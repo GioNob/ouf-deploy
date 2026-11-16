@@ -180,7 +180,7 @@ class PortableTests(unittest.TestCase):
 
     def test_allowlist_complete_apply_and_exclusive_metadata_evidence(self):
         tree = Tree(); rows = tree.plan(); report = dict(volatileEntriesRemoved=0)
-        self.assertEqual(len(rows), 22)
+        self.assertEqual(len(rows), 24)
         with tree.descriptors(), patch.object(V.I, "write_once") as write:
             V.remove(tree.context, rows, Path("/output"), report)
         self.assertEqual(tree.read()[0], tree.expected)
@@ -204,6 +204,21 @@ class PortableTests(unittest.TestCase):
         # A remaining copied-up child keeps the marker legitimate: no clearing, exact proof denies.
         tree = Tree(); tree.records[""]["xattrs"] = {V.IMPURE: "79"}
         tree.records["run"]["xattrs"] = {"trusted.overlay.origin": "00"}
+        with self.assertRaisesRegex(O.A.OperationDenied, V.DENIED):
+            tree.plan()
+
+    def test_vps_clean_stop_empty_logs_copy_up(self):
+        # VPS inventory 16/11: after a clean stop nginx removed logs/nginx.pid, the copy-up stays.
+        tree = Tree(); del tree.records["usr/local/apisix/logs/nginx.pid"]; tree.relink()
+        tree.context["beforeSeal"] = tree.read()[0]
+        rows = tree.plan()
+        self.assertIn({"path": "usr/local/apisix/logs", "kind": "directory"}, rows)
+        with tree.descriptors(), patch.object(V.I, "write_once"):
+            V.remove(tree.context, rows, Path("/output"), dict(volatileEntriesRemoved=0))
+        self.assertEqual(tree.read()[0], tree.expected)
+        # A non-allowlisted log file keeps the copy-up and is denied before any removal.
+        tree = Tree(); p = "usr/local/apisix/logs/error.log"
+        tree.records[p] = entry(p, "file"); tree.inodes[p] = 999
         with self.assertRaisesRegex(O.A.OperationDenied, V.DENIED):
             tree.plan()
 
@@ -285,8 +300,8 @@ class PortableTests(unittest.TestCase):
             V.remove(tree.context, tree.plan(), Path("/output"), report)
         tree.context["comparison"]["expectedUpperSeal"] = {**tree.expected, "sha256": "0"*64}
         with self.assertRaisesRegex(O.A.OperationDenied, V.MISMATCH): V.verify(SimpleNamespace(), tree.context)
-        self.assertEqual(report["volatileEntriesRemoved"], 22)
-        self.assertEqual(len(report["volatileRemovals"]), 22)
+        self.assertEqual(report["volatileEntriesRemoved"], 24)
+        self.assertEqual(len(report["volatileRemovals"]), 24)
 
     def test_descriptor_preflight_link_and_mount_denied_before_unlink(self):
         for bad in ("link", "mount"):
@@ -332,7 +347,7 @@ class PortableTests(unittest.TestCase):
                     patch.object(V.I, "write_once"):
                 V.apply(args, observation(), plan, report, observation)
             self.assertEqual(events, ["lock", "verify", "verify", "unlock"])
-            self.assertEqual(report["volatileEntriesRemoved"], 22 if dirty else 0)
+            self.assertEqual(report["volatileEntriesRemoved"], 24 if dirty else 0)
 
     def test_adapter_drift_during_apply_denies_before_southbound_mutation(self):
         from test_semantic_provider_r3_operate import observation
@@ -363,7 +378,7 @@ class PortableTests(unittest.TestCase):
         tree.context["expected"] = {**tree.expected, "sha256": "0"*64}
         args = SimpleNamespace(output_directory="/output", docker="/docker", docker_sha256="a"*64, docker_socket="unix:///sock")
         with self.assertRaisesRegex(O.A.OperationDenied, V.MISMATCH): V.verify(args, tree.context)
-        self.assertEqual(report["volatileEntriesRemoved"], 22)
+        self.assertEqual(report["volatileEntriesRemoved"], 24)
 
     def test_current_snapshot_drift_denied_before_removals(self):
         tree = Tree()

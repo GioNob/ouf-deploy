@@ -22,10 +22,13 @@ DENIED = "R3_VOLATILE_UNDECLARED_ENTRY"
 MISMATCH = "R3_VOLATILE_RESTORE_SEAL_MISMATCH"
 TEMPS = tuple("usr/local/apisix/" + p for p in
               ("fastcgi_temp", "scgi_temp", "client_body_temp", "proxy_temp", "uwsgi_temp"))
-FILES = ("usr/local/apisix/conf/nginx.conf", "usr/local/apisix/conf/apisix.uid")
+FILES = ("usr/local/apisix/conf/nginx.conf", "usr/local/apisix/conf/apisix.uid",
+         # nginx pid file: removed on a clean stop, left behind by a crash or power loss.
+         "usr/local/apisix/logs/nginx.pid")
 LINK = "usr/local/apisix/conf/apisix.yaml"
 TARGET = "/run/ouf-southbound-runtime/apisix.yaml"
-COPYUPS = ("usr", "usr/local", "usr/local/apisix", "usr/local/apisix/conf")
+# logs is copied up because nginx writes logs/nginx.pid at start (VPS inventory, 16/11).
+COPYUPS = ("usr", "usr/local", "usr/local/apisix", "usr/local/apisix/logs", "usr/local/apisix/conf")
 MAX_ENTRIES, MAX_BYTES, MAX_DEPTH = 10000, 256 * 1024 * 1024, 8
 IMPURE, ORIGIN = "trusted.overlay.impure", "trusted.overlay.origin"
 IMPURE_ROW = "overlay-impure-xattr"

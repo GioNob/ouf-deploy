@@ -73,9 +73,9 @@ Solo nell'upper southbound:
 | Percorso relativo | Requisiti |
 | --- | --- |
 | `usr/local/apisix/{fastcgi_temp,scgi_temp,client_body_temp,proxy_temp,uwsgi_temp}` | Directory; discendenti solo directory/file regolari. Profondità relativa massima 8, complessivamente 10.000 elementi incluse le cinque radici, 256 MiB di file. |
-| `usr/local/apisix/conf/{nginx.conf,apisix.uid}` | File regolari, nlink 1, massimo 1 MiB ciascuno. |
+| `usr/local/apisix/conf/{nginx.conf,apisix.uid}`, `usr/local/apisix/logs/nginx.pid` | File regolari, nlink 1, massimo 1 MiB ciascuno. Il pid file resta solo dopo uno stop non pulito. |
 | `usr/local/apisix/conf/apisix.yaml` | Symlink, nlink 1, destinazione esattamente `/run/ouf-southbound-runtime/apisix.yaml`. |
-| `usr`, `usr/local`, `usr/local/apisix`, `usr/local/apisix/conf` | Copy-up con modo, uid, gid e xattr normalizzati identici all'immagine. Rimozione soltanto quando vuoti. |
+| `usr`, `usr/local`, `usr/local/apisix`, `usr/local/apisix/logs`, `usr/local/apisix/conf` | Copy-up con modo, uid, gid e xattr normalizzati identici all'immagine. Rimozione soltanto quando vuoti. |
 | xattr `trusted.overlay.impure` delle directory padre degli elementi rimossi | Marcatore che il kernel imposta sul padre di un copy-up, invisibile nella vista unita. Viene rimosso solo se nessun figlio rimasto porta `trusted.overlay.origin`; la previsione esatta del sigillo continua a decidere. Riga di evidenza `kind = overlay-impure-xattr`. Emerso dal gate nativo: la copia di `usr` marca la radice dell'upper. |
 
 Volatili e discendenti devono appartenere all'utente OCI e avere
@@ -141,3 +141,11 @@ reali sealer, filesystem, binding snapshot e create/state/delete runc.
 Il workflow R3 esegue esplicitamente questo gate. La sua definizione non
 attesta un'esecuzione CI né un risultato VPS. Non prova l'avvio applicativo
 APISIX, il lease o l'E2E; non consuma claim operativi esistenti.
+
+## Inventario reale (VPS, 16/11)
+
+Primo plan reale: `R3_VOLATILE_UNDECLARED_ENTRY`, zero modifiche. L'inventario dei metadati
+(`r3-upper-delta.py`) ha mostrato 20 elementi nell'upper del southbound contro 7 attesi: i 12
+dell'allowlist più `usr/local/apisix/logs`, copiata nell'upper perché nginx vi scrive il pid file.
+`logs` è ora un copy-up rimovibile solo se vuoto, `logs/nginx.pid` un file volatile.
+Un socket lasciato in `logs/` da un crash resta negato: il walker storico non ammette socket.

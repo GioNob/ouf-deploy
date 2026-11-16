@@ -98,7 +98,7 @@ class PortableTests(unittest.TestCase):
             events = []
             def restore(*argv):
                 events.append("restore")
-                argv[3]["volatileEntriesRemoved"] = 22
+                argv[3]["volatileEntriesRemoved"] = 24
             with patch.object(O.VR, "apply", side_effect=restore), \
                     patch.object(O, "observe", side_effect=[before, successful("start", before)]), \
                     patch.object(O, "docker", side_effect=lambda *_: events.append("start")), \
@@ -107,7 +107,7 @@ class PortableTests(unittest.TestCase):
                 report = {"status": "HELD", **O.COUNTERS}
                 O.apply(args, plan, report)
             self.assertEqual(events, ["restore", "start", "start"])
-            self.assertEqual(report["volatileEntriesRemoved"], 22)
+            self.assertEqual(report["volatileEntriesRemoved"], 24)
 
     def test_volatile_failure_is_held_with_zero_start_and_partial_evidence(self):
         before = observation()
