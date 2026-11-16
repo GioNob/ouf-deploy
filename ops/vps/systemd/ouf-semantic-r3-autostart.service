@@ -1,0 +1,32 @@
+[Unit]
+Description=OUF R3 governed boot start (D-045)
+Wants=docker.service network-online.target ouf-semantic-lease-supervisor-v2.service
+After=docker.service network-online.target ouf-semantic-lease-supervisor-v2.service
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+Restart=no
+TimeoutStartSec=6000
+ExecStart=/usr/bin/python3.13 -I -B /etc/ouf/semantic-provider-r3-autostart/source/scripts/autostart-semantic-provider-r3.py --config /etc/ouf/semantic-provider-r3-autostart/config.json
+NoNewPrivileges=yes
+ProtectSystem=full
+ReadWritePaths=/etc/ouf/deploy-snapshots
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ouf-semantic-r3-autostart
+SyslogLevelPrefix=yes
+Environment=PATH=/usr/sbin:/usr/bin:/sbin:/bin LC_ALL=C OPENSSL_CONF=/dev/null
+
+[Install]
+WantedBy=multi-user.target
