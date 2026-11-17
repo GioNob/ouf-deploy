@@ -24,6 +24,8 @@ on:
       - tools/semantic_provider_admission_v2/**
       - tests/test_semantic_provider_lease_supervisor.py
       - tests/test_semantic_lease_dns_tolerance.py
+      - tests/test_semantic_lease_kernel_v2*.py
+      - tests/native_semantic_lease_kernel_v2.py
       - tests/fixtures/r3-v1-v10-dns-tolerance-hashes.json
       - tests/test_semantic_b1_acceptance.py
       - tests/test_runtime_v52_epochs.py
@@ -37,6 +39,19 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: D-050 lease kernel generation 2 (portable)
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_lease_kernel_v2.py -v
+      - name: D-050 native dependencies and explicit root gate
+        run: |
+          test "$(sudo -n id -u)" = 0
+          test "$(sudo -n id -g)" = 0
+          sudo -n apt-get update
+          sudo -n apt-get install -y --no-install-recommends nftables iproute2
+          sudo -n modprobe nf_conntrack_bridge
+      - name: D-050 real DNAT and native bridge conntrack (private net and mount namespaces)
+        run: >-
+          sudo -n env OUF_LEASE_KERNEL_V2_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_lease_kernel_v2_native.py -v
       - name: Integrated real runtime, broker, preparer and hook with composed authority
         run: >-
           sudo -n env OUF_R3_INTEGRATION_NATIVE=1 /usr/bin/python3 -I -B
