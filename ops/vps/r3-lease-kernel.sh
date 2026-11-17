@@ -20,7 +20,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=ae14c844c532f3ed45a94986b6ad5c59698e6e0a
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -52,7 +52,7 @@ fetch() {
 
 delivery() {
   # BEGIN DELIVERY
-  fetch ops/vps/r3-settings.json bdcfa10bc132a1f040c650c5490afecf95c965f7d81a79c713f648206ed9ceb7
+  fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
   fetch scripts/issue-semantic-provider-operation-authorization.py 21bc0e9819fe11c78ef87ff76823e7a19ee23dd5cb1c00454ba844a0c9501f41
   fetch scripts/migrate-semantic-lease-kernel.py 7143499813c70c936e0c2792b2e19d44a3cd32cac072fd5b82312ae4dd923901
