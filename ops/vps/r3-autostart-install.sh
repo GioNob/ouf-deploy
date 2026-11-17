@@ -28,7 +28,7 @@ S = '/etc/ouf/deploy-snapshots'
 PYTHON_SHA = '889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9'
 # BEGIN DELIVERY (same LF blobs as r3-operate.sh, plus the boot driver/entrypoint)
 MANIFEST = {
-    'ops/vps/r3-settings.json': 'e4040d9428f055362b500cd4d6042ccda117baba48c89d37101988999c923a37',
+    'ops/vps/r3-settings.json': 'bdcfa10bc132a1f040c650c5490afecf95c965f7d81a79c713f648206ed9ceb7',
     'scripts/autostart-semantic-provider-r3.py': '0d280a2f0608a564f582f5f6058b4950ea12033b4c4b25f6a504076a54a03449',
     'scripts/install-semantic-provider-r3.py': 'd8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76',
     'scripts/issue-semantic-provider-operation-authorization.py': '21bc0e9819fe11c78ef87ff76823e7a19ee23dd5cb1c00454ba844a0c9501f41',

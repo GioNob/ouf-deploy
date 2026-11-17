@@ -5,7 +5,7 @@
 #       AZIONE=start bash r3-operate.sh apply <planSha256>
 #       per restart-one aggiungere RUOLO=adapter oppure RUOLO=southbound
 # Il plan scarica una consegna propria (D-047: operate + ripristino dei volatili); l'apply riusa
-# consegna e root di output salvate dal plan della stessa azione. Presuppone la v11 installata.
+# consegna e root di output salvate dal plan della stessa azione. Presuppone la v12 installata.
 set -euo pipefail
 umask 077
 
@@ -18,13 +18,13 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=74061a93a9aaced23c3d2a0ba135b8760286f123
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 S=/etc/ouf/deploy-snapshots
 INSTALL=$S/semantic-provider-r3-install-v1
-STATE=$HOME/.ouf-r3-v11-state
+STATE=$HOME/.ouf-r3-v12-state
 NFT_SHA=57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0
 TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)
 PROFILE=$S/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json
@@ -50,7 +50,7 @@ fetch() {
 
 delivery() {
   # BEGIN DELIVERY
-  fetch ops/vps/r3-settings.json e4040d9428f055362b500cd4d6042ccda117baba48c89d37101988999c923a37
+  fetch ops/vps/r3-settings.json bdcfa10bc132a1f040c650c5490afecf95c965f7d81a79c713f648206ed9ceb7
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
   fetch scripts/issue-semantic-provider-operation-authorization.py 21bc0e9819fe11c78ef87ff76823e7a19ee23dd5cb1c00454ba844a0c9501f41
   fetch scripts/migrate-semantic-lease-kernel.py 7143499813c70c936e0c2792b2e19d44a3cd32cac072fd5b82312ae4dd923901
@@ -197,7 +197,23 @@ PINS = {"coordinator": "5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd
         "southbound/launch": "f066a65cffc7766bbf77b9de15fe9d527ce8ca68a9bb0d74cadfe8370c6ad63b",
         "southbound/context": "18a1df8d45fbe0914514478910041d3a49ecf402b8c78a06c8148cf95c06a1c9",
         "southbound/policy": "e489068bc8a86f226dadfa5a3870dc05aaae65437d638a8b9ce56c4c42e218a8"}
-assert set(files) == C.DATA_INPUTS, "R3_INPUT_SET_DRIFT"
+if 12 >= 12:
+    # D-050: v12 composes on the generation-2 lease kernel published by the migration.
+    G2 = "/etc/ouf/lease-kernel-generations/g2-20261117T122656"
+    MIG = S + "/semantic-lease-kernel-migration-20261117T122656"
+    files.update(coordinator=G2 + "/coordinated-configuration.json",
+                 coordinationJournal=G2 + "/coordination-journal.json",
+                 migrationPlan=MIG + "/plan.json", migrationReceipt=MIG + "/receipt.json",
+                 generationReceipt=G2 + "/generation-receipt.json",
+                 bootPointer="/etc/ouf/coordinated-boot-installation.json")
+    PINS.update(coordinator="899f39c193b88017b88931dcd9713ed80d7f63b87594c2cd00636a695e06b02f",
+                migrationPlan="65a825ac859d81e4ebed4a3f791141a3154a5db1703db6edf4809194a917adaf",
+                migrationReceipt="a3456dfb839001657922e5aed892180cb9347b35e9e765c2a38fb8489a6d534b",
+                generationReceipt="0233576fd023ce6f6afe62f040bfaec1d5a3103035c4b7c4b5657eb81082cca8",
+                bootPointer="2c532ae900128e423c33addee66f5536078d7ce2589237601d6b963bd35bbd42")
+    assert set(files) == C.DATA_INPUTS_V12, "R3_INPUT_SET_DRIFT"
+else:
+    assert set(files) == C.DATA_INPUTS, "R3_INPUT_SET_DRIFT"
 def sha(path):
     return hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
 bound = {}
@@ -206,7 +222,8 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = C.SOURCE_INPUTS_V11 if 11 >= 11 else C.SOURCE_INPUTS_V6 if 11 >= 6 else C.SOURCE_INPUTS
+SOURCE_SET = (C.SOURCE_INPUTS_V12 if 12 >= 12 else C.SOURCE_INPUTS_V11 if 12 >= 11
+              else C.SOURCE_INPUTS_V6 if 12 >= 6 else C.SOURCE_INPUTS)
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
