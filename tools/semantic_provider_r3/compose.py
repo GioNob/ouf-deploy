@@ -62,6 +62,9 @@ REPLACEMENTS_V12 = {KERNEL_V1: KERNEL_V2,
 SOURCE_MAP_V12 = {p: REPLACEMENTS_V12.get(v, v) for p, v in SOURCE_MAP_V11.items()}
 # The compiler alias embeds the frozen validator: it must not import itself.
 SOURCE_INPUTS_V12 = frozenset(SOURCE_MAP_V12.values()) | {KERNEL_V1}
+IDENTITY_SOURCE = 'tools/semantic_provider_r3/identity_provider_v13.py'
+SOURCE_MAP_V13 = {**SOURCE_MAP_V12, IDENTITY_SOURCE: IDENTITY_SOURCE}
+SOURCE_INPUTS_V13 = frozenset(SOURCE_MAP_V13.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -70,6 +73,7 @@ DATA_INPUTS = {"settings", "coordinator", "coordinationJournal", "a2Manifest", "
                "rootfs", "acceptance"} | {r + "/" + p for r in ROLES for p in
                                             ("historicalTemplate", "template", "launch", "context", "policy")}
 DATA_INPUTS_V12 = DATA_INPUTS | {'migrationReceipt', 'migrationPlan', 'generationReceipt', 'bootPointer'}
+DATA_INPUTS_V13 = DATA_INPUTS_V12 | {'identityProviderPeer'}
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -80,7 +84,8 @@ def input_set(files, sources):
     """Closed input pairs; the authenticated sequence still selects the version."""
     return ((set(files) == DATA_INPUTS and set(sources) in
              (SOURCE_INPUTS, SOURCE_INPUTS_V6, SOURCE_INPUTS_V11)) or
-            (set(files) == DATA_INPUTS_V12 and set(sources) == SOURCE_INPUTS_V12))
+            (set(files) == DATA_INPUTS_V12 and set(sources) == SOURCE_INPUTS_V12) or
+            (set(files) == DATA_INPUTS_V13 and set(sources) == SOURCE_INPUTS_V13))
 
 
 def migration_bindings(files):
@@ -252,9 +257,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
-    selected_map = SOURCE_MAP_V12 if version >= 12 else SOURCE_MAP_V11 if version >= 11 else SOURCE_MAP_V6 if version >= 6 else SOURCE_MAP
-    selected_inputs = SOURCE_INPUTS_V12 if version >= 12 else frozenset(selected_map.values())
-    require(set(files) == (DATA_INPUTS_V12 if version >= 12 else DATA_INPUTS) and (set(sources) == selected_inputs
+    selected_map = SOURCE_MAP_V13 if version >= 13 else SOURCE_MAP_V12 if version >= 12 else SOURCE_MAP_V11 if version >= 11 else SOURCE_MAP_V6 if version >= 6 else SOURCE_MAP
+    selected_inputs = SOURCE_INPUTS_V13 if version >= 13 else SOURCE_INPUTS_V12 if version >= 12 else frozenset(selected_map.values())
+    require(set(files) == (DATA_INPUTS_V13 if version >= 13 else DATA_INPUTS_V12 if version >= 12 else DATA_INPUTS) and (set(sources) == selected_inputs
             or version <= 3 and set(sources) == SOURCE_INPUTS - {L2_SOURCE})
             and all(type(v) is bytes and 0 < len(v) <= 131072 for v in sources.values()),
             "EXACT_R3_INPUT_SET_REQUIRED")
@@ -311,6 +316,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     source_map = {target: original for target, original in selected_map.items() if original in sources}
     broker_sources = B.SOURCES & source_map.keys()
     emitted = sources_v12(sources) if version >= 12 else sources
+    if version >= 13:
+        from .identity_overlay_v13 import sources_v13
+        emitted = sources_v13(emitted, SOURCE_MAP, IDENTITY_SOURCE)
     if version >= 12:
         contract_module(emitted[KERNEL_V2], 'kernel_g2').materialize(owner['kernel'], empty_provider_sets=True)
     docs = {"source/" + target: emitted[original] for target, original in source_map.items()}
@@ -423,6 +431,10 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                            "applicationHash": sha(canonical(policies[role]["expectedOci"]))})
         require(len(peers.declarations(candidate["transport"], candidate["containerId"])) == 1,
                 "EXACT_RECIPROCAL_COHORT_REQUIRED")
+        if version >= 13 and role == 'southbound':
+            identity = contract_module(sources[IDENTITY_SOURCE], 'identity_provider_v13')
+            candidate['transport'].append(identity.identity_flow(data['identityProviderPeer'], candidate,
+                                                                 owner['kernel']))
         prefix = "documents/" + role + "/"
         frame = put(prefix + "frame-policy.json", policies[role])
         seal = put(prefix + "rootfs-seal.json", rootfs["roles"][role]["effectiveSeal"])
