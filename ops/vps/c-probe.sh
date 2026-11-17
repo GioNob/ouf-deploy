@@ -13,7 +13,7 @@ case "$mode" in
   *) echo 'uso: plan | apply <planSha256>' >&2; exit 2 ;;
 esac
 # Claude fissa il commit dopo review e commit D-001.
-C=3ca637bad07229dcb67d0a37140748bc68189b93
+C=0b76e76225c5342c5ab1ca9211fb538b0d7bbce7
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] || {
   echo 'runbook non ancora fissato a un commit' >&2; exit 2;
 }
@@ -128,7 +128,7 @@ delivery() {
   fetch tools/semantic_provider_admission_v2/locking.py 1a92011a1948ab82498fcc2fc92ee17b7cbf11f1858cbe7edc1dac606de0b564
   fetch tools/semantic_provider_admission_v2/preparer_v2.py c417cd74f4a1712b93e19b145df959ac85d1e42a07484c729cfd18182dd579c7
   fetch tools/semantic_provider_admission_v2/reauthorization_v2.py 53fb58772280116845a47351bdbce802dfd26169175cb36e3e9c11421df6b39c
-  fetch tools/semantic_provider_c/probe.py fe21fc970b304b640e618c59667ce849ea16fa3d4c884568e125fad5294d1ea6
+  fetch tools/semantic_provider_c/probe.py 95cc735a40bb9ee61a948144f24f5bb34845a0aa349044d98216300c00de83c5
   fetch tools/semantic_provider_operation/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_provider_operation/authorization.py 8f5dd2fd86efb7add1bdb5325b6428db41cc539b7b00a3b33efa4d692ab958fc
   fetch tools/semantic_provider_operation/epochs.py b5188406c935079b35f2a81ba670df9578d6ef97a5d7308cbb9cf502a72635bb
