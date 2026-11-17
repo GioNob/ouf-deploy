@@ -153,8 +153,12 @@ def targets(profile, env, peer, transport):
     base, port = endpoint(env["GATEWAY_BASE_URL"], {"https"})
     require(base.path in ("", "/") and port == profile["ports"]["southbound"], "C_ENDPOINT_PROFILE_DRIFT")
     networks = profile["roles"]["southbound"]["networks"]
+    # Docker repeats the container name and aliases on every network of the southbound
+    # (backend, egress, internal): only the network shared with the Semantic is the path
+    # the R3 ingress admits.
+    shared = set(profile["roles"]["semantic"]["networks"])
     matches = [(name, ep) for name, ep in networks.items()
-               if base.hostname in ep["aliases"] or base.hostname in ep["dnsNames"]]
+               if name in shared and (base.hostname in ep["aliases"] or base.hostname in ep["dnsNames"])]
     require(len(matches) == 1, "C_SOUTHBOUND_ALIAS_UNPROVEN")
     network, south = matches[0]
     semantic_net = profile["roles"]["semantic"]["networks"][network]
@@ -204,8 +208,18 @@ def proc_read(pid, filename, maximum):
         os.close(fd)
 
 
+PEM_CERTIFICATE = re.compile(rb"-----BEGIN CERTIFICATE-----\r?\n[A-Za-z0-9+/=\r\n]+-----END CERTIFICATE-----")
+
+
+def pem_certificates(raw):
+    """Merged trust bundles may carry non-ASCII comment headers; keep only PEM blocks."""
+    blocks = PEM_CERTIFICATE.findall(raw)
+    require(1 <= len(blocks) <= 1024, "C_SOUTHBOUND_TLS_UNPROVEN")
+    return b"\n".join(blocks).decode("ascii") + "\n"
+
+
 def resolver(raw):
-    servers = [line.split()[1] for line in raw.decode("ascii").splitlines()
+    servers = [line.split()[1] for line in raw.decode("ascii", errors="replace").splitlines()
                if line.split() and line.split()[0] == "nameserver" and len(line.split()) >= 2]
     require(bool(servers), "C_CONTAINER_RESOLVER_UNPROVEN")
     return str(ipaddress.ip_address(servers[0]))
@@ -222,7 +236,7 @@ def observation(args, *, output_exists=False, deadline=None):
     target = targets(profile, env, peer, transport)
     ca = reader.read(args.southbound_ca, args.southbound_ca_sha256)
     try:
-        ssl.create_default_context(cadata=ca.decode("ascii"))
+        ssl.create_default_context(cadata=pem_certificates(ca))
     except Exception:
         raise I.A.OperationDenied("C_SOUTHBOUND_TLS_UNPROVEN") from None
     resolv = proc_read(peer["generation"]["pid"], "/etc/resolv.conf", 65536)
@@ -330,7 +344,7 @@ def metadata(status=None, outcome="HTTP", body=b"", duration=0):
 class Transport:
     def __init__(self, nameserver, ca, budget):
         self.nameserver, self.budget = nameserver, budget
-        self.south_context = ssl.create_default_context(cadata=ca.decode("ascii"))
+        self.south_context = ssl.create_default_context(cadata=pem_certificates(ca))
         self.token_context = ssl.create_default_context()
 
     def addresses(self, host):

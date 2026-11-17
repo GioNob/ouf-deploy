@@ -310,7 +310,8 @@ class Contracts(unittest.TestCase):
                    "networks": {"backend": {"bridge": "br-test", "subnets": ["10.10.0.0/24"]}},
                    "roles": {"semantic": {"networks": {"backend": {"ipv4": "10.10.0.2"}}},
                        "southbound": {"networks": {"backend": {"ipv4": "10.10.0.3", "aliases": ["south.test"], "dnsNames": ["south.test"]},
-                                                  "relay": {"ipv4": "10.11.0.3", "aliases": [], "dnsNames": []}}},
+                                                  # As on the VPS: the alias repeats on every southbound network.
+                                                  "relay": {"ipv4": "10.11.0.3", "aliases": ["south.test"], "dnsNames": ["south.test"]}}},
                        "adapter": {"containerName": "adapter.test", "networks": {"relay": {"ipv4": "10.11.0.2", "dnsNames": ["adapter.test"]}}}}}
         transport = {"transport": [{"source": "10.10.0.2", "destination": "10.10.0.3", "port": 443,
                                   "peerIngress": {"kind": "BRIDGE_PORT", "ifindex": 9}},
@@ -405,7 +406,8 @@ class Contracts(unittest.TestCase):
         with patch.object(C.R, "observe", return_value=r3()), patch.object(C.I, "Reader", return_value=reader), \
                 patch.object(C, "installed", return_value=(peer, (), {})), patch.object(C, "semantic", return_value=row), \
                 patch.object(C.I.C, "document", return_value={}), patch.object(C, "targets", return_value={}), \
-                patch.object(C.ssl, "create_default_context"), patch.object(C, "proc_read", return_value=b"nameserver 127.0.0.11\n") as read:
+                patch.object(C.ssl, "create_default_context"), patch.object(C, "pem_certificates", return_value="pem"), \
+                patch.object(C, "proc_read", return_value=b"nameserver 127.0.0.11\n") as read:
             observed, _ = C.observation(args)
             read.assert_called_once_with(123, "/etc/resolv.conf", 65536)
         self.assertEqual(observed["configuration"], item["configuration"])
