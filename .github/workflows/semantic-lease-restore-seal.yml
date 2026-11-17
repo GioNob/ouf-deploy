@@ -1,0 +1,33 @@
+name: D-050 restore seal feasibility (not migration qualification)
+on:
+  pull_request:
+    paths:
+      - tests/qualify_semantic_lease_restore_seal.py
+      - tests/test_semantic_lease_restore_seal*.py
+      - tests/test_semantic_lease_kernel_v2.py
+      - tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_kernel*.py
+      - tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_nft.py
+      - tools/semantic_guard_extension/extend_empty_lease_guard.py
+      - .github/workflows/semantic-lease-restore-seal.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  feasibility:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Portable historical seal contract
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_lease_restore_seal.py -v
+      - name: Native dependencies and explicit root gate
+        run: |
+          test "$(sudo -n id -u)" = 0
+          test "$(sudo -n id -g)" = 0
+          sudo -n apt-get update
+          sudo -n apt-get install -y --no-install-recommends nftables
+          sudo -n modprobe nf_conntrack_bridge
+      - name: Witness atomic failure and restore seal denial in disposable netns
+        run: >-
+          sudo -n env OUF_LEASE_RESTORE_SEAL_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_lease_restore_seal_native.py -v
