@@ -305,7 +305,12 @@ class Native:
             stack.enter_context(I.operation_locks(Path(self.args.install_root), sorted(cfg['candidates'])))
             stack.enter_context(B.directory_lock(Path(self.args.install_root) / 'authorization'))
             stack.enter_context(B.lock(self.args.lock))
-            stack.enter_context(B.lock(self.owner['commonLockFile']))
+            # On the VPS the coordinator's common lock IS the boot guard lock
+            # (/run/ouf-semantic-boot-guard/guard.lock). A second flock on a new
+            # descriptor of the same inode would fail with EWOULDBLOCK: take it once.
+            guard, common = Path(self.args.lock).lstat(), Path(self.owner['commonLockFile']).lstat()
+            if (guard.st_dev, guard.st_ino) != (common.st_dev, common.st_ino):
+                stack.enter_context(B.lock(self.owner['commonLockFile']))
             B.need(self.runtime() == (cfg, version), 'LEASE_KERNEL_R3_CHANGED_BEFORE_LOCK')
             return stack
         except BaseException:
