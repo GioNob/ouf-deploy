@@ -76,7 +76,7 @@ MANIFEST = {
     'tools/semantic_lease_kernel_migration/boot_runner_v2.py': 'e6f968e939842fcf71c6b1632886eeb377df9b1ce57f390293b4bb34c1afe713',
     'tools/semantic_lease_kernel_migration/cli.py': '6ef7827768ecb52fcd542a403c50f1d3b19cfc6e847bbe8af0da4ac5d86cd67d',
     'tools/semantic_lease_kernel_migration/migration.py': 'cbcd08ac71d0221f60530125b52861e5a23a37896116c3224576b883ced45464',
-    'tools/semantic_lease_kernel_migration/native.py': '64b443874f158d2055e3378d02c573a30f14282c377e0f82dfe50bfa3bba4e2e',
+    'tools/semantic_lease_kernel_migration/native.py': '1ab1a3568227f604f4d4c87a8aae8bb88476e96edfba8e0269846762cf622a22',
     'tools/semantic_lease_recovery/activation_core.py': '06d14a340db6d35a795115fd921f901e1cd0de74c06174562107270b08fc7c2a',
     'tools/semantic_lease_recovery/activation_core_v2.py': 'c8c7a6841b1427f677349a889e6cb4502ce5bb5a28f6a5b65d5e72fbc2ae1aeb',
     'tools/semantic_lease_recovery/adaptive_supervisor.py': '08a354cfbea6a31ed1ea21dd80ddab0d0f983e3a0143a6f656124cf843d5635c',
