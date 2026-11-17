@@ -225,8 +225,30 @@ def resolver(raw):
     return str(ipaddress.ip_address(servers[0]))
 
 
+SETTLE_ATTEMPTS, SETTLE_PAUSE_SECONDS = 6, 5
+
+
+def r3_settled(args, *, output_exists=False, deadline=None, sleep=time.sleep):
+    """A lease renewal briefly publishes LEASE_UPDATING; wait it out (bounded) instead of failing."""
+    for attempt in range(SETTLE_ATTEMPTS):
+        r3 = R.observe(args, output_exists=output_exists, deadline=deadline)
+        if r3["lease"]["state"] != "LEASE_UPDATING":
+            return r3
+        if attempt + 1 < SETTLE_ATTEMPTS:
+            sleep(SETTLE_PAUSE_SECONDS)
+    return r3
+
+
+def r3_stable(r3):
+    """Fields that must not change around the probe. The supervisor reason and the rolling
+    activation counter change legitimately with renewals and are excluded from comparisons
+    and from the plan digest; state, epochs, unit, lease and tables stay exact."""
+    supervisor = {k: r3["supervisor"][k] for k in ("unit", "state", "epochs", "authorizationSequence")}
+    return {**r3, "supervisor": supervisor}
+
+
 def observation(args, *, output_exists=False, deadline=None):
-    r3 = R.observe(args, output_exists=output_exists, deadline=deadline)
+    r3 = r3_settled(args, output_exists=output_exists, deadline=deadline)
     preconditions(r3)
     reader = I.Reader()
     peer, ip_binding, transport = installed(args, r3, reader)
@@ -240,12 +262,13 @@ def observation(args, *, output_exists=False, deadline=None):
     except Exception:
         raise I.A.OperationDenied("C_SOUTHBOUND_TLS_UNPROVEN") from None
     resolv = proc_read(peer["generation"]["pid"], "/etc/resolv.conf", 65536)
-    state = {"r3": r3, "semantic": {"containerId": peer["containerId"], "generation": peer["generation"],
+    state = {"r3": r3_stable(r3), "semantic": {"containerId": peer["containerId"], "generation": peer["generation"],
              "bootId": peer["bootId"]}, "configuration": env, "targets": target,
              "resolver": {"nameserver": resolver(resolv), "sha256": sha(resolv)}, "inputHashes": reader.hashes}
     reader.verify()
     require(configuration(semantic(args, peer, ip_binding)) == env, "C_SEMANTIC_CONFIGURATION_DRIFT")
-    require(R.observe(args, output_exists=output_exists, deadline=deadline) == r3, "C_R3_OBSERVATION_DRIFT")
+    again = r3_settled(args, output_exists=output_exists, deadline=deadline)
+    require(r3_stable(again) == state["r3"], "C_R3_OBSERVATION_DRIFT")
     return state, ca
 
 

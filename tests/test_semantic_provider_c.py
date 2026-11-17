@@ -394,6 +394,24 @@ class Contracts(unittest.TestCase):
                 child.assert_not_called()
                 request.assert_not_called()
 
+    def test_lease_updating_is_waited_out_and_volatile_supervisor_fields_ignored(self):
+        updating = r3(); updating["lease"] = {"state": "LEASE_UPDATING", "leaseAuthorized": False}
+        ready = r3()
+        sleeps = []
+        with patch.object(C.R, "observe", side_effect=[updating, updating, ready]):
+            self.assertEqual(C.r3_settled(SimpleNamespace(), sleep=sleeps.append), ready)
+        self.assertEqual(sleeps, [C.SETTLE_PAUSE_SECONDS] * 2)
+        with patch.object(C.R, "observe", return_value=updating):
+            self.assertEqual(C.r3_settled(SimpleNamespace(), sleep=lambda _: None)["lease"]["state"], "LEASE_UPDATING")
+        a, b = r3(), r3()
+        a["supervisor"].update(reason=None, activationsLastHour=0)
+        b["supervisor"].update(reason="DNS_WINDOW_TOO_SHORT", activationsLastHour=1)
+        self.assertEqual(C.r3_stable(a), C.r3_stable(b))
+        b["supervisor"]["state"] = "WAITING"
+        self.assertNotEqual(C.r3_stable(a), C.r3_stable(b))
+        c = r3(); c["candidates"]["adapter"]["epoch"]["epoch"] = 2
+        self.assertNotEqual(C.r3_stable(a), C.r3_stable(c))
+
     def test_plan_observation_reads_only_resolver_and_not_secret(self):
         item = state()
         row = {"Config": {"Env": ["OUF_SCHEMA_GOV_" + k + "=" + v for k, v in item["configuration"].items()]}}
