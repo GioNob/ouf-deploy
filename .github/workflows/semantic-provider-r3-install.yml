@@ -9,6 +9,9 @@ on:
       - docs/OUF_SEMANTIC_PROVIDER_R3_AUTOSTART.md
       - tests/test_r3_runbooks.py
       - tools/semantic_provider_r3/**
+      - tools/semantic_lease_kernel_migration/**
+      - tests/fixtures/r3-v1-v11-pre-v12-hashes.json
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V12.md
       - tools/semantic_provider_operation/**
       - tools/semantic_provider_admission_v2/**
       - tools/semantic_runtime_v52/**
@@ -62,6 +65,8 @@ jobs:
         with: {persist-credentials: false, fetch-depth: 0}
       - name: R3 runbooks, single delivery of LF blobs and exact closure
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_r3_runbooks.py -v
+      - name: D-050 v12 migration bindings, upgrade and start denials (portable)
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v12.py -v
       - name: D-045 bounded offline boot autostart (portable)
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_autostart.py -v
       - name: D-045 installer shell syntax

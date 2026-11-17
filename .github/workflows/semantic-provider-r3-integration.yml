@@ -9,6 +9,7 @@ on:
       - tools/semantic_authority_mandates/**
       - tools/semantic_cohort_admission/cohort-draft/**
       - tools/semantic_lease_recovery/**
+      - tools/semantic_lease_kernel_migration/**
       - tools/semantic_frame_compiler/**
       - tools/semantic_successor_recipes/**
       - tools/semantic_b1_acceptance/**
@@ -27,6 +28,8 @@ on:
       - tests/test_semantic_lease_kernel_v2*.py
       - tests/native_semantic_lease_kernel_v2.py
       - tests/fixtures/r3-v1-v10-dns-tolerance-hashes.json
+      - tests/fixtures/r3-v1-v11-pre-v12-hashes.json
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V12.md
       - tests/test_semantic_b1_acceptance.py
       - tests/test_runtime_v52_epochs.py
       - .github/workflows/semantic-provider-r3-integration.yml
@@ -52,6 +55,10 @@ jobs:
         run: >-
           sudo -n env OUF_LEASE_KERNEL_V2_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_semantic_lease_kernel_v2_native.py -v
+      - name: D-050 v12 replay, migrated closure, upgrade and native start gate (private net namespace)
+        run: >-
+          sudo -n env OUF_LEASE_KERNEL_V2_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_v12.py -v
       - name: Integrated real runtime, broker, preparer and hook with composed authority
         run: >-
           sudo -n env OUF_R3_INTEGRATION_NATIVE=1 /usr/bin/python3 -I -B

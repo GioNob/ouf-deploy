@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - tools/semantic_provider_r3/**
+      - tools/semantic_lease_kernel_migration/**
+      - tests/test_semantic_provider_r3_v12.py
+      - tests/fixtures/r3-v1-v11-pre-v12-hashes.json
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V12.md
       - tools/semantic_provider_operation/**
       - tools/semantic_provider_admission_v2/**
       - tools/semantic_runtime_v52/**
@@ -45,6 +49,8 @@ jobs:
           # Tests also print findmnt -T for their actual temporary directory.
       - name: Pure composition, real validators and frame observer contract
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_compose.py -v
+      - name: D-050 v12 migration bindings and frozen v1-v11 replay
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v12.py -v
       - name: Native issuance with ephemeral Ed25519 key, custody and actual CLI
         run: >-
           sudo -n env OUF_OPERATION_ISSUANCE_NATIVE=1 /usr/bin/python3 -I -B

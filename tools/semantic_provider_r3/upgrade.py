@@ -54,8 +54,7 @@ def read_inputs(args):
     index = C.document(reader.read(args.inputs, args.inputs_sha256))
     require(set(index) == {"schema", "files", "sources"}
             and index["schema"] == "ouf.semantic-provider-r3-inputs.v1"
-            and set(index["files"]) == C.DATA_INPUTS
-            and set(index["sources"]) in (C.SOURCE_INPUTS, C.SOURCE_INPUTS_V6, C.SOURCE_INPUTS_V11),
+            and C.input_set(index["files"], index["sources"]),
             "R3_EXACT_INPUT_MANIFEST_REQUIRED")
     files = {k: reader.bound(v) for k, v in index["files"].items()}
     sources = {k: reader.bound(v) for k, v in index["sources"].items()}
@@ -114,10 +113,7 @@ def observe(args, *, published=False, unit_switched=False, switched=False):
     coordinator = I.coordinator_state(settings, files, reader)
     old_sup = C.document(runtime.bound_bytes(old_cfg["leaseQuiesce"]["configuration"]))
     new_sup = C.document(composed["documents"][f"versions/{version}/supervisor/configuration.json"])
-    require(old_sup["statusPath"] == new_sup["statusPath"]
-            and old_sup["recoveryJournalRoot"] == new_sup["recoveryJournalRoot"]
-            and old_sup["coordinator"] == {**new_sup["coordinator"], "dnsProfile": old_sup["coordinator"]["dnsProfile"]},
-            "R3_UPGRADE_SHARED_STATE_DRIFT")
+    shared_state(version, old_sup, new_sup, files, previous)
     old_wrapper = I.wrapper_bytes(old_cfg["pythonPath"], old_root)
     proposed = I.wrapper_bytes(cfg["pythonPath"], new_root)
     require(sha(old_wrapper) == args.current_wrapper_sha256, "R3_CURRENT_WRAPPER_BINDING_DRIFT")
@@ -160,6 +156,31 @@ def observe(args, *, published=False, unit_switched=False, switched=False):
     if not unit_switched:
         state["unitIdentity"] = list(unit_identity)
     return state, composed
+
+
+def shared_state(version, old, new, files, previous):
+    """Only 11 -> 12 may select the owner published by the migration."""
+    code = 'R3_UPGRADE_SHARED_STATE_DRIFT'
+    require(old['statusPath'] == new['statusPath']
+            and old['recoveryJournalRoot'] == new['recoveryJournalRoot'], code)
+    if old['coordinator'] == {**new['coordinator'], 'dnsProfile': old['coordinator']['dnsProfile']}:
+        return
+    require(version == 12 and 'migrationReceipt' in files, code)
+    C.migration_bindings(files)
+    plan = C.document(files['migrationPlan'])
+    prior = plan['context']['owner']
+    settings, owner = C.document(files['settings']), C.document(files['coordinator'])
+    require(old['coordinator']['ownerConfiguration']['sha256'] == sha(canonical(prior))
+            and old['coordinator']['ownerConfiguration']['path'] == plan['context']['profile']['coordinatedConfiguration']
+            and old['coordinator']['journalPath'] == prior['journalFile']
+            and old['coordinator']['commonLockPath'] == prior['commonLockFile']
+            and new['coordinator']['ownerConfiguration'] == settings['coordinatorBinding']
+            and new['coordinator']['journalPath'] == owner['journalFile']
+            and new['coordinator']['commonLockPath'] == owner['commonLockFile']
+            and old['coordinator']['nftBinding'] == new['coordinator']['nftBinding']
+            and plan['observation']['authorization']['sha256'] == sha(canonical(previous))
+            and previous['lease']['ownerConfigurationSha256'] == sha(canonical(prior))
+            and previous['lease']['leaseStructureHash'] == prior['expectedStructureHash'], code)
 
 
 def comparable(state):

@@ -177,6 +177,8 @@ def v51_state(args, S):
 
 
 def coordinator_state(settings, files, reader):
+    if 'migrationReceipt' in files:
+        migration_state(files, reader)
     raw = reader.bound(settings["coordinatorBinding"])
     require(raw == files["coordinator"], "R3_COORDINATOR_INPUT_DRIFT")
     owner = C.document(raw)
@@ -189,6 +191,37 @@ def coordinator_state(settings, files, reader):
             and all(row.get(k) == v for k, v in owner["binding"].items()), "R3_COORDINATOR_BINDING_DRIFT")
     require(row == C.document(files["coordinationJournal"]), "R3_COORDINATOR_JOURNAL_DRIFT")
     return {"path": owner["journalFile"], "canonicalSha256": sha(canonical(row))}
+
+
+def migration_state(files, reader):
+    """Read the published task-65 artifacts, including restore/finalize markers."""
+    for name, binding in C.migration_bindings(files).items():
+        require(reader.bound(binding) == files[name], 'R3_LEASE_KERNEL_MIGRATION_DRIFT')
+    plan = C.document(files['migrationPlan'])
+    claim = Path(plan['paths']['migrationDirectory'])
+    require(not os.path.lexists(claim / 'restore-receipt.json'), 'R3_LEASE_KERNEL_MIGRATION_STATE_DENIED')
+    if os.path.lexists(claim / 'finalize-intent.json'):
+        require(os.path.lexists(claim / 'finalize-receipt.json'), 'R3_LEASE_KERNEL_MIGRATION_STATE_DENIED')
+        finalized = native_switch().custody(claim / 'finalize-receipt.json', 0o600)[0]
+        C.migration_bindings({**files, 'migrationReceipt': finalized})
+        reader.read(str(claim / 'finalize-receipt.json'), sha(finalized))
+
+
+def lease_structure_hash(tables):
+    """Exact nft_seconds_backend projection, including metainfo and ALL handles.
+
+    Kept local so the operate delivery does not import an unsealed compiler or
+    require a new migration package for historical, pre-v12 operations.
+    """
+    def structure(value):
+        if isinstance(value, list):
+            return [structure(v) for v in value]
+        if isinstance(value, dict):
+            if isinstance(value.get('set'), dict) and 'name' in value['set']:
+                return {'set': structure({k: v for k, v in value['set'].items() if k != 'elem'})}
+            return {k: structure(v) for k, v in value.items() if k not in ('packets', 'bytes', 'expires')}
+        return value
+    return sha(canonical(structure(tables)))
 
 
 def authorization(settings, sources, root):

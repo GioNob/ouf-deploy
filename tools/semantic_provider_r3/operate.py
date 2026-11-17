@@ -223,6 +223,15 @@ def observe(args, *, output_exists=False, deadline=None):
     lease = {k: journal[k] for k in ("state", "leaseAuthorized")}
     nft = decode(command(args.nft, args.nft_sha256, ["-j", "list", "tables"], remaining()))
     tables = {(r["table"]["family"], r["table"]["name"]) for r in nft["nftables"] if "table" in r}
+    kernel_state = {}
+    if code_root != root and int(code_root.name) >= 12 and getattr(args, 'action', None) in {'start', 'restart-one'}:
+        owner = C.document(runtime.bound_bytes(sup['coordinator']['ownerConfiguration']))
+        require(owner['nftPath'] == args.nft and owner['nftSha256'] == args.nft_sha256
+                and all(journal.get(k) == v for k, v in owner['binding'].items()),
+                'R3_COORDINATOR_BINDING_DRIFT')
+        kernel_state['leaseKernel'] = lease_kernel_state(owner, journal, tables,
+            lambda family, name: decode(command(args.nft, args.nft_sha256,
+                ['-j', 'list', 'table', family, name], remaining())))
     present = {}
     for role in ROLES:
         name = head["authorization"]["roles"][role]["tableName"]
@@ -234,7 +243,24 @@ def observe(args, *, output_exists=False, deadline=None):
         require(runtime.authorization_head(cfg, raw, cid, auth) == head,
                 "R3_AUTHORIZATION_CHANGED_DURING_OBSERVATION")
     return {"configurationSha256": sha(raw), "authorization": authorization,
-            "candidates": candidates, "supervisor": supervisor, "lease": lease, "tables": present}
+            "candidates": candidates, "supervisor": supervisor, "lease": lease, "tables": present, **kernel_state}
+
+
+def lease_kernel_state(owner, journal, tables, read):
+    """Start gate only: no nft writes, seal adoption or migration effects."""
+    kernel = owner['kernel']
+    name = kernel['tableName']
+    require(type(kernel.get('generation')) is int and kernel['generation'] == 2
+            and kernel.get('providerFlowMatch') == 'ORIGINAL_TUPLE' and name.endswith('_g2'),
+            'R3_LEASE_KERNEL_GENERATION_DRIFT')
+    require(journal.get('state') != 'BLOCKED', 'R3_LEASE_KERNEL_JOURNAL_BLOCKED')
+    require(not any((f, name[:-3]) in tables for f in ('inet', 'bridge')),
+            'R3_LEASE_KERNEL_NOT_FINALIZED')
+    require(all((f, name) in tables for f in ('inet', 'bridge')), 'R3_LEASE_KERNEL_STRUCTURE_DRIFT')
+    actual = {f: read(f, name) for f in ('inet', 'bridge')}
+    require(I.lease_structure_hash(actual) == owner['expectedStructureHash']
+            == owner['binding']['leaseStructureHash'], 'R3_LEASE_KERNEL_STRUCTURE_DRIFT')
+    return {'generation': 2, 'predecessorAbsent': True, 'structureHash': owner['expectedStructureHash']}
 
 
 def running(row):
@@ -369,6 +395,10 @@ def apply(args, plan, report):
     if args.action == "start":
         VR.apply(args, before, plan["volatileRestore"], report,
                  lambda: observe(args, output_exists=True))
+    if before['authorization']['sequence'] >= 12 and args.action in {'start', 'restart-one'}:
+        # Volatile restore can take time: recheck the v12 gate immediately
+        # before submitting any request that starts a container.
+        preconditions(args, observe(args, output_exists=True))
     calls = requests(args, before)
     counter = {"start": "dockerStartRequests", "stop": "dockerStopRequests",
                "restart-one": "dockerRestartRequests"}[args.action]

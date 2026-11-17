@@ -85,8 +85,7 @@ def observe(args, clock):
     require(key_paths == reader.private_paths, "EXACT_PRIVATE_KEY_PATH_EXCLUSIONS_REQUIRED")
     bundle = C.document(reader.read(args.inputs, args.inputs_sha256))
     require(set(bundle) == {"schema", "files", "sources"} and bundle["schema"] == "ouf.semantic-provider-r3-inputs.v1"
-            and set(bundle["files"]) == C.DATA_INPUTS
-            and set(bundle["sources"]) in (C.SOURCE_INPUTS, C.SOURCE_INPUTS_V6, C.SOURCE_INPUTS_V11),
+            and C.input_set(bundle["files"], bundle["sources"]),
             "EXACT_R3_INPUT_MANIFEST_REQUIRED")
     files = {k: reader.bound(v) for k, v in bundle["files"].items()}
     sources = {k: reader.bound(v) for k, v in bundle["sources"].items()}
@@ -123,6 +122,9 @@ def observe(args, clock):
     match = re.match(rb"OpenSSL ([0-9]+[.][0-9]+[.][0-9]+[a-z]?)\b", version)
     require(match is not None and match[1].decode() == ssl["version"], "DETACHED_OPENSSL_VERSION_UNPROVEN")
     previous = authorization_head(args, M, settings, clock) if args.supersede else None
+    if 'migrationReceipt' in files:
+        from tools.semantic_provider_r3 import install_common as I
+        I.coordinator_state(settings, files, reader)
     composed = compose_next({"files": files, "sources": sources}, previous, args.issued_at)
     reader.verify()
     plan = {"schema": SCHEMA, "payload": A.validate(composed["authorization"]),
@@ -139,6 +141,12 @@ def compose_next(inputs, previous, issued_at):
         require(previous["decision"] == "OPERATE", "SUPERSEDE_REQUIRES_OPERATE_HEAD")
         require(issued_at >= previous["authorization"]["issuedAt"], "OPERATION_CHAIN_TIME_REGRESSED")
     number = previous["sequence"] + 1 if previous else 1
+    if number == 12:
+        C.migration_bindings(inputs['files'])
+        plan = C.document(inputs['files']['migrationPlan'])
+        require(plan['observation']['authorization']['sha256'] == previous['sha256']
+                and previous['authorization']['lease']['ownerConfigurationSha256']
+                    == sha(canonical(plan['context']['owner'])), 'R3_LEASE_KERNEL_MIGRATION_HEAD_DRIFT')
     return C.compose(inputs, version=number, sequence=number,
                      supersedes=previous["sha256"] if previous else None)
 

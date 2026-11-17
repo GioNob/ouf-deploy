@@ -53,6 +53,15 @@ REPLACEMENTS_V11.update({
         'tools/semantic_lease_recovery/dns_v2.py'})
 SOURCE_MAP_V11 = {p: REPLACEMENTS_V11.get(v, v) for p, v in SOURCE_MAP_V6.items()}
 SOURCE_INPUTS_V11 = frozenset(SOURCE_MAP_V11.values())
+KERNEL_V1 = 'tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_kernel.py'
+KERNEL_V2 = KERNEL_V1.replace('.py', '_v2.py')
+REFRESH_V2 = 'tools/semantic_lease_recovery/materialize_southbound_lease_refresh_v2.py'
+REPLACEMENTS_V12 = {KERNEL_V1: KERNEL_V2,
+    'tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_lease_refresh.py': REFRESH_V2,
+    'tools/semantic_lease_recovery/readback_margin_compiler.py': REFRESH_V2}
+SOURCE_MAP_V12 = {p: REPLACEMENTS_V12.get(v, v) for p, v in SOURCE_MAP_V11.items()}
+# The compiler alias embeds the frozen validator: it must not import itself.
+SOURCE_INPUTS_V12 = frozenset(SOURCE_MAP_V12.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -60,10 +69,109 @@ L2_SOURCE = "tools/semantic_provider_admission_v2/l2_binding.py"
 DATA_INPUTS = {"settings", "coordinator", "coordinationJournal", "a2Manifest", "successors", "semanticPeer",
                "rootfs", "acceptance"} | {r + "/" + p for r in ROLES for p in
                                             ("historicalTemplate", "template", "launch", "context", "policy")}
+DATA_INPUTS_V12 = DATA_INPUTS | {'migrationReceipt', 'migrationPlan', 'generationReceipt', 'bootPointer'}
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
 require, canonical, sha = A.require, A.canonical, A.sha
+
+
+def input_set(files, sources):
+    """Closed input pairs; the authenticated sequence still selects the version."""
+    return ((set(files) == DATA_INPUTS and set(sources) in
+             (SOURCE_INPUTS, SOURCE_INPUTS_V6, SOURCE_INPUTS_V11)) or
+            (set(files) == DATA_INPUTS_V12 and set(sources) == SOURCE_INPUTS_V12))
+
+
+def migration_bindings(files):
+    """Reconcile task-65 artifacts without inventing a migration state/schema."""
+    require(DATA_INPUTS_V12 <= set(files), 'R3_LEASE_KERNEL_MIGRATION_REQUIRED')
+    d = {k: document(files[k]) for k in DATA_INPUTS_V12 - DATA_INPUTS}
+    plan, receipt, generation, pointer = (d[k] for k in
+        ('migrationPlan', 'migrationReceipt', 'generationReceipt', 'bootPointer'))
+    owner, settings = document(files['coordinator']), document(files['settings'])
+    code = 'R3_LEASE_KERNEL_MIGRATION_DRIFT'
+    require(plan.get('schema') == receipt.get('schema') == 'ouf.semantic-lease-kernel-migration.v1'
+            and plan.get('operation') == 'migrate'
+            and plan.get('planSha256') == sha(canonical({k: v for k, v in plan.items() if k != 'planSha256'})), code)
+    status = receipt.get('status')
+    require(status in ('LEASE_KERNEL_MIGRATED', 'LEASE_KERNEL_FINALIZED'), 'R3_LEASE_KERNEL_MIGRATION_STATE_DENIED')
+    require((receipt['planSha256'] if status == 'LEASE_KERNEL_MIGRATED' else receipt['migrationPlanSha256'])
+            == plan['planSha256'] and receipt['after']['kernel'] == lease_guard_hash(owner['kernel'])
+            and receipt['after']['structure'] == owner['expectedStructureHash']
+            and receipt['after']['boot'] == plan['expectedBootFootprint']
+            and receipt['before'] == plan['before']
+            and receipt.get('startAuthorized') is False and receipt.get('leaseAuthorized') is False, code)
+    old = plan['context']['owner']
+    kernel = {**old['kernel'], 'generation': 2, 'providerFlowMatch': 'ORIGINAL_TUPLE',
+              'tableName': old['kernel']['tableName'] + '_g2'}
+    root, claim = plan['paths']['generationDirectory'], plan['paths']['migrationDirectory']
+    require(type(old['kernel'].get('generation', 1)) is int and old['kernel'].get('generation', 1) == 1
+            and owner['kernel'] == plan['destination'] == kernel
+            and all(B.absolute(p) for p in (root, claim))
+            and plan['paths']['r3']['install_root'] == settings['installRoot']
+            and settings['coordinatorBinding'] == {'path': root + '/coordinated-configuration.json',
+                                                  'sha256': sha(files['coordinator'])}
+            and owner['journalFile'] == root + '/coordination-journal.json'
+            and all(owner[k] == old[k] for k in ('commonLockFile', 'nftPath', 'nftSha256', 'dns',
+                                                'readBudgetSeconds', 'pollSeconds'))
+            and owner['binding']['transactionId'] == plan['planSha256']
+            and owner['binding']['configurationHash'] == sha(canonical({k: v for k, v in owner.items() if k != 'binding'})), code)
+    require(generation.get('schema') == 'ouf.semantic-lease-kernel-generation.v1'
+            and type(generation.get('generation')) is int and generation['generation'] == 2
+            and generation['directory'] == root and generation['migrationPlanSha256'] == plan['planSha256']
+            and generation['configurationHash'] == sha(files['coordinator'])
+            and generation['closure']['coordinated-configuration.json'] == sha(files['coordinator'])
+            and all(generation['closure'].get('source/' + p) == h for p, h in owner['sourceHashes'].items())
+            and generation['predecessorTableName'] == old['kernel']['tableName']
+            and set(pointer) == {'schema', 'receiptFile', 'receiptHash', 'observerFile', 'observerHash'}
+            and pointer['schema'] == 'ouf.semantic-coordinated-boot-pointer.v1'
+            and pointer['receiptFile'] == root + '/generation-receipt.json'
+            and pointer['receiptHash'] == sha(files['generationReceipt'])
+            and pointer['observerFile'] == plan['paths']['dispatcher']
+            and pointer['observerHash'] == plan['sourceHashes']['@dispatcher'], code)
+    return {k: {'path': p, 'sha256': sha(files[k])} for k, p in {
+        'migrationPlan': claim + '/plan.json',
+        'migrationReceipt': claim + ('/receipt.json' if status == 'LEASE_KERNEL_MIGRATED' else '/finalize-receipt.json'),
+        'generationReceipt': root + '/generation-receipt.json',
+        'bootPointer': '/etc/ouf/coordinated-boot-installation.json'}.items()}
+
+
+def sources_v12(sources):
+    """Version-local sealed aliases; historical source blobs remain untouched."""
+    out = dict(sources)
+    def replace(path, old, new):
+        require(out[path].count(old) == 1, 'R3_V12_SOURCE_CONTRACT_DRIFT')
+        out[path] = out[path].replace(old, new)
+    # A self-contained alias keeps the broker's exact historical module set.
+    replace(KERNEL_V2, b'from . import materialize_southbound_kernel as historical',
+        b'import types\nhistorical = types.ModuleType("r3_kernel_generation_1")\nexec(compile(' +
+        repr(sources[KERNEL_V1]).encode('ascii') + b', "<sealed-generation-1>", "exec"), historical.__dict__)')
+    replace(KERNEL_V2, b'fields = historical.fields',
+            b'fields, ip, name, port = historical.fields, historical.ip, historical.name, historical.port')
+    replace(REFRESH_V2, b'from tools.materialize_southbound_kernel_v2 import',
+            b'from tools.materialize_southbound_kernel import')
+    core = REPLACEMENTS_V11['tools/semantic_lease_recovery/activation_core.py']
+    replace(core, b"'materialize_southbound_kernel', 'semantic_provider_dns', 'materialize_southbound_lease_refresh',",
+        b"'materialize_southbound_kernel', 'materialize_southbound_kernel_v2', 'semantic_provider_dns', "
+        b"'materialize_southbound_lease_refresh', 'materialize_southbound_lease_refresh_v2',")
+    # task-65 merges the historical owner AND boot source hashes into g2.
+    # Authenticate the retained boot bytes as well, without executing them.
+    replace(core, b"*('tools/' + n + '.py' for n in order)}, 'EXACT_INSTALLED_OWNER_CLOSURE_REQUIRED')",
+        b"*('tools/' + n + '.py' for n in order), 'scripts/run_semantic_coordinated_boot_guard.py', "
+        b"'tools/semantic_provider_boot_coordination.py'}, 'EXACT_INSTALLED_OWNER_CLOSURE_REQUIRED')")
+    replace(core, b"        modules[name] = module", b"""        modules[name] = module
+        if name in ('materialize_southbound_kernel_v2', 'materialize_southbound_lease_refresh_v2'):
+            alias = name.removesuffix('_v2')
+            sys.modules['tools.' + alias] = module
+            setattr(package, alias, module)
+            modules[alias] = module""")
+    sup = REPLACEMENTS_V11[SUPERVISOR]
+    # Retain every other reviewed pin and the exact loader source-set contract.
+    module = contract_module(sources[sup], 'v12_pins')
+    for name, path in (('activation_core', core), ('readback_margin_compiler', REFRESH_V2)):
+        replace(sup, module.PINS[name].encode(), sha(out[path]).encode())
+    return out
 
 
 def document(raw, code="INPUT_NOT_CANONICAL_PLUS_LF"):
@@ -144,9 +252,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
-    selected_map = SOURCE_MAP_V11 if version >= 11 else SOURCE_MAP_V6 if version >= 6 else SOURCE_MAP
-    selected_inputs = frozenset(selected_map.values())
-    require(set(files) == DATA_INPUTS and (set(sources) == selected_inputs
+    selected_map = SOURCE_MAP_V12 if version >= 12 else SOURCE_MAP_V11 if version >= 11 else SOURCE_MAP_V6 if version >= 6 else SOURCE_MAP
+    selected_inputs = SOURCE_INPUTS_V12 if version >= 12 else frozenset(selected_map.values())
+    require(set(files) == (DATA_INPUTS_V12 if version >= 12 else DATA_INPUTS) and (set(sources) == selected_inputs
             or version <= 3 and set(sources) == SOURCE_INPUTS - {L2_SOURCE})
             and all(type(v) is bytes and 0 < len(v) <= 131072 for v in sources.values()),
             "EXACT_R3_INPUT_SET_REQUIRED")
@@ -169,6 +277,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
             and all(type(t) is str and A.TABLE.fullmatch(t) and t not in ("ouf_v2_adapter", "ouf_v2_southbound")
                     for t in s["tableNames"].values()), "FRESH_DISTINCT_TABLE_NAMES_REQUIRED")
     owner, journal = data["coordinator"], data["coordinationJournal"]
+    if version >= 12:
+        migration_bindings(files)
     require(sha(files["coordinator"]) == s["coordinatorBinding"]["sha256"]
             and owner["binding"]["leaseStructureHash"] == owner["expectedStructureHash"]
             and all(journal[k] == owner["binding"][k] for k in
@@ -200,8 +310,11 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     require(rootfs["aSuccessors"]["sha256"] == sha(files["successors"]), "ROOTFS_A2_DRIFT")
     source_map = {target: original for target, original in selected_map.items() if original in sources}
     broker_sources = B.SOURCES & source_map.keys()
-    docs = {"source/" + target: sources[original] for target, original in source_map.items()}
-    hashes = {target: sha(sources[original]) for target, original in source_map.items()}
+    emitted = sources_v12(sources) if version >= 12 else sources
+    if version >= 12:
+        contract_module(emitted[KERNEL_V2], 'kernel_g2').materialize(owner['kernel'], empty_provider_sets=True)
+    docs = {"source/" + target: emitted[original] for target, original in source_map.items()}
+    hashes = {target: sha(emitted[original]) for target, original in source_map.items()}
 
     def put(path, value):
         docs[path] = canonical(value)
@@ -265,6 +378,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 nic["mac"] = L2_LIVE_MAC
                 nic["interface"] = live_interface(index)
             if "leaseGuard" in nic:
+                if version >= 12:
+                    nic['leaseGuard']['tableName'] = owner['kernel']['tableName']
                 nic["leaseGuard"]["configurationHash"] = (lease_guard_hash(owner["kernel"]) if version >= 9
                                                           else owner["binding"]["configurationHash"])
                 if version >= 9:
@@ -289,6 +404,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                         nic["mac"] = L2_LIVE_MAC
                         nic["interface"] = live_interface(index)
                     if "leaseGuard" in nic:
+                        if version >= 12:
+                            nic['leaseGuard']['tableName'] = owner['kernel']['tableName']
                         nic["leaseGuard"]["configurationHash"] = (lease_guard_hash(owner["kernel"]) if version >= 9
                                                                   else owner["binding"]["configurationHash"])
                 sibling += 1
@@ -343,7 +460,7 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         "recoveryJournalRoot": root + "/supervisor/state/recovery", "statusPath": root + "/supervisor/state/status.json",
         "limits": s["supervisorLimits"]}
     sup = put("supervisor/configuration.json", supervisor)
-    contract_module(sources[selected_map[SUPERVISOR]], "supervisor").validate(docs["supervisor/configuration.json"])
+    contract_module(emitted[selected_map[SUPERVISOR]], "supervisor").validate(docs["supervisor/configuration.json"])
     runtime = {"schema": "ouf.semantic-docker-runtime-adapter.v5.2", "sourceHash": hashes[RUNTIME],
         "runtimePath": s["runtimeBinding"]["path"], "runtimeSha256": s["runtimeBinding"]["sha256"],
         "pythonPath": templates["adapter"]["pythonPath"], "pythonSha256": templates["adapter"]["pythonHash"],
