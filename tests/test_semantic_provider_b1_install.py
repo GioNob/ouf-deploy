@@ -133,7 +133,9 @@ class Native(unittest.TestCase):
     """
     def setUp(self):
         self.addCleanup(os.umask, os.umask(0o077))
-        work = tempfile.TemporaryDirectory(prefix="ouf-b1-install-", dir="/run")
+        # Newer runner images mount /run noexec: the fake runc/tools must be executable.
+        base = "/var/lib" if os.statvfs("/run").f_flag & os.ST_NOEXEC else "/run"
+        work = tempfile.TemporaryDirectory(prefix="ouf-b1-install-", dir=base)
         self.addCleanup(work.cleanup)
         self.root = Path(work.name)
         self.delivery = self.root / "delivery"
