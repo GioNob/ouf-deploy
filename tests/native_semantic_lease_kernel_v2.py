@@ -92,6 +92,13 @@ class Proof:
                         ['ip', '-n', 'southbound', '-6', 'addr'], ['ip', '-n', 'southbound', '-6', 'route'],
                         ['ip', '-n', 'southbound', '-6', 'neigh'], ['ip', '-n', 'direct', '-6', 'addr'],
                         ['ip', '-n', 'direct', '-6', 'neigh'], ['bridge', 'link'], ['nft', 'list', 'ruleset'],
+                        ['ip', '-n', 'direct', '-6', 'maddr', 'show', 'dev', 'eth0'],
+                        ['ip', '-n', 'direct', 'link', 'show', 'eth0'], ['bridge', 'mdb', 'show'],
+                        ['ip', '-d', 'link', 'show', 'external'],
+                        ['ip', 'netns', 'exec', 'direct', 'sysctl', 'net.ipv6.conf.eth0.disable_ipv6',
+                         'net.ipv6.conf.eth0.accept_dad', 'net.ipv6.conf.all.forwarding'],
+                        ['ip', '-n', 'direct', '-s', 'link', 'show', 'eth0'],
+                        ['ip', '-s', 'link', 'show', 'v-direct'],
                         ['sysctl', 'net.ipv6.conf.all.forwarding', 'net.ipv6.conf.default.forwarding',
                          'net.ipv6.conf.egress.forwarding', 'net.ipv6.conf.external.forwarding',
                          'net.ipv6.conf.all.disable_ipv6']):

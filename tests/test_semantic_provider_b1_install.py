@@ -149,6 +149,15 @@ class Native(unittest.TestCase):
                 print("DEBUG_SMOKE rc=%s argv0=%s" % (r.returncode, argv[0]), flush=True)
                 print("DEBUG_SMOKE stderr:", r.stderr[-3000:].decode(errors="replace"), flush=True)
                 print("DEBUG_SMOKE stdout:", r.stdout[-1000:].decode(errors="replace"), flush=True)
+                code = ("import runpy,sys,traceback\nfrom pathlib import Path\n"
+                        "script,cfg=sys.argv[1],sys.argv[2]\n"
+                        "m=runpy.run_path(script,run_name='dbg')\n"
+                        "try:\n print('RC',m['operate'](Path(cfg),['--version']))\n"
+                        "except BaseException:\n traceback.print_exc()\n")
+                t = _sp.run([argv[0], '-I', '-B', '-c', code, argv[3], argv[5]],
+                            stdin=_sp.DEVNULL, capture_output=True, env=_c.ENV, timeout=12)
+                print("DEBUG_SMOKE trace:", t.stdout[-1500:].decode(errors="replace"),
+                      t.stderr[-3000:].decode(errors="replace"), flush=True)
             _c.require(r.returncode == 0, "B1_SMOKE_FAILED")
         self.c.smoke = _debug_smoke
         self.d = self.c.dependencies()
