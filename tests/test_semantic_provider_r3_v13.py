@@ -283,6 +283,20 @@ class LiveAdmission(unittest.TestCase):
         self.assertTrue(all('inspect' in a and '--format' in a for a in calls))
         reader.verify.assert_called_once_with()
 
+    def test_reader_denial_reports_only_public_code(self):
+        import io
+        argv = ['reader'] + [x for f in ('docker', 'docker-sha256', 'docker-socket', 'container', 'network',
+                'southbound-id', 'coordinator', 'coordinator-sha256', 'historical-template',
+                'historical-template-sha256') for x in ('--' + f, 'x')]
+        for exc, expected in ((P.Denied('R3_IDENTITY_PROVIDER_LIVE_DRIFT'),
+                               'R3_IDENTITY_PROVIDER_READ_DENIED R3_IDENTITY_PROVIDER_LIVE_DRIFT\n'),
+                              (KeyError('/secret/path value'), 'R3_IDENTITY_PROVIDER_READ_DENIED\n')):
+            err = io.StringIO()
+            with patch.object(sys, 'argv', argv), patch.object(sys, 'stderr', err), \
+                    patch.object(R, 'observe', side_effect=exc), patch.object(R.P, 'identity_require'):
+                self.assertEqual(R.main(), 1)
+            self.assertEqual(err.getvalue(), expected)
+
     def test_reader_source_from_bound_template_stopped_or_matching_live(self):
         inputs, old = fixture()
         d = C.document(inputs['files']['identityProviderPeer']); peer = d['peer']

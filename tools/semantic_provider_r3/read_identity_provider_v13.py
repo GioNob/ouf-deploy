@@ -99,9 +99,12 @@ def main():
         value = observe(args, I.Reader(), bound_docker)
         sys.stdout.buffer.write(C.canonical(value) + b'\n')
         return 0
-    except Exception:
-        # No native output, config, paths or secret material in denial reports.
-        print('R3_IDENTITY_PROVIDER_READ_DENIED', file=sys.stderr)
+    except Exception as error:
+        # No native output, config, paths or secret material in denial reports: only a
+        # public denial code (R3_*/upper-case code raised by the bounded checks), if any.
+        code = str(error.args[0]) if error.args else ''
+        detail = ' ' + code if re.fullmatch('[A-Z][A-Z0-9_]{2,80}', code) else ''
+        print('R3_IDENTITY_PROVIDER_READ_DENIED' + detail, file=sys.stderr)
         return 1
 
 
