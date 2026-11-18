@@ -86,6 +86,20 @@ class Proof:
     def probe(self, source, destination, *, allowed, port=443, keep=False):
         child = self.start('southbound', CLIENT, source, destination, str(port))
         actual = self.line(child)
+        if actual != ('CONNECTED' if allowed else 'DROP') and ':' in source:
+            # DEBUG (branch debug/b1-smoke-stderr only): IPv6 state on kernel 7.0 runners.
+            for cmd in (['ip', '-6', 'addr'], ['ip', '-6', 'route'], ['ip', '-6', 'neigh'],
+                        ['ip', '-n', 'southbound', '-6', 'addr'], ['ip', '-n', 'southbound', '-6', 'route'],
+                        ['ip', '-n', 'southbound', '-6', 'neigh'], ['ip', '-n', 'direct', '-6', 'addr'],
+                        ['ip', '-n', 'direct', '-6', 'neigh'], ['bridge', 'link'], ['nft', 'list', 'ruleset'],
+                        ['sysctl', 'net.ipv6.conf.all.forwarding', 'net.ipv6.conf.default.forwarding',
+                         'net.ipv6.conf.egress.forwarding', 'net.ipv6.conf.external.forwarding',
+                         'net.ipv6.conf.all.disable_ipv6']):
+                try:
+                    out = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+                    print('DEBUG_V6', ' '.join(cmd), '\n', out.stdout[-2500:], out.stderr[-500:], flush=True)
+                except Exception as exc:
+                    print('DEBUG_V6', ' '.join(cmd), 'ERR', exc, flush=True)
         assert actual == ('CONNECTED' if allowed else 'DROP'), (source, destination, port, actual)
         if allowed:
             self.echo(child, 'before', 'ECHO')
