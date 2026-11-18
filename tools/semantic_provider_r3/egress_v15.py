@@ -110,8 +110,10 @@ def check_routes(projection, south, adapter, kernel, identity, route_module):
     require(static, MISSING)
     require(len(static) == 1, AMBIGUOUS)
     adapter_ips = {nic['ipv4'] for nic in adapter['networkBindings']}
+    # The internal NICs are lease-guarded too (oufsp-int is a guarded interface on the VPS):
+    # identity is bindingRef + IP + shared bridge, corroborated by the flow and staticFlows.
     internal = [nic for nic in adapter['networkBindings'] if nic['bindingRef'] == 'adapter-internal'
-                and 'leaseGuard' not in nic and nic['ipv4'] == flow['destination']]
+                and nic['ipv4'] == flow['destination']]
     require(len(internal) == 1 and any(nic['bindingRef'] == 'southbound-internal'
             and nic['ipv4'] == flow['source'] and nic['bridge'] == internal[0]['bridge']
             for nic in south['networkBindings']), UPSTREAM)

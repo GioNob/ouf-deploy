@@ -170,6 +170,22 @@ class Composition(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(C.A.OperationDenied, '^' + code + '$'):
                 self.compose(inputs)
 
+    def test_lease_guarded_internal_nic_is_the_declared_destination(self):
+        # VPS 18/11: oufsp-int is lease-guarded, so the adapter internal NIC carries leaseGuard.
+        inputs = copy.deepcopy(self.inputs)
+        value = C.document(inputs['files']['adapter/historicalTemplate'])
+        nics = [n for n in value['candidate']['networkBindings'] if n['bindingRef'] == 'adapter-internal']
+        self.assertEqual(len(nics), 1)
+        guard = next((n['leaseGuard'] for n in value['candidate']['networkBindings'] if 'leaseGuard' in n), None)
+        if guard is not None and 'leaseGuard' not in nics[0]:
+            nics[0]['leaseGuard'] = copy.deepcopy(guard)
+        projection = C.document(inputs['files'][E.ROUTE_INPUT])
+        south = C.document(inputs['files']['southbound/historicalTemplate'])['candidate']
+        kernel = C.document(inputs['files']['coordinator'])['kernel']
+        from tools.semantic_provider_r3 import identity_provider_v13 as I
+        from tools.semantic_provider_routes import routes as R
+        self.assertIsInstance(E.check_routes(projection, south, value['candidate'], kernel, I, R), int)
+
     def test_bound_flow_or_certificate_recipe_drift(self):
         def change_flows(row, code, name, path, change):
             inputs = copy.deepcopy(self.inputs)
