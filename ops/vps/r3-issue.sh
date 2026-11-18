@@ -16,7 +16,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=dba85a13f208fa814adb44286292b1392861d5d1
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -129,8 +129,8 @@ delivery() {
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_operation/lease_supervisor_v2.py 06f7fb2744a1ac3d4b94ef20aa04801e9625f9ca920dfe8fcd421e11456d0de4
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py b6cf4d645abf6f5cad26122cd0d7c6d391589c8db3897ee4f12d934c8635b102
-  fetch tools/semantic_provider_r3/identity_overlay_v13.py 397addeffebf9e77958daf8ad3f621d3cc4fbab10a6374dc76b58179e41c9baa
+  fetch tools/semantic_provider_r3/compose.py c1d609efe5097324b5c8dfb3ec369a33eee6fb5de62abca84609c534ccf1707b
+  fetch tools/semantic_provider_r3/identity_overlay_v13.py 0334b8a3387e3a9342b3ff6f2679f9ddd179cee67c5085ef9d3e4751bd82e131
   fetch tools/semantic_provider_r3/identity_provider_v13.py 3bdcf7688ffac5c485abfc5893a3f6a3ff5777aab136138ee7488e3a2bd747bf
   fetch tools/semantic_provider_r3/install_common.py 0d28d8f23fdfb6c05a866275a8bb0f7dc2505926d305acd53bb3b9b8ca843695
   fetch tools/semantic_provider_r3/operate.py 019bb1b66d243acfdc071410d3219e448c70b84dba623636efbed85ff0362d8a

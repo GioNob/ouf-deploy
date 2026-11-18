@@ -20,7 +20,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=dba85a13f208fa814adb44286292b1392861d5d1
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -133,8 +133,8 @@ delivery() {
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_operation/lease_supervisor_v2.py 06f7fb2744a1ac3d4b94ef20aa04801e9625f9ca920dfe8fcd421e11456d0de4
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py b6cf4d645abf6f5cad26122cd0d7c6d391589c8db3897ee4f12d934c8635b102
-  fetch tools/semantic_provider_r3/identity_overlay_v13.py 397addeffebf9e77958daf8ad3f621d3cc4fbab10a6374dc76b58179e41c9baa
+  fetch tools/semantic_provider_r3/compose.py c1d609efe5097324b5c8dfb3ec369a33eee6fb5de62abca84609c534ccf1707b
+  fetch tools/semantic_provider_r3/identity_overlay_v13.py 0334b8a3387e3a9342b3ff6f2679f9ddd179cee67c5085ef9d3e4751bd82e131
   fetch tools/semantic_provider_r3/identity_provider_v13.py 3bdcf7688ffac5c485abfc5893a3f6a3ff5777aab136138ee7488e3a2bd747bf
   fetch tools/semantic_provider_r3/install_common.py 0d28d8f23fdfb6c05a866275a8bb0f7dc2505926d305acd53bb3b9b8ca843695
   fetch tools/semantic_provider_r3/operate.py 019bb1b66d243acfdc071410d3219e448c70b84dba623636efbed85ff0362d8a
@@ -202,7 +202,7 @@ PINS = {"coordinator": "5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd
         "southbound/launch": "f066a65cffc7766bbf77b9de15fe9d527ce8ca68a9bb0d74cadfe8370c6ad63b",
         "southbound/context": "18a1df8d45fbe0914514478910041d3a49ecf402b8c78a06c8148cf95c06a1c9",
         "southbound/policy": "e489068bc8a86f226dadfa5a3870dc05aaae65437d638a8b9ce56c4c42e218a8"}
-if 13 >= 12:
+if 14 >= 12:
     # D-050: v12 composes on the generation-2 lease kernel published by the migration.
     G2 = "/etc/ouf/lease-kernel-generations/g2-20261117T122656"
     MIG = S + "/semantic-lease-kernel-migration-20261117T122656"
@@ -216,7 +216,7 @@ if 13 >= 12:
                 migrationReceipt="a3456dfb839001657922e5aed892180cb9347b35e9e765c2a38fb8489a6d534b",
                 generationReceipt="0233576fd023ce6f6afe62f040bfaec1d5a3103035c4b7c4b5657eb81082cca8",
                 bootPointer="2c532ae900128e423c33addee66f5536078d7ce2589237601d6b963bd35bbd42")
-    if 13 >= 13:
+    if 14 >= 13:
         # D-051: identity provider peer read at plan time into the delivery (verified by the composer).
         files["identityProviderPeer"] = str(D / "identity-provider-peer.json")
         assert set(files) == C.DATA_INPUTS_V13, "R3_INPUT_SET_DRIFT"
@@ -232,8 +232,8 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = (C.SOURCE_INPUTS_V13 if 13 >= 13 else C.SOURCE_INPUTS_V12 if 13 >= 12 else C.SOURCE_INPUTS_V11 if 13 >= 11
-              else C.SOURCE_INPUTS_V6 if 13 >= 6 else C.SOURCE_INPUTS)
+SOURCE_SET = (C.SOURCE_INPUTS_V13 if 14 >= 13 else C.SOURCE_INPUTS_V12 if 14 >= 12 else C.SOURCE_INPUTS_V11 if 14 >= 11
+              else C.SOURCE_INPUTS_V6 if 14 >= 6 else C.SOURCE_INPUTS)
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
