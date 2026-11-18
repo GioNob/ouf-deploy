@@ -76,6 +76,9 @@ ADAPTER_CONTRACT = 'tools/semantic_provider_config/contract.py'
 SOURCE_MAP_V16 = {**SOURCE_MAP_V15, **{p: p for p in (
     ADAPTER_V16, ADAPTER_CONTRACT, 'tools/semantic_provider_r3/read_adapter_v16.py')}}
 SOURCE_INPUTS_V16 = frozenset(SOURCE_MAP_V16.values()) | {KERNEL_V1}
+# V17 overlays the same sealed blobs at their existing installed paths.
+SOURCE_MAP_V17 = dict(SOURCE_MAP_V16)
+SOURCE_INPUTS_V17 = frozenset(SOURCE_MAP_V17.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -87,6 +90,7 @@ DATA_INPUTS_V12 = DATA_INPUTS | {'migrationReceipt', 'migrationPlan', 'generatio
 DATA_INPUTS_V13 = DATA_INPUTS_V12 | {'identityProviderPeer'}
 DATA_INPUTS_V15 = DATA_INPUTS_V13 | {'southbound/routesProjection'}
 DATA_INPUTS_V16 = DATA_INPUTS_V15 | {'adapter/configProjection', 'installationProfile'}
+DATA_INPUTS_V17 = DATA_INPUTS_V16 | {'driverBudget'}
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -100,7 +104,8 @@ def input_set(files, sources):
             (set(files) == DATA_INPUTS_V12 and set(sources) == SOURCE_INPUTS_V12) or
             (set(files) == DATA_INPUTS_V13 and set(sources) == SOURCE_INPUTS_V13) or
             (set(files) == DATA_INPUTS_V15 and set(sources) == SOURCE_INPUTS_V15) or
-            (set(files) == DATA_INPUTS_V16 and set(sources) == SOURCE_INPUTS_V16))
+            (set(files) == DATA_INPUTS_V16 and set(sources) == SOURCE_INPUTS_V16) or
+            (set(files) == DATA_INPUTS_V17 and set(sources) == SOURCE_INPUTS_V17))
 
 
 def migration_bindings(files):
@@ -272,7 +277,10 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
-    if version >= 16:
+    if version >= 17:
+        from . import driver_budget_v17
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V17, SOURCE_INPUTS_V17, DATA_INPUTS_V17
+    elif version >= 16:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V16, SOURCE_INPUTS_V16, DATA_INPUTS_V16
     elif version >= 15:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V15, SOURCE_INPUTS_V15, DATA_INPUTS_V15
@@ -287,8 +295,10 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
             or version <= 3 and set(sources) == SOURCE_INPUTS - {L2_SOURCE})
             and all(type(v) is bytes and 0 < len(v) <= 131072 for v in sources.values()),
             "EXACT_R3_INPUT_SET_REQUIRED")
+    if version >= 17:
+        driver_budget = driver_budget_v17.seconds(document(files['driverBudget'], driver_budget_v17.INVALID))
     data = {k: document(v, "RECIPE_POLICY_NOT_CANONICAL_PLUS_LF" if k.endswith("/policy")
-                        else "INPUT_NOT_CANONICAL_PLUS_LF") for k, v in files.items()}
+                        else "INPUT_NOT_CANONICAL_PLUS_LF") for k, v in files.items() if k != 'driverBudget'}
     for role in ROLES:
         require(files[role + "/policy"] == canonical(data[role + "/policy"]) + b"\n",
                 "RECIPE_POLICY_NOT_CANONICAL_PLUS_LF")
@@ -359,6 +369,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     if version >= 16:
         from .driver_denial_overlay_v16 import sources_v16
         emitted = sources_v16(emitted, selected_map)
+    if version >= 17:
+        emitted = driver_budget_v17.sources_v17(emitted, selected_map)
     if version >= 12:
         contract_module(emitted[KERNEL_V2], 'kernel_g2').materialize(owner['kernel'], empty_provider_sets=True)
     docs = {"source/" + target: emitted[original] for target, original in source_map.items()}
@@ -410,6 +422,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and type(t["budgetSeconds"]) is int and 1 <= t["budgetSeconds"] <= 5
                 and type(t["hostNetworkNamespace"]) is int and t["hostNetworkNamespace"] > 0,
                 "EXACT_NATIVE_PREPARER_TEMPLATE_REQUIRED")
+        if version >= 17:
+            t["budgetSeconds"] = driver_budget
         t.update(kernel=copy.deepcopy(owner["kernel"]), dns=copy.deepcopy(dns_profile),
                  coordinationBinding=copy.deepcopy(owner["binding"]), coordinationJournal=owner["journalFile"],
                  lockFile=owner["commonLockFile"])

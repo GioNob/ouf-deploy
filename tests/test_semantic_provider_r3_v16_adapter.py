@@ -1,4 +1,4 @@
-"""Portable proofs for the D-053 adapter change and the historical R3 closure."""
+"""Portable proofs for the D-053 adapter and driver budget changes in R3."""
 import copy
 from contextlib import nullcontext
 from dataclasses import replace
@@ -6,6 +6,7 @@ import json
 from pathlib import Path, PurePosixPath
 import re
 import runpy
+import stat
 import sys
 import tempfile
 from types import ModuleType, SimpleNamespace
@@ -15,7 +16,8 @@ from unittest.mock import patch
 import test_semantic_provider_r3_v15 as V15
 from tools.semantic_provider_config import acceptance_g7 as G, b1_v4 as B, contract as D
 from tools.semantic_provider_config import observation as O, publication as P
-from tools.semantic_provider_r3 import adapter_v16 as A, compose as C, read_adapter_v16 as R
+from tools.semantic_provider_r3 import adapter_v16 as A, compose as C, driver_budget_v17 as BUDGET
+from tools.semantic_provider_r3 import read_adapter_v16 as R, upgrade
 from tools.semantic_provider_routes.routes import Held
 
 
@@ -346,8 +348,6 @@ class Composition(unittest.TestCase):
                 'authorization': previous}
         issuer = V12.F.load('scripts/issue-semantic-provider-operation-authorization.py', 'v16_adapter_issuer')
         self.assertEqual(issuer.compose_next(self.inputs, head, authorization['issuedAt']), result)
-        from tools.semantic_provider_r3 import upgrade
-
         def pair(path):
             return tuple(C.document(closure['documents'][f'versions/{version}/' + path])
                          for closure, version in ((self.previous, 15), (result, 16)))
@@ -390,9 +390,17 @@ class Composition(unittest.TestCase):
             with self.subTest(key=key, code=code), self.assertRaisesRegex(C.A.OperationDenied, '^' + code + '$'):
                 self.compose(inputs)
 
-    def test_frozen_v1_to_v15(self):
+    def test_frozen_v1_to_v16(self):
         golden = json.loads(V12.blob('tests/fixtures/r3-v1-v15-pre-v16-hashes.json'))
-        for version in range(1, 16):
+        # Captured at 701a4cc9, before the v17 composer changes.
+        golden['16'] = {
+            'audit': '302d3b526d20af5f200c95a7258d9351254ce50220df3425aa7a3749db8e8aab',
+            'authorization': '8cec50357885e7f0644df4342782c6addb3416ea0466d288391ef144ebf798d1',
+            'hashes': '0c253fd9152056bd715538de907b9fc63dc2aec24871e66fe084fa6b863f86de',
+            'inputHashes': 'f8603f74a8e182402f046bea74fadc48c9831ece8aae7488a448a4867c9c0270',
+            'layout': 'b7406a4f31f4b8fd639205ccb230685aca2087f8c9d80b624deccd699dc14580',
+        }
+        for version in range(1, 17):
             with self.subTest(version=version):
                 if version <= 11:
                     data = V12.F.fixture(version)
@@ -400,9 +408,155 @@ class Composition(unittest.TestCase):
                 else:
                     if version == 12:
                         data, previous, _, _ = V12.fixture()
-                    else:
+                    elif version < 16:
                         data, previous = (V13 if version < 15 else V15).fixture()
+                    else:
+                        data, previous = self.inputs, self.previous
                     kwargs = dict(sequence=version, supersedes=C.sha(previous['authorization']))
                 output = C.compose(data, version, **kwargs)
                 actual = {key: C.sha(C.canonical(output[key])) for key in ('hashes', 'inputHashes', 'audit', 'layout')}
                 self.assertEqual(actual | {'authorization': C.sha(output['authorization'])}, golden[str(version)])
+
+
+class DriverBudget(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        inputs, previous = v16_fixture()
+        cls.v16 = C.compose(inputs, 16, sequence=16, supersedes=C.sha(previous['authorization']))
+        cls.inputs = inputs | {'files': inputs['files'] | {
+            'driverBudget': V12.blob('ops/vps/r3-driver-budget.json')}}
+
+    def compose(self, inputs):
+        return C.compose(inputs, 17, sequence=17, supersedes=C.sha(self.v16['authorization']))
+
+    def test_v17_successor_and_sealed_budget(self):
+        files, sources = self.inputs['files'], self.inputs['sources']
+        self.assertEqual(C.DATA_INPUTS_V17 - C.DATA_INPUTS_V16, {'driverBudget'})
+        self.assertEqual(C.SOURCE_INPUTS_V17, C.SOURCE_INPUTS_V16)
+        self.assertTrue(C.input_set(files, sources))
+        result = self.compose(self.inputs)
+        self.assertEqual(result['inputHashes']['driverBudget'], C.sha(files['driverBudget']))
+        old_auth, auth = (C.document(r['authorization']) for r in (self.v16, result))
+        head = {'sequence': 16, 'decision': 'OPERATE', 'sha256': C.sha(self.v16['authorization']),
+                'authorization': old_auth}
+        issuer = V12.F.load('scripts/issue-semantic-provider-operation-authorization.py', 'v17_budget_issuer')
+        self.assertEqual(issuer.compose_next(self.inputs, head, auth['issuedAt']), result)
+        self.assertEqual(auth['supersedes'], head['sha256'])
+        self.assertEqual(auth['acceptanceSha256'], old_auth['acceptanceSha256'])
+        self.assertEqual(C.ACCEPT.decode_manifest(files['acceptance'])['generation'], 7)
+        self.assertEqual(auth['lease'], old_auth['lease'])
+        old, new = (r['documents'] for r in (self.v16, result))
+        old_cfg, cfg = (C.document(d[f'versions/{v}/runtime-configuration.json'])
+                        for d, v in ((old, 16), (new, 17)))
+        self.assertEqual(cfg['candidates'], old_cfg['candidates'])
+        upgrade.shared_state(17, C.document(old['versions/16/supervisor/configuration.json']),
+                             C.document(new['versions/17/supervisor/configuration.json']), files, old_auth)
+        self.assertEqual({p.removeprefix('versions/17/source/') for p in new if '/source/' in p
+                          and new[p] != old[p.replace('versions/17/', 'versions/16/', 1)]}, {
+            'tools/semantic_provider_admission_v2/preparer_v2.py',
+            'tools/semantic_provider_admission_v2/driver_v7.py',
+            'tools/semantic_provider_preexec_native.py',
+            C.SOURCE_MAP_V17['tools/semantic_provider_preexec_native.py'],
+        })
+        for role in C.ROLES:
+            with self.subTest(role=role):
+                path = f'documents/{role}/preparer-template.json'
+                template_raw = new['versions/17/' + path]
+                template = C.document(template_raw)
+                self.assertEqual(template['budgetSeconds'], 12)
+                self.assertEqual(template['kernel'], C.document(files['coordinator'])['kernel'])
+                self.assertEqual(C.document(old['versions/16/' + path])['budgetSeconds'], 5)
+                broker_raw = new[f'versions/17/broker/{role}.json']
+                broker = C.B.validate(broker_raw)
+                self.assertEqual(broker['preparerTemplate']['sha256'], C.sha(template_raw))
+                self.assertEqual(auth['roles'][role], old_auth['roles'][role] | {
+                    'admissionConfigurationSha256': C.sha(broker_raw)})
+                for name, digest in broker['sourceHashes'].items():
+                    self.assertEqual(C.sha(new['versions/17/source/' + name]), digest)
+
+    def test_budget_denials_and_boundaries(self):
+        for value in (4, 16, True, 12.0, '12', None):
+            files = self.inputs['files'] | {'driverBudget': raw({'driverBudgetSeconds': value})}
+            with self.subTest(value=value), self.assertRaisesRegex(C.A.OperationDenied, '^' + BUDGET.INVALID + '$'):
+                self.compose(self.inputs | {'files': files})
+        with self.assertRaisesRegex(C.A.OperationDenied, '^' + BUDGET.INVALID + '$'):
+            self.compose(self.inputs | {'files': self.inputs['files'] | {'driverBudget': b'{}'}})
+        for value in (5, 15):
+            with self.subTest(value=value):
+                result = self.compose(self.inputs | {'files': self.inputs['files'] | {
+                    'driverBudget': raw({'driverBudgetSeconds': value})}})
+                for role in C.ROLES:
+                    path = f'versions/17/documents/{role}/preparer-template.json'
+                    self.assertEqual(C.document(result['documents'][path])['budgetSeconds'], value)
+        old_inputs = self.inputs | {'files': {k: v for k, v in self.inputs['files'].items() if k != 'driverBudget'}}
+        with self.assertRaisesRegex(C.A.OperationDenied, '^EXACT_R3_INPUT_SET_REQUIRED$'):
+            self.compose(old_inputs)
+        with self.assertRaisesRegex(C.A.OperationDenied, '^EXACT_R3_INPUT_SET_REQUIRED$'):
+            C.compose(self.inputs, 16, sequence=16, supersedes='f' * 64)
+        files = old_inputs['files']
+        bad_template = C.document(files['adapter/historicalTemplate']) | {'budgetSeconds': 6}
+        with self.assertRaisesRegex(C.A.OperationDenied, '^EXACT_NATIVE_PREPARER_TEMPLATE_REQUIRED$'):
+            C.compose(old_inputs | {'files': files | {'adapter/historicalTemplate': raw(bad_template)}},
+                      16, sequence=16, supersedes='f' * 64)
+
+    def test_emitted_worker_driver_and_native_backend_accept_budget(self):
+        result = self.compose(self.inputs)
+        docs = result['documents']
+        source = 'versions/17/source/tools/'
+
+        def admission_module(name):
+            module = ModuleType('tools.semantic_provider_admission_v2.' + name)
+            module.__package__ = 'tools.semantic_provider_admission_v2'
+            path = source + 'semantic_provider_admission_v2/' + name + '.py'
+            exec(compile(docs[path], path, 'exec'), module.__dict__)
+            module.Path = PurePosixPath
+            return module
+
+        preparer = admission_module('preparer_v2')
+        driver = admission_module('driver_v7')
+        fixtures = V12.F.grant_fixture
+        with fixtures.part_a.libraries():
+            from tools import semantic_provider_deployment_producer as producer, semantic_provider_lease_coordination as lease
+
+            path = source + 'semantic_provider_preexec_native.py'
+            native = C.contract_module(docs[path], 'native_budget')
+            for role in C.ROLES:
+                with self.subTest(role=role):
+                    cfg_raw = docs[f'versions/17/broker/{role}.json']
+                    cfg = C.B.validate(cfg_raw)
+                    template_raw = docs[f'versions/17/documents/{role}/preparer-template.json']
+                    root = f"{cfg['registryRoot']}/{cfg['containerId']}/epochs/1"
+                    binding = {'containerId': cfg['containerId'], 'epoch': 1, 'configurationHash': C.sha(cfg_raw),
+                               'authorizationSha256': C.sha(result['authorization'])}
+                    request = {'epoch': 1, 'epochRoot': root, 'bundle': root + '/bundle',
+                               'runtimeRoot': cfg['runtimeRootParent'] + '/fixture',
+                               'binding': binding | {k: cfg['authorities'][k] for k in ('installationRef', 'entityRef')},
+                               'template': C.document(template_raw),
+                               'evidenceBinding': {'path': root + '/evidence.json', 'sha256': 'b' * 64},
+                               'configurationBinding': {'path': f'/broker/{role}.json', 'sha256': C.sha(cfg_raw)}}
+                    with patch.object(C.B, 'private', return_value=C.canonical(request)), \
+                            patch.object(C.B, 'load', return_value=(cfg, cfg_raw)), \
+                            patch.object(C.B, 'read_binding', return_value=template_raw), \
+                            patch.object(C.B, 'epoch_module') as epochs, patch.object(lease, 'PrivateJournal'), \
+                            patch.object(producer, 'program'):
+                        worker = preparer.Worker(root + '/preparer.json')
+                        epochs.return_value.directory.assert_called_once()
+                    grant = fixtures.grant()
+                    grant.update(sourceRoot=cfg['sourceRoot'], sourceHashes=cfg['sourceHashes'],
+                                 operation=cfg['operation'] | cfg['authorities'],
+                                 creationFrameObserverBinding=cfg['creationFrameObserverBinding'],
+                                 operationBinding=binding, evidenceBinding=request['evidenceBinding'],
+                                 consumptionJournal=root + '/deployment.json', preexecJournal=root + '/preexec.json',
+                                 commands={k: worker.template['commands'][k] for k in ('nft', 'ip', 'nsenter')},
+                                 **{k: worker.template[k] for k in ('budgetSeconds', 'coordinationBinding', 'lockFile',
+                                                                  'coordinationJournal', 'kernel', 'dns')})
+                    grant['profile'].update(containerId=cfg['containerId'], bundlePath=root + '/bundle',
+                                            transactionId=driver.correlation(binding), policy={'tableName': 'fixture'})
+                    value = driver.validate(C.canonical(grant))
+                    self.assertEqual(value['budgetSeconds'], 12)
+                    command_info = SimpleNamespace(st_mode=stat.S_IFREG | 0o755, st_uid=0)
+                    with patch.object(native, 'Path') as command_path, patch.object(native, '_ancestors'), \
+                            patch.object(native, 'rules', return_value=''):
+                        command_path.return_value.lstat.return_value = command_info
+                        backend = native.NativeBackend(value['profile'], value['commands'], value['budgetSeconds'])
+                    self.assertEqual(backend.budget, 12)
