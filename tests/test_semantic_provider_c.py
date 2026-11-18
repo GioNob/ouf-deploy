@@ -474,7 +474,8 @@ class Contracts(unittest.TestCase):
             self.assertFalse(C.expected(case, C.metadata()))
         for case in ("N1", "N2", "N3", "N4"):
             self.assertTrue(C.expected(case, C.metadata(401)))
-            self.assertFalse(C.expected(case, C.metadata(403)))
+            # N4 only: an expired token may be denied by the strict admission Lua (403).
+            self.assertEqual(C.expected(case, C.metadata(403)), case == "N4")
         self.assertTrue(C.expected("P3", C.metadata(200)))
         for status in (400, 404):
             self.assertTrue(C.expected("N5", C.metadata(status)))
