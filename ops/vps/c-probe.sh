@@ -13,7 +13,7 @@ case "$mode" in
   *) echo 'uso: plan | apply <planSha256>' >&2; exit 2 ;;
 esac
 # Claude fissa il commit dopo review e commit D-001.
-C=44b011e8e3022777a4e290927872e9853d32d86f
+C=43dced7f659008e84d2c52c186642822dc96ed77
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] || {
   echo 'runbook non ancora fissato a un commit' >&2; exit 2;
 }
@@ -66,7 +66,7 @@ delivery() {
   fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
   fetch scripts/prepare-semantic-provider-b1-rootfs-v3.py 29899e5ee25aa9e772f21fb62fb473706cdf2b8f921034efeccb3b284d350397
   fetch scripts/prepare-semantic-provider-b1-rootfs.py 8107d055fe0bfd8fe363506f39ffa006f157a292a54bbcbf4de11b011816178d
-  fetch scripts/prepare-semantic-provider-installation.py 87b7117c4a3c8a6375b57b5877050c96a63475419ad3dfbc2dc8e674cd0e9076
+  fetch scripts/prepare-semantic-provider-installation.py a19f08678c82472abafa8cb6508245c0f49b39464cdbb7b74222e3cf14967d2c
   fetch scripts/probe-semantic-provider-c.py c458d63ce7b7d3507974bb91b901f654d1e5d862a1c9b0a7fba0e0e9fde63e88
   fetch scripts/restore-semantic-provider-r3.py 1be4b6cd69f0c70959627f87502de307488ebca1862928b984b653e290e3fdd8
   fetch scripts/semantic-provider-admission-preparer-v2.py 7e041ddf4e7668861cc5ae111f6069f73eeda32be065622ee51381129a4f9b57
