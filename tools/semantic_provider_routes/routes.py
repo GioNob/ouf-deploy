@@ -115,7 +115,7 @@ def oidc_projection(value):
                               "use_jwks", "unauth_action", "realm", "timeout",
                               "token_signing_alg_values_expected", "set_access_token_header",
                               "set_id_token_header", "set_userinfo_header",
-                              "access_token_in_authorization_header"}, required)
+                              "access_token_in_authorization_header", "claim_validator"}, required)
     require(all(type(value[key]) is bool for key in ("ssl_verify", "bearer_only")))
     result = {key: value[key] for key in ("ssl_verify", "bearer_only")}
     for key in ("discovery", "issuer"):
@@ -124,16 +124,52 @@ def oidc_projection(value):
     return result
 
 
+# Serverless functions run inside APISIX: only these modules, and no network,
+# subrequest, timer, file or process primitive (no hidden egress beyond the upstream).
+LUA_MODULES = {"cjson.safe", "resty.openssl.digest", "resty.openssl.hmac", "resty.string"}
+LUA_FORBIDDEN = re.compile(r"ngx\.socket|ngx\.location|ngx\.timer|ngx\.thread|ngx\.pipe|resty\.http|"
+                           r"resty\.dns|resty\.websocket|cosocket|\bio\.|\bos\.|\bload(string)?\s*\(|"
+                           r"\bdofile\b|\bloadfile\b|package\.|debug\.")
+
+
+def serverless_projection(name, value):
+    fields(value, {"phase", "functions"}, {"phase", "functions"})
+    require(value["phase"] in ("rewrite", "access") and type(value["functions"]) is list
+            and 1 <= len(value["functions"]) <= 4)
+    hashes = []
+    for function in value["functions"]:
+        require(type(function) is str and 0 < len(function) <= 65536 and function.isascii())
+        modules = re.findall(r"""require\s*\(?\s*['"]([^'"]+)['"]""", function)
+        require(set(modules) <= LUA_MODULES and len(modules) == len(re.findall(r"\brequire\b", function))
+                and not LUA_FORBIDDEN.search(function))
+        hashes.append(sha(function.encode("ascii")))
+    return {"plugin": name, "phase": value["phase"], "functionSha256": hashes}
+
+
+def labels(value):
+    require(type(value) is dict and len(value) <= 16 and all(
+        type(k) is str and type(v) is str and len(k) <= 63 and len(v) <= 253 for k, v in value.items()))
+
+
 def route_projection(route):
     required = {"uri", "methods", "upstream", "plugins"}
-    fields(route, required | {"id", "name", "desc", "status", "priority", "host", "hosts"}, required)
+    fields(route, required | {"id", "name", "desc", "status", "priority", "host", "hosts", "labels"}, required)
+    if "labels" in route:
+        labels(route["labels"])
     require(type(route["uri"]) is str and re.fullmatch(r"/[A-Za-z0-9_./~:@*-]*", route["uri"]))
     methods = route["methods"]
     require(type(methods) is list and methods and all(
         type(method) is str and method in {"GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"}
         for method in methods))
     plugins = route["plugins"]
-    fields(plugins, {"openid-connect", "limit-count", "request-validation"}, {"openid-connect"})
+    fields(plugins, {"openid-connect", "limit-count", "request-validation", "client-control",
+                     "serverless-pre-function", "serverless-post-function"}, {"openid-connect"})
+    if "client-control" in plugins:
+        fields(plugins["client-control"], {"max_body_size"}, {"max_body_size"})
+        require(type(plugins["client-control"]["max_body_size"]) is int
+                and 0 < plugins["client-control"]["max_body_size"] <= 16777216)
+    serverless = [serverless_projection(name, plugins[name])
+                  for name in ("serverless-pre-function", "serverless-post-function") if name in plugins]
     if "limit-count" in plugins:
         limit = plugins["limit-count"]
         fields(limit, {"count", "time_window", "key_type", "key", "policy", "rejected_code",
@@ -142,7 +178,7 @@ def route_projection(route):
     if "request-validation" in plugins:
         fields(plugins["request-validation"], {"header_schema", "body_schema", "rejected_code", "rejected_msg"})
     return {"uri": route["uri"], "methods": methods, "upstream": upstream_projection(route["upstream"]),
-            "openid-connect": oidc_projection(plugins["openid-connect"])}
+            "openid-connect": oidc_projection(plugins["openid-connect"]), "serverless": serverless}
 
 
 def parse_routes(raw):
@@ -153,7 +189,8 @@ def parse_routes(raw):
     if "ssls" in document:
         require(type(document["ssls"]) is list)
         for ssl in document["ssls"]:
-            fields(ssl, {"id", "snis", "type", "status", "cert", "key", "certs", "keys"})
+            fields(ssl, {"id", "snis", "type", "status", "cert", "key", "certs", "keys",
+                         "ssl_protocols", "labels"})
     return document
 
 

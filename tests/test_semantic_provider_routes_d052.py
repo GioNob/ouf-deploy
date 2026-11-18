@@ -23,18 +23,40 @@ PLACEHOLDER = "SYNTHETIC_SECRET_PLACEHOLDER"
 
 ADAPTER_FIXTURE_HOST = "fixture-adapter.invalid"
 
-def api_bytes():
+# Same shape as ouf-api-gateway tools/materialize_semantic_provider(_tls).py (real route source).
+STRIP_LUA = ("return function(conf,ctx) for name,_ in pairs(ngx.req.get_headers(0)) do "
+             "if name:lower():sub(1,6)=='x-ouf-' then ngx.req.clear_header(name) end end end")
+ADMIT_LUA = ("return function(conf,ctx)\nlocal cjson = require('cjson.safe')\n"
+             "local d=require('resty.openssl.digest').new('sha256')\n"
+             "local h=require('resty.openssl.hmac').new('k','sha256')\n"
+             "ngx.req.set_header('X-OUF-R', require('resty.string').to_hex(d:final('x')))\nend")
+
+
+def api_bytes(post_lua=ADMIT_LUA):
     upstream = {"type": "roundrobin", "scheme": "https", "nodes": {ADAPTER_FIXTURE_HOST + ":9443": 1},
                 "upstream_host": ADAPTER_FIXTURE_HOST, "pass_host": "rewrite",
-                "timeout": {"connect": 3, "send": 4, "read": 25}}
-    plugins = {"openid-connect": {"client_id": "synthetic-client", "client_secret": PLACEHOLDER,
+                "timeout": {"connect": 3, "send": 4, "read": 25}, "retries": 0}
+    plugins = {"client-control": {"max_body_size": 65536},
+               "limit-count": {"count": 20, "time_window": 60, "key_type": "var", "key": "remote_addr",
+                               "policy": "local", "rejected_code": 429},
+               "serverless-pre-function": {"phase": "rewrite", "functions": [STRIP_LUA]},
+               "openid-connect": {"client_id": "synthetic-client", "client_secret": PLACEHOLDER,
                                   "discovery": "https://issuer.example:8444/test/.well-known/openid-configuration",
                                   "issuer": "https://issuer.example/test", "ssl_verify": True,
-                                  "bearer_only": True, "use_jwks": True, "unauth_action": "deny"},
-               "limit-count": {"count": 20, "policy": "local"}}
-    return encode({"routes": [{"uri": "/search", "methods": ["POST"], "upstream": upstream, "plugins": plugins},
-                              {"uri": "/fetch", "methods": ["GET"], "upstream": upstream, "plugins": plugins}],
-                   "ssls": [{"snis": ["gateway.example"], "cert": "TEST_CERT", "key": "TEST_KEY"}]})
+                                  "bearer_only": True, "use_jwks": True, "unauth_action": "deny",
+                                  "required_scopes": ["gateway.test"],
+                                  "claim_validator": {"audience": {"required": True, "match_with_client_id": True}},
+                                  "set_access_token_header": False, "set_id_token_header": False,
+                                  "set_userinfo_header": False},
+               "serverless-post-function": {"phase": "access", "functions": [post_lua]}}
+    lab = {"ouf-managed": "true", "ouf-installation": "fixture", "ouf-mediation": "semantic-provider-transport-v1"}
+    return encode({"routes": [{"id": "s", "uri": "/search", "methods": ["POST"], "labels": lab,
+                               "upstream": upstream, "plugins": plugins},
+                              {"id": "f", "uri": "/fetch", "methods": ["GET"], "labels": lab,
+                               "upstream": upstream, "plugins": plugins}],
+                   "ssls": [{"id": "sb", "type": "server", "status": 1, "snis": ["gateway.example"],
+                             "cert": "TEST_CERT", "key": "TEST_KEY", "ssl_protocols": ["TLSv1.2", "TLSv1.3"],
+                             "labels": {"ouf-managed": "true"}}]})
 
 
 def encode(doc):
@@ -65,6 +87,21 @@ class Routes(unittest.TestCase):
         self.assertEqual(route["openid-connect"]["issuer"], {"host": "issuer.example", "port": 443})
         self.assertEqual(route["upstream"]["timeout"], {"connect": 3, "send": 4, "read": 25})
         self.assertEqual((view["sha256"], view["bytes"]), (R.sha(api_bytes()), len(api_bytes())))
+
+    def test_serverless_lua_closed_module_set_without_network(self):
+        view = R.project("/fixture/apisix.yaml", api_bytes())
+        self.assertEqual([s["plugin"] for s in view["routes"][0]["serverless"]],
+                         ["serverless-pre-function", "serverless-post-function"])
+        self.assertNotIn(b"resty.openssl", R.canonical(view))
+        for lua in ("return function() local s=ngx.socket.tcp() end",
+                    "return function() local h=require('resty.http') end",
+                    "return function() local x=require('socket') end",
+                    "return function() ngx.location.capture('/x') end",
+                    "return function() os.execute('id') end",
+                    "return function() local r=require(name) end",
+                    "return function() loadstring('x')() end"):
+            with self.subTest(lua=lua), self.assertRaisesRegex(R.Held, R.UNPROVEN):
+                R.project("/fixture/apisix.yaml", api_bytes(post_lua=lua))
 
     def test_invalid_and_unknown_egress_denied(self):
         raw = api_bytes()
