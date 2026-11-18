@@ -112,7 +112,10 @@ class Proof:
         self.isolated = True
         for name in ('ip_forward',):
             Path('/proc/sys/net/ipv4/' + name).write_text('1\n')
-        Path('/proc/sys/net/ipv6/conf/all/forwarding').write_text('1\n')
+        # Explicit: newer kernels (7.0 runners) do not propagate all/forwarding to
+        # default/forwarding, which interfaces created later inherit.
+        for scope in ('all', 'default'):
+            Path('/proc/sys/net/ipv6/conf/' + scope + '/forwarding').write_text('1\n')
         # No shared-host sysctl changes: net+mount isolation is already checked.
         for name in ('bridge-nf-call-iptables', 'bridge-nf-call-ip6tables', 'bridge-nf-call-arptables'):
             path = Path('/proc/sys/net/bridge') / name
@@ -127,6 +130,7 @@ class Proof:
             run('ip', 'addr', 'add', v4, 'dev', bridge)
             run('ip', '-6', 'addr', 'add', v6, 'dev', bridge, 'nodad')
             run('ip', 'link', 'set', bridge, 'up')
+            Path('/proc/sys/net/ipv6/conf/' + bridge + '/forwarding').write_text('1\n')
         for ns, bridge, v4, v6 in (('southbound', 'egress', '10.64.0.2/24', 'fd64::2/64'),
                                     ('dnat', 'servers', '10.65.0.2/24', 'fd65::2/64'),
                                     ('direct', 'external', '10.66.0.2/24', 'fd66::2/64'),
