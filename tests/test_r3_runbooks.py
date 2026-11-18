@@ -18,6 +18,9 @@ RUNBOOKS = [ROOT / "ops/vps" / n for n in ("r3-issue.sh", "r3-install.sh", "r3-r
                                          "r3-upgrade-v9.sh", "r3-operate.sh")]
 FETCH = re.compile(r"^  fetch (\S+) ([0-9a-f]{64})$", re.M)
 PIN = re.compile(r"^C=([0-9a-f]{40})$", re.M)
+# These host-side tools evolve with v16. Legacy runbooks fetch their pinned blobs.
+VERSIONED_TOOLS = {"tools/semantic_provider_r3/" + name for name in
+                   ("compose.py", "install_common.py", "operate.py")}
 # Import closure of the issuer/installer/restore entrypoints (traced with the real interpreter,
 # task-41c review) plus the 29b switch boundary reused unchanged by install_common.native_switch.
 CLOSURE = {
@@ -89,8 +92,10 @@ class R3Runbooks(unittest.TestCase):
                          | set(C.SOURCE_INPUTS_V12) | set(C.SOURCE_INPUTS_V13)
                          | set(C.SOURCE_INPUTS_V15))
 
-    def test_hashes_are_lf_blobs_at_head(self):
+    def test_sealed_hashes_are_lf_blobs_at_head(self):
         for path, digest in self.deliveries[0]:
+            if path in VERSIONED_TOOLS:
+                continue
             with self.subTest(path=path):
                 self.assertEqual(hashlib.sha256(blob("HEAD", path)).hexdigest(), digest)
 

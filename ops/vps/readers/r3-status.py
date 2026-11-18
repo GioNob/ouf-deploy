@@ -28,14 +28,15 @@ def main():
             raw = read(epoch_base(cfg, cid, n) / 'adapter.json')
             if hashlib.sha256(raw).hexdigest() != pointer['journalSha256']:
                 raise ValueError('EPOCH_POINTER_DRIFT')
-            row = json.loads(raw)
+            row = adapter_journal(raw, cid, n)
+            detail = driver_denial_fields(row)
             live = False
             if row['state'] == 'STARTED' and row['bootId'] == read(PROC / 'sys/kernel/random/boot_id').decode().strip():
                 try:
                     live = ticks(row['generation']['pid']) == row['generation']['startTicks']
                 except FileNotFoundError:
                     pass
-            epoch = dict(epoch=n, live=live, **fields(row, ('state', 'failure')))
+            epoch = dict(epoch=n, live=live, **fields(row, ('state', 'failure')), **detail)
             denials = []
             for e in (n, n - 1) if n > 1 else (n,):
                 denials.extend(epoch_base(cfg, cid, e).glob('broker-denial-*.json'))

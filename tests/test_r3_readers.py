@@ -39,6 +39,13 @@ def tree(root):
             for p in root.rglob('*')}
 
 
+def adapter_journal(cid, version=2, **extra):
+    return {'schema': f'ouf.semantic-docker-runtime-journal.v{version}', 'containerId': cid, 'epoch': 1,
+            'state': 'FAILED', 'failure': 'SAFE_CODE', 'bootId': '00000000-0000-0000-0000-000000000001',
+            'configurationHash': 'c' * 64, 'authorizationSha256': 'd' * 64, 'openedAt': 1,
+            'runtimeRoot': '/run/test', 'bundleHash': None, 'driverHash': None, 'generation': None, **extra}
+
+
 class Readers(unittest.TestCase):
     def test_syntax(self):
         for path in READERS.glob('*.py'):
@@ -73,6 +80,9 @@ class Readers(unittest.TestCase):
         self.assertEqual({n for n, _ in rows}, {p.name for p in READERS.iterdir() if p.is_file()})
         for name, expected in rows:
             raw = (READERS / name).read_bytes()
+            if os.name == 'nt':
+                # A Windows Git checkout may translate the LF delivery blobs.
+                raw = raw.replace(b'\r\n', b'\n')
             self.assertNotIn(b'\r', raw)
             self.assertEqual(hashlib.sha256(raw).hexdigest(), expected)
         self.assertRegex(text, r'(?m)^C=[0-9a-f]{40} ')  # zero before review, then the reviewed commit
@@ -88,7 +98,7 @@ class Readers(unittest.TestCase):
         self.assertNotIn('90-ouf-readonly-diagnostics', text)
 
     def test_copies_only_add_validation(self):
-        for name in ('r3-epoch-diag.py', 'r3-frame-diag.py', 'r3-guard-diag.py'):
+        for name in ('r3-frame-diag.py', 'r3-guard-diag.py'):
             old = ast.parse((ROOT / 'ops/vps' / name).read_text())
             new = ast.parse((READERS / name).read_text())
             main = next(n for n in new.body if isinstance(n, ast.FunctionDef) and n.name == 'main')
@@ -113,7 +123,9 @@ class Readers(unittest.TestCase):
             put(root / 'lease.json', {'state': 'QUIESCED', 'leaseAuthorized': False, 'password': 'SECRET_SENTINEL'})
             for role, cid in ids.items():
                 epoch = root / 'registry' / cid / 'epochs/1'
-                binding = put(epoch / 'adapter.json', {'state': 'FAILED', 'failure': 'SAFE_CODE', 'privateKey': 'SECRET_SENTINEL'})
+                denial = {'phase': 'start', 'code': 'OPERATION_AUTHORIZATION_DRIFT'}
+                journal = adapter_journal(cid) if role == 'adapter' else adapter_journal(cid, 3, driverDenial=denial)
+                binding = put(epoch / 'adapter.json', journal)
                 put(epoch / 'failure.json', {'failure': {'code': 'ERR', 'reason': 'IDLE', 'secret': 'SECRET_SENTINEL'},
                                            'state': 'password=SECRET_SENTINEL'})
                 put(root / 'registry' / cid / 'current', {'epoch': 1, 'journalSha256': binding['sha256']})
@@ -132,7 +144,32 @@ class Readers(unittest.TestCase):
                     self.assertEqual(ns['main'](), 0)
                 self.assertNotIn('SECRET_SENTINEL', output.getvalue())
                 self.assertNotIn('privateKey', output.getvalue())
+                rows = [json.loads(line) for line in output.getvalue().splitlines()]
+                if name == 'r3-status.py':
+                    journals = {row['role']: row['epoch'] for row in rows if row.get('step') == 'role'}
+                else:
+                    journals = {row['role']: row for row in rows if row.get('file') == 'adapter.json'}
+                self.assertNotIn('driverDenial', journals['adapter'])
+                self.assertEqual(journals['southbound']['driverDenial'], denial)
                 self.assertEqual(before, tree(root))
+
+    def test_driver_denial_projection_validates_exact_shape(self):
+        ns = load('r3_common.py')
+        cid = 'a' * 64
+        valid = adapter_journal(cid, 3, driverDenial=None)
+        self.assertEqual(ns['driver_denial_fields'](ns['adapter_journal'](json.dumps(valid).encode(), cid, 1)),
+                         {'driverDenial': None})
+        for detail in ({'phase': 'prepare', 'code': 'D'}, {'phase': 'hook', 'code': 'lowercase'},
+                       {'phase': 'hook', 'code': 'D' * 81}, {'phase': 'hook', 'code': 'D', 'stderr': 'SECRET'}):
+            with self.subTest(detail=detail), self.assertRaises(ValueError):
+                ns['driver_denial_fields'](valid | {'driverDenial': detail})
+        with self.assertRaises(ValueError):
+            ns['driver_denial_fields'](valid | {'state': 'DELETING', 'driverDenial': {'phase': 'hook', 'code': 'D'}})
+        for journal in (adapter_journal(cid, 2, driverDenial=None), adapter_journal(cid, 3)):
+            with self.assertRaises(ValueError):
+                ns['adapter_journal'](json.dumps(journal).encode(), cid, 1)
+        with self.assertRaises(ValueError):
+            ns['adapter_journal'](json.dumps(valid).encode().replace(b'null}', b'null,"driverDenial":null}'), cid, 1)
 
     def test_journal_filter(self):
         ns = load('r3-supervisor-journal.py')
@@ -175,6 +212,8 @@ class Readers(unittest.TestCase):
                 epoch = root / 'registry' / role / 'epochs/1'
                 epoch.mkdir(parents=True)
                 (epoch / 'epoch.json').write_text(json.dumps({'state': 'FAILED', 'private': 'SECRET_SENTINEL'}))
+                denial = {'phase': 'hook', 'code': 'GATE_DENIED'}
+                (epoch / 'adapter.json').write_text(json.dumps(adapter_journal(role, 3, driverDenial=denial)))
                 docs = root / 'versions/8/documents' / role
                 docs.mkdir(parents=True)
                 (docs / 'preparer-template.json').write_text(json.dumps({'kernel': {}}))
@@ -188,6 +227,10 @@ class Readers(unittest.TestCase):
                         patch.object(sys, 'argv', [name]), redirect_stdout(output):
                     self.assertEqual(ns['main'](), 0)
                 self.assertNotIn('SECRET_SENTINEL', output.getvalue())
+                if name == 'r3-epoch-diag.py':
+                    rows = [json.loads(line) for line in output.getvalue().splitlines()]
+                    self.assertEqual([row['driverDenial'] for row in rows if row.get('file') == 'adapter.json'],
+                                     [denial, denial])
                 self.assertEqual(before, tree(root))
 
     def test_watch_snapshot_readonly(self):
