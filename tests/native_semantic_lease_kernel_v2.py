@@ -140,7 +140,7 @@ class Proof:
         for bridge, v4, v6 in (('egress', '10.64.0.1/24', 'fd64::1/64'),
                                ('servers', '10.65.0.1/24', 'fd65::1/64'),
                                ('external', '10.66.0.1/24', 'fd66::1/64')):
-            run('ip', 'link', 'add', bridge, 'type', 'bridge')
+            run('ip', 'link', 'add', bridge, 'type', 'bridge', 'mcast_snooping', '0')
             run('ip', 'addr', 'add', v4, 'dev', bridge)
             run('ip', '-6', 'addr', 'add', v6, 'dev', bridge, 'nodad')
             run('ip', 'link', 'set', bridge, 'up')
