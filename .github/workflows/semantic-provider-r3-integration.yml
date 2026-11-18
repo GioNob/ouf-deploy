@@ -6,6 +6,7 @@ on:
       - tools/semantic_provider_admission_v2/**
       - tools/semantic_provider_r3/**
       - tools/semantic_provider_routes/**
+      - tools/semantic_provider_config/**
       - tools/semantic_provider_operation/**
       - tools/semantic_authority_mandates/**
       - tools/semantic_cohort_admission/cohort-draft/**
@@ -17,6 +18,11 @@ on:
       - scripts/semantic-provider-*-v2.py
       - scripts/semantic-provider-lease-supervisor-v3.py
       - scripts/issue-semantic-provider-operation-authorization.py
+      - scripts/prepare-semantic-provider-installation.py
+      - scripts/semantic-provider-config.py
+      - ops/vps/config-publish.sh
+      - ops/vps/b1-recipes-v4.sh
+      - ops/vps/acceptance-v51-g7.sh
       - tests/test_semantic_provider_r3*.py
       - tests/test_frame_observer_v2.py
       - tests/test_semantic_provider_operation*.py
@@ -32,9 +38,11 @@ on:
       - tests/fixtures/r3-v1-v10-dns-tolerance-hashes.json
       - tests/fixtures/r3-v1-v11-pre-v12-hashes.json
       - tests/fixtures/r3-v1-v12-pre-v13-hashes.json
+      - tests/fixtures/r3-v1-v15-pre-v16-hashes.json
       - docs/OUF_SEMANTIC_PROVIDER_R3_V12.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V13.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V15.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V16_ADAPTER.md
       - tests/test_semantic_b1_acceptance.py
       - tests/test_runtime_v52_epochs.py
       - .github/workflows/semantic-provider-r3-integration.yml
@@ -49,6 +57,8 @@ jobs:
         with: {persist-credentials: false}
       - name: D-050 lease kernel generation 2 (portable)
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_lease_kernel_v2.py -v
+      - name: D-053 v16 adapter, configuration publication, B1 v4 and acceptance g7 (portable)
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v16_adapter.py -v
       - name: D-050 native dependencies and explicit root gate
         run: |
           test "$(sudo -n id -u)" = 0

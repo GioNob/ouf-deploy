@@ -71,6 +71,11 @@ SOURCE_MAP_V15 = {**SOURCE_MAP_V13, **{p: p for p in (
     EGRESS_V15, ROUTES_SOURCE, 'tools/semantic_provider_routes/custody.py',
     'tools/semantic_provider_r3/read_routes_v15.py')}}
 SOURCE_INPUTS_V15 = frozenset(SOURCE_MAP_V15.values()) | {KERNEL_V1}
+ADAPTER_V16 = 'tools/semantic_provider_r3/adapter_v16.py'
+ADAPTER_CONTRACT = 'tools/semantic_provider_config/contract.py'
+SOURCE_MAP_V16 = {**SOURCE_MAP_V15, **{p: p for p in (
+    ADAPTER_V16, ADAPTER_CONTRACT, 'tools/semantic_provider_r3/read_adapter_v16.py')}}
+SOURCE_INPUTS_V16 = frozenset(SOURCE_MAP_V16.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -81,6 +86,7 @@ DATA_INPUTS = {"settings", "coordinator", "coordinationJournal", "a2Manifest", "
 DATA_INPUTS_V12 = DATA_INPUTS | {'migrationReceipt', 'migrationPlan', 'generationReceipt', 'bootPointer'}
 DATA_INPUTS_V13 = DATA_INPUTS_V12 | {'identityProviderPeer'}
 DATA_INPUTS_V15 = DATA_INPUTS_V13 | {'southbound/routesProjection'}
+DATA_INPUTS_V16 = DATA_INPUTS_V15 | {'adapter/configProjection', 'installationProfile'}
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -93,7 +99,8 @@ def input_set(files, sources):
              (SOURCE_INPUTS, SOURCE_INPUTS_V6, SOURCE_INPUTS_V11)) or
             (set(files) == DATA_INPUTS_V12 and set(sources) == SOURCE_INPUTS_V12) or
             (set(files) == DATA_INPUTS_V13 and set(sources) == SOURCE_INPUTS_V13) or
-            (set(files) == DATA_INPUTS_V15 and set(sources) == SOURCE_INPUTS_V15))
+            (set(files) == DATA_INPUTS_V15 and set(sources) == SOURCE_INPUTS_V15) or
+            (set(files) == DATA_INPUTS_V16 and set(sources) == SOURCE_INPUTS_V16))
 
 
 def migration_bindings(files):
@@ -265,7 +272,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
-    if version >= 15:
+    if version >= 16:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V16, SOURCE_INPUTS_V16, DATA_INPUTS_V16
+    elif version >= 15:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V15, SOURCE_INPUTS_V15, DATA_INPUTS_V15
     elif version >= 13:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V13, SOURCE_INPUTS_V13, DATA_INPUTS_V13
@@ -306,6 +315,10 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         # Report D-052.2 tuple denials before the general kernel/transport gates.
         oidc_port = egress.check_routes(projection, data['southbound/historicalTemplate']['candidate'],
             data['adapter/historicalTemplate']['candidate'], owner['kernel'], identity, routes)
+    if version >= 16:
+        require(sha(files['coordinator']) == s['coordinatorBinding']['sha256'], 'SUCCESSOR_COORDINATOR_UNPROVEN')
+        adapter = contract_module(sources[ADAPTER_V16], 'adapter_v16')
+        adapter.check(data, files, contract_module(sources[ADAPTER_CONTRACT], 'adapter_contract_v16'))
     if version >= 12:
         migration_bindings(files)
     require(sha(files["coordinator"]) == s["coordinatorBinding"]["sha256"]

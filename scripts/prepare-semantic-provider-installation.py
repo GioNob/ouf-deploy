@@ -891,31 +891,107 @@ def revise(proposal, raw, outcome):
     return str(superseded)
 
 
+def namespace_revision(args):
+    # A pinned, already accepted profile is the base of this additive revision.
+    if __name__ == "__main__":
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from tools.semantic_provider_config import contract
+    from tools.semantic_provider_routes.routes import Held as ContractHeld
+
+    destination = absolute(contract.PROFILE_PATH)
+    writes = {"profileFile": str(destination), "owner": "root:root", "mode": "0600", "directoriesIfMissing": []}
+    current, binding = revision_base(destination, args.revise_from_sha256)
+    require(digest(canonical(current) + b"\n") == args.revise_from_sha256, "REVISION_BASE_PROFILE_UNPROVEN")
+
+    def additive(previous, row):
+        require(contract.DECLARATION not in previous and previous.get("installationRef") == destination.parent.name
+                and previous.get("externalEndpoints", {}).get("provider", {}).get("sourceRole") == "adapter",
+                "NAMESPACE_REVISION_BASE_UNPROVEN")
+        profile = previous | {contract.DECLARATION: [row]}
+        try:
+            contract.declaration(profile)
+        except ContractHeld as error:
+            raise Held(str(error)) from None
+        return profile
+
+    if args.restore:
+        superseded = destination.with_name(destination.name + ".superseded-" + args.original_profile_sha256)
+        profile, _ = revision_base(superseded, args.original_profile_sha256)
+        require(digest(canonical(profile) + b"\n") == args.original_profile_sha256
+                and type(current.get(contract.DECLARATION)) is list and len(current[contract.DECLARATION]) == 1
+                and canonical(additive(profile, current[contract.DECLARATION][0])) == canonical(current),
+                "NAMESPACE_RESTORE_DELTA_UNPROVEN")
+    else:
+        profile = additive(current, {"endpointRef": args.namespace_endpoint_ref,
+                                     "namespacePrefixes": args.namespace_prefix})
+    proposal = binding | {"writes": writes, "profileSha256": digest(canonical(profile) + b"\n"),
+                          "providerNamespaces": (current if args.restore else profile)[contract.DECLARATION],
+                          "profileDiff": [{"path": "/" + contract.DECLARATION,
+                                           "change": "removed" if args.restore else "added"}]}
+    return proposal | {"planSha256": digest(canonical(proposal))}, canonical(profile) + b"\n"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--plan", action="store_true")
     mode.add_argument("--apply", action="store_true")
+    mode.add_argument("--restore", action="store_true")
     parser.add_argument("--plan-sha256")
     parser.add_argument("--revise-from-sha256")
-    parser.add_argument("--docker-socket-activation", choices=("systemd-socket", "daemon"), required=True)
-    for name in ("installation-ref", "installation-root", "a-root", "a-plan-sha256", "guard-pointer",
+    parser.add_argument("--namespace-revision", action="store_true")
+    parser.add_argument("--namespace-endpoint-ref")
+    parser.add_argument("--namespace-prefix", action="append")
+    parser.add_argument("--original-profile-sha256")
+    parser.add_argument("--docker-socket-activation", choices=("systemd-socket", "daemon"))
+    legacy = ("installation-ref", "installation-root", "a-root", "a-plan-sha256", "guard-pointer",
                  "docker-socket", "docker-socket-unit", "docker-service-unit", "docker-socket-owner",
                  "guard-service-unit", "guard-service-file", "docker-drop-in-file",
                  "docker-socket-group", "docker-socket-mode", "dockerd",
                  "generation-receipt", "generation-receipt-sha256", "authority-profile",
-                 "authority-sha256", "trust-policy", "trust-policy-sha256"):
-        parser.add_argument("--" + name, required=True)
+                 "authority-sha256", "trust-policy", "trust-policy-sha256")
+    for name in legacy:
+        parser.add_argument("--" + name)
     args = parser.parse_args()
-    require_hashes = (args.a_plan_sha256, args.generation_receipt_sha256, args.authority_sha256, args.trust_policy_sha256)
+    namespace = args.namespace_revision or args.restore or any(value is not None for value in
+                (args.namespace_endpoint_ref, args.namespace_prefix, args.original_profile_sha256))
+    legacy_values = [getattr(args, name.replace("-", "_")) for name in (*legacy, "docker-socket-activation")]
+    if namespace:
+        if (any(value is not None for value in legacy_values) or args.revise_from_sha256 is None or
+                (args.restore and (args.namespace_endpoint_ref is not None or args.namespace_prefix is not None
+                                   or args.original_profile_sha256 is None)) or
+                (not args.restore and (args.namespace_endpoint_ref is None or not args.namespace_prefix
+                                       or args.original_profile_sha256 is not None))):
+            parser.error("expected a pinned namespace revision or restore")
+        require_hashes = (args.original_profile_sha256,) if args.restore else ()
+    else:
+        if not all(value is not None for value in legacy_values):
+            parser.error("missing installation observation arguments")
+        require_hashes = (args.a_plan_sha256, args.generation_receipt_sha256,
+                          args.authority_sha256, args.trust_policy_sha256)
     if any(not HEX.fullmatch(value) for value in require_hashes) or (
-            args.apply and not HEX.fullmatch(args.plan_sha256 or "")) or (args.plan and args.plan_sha256 is not None) or (
+            args.apply and not HEX.fullmatch(args.plan_sha256 or "")) or (
+            not args.apply and args.plan_sha256 is not None) or (
             args.revise_from_sha256 is not None and not HEX.fullmatch(args.revise_from_sha256)):
         parser.error("expected exact lowercase SHA-256 bindings")
     report = {"schema": "ouf.semantic-provider-installation.plan.v1", "status": "HELD", "privateKeysRead": 0}
     try:
         require(os.geteuid() == 0 and os.getegid() == 0, "ROOT_CUSTODY_REQUIRED")
         os.umask(0o077)
+        if namespace:
+            proposal, raw = namespace_revision(args)
+            report.update(proposal)
+            if args.plan:
+                report["status"] = "PLAN_READY"
+            else:
+                require(args.restore or args.plan_sha256 == proposal["planSha256"], "PLAN_DIGEST_CHANGED")
+                report["revisionOutcome"] = {}
+                report["supersededFile"] = revise(proposal, raw, report["revisionOutcome"])
+                report["status"] = ("SEMANTIC_PROVIDER_INSTALLATION_PROFILE_RESTORED" if args.restore
+                                    else "SEMANTIC_PROVIDER_INSTALLATION_PROFILE_REVISED")
+            print(canonical(report).decode(), flush=True)
+            return 0
         proposal = observe(args)
         report.update(proposal)
         if args.plan:
