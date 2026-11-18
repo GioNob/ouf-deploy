@@ -187,6 +187,11 @@ class Proof:
         self.server('dnat', '10.65.0.2', 8443)
         self.server('direct', '10.66.0.2', 443)
         self.server('direct', 'fd66::2', 443)
+        # DEBUG experiment: servers announce themselves to their gateway first (real NDP).
+        for ns, gw in (('direct', 'fd66::1'), ('peer', 'fd64::1'), ('dnat', 'fd65::1')):
+            r = subprocess.run(['ip', 'netns', 'exec', ns, 'ping', '-6', '-c', '1', '-W', '2', gw],
+                               capture_output=True, text=True, timeout=10)
+            print('DEBUG_V6 announce', ns, gw, r.returncode, flush=True)
         for address in ('10.64.0.10', '10.64.0.11', 'fd64::10', 'fd64::11'):
             self.server('peer', address, 443)
 
