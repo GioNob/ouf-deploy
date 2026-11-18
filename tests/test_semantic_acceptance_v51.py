@@ -159,6 +159,38 @@ class Native(unittest.TestCase):
         for file in (self.root / "output/issuance").iterdir():
             self.assertEqual((file.stat().st_mode & 0o777, file.stat().st_nlink), (0o600, 1))
 
+    def test_generation_six_issues_with_revised_recipes_and_same_rootfs(self):
+        self.args.generation = 5
+        g5 = B.decode_manifest(self.plan()["manifestRaw"].encode())
+        recipes = copy.deepcopy(self.f.recipes)
+        recipes["recipeRevision"] = 3
+        recipes["routeSha256"] = sha(b"synthetic D-052 routes")
+        southbound = recipes["roles"]["southbound"]["recipe"]
+        for part in ("launch", "policy"):
+            southbound[part] = self.f.put(self.root / "recipes-v3" / "southbound" / (part + ".json"),
+                                         {"sources": [{"sha256": recipes["routeSha256"]}]})
+        self.f.update("recipes_result", recipes)
+        self.materialize()
+        self.args.generation = 6
+        self.args.output_name = "issuance-g6"
+        plan = self.plan()
+        self.assertEqual(plan["privateKeysRead"], 0)
+        self.args.plan, self.args.apply, self.args.plan_sha256 = False, True, plan["planSha256"]
+        result = m.execute(self.args, self.progress)
+        raw = Path(result["manifest"]["path"]).read_bytes()
+        g6 = B.decode_manifest(raw)
+        self.assertEqual(g6["generation"], 6)
+        for role in B.ROLES:
+            self.assertEqual(g6["roles"][role]["rootfs"], g5["roles"][role]["rootfs"])
+            self.assertEqual(g6["roles"][role]["recipe"], recipes["roles"][role]["recipe"])
+        self.assertNotEqual(g6["roles"]["southbound"]["recipe"]["launch"],
+                            g5["roles"]["southbound"]["recipe"]["launch"])
+        signature = Path(result["signature"]["path"]).read_bytes()
+        authenticator = M.MandateAuthenticator(self.anchor(), str(self.ledger),
+                                               {**m.cli_binding(self.args, "openssl"), "version": self.args.openssl_version})
+        self.assertTrue(authenticator.verify_b1b2_detached(raw, signature, "ARTIFACT_ACCEPTANCE", "fixture-issuer",
+                                                          "fixture-installation", "fixture-entity"))
+
     def test_expired_generation_zero_renewed_by_the_ledger_still_signs(self):
         now = int(time.time())
         self.update_policy({"notBefore": now - 7200, "expiresAt": now - 3600})

@@ -3,16 +3,25 @@ on:
   pull_request:
     paths:
       - 'scripts/prepare-semantic-provider-b1-recipes.py'
+      - 'scripts/prepare-semantic-provider-b1-recipes-v3.py'
+      - 'scripts/publish-semantic-provider-routes.py'
       - 'scripts/deliver-semantic-provider-b1-recipes.sh'
       - 'scripts/recreate-southbound-successor-20261113.py'
+      - 'tools/semantic_provider_routes/**'
       - 'tools/semantic_successor_recipes/**'
       - 'tools/semantic_frame_compiler/**'
       - 'tools/semantic_b1_acceptance/**'
       - 'tools/semantic_b1b2_authority/**'
       - 'tests/test_semantic_provider_b1_recipes.py'
+      - 'tests/test_semantic_provider_routes_d052.py'
+      - 'tests/test_semantic_acceptance_v51.py'
       - 'tests/test_semantic_b1_acceptance.py'
+      - 'ops/vps/routes-d052.sh'
+      - 'ops/vps/b1-recipes-v3.sh'
+      - 'ops/vps/acceptance-v51-g6.sh'
       - '.github/workflows/semantic-provider-b1-recipes.yml'
       - 'docs/OUF_SEMANTIC_PROVIDER_B1_RECIPES_20261113.md'
+      - 'docs/OUF_SEMANTIC_PROVIDER_ROUTES_D052.md'
 permissions:
   contents: read
 jobs:
@@ -28,5 +37,10 @@ jobs:
           python-version: '3.13'
       - name: Unit contracts, real baselines, private POSIX publication and secret exclusion
         run: sudo "$(command -v python3)" -I -B -m unittest discover -s tests -p test_semantic_provider_b1_recipes.py -v
+      - name: D-052 projection, declaration, native publication and retained recipes
+        run: sudo env OUF_D052_NATIVE=1 "$(command -v python3)" -I -B -m unittest discover -s tests -p test_semantic_provider_routes_d052.py -v
       - name: Launcher syntax
-        run: bash -n scripts/deliver-semantic-provider-b1-recipes.sh
+        run: |
+          for runbook in scripts/deliver-semantic-provider-b1-recipes.sh ops/vps/{routes-d052,b1-recipes-v3,acceptance-v51-g6}.sh; do
+            bash -n "$runbook"
+          done
