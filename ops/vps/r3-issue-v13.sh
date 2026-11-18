@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=9a091c1cfd69b9589ec3c94be98a46e4a6a90bfe
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -133,7 +133,7 @@ delivery() {
   fetch tools/semantic_provider_r3/identity_provider_v13.py 3bdcf7688ffac5c485abfc5893a3f6a3ff5777aab136138ee7488e3a2bd747bf
   fetch tools/semantic_provider_r3/install_common.py 0d28d8f23fdfb6c05a866275a8bb0f7dc2505926d305acd53bb3b9b8ca843695
   fetch tools/semantic_provider_r3/operate.py 019bb1b66d243acfdc071410d3219e448c70b84dba623636efbed85ff0362d8a
-  fetch tools/semantic_provider_r3/read_identity_provider_v13.py 46819db14df0a093d7467fa6f15e5d6d48f0493f991482a1d4ea53104e8affa6
+  fetch tools/semantic_provider_r3/read_identity_provider_v13.py 7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7
   fetch tools/semantic_provider_r3/upgrade.py bc18eee17996d2cb0533d132ec40789c43244187d2edb2d2ca59f48ff850c754
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -261,14 +261,13 @@ case "$mode" in
     DOWNLOAD=1
     delivery
     # D-051: identity provider peer, read-only docker inspect bound into the v13 inputs.
-    IDP_ID=$(sudo docker inspect -f '{{.Id}}' ouf-caddy)
     G2=/etc/ouf/lease-kernel-generations/g2-20261117T122656
     SBT=$S/semantic-provider-v2-transaction-mf9x0eqd/registry
     SBT=$SBT/1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916/preparer-template.json
     sudo install -o root -g root -m 0600 /dev/null "$D/identity-provider-peer.json"
     sudo /usr/bin/python3.13 -I -B "$D/tools/semantic_provider_r3/read_identity_provider_v13.py" \
       --docker /usr/bin/docker --docker-sha256 "$DOCKER_SHA" --docker-socket /var/run/docker.sock \
-      --container "$IDP_ID" --network ouf-backend \
+      --container ouf-caddy --network ouf-backend \
       --southbound-id 622a150067244ae8dbb4ac0f1889bc9e4b9823ed761820495f5c0849738dbc0d \
       --coordinator "$G2/coordinated-configuration.json" \
       --coordinator-sha256 899f39c193b88017b88931dcd9713ed80d7f63b87594c2cd00636a695e06b02f \
