@@ -310,7 +310,7 @@ class RecipesAndAcceptance(unittest.TestCase):
         for name in ('config-publish', 'b1-recipes-v4', 'acceptance-v51-g7'):
             with self.subTest(name=name):
                 text = (root / 'ops/vps' / (name + '.sh')).read_text()
-                self.assertIn('C=' + '0' * 40 + '\n', text)
+                self.assertRegex(text, r'(?m)^C=[0-9a-f]{40}$')
                 shell = re.findall(r'^fetch (\S+) ([0-9a-f]{64})$', text, re.MULTILINE)
                 acceptance = re.findall(r'^    "([0-9a-f]{64})" "\$1/([^"]+)"', text, re.MULTILINE)
                 pins = dict(shell + [(p, digest) for digest, p in acceptance])
