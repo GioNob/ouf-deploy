@@ -28,7 +28,8 @@ STRIP_LUA = ("return function(conf,ctx) for name,_ in pairs(ngx.req.get_headers(
              "if name:lower():sub(1,6)=='x-ouf-' then ngx.req.clear_header(name) end end end")
 ADMIT_LUA = ("return function(conf,ctx)\nlocal cjson = require('cjson.safe')\n"
              "local d=require('resty.openssl.digest').new('sha256')\n"
-             "local h=require('resty.openssl.hmac').new('k','sha256')\n"
+             "local key=os.getenv(RECEIPT_KEY_ENV)\n"
+             "local h=require('resty.openssl.hmac').new(key,'sha256')\n"
              "ngx.req.set_header('X-OUF-R', require('resty.string').to_hex(d:final('x')))\nend")
 
 

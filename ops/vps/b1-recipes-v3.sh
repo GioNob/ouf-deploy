@@ -43,7 +43,7 @@ fetch() {
   printf '%s  %s\n' "$expected" "$D/$path" | sudo sha256sum --check --status
 }
 fetch scripts/prepare-semantic-provider-b1-recipes-v3.py 9b350e834431eae5960881f8690c7a7e8f7c108f9e4d454b108ad89be424297d
-fetch tools/semantic_provider_routes/routes.py d0bfc3390207efa75db900760e9bfc121f4849019427e24f75cb5df2245006ba
+fetch tools/semantic_provider_routes/routes.py 305f2535e2cc547de5f242080247d62a43b4bdb93303bf00a03bb36e87097997
 fetch tools/semantic_provider_routes/custody.py 2ab7177f21fb5b330473895798c141282cdabc85c245142f96511fa13e848db3
 fetch tools/semantic_provider_routes/publication.py eafd9bae591d1b3715dd0f79c5ca9904a1b761e57eb69989d6db7e3c2f9948ba
 fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150

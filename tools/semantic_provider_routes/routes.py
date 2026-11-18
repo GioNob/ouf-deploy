@@ -126,9 +126,10 @@ def oidc_projection(value):
 
 # Serverless functions run inside APISIX: only these modules, and no network,
 # subrequest, timer, file or process primitive (no hidden egress beyond the upstream).
+# os.getenv alone is allowed: the admission function reads its receipt key from env.
 LUA_MODULES = {"cjson.safe", "resty.openssl.digest", "resty.openssl.hmac", "resty.string"}
 LUA_FORBIDDEN = re.compile(r"ngx\.socket|ngx\.location|ngx\.timer|ngx\.thread|ngx\.pipe|resty\.http|"
-                           r"resty\.dns|resty\.websocket|cosocket|\bio\.|\bos\.|\bload(string)?\s*\(|"
+                           r"resty\.dns|resty\.websocket|cosocket|\bio\.|\bos\.(?!getenv\s*\()|\bload(string)?\s*\(|"
                            r"\bdofile\b|\bloadfile\b|package\.|debug\.")
 
 
