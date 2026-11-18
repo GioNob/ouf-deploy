@@ -259,8 +259,8 @@ class NativePublication(unittest.TestCase):
 
     def test_interrupted_publication_restores_from_prepared_claim(self):
         plan = P.execute("plan", docker=self.docker)
-        with patch.object(C, "write_document", wraps=C.write_document) as write:
-            original = C.write_document
+        original = C.write_document  # captured before patching, else it is the mock itself
+        with patch.object(C, "write_document", wraps=original) as write:
 
             def fail_receipt(path, doc):
                 if path.name == "result.json":
