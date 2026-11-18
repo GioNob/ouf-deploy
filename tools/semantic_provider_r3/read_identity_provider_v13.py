@@ -67,8 +67,16 @@ def observe(args, reader, run):
     own_endpoint = own['Networks'][args.network]
     P.identity_require(own['Id'] == args.southbound_id and own_endpoint['NetworkID'] == peer['networkId'],
                        'R3_IDENTITY_PROVIDER_NETWORK_NOT_SHARED')
+    # The source address comes from the hash-bound template, the composition's own source,
+    # so the read works with the provider stopped (normal issuance sequence: Docker reports
+    # no address then). A running southbound must show exactly that address live.
+    bound = [n for n in candidate['networkBindings'] if n['bridge'] == peer['bridge'] and 'leaseGuard' not in n]
+    P.identity_require(len(bound) == 1, 'R3_IDENTITY_PROVIDER_NETWORK_NOT_SHARED')
+    source, live_ip = bound[0]['ipv4'], own_endpoint.get('IPAddress') or ''
+    P.identity_require(live_ip == source or (live_ip == '' and own.get('Running') is False),
+                       'R3_IDENTITY_PROVIDER_SOUTHBOUND_DRIFT')
     value = {'schema': 'ouf.semantic-identity-provider-peer.v1', 'peer': peer,
-             'southbound': {'containerId': own['Id'], 'ipv4': own_endpoint['IPAddress'],
+             'southbound': {'containerId': own['Id'], 'ipv4': source,
                            'network': args.network, 'networkId': own_endpoint['NetworkID'], 'bridge': peer['bridge']},
              'observationHashes': {'identityProvider': C.sha(first_raw), 'southbound': C.sha(own_raw), 'network': C.sha(network_raw)}}
     P.identity_flow(value, candidate, owner['kernel'])

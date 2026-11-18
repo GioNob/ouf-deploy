@@ -283,5 +283,30 @@ class LiveAdmission(unittest.TestCase):
         self.assertTrue(all('inspect' in a and '--format' in a for a in calls))
         reader.verify.assert_called_once_with()
 
+    def test_reader_source_from_bound_template_stopped_or_matching_live(self):
+        inputs, old = fixture()
+        d = C.document(inputs['files']['identityProviderPeer']); peer = d['peer']
+        owner = C.document(inputs['files']['coordinator'])
+        template = C.document(inputs['files']['southbound/historicalTemplate'])
+        args = types.SimpleNamespace(coordinator='owner', coordinator_sha256='1' * 64,
+            historical_template='template', historical_template_sha256='2' * 64,
+            docker=peer['dockerBinding']['path'],
+            docker_sha256=peer['dockerBinding']['sha256'], docker_socket=peer['dockerSocket'],
+            container=peer['containerName'], network=peer['network'], southbound_id=d['southbound']['containerId'])
+        def attempt(running, address):
+            reader = Mock(); reader.read.side_effect = [C.canonical(owner), C.canonical(template)]
+            own = live(peer); own['Id'] = args.southbound_id; own['Running'] = running
+            own['Networks'][args.network]['IPAddress'] = address
+            def run(binding, argv, limit):
+                if 'network' in argv: return C.canonical(network(peer))
+                return C.canonical(own if argv[-1] == args.southbound_id else live(peer))
+            return R.observe(args, reader, run)
+        stopped = attempt(False, '')
+        self.assertEqual(stopped['southbound']['ipv4'], d['southbound']['ipv4'])
+        self.assertEqual(stopped['peer'], peer)
+        for running, address in ((True, '172.18.0.77'), (True, ''), (False, '172.18.0.77')):
+            with self.assertRaisesRegex(ValueError, 'R3_IDENTITY_PROVIDER_SOUTHBOUND_DRIFT'):
+                attempt(running, address)
+
 
 if __name__ == '__main__': unittest.main()
