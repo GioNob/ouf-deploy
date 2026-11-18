@@ -16,7 +16,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=e8f978fe0bda6e08c9cba009b6b73d759027ff89
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -134,7 +134,7 @@ delivery() {
   fetch tools/semantic_provider_r3/identity_provider_v13.py 3bdcf7688ffac5c485abfc5893a3f6a3ff5777aab136138ee7488e3a2bd747bf
   fetch tools/semantic_provider_r3/install_common.py 0d28d8f23fdfb6c05a866275a8bb0f7dc2505926d305acd53bb3b9b8ca843695
   fetch tools/semantic_provider_r3/operate.py 019bb1b66d243acfdc071410d3219e448c70b84dba623636efbed85ff0362d8a
-  fetch tools/semantic_provider_r3/read_identity_provider_v13.py 9408ff93171dfb8af4c4a6e51dde478cb6ba051e834f13897235c874e31486a4
+  fetch tools/semantic_provider_r3/read_identity_provider_v13.py 46819db14df0a093d7467fa6f15e5d6d48f0493f991482a1d4ea53104e8affa6
   fetch tools/semantic_provider_r3/upgrade.py bc18eee17996d2cb0533d132ec40789c43244187d2edb2d2ca59f48ff850c754
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
