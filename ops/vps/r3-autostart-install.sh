@@ -28,6 +28,7 @@ S = '/etc/ouf/deploy-snapshots'
 PYTHON_SHA = '889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9'
 # BEGIN DELIVERY (same LF blobs as r3-operate.sh, plus the boot driver/entrypoint)
 MANIFEST = {
+    'ops/vps/r3-driver-budget.json': '2fc0921fd26cdb69adf6ab7dc683b3fea321bb59c5db24db95428d7ac59a1e16',
     'ops/vps/r3-settings.json': '4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150',
     'scripts/autostart-semantic-provider-r3.py': '0d280a2f0608a564f582f5f6058b4950ea12033b4c4b25f6a504076a54a03449',
     'scripts/install-semantic-provider-r3.py': 'd8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76',
@@ -113,7 +114,8 @@ MANIFEST = {
     'tools/semantic_provider_r3/__init__.py': '44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6',
     'tools/semantic_provider_r3/adapter_v16.py': '1af794ea243bfa1d2caa8cfa702017bd5a378c49d27e6c753f52ab4f1890825a',
     'tools/semantic_provider_r3/autostart.py': '6a9907fcbfd8f1c0f29da399a08aadca0a9d6e26e7c72fc8e85005ed1acca270',
-    'tools/semantic_provider_r3/compose.py': 'a560756ae9ab5842f1975bdb36565301c77ece01e77dab77e6ea7bb4979b7a95',
+    'tools/semantic_provider_r3/compose.py': '4cfb90bc889673ea3ee1ee26ab1dc4921579f3e8d1096c66a1e928a621fac11b',
+    'tools/semantic_provider_r3/driver_budget_v17.py': '086b695267ac94ce50053fe1c8f6c8bcec6f702d36e6d350fe74c319741a4f02',
     'tools/semantic_provider_r3/driver_denial_overlay_v16.py': 'cc2393eb2bea4b299cd8b0a8cdecb7b6e67b8c83f7e8d3d15bd09d915e3b2009',
     'tools/semantic_provider_r3/egress_v15.py': '03552b9750a551fb227917ac5756667995362e3f9e9acbaf91d717ded4422f82',
     'tools/semantic_provider_r3/identity_overlay_v13.py': '0334b8a3387e3a9342b3ff6f2679f9ddd179cee67c5085ef9d3e4751bd82e131',
