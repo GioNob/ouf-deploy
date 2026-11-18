@@ -73,7 +73,9 @@ def installed(args, observation, reader):
             == observation["authorization"], "C_R3_BINDING_DRIFT")
     index = I.C.document(reader.read(args.inputs, args.inputs_sha256))
     require(index["schema"] == "ouf.semantic-provider-r3-inputs.v1"
-            and set(index["files"]) == I.C.DATA_INPUTS, "C_R3_INPUTS_UNPROVEN")
+            # Any R3 version index: the probe needs only these v1 inputs, each re-bound
+            # to the signed head (acceptance) or to the accepted A2 files below.
+            and I.C.DATA_INPUTS <= set(index["files"]), "C_R3_INPUTS_UNPROVEN")
     accepted_raw = reader.bound(index["files"]["acceptance"])
     require(sha(accepted_raw) == heads[0]["authorization"]["acceptanceSha256"], "C_R3_ACCEPTANCE_DRIFT")
     accepted = I.C.ACCEPT.decode_manifest(accepted_raw)
