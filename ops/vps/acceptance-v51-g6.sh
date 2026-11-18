@@ -4,7 +4,7 @@
 set -euo pipefail
 umask 077
 
-C=cac29ba9020ba68e6fb69704cd80ab305667938b
+C=39adaab919b87c2efeab3798080b786b649ba5ef
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 mode=${1:-}
