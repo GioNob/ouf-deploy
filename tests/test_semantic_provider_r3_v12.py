@@ -30,7 +30,8 @@ def blob(path):
     return (ROOT / path).read_bytes().replace(b'\r\n', b'\n')
 
 
-def fixture():
+def fixture(*, dispatcher_raw=None):
+    dispatcher_raw = blob(K.__file__) if dispatcher_raw is None else dispatcher_raw
     old = F.fixture(11)
     prior = C.document(old['files']['coordinator'])
     kernel = kernel_configuration()
@@ -69,7 +70,7 @@ def fixture():
         'destination': destination, 'paths': {'generationDirectory': root, 'migrationDirectory': claim,
             'dispatcher': '/etc/ouf/lease-kernel-boot-dispatcher-v1.py', 'r3': {'install_root': settings['installRoot']}},
         'before': M.seals(kernel, fixture_tables(kernel)), 'expectedBootFootprint': after_seals['boot'],
-        'sourceHashes': {'@dispatcher': C.sha(Path(K.__file__).read_bytes())}})
+        'sourceHashes': {'@dispatcher': C.sha(dispatcher_raw)}})
     retained.update({'tools/materialize_southbound_kernel_v2.py': blob(C.KERNEL_V2),
                      'tools/materialize_southbound_lease_refresh_v2.py': blob(C.REFRESH_V2)})
     owner = copy.deepcopy(prior)
@@ -107,7 +108,8 @@ def composed(inputs, previous):
 
 class Composition(unittest.TestCase):
     def test_composition_accepts_real_task65_stage_publication(self):
-        inputs, old, retained, tables = fixture()
+        # Native.stage hashes the loaded checkout file when it builds the pointer.
+        inputs, old, retained, tables = fixture(dispatcher_raw=Path(K.__file__).read_bytes())
         plan = C.document(inputs['files']['migrationPlan'])
         # Use the real task-65 producer; replace only its filesystem effects.
         io = object.__new__(N.Native)

@@ -143,6 +143,25 @@ class Composition(unittest.TestCase):
                         **({} if version == 1 else dict(sequence=version, supersedes='a' * 64)))
                 self.assertEqual({k: r[k] for k in ('hashes', 'inputHashes')}, golden[str(version)])
 
+    def test_frozen_v13_v14_input_and_output_bytes(self):
+        # Recorded at b16113055d4c before the v15 composition changes.
+        golden = {
+            13: ('bca8a3fbb335c5e49c00f9b4af6a3a530afae5c52ec2dec29b010148d71f6a31',
+                 '1a88811ef19b4c6485700bfbb1970afffa1a8ad079ce36db367dc3519333be37',
+                 'd2af995334a42fb314ff94d8ae22010dd45aa7c760987cc1145de4f95bc8321e',
+                 '66f045ebcbc086bf658c5681f1db239a4bfc150fd091c119f3207718af9f298b'),
+            14: ('ac151373ea2181aa95c7af6909d826061fceb9fd72470d592ee6f92a9845f6e4',
+                 '1a88811ef19b4c6485700bfbb1970afffa1a8ad079ce36db367dc3519333be37',
+                 'd2af995334a42fb314ff94d8ae22010dd45aa7c760987cc1145de4f95bc8321e',
+                 'ea87a0e4779aed3e411a8d14cdd22baeda035afcdf65b7148c35a776951015a3'),
+        }
+        inputs, previous = fixture()
+        for version, expected in golden.items():
+            with self.subTest(version=version):
+                result = C.compose(inputs, version, sequence=version, supersedes=C.sha(previous['authorization']))
+                self.assertEqual(tuple(C.sha(C.canonical(result[key]))
+                                       for key in ('hashes', 'inputHashes', 'audit', 'layout')), expected)
+
     def test_v13_closure_one_flow_and_normal_upgrade(self):
         inputs, previous = fixture()
         before = copy.deepcopy(inputs)

@@ -65,6 +65,12 @@ SOURCE_INPUTS_V12 = frozenset(SOURCE_MAP_V12.values()) | {KERNEL_V1}
 IDENTITY_SOURCE = 'tools/semantic_provider_r3/identity_provider_v13.py'
 SOURCE_MAP_V13 = {**SOURCE_MAP_V12, IDENTITY_SOURCE: IDENTITY_SOURCE}
 SOURCE_INPUTS_V13 = frozenset(SOURCE_MAP_V13.values()) | {KERNEL_V1}
+EGRESS_V15 = 'tools/semantic_provider_r3/egress_v15.py'
+ROUTES_SOURCE = 'tools/semantic_provider_routes/routes.py'
+SOURCE_MAP_V15 = {**SOURCE_MAP_V13, **{p: p for p in (
+    EGRESS_V15, ROUTES_SOURCE, 'tools/semantic_provider_routes/custody.py',
+    'tools/semantic_provider_r3/read_routes_v15.py')}}
+SOURCE_INPUTS_V15 = frozenset(SOURCE_MAP_V15.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -74,6 +80,7 @@ DATA_INPUTS = {"settings", "coordinator", "coordinationJournal", "a2Manifest", "
                                             ("historicalTemplate", "template", "launch", "context", "policy")}
 DATA_INPUTS_V12 = DATA_INPUTS | {'migrationReceipt', 'migrationPlan', 'generationReceipt', 'bootPointer'}
 DATA_INPUTS_V13 = DATA_INPUTS_V12 | {'identityProviderPeer'}
+DATA_INPUTS_V15 = DATA_INPUTS_V13 | {'southbound/routesProjection'}
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -85,7 +92,8 @@ def input_set(files, sources):
     return ((set(files) == DATA_INPUTS and set(sources) in
              (SOURCE_INPUTS, SOURCE_INPUTS_V6, SOURCE_INPUTS_V11)) or
             (set(files) == DATA_INPUTS_V12 and set(sources) == SOURCE_INPUTS_V12) or
-            (set(files) == DATA_INPUTS_V13 and set(sources) == SOURCE_INPUTS_V13))
+            (set(files) == DATA_INPUTS_V13 and set(sources) == SOURCE_INPUTS_V13) or
+            (set(files) == DATA_INPUTS_V15 and set(sources) == SOURCE_INPUTS_V15))
 
 
 def migration_bindings(files):
@@ -257,9 +265,16 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
-    selected_map = SOURCE_MAP_V13 if version >= 13 else SOURCE_MAP_V12 if version >= 12 else SOURCE_MAP_V11 if version >= 11 else SOURCE_MAP_V6 if version >= 6 else SOURCE_MAP
-    selected_inputs = SOURCE_INPUTS_V13 if version >= 13 else SOURCE_INPUTS_V12 if version >= 12 else frozenset(selected_map.values())
-    require(set(files) == (DATA_INPUTS_V13 if version >= 13 else DATA_INPUTS_V12 if version >= 12 else DATA_INPUTS) and (set(sources) == selected_inputs
+    if version >= 15:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V15, SOURCE_INPUTS_V15, DATA_INPUTS_V15
+    elif version >= 13:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V13, SOURCE_INPUTS_V13, DATA_INPUTS_V13
+    elif version >= 12:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V12, SOURCE_INPUTS_V12, DATA_INPUTS_V12
+    else:
+        selected_map = SOURCE_MAP_V11 if version >= 11 else SOURCE_MAP_V6 if version >= 6 else SOURCE_MAP
+        selected_inputs, selected_data = frozenset(selected_map.values()), DATA_INPUTS
+    require(set(files) == selected_data and (set(sources) == selected_inputs
             or version <= 3 and set(sources) == SOURCE_INPUTS - {L2_SOURCE})
             and all(type(v) is bytes and 0 < len(v) <= 131072 for v in sources.values()),
             "EXACT_R3_INPUT_SET_REQUIRED")
@@ -282,6 +297,15 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
             and all(type(t) is str and A.TABLE.fullmatch(t) and t not in ("ouf_v2_adapter", "ouf_v2_southbound")
                     for t in s["tableNames"].values()), "FRESH_DISTINCT_TABLE_NAMES_REQUIRED")
     owner, journal = data["coordinator"], data["coordinationJournal"]
+    if version >= 15:
+        egress = contract_module(sources[EGRESS_V15], 'egress_v15')
+        routes = contract_module(sources[ROUTES_SOURCE], 'routes_v15')
+        identity = contract_module(sources[IDENTITY_SOURCE], 'identity_provider_v13')
+        projection = egress.bind_projection(data, routes)
+        # Candidate transport rebinding below changes peer declarations only.
+        # Report D-052.2 tuple denials before the general kernel/transport gates.
+        oidc_port = egress.check_routes(projection, data['southbound/historicalTemplate']['candidate'],
+            data['adapter/historicalTemplate']['candidate'], owner['kernel'], identity, routes)
     if version >= 12:
         migration_bindings(files)
     require(sha(files["coordinator"]) == s["coordinatorBinding"]["sha256"]
@@ -432,9 +456,17 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         require(len(peers.declarations(candidate["transport"], candidate["containerId"])) == 1,
                 "EXACT_RECIPROCAL_COHORT_REQUIRED")
         if version >= 13 and role == 'southbound':
-            identity = contract_module(sources[IDENTITY_SOURCE], 'identity_provider_v13')
-            candidate['transport'].append(identity.identity_flow(data['identityProviderPeer'], candidate,
-                                                                 owner['kernel']))
+            if version < 15:
+                identity = contract_module(sources[IDENTITY_SOURCE], 'identity_provider_v13')
+            try:
+                candidate['transport'].append(identity.identity_flow(data['identityProviderPeer'], candidate,
+                                                                     owner['kernel']))
+            except identity.Denied as error:
+                if version >= 15 and error.args == ('R3_IDENTITY_PROVIDER_ISSUER_DRIFT',):
+                    require(False, egress.NETWORK)
+                raise
+            if version >= 15:
+                egress.check_identity_flow(candidate, oidc_port)
         prefix = "documents/" + role + "/"
         frame = put(prefix + "frame-policy.json", policies[role])
         seal = put(prefix + "rootfs-seal.json", rootfs["roles"][role]["effectiveSeal"])
