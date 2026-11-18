@@ -217,6 +217,15 @@ class LocalTls(unittest.TestCase):
         self.assertEqual(result["southboundHttpRequests"], 8)
         self.assertEqual(result["cases"]["N4"]["httpStatus"], 401)
 
+    def test_expired_token_denial_may_come_from_admission(self):
+        # VPS 18/11: openid-connect clock skew lets the strict admission Lua deny with 403.
+        http = {"outcome": "HTTP"}
+        self.assertTrue(C.expected("N4", {**http, "httpStatus": 401}))
+        self.assertTrue(C.expected("N4", {**http, "httpStatus": 403}))
+        self.assertFalse(C.expected("N4", {**http, "httpStatus": 200}))
+        for case in ("N1", "N2", "N3"):
+            self.assertFalse(C.expected(case, {**http, "httpStatus": 403}))
+
     def test_tls_preflight_failure_is_held_before_secret(self):
         self.input["targets"]["southboundHost"] = "wrong.test"
         result = self.run_suite()

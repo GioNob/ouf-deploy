@@ -487,7 +487,11 @@ def expected(case, result):
         return status == 200 and result.get("rows", 0) >= 1 and result.get("firstUriValid") is True
     if case == "P3":
         return status == 200
-    if case in ("N1", "N2", "N3", "N4"):
+    if case == "N4":
+        # Expired token: openid-connect tolerates clock skew (~120 s), so at exp+5 s the
+        # strict admission Lua (claims.exp <= now) denies with 403; either is a denial.
+        return status in (401, 403)
+    if case in ("N1", "N2", "N3"):
         return status == 401
     if case == "N5":
         return status in (400, 404)
