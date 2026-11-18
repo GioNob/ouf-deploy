@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from tools.semantic_provider_routes import b1, custody as C, publication as P, routes as R
 import test_semantic_provider_b1_recipes as legacy
+from tools.semantic_successor_recipes import creation_launch as L
 
 
 PLACEHOLDER = "SYNTHETIC_SECRET_PLACEHOLDER"
@@ -317,28 +318,38 @@ class NativePublication(unittest.TestCase):
 class Recipes(unittest.TestCase):
     def test_retained_state_is_distinct_from_exact_a2_config(self):
         for role in b1.ROLES:
-            row = legacy.synthetic_inspect(role, legacy.synthetic_request(role))
+            request = legacy.synthetic_request(role)
+            row = legacy.synthetic_inspect(role, request)
             config = row["Config"]
             row.update(State=copy.deepcopy(b1.CREATED_STATE), Path=config["Entrypoint"][0],
                        Args=config["Entrypoint"][1:] + config["Cmd"])
             prior = {"containerId": row["Id"], "name": row["Name"], "image": row["Image"],
-                     "transaction": config["Labels"][b1.OWNER_LABEL],
-                     "dockerFrameSha256": R.sha(R.canonical({key: row[key] for key in legacy.m.A2_FRAME_FIELDS}))}
+                     "transaction": config["Labels"][b1.OWNER_LABEL]}
             row["State"].update(Status="exited", StartedAt="2026-10-11T11:22:33.123Z",
                                 FinishedAt="2026-10-11T11:23:33Z", ExitCode=143)
+            launch = L.creation_launch(request, role, legacy.baseline[role]["launch"]["manifest"].get("tmpfs"),
+                                       hash_source=legacy.fake_source)
+            # Previously started and stopped: accepted; network/runtime-only views are not compared.
             self.assertEqual(b1.retained_frame(row, prior)["status"], "exited")
-            for field, key, value in (
-                    ("Config", "MacAddress", None), ("Config", "Cmd", ["changed"]),
-                    ("HostConfig", "Memory", 0), ("NetworkSettings", "Networks", {})):
+            self.assertEqual(b1.retained_config(row, role, launch), {"recipeLaunchEqual": True})
+            drifted = copy.deepcopy(row); drifted["NetworkSettings"]["Networks"] = {}
+            self.assertEqual(b1.retained_config(drifted, role, launch), {"recipeLaunchEqual": True})
+            for change, code in (
+                    (lambda r: r["HostConfig"].update(Memory=r["HostConfig"]["Memory"] + 1),
+                     "RETAINED_DOCKER_CONFIGURATION_CHANGED"),
+                    (lambda r: r["HostConfig"].update(ReadonlyRootfs=not r["HostConfig"]["ReadonlyRootfs"]),
+                     "RETAINED_DOCKER_CONFIGURATION_CHANGED"),
+                    (lambda r: r["HostConfig"]["Mounts"][0].update(ReadOnly=False), "RETAINED_MOUNTS_CHANGED"),
+                    (lambda r: r["HostConfig"]["Mounts"][0].update(Source="/other/source"),
+                     "RETAINED_DOCKER_CONFIGURATION_CHANGED"),
+                    (lambda r: r["Config"].update(Cmd=["changed"]), "RETAINED_PROCESS_CONFIGURATION_CHANGED"),
+                    (lambda r: r["Config"].update(WorkingDir="/elsewhere"), "RETAINED_PROCESS_CONFIGURATION_CHANGED"),
+                    (lambda r: r["Config"].update(Env=[]), "RETAINED_DOCKER_CONFIGURATION_CHANGED"),
+                    (lambda r: r["HostConfig"].update(Tmpfs={"/x": "rw"}), "RETAINED_DOCKER_CONFIGURATION_CHANGED")):
                 changed = copy.deepcopy(row)
-                changed[field][key] = value
-                with self.subTest(field=field, key=key), self.assertRaisesRegex(
-                        R.Held, "RETAINED_DOCKER_CONFIGURATION_CHANGED"):
-                    b1.retained_frame(changed, prior)
-            changed = copy.deepcopy(row)
-            changed["Mounts"][0]["RW"] = True
-            with self.assertRaisesRegex(R.Held, "RETAINED_DOCKER_CONFIGURATION_CHANGED"):
-                b1.retained_frame(changed, prior)
+                change(changed)
+                with self.subTest(role=role, code=code), self.assertRaisesRegex(R.Held, code):
+                    b1.retained_config(changed, role, launch)
             changed = copy.deepcopy(row)
             changed["State"]["Running"] = True
             with self.assertRaisesRegex(R.Held, "PROVIDER_NOT_STOPPED"):

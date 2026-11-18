@@ -69,15 +69,47 @@ def retained_frame(row, prior):
     require(row["Id"] == prior["containerId"] and row["Name"] == prior["name"] and row["Image"] == prior["image"]
             and row["Config"]["Labels"][OWNER_LABEL] == prior["transaction"],
             "RETAINED_PROVIDER_IDENTITY_CHANGED")
-    # No field in the configuration or endpoint MAC view is normalized.
-    require(sha(canonical(config | {"State": CREATED_STATE, "RestartCount": 0})) == prior["dockerFrameSha256"],
-            "RETAINED_DOCKER_CONFIGURATION_CHANGED")
+    # The A2 created-state frame hash is not comparable after a start: Docker no longer
+    # reports the never-started envelope (proved on the VPS, 18/11: no reconstruction of
+    # MAC/DNSNames/Ports matches). Equality is proven instead against the accepted recipe
+    # launch (retained_config); R3 start re-proves OCI, networks and rootfs every time.
     entrypoint = row["Config"]["Entrypoint"]
     command = row["Config"]["Cmd"]
     require(type(entrypoint) is list and entrypoint and type(command) is list
             and [row["Path"], *row["Args"]] == entrypoint + command, "RETAINED_PROCESS_CONFIGURATION_CHANGED")
     return {"configurationSha256": sha(canonical(config)), "stateSha256": sha(canonical(state)),
             "status": state["Status"], "startedAt": state["StartedAt"]}
+
+
+def retained_config(row, role, launch):
+    """Exact equality with the configuration the accepted B1 launch encodes (no normalization)."""
+    config, host = row["Config"], row["HostConfig"]
+    manifest, startup = launch["manifest"], launch["startup"]
+    mounts = host.get("Mounts")
+    require(type(mounts) is list and mounts and not host.get("Binds")
+            and all(m.get("Type") == "bind" and m.get("ReadOnly") is True for m in mounts),
+            "RETAINED_MOUNTS_CHANGED")
+    live = {"user": config["User"], "readOnlyRoot": host["ReadonlyRootfs"], "memoryBytes": host["Memory"],
+            "pidsLimit": host["PidsLimit"],
+            "mounts": [{"source": m["Source"], "target": m["Target"], "readOnly": True} for m in mounts]}
+    if role == "southbound":
+        live["tmpfs"] = dict(host.get("Tmpfs") or {})
+    else:
+        require(not host.get("Tmpfs"), "RETAINED_DOCKER_CONFIGURATION_CHANGED")
+    require(live == manifest, "RETAINED_DOCKER_CONFIGURATION_CHANGED")
+    require([(s["source"], s["target"]) for s in launch["sources"]] == [(m["Source"], m["Target"]) for m in mounts],
+            "RETAINED_MOUNTS_CHANGED")
+    require(type(config["User"]) is str and re.fullmatch(r"[1-9][0-9]*:[1-9][0-9]*", config["User"]),
+            "RETAINED_PROCESS_CONFIGURATION_CHANGED")
+    uid, gid = map(int, config["User"].split(":"))
+    args = (config.get("Entrypoint") or []) + (config.get("Cmd") or [])
+    require((uid, gid, config["WorkingDir"], args) == (startup["uid"], startup["gid"], startup["cwd"], startup["args"])
+            and [row["Path"], *row["Args"]] == args, "RETAINED_PROCESS_CONFIGURATION_CHANGED")
+    # Docker merges image ENV into Config.Env: every recipe entry must be present verbatim.
+    env = set(config.get("Env") or [])
+    require(all(item in env for item in startup["env"] if not item.startswith(("PATH=", "HOSTNAME="))),
+            "RETAINED_DOCKER_CONFIGURATION_CHANGED")
+    return {"recipeLaunchEqual": True}
 
 
 def compiler_module():
@@ -204,6 +236,7 @@ def observe(docker, receipt_hash, *, seal_rootfs=verify_rootfs):
             path = PREVIOUS.parent / role / (part + ".json")
             require(old_role["recipe"][part] == P.binding(path, digest), "B1_PREVIOUS_RECIPE_UNPROVEN")
             raw[part] = C.read(path, digest)
+        retained[role] |= retained_config(candidates[cid], role, decode(raw["launch"]))
         retained[role]["rootfsSeal"] = seal_rootfs(role, decode(raw["context"]), decode(raw["policy"]), rf, rootfs_result)
         artifacts[role] = revise(role, raw, new_hash, compiler)
         roles[role] = {"containerId": cid, "transaction": pinned["transaction"],
