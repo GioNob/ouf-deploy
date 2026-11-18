@@ -86,7 +86,8 @@ class R3Runbooks(unittest.TestCase):
         paths = {p for p, _ in self.deliveries[0]}
         # One delivery serves v1-5 (observer v1) and v6 (observer v2).
         self.assertEqual(paths, CLOSURE | set(C.SOURCE_INPUTS) | set(C.SOURCE_INPUTS_V6) | set(C.SOURCE_INPUTS_V11)
-                         | set(C.SOURCE_INPUTS_V12) | set(C.SOURCE_INPUTS_V13))
+                         | set(C.SOURCE_INPUTS_V12) | set(C.SOURCE_INPUTS_V13)
+                         | set(C.SOURCE_INPUTS_V15))
 
     def test_hashes_are_lf_blobs_at_head(self):
         for path, digest in self.deliveries[0]:

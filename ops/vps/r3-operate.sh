@@ -5,7 +5,7 @@
 #       AZIONE=start bash r3-operate.sh apply <planSha256>
 #       per restart-one aggiungere RUOLO=adapter oppure RUOLO=southbound
 # Il plan scarica una consegna propria (D-047: operate + ripristino dei volatili); l'apply riusa
-# consegna e root di output salvate dal plan della stessa azione. Presuppone la v14 installata.
+# consegna e root di output salvate dal plan della stessa azione. Presuppone la v15 installata.
 set -euo pipefail
 umask 077
 
@@ -18,13 +18,13 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=e7ea0a8b5d8b0c946f6cbea27311f4dc634fda8b
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 S=/etc/ouf/deploy-snapshots
 INSTALL=$S/semantic-provider-r3-install-v1
-STATE=$HOME/.ouf-r3-v14-state
+STATE=$HOME/.ouf-r3-v15-state
 NFT_SHA=57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0
 TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)
 PROFILE=$S/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json
@@ -131,14 +131,18 @@ delivery() {
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_operation/lease_supervisor_v2.py 06f7fb2744a1ac3d4b94ef20aa04801e9625f9ca920dfe8fcd421e11456d0de4
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py c1d609efe5097324b5c8dfb3ec369a33eee6fb5de62abca84609c534ccf1707b
+  fetch tools/semantic_provider_r3/compose.py 30d9a8fbce22b953786148a478527b38a1257bd848992aee8894f8893bc76958
+  fetch tools/semantic_provider_r3/egress_v15.py c8dcb7cfd148fc62e062be85a479fa9ba2a6328a0c71affa84cc4b5daf2c6810
   fetch tools/semantic_provider_r3/identity_overlay_v13.py 0334b8a3387e3a9342b3ff6f2679f9ddd179cee67c5085ef9d3e4751bd82e131
   fetch tools/semantic_provider_r3/identity_provider_v13.py 3bdcf7688ffac5c485abfc5893a3f6a3ff5777aab136138ee7488e3a2bd747bf
   fetch tools/semantic_provider_r3/install_common.py 0d28d8f23fdfb6c05a866275a8bb0f7dc2505926d305acd53bb3b9b8ca843695
   fetch tools/semantic_provider_r3/operate.py 019bb1b66d243acfdc071410d3219e448c70b84dba623636efbed85ff0362d8a
   fetch tools/semantic_provider_r3/read_identity_provider_v13.py 7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7
+  fetch tools/semantic_provider_r3/read_routes_v15.py e3e62ea885e0a54fb74de591e49891d1b209fae7756296ad74ae2a958506390e
   fetch tools/semantic_provider_r3/upgrade.py bc18eee17996d2cb0533d132ec40789c43244187d2edb2d2ca59f48ff850c754
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
+  fetch tools/semantic_provider_routes/custody.py 2ab7177f21fb5b330473895798c141282cdabc85c245142f96511fa13e848db3
+  fetch tools/semantic_provider_routes/routes.py 305f2535e2cc547de5f242080247d62a43b4bdb93303bf00a03bb36e87097997
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
   fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py 117c9c86bb173742e4da7051d18bdef68526d3a8172cf231c41a27d2ea815911
@@ -200,7 +204,7 @@ PINS = {"coordinator": "5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd
         "southbound/launch": "f066a65cffc7766bbf77b9de15fe9d527ce8ca68a9bb0d74cadfe8370c6ad63b",
         "southbound/context": "18a1df8d45fbe0914514478910041d3a49ecf402b8c78a06c8148cf95c06a1c9",
         "southbound/policy": "e489068bc8a86f226dadfa5a3870dc05aaae65437d638a8b9ce56c4c42e218a8"}
-if 14 >= 12:
+if 15 >= 12:
     # D-050: v12 composes on the generation-2 lease kernel published by the migration.
     G2 = "/etc/ouf/lease-kernel-generations/g2-20261117T122656"
     MIG = S + "/semantic-lease-kernel-migration-20261117T122656"
@@ -214,10 +218,23 @@ if 14 >= 12:
                 migrationReceipt="a3456dfb839001657922e5aed892180cb9347b35e9e765c2a38fb8489a6d534b",
                 generationReceipt="0233576fd023ce6f6afe62f040bfaec1d5a3103035c4b7c4b5657eb81082cca8",
                 bootPointer="2c532ae900128e423c33addee66f5536078d7ce2589237601d6b963bd35bbd42")
-    if 14 >= 13:
+    if 15 >= 13:
         # D-051: identity provider peer read at plan time into the delivery (verified by the composer).
         files["identityProviderPeer"] = str(D / "identity-provider-peer.json")
-        assert set(files) == C.DATA_INPUTS_V13, "R3_INPUT_SET_DRIFT"
+        if 15 >= 15:
+            # D-052: B1 recipes v3, acceptance g6 and the routes projection read at plan time.
+            REC3 = S + "/semantic-provider-b1-recipes-20261118-v3"
+            for role in ("adapter", "southbound"):
+                for part in ("template", "launch", "context", "policy"):
+                    files[role + "/" + part] = REC3 + "/" + role + "/" + part + ".json"
+            files["acceptance"] = S + "/semantic-provider-acceptance-v51-g6/manifest.json"
+            files["southbound/routesProjection"] = str(D / "routes-projection.json")
+            PINS.update({"southbound/launch": "28a50731e885c58e3df1c765b686c4699a102e64564f48d7c66a07020a975945",
+                         "southbound/policy": "9109fd88221b25386f68c27327eada4dc392eb0d6c3d426447849ed2c4265a51",
+                         "acceptance": "78954515c36921d7321120a2e7e0bf2cb690eeb7f852b913fb3afea5ddf242c9"})
+            assert set(files) == C.DATA_INPUTS_V15, "R3_INPUT_SET_DRIFT"
+        else:
+            assert set(files) == C.DATA_INPUTS_V13, "R3_INPUT_SET_DRIFT"
     else:
         assert set(files) == C.DATA_INPUTS_V12, "R3_INPUT_SET_DRIFT"
 else:
@@ -230,8 +247,8 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = (C.SOURCE_INPUTS_V13 if 14 >= 13 else C.SOURCE_INPUTS_V12 if 14 >= 12 else C.SOURCE_INPUTS_V11 if 14 >= 11
-              else C.SOURCE_INPUTS_V6 if 14 >= 6 else C.SOURCE_INPUTS)
+SOURCE_SET = (C.SOURCE_INPUTS_V15 if 15 >= 15 else C.SOURCE_INPUTS_V13 if 15 >= 13 else C.SOURCE_INPUTS_V12 if 15 >= 12 else C.SOURCE_INPUTS_V11 if 15 >= 11
+              else C.SOURCE_INPUTS_V6 if 15 >= 6 else C.SOURCE_INPUTS)
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")

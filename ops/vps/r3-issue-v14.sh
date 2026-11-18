@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=e7ea0a8b5d8b0c946f6cbea27311f4dc634fda8b
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -128,14 +128,18 @@ delivery() {
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_operation/lease_supervisor_v2.py 06f7fb2744a1ac3d4b94ef20aa04801e9625f9ca920dfe8fcd421e11456d0de4
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py c1d609efe5097324b5c8dfb3ec369a33eee6fb5de62abca84609c534ccf1707b
+  fetch tools/semantic_provider_r3/compose.py 30d9a8fbce22b953786148a478527b38a1257bd848992aee8894f8893bc76958
+  fetch tools/semantic_provider_r3/egress_v15.py c8dcb7cfd148fc62e062be85a479fa9ba2a6328a0c71affa84cc4b5daf2c6810
   fetch tools/semantic_provider_r3/identity_overlay_v13.py 0334b8a3387e3a9342b3ff6f2679f9ddd179cee67c5085ef9d3e4751bd82e131
   fetch tools/semantic_provider_r3/identity_provider_v13.py 3bdcf7688ffac5c485abfc5893a3f6a3ff5777aab136138ee7488e3a2bd747bf
   fetch tools/semantic_provider_r3/install_common.py 0d28d8f23fdfb6c05a866275a8bb0f7dc2505926d305acd53bb3b9b8ca843695
   fetch tools/semantic_provider_r3/operate.py 019bb1b66d243acfdc071410d3219e448c70b84dba623636efbed85ff0362d8a
   fetch tools/semantic_provider_r3/read_identity_provider_v13.py 7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7
+  fetch tools/semantic_provider_r3/read_routes_v15.py e3e62ea885e0a54fb74de591e49891d1b209fae7756296ad74ae2a958506390e
   fetch tools/semantic_provider_r3/upgrade.py bc18eee17996d2cb0533d132ec40789c43244187d2edb2d2ca59f48ff850c754
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
+  fetch tools/semantic_provider_routes/custody.py 2ab7177f21fb5b330473895798c141282cdabc85c245142f96511fa13e848db3
+  fetch tools/semantic_provider_routes/routes.py 305f2535e2cc547de5f242080247d62a43b4bdb93303bf00a03bb36e87097997
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
   fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py 117c9c86bb173742e4da7051d18bdef68526d3a8172cf231c41a27d2ea815911
@@ -214,7 +218,20 @@ if 14 >= 12:
     if 14 >= 13:
         # D-051: identity provider peer read at plan time into the delivery (verified by the composer).
         files["identityProviderPeer"] = str(D / "identity-provider-peer.json")
-        assert set(files) == C.DATA_INPUTS_V13, "R3_INPUT_SET_DRIFT"
+        if 14 >= 15:
+            # D-052: B1 recipes v3, acceptance g6 and the routes projection read at plan time.
+            REC3 = S + "/semantic-provider-b1-recipes-20261118-v3"
+            for role in ("adapter", "southbound"):
+                for part in ("template", "launch", "context", "policy"):
+                    files[role + "/" + part] = REC3 + "/" + role + "/" + part + ".json"
+            files["acceptance"] = S + "/semantic-provider-acceptance-v51-g6/manifest.json"
+            files["southbound/routesProjection"] = str(D / "routes-projection.json")
+            PINS.update({"southbound/launch": "28a50731e885c58e3df1c765b686c4699a102e64564f48d7c66a07020a975945",
+                         "southbound/policy": "9109fd88221b25386f68c27327eada4dc392eb0d6c3d426447849ed2c4265a51",
+                         "acceptance": "78954515c36921d7321120a2e7e0bf2cb690eeb7f852b913fb3afea5ddf242c9"})
+            assert set(files) == C.DATA_INPUTS_V15, "R3_INPUT_SET_DRIFT"
+        else:
+            assert set(files) == C.DATA_INPUTS_V13, "R3_INPUT_SET_DRIFT"
     else:
         assert set(files) == C.DATA_INPUTS_V12, "R3_INPUT_SET_DRIFT"
 else:
@@ -227,7 +244,7 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = (C.SOURCE_INPUTS_V13 if 14 >= 13 else C.SOURCE_INPUTS_V12 if 14 >= 12 else C.SOURCE_INPUTS_V11 if 14 >= 11
+SOURCE_SET = (C.SOURCE_INPUTS_V15 if 14 >= 15 else C.SOURCE_INPUTS_V13 if 14 >= 13 else C.SOURCE_INPUTS_V12 if 14 >= 12 else C.SOURCE_INPUTS_V11 if 14 >= 11
               else C.SOURCE_INPUTS_V6 if 14 >= 6 else C.SOURCE_INPUTS)
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
