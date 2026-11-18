@@ -2,13 +2,19 @@
 
 Uso (root, sola lettura):  sudo /usr/bin/python3.13 -I -B r3-epoch-diag.py [VERSIONE] [EPOCA]
 
-Per ogni ruolo elenca i file della cartella dell'epoca (nome, tipo, modo, dimensione)
-e, dai journal JSON, solo il campo `state` e i NOMI delle chiavi presenti, così si vede
-fin dove è arrivato il preparer. Non stampa contenuti, hash di segreti o chiavi.
+Per ogni ruolo elenca i file dell'epoca e i campi pubblici dei journal.
+Per adapter.json include l'eventuale codice validato del diniego del driver.
 Nessuna scrittura, nessuna azione su container, nft o systemd.
 """
 import json, os, stat, sys
+import runpy
 from pathlib import Path
+
+_common = runpy.run_path(str(Path(__file__).with_name('r3_common.py')))
+adapter_journal = _common['adapter_journal']
+driver_denial_fields = _common['driver_denial_fields']
+fields = _common['fields']
+read = _common['read']
 
 ROOT = Path("/etc/ouf/deploy-snapshots/semantic-provider-r3-install-v1")
 JOURNALS = ("admission.json", "preexec.json", "deployment.json", "broker.json", "runtime.json",
@@ -60,7 +66,14 @@ def main():
                          info.st_size if kind == "file" else None])
         emit(role=role, epoch=epoch, step="files", files=rows)
         for path in sorted(base.rglob("*.json")):
-            if path.name in JOURNALS or path.name.startswith("broker-denial"):
+            if path == base / "adapter.json" and path.is_file() and not path.is_symlink():
+                try:
+                    value = adapter_journal(read(path), cfg["containerId"], epoch)
+                    projection = fields(value, ("schema", "state", "failure")) | driver_denial_fields(value)
+                except (ValueError, OSError) as exc:
+                    projection = {"parse": type(exc).__name__}
+                emit(role=role, epoch=epoch, step="journal", file="adapter.json", **projection)
+            elif path.name in JOURNALS or path.name.startswith("broker-denial"):
                 emit(role=role, epoch=epoch, step="journal", file=str(path.relative_to(base)), **summary(path))
     emit(step="done", writes=0, containerLifecycleOperations=0, secretsPrinted=False)
     return 0

@@ -343,6 +343,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     if version >= 13:
         from .identity_overlay_v13 import sources_v13
         emitted = sources_v13(emitted, SOURCE_MAP, IDENTITY_SOURCE, driver_check=version < 14)
+    if version >= 16:
+        from .driver_denial_overlay_v16 import sources_v16
+        emitted = sources_v16(emitted, selected_map)
     if version >= 12:
         contract_module(emitted[KERNEL_V2], 'kernel_g2').materialize(owner['kernel'], empty_provider_sets=True)
     docs = {"source/" + target: emitted[original] for target, original in source_map.items()}

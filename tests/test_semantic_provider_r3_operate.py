@@ -20,6 +20,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tools.semantic_provider_r3 import operate as O
+from tools.semantic_provider_r3.driver_denial_overlay_v16 import EPOCHS, sources_v16
 import test_semantic_provider_r3_install as F
 
 NATIVE = os.environ.get("OUF_R3_OPERATE_NATIVE") == "1"
@@ -494,7 +495,16 @@ class PortableTests(unittest.TestCase):
                 if path == args.systemctl: return b"ActiveState=active\nSubState=running\nNRestarts=0\n"
                 return json.dumps({"nftables":[{"table":{"family":f,"name":"ouf_r3_"+r}}
                     for r in O.ROLES for f in ("inet","bridge")]}).encode()
-            with patch.object(O.I,"native_switch",return_value=SimpleNamespace(custody=custody)), \
+            delivery = {path: (O.I.ROOT / path).read_bytes() for path in (O.C.RUNTIME, EPOCHS)}
+            base = delivery[O.C.RUNTIME]
+            overlay = sources_v16(delivery, {path: path for path in delivery})[O.C.RUNTIME]
+            source = root / 'source' / O.C.RUNTIME
+            installed = base
+
+            def installed_custody(path, mode):
+                return (installed, ()) if path == source else custody(path, mode)
+
+            with patch.object(O.I,"native_switch",return_value=SimpleNamespace(custody=installed_custody)), \
                     patch.object(O.V,"absolute",side_effect=Path), patch.object(O.V,"private_directory"), \
                     patch.object(O.I,"output_directory"), patch.object(O.I,"compiled",return_value=runtime) as load, \
                     patch.object(O.I,"wrapper_bytes",return_value=b"wrapper"), \
@@ -506,7 +516,17 @@ class PortableTests(unittest.TestCase):
                 self.assertEqual(result["candidates"]["adapter"]["denials"][0], {"invalid":"BROKER_DENIAL_INVALID"})
                 self.assertEqual(result["candidates"]["adapter"]["denials"][1]["reason"], "PEER_MAC_IP_DRIFT")
                 self.assertNotIn("PRIVATE", O.canonical(result).decode())
-                self.assertEqual(load.call_args.args[3], O.sha((O.I.ROOT/O.C.RUNTIME).read_bytes()))
+                self.assertEqual(load.call_args.args[3], O.sha(base))
+                installed = overlay
+                self.assertEqual(O.observe(args), result)
+                self.assertEqual(load.call_args.args[3], O.sha(overlay))
+                self.assertEqual(O.I.installed_runtime_hashes(), {O.sha(base), O.sha(overlay)})
+                installed += b'\n# altered\n'
+                load.reset_mock()
+                with self.assertRaisesRegex(O.A.OperationDenied, '^R3_SOURCE_HASH_DRIFT$'):
+                    O.observe(args)
+                load.assert_not_called()
+                installed = base
                 epoch["authorizationSha256"] = "0"*64
                 with self.assertRaisesRegex(O.A.OperationDenied,"EPOCH_AUTHORIZATION_DRIFT"): O.observe(args)
                 epoch["authorizationSha256"] = head["sha256"]

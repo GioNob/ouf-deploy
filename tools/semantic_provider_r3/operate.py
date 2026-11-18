@@ -145,8 +145,10 @@ def observe(args, *, output_exists=False, deadline=None):
         V.private_directory(root / "versions")
         V.private_directory(code_root)
     runtime_path = code_root / "source" / C.RUNTIME
-    runtime = I.compiled(S.custody(runtime_path, 0o600)[0], runtime_path,
-                         "r3_operate_installed_runtime", sha((I.ROOT / C.RUNTIME).read_bytes()))
+    runtime_raw = S.custody(runtime_path, 0o600)[0]
+    runtime_hash = sha(runtime_raw)
+    require(runtime_hash in I.installed_runtime_hashes(), "R3_SOURCE_HASH_DRIFT")
+    runtime = I.compiled(runtime_raw, runtime_path, "r3_operate_installed_runtime", runtime_hash)
     cfg, raw = runtime.load_configuration(code_root / "runtime-configuration.json")
     runtime.verify_files(cfg)
     require(cfg["registryRoot"] == str(root / "registry")

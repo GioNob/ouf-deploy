@@ -52,6 +52,15 @@ def compiled(raw, path, name, expected, package=None):
     return module
 
 
+def installed_runtime_hashes():
+    """Trust only the delivered runtime and its deterministic v16 overlay."""
+    from .driver_denial_overlay_v16 import EPOCHS, sources_v16
+
+    sources = {path: (ROOT / path).read_bytes() for path in (C.RUNTIME, EPOCHS)}
+    overlay = sources_v16(sources, {path: path for path in sources})
+    return frozenset((sha(sources[C.RUNTIME]), sha(overlay[C.RUNTIME])))
+
+
 @contextmanager
 def module_scope():
     """Real loaders install historical names; never leak those into the caller."""

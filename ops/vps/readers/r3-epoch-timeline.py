@@ -1,4 +1,4 @@
-"""Epoch file metadata and allowlisted scalar journal fields only."""
+"""Epoch file metadata and allowlisted journal fields."""
 from datetime import datetime, timezone
 import runpy
 import sys
@@ -23,10 +23,13 @@ def main():
             row = {}
             if path.suffix == '.json':
                 try:
-                    value = document(path)
+                    adapter = path == base / 'adapter.json'
+                    value = adapter_journal(read(path), cid, epoch) if adapter else document(path)
                     if isinstance(value, dict):
                         row = fields(value, ('state', 'failure', 'reason', 'code', 'mode', 'schema'))
-                        if isinstance(value.get('failure'), dict):
+                        if adapter:
+                            row.update(driver_denial_fields(value))
+                        elif isinstance(value.get('failure'), dict):
                             row['failure'] = fields(value['failure'], ('code', 'reason'))
                 except (ValueError, OSError):
                     row = {'code': 'UNREADABLE_JSON'}

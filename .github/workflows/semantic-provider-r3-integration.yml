@@ -35,6 +35,7 @@ on:
       - docs/OUF_SEMANTIC_PROVIDER_R3_V12.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V13.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V15.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V16_DRIVER_DENIAL.md
       - tests/test_semantic_b1_acceptance.py
       - tests/test_runtime_v52_epochs.py
       - .github/workflows/semantic-provider-r3-integration.yml
@@ -63,6 +64,8 @@ jobs:
         run: >-
           sudo -n env OUF_R3_V15_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_semantic_provider_r3_v15.py -v
+      - name: D-053.3 v16 driver denial and frozen v15 (offline)
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v16_driver_denial.py -v
       - name: D-051 v13 southbound shared bridge identity flow (private net and mount namespaces)
         run: >-
           sudo -n env OUF_R3_V13_NATIVE=1 /usr/bin/python3 -I -B
