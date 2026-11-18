@@ -392,7 +392,7 @@ class Runbooks(unittest.TestCase):
     def test_delivery_pins_and_g6_reuses_g5_software_and_d042(self):
         for name, count in (("routes-d052.sh", 5), ("b1-recipes-v3.sh", 9), ("acceptance-v51-g6.sh", 0)):
             script = (ROOT / "ops/vps" / name).read_text()
-            self.assertIn("C=" + "0" * 40 + "\n", script)
+            self.assertRegex(script, r"(?m)^C=[0-9a-f]{40}$")
             pins = re.findall(r"^fetch (\S+) ([0-9a-f]{64})$", script, re.M)
             self.assertEqual(len(pins), count)
             for path, digest in pins:
