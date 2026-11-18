@@ -140,6 +140,17 @@ class Native(unittest.TestCase):
         for name in C.DEPENDENCIES:
             self.write(self.delivery / name, (ROOT / name).read_bytes())
         self.c = module(self.delivery / "scripts/install-semantic-provider-b1.py", "b1_native_controller")
+        # DEBUG (branch debug/b1-smoke-stderr only): expose the smoke failure cause.
+        import subprocess as _sp
+        _c = self.c
+        def _debug_smoke(argv):
+            r = _sp.run(argv, stdin=_sp.DEVNULL, stdout=_sp.PIPE, stderr=_sp.PIPE, env=_c.ENV, timeout=12)
+            if r.returncode != 0:
+                print("DEBUG_SMOKE rc=%s argv0=%s" % (r.returncode, argv[0]), flush=True)
+                print("DEBUG_SMOKE stderr:", r.stderr[-3000:].decode(errors="replace"), flush=True)
+                print("DEBUG_SMOKE stdout:", r.stdout[-1000:].decode(errors="replace"), flush=True)
+            _c.require(r.returncode == 0, "B1_SMOKE_FAILED")
+        self.c.smoke = _debug_smoke
         self.d = self.c.dependencies()
         self.p, self.a, self.b = self.d.P, self.d.A, self.d.B
         self.stack = ExitStack()

@@ -265,3 +265,4 @@ class RunbookContract(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+# debug trigger (branch debug/b1-smoke-stderr)
