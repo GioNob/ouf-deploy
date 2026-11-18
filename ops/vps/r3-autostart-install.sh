@@ -117,7 +117,7 @@ MANIFEST = {
     'tools/semantic_provider_r3/install_common.py': '0d28d8f23fdfb6c05a866275a8bb0f7dc2505926d305acd53bb3b9b8ca843695',
     'tools/semantic_provider_r3/operate.py': '019bb1b66d243acfdc071410d3219e448c70b84dba623636efbed85ff0362d8a',
     'tools/semantic_provider_r3/read_identity_provider_v13.py': '7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7',
-    'tools/semantic_provider_r3/egress_v15.py': 'c8dcb7cfd148fc62e062be85a479fa9ba2a6328a0c71affa84cc4b5daf2c6810',
+    'tools/semantic_provider_r3/egress_v15.py': '03552b9750a551fb227917ac5756667995362e3f9e9acbaf91d717ded4422f82',
     'tools/semantic_provider_r3/read_routes_v15.py': 'e3e62ea885e0a54fb74de591e49891d1b209fae7756296ad74ae2a958506390e',
     'tools/semantic_provider_routes/custody.py': '2ab7177f21fb5b330473895798c141282cdabc85c245142f96511fa13e848db3',
     'tools/semantic_provider_routes/routes.py': '305f2535e2cc547de5f242080247d62a43b4bdb93303bf00a03bb36e87097997',
