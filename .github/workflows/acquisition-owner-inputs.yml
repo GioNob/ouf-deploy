@@ -19,6 +19,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: Verify bytecode compilation
         run: python3 -m py_compile scripts/read-acquisition-owner-inputs-20261025.py tests/test_acquisition_owner_inputs.py
       - name: Root Unix peer, real Docker1.44 GETs, process pins, private outputs, replay/drift rejection

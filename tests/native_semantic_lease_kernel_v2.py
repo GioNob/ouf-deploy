@@ -166,6 +166,11 @@ class Proof:
         self.server('dnat', '10.65.0.2', 8443)
         self.server('direct', '10.66.0.2', 443)
         self.server('direct', 'fd66::2', 443)
+        # Kernel 7.0 runners: host-initiated IPv6 neighbour discovery towards a netns with
+        # nodad addresses stays INCOMPLETE until the netns has spoken. Servers announce
+        # themselves to their gateway first (real NDP, no static neighbours).
+        for ns, gateway in (('direct', 'fd66::1'), ('peer', 'fd64::1'), ('dnat', 'fd65::1')):
+            run('ip', 'netns', 'exec', ns, 'ping', '-6', '-c', '1', '-W', '2', gateway)
         for address in ('10.64.0.10', '10.64.0.11', 'fd64::10', 'fd64::11'):
             self.server('peer', address, 443)
 

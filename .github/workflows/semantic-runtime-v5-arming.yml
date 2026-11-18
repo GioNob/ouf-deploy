@@ -18,6 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: Runtime v5, native custody and real isolated arming verification
         run: sudo -n env OUF_RUNTIME_V5_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_runtime_v5_arming.py -v
       - name: Recheck task-14 trust policy and signatures natively

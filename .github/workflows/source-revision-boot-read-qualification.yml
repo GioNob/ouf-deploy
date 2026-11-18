@@ -22,11 +22,15 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - uses: actions/checkout@v4
         with:
           repository: GioNob/ouf-api-gateway
           ref: df103735c1fe75a31e6d4c752360e9368e6aa52d
           path: native-source
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: Qualify actual pinned native readers and root custody with no target effects
         run: |
           bash -n scripts/launch-source-revision-boot-read-20261018.sh

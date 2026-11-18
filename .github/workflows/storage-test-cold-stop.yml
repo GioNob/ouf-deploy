@@ -26,6 +26,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: Install age for disposable capture qualification
         run: sudo apt-get update && sudo apt-get install -y age
       - name: Reuse exact successful stop cohort (no new stop test)

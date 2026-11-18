@@ -32,6 +32,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: Check launcher syntax
         run: |
           for f in scripts/deliver-semantic-provider-b1-rootfs.sh ops/vps/b1-rootfs-v3.sh ops/vps/acceptance-v51-g5.sh; do
@@ -58,6 +60,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: Use the same pinned Docker 29.8.1 archive as R3 cohort qualification
         shell: bash
         run: |

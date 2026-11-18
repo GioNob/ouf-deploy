@@ -63,6 +63,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false, fetch-depth: 0}
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: R3 runbooks, single delivery of LF blobs and exact closure
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_r3_runbooks.py -v
       - name: D-050 v12 migration bindings, upgrade and start denials (portable)
@@ -163,6 +165,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: Download and verify official Docker 29.8.1 static binaries
         shell: bash
         run: |

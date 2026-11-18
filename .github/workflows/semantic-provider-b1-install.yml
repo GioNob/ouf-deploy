@@ -24,6 +24,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: B1 native apply, custody, flock, real signatures and inactive v5
         run: >-
           sudo -n env OUF_B1_INSTALL_NATIVE=1 /usr/bin/python3 -I -B

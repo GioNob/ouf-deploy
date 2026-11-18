@@ -23,6 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: Portable policy and state machine tests
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_admission_v2.py -v
       - name: Native broker with real operation authorization and epoch custody
