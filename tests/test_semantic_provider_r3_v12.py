@@ -389,6 +389,7 @@ class StartGate(unittest.TestCase):
         with patch.object(I, 'native_switch', return_value=types.SimpleNamespace(custody=custody)), \
                 patch.object(O.V, 'absolute', side_effect=PurePosixPath), patch.object(O.V, 'private_directory'), \
                 patch.object(I, 'output_directory'), patch.object(I, 'compiled', return_value=runtime), \
+                patch.object(I, 'installed_runtime_hashes', return_value=frozenset({C.sha(b'wrapper')})), \
                 patch.object(I, 'wrapper_bytes', return_value=b'wrapper'), \
                 patch.object(I, 'wrapper_code_root', return_value=root / 'versions/12'), \
                 patch.object(O, 'docker', side_effect=docker), patch.object(O, 'command', side_effect=command), \
