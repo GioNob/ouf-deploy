@@ -50,6 +50,8 @@ CLOSURE = {
     "scripts/migrate-semantic-lease-kernel.py",
     # D-051 (task-67): v13 identity-provider overlay (imported by compose) and its read-only reader.
     "tools/semantic_provider_r3/identity_overlay_v13.py", "tools/semantic_provider_r3/read_identity_provider_v13.py",
+    # D-053.3: v16 driver-denial overlay, imported by compose and by install_common (operate/probe).
+    "tools/semantic_provider_r3/driver_denial_overlay_v16.py",
     *("tools/semantic_lease_kernel_migration/" + n for n in (
         "__init__.py", "boot_dispatcher.py", "boot_runner_v2.py", "cli.py", "migration.py", "native.py")),
     "tools/semantic_provider_r3/upgrade.py", "scripts/upgrade-semantic-provider-r3.py",
@@ -90,7 +92,7 @@ class R3Runbooks(unittest.TestCase):
         # One delivery serves v1-5 (observer v1) and v6 (observer v2).
         self.assertEqual(paths, CLOSURE | set(C.SOURCE_INPUTS) | set(C.SOURCE_INPUTS_V6) | set(C.SOURCE_INPUTS_V11)
                          | set(C.SOURCE_INPUTS_V12) | set(C.SOURCE_INPUTS_V13)
-                         | set(C.SOURCE_INPUTS_V15))
+                         | set(C.SOURCE_INPUTS_V15) | set(C.SOURCE_INPUTS_V16))
 
     def test_sealed_hashes_are_lf_blobs_at_head(self):
         for path, digest in self.deliveries[0]:
