@@ -69,7 +69,16 @@ def bind_projection(data, route_module):
             and names == sorted(set(names)), TLS)
     require(type(projection['routes']) is list and projection['routes'], CONFIG)
     for route in projection['routes']:
-        shape(route, ('uri', 'methods', 'upstream', 'openid-connect'))
+        shape(route, ('uri', 'methods', 'upstream', 'openid-connect'), ('serverless',))
+        require(type(route.get('serverless', [])) is list, CONFIG)
+        # Serverless Lua is no egress: the D-052 projection admits only a closed module
+        # set without network/subrequest primitives and exposes just function hashes.
+        for item in route.get('serverless', []):
+            require(type(item) is dict and set(item) == {'plugin', 'phase', 'functionSha256'}
+                    and item['plugin'] in ('serverless-pre-function', 'serverless-post-function')
+                    and item['phase'] in ('rewrite', 'access')
+                    and type(item['functionSha256']) is list and item['functionSha256']
+                    and all(type(h) is str and SHA256.fullmatch(h) for h in item['functionSha256']), CONFIG)
         require(type(route['uri']) is str and re.fullmatch(r'/[A-Za-z0-9_./~:@*-]*', route['uri'])
                 and type(route['methods']) is list and route['methods']
                 and all(type(method) is str and method in HTTP_METHODS for method in route['methods']), CONFIG)
