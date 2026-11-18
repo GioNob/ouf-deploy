@@ -13,7 +13,7 @@ case "$mode" in
   *) echo 'uso: plan | apply <planSha256>' >&2; exit 2 ;;
 esac
 # Claude fissa il commit dopo review e commit D-001.
-C=feed5a4cd51065d407891235f360879a7e13156d
+C=44b011e8e3022777a4e290927872e9853d32d86f
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] || {
   echo 'runbook non ancora fissato a un commit' >&2; exit 2;
 }
@@ -60,13 +60,13 @@ fetch() {
 }
 delivery() {
   # BEGIN DELIVERY
-  fetch ops/vps/r3-settings.json e4040d9428f055362b500cd4d6042ccda117baba48c89d37101988999c923a37
+  fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
-  fetch scripts/issue-semantic-provider-operation-authorization.py d3d77cf1cfc0073d8ce2072ef1ec77640765db40cc63f35c8b1a1f077e080a58
+  fetch scripts/issue-semantic-provider-operation-authorization.py 21bc0e9819fe11c78ef87ff76823e7a19ee23dd5cb1c00454ba844a0c9501f41
   fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
   fetch scripts/prepare-semantic-provider-b1-rootfs-v3.py 29899e5ee25aa9e772f21fb62fb473706cdf2b8f921034efeccb3b284d350397
   fetch scripts/prepare-semantic-provider-b1-rootfs.py 8107d055fe0bfd8fe363506f39ffa006f157a292a54bbcbf4de11b011816178d
-  fetch scripts/prepare-semantic-provider-installation.py a19f08678c82472abafa8cb6508245c0f49b39464cdbb7b74222e3cf14967d2c
+  fetch scripts/prepare-semantic-provider-installation.py 87b7117c4a3c8a6375b57b5877050c96a63475419ad3dfbc2dc8e674cd0e9076
   fetch scripts/probe-semantic-provider-c.py c458d63ce7b7d3507974bb91b901f654d1e5d862a1c9b0a7fba0e0e9fde63e88
   fetch scripts/restore-semantic-provider-r3.py 1be4b6cd69f0c70959627f87502de307488ebca1862928b984b653e290e3fdd8
   fetch scripts/semantic-provider-admission-preparer-v2.py 7e041ddf4e7668861cc5ae111f6069f73eeda32be065622ee51381129a4f9b57
@@ -128,17 +128,18 @@ delivery() {
   fetch tools/semantic_provider_admission_v2/locking.py 1a92011a1948ab82498fcc2fc92ee17b7cbf11f1858cbe7edc1dac606de0b564
   fetch tools/semantic_provider_admission_v2/preparer_v2.py c417cd74f4a1712b93e19b145df959ac85d1e42a07484c729cfd18182dd579c7
   fetch tools/semantic_provider_admission_v2/reauthorization_v2.py 53fb58772280116845a47351bdbce802dfd26169175cb36e3e9c11421df6b39c
-  fetch tools/semantic_provider_c/probe.py a7cef617dd1427ec7590a1d3798830dde9dd685e5d9e2740a141de051c1ca184
+  fetch tools/semantic_provider_c/probe.py 7ba00140eab47acf19e09192ead917ed26791b5a898be9dd82978b8faf9c2843
   fetch tools/semantic_provider_operation/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_provider_operation/authorization.py 8f5dd2fd86efb7add1bdb5325b6428db41cc539b7b00a3b33efa4d692ab958fc
   fetch tools/semantic_provider_operation/epochs.py b5188406c935079b35f2a81ba670df9578d6ef97a5d7308cbb9cf502a72635bb
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_operation/lease_supervisor_v2.py 06f7fb2744a1ac3d4b94ef20aa04801e9625f9ca920dfe8fcd421e11456d0de4
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py e577a99329b24d2b814f448d747f59a9ed4846baa02a9044a9d8038df5d45f1e
-  fetch tools/semantic_provider_r3/install_common.py 55fd4e7745b290ad36195f07ae6b49d3360c430c8a3a77aee9d02226155e4b33
-  fetch tools/semantic_provider_r3/operate.py abd9801a45ac62bc177681228d0c85717e8ea7305ae8da87dbcb9394582e2282
-  fetch tools/semantic_provider_r3/upgrade.py 690c22cd19b4781754bb64259b0a3b96e8467fdc00b8694138721782a563ed54
+  fetch tools/semantic_provider_r3/compose.py a560756ae9ab5842f1975bdb36565301c77ece01e77dab77e6ea7bb4979b7a95
+  fetch tools/semantic_provider_r3/driver_denial_overlay_v16.py cc2393eb2bea4b299cd8b0a8cdecb7b6e67b8c83f7e8d3d15bd09d915e3b2009
+  fetch tools/semantic_provider_r3/install_common.py f06476342095d0e9590df66ca16b1718d58ea0dbdcb3c767242f58124720d781
+  fetch tools/semantic_provider_r3/operate.py f0bd132c86d0bebb185a7f473c9abae4819fc47e2cf5284ccc2cfbdad255d885
+  fetch tools/semantic_provider_r3/upgrade.py bc18eee17996d2cb0533d132ec40789c43244187d2edb2d2ca59f48ff850c754
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
