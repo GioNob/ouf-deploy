@@ -38,7 +38,8 @@ fetch() {
   fi
   printf '%s  %s\n' "$expected" "$D/$path" | sudo sha256sum --check --status
 }
-fetch scripts/prepare-semantic-provider-installation.py 87b7117c4a3c8a6375b57b5877050c96a63475419ad3dfbc2dc8e674cd0e9076
+fetch scripts/prepare-semantic-provider-installation.py a19f08678c82472abafa8cb6508245c0f49b39464cdbb7b74222e3cf14967d2c
+fetch scripts/revise-semantic-provider-namespaces.py b9a1bfbe39d8c66569cd394c9d3f130e817547d4a159b3a2f39af1c11968c328
 fetch scripts/semantic-provider-config.py adf43ebaadc65d27e13629c4ed07e35e013ce6427af606c7f2de38bf2c5e228c
 fetch tools/semantic_provider_config/contract.py 056a97bd7d9f4e506c9200f232fa95a44b766ee7fa628444bb3816018b676e15
 fetch tools/semantic_provider_config/observation.py 62d7db7c72ca0c21906a5f8d44470245f533e18604d41519ee891e7bd31bd681
@@ -56,7 +57,7 @@ if [[ $mode == plan ]]; then
   printf '%s\n' "$D" > "$STATE"
 fi
 if [[ $operation == profile ]]; then
-  sudo /usr/bin/python3.13 -I -B "$D/scripts/prepare-semantic-provider-installation.py" "--$mode" --namespace-revision "$@"
+  sudo /usr/bin/python3.13 -I -B "$D/scripts/revise-semantic-provider-namespaces.py" "--$mode" "$@"
 else
   sudo /usr/bin/python3.13 -I -B "$D/scripts/semantic-provider-config.py" publish "$mode" "$@"
 fi

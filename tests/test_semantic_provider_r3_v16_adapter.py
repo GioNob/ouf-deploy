@@ -132,7 +132,7 @@ class Configuration(unittest.TestCase):
             D.regenerate(SOURCE, after, profile())
 
     def test_additive_profile_and_reverse_delta(self):
-        path = Path(__file__).resolve().parents[1] / 'scripts/prepare-semantic-provider-installation.py'
+        path = Path(__file__).resolve().parents[1] / 'scripts/revise-semantic-provider-namespaces.py'
         # The profile planner uses no system users or groups in the pure fixture.
         with patch.dict(sys.modules, {name: ModuleType(name) for name in ('grp', 'pwd')}):
             script = runpy.run_path(str(path))
