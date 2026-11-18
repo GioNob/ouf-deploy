@@ -283,6 +283,32 @@ class LiveAdmission(unittest.TestCase):
         self.assertTrue(all('inspect' in a and '--format' in a for a in calls))
         reader.verify.assert_called_once_with()
 
+    def test_v14_moves_live_identity_read_out_of_driver_only(self):
+        inputs, old = fixture()
+        a = C.compose(inputs, 13, sequence=13, supersedes=C.sha(old['authorization']))
+        b = C.compose(inputs, 14, sequence=14, supersedes=C.sha(old['authorization']))
+        da = {k.replace('versions/13/', 'versions/N/'): v for k, v in a['documents'].items()}
+        db = {k.replace('versions/14/', 'versions/N/'): v for k, v in b['documents'].items()}
+        self.assertEqual(set(da), set(db))
+        drv = 'versions/N/source/tools/semantic_provider_admission_v2/driver_v7.py'
+        prep = 'versions/N/source/tools/semantic_provider_admission_v2/preparer_v2.py'
+        # Only the driver source and the documents carrying source hashes or the version root.
+        self.assertEqual({k for k in da if da[k] != db[k]},
+                         {drv, 'versions/N/broker/adapter.json', 'versions/N/broker/southbound.json',
+                          'versions/N/runtime-configuration.json', 'versions/N/supervisor/configuration.json'})
+        call = (b'    from tools.semantic_provider_peer_bindings import verify_identity_flows\n'
+                b'    verify_identity_flows(policy["transport"], run)\n')
+        self.assertEqual(da[drv].count(call), 1)
+        self.assertEqual(da[drv].replace(call, b''), db[drv])
+        self.assertNotIn(b'verify_identity_flows', db[drv])
+        self.assertEqual(da[prep], db[prep])
+        self.assertEqual(db[prep].count(b'verify_identity_flows(candidate["transport"]'), 1)
+        # Same declared flow and nft-bound identity in both versions.
+        for r in (a, b):
+            v = next(k for k in r['documents'] if k.endswith('documents/southbound/transport.json'))
+            self.assertEqual(C.document(r['documents'][v])['transport'][-1]['peerIngress']['kind'],
+                             'IDENTITY_PROVIDER_MAC')
+
     def test_reader_denial_reports_only_public_code(self):
         import io
         argv = ['reader'] + [x for f in ('docker', 'docker-sha256', 'docker-socket', 'container', 'network',

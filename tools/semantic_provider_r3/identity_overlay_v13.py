@@ -6,7 +6,13 @@ and the broker's closed package stay identical; all patched bytes are hashed.
 from tools.semantic_provider_operation.authorization import require
 
 
-def sources_v13(sources, historical_map, identity_source):
+def sources_v13(sources, historical_map, identity_source, driver_check=True):
+    """driver_check=False (v14+): the live identity read stays in the preparer only.
+
+    The driver re-runs authorize() up to three times inside one 5 s verification
+    budget during OCI start; four Docker reads per call exceeded it on the VPS
+    (start v13, 18/11). The bridge rules stay bound to the declared IP/MAC.
+    """
     out = dict(sources)
 
     def edit(target, old, new):
@@ -94,10 +100,11 @@ def sources_v13(sources, historical_map, identity_source):
     edit(preparer, 'if v["peerIngress"]["kind"] != "HOST")',
          'if v["peerIngress"]["kind"] not in ("HOST", "IDENTITY_PROVIDER_MAC"))')
     driver = 'tools/semantic_provider_admission_v2/driver_v7.py'
-    edit(driver, '    peers = declarations(policy["transport"], value["profile"]["containerId"])',
-         '    from tools.semantic_provider_peer_bindings import verify_identity_flows\n'
-         '    verify_identity_flows(policy["transport"], run)\n'
-         '    peers = declarations(policy["transport"], value["profile"]["containerId"])')
+    if driver_check:
+        edit(driver, '    peers = declarations(policy["transport"], value["profile"]["containerId"])',
+             '    from tools.semantic_provider_peer_bindings import verify_identity_flows\n'
+             '    verify_identity_flows(policy["transport"], run)\n'
+             '    peers = declarations(policy["transport"], value["profile"]["containerId"])')
     # Endpoint MAC observations use the same explicit API as A/A2. Preserve the
     # old observer bytes for v1--v12 and keep its hash/custody/time limits.
     edit('tools/semantic_provider_node_observation.py',

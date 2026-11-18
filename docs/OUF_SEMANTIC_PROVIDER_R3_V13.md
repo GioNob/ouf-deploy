@@ -191,3 +191,36 @@ fallisce, senza skip. Fuori CI/root Linux la prova nativa è uno skip esplicito.
 
 La rete, /run, i namespace, i listener e le regole del test sono sintetici e
 isolati. Nessun container Docker o servizio esterno necessario.
+
+## v14: verifica live solo nel preparer (18/11)
+
+**Cosa è successo.** Lo start v13 sul VPS (epoca 15) è fallito nella fase
+`start` del driver del southbound (`ADMISSION_OR_DRIVER_FAILED`). Le fasi
+`prepare` e `hook` invece erano passate. L'adapter ha prodotto
+`NODE_OBSERVATION_UNPROVEN` solo di conseguenza: ha preso il turno quando il
+southbound era già caduto.
+
+**Perché.** In modalità `start` il driver chiama `authorize()` tre volte, sotto
+il lock comune e dentro un unico budget di verifica di 5 secondi
+(`budgetSeconds`). La v13 aggiungeva a ogni chiamata quattro `docker inspect`,
+eseguiti mentre dockerd avvia anche l'altro container. Già la fase `hook`
+della v13 è durata circa 2 secondi in più dell'intero start della v12.
+
+**Cosa cambia nella v14.** La v14 è identica alla v13, con gli stessi input e le
+stesse regole, tranne un punto: il driver **non** rilegge più l'identity
+provider dal vivo. La lettura live, doppia e confrontata, resta nel preparer.
+Il preparer è l'admission di ogni start: gira una volta, prima che le tabelle
+di ruolo vengano installate e verificate (`PROTECTED`).
+
+**Perché resta sicuro.** Le regole bridge restano legate a IP e MAC dichiarati
+di Caddy. Se l'identity provider cambiasse identità tra preparer e start, il
+flusso non passerebbe e si fermerebbe in modo chiuso.
+
+**Test.** La composizione v14 coincide con la v13 in ogni documento, tranne:
+- il sorgente `driver_v7.py`, privo delle sole due righe della rilettura;
+- i documenti che ne portano l'hash o la radice di versione.
+
+Il preparer è byte per byte quello della v13.
+
+**Sequenza sul VPS.** Emissione v14 (plan con lettura dell'identity provider,
+poi apply), upgrade 13 → 14, start, sonda C.
