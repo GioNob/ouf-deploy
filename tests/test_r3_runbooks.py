@@ -54,6 +54,9 @@ CLOSURE = {
     "tools/semantic_provider_r3/driver_denial_overlay_v16.py",
     # R-030 (task-74): v17 driver budget overlay and its pinned installation input.
     "tools/semantic_provider_r3/driver_budget_v17.py", "ops/vps/r3-driver-budget.json",
+    # R-022 (task-76/77/78): v18 lease renewal and observability overlays and their pinned input.
+    "tools/semantic_provider_r3/lease_renewal_v18.py", "tools/semantic_provider_r3/lease_renewal_overlay_v18.py",
+    "tools/semantic_provider_r3/lease_observability_overlay_v18.py", "ops/vps/r3-lease-renewal.json",
     *("tools/semantic_lease_kernel_migration/" + n for n in (
         "__init__.py", "boot_dispatcher.py", "boot_runner_v2.py", "cli.py", "migration.py", "native.py")),
     "tools/semantic_provider_r3/upgrade.py", "scripts/upgrade-semantic-provider-r3.py",
@@ -95,7 +98,7 @@ class R3Runbooks(unittest.TestCase):
         self.assertEqual(paths, CLOSURE | set(C.SOURCE_INPUTS) | set(C.SOURCE_INPUTS_V6) | set(C.SOURCE_INPUTS_V11)
                          | set(C.SOURCE_INPUTS_V12) | set(C.SOURCE_INPUTS_V13)
                          | set(C.SOURCE_INPUTS_V15) | set(C.SOURCE_INPUTS_V16)
-                         | set(C.SOURCE_INPUTS_V17))
+                         | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18))
 
     def test_sealed_hashes_are_lf_blobs_at_head(self):
         for path, digest in self.deliveries[0]:
