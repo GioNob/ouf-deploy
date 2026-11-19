@@ -1,7 +1,25 @@
 name: MCP archived analysis application upgrade
 on:
+  workflow_dispatch:
+    inputs:
+      candidate:
+        description: 'R-033 candidate JSON from inputs.json (imageId for containerd)'
+        required: true
+        type: string
+      classic_image_id:
+        description: 'sha256:<OCI configuration digest> for the classic store'
+        required: true
+        type: string
+      govulncheck_version:
+        description: 'Pinned golang.org/x/vuln module version used for the binary check'
+        required: true
+        type: string
   pull_request:
     paths:
+      - scripts/swap-mcp-image.py
+      - ops/vps/mcp-image-swap.sh
+      - tests/test_mcp_image_swap.py
+      - tests/qualify_mcp_image_swap_native.py
       - scripts/upgrade-mcp-analysis-20261108.py
       - tests/test_mcp_analysis_upgrade_native.py
       - tests/test_mcp_analysis_upgrade.py
@@ -9,6 +27,13 @@ on:
       - .github/workflows/mcp-analysis-upgrade.yml
 permissions: {contents: read, actions: read}
 jobs:
+  r033-guards:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -m unittest discover -s tests -p test_mcp_image_swap.py -v
+      - run: bash -n ops/vps/mcp-image-swap.sh
   native:
     strategy:
       fail-fast: false
@@ -22,23 +47,61 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: GioNob/ouf-mcp-server
-          ref: 907ace32100d44a0fcf1fcbda5d713ee7bd8fd94
+          ref: ${{ github.event_name == 'workflow_dispatch' && 'b4c1091bcbbb374d7d4a190f58a818e1d17deac7' || '907ace32100d44a0fcf1fcbda5d713ee7bd8fd94' }}
           path: mcp-source
           persist-credentials: false
       - uses: actions/setup-go@v6
-        with: {go-version: '1.27.3'}
+        with:
+          go-version: ${{ github.event_name == 'workflow_dispatch' && '1.27.4' || '1.27.3' }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        if: github.event_name == 'pull_request'
         with:
           repository: GioNob/ouf-mcp-server
           name: acquisition-mcp-image-42420569963
           run-id: 42420569963
           github-token: ${{ github.token }}
           path: mcp-candidate
-      - name: Verify archived payload, prepare only disposable signed fixture
+      - name: Verify historical archived payload
+        if: github.event_name == 'pull_request'
         run: |
           (cd mcp-candidate && sha256sum -c SHA256SUMS)
           echo '5ea15eeff97021e90eedfc74ea0b3fc53bb29dbf5a14f4f21ada564d40e88d02  mcp-candidate/image.tar.gz' | sha256sum -c -
           test "$(cat mcp-candidate/source-commit.txt)" = e2a474ea09bf9c3cb130103ca142f1a128942a80
+      - name: Bind R-033 ZIP to the successful publisher run and source tree
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          CANDIDATE: ${{ inputs.candidate }}
+          CLASSIC_ID: ${{ inputs.classic_image_id }}
+          STORE: ${{ matrix.store }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          from pathlib import Path
+          c = json.loads(os.environ['CANDIDATE'])
+          def api(path):
+              return json.loads(subprocess.check_output(['gh','api','repos/GioNob/ouf-mcp-server/'+path]))
+          assert all(type(c[k]) is int and c[k] > 0 for k in ('artifactId','runId'))
+          artifact = api('actions/artifacts/' + str(c['artifactId']))
+          run = api('actions/runs/' + str(c['runId']))
+          assert run['conclusion'] == 'success' and run['path'] == '.github/workflows/ci.yml'
+          assert artifact['workflow_run']['id'] == run['id'] == c['runId'] and not artifact['expired']
+          assert artifact['name'] == 'acquisition-mcp-image-' + str(run['id'])
+          assert c['sourceCommit'] == 'b4c1091bcbbb374d7d4a190f58a818e1d17deac7'
+          assert run['head_sha'] in (c['sourceCommit'], c['publisherCommit'])
+          for commit, tree in [('sourceCommit','sourceTree'), ('publisherCommit','publisherTree')]:
+              assert re.fullmatch('[0-9a-f]{40}', c[commit])
+              assert api('git/commits/' + c[commit])['tree']['sha'] == c[tree]
+          assert c['sourceTree'] == c['publisherTree']
+          if os.environ['STORE'] == 'classic':
+              c['imageId'] = os.environ['CLASSIC_ID']
+          Path('r033-candidate.json').write_text(json.dumps(c))
+          with open('r033.zip','xb') as out:
+              subprocess.run(['gh','api','repos/GioNob/ouf-mcp-server/actions/artifacts/'+str(c['artifactId'])+'/zip'],
+                             stdout=out,check=True)
+          PY
+      - name: Prepare disposable signed fixture
+        run: |
           mkdir mcp-fixture
           cp tools/mcp_analysis_20261108/fixture_export_test.go mcp-source/internal/reprocessing/rollout_fixture_test.go
           cd mcp-source
@@ -77,4 +140,18 @@ jobs:
           done
           test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
       - name: Archived binary, ordinary migration14, signed expired permit and native replacement
+        if: github.event_name == 'pull_request'
         run: sudo python3 -I -B tests/test_mcp_analysis_upgrade_native.py
+      - name: R-033 selected image, unchanged schema 14 and immediate predecessor rollback
+        if: github.event_name == 'workflow_dispatch'
+        env: {SELECTED_STORE: '${{ matrix.store }}'}
+        run: sudo env PATH="$PATH" EXPECTED_STORE="$SELECTED_STORE" DOCKER_API_VERSION=1.44 python3 -I -B tests/qualify_mcp_image_swap_native.py
+      - name: Inspect and scan the exact executable copied from the running image
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          SCANNER_VERSION: ${{ inputs.govulncheck_version }}
+        run: |
+          [[ $SCANNER_VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          go version -m r033-ouf-mcp
+          go install "golang.org/x/vuln/cmd/govulncheck@$SCANNER_VERSION"
+          "$(go env GOPATH)/bin/govulncheck" -mode=binary ./r033-ouf-mcp
