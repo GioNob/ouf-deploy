@@ -202,13 +202,15 @@ class PortableFailedCleanup(unittest.TestCase):
         self.calls.append(args)
         if args[:1] == ['/runc'] and args[-2:] == ['state', CID] and 'stdout' in kw:
             raw, error, code = (encoded(self.state), b'', 0) if self.state is not None else (b'', self.absence, self.probe_code)
-            kw['stdout'].write(raw); kw['stderr'].write(error)
+            kw['stdout'].write(raw)
+            if hasattr(kw['stderr'], 'write'):
+                kw['stderr'].write(error)
         else:
             code = 1 if args[-1] == self.fail_phase else self.forward_code
             if args[:1] == ['/runc'] and 'delete' in args and code == 0: self.state = None
         return subprocess.CompletedProcess(args, code)
 
-    def run_op(self, mode):
+    def run_op(self, mode, *, argv=None, publish_epoch=None):
         # No Linux custody claims are made by these portable tests.
         info = types.SimpleNamespace(st_mode=stat.S_IFREG | 0o600, st_uid=0, st_gid=0, st_nlink=1, st_dev=1, st_ino=2)
         directory = types.SimpleNamespace(st_mode=stat.S_IFDIR | 0o700, st_uid=0, st_gid=0, st_dev=1, st_ino=3)
@@ -224,9 +226,9 @@ class PortableFailedCleanup(unittest.TestCase):
             stack.enter_context(patch.object(self.r, 'private_directory'))
             stack.enter_context(patch.object(self.r, 'ancestors'))
             stack.enter_context(patch.object(self.r, 'operation_modules', return_value=(None, self.epochs)))
-            stack.enter_context(patch.object(self.r, 'read', side_effect=lambda p: self.files[str(p)]))
+            stack.enter_context(patch.object(self.r, 'read', side_effect=lambda p, private=True: self.files[str(p)]))
             stack.enter_context(patch.object(self.r, 'exclusive', side_effect=exclusive))
-            stack.enter_context(patch.object(self.r, 'publish_epoch', side_effect=publish))
+            stack.enter_context(patch.object(self.r, 'publish_epoch', side_effect=publish_epoch or publish))
             stack.enter_context(patch.object(self.r, 'quiesce', self.quiesce))
             stack.enter_context(patch.object(self.r, 'authorization_head', return_value={'sha256': 'a'*64}))
             stack.enter_context(patch.object(self.r, 'driver_validator', return_value=(self.validator,
@@ -241,9 +243,11 @@ class PortableFailedCleanup(unittest.TestCase):
             stack.enter_context(patch.object(Path, 'lstat', lambda p, *a, **kw: info if p == lock else directory if p == self.registry else native_lstat(p, *a, **kw)))
             stack.enter_context(patch.object(self.r, 'fcntl', types.SimpleNamespace(flock=Mock(), LOCK_EX=1, LOCK_NB=2)))
             stack.enter_context(patch.object(self.r.subprocess, 'run', side_effect=self.simulate))
-            argv = ['--root', str(self.runtime_root), mode]
-            if mode == 'create': argv += ['--bundle', str(self.root/'oci'/CID)]
-            return self.r.operate(self.config_path, argv + [CID] + (['SIGTERM'] if mode == 'kill' else []))
+            if argv is None:
+                argv = ['--root', str(self.runtime_root), mode]
+                if mode == 'create': argv += ['--bundle', str(self.root/'oci'/CID)]
+                argv += [CID] + (['SIGTERM'] if mode == 'kill' else [])
+            return self.r.operate(self.config_path, argv)
 
     def denied(self, mode, code):
         with self.assertRaisesRegex(self.r.Denied, '^'+code+'$'): self.run_op(mode)

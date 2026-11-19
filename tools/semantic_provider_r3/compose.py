@@ -83,6 +83,8 @@ LEASE_RENEWAL_SOURCE = 'tools/semantic_provider_r3/lease_renewal_v18.py'
 LEASE_RENEWAL_TARGET = 'tools/semantic_lease_recovery/lease_renewal_v18.py'
 SOURCE_MAP_V18 = {**SOURCE_MAP_V17, LEASE_RENEWAL_TARGET: LEASE_RENEWAL_SOURCE}
 SOURCE_INPUTS_V18 = frozenset(SOURCE_MAP_V18.values()) | {KERNEL_V1}
+SOURCE_MAP_V19 = dict(SOURCE_MAP_V18)
+SOURCE_INPUTS_V19 = frozenset(SOURCE_MAP_V19.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -96,6 +98,7 @@ DATA_INPUTS_V15 = DATA_INPUTS_V13 | {'southbound/routesProjection'}
 DATA_INPUTS_V16 = DATA_INPUTS_V15 | {'adapter/configProjection', 'installationProfile'}
 DATA_INPUTS_V17 = DATA_INPUTS_V16 | {'driverBudget'}
 DATA_INPUTS_V18 = DATA_INPUTS_V17 | {'leaseRenewal'}
+DATA_INPUTS_V19 = set(DATA_INPUTS_V18)
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -286,7 +289,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     files, sources = inputs["files"], inputs["sources"]
     if version >= 17:
         from . import driver_budget_v17
-    if version >= 18:
+    if version >= 19:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V19, SOURCE_INPUTS_V19, DATA_INPUTS_V19
+    elif version >= 18:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V18, SOURCE_INPUTS_V18, DATA_INPUTS_V18
     elif version >= 17:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V17, SOURCE_INPUTS_V17, DATA_INPUTS_V17
@@ -387,6 +392,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         from .lease_renewal_overlay_v18 import seal_v18, sources_v18
         emitted = sources_v18(emitted, selected_map)
         emitted = sources_v18_observability(emitted, selected_map)
+        if version >= 19:
+            from .runtime_absent_overlay_v19 import sources_v19
+            emitted = sources_v19(emitted, selected_map)
         emitted, hashes = seal_v18(sources, emitted, source_map, RECOVERY, sha)
     else:
         hashes = {target: sha(emitted[original]) for target, original in source_map.items()}
