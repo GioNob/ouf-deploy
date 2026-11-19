@@ -5,14 +5,16 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import runpy
+import stat
 import subprocess
 import sys
 import tempfile
 import unittest
-from unittest.mock import patch
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 READERS = ROOT / 'ops/vps/readers'
@@ -119,7 +121,7 @@ class Readers(unittest.TestCase):
             supervisor = {'statusPath': str(root / 'status.json'), 'coordinator': {'journalPath': str(root / 'lease.json')}}
             cfg['leaseQuiesce'] = {'configuration': put(root / 'supervisor.json', supervisor)}
             put(root / 'status.json', {'state': 'WAITING', 'reason': 'IDLE', 'activationsLastHour': 0,
-                                      'epochs': dict.fromkeys(ids, 1), 'token': 'SECRET_SENTINEL'})
+                                      'epochs': dict.fromkeys(ids, 1), 'token': 'SECRET_SENTINEL', 'updatedAt': 123})
             put(root / 'lease.json', {'state': 'QUIESCED', 'leaseAuthorized': False, 'password': 'SECRET_SENTINEL'})
             for role, cid in ids.items():
                 epoch = root / 'registry' / cid / 'epochs/1'
@@ -147,11 +149,105 @@ class Readers(unittest.TestCase):
                 rows = [json.loads(line) for line in output.getvalue().splitlines()]
                 if name == 'r3-status.py':
                     journals = {row['role']: row['epoch'] for row in rows if row.get('step') == 'role'}
+                    status = next(row for row in rows if row.get('step') == 'supervisor')
+                    self.assertEqual(status['updatedAt'], 123)
+                    self.assertIsNone(status['leaseRecovery'])
                 else:
                     journals = {row['role']: row for row in rows if row.get('file') == 'adapter.json'}
                 self.assertNotIn('driverDenial', journals['adapter'])
                 self.assertEqual(journals['southbound']['driverDenial'], denial)
                 self.assertEqual(before, tree(root))
+
+    def test_recovery_projection_selects_scope_and_redacts_checkpoint(self):
+        ns = load('r3-status.py')
+        root = Path(ns['ROOT'])
+        configuration_sha, scope = 'a' * 64, 'd' * 48
+        selector = json.dumps({'configuration': configuration_sha, 'invocation': scope},
+                              sort_keys=True, separators=(',', ':')).encode()
+        scope_ref = hashlib.sha256(selector).hexdigest()
+        recovery_root = root / 'supervisor/state/recovery'
+        sup = {'recoveryJournalRoot': str(recovery_root), 'statusPath': '/fixture/status.json',
+               'coordinator': {'journalPath': '/fixture/lease.json'}}
+        status = dict(state='WAITING', reason='DNS_WINDOW_TOO_SHORT', activationsLastHour=2,
+                      epochs={'adapter': 1, 'southbound': 2}, updatedAt=123, recoveryScope=scope)
+        row = {'schema': 'ouf.bounded-recovery.v1', 'contextRef': scope_ref, 'state': 'RETRY_WAIT',
+               'attempts': 1, 'nextWall': 130, 'nativeOutput': 'SECRET_SENTINEL 192.0.2.100'}
+        incident = dict(schema='ouf.semantic-lease-recovery-incident.v1', scopeRef=scope_ref,
+                        authorizationSequence=7, epochs=status['epochs'], incidentCount=1, failedAt=120,
+                        pausedAt=121, resumedAt=None, nextRetryAt=130, phase='LOCK_ACQUIRE',
+                        code='COMMON_LOCK_TIMEOUT', revocation='VERIFIED', stateAtFailure='ACTIVE',
+                        leaseRemainingMs=4315, lockWaitMs=473, deadlineMonotonic=55)
+        read_recovery = Mock(side_effect=lambda _: json.dumps(row).encode())
+        cfg = {'operation': {'authorizationRoot': str(root / 'authorization')},
+               'leaseQuiesce': {'configuration': {'sha256': configuration_sha}}}
+        with contexts(ns, configuration=lambda: cfg, bound=lambda _: sup, document=lambda path: (
+                status if path == sup['statusPath'] else {'state': 'QUIESCED', 'leaseAuthorized': False}),
+                candidates=lambda _: {}, read_recovery=read_recovery,
+                read=lambda _: b'{"decision":"OPERATE"}', command=lambda _: '{"nftables":[]}'), \
+                patch('pathlib.Path.glob', return_value=[Path('1.json')]), patch.object(sys, 'argv', ['status']):
+            for detail in (None, incident):
+                with self.subTest(incident=detail is not None):
+                    if detail is not None:
+                        row['lastIncident'] = detail
+                    output = io.StringIO()
+                    with redirect_stdout(output):
+                        self.assertEqual(ns['main'](), 0)
+                    public = output.getvalue()
+                    self.assertNotIn('SECRET_SENTINEL', public)
+                    self.assertNotIn('192.0.2.100', public)
+                    self.assertNotIn(scope, public)
+                    projected = next(r for r in map(json.loads, public.splitlines()) if r['step'] == 'supervisor')
+                    self.assertEqual(projected['leaseRecovery'], {'scopeRef': scope_ref, 'state': 'RETRY_WAIT',
+                        'attempts': 1, 'nextRetryAt': 130, 'lastIncident': detail})
+                    read_recovery.assert_called_with(recovery_root / scope)
+            read_recovery.reset_mock()
+            for altered in ({'recoveryScope': '../other'}, {'recoveryScope': 'b' * 64}):
+                with self.assertRaises(ValueError):
+                    ns['lease_recovery'](sup, status | altered, configuration_sha)
+            with self.assertRaises(ValueError):
+                ns['lease_recovery'](sup | {'recoveryJournalRoot': '/unbound'}, status, configuration_sha)
+            read_recovery.assert_not_called()
+            for bad in ({'code': 'SECRET_SENTINEL'}, {'phase': '192.0.2.100'}, {'deadlineMonotonic': float('nan')},
+                        {'pausedAt': None}, {'stderr': 'SECRET_SENTINEL'}, {'scopeRef': 'b' * 64}):
+                row['lastIncident'] = incident | bad
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    self.assertEqual(ns['entry'](ns['main']), 2)
+                self.assertNotIn('SECRET_SENTINEL', output.getvalue())
+            row['lastIncident'] = incident
+            with self.assertRaisesRegex(ValueError, 'RECOVERY_CHECKPOINT_INVALID'):
+                ns['lease_recovery'](sup, status, 'b' * 64)
+
+    def test_recovery_read_is_bounded_and_requires_stable_private_file(self):
+        ns = load('r3_common.py')
+        directory = SimpleNamespace(st_mode=stat.S_IFDIR | 0o700, st_uid=0, st_gid=0)
+        record = dict(st_dev=1, st_ino=2, st_mode=stat.S_IFREG | 0o600, st_uid=0,
+                      st_gid=0, st_nlink=1, st_size=2, st_mtime_ns=3, st_ctime_ns=4)
+        fake_os = SimpleNamespace(O_RDONLY=0, O_NOFOLLOW=1, O_CLOEXEC=2, O_NONBLOCK=4, O_DIRECTORY=8,
+                                  open=Mock(), close=Mock(), fstat=Mock(), read=Mock(return_value=b'{}'), stat=Mock())
+        with contexts(ns, os=fake_os):
+            for change in ({}, {'st_size': 65537}, {'st_nlink': 2}, {'st_mode': stat.S_IFLNK | 0o600}):
+                with self.subTest(change=change):
+                    file = SimpleNamespace(**(record | change))
+                    fake_os.open.side_effect = [1, 2, 3]
+                    fake_os.fstat.side_effect = [directory, file, file]
+                    fake_os.stat.return_value = file
+                    fake_os.read.reset_mock()
+                    if change:
+                        with self.assertRaisesRegex(ValueError, 'RECOVERY_FILE_CUSTODY_INVALID'):
+                            ns['read_recovery'](PurePosixPath('/scope'))
+                        fake_os.read.assert_not_called()
+                    else:
+                        self.assertEqual(ns['read_recovery'](PurePosixPath('/scope')), b'{}')
+                        fake_os.read.assert_called_once_with(3, 65537)
+                        fake_os.open.assert_any_call('scope', 15, dir_fd=1)
+                        fake_os.open.assert_called_with('recovery.json', 7, dir_fd=2)
+            file = SimpleNamespace(**record)
+            fake_os.open.side_effect = [1, 2, 3]
+            fake_os.fstat.side_effect = [directory, file, file]
+            fake_os.stat.return_value = SimpleNamespace(**(record | {'st_ino': 8}))
+            with self.assertRaisesRegex(ValueError, 'RECOVERY_FILE_CHANGED'):
+                ns['read_recovery'](PurePosixPath('/scope'))
 
     def test_driver_denial_projection_validates_exact_shape(self):
         ns = load('r3_common.py')

@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 
 ROOT = Path('/etc/ouf/deploy-snapshots/semantic-provider-r3-install-v1')
@@ -21,6 +22,27 @@ ADAPTER_STATES = ('OPENING', 'PREPARING', 'CREATING', 'CREATED', 'ADMITTED', 'ST
 BOOT_ID = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
 HEX64 = re.compile(r'[0-9a-f]{64}')
 DRIVER_CODE = re.compile(r'[A-Z0-9_]{1,80}')
+RECOVERY_STATES = ('NEW', 'ATTEMPTING', 'PUBLISHING', 'ACTIVE', 'RETRY_WAIT',
+                   'PAUSED_EXHAUSTED', 'BLOCKED', 'RECONCILE_REQUIRED', 'CANCELLED')
+INCIDENT_SCHEMA = 'ouf.semantic-lease-recovery-incident.v1'
+INCIDENT_PHASES = ('PLAN', 'DNS', 'LOCK_ACQUIRE', 'COMPILE', 'APPLY', 'READBACK', 'COMMIT', 'REVOKE')
+INCIDENT_CODES = (
+    'DNS_UNAVAILABLE', 'DNS_WINDOW_TOO_SHORT', 'DEPENDENCY_UNAVAILABLE', 'DEPENDENCY_TIMEOUT',
+    'RATE_LIMITED', 'SERVICE_UNAVAILABLE', 'AUTHORITY_REVOKED', 'AUTHORITY_EXPIRED',
+    'GENERATION_CHANGED', 'CONFIGURATION_DRIFT', 'INTEGRITY_UNPROVEN', 'PERMANENT_FAILURE',
+    'COMMON_LOCK_TIMEOUT', 'NFT_ATTEMPT_DEADLINE_UNPROVEN', 'RECOVERY_SCOPE_TIME_EXHAUSTED',
+    'RETRY_BUDGET_EXHAUSTED', 'LOCAL_AUTHORITY_UNPROVEN', 'LOCAL_STATE_UNPROVEN',
+    'CLOCK_REGRESSION', 'GENERATION_RECONCILIATION_REQUIRED',
+    'WORKER_INVOCATION_RECONCILIATION_REQUIRED', 'INTERRUPTED_ATTEMPT_REQUIRES_RECONCILIATION',
+    'PUBLICATION_DEADLINE_UNPROVEN', 'PUBLICATION_OUTCOME_AMBIGUOUS', 'DURABLE_RESULT_UNPROVEN',
+    'SAFE_PAUSE_UNPROVEN', 'UNCLASSIFIED_FAILURE',
+)
+INCIDENT_FIELDS = (
+    'schema', 'scopeRef', 'authorizationSequence', 'epochs', 'incidentCount',
+    'failedAt', 'pausedAt', 'resumedAt', 'nextRetryAt', 'phase', 'code',
+    'revocation', 'stateAtFailure', 'leaseRemainingMs', 'lockWaitMs', 'deadlineMonotonic',
+)
+RECOVERY_LIMIT = 65536
 
 
 def positive(value):
@@ -157,6 +179,106 @@ def driver_denial_fields(row):
             or not DRIVER_CODE.fullmatch(denial['code'])):
         raise ValueError('EPOCH_DRIVER_DENIAL_INVALID')
     return {'driverDenial': {'phase': denial['phase'], 'code': denial['code']}}
+
+
+def recovery_integer(value, minimum=1):
+    return type(value) is int and minimum <= value < 2**63
+
+
+def recovery_time(value):
+    return type(value) in (int, float) and 0 <= value < 2**63
+
+
+def recovery_incident(value, scope_ref):
+    if value is None:
+        return None
+    if (type(value) is not dict or set(value) != set(INCIDENT_FIELDS)
+            or value['schema'] != INCIDENT_SCHEMA or value['scopeRef'] != scope_ref
+            or not recovery_integer(value['authorizationSequence']) or not recovery_integer(value['incidentCount'])
+            or type(value['epochs']) is not dict or set(value['epochs']) != set(ROLES)
+            or not all(map(recovery_integer, value['epochs'].values()))
+            or value['phase'] not in INCIDENT_PHASES or value['code'] not in INCIDENT_CODES
+            or value['stateAtFailure'] not in RECOVERY_STATES or not recovery_time(value['failedAt'])
+            or value['revocation'] not in ('VERIFIED', 'UNPROVEN')
+            or (value['pausedAt'] is not None) != (value['revocation'] == 'VERIFIED')
+            or not all(value[key] is None or recovery_time(value[key])
+                       for key in ('pausedAt', 'resumedAt', 'nextRetryAt', 'deadlineMonotonic'))
+            or not all(value[key] is None or recovery_integer(value[key], 0)
+                       for key in ('leaseRemainingMs', 'lockWaitMs'))):
+        raise ValueError('RECOVERY_INCIDENT_INVALID')
+    return {key: value[key] for key in INCIDENT_FIELDS}
+
+
+def read_recovery(scope_dir):
+    """Open every component relative to a verified directory descriptor."""
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK
+    directory_flags = flags | os.O_DIRECTORY
+    directory = os.open('/', directory_flags)
+    try:
+        for name in scope_dir.parts[1:]:
+            child = os.open(name, directory_flags, dir_fd=directory)
+            os.close(directory)
+            directory = child
+            info = os.fstat(directory)
+            if info.st_uid != 0 or info.st_mode & 0o022:
+                raise ValueError('RECOVERY_DIRECTORY_CUSTODY_INVALID')
+        if info.st_gid != 0 or stat.S_IMODE(info.st_mode) != 0o700:
+            raise ValueError('RECOVERY_SCOPE_CUSTODY_INVALID')
+        fd = os.open('recovery.json', flags, dir_fd=directory)
+        try:
+            def identity(info):
+                return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid,
+                        info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+            info = os.fstat(fd)
+            if (not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode) != 0o600
+                    or info.st_uid != 0 or info.st_gid != 0 or info.st_nlink != 1
+                    or not 0 < info.st_size <= RECOVERY_LIMIT):
+                raise ValueError('RECOVERY_FILE_CUSTODY_INVALID')
+            raw = os.read(fd, RECOVERY_LIMIT + 1)
+            if (len(raw) != info.st_size or identity(info) != identity(os.fstat(fd))
+                    or identity(info) != identity(os.stat('recovery.json', dir_fd=directory, follow_symlinks=False))):
+                raise ValueError('RECOVERY_FILE_CHANGED')
+            return raw
+        finally:
+            os.close(fd)
+    finally:
+        os.close(directory)
+
+
+def lease_recovery(sup, status, configuration_sha):
+    scope = status.get('recoveryScope')
+    if scope is None:
+        return None
+    root = ROOT / 'supervisor/state/recovery'
+    if (type(scope) is not str or not re.fullmatch(r'[0-9a-f]{48}', scope)
+            or sup.get('recoveryJournalRoot') != str(root)):
+        raise ValueError('RECOVERY_SCOPE_INVALID')
+
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError('DUPLICATE_RECOVERY_KEY')
+            result[key] = value
+        return result
+
+    selector = json.dumps({'configuration': configuration_sha, 'invocation': scope},
+                          sort_keys=True, separators=(',', ':')).encode('ascii')
+    scope_ref = hashlib.sha256(selector).hexdigest()
+    try:
+        row = json.loads(read_recovery(root / scope), object_pairs_hook=unique)
+    except RecursionError:
+        raise ValueError('RECOVERY_CHECKPOINT_INVALID') from None
+    if (type(row) is not dict or row.get('schema') != 'ouf.bounded-recovery.v1'
+            or row.get('contextRef') != scope_ref or row.get('state') not in RECOVERY_STATES
+            or not recovery_integer(row.get('attempts'), 0)):
+        raise ValueError('RECOVERY_CHECKPOINT_INVALID')
+    next_retry = row.get('nextWall')
+    if row['state'] == 'RETRY_WAIT' and not recovery_time(next_retry):
+        raise ValueError('RECOVERY_RETRY_INVALID')
+    return {'scopeRef': scope_ref, 'state': row['state'], 'attempts': row['attempts'],
+            'nextRetryAt': next_retry if row['state'] == 'RETRY_WAIT' else None,
+            'lastIncident': recovery_incident(row.get('lastIncident'), scope_ref)}
 
 
 def emit(**row):

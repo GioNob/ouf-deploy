@@ -2,7 +2,7 @@
 # Installazione umana D-046(a). Nessun grant sudo per questo runbook.
 set -euo pipefail
 umask 077
-C=be3728225594e234fc7dcb8b715815833ca0884b # Claude: fissato dopo review/commit D-001.
+C=0000000000000000000000000000000000000000 # Fissare dopo review e commit D-001.
 mode=${1:-}
 case "$mode:$#" in
   plan:1) ;;
@@ -29,12 +29,12 @@ fetch() {
 }
 # BEGIN DELIVERY
 fetch 91-ouf-r3-readers 6735348f06cfccc324a0767c03eeea90c50a155e9a037ececfd61a12b3303cfe
-fetch r3_common.py 9f1797fa278bd7864fe37bbb4e66a8a03fbbd9151f2f342eafa53b13a29b2dd3
+fetch r3_common.py 4ec8a6029763fd9720182635737d7cceca5be86a4e207250195656ec42f8a881
 fetch r3-epoch-diag.py 1e5e78730cb05eb8649c792f4da5da6c43c2c83369dbf51b49766bfe3d508a31
 fetch r3-epoch-timeline.py 436a94f1b424e9db5033a5001910335a3564ec0d40f56fedc61d228eef672a57
 fetch r3-frame-diag.py 5632b7655aa79c11e1afafd7eacfc32bc4b5ef67d6b8791a852c39d4339d78d3
 fetch r3-guard-diag.py 6fa11b789164e81f760161da1d332c08375f5cc75586f1eb83d7e14c2f29fd1d
-fetch r3-status.py 00e563b48295cbd48a7cb7e4dbad3813ca6ef9192b7198b98e32434305cd0c3c
+fetch r3-status.py a63ab2d713ef72040b2807d91454453b099c44df2ae182a5eb5f3c9ba2bfa275
 fetch r3-supervisor-journal.py 7301994a4b7938c3245d25fc7ef98ea76c20c109df53447189c82f3922921389
 fetch r3-upper-delta.py 83414677f2a1884744137b937d4ea2a4afb8f6808d2e5e395fc6061f290b9181
 fetch r3-watch.py df55ef764f096694a795838759f3ae3f17312dae267c0172c230e8884d372f47

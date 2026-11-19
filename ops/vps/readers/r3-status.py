@@ -46,10 +46,13 @@ def main():
         emit(step='role', role=role, epoch=epoch, docker={
             'Status': scalar(meta['State']['Status']), 'Pid': meta['State']['Pid'],
             'RestartPolicy': fields(meta['HostConfig']['RestartPolicy'], ('Name', 'MaximumRetryCount'))})
-    sup = bound(cfg['leaseQuiesce']['configuration'])
+    binding = cfg['leaseQuiesce']['configuration']
+    sup = bound(binding)
     status = document(sup['statusPath'])
     emit(step='supervisor', **fields(status, ('state', 'reason', 'activationsLastHour')),
-         epochs={r: scalar(status['epochs'][r]) for r in ROLES})
+         epochs={r: scalar(status['epochs'][r]) for r in ROLES},
+         updatedAt=status['updatedAt'] if recovery_integer(status.get('updatedAt'), 0) else None,
+         leaseRecovery=lease_recovery(sup, status, binding['sha256']))
     emit(step='lease', **fields(document(sup['coordinator']['journalPath']), ('state', 'leaseAuthorized')))
     tables = json.loads(command(['/usr/sbin/nft', '-j', 'list', 'tables']))
     emit(step='tables', tables=sorted([[t['table']['family'], t['table']['name']]
