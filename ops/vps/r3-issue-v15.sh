@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=ab7423c9494465b3094aa79098cfb8d862f14f58
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -48,6 +48,7 @@ fetch() {
 delivery() {
   # BEGIN DELIVERY
   fetch ops/vps/r3-driver-budget.json 2fc0921fd26cdb69adf6ab7dc683b3fea321bb59c5db24db95428d7ac59a1e16
+  fetch ops/vps/r3-lease-renewal-v22.json 7a53b38d9ecc3f75f1221a637d0c439bc0d31291fdcaedc4daf0414eaa122d53
   fetch ops/vps/r3-lease-renewal.json c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f
   fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
@@ -133,7 +134,8 @@ delivery() {
   fetch tools/semantic_provider_operation/supersede_gate.py d27e874ceef9e2a1f34f2543d4f79dcdd5b76bdf4db72c10156bc33665cc0ef5
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
   fetch tools/semantic_provider_r3/adapter_v16.py 1af794ea243bfa1d2caa8cfa702017bd5a378c49d27e6c753f52ab4f1890825a
-  fetch tools/semantic_provider_r3/compose.py 955179574957bf10c3ea016b4fcc2aeb09062e073b3dc7deacfe14b48b78ebd3
+  fetch tools/semantic_provider_r3/compose.py 0f1d56a4165d447d339decefad77e85ed2ff7563e3ddc3b68c39bd99a80e85d9
+  fetch tools/semantic_provider_r3/dns_parallel_overlay_v22.py 9a11956689e6bc5263be8a8931b5c99b987f6c61225accbd1e38f518d26260a6
   fetch tools/semantic_provider_r3/dns_retransmit_overlay_v20.py 64987fd8606cef23b033918f2bbb301010b79a9139c866c5e08f8f98828d1b2e
   fetch tools/semantic_provider_r3/driver_budget_v17.py 086b695267ac94ce50053fe1c8f6c8bcec6f702d36e6d350fe74c319741a4f02
   fetch tools/semantic_provider_r3/driver_denial_overlay_v16.py cc2393eb2bea4b299cd8b0a8cdecb7b6e67b8c83f7e8d3d15bd09d915e3b2009
@@ -149,6 +151,7 @@ delivery() {
   fetch tools/semantic_provider_r3/read_adapter_v16.py 66b1dd83d4543e4454036489ff64433d16a9a30bb63127b4310431271064de77
   fetch tools/semantic_provider_r3/read_identity_provider_v13.py 7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7
   fetch tools/semantic_provider_r3/read_routes_v15.py e3e62ea885e0a54fb74de591e49891d1b209fae7756296ad74ae2a958506390e
+  fetch tools/semantic_provider_r3/renewal_overlay_v22.py 81e6e20760b4ea88aa757a1edee60e4436d23bc90d7504dd0f093690176173a7
   fetch tools/semantic_provider_r3/runtime_absent_overlay_v19.py 6fe53b0f9c8e37431bb1c1537d47b8eb450a303b5ef31322eda949963ce58826
   fetch tools/semantic_provider_r3/upgrade.py bc18eee17996d2cb0533d132ec40789c43244187d2edb2d2ca59f48ff850c754
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
@@ -262,9 +265,14 @@ if 15 >= 12:
                     PINS["driverBudget"] = "2fc0921fd26cdb69adf6ab7dc683b3fea321bb59c5db24db95428d7ac59a1e16"
                     if 15 >= 18:
                         # R-022: lease renewal/recovery parameters as an installation input (delivered, pinned).
-                        files["leaseRenewal"] = str(D / "ops/vps/r3-lease-renewal.json")
-                        PINS["leaseRenewal"] = "c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f"
-                        assert set(files) == (C.DATA_INPUTS_V21 if 15 >= 21 else C.DATA_INPUTS_V20 if 15 >= 20 else C.DATA_INPUTS_V19 if 15 >= 19 else C.DATA_INPUTS_V18), "R3_INPUT_SET_DRIFT"
+                        if 15 >= 22:
+                            # R-022 (task-104): composed budgets DNS 6 s / lock 3 s, immediate-renewal band M=19.
+                            files["leaseRenewal"] = str(D / "ops/vps/r3-lease-renewal-v22.json")
+                            PINS["leaseRenewal"] = "7a53b38d9ecc3f75f1221a637d0c439bc0d31291fdcaedc4daf0414eaa122d53"
+                        else:
+                            files["leaseRenewal"] = str(D / "ops/vps/r3-lease-renewal.json")
+                            PINS["leaseRenewal"] = "c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f"
+                        assert set(files) == (C.DATA_INPUTS_V22 if 15 >= 22 else C.DATA_INPUTS_V21 if 15 >= 21 else C.DATA_INPUTS_V20 if 15 >= 20 else C.DATA_INPUTS_V19 if 15 >= 19 else C.DATA_INPUTS_V18), "R3_INPUT_SET_DRIFT"
                     else:
                         assert set(files) == C.DATA_INPUTS_V17, "R3_INPUT_SET_DRIFT"
                 else:
@@ -285,7 +293,7 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = (C.SOURCE_INPUTS_V21 if 15 >= 21 else C.SOURCE_INPUTS_V20 if 15 >= 20 else C.SOURCE_INPUTS_V19 if 15 >= 19 else C.SOURCE_INPUTS_V18 if 15 >= 18 else C.SOURCE_INPUTS_V17 if 15 >= 17 else C.SOURCE_INPUTS_V16 if 15 >= 16 else C.SOURCE_INPUTS_V15 if 15 >= 15 else C.SOURCE_INPUTS_V13 if 15 >= 13 else C.SOURCE_INPUTS_V12 if 15 >= 12 else C.SOURCE_INPUTS_V11 if 15 >= 11
+SOURCE_SET = (C.SOURCE_INPUTS_V22 if 15 >= 22 else C.SOURCE_INPUTS_V21 if 15 >= 21 else C.SOURCE_INPUTS_V20 if 15 >= 20 else C.SOURCE_INPUTS_V19 if 15 >= 19 else C.SOURCE_INPUTS_V18 if 15 >= 18 else C.SOURCE_INPUTS_V17 if 15 >= 17 else C.SOURCE_INPUTS_V16 if 15 >= 16 else C.SOURCE_INPUTS_V15 if 15 >= 15 else C.SOURCE_INPUTS_V13 if 15 >= 13 else C.SOURCE_INPUTS_V12 if 15 >= 12 else C.SOURCE_INPUTS_V11 if 15 >= 11
               else C.SOURCE_INPUTS_V6 if 15 >= 6 else C.SOURCE_INPUTS)
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},

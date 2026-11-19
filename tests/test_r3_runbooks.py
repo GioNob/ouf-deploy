@@ -65,6 +65,9 @@ CLOSURE = {
     "tools/semantic_provider_r3/dns_retransmit_overlay_v20.py",
     # R-022 (task-97): v21 renewal timing observability overlay.
     "tools/semantic_provider_r3/lease_timing_overlay_v21.py",
+    # R-022 (task-104): v22 renewal band, composed budgets, parallel DNS and its input.
+    "tools/semantic_provider_r3/renewal_overlay_v22.py", "tools/semantic_provider_r3/dns_parallel_overlay_v22.py",
+    "ops/vps/r3-lease-renewal-v22.json",
     *("tools/semantic_lease_kernel_migration/" + n for n in (
         "__init__.py", "boot_dispatcher.py", "boot_runner_v2.py", "cli.py", "migration.py", "native.py")),
     "tools/semantic_provider_r3/upgrade.py", "scripts/upgrade-semantic-provider-r3.py",
@@ -106,7 +109,7 @@ class R3Runbooks(unittest.TestCase):
         self.assertEqual(paths, CLOSURE | set(C.SOURCE_INPUTS) | set(C.SOURCE_INPUTS_V6) | set(C.SOURCE_INPUTS_V11)
                          | set(C.SOURCE_INPUTS_V12) | set(C.SOURCE_INPUTS_V13)
                          | set(C.SOURCE_INPUTS_V15) | set(C.SOURCE_INPUTS_V16)
-                         | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18) | set(C.SOURCE_INPUTS_V19) | set(C.SOURCE_INPUTS_V20) | set(C.SOURCE_INPUTS_V21))
+                         | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18) | set(C.SOURCE_INPUTS_V19) | set(C.SOURCE_INPUTS_V20) | set(C.SOURCE_INPUTS_V21) | set(C.SOURCE_INPUTS_V22))
 
     def test_sealed_hashes_are_lf_blobs_at_head(self):
         for path, digest in self.deliveries[0]:
