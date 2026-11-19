@@ -185,7 +185,9 @@ class Readers(unittest.TestCase):
                 candidates=lambda _: {}, read_recovery=read_recovery,
                 read=lambda _: b'{"decision":"OPERATE"}', command=lambda _: '{"nftables":[]}'), \
                 patch('pathlib.Path.glob', return_value=[Path('1.json')]), patch.object(sys, 'argv', ['status']):
-            for detail in (None, incident):
+            timing = dict(schema='ouf.lease-renewal-timing.v1', branch=[0, 75], previous=None,
+                          current=dict(sequence=1, events=[['sampleAfter', 104, 21.75, 125.75]], truncated=False))
+            for detail in (None, incident, {**incident, 'timing': timing}):
                 with self.subTest(incident=detail is not None):
                     if detail is not None:
                         row['lastIncident'] = detail
@@ -197,8 +199,9 @@ class Readers(unittest.TestCase):
                     self.assertNotIn('192.0.2.100', public)
                     self.assertNotIn(scope, public)
                     projected = next(r for r in map(json.loads, public.splitlines()) if r['step'] == 'supervisor')
+                    expected = {'timing': None, **detail} if detail is not None else None
                     self.assertEqual(projected['leaseRecovery'], {'scopeRef': scope_ref, 'state': 'RETRY_WAIT',
-                        'attempts': 1, 'nextRetryAt': 130, 'lastIncident': detail})
+                        'attempts': 1, 'nextRetryAt': 130, 'lastIncident': expected})
                     read_recovery.assert_called_with(recovery_root / scope)
             read_recovery.reset_mock()
             for altered in ({'recoveryScope': '../other'}, {'recoveryScope': 'b' * 64}):
@@ -208,6 +211,7 @@ class Readers(unittest.TestCase):
                 ns['lease_recovery'](sup | {'recoveryJournalRoot': '/unbound'}, status, configuration_sha)
             read_recovery.assert_not_called()
             for bad in ({'code': 'SECRET_SENTINEL'}, {'phase': '192.0.2.100'}, {'deadlineMonotonic': float('nan')},
+                        {'timing': {**timing, 'branch': ['SECRET_SENTINEL', 1]}},
                         {'pausedAt': None}, {'stderr': 'SECRET_SENTINEL'}, {'scopeRef': 'b' * 64}):
                 row['lastIncident'] = incident | bad
                 output = io.StringIO()

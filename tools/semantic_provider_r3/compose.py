@@ -87,6 +87,8 @@ SOURCE_MAP_V19 = dict(SOURCE_MAP_V18)
 SOURCE_INPUTS_V19 = frozenset(SOURCE_MAP_V19.values()) | {KERNEL_V1}
 SOURCE_MAP_V20 = dict(SOURCE_MAP_V19)
 SOURCE_INPUTS_V20 = frozenset(SOURCE_MAP_V20.values()) | {KERNEL_V1}
+SOURCE_MAP_V21 = dict(SOURCE_MAP_V20)
+SOURCE_INPUTS_V21 = SOURCE_INPUTS_V20
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -102,6 +104,7 @@ DATA_INPUTS_V17 = DATA_INPUTS_V16 | {'driverBudget'}
 DATA_INPUTS_V18 = DATA_INPUTS_V17 | {'leaseRenewal'}
 DATA_INPUTS_V19 = set(DATA_INPUTS_V18)
 DATA_INPUTS_V20 = set(DATA_INPUTS_V19)
+DATA_INPUTS_V21 = set(DATA_INPUTS_V20)
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -292,7 +295,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     files, sources = inputs["files"], inputs["sources"]
     if version >= 17:
         from . import driver_budget_v17
-    if version >= 20:
+    if version >= 21:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V21, SOURCE_INPUTS_V21, DATA_INPUTS_V21
+    elif version >= 20:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V20, SOURCE_INPUTS_V20, DATA_INPUTS_V20
     elif version >= 19:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V19, SOURCE_INPUTS_V19, DATA_INPUTS_V19
@@ -403,6 +408,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         if version >= 20:
             from . import dns_retransmit_overlay_v20
             emitted = dns_retransmit_overlay_v20.sources_v20(emitted, selected_map)
+        if version >= 21:
+            from .lease_timing_overlay_v21 import sources_v21
+            emitted = sources_v21(emitted, selected_map)
         emitted, hashes = seal_v18(sources, emitted, source_map, RECOVERY, sha)
     else:
         hashes = {target: sha(emitted[original]) for target, original in source_map.items()}
