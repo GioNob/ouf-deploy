@@ -93,6 +93,8 @@ SOURCE_MAP_V22 = dict(SOURCE_MAP_V21)
 SOURCE_INPUTS_V22 = frozenset(SOURCE_MAP_V22.values()) | {KERNEL_V1}
 SOURCE_MAP_V23 = dict(SOURCE_MAP_V22)
 SOURCE_INPUTS_V23 = frozenset(SOURCE_MAP_V23.values()) | {KERNEL_V1}
+SOURCE_MAP_V24 = dict(SOURCE_MAP_V23)
+SOURCE_INPUTS_V24 = frozenset(SOURCE_MAP_V24.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -111,6 +113,7 @@ DATA_INPUTS_V20 = set(DATA_INPUTS_V19)
 DATA_INPUTS_V21 = set(DATA_INPUTS_V20)
 DATA_INPUTS_V22 = set(DATA_INPUTS_V21)  # New version of the leaseRenewal document.
 DATA_INPUTS_V23 = set(DATA_INPUTS_V22)
+DATA_INPUTS_V24 = set(DATA_INPUTS_V23)
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -301,7 +304,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     files, sources = inputs["files"], inputs["sources"]
     if version >= 17:
         from . import driver_budget_v17
-    if version >= 23:
+    if version >= 24:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V24, SOURCE_INPUTS_V24, DATA_INPUTS_V24
+    elif version >= 23:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V23, SOURCE_INPUTS_V23, DATA_INPUTS_V23
     elif version >= 22:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V22, SOURCE_INPUTS_V22, DATA_INPUTS_V22
@@ -427,6 +432,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         if version >= 23:
             from .cache_rollover_overlay_v23 import sources_v23
             emitted = sources_v23(emitted, selected_map)
+        if version >= 24:
+            from .cache_watch_overlay_v24 import sources_v24
+            emitted = sources_v24(emitted, selected_map)
         emitted, hashes = seal_v18(sources, emitted, source_map, RECOVERY, sha)
     else:
         hashes = {target: sha(emitted[original]) for target, original in source_map.items()}

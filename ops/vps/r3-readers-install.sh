@@ -2,7 +2,7 @@
 # Installazione umana D-046(a). Nessun grant sudo per questo runbook.
 set -euo pipefail
 umask 077
-C=a2410de20ce2c3131dc968cb53cbca80224075fa # Fissato dopo review e commit D-001.
+C=2d2b63d92d692f09987f95b3aabf3d1cf37a0f96 # Fissato dopo review e commit D-001.
 mode=${1:-}
 case "$mode:$#" in
   plan:1) ;;
