@@ -92,6 +92,9 @@ jobs:
       - name: R-022 R3 v23 DNS cache rollover and v22 upgrade
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v23.py -v
+      - name: R-022 R3 v24 supervised cache wait and v23 upgrade
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v24.py -v
       - name: R-012 prepared-epoch reconciliation and pinned runbook
         run: |
           bash -n ops/vps/r3-reconcile.sh
