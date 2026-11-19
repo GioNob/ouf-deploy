@@ -16,7 +16,7 @@ Al prefisso si aggiunge una delle forme seguenti:
 
 | Forma | Output |
 | --- | --- |
-| `r3-status.py` | Testa delle autorizzazioni, epoche correnti, ultimo diniego per mtime, Docker, lease, supervisore e tabelle nft R3 |
+| `r3-status.py` | Testa delle autorizzazioni, epoche correnti, ultimo diniego per mtime, Docker, lease, supervisore con `updatedAt` e `leaseRecovery`, tabelle nft R3 |
 | `r3-epoch-timeline.py adapter N` | File dell'epoca adapter |
 | `r3-epoch-timeline.py southbound N` | File dell'epoca southbound |
 | `r3-epoch-timeline.py both N` | File di entrambi i ruoli |
@@ -49,6 +49,10 @@ Il puntatore dell'epoca viene confrontato con l'hash del journal; `live` richied
 STARTED, boot corrente e stessa generazione PID/startTicks. Letture concorrenti
 possono produrre errore o una fotografia non atomica; non vengono presi lock.
 Gli errori dei nuovi lettori riportano soltanto il tipo, senza contenuti privati.
+Per il checkpoint di recupero R3 v18 il lettore usa lo scope indicato dallo
+stato del supervisore e verifica la root e l'identità dello scope prima della
+proiezione. Il formato di `leaseRecovery` e i casi storici sono descritti nel
+[contratto di osservabilità R3 v18](OUF_SEMANTIC_PROVIDER_R3_V18_LEASE_OBSERVABILITY.md).
 
 La timeline mostra mtime UTC e percorso relativo dei file, e soltanto i campi
 scalari `state`, `failure`, `reason`, `code`, `mode`, `schema`; in `failure` oggetto
@@ -95,7 +99,7 @@ bash ops/vps/r3-readers-install.sh plan
 bash ops/vps/r3-readers-install.sh apply <planSha256>
 ```
 
-Plan scarica esclusivamente i nove blob elencati dal commit fissato, controlla
+Plan scarica esclusivamente i dieci blob elencati dal commit fissato, controlla
 gli SHA-256 dei byte LF, verifica la copia temporanea con `visudo -cf` e stampa
 hash, destinazioni, proprietari e modi. Non installa file; usa una directory
 root temporanea eliminata all'uscita. Il digest del piano comprende manifest,

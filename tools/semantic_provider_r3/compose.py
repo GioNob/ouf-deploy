@@ -371,6 +371,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         emitted = sources_v16(emitted, selected_map)
     if version >= 17:
         emitted = driver_budget_v17.sources_v17(emitted, selected_map)
+    if version >= 18:
+        from .lease_observability_overlay_v18 import sources_v18_observability
+        emitted = sources_v18_observability(emitted, selected_map)
     if version >= 12:
         contract_module(emitted[KERNEL_V2], 'kernel_g2').materialize(owner['kernel'], empty_provider_sets=True)
     docs = {"source/" + target: emitted[original] for target, original in source_map.items()}
