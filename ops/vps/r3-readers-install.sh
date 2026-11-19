@@ -2,7 +2,7 @@
 # Installazione umana D-046(a). Nessun grant sudo per questo runbook.
 set -euo pipefail
 umask 077
-C=d454a96624e89d53af9261be978a55e743245381 # Fissato dopo review e commit D-001.
+C=0000000000000000000000000000000000000000 # Fissato dopo review e commit D-001.
 mode=${1:-}
 case "$mode:$#" in
   plan:1) ;;
@@ -29,7 +29,7 @@ fetch() {
 }
 # BEGIN DELIVERY
 fetch 91-ouf-r3-readers 6735348f06cfccc324a0767c03eeea90c50a155e9a037ececfd61a12b3303cfe
-fetch r3_common.py 128e4657197a57db837f1c5a4bfc524ab47a0962fd33530aa5b2f9370a68ec27
+fetch r3_common.py 309fe1f8fa6514810b0330d03ad440ea6eaefef594685dc634aeca073bf8afae
 fetch r3-epoch-diag.py 1e5e78730cb05eb8649c792f4da5da6c43c2c83369dbf51b49766bfe3d508a31
 fetch r3-epoch-timeline.py 436a94f1b424e9db5033a5001910335a3564ec0d40f56fedc61d228eef672a57
 fetch r3-frame-diag.py 5632b7655aa79c11e1afafd7eacfc32bc4b5ef67d6b8791a852c39d4339d78d3

@@ -56,6 +56,7 @@ on:
       - docs/OUF_SEMANTIC_PROVIDER_R3_V19.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V20.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V22.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V23.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V21.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_RECONCILE.md
       - tests/test_semantic_b1_acceptance.py
@@ -88,6 +89,9 @@ jobs:
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v22.py -v
       - name: R3 scoped checkpoint projection and reader delivery
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_r3_readers.py -v
+      - name: R-022 R3 v23 DNS cache rollover and v22 upgrade
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v23.py -v
       - name: R-012 prepared-epoch reconciliation and pinned runbook
         run: |
           bash -n ops/vps/r3-reconcile.sh

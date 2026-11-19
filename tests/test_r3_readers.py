@@ -203,6 +203,14 @@ class Readers(unittest.TestCase):
                     self.assertEqual(projected['leaseRecovery'], {'scopeRef': scope_ref, 'state': 'RETRY_WAIT',
                         'attempts': 1, 'nextRetryAt': 130, 'lastIncident': expected})
                     read_recovery.assert_called_with(recovery_root / scope)
+            row['lastCacheRollover'] = ['cacheRenewed', 118, 116, 117, 117.01]
+            self.assertEqual(ns['lease_recovery'](sup, status, configuration_sha)['lastCacheRollover'],
+                             row['lastCacheRollover'])
+            for invalid in (['ready', 118], ['cacheWait', 100, 116, 'SECRET_SENTINEL', 0]):
+                row['lastCacheRollover'] = invalid
+                with self.assertRaisesRegex(ValueError, 'RECOVERY_CACHE_ROLLOVER_INVALID'):
+                    ns['lease_recovery'](sup, status, configuration_sha)
+            del row['lastCacheRollover']
             read_recovery.reset_mock()
             for altered in ({'recoveryScope': '../other'}, {'recoveryScope': 'b' * 64}):
                 with self.assertRaises(ValueError):
