@@ -1,11 +1,6 @@
+# Qualificazione storica (2026-11-05): solo manuale, D-055
 name: Storage MinIO to exact OCI33 migration rehearsal
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-minio33-rehearsal.yml
-      - scripts/run-storage-minio33-rehearsal.py
-      - tests/fixtures/storage-minio33/**
   workflow_dispatch:
 permissions:
   contents: read

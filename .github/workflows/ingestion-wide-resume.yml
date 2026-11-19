@@ -1,12 +1,7 @@
+# Qualificazione storica (2026-11-08): solo manuale, D-055
 name: Ingestion stopped-prefix residual upgrade
 on:
-  pull_request:
-    paths:
-      - scripts/resume-ingestion-wide-20261108.py
-      - tests/test_ingestion_wide_resume.py
-      - tests/test_ingestion_wide_resume_native.py
-      - tools/ingestion_wide_20261108/**
-      - .github/workflows/ingestion-wide-resume.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   native:

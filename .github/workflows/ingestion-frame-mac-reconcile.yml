@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-20): solo manuale, D-055
 name: Ingestion MAC parameterization and retained-frame reconciliation
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['tools/ingestion_rollout_preparation/frames.py', 'scripts/reconcile-ingestion-frame-mac-20261020.py', 'scripts/launch-ingestion-frame-mac-reconcile-20261020.sh', 'tests/test_ingestion_frame_mac*.py', '.github/workflows/ingestion-frame-mac-reconcile.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   native-frame:

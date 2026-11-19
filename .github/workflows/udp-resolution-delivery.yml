@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-17): solo manuale, D-055
 name: UDP Resolution pinned delivery verification
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['scripts/launch-udp-resolution-update-20261017.sh', 'tests/test_udp_resolution_delivery.py', '.github/workflows/udp-resolution-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   pinned-delivery:

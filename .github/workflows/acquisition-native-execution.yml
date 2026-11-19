@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-25): solo manuale, D-055
 name: Acquisition native execution input preparation
 on:
-  push:
-    branches: [fix/registry-bound-owner-lineage-20261023]
-    paths: ['scripts/prepare-acquisition-read-native-execution-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_native_execution.py','tests/qualify_acquisition_native_archive.py','.github/workflows/acquisition-native-execution.yml']
-  pull_request:
-    paths: ['scripts/prepare-acquisition-read-native-execution-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_native_execution.py','tests/qualify_acquisition_native_archive.py','.github/workflows/acquisition-native-execution.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   isolated-root-plan-and-namespace-get:

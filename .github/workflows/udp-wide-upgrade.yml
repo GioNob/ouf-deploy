@@ -1,12 +1,7 @@
+# Qualificazione storica (2026-11-09): solo manuale, D-055
 name: UDP archived wide candidate upgrade
 on:
-  pull_request:
-    paths:
-      - scripts/upgrade-udp-wide-20261109.py
-      - tests/test_udp_wide_upgrade.py
-      - tests/test_udp_wide_upgrade_native.py
-      - tools/udp_wide_20261108/**
-      - .github/workflows/udp-wide-upgrade.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   native:

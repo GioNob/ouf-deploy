@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-27): solo manuale, D-055
 name: Retained CSV control exact images and conditional plan
 on:
-  push:
-    paths: ['tools/managed_csv_recovery/image_plan.py', 'scripts/prepare-managed-csv-control-image-plan.py', 'scripts/download-managed-csv-control-images.py', 'tests/test_managed_csv_control_image_plan.py', 'tests/qualify_managed_csv_control_image_plan.py', 'tests/qualify_managed_csv_control_image_plan_delivery.py', 'releases/prepare-managed-csv-control-image-plan-20261027.sh', 'releases/managed-csv-control-image-plan-case-20261027.json', '.github/workflows/managed-csv-control-image-plan.yml']
-  pull_request:
-    paths: ['tools/managed_csv_recovery/image_plan.py', 'scripts/prepare-managed-csv-control-image-plan.py', 'scripts/download-managed-csv-control-images.py', 'tests/test_managed_csv_control_image_plan.py', 'tests/qualify_managed_csv_control_image_plan.py', 'tests/qualify_managed_csv_control_image_plan_delivery.py', 'releases/prepare-managed-csv-control-image-plan-20261027.sh', 'releases/managed-csv-control-image-plan-case-20261027.json', '.github/workflows/managed-csv-control-image-plan.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   exact-archives-and-plan:

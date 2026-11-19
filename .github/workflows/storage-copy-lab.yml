@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-11-02): solo manuale, D-055
 name: Storage copy core real S3 crash and integrity qualification
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - '.github/workflows/storage-copy-lab.yml'
-      - 'tools/storage_copy/**'
-      - 'scripts/run-storage-copy-lab-20261102.py'
+  workflow_dispatch:
 permissions: {contents: read, id-token: write, attestations: write}
 jobs:
   qualify:

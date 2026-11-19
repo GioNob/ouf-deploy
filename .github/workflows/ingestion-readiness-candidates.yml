@@ -1,8 +1,6 @@
+# Qualificazione storica (2026-10-17): solo manuale, D-055
 name: Scoped Ingestion readiness candidate packages
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['.github/workflows/ingestion-readiness-candidates.yml', 'scripts/package-ingestion-readiness-candidate.py', 'scripts/materialize-ingestion-readiness-route.py', 'releases/ingestion-readiness-candidate-20261017.json']
   workflow_dispatch:
 permissions: {contents: read}
 jobs:

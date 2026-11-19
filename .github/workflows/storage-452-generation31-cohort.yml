@@ -1,17 +1,8 @@
+# Qualificazione storica (2026-11-03): solo manuale, D-055
 name: Storage 4.52 generation31 cohort and legal text rebinding
 
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-452-generation31-cohort.yml
-      - scripts/verify-seaweedfs-452-generation31-cohort.py
-      - tests/test_seaweedfs_452_generation31_cohort.py
-      - releases/seaweedfs-452-generation31-candidate-lock-20261103.json
-      - evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source-manifest.json
-      - evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source.tar.gz
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read

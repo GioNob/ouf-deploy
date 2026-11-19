@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: MCP Gateway82 immutable delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-mcp-read-transport-gateway82-20261019.sh'
-      - 'tests/test_mcp_read_transport_gateway82_delivery.py'
-      - '.github/workflows/mcp-read-transport-gateway82-delivery.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

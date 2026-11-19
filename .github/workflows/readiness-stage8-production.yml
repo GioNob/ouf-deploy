@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-22): solo manuale, D-055
 name: Stage8 exact production delivery reproduction
 on:
-  push:
-    branches: [feat/csv-e2e-owner-composition-20261020]
-    paths: ['scripts/*ingestion-stage8*','releases/ingestion-readiness-stage8-*.json','evidence/ingestion-readiness-stage8-production-pins-*.json','tools/ingestion_readiness_patch_execution/stage8_production.py','tests/test_readiness_patch_stage8_governance.py','.github/workflows/readiness-stage8-production.yml']
-  pull_request:
-    paths: ['scripts/*ingestion-stage8*','releases/ingestion-readiness-stage8-*.json','evidence/ingestion-readiness-stage8-production-pins-*.json','tools/ingestion_readiness_patch_execution/stage8_production.py','tests/test_readiness_patch_stage8_governance.py','.github/workflows/readiness-stage8-production.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   exact-production-caches:

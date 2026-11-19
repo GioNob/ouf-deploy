@@ -75,7 +75,7 @@ if [[ $mode == plan || $mode == apply ]]; then
 import json, re, sys
 with open(sys.argv[1], 'rb') as f:
     c = json.load(f)['candidate']
-if (c['sourceCommit'] != 'b4c1091bcbbb374d7d4a190f58a818e1d17deac7'
+if (c['sourceCommit'] != 'fccdd375fac37991737a4f60aea4ca21ce0a9b23'
         or type(c['artifactId']) is not int or c['artifactId'] <= 0
         or not re.fullmatch('[a-f0-9]{64}', c['zipSha256'])):
     sys.exit('Selezione del candidato R-033 non valida.')

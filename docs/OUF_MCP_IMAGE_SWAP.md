@@ -1,6 +1,6 @@
 # R-033 · Sostituzione dell’immagine MCP su schema 14
 
-Il candidato è il commit `b4c1091bcbbb374d7d4a190f58a818e1d17deac7` di `GioNob/ouf-mcp-server`, PR #85, Go 1.27.4. La [ricevuta dell’8 novembre](../evidence/mcp-analysis-ready-operator-20261108.json) identifica il rilascio precedente. Il CID corrente, il database e il binario in esecuzione si rilevano nuovamente sul VPS. Il launcher ha il commit di consegna a zeri fino alla review.
+Il candidato è il commit `fccdd375fac37991737a4f60aea4ca21ce0a9b23` di `GioNob/ouf-mcp-server`, PR #86, Go 1.27.4 più i tool di discovery della #84. La [ricevuta dell’8 novembre](../evidence/mcp-analysis-ready-operator-20261108.json) identifica il rilascio precedente. Il CID corrente, il database e il binario in esecuzione si rilevano nuovamente sul VPS. Il launcher ha il commit di consegna a zeri fino alla review.
 
 ## Selezione del pacchetto e qualifica su GitHub
 
@@ -32,7 +32,7 @@ Preparare `inputs.json` root:root 0600 nella directory sopra indicata. Inserire 
   "candidate": {
     "runId": 0,
     "artifactId": 0,
-    "sourceCommit": "b4c1091bcbbb374d7d4a190f58a818e1d17deac7",
+    "sourceCommit": "fccdd375fac37991737a4f60aea4ca21ce0a9b23",
     "publisherCommit": "<commit del publisher>",
     "sourceTree": "<albero del candidato>",
     "publisherTree": "<albero del publisher>",

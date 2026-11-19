@@ -1,11 +1,6 @@
+# Qualificazione storica (2026-11-05): solo manuale, D-055
 name: Onboarding upload39 independent native evidence readback
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/onboarding-upload39-readback.yml
-      - scripts/readback-onboarding-upload39.py
-      - evidence/onboarding-upload-source-tree-9d8a1ec.json
   workflow_dispatch:
 permissions:
   contents: read

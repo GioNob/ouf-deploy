@@ -1,23 +1,7 @@
+# Qualificazione storica (2026-10-14): solo manuale, D-055
 name: OUF proposal seven-mount frame and native custody fixture
 on:
   workflow_dispatch:
-  push:
-    branches: [main, codex/semantic-proposal-frame-20261014]
-    paths:
-      - tests/native_proposal_seven_mount_v11_execution.py
-      - tools/semantic_application_cutover/semantic_proposal_frame_observation.py
-      - tools/semantic_frame_compiler/compile_semantic_proposal_frame_policy.py
-      - tools/semantic_frame_compiler/test_compile_semantic_proposal_frame_policy.py
-      - tools/semantic_application_cutover/six_mount_frame_observation.py
-      - tools/semantic_application_cutover/paused_node_observation.py
-      - tools/semantic_policy_token_owner/mount_observation.py
-      - tools/semantic_application_cutover/configtree_mount_observation.py
-      - tools/semantic_application_cutover/projected_frame_observation.py
-      - tools/semantic_application_cutover/paused_attestation_adapter.py
-      - tests/test_projected_frame_custody.py
-      - tools/semantic_application_cutover/gated_process_observation.py
-      - tools/semantic_application_cutover/gated_release_adapter.py
-      - .github/workflows/semantic-proposal-seven-mount.yml
 permissions:
   contents: read
   actions: read

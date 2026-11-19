@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-20): solo manuale, D-055
 name: Ingestion private rollout packet qualification
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/prepare-ingestion-rollout-packet-20261020.py', 'scripts/launch-ingestion-rollout-packet-20261020.sh', 'tools/ingestion_rollout_preparation/*.py', 'tests/test_ingestion_rollout_packet*.py', '.github/workflows/ingestion-rollout-packet.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   private-packet:

@@ -1,18 +1,6 @@
+# Qualificazione storica (2026-10-11): solo manuale, D-055
 name: Native V11 private plan and original-byte Engine qualification
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/native-v11-plan.yml
-      - scripts/prepare-native-v11-plan.py
-      - tools/semantic_application_cutover/rebase_native_manifest.py
-      - tests/test_native_v11*.py
-      - tests/native_v11_plan_native.py
-      - tests/native_v11_cutover_executor.py
-      - tests/test_cutover_executor.py
-      - tools/semantic_application_cutover/cutover_executor.py
-      - tools/semantic_application_cutover/creation_adapter.py
-      - releases/native-v11-plan-20261011.sh
   workflow_dispatch:
 permissions:
   contents: read

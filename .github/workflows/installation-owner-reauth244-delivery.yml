@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: Installation owner reauthentication244 authenticated delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-installation-owner-reauth244-20261019.sh'
-      - 'tests/test_installation_owner_reauth244_delivery.py'
-      - 'evidence/installation-owner-reauth244-delivery-pins-20261019.json'
-      - '.github/workflows/installation-owner-reauth244-delivery.yml'
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

@@ -1,8 +1,6 @@
+# Qualificazione storica (2026-10-17): solo manuale, D-055
 name: Resolution object comparison candidates
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['.github/workflows/resolution-comparison-candidates.yml', 'scripts/package-resolution-comparison-candidate.py', 'scripts/materialize-ingestion-readiness-route.py', 'releases/resolution-comparison-candidate-20261017.json']
   workflow_dispatch:
 permissions: {contents: read}
 jobs:

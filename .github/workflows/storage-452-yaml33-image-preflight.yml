@@ -1,25 +1,8 @@
+# Qualificazione storica (2026-11-04): solo manuale, D-055
 name: Storage 4.52 YAML33 image input preflight
 
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-452-yaml33-image-preflight.yml
-      - scripts/verify-seaweedfs-yaml33-observation.py
-      - scripts/prepare_iceberg_vendor_patch.py
-      - tests/test_seaweedfs_yaml33_image_preflight.py
-      - tests/test_generation_vendor_contract.py
-      - tools/storage_security/generation_vendor_contract.py
-      - tools/storage_security/vendor_yaml_source.py
-      - config/seaweedfs-generation33-vendor-source-profile.json
-      - releases/seaweedfs-452-generation32-build-manifest-20261103.json
-      - releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json
-      - patches/seaweedfs/**
-      - patches/iceberg-go/**
-      - evidence/artifacts/seaweedfs-yaml33-source-observation-41776440912.zip
-      - evidence/seaweedfs-yaml33-source-observation-hosted-20261104.json
   workflow_dispatch:
-
 permissions:
   contents: read
 

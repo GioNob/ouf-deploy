@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-28): solo manuale, D-055
 name: Reviewed additive THS IAM correction and same-effect reconciliation
 on:
-  push:
-    paths: ['scripts/correct-managed-profile-ths-iam-bindings-20261028.py','tools/build_managed_profile_ths_iam_correction.py','tools/managed_profile_ths_scopes/iam_correction*','tests/*managed_profile_ths_iam_correction*','releases/correct-managed-profile-ths-iam-bindings-20261028.sh','.github/workflows/managed-profile-ths-iam-correction.yml']
-  pull_request:
-    paths: ['scripts/correct-managed-profile-ths-iam-bindings-20261028.py','tools/build_managed_profile_ths_iam_correction.py','tools/managed_profile_ths_scopes/iam_correction*','tests/*managed_profile_ths_iam_correction*','releases/correct-managed-profile-ths-iam-bindings-20261028.sh','.github/workflows/managed-profile-ths-iam-correction.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   reviewed-protocol-and-real-provider:

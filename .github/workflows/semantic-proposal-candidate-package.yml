@@ -1,19 +1,6 @@
+# Qualificazione storica (2026-10-14): solo manuale, D-055
 name: Complete chatbot file cohort packages
 on:
-  push:
-    branches: [codex/complete-file-cohort-package-20261014]
-    paths:
-      - scripts/package-semantic-proposal-candidate.py
-      - scripts/package-file-loop-candidate.py
-      - scripts/assemble-file-cohort.py
-      - scripts/check-file-cohort-startup.py
-      - scripts/qualify-file-only-rootfs.py
-      - scripts/materialize-file-cohort-routes.py
-      - scripts/download-file-cohort.py
-      - tests/test_semantic_proposal_candidate_package.py
-      - tests/test_file_cohort_package.py
-      - releases/chatbot-file-cohort-20261014.json
-      - .github/workflows/semantic-proposal-candidate-package.yml
   workflow_dispatch:
 permissions: {contents: read}
 jobs:

@@ -1,17 +1,7 @@
+# Qualificazione storica (2026-11-02): solo manuale, D-055
 name: SeaweedFS independent producer evidence readback
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - '.github/workflows/seaweedfs-evidence-readback.yml'
-      - 'scripts/read-seaweedfs-lab-artifact-20261102.py'
-      - 'scripts/verify-seaweedfs-evidence-20261102.py'
-      - 'tools/storage_migration/inventory_bootstrap.py'
-      - 'tests/test_storage_inventory_bootstrap.py'
-      - 'scripts/test-storage-inventory-bootstrap-20261102.py'
-      - 'scripts/build-storage-inventory-bootstrap-20261102.py'
-      - 'scripts/verify-published-storage-inventory-20261102.py'
-      - 'releases/seaweedfs-inventory-delivery-20261102/run-inventory.py'
+  workflow_dispatch:
 permissions: {contents: read, attestations: read}
 jobs:
   readback:

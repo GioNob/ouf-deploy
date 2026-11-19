@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-20): solo manuale, D-055
 name: Ingestion replacement observations and Gateway namespace binding
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['tools/ingestion_rollout_execution/replacement.py', 'tools/ingestion_rollout_execution/namespace.py', 'tests/test_ingestion_replacement*.py', '.github/workflows/ingestion-replacement.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   native-replacement:

@@ -1,14 +1,8 @@
+# Qualificazione storica (2026-11-04): solo manuale, D-055
 name: Storage generation33 physical PostgreSQL and SeaweedFS common cut
 
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-generation33-physical-cut.yml
-      - scripts/run-storage-physical-cut33-lab.py
-      - tests/test_storage_physical_cut33.py
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read

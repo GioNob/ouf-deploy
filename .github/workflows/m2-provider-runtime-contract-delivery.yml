@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-29): solo manuale, D-055
 name: M2 read-only provider runtime contract protected delivery
 on:
-  push:
-    paths: ['releases/read-m2-provider-runtime-contract-20261029.sh','tests/qualify_m2_provider_runtime_contract_delivery.py','.github/workflows/m2-provider-runtime-contract-delivery.yml']
-  pull_request:
-    paths: ['releases/read-m2-provider-runtime-contract-20261029.sh','tests/qualify_m2_provider_runtime_contract_delivery.py','.github/workflows/m2-provider-runtime-contract-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

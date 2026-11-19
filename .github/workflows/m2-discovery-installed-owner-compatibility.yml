@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-31): solo manuale, D-055
 name: M2 reuse installed Teatri owner contracts
 on:
-  push:
-    paths: ['.github/workflows/m2-discovery-installed-owner-compatibility.yml','tools/m2_discovery_installation_profile/**','catalogue/m2-semantic-discovery-capabilities.json','tests/test_semantic_discovery_authorization.py','tests/fixtures/owner-role-roundtrip/**']
-  pull_request:
-    paths: ['.github/workflows/m2-discovery-installed-owner-compatibility.yml','tools/m2_discovery_installation_profile/**','catalogue/m2-semantic-discovery-capabilities.json','tests/test_semantic_discovery_authorization.py','tests/fixtures/owner-role-roundtrip/**']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   installed-onboarding-contracts:

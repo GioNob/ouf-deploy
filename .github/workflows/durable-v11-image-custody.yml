@@ -1,14 +1,6 @@
+# Qualificazione storica (2026-10-11): solo manuale, D-055
 name: Exact signed V11 image archive and Engine byte custody qualification
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/durable-v11-image-custody.yml
-      - tools/semantic_application_cutover/image_custody.py
-      - tools/semantic_application_cutover/image_manifest_identity.py
-      - tests/test_image_*.py
-      - tools/semantic_application_cutover/image_import.py
-      - tests/durable_v11_image_custody_native.py
   workflow_dispatch:
 permissions:
   contents: read

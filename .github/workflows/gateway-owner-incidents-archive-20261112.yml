@@ -1,13 +1,7 @@
+# Qualificazione storica (2026-11-12): solo manuale, D-055
 name: Archive Gateway owner incidents candidate 20261112
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - .github/workflows/gateway-owner-incidents-archive-20261112.yml
-      - .github/workflows/gateway-owner-incidents-qualify-20261112.yml
-      - scripts/*gateway*incidents*20261112*
-      - tests/*gateway_incidents*20261112.py
-      - docs/OUF_GATEWAY_OWNER_INCIDENTS_DEPLOY_20261112.md
 permissions: {contents: read}
 jobs:
   archive:

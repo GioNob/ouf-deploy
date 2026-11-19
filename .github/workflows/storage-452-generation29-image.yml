@@ -1,18 +1,8 @@
+# Qualificazione storica (2026-11-03): solo manuale, D-055
 name: Storage 4.52 generation29 image qualification
 
 on:
-  push:
-    branches:
-      - feat/m2-discovery-complete-profile-20261029
-    paths:
-      - .github/workflows/storage-452-generation29-image.yml
-      - patches/seaweedfs/4.52-s3-content-type-persistence.patch
-      - scripts/qualify-seaweedfs-452-generation29-image.py
-      - scripts/readback-seaweedfs-452-generation29-image.py
-      - tests/test_seaweedfs_452_generation29_image.py
-      - releases/seaweedfs-452-generation29-build-manifest-20261103.json
   workflow_dispatch:
-
 permissions:
   contents: read
   id-token: write

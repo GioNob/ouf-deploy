@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-31): solo manuale, D-055
 name: M2 installed Ingestion to Onboarding HTTP contract
 on:
-  push:
-    paths: ['.github/workflows/m2-discovery-installed-owner-http.yml','tests/fixtures/installed-ingestion-owner/**']
-  pull_request:
-    paths: ['.github/workflows/m2-discovery-installed-owner-http.yml','tests/fixtures/installed-ingestion-owner/**']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   joined-installed-owner-http:

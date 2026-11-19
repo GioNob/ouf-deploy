@@ -1,11 +1,6 @@
+# Qualificazione storica (2026-10-10): solo manuale, D-055
 name: Retained Semantic candidate public roots
 on:
-  push:
-    branches: [codex/file-loop-candidate-public-roots-20261010]
-    paths:
-      - .github/workflows/file-loop-candidate-public-roots.yml
-      - scripts/capture-retained-package-public-roots.py
-      - tools/file_loop_package/**
   workflow_dispatch:
 permissions:
   contents: read

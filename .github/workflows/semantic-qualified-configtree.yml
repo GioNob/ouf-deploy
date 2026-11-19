@@ -1,10 +1,6 @@
+# Qualificazione storica (2026-10-10): solo manuale, D-055
 name: Current Semantic package configtree startup and recovery
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/semantic-qualified-configtree.yml
-      - tests/qualified_semantic_configtree_fixture.py
   workflow_dispatch:
 permissions:
   contents: read

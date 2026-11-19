@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: Ingestion Gateway corrected custody immutable delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-ingestion-read-gateway-custody-20261019.sh'
-      - 'tests/test_ingestion_read_gateway_custody_delivery.py'
-      - '.github/workflows/ingestion-read-gateway-custody-delivery.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

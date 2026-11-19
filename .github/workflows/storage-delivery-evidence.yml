@@ -1,23 +1,8 @@
+# Qualificazione storica (2026-11-03): solo manuale, D-055
 name: Storage 4.52 delivery evidence
 
 on:
-  push:
-    branches:
-      - feat/m2-discovery-complete-profile-20261029
-    paths:
-      - .github/workflows/storage-delivery-evidence.yml
-      - scripts/build-seaweedfs-452-delivery-evidence.py
-      - scripts/verify-seaweedfs-452-delivery-evidence.py
-      - tests/test_seaweedfs_452_delivery_evidence.py
-      - releases/seaweedfs-452-delivery-evidence-lock-20261103.json
-      - releases/seaweedfs-452-durable-custody-plan-20261103.json
-      - evidence/seaweedfs-452-component-obligation-matrix-20261103.json
-      - evidence/seaweedfs-452-component-obligation-matrix-20261103.csv
-      - evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-000
-      - evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-001
-      - evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-002
   workflow_dispatch:
-
 permissions:
   contents: read
   id-token: write

@@ -1,13 +1,7 @@
+# Qualificazione storica (2026-10-25): solo manuale, D-055
 name: Acquisition permission descriptor read delivery
 on:
-  push:
-    paths:
-      - releases/read-acquisition-permission-descriptors-20261025.sh
-      - .github/workflows/acquisition-permission-descriptor-delivery.yml
-  pull_request:
-    paths:
-      - releases/read-acquisition-permission-descriptors-20261025.sh
-      - .github/workflows/acquisition-permission-descriptor-delivery.yml
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   root-copy-no-login:

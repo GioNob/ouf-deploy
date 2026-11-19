@@ -1,8 +1,6 @@
+# Qualificazione storica (2026-10-17): solo manuale, D-055
 name: Onboarding audited configuration GET fix candidate
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['.github/workflows/onboarding-audit-fix-candidate.yml', 'scripts/package-onboarding-audit-fix-candidate.py', 'scripts/materialize-ingestion-readiness-route.py', 'releases/onboarding-audit-fix-candidate-20261017.json']
   workflow_dispatch:
 permissions: {contents: read}
 jobs:

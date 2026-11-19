@@ -1,8 +1,6 @@
+# Qualificazione storica (2026-10-18): solo manuale, D-055
 name: Chat-only recovery qualified candidates
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['.github/workflows/chat-only-recovery-candidates.yml', 'scripts/package-chat-only-recovery-candidate.py', 'releases/chat-only-recovery-candidate-20261018.json']
   workflow_dispatch:
 permissions: {contents: read}
 jobs:
