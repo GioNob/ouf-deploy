@@ -20,7 +20,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=539ef56a68c5104903a86f9a3de9647d3f98f3ab
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -138,7 +138,8 @@ delivery() {
   fetch tools/semantic_provider_operation/supersede_gate.py d27e874ceef9e2a1f34f2543d4f79dcdd5b76bdf4db72c10156bc33665cc0ef5
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
   fetch tools/semantic_provider_r3/adapter_v16.py 1af794ea243bfa1d2caa8cfa702017bd5a378c49d27e6c753f52ab4f1890825a
-  fetch tools/semantic_provider_r3/compose.py 7de0c12495184cec2e08494234fc9f0637c84cd3f6ba6747b9b4b079957e9b2f
+  fetch tools/semantic_provider_r3/compose.py 1aa51046466517aa93e7f3028867d64242357dedbd27a2fe17bb7c13cc836ae7
+  fetch tools/semantic_provider_r3/dns_retransmit_overlay_v20.py 64987fd8606cef23b033918f2bbb301010b79a9139c866c5e08f8f98828d1b2e
   fetch tools/semantic_provider_r3/driver_budget_v17.py 086b695267ac94ce50053fe1c8f6c8bcec6f702d36e6d350fe74c319741a4f02
   fetch tools/semantic_provider_r3/driver_denial_overlay_v16.py cc2393eb2bea4b299cd8b0a8cdecb7b6e67b8c83f7e8d3d15bd09d915e3b2009
   fetch tools/semantic_provider_r3/egress_v15.py 03552b9750a551fb227917ac5756667995362e3f9e9acbaf91d717ded4422f82
@@ -218,7 +219,7 @@ PINS = {"coordinator": "5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd
         "southbound/launch": "f066a65cffc7766bbf77b9de15fe9d527ce8ca68a9bb0d74cadfe8370c6ad63b",
         "southbound/context": "18a1df8d45fbe0914514478910041d3a49ecf402b8c78a06c8148cf95c06a1c9",
         "southbound/policy": "e489068bc8a86f226dadfa5a3870dc05aaae65437d638a8b9ce56c4c42e218a8"}
-if 19 >= 12:
+if 20 >= 12:
     # D-050: v12 composes on the generation-2 lease kernel published by the migration.
     G2 = "/etc/ouf/lease-kernel-generations/g2-20261117T122656"
     MIG = S + "/semantic-lease-kernel-migration-20261117T122656"
@@ -232,10 +233,10 @@ if 19 >= 12:
                 migrationReceipt="a3456dfb839001657922e5aed892180cb9347b35e9e765c2a38fb8489a6d534b",
                 generationReceipt="0233576fd023ce6f6afe62f040bfaec1d5a3103035c4b7c4b5657eb81082cca8",
                 bootPointer="2c532ae900128e423c33addee66f5536078d7ce2589237601d6b963bd35bbd42")
-    if 19 >= 13:
+    if 20 >= 13:
         # D-051: identity provider peer read at plan time into the delivery (verified by the composer).
         files["identityProviderPeer"] = str(D / "identity-provider-peer.json")
-        if 19 >= 15:
+        if 20 >= 15:
             # D-052: B1 recipes v3, acceptance g6 and the routes projection read at plan time.
             REC3 = S + "/semantic-provider-b1-recipes-20261118-v3"
             for role in ("adapter", "southbound"):
@@ -246,7 +247,7 @@ if 19 >= 12:
             PINS.update({"southbound/launch": "28a50731e885c58e3df1c765b686c4699a102e64564f48d7c66a07020a975945",
                          "southbound/policy": "9109fd88221b25386f68c27327eada4dc392eb0d6c3d426447849ed2c4265a51",
                          "acceptance": "78954515c36921d7321120a2e7e0bf2cb690eeb7f852b913fb3afea5ddf242c9"})
-            if 19 >= 16:
+            if 20 >= 16:
                 # D-053: B1 v4 recipes, acceptance g7, revised installation profile, adapter projection.
                 REC4 = S + "/semantic-provider-b1-recipes-v4"
                 for role in ("adapter", "southbound"):
@@ -259,15 +260,15 @@ if 19 >= 12:
                              "adapter/policy": "6ed79d6e0cfdda7079a7f5417cbcb269388f613a238856c76d4c913a14200f50",
                              "acceptance": "8dcbb865056cf86ff443772653d8daf346ce04520272add747c7cbda83626752",
                              "installationProfile": "b7ca10e139d91e564c313eb226953db6d384e95283c31c13f7091fa40ffbb160"})
-                if 19 >= 17:
+                if 20 >= 17:
                     # R-030: driver verification budget as an installation input (delivered, pinned).
                     files["driverBudget"] = str(D / "ops/vps/r3-driver-budget.json")
                     PINS["driverBudget"] = "2fc0921fd26cdb69adf6ab7dc683b3fea321bb59c5db24db95428d7ac59a1e16"
-                    if 19 >= 18:
+                    if 20 >= 18:
                         # R-022: lease renewal/recovery parameters as an installation input (delivered, pinned).
                         files["leaseRenewal"] = str(D / "ops/vps/r3-lease-renewal.json")
                         PINS["leaseRenewal"] = "c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f"
-                        assert set(files) == (C.DATA_INPUTS_V19 if 19 >= 19 else C.DATA_INPUTS_V18), "R3_INPUT_SET_DRIFT"
+                        assert set(files) == (C.DATA_INPUTS_V20 if 20 >= 20 else C.DATA_INPUTS_V19 if 20 >= 19 else C.DATA_INPUTS_V18), "R3_INPUT_SET_DRIFT"
                     else:
                         assert set(files) == C.DATA_INPUTS_V17, "R3_INPUT_SET_DRIFT"
                 else:
@@ -288,8 +289,8 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = (C.SOURCE_INPUTS_V19 if 19 >= 19 else C.SOURCE_INPUTS_V18 if 19 >= 18 else C.SOURCE_INPUTS_V17 if 19 >= 17 else C.SOURCE_INPUTS_V16 if 19 >= 16 else C.SOURCE_INPUTS_V15 if 19 >= 15 else C.SOURCE_INPUTS_V13 if 19 >= 13 else C.SOURCE_INPUTS_V12 if 19 >= 12 else C.SOURCE_INPUTS_V11 if 19 >= 11
-              else C.SOURCE_INPUTS_V6 if 19 >= 6 else C.SOURCE_INPUTS)
+SOURCE_SET = (C.SOURCE_INPUTS_V20 if 20 >= 20 else C.SOURCE_INPUTS_V19 if 20 >= 19 else C.SOURCE_INPUTS_V18 if 20 >= 18 else C.SOURCE_INPUTS_V17 if 20 >= 17 else C.SOURCE_INPUTS_V16 if 20 >= 16 else C.SOURCE_INPUTS_V15 if 20 >= 15 else C.SOURCE_INPUTS_V13 if 20 >= 13 else C.SOURCE_INPUTS_V12 if 20 >= 12 else C.SOURCE_INPUTS_V11 if 20 >= 11
+              else C.SOURCE_INPUTS_V6 if 20 >= 6 else C.SOURCE_INPUTS)
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
