@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=d454a96624e89d53af9261be978a55e743245381
+C=a2410de20ce2c3131dc968cb53cbca80224075fa
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -134,7 +134,8 @@ delivery() {
   fetch tools/semantic_provider_operation/supersede_gate.py d27e874ceef9e2a1f34f2543d4f79dcdd5b76bdf4db72c10156bc33665cc0ef5
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
   fetch tools/semantic_provider_r3/adapter_v16.py 1af794ea243bfa1d2caa8cfa702017bd5a378c49d27e6c753f52ab4f1890825a
-  fetch tools/semantic_provider_r3/compose.py 0f1d56a4165d447d339decefad77e85ed2ff7563e3ddc3b68c39bd99a80e85d9
+  fetch tools/semantic_provider_r3/cache_rollover_overlay_v23.py 2f6596c7b1897da8f559891efed7cc2e93baaf724e56b12f03824c4d96124929
+  fetch tools/semantic_provider_r3/compose.py 6aaafd8b0f7851d2ccacc5ff26d76fd0f46392e5f7ab373c1118272a79fdb333
   fetch tools/semantic_provider_r3/dns_parallel_overlay_v22.py 9a11956689e6bc5263be8a8931b5c99b987f6c61225accbd1e38f518d26260a6
   fetch tools/semantic_provider_r3/dns_retransmit_overlay_v20.py 64987fd8606cef23b033918f2bbb301010b79a9139c866c5e08f8f98828d1b2e
   fetch tools/semantic_provider_r3/driver_budget_v17.py 086b695267ac94ce50053fe1c8f6c8bcec6f702d36e6d350fe74c319741a4f02
@@ -272,7 +273,7 @@ if 8 >= 12:
                         else:
                             files["leaseRenewal"] = str(D / "ops/vps/r3-lease-renewal.json")
                             PINS["leaseRenewal"] = "c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f"
-                        assert set(files) == (C.DATA_INPUTS_V22 if 8 >= 22 else C.DATA_INPUTS_V21 if 8 >= 21 else C.DATA_INPUTS_V20 if 8 >= 20 else C.DATA_INPUTS_V19 if 8 >= 19 else C.DATA_INPUTS_V18), "R3_INPUT_SET_DRIFT"
+                        assert set(files) == (C.DATA_INPUTS_V23 if 8 >= 23 else C.DATA_INPUTS_V22 if 8 >= 22 else C.DATA_INPUTS_V21 if 8 >= 21 else C.DATA_INPUTS_V20 if 8 >= 20 else C.DATA_INPUTS_V19 if 8 >= 19 else C.DATA_INPUTS_V18), "R3_INPUT_SET_DRIFT"
                     else:
                         assert set(files) == C.DATA_INPUTS_V17, "R3_INPUT_SET_DRIFT"
                 else:
@@ -293,7 +294,7 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = (C.SOURCE_INPUTS_V22 if 8 >= 22 else C.SOURCE_INPUTS_V21 if 8 >= 21 else C.SOURCE_INPUTS_V20 if 8 >= 20 else C.SOURCE_INPUTS_V19 if 8 >= 19 else C.SOURCE_INPUTS_V18 if 8 >= 18 else C.SOURCE_INPUTS_V17 if 8 >= 17 else C.SOURCE_INPUTS_V16 if 8 >= 16 else C.SOURCE_INPUTS_V15 if 8 >= 15 else C.SOURCE_INPUTS_V13 if 8 >= 13 else C.SOURCE_INPUTS_V12 if 8 >= 12 else C.SOURCE_INPUTS_V11 if 8 >= 11
+SOURCE_SET = (C.SOURCE_INPUTS_V23 if 8 >= 23 else C.SOURCE_INPUTS_V22 if 8 >= 22 else C.SOURCE_INPUTS_V21 if 8 >= 21 else C.SOURCE_INPUTS_V20 if 8 >= 20 else C.SOURCE_INPUTS_V19 if 8 >= 19 else C.SOURCE_INPUTS_V18 if 8 >= 18 else C.SOURCE_INPUTS_V17 if 8 >= 17 else C.SOURCE_INPUTS_V16 if 8 >= 16 else C.SOURCE_INPUTS_V15 if 8 >= 15 else C.SOURCE_INPUTS_V13 if 8 >= 13 else C.SOURCE_INPUTS_V12 if 8 >= 12 else C.SOURCE_INPUTS_V11 if 8 >= 11
               else C.SOURCE_INPUTS_V6 if 8 >= 6 else C.SOURCE_INPUTS)
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},

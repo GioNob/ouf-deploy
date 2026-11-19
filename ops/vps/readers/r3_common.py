@@ -192,6 +192,9 @@ def recovery_time(value):
 TIMING_SCHEMA = 'ouf.lease-renewal-timing.v1'
 # Each event begins with a fixed tag and a monotonic timestamp in seconds.
 TIMING_EVENTS = {
+    'cacheWait': 'time time time', 'cachePaused': 'time time time',
+    'cacheCollect': 'time time time', 'cacheShort': 'time time time',
+    'cacheRenewed': 'time time time', 'cacheFailed': 'time time time',
     'dnsSend': 'resolver flow kind depth attempt signed signed',
     'dnsRecv': 'resolver flow kind depth attempt signed signed bool',
     'dnsTimeout': 'resolver flow kind depth attempt signed signed',
@@ -344,7 +347,14 @@ def lease_recovery(sup, status, configuration_sha):
     next_retry = row.get('nextWall')
     if row['state'] == 'RETRY_WAIT' and not recovery_time(next_retry):
         raise ValueError('RECOVERY_RETRY_INVALID')
-    return {'scopeRef': scope_ref, 'state': row['state'], 'attempts': row['attempts'],
+    cache = {}
+    if 'lastCacheRollover' in row:
+        event = row['lastCacheRollover']
+        if not valid_timing_event(event) or event[0] not in (
+                'cacheWait', 'cachePaused', 'cacheCollect', 'cacheShort', 'cacheRenewed', 'cacheFailed'):
+            raise ValueError('RECOVERY_CACHE_ROLLOVER_INVALID')
+        cache['lastCacheRollover'] = event
+    return {**cache, 'scopeRef': scope_ref, 'state': row['state'], 'attempts': row['attempts'],
             'nextRetryAt': next_retry if row['state'] == 'RETRY_WAIT' else None,
             'lastIncident': recovery_incident(row.get('lastIncident'), scope_ref)}
 
