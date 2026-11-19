@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=b50e609bc6d9012d1f55c3ec04a819121a7f3261
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -51,7 +51,7 @@ delivery() {
   fetch ops/vps/r3-lease-renewal.json c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f
   fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
-  fetch scripts/issue-semantic-provider-operation-authorization.py 21bc0e9819fe11c78ef87ff76823e7a19ee23dd5cb1c00454ba844a0c9501f41
+  fetch scripts/issue-semantic-provider-operation-authorization.py e5f14e218efdc73fa9a592ef6dd9a2f7fafeb997ed22c785bc72951c82080197
   fetch scripts/migrate-semantic-lease-kernel.py 7143499813c70c936e0c2792b2e19d44a3cd32cac072fd5b82312ae4dd923901
   fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
   fetch scripts/prepare-semantic-provider-b1-rootfs-v3.py 29899e5ee25aa9e772f21fb62fb473706cdf2b8f921034efeccb3b284d350397
@@ -130,6 +130,7 @@ delivery() {
   fetch tools/semantic_provider_operation/epochs.py b5188406c935079b35f2a81ba670df9578d6ef97a5d7308cbb9cf502a72635bb
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_operation/lease_supervisor_v2.py 06f7fb2744a1ac3d4b94ef20aa04801e9625f9ca920dfe8fcd421e11456d0de4
+  fetch tools/semantic_provider_operation/supersede_gate.py d27e874ceef9e2a1f34f2543d4f79dcdd5b76bdf4db72c10156bc33665cc0ef5
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
   fetch tools/semantic_provider_r3/adapter_v16.py 1af794ea243bfa1d2caa8cfa702017bd5a378c49d27e6c753f52ab4f1890825a
   fetch tools/semantic_provider_r3/compose.py 916dc73f82aa6bf1f0bdd693a7ea3beca60f0dbbf5fd0beacc95e79c096705d1

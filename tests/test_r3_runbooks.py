@@ -57,6 +57,8 @@ CLOSURE = {
     # R-022 (task-76/77/78): v18 lease renewal and observability overlays and their pinned input.
     "tools/semantic_provider_r3/lease_renewal_v18.py", "tools/semantic_provider_r3/lease_renewal_overlay_v18.py",
     "tools/semantic_provider_r3/lease_observability_overlay_v18.py", "ops/vps/r3-lease-renewal.json",
+    # R-031 (task-81): supersession gate imported by the issuer.
+    "tools/semantic_provider_operation/supersede_gate.py",
     *("tools/semantic_lease_kernel_migration/" + n for n in (
         "__init__.py", "boot_dispatcher.py", "boot_runner_v2.py", "cli.py", "migration.py", "native.py")),
     "tools/semantic_provider_r3/upgrade.py", "scripts/upgrade-semantic-provider-r3.py",
