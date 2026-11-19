@@ -409,6 +409,9 @@ CAS resta un diniego. Una caduta del processo durante `DELETING` o un rollback
 parziale richiedono riconciliazione governata; non vengono dichiarati puliti
 né ripetuti automaticamente i passi già consumati.
 
+Per il caso stesso boot con preexec già `ROLLED_BACK` e autorizzazione
+superata, seguire il [runbook di riconciliazione R3 v18](OUF_SEMANTIC_PROVIDER_R3_RECONCILE.md).
+
 Il test portabile usa runc simulato e verifica sia i dinieghi sia la sequenza
 di rollback. `OUF_R3_COHORT_NATIVE=1` aggiunge un veto esplicito della fixture
 su `cohort-ready` dell'epoca 1, dopo la creazione reale. Stampa entrambi gli

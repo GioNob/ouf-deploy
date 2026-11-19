@@ -17,6 +17,7 @@ on:
       - tools/semantic_b1_acceptance/**
       - scripts/semantic-provider-*-v2.py
       - scripts/semantic-provider-lease-supervisor-v3.py
+      - scripts/reconcile-semantic-provider-r3-epoch.py
       - scripts/issue-semantic-provider-operation-authorization.py
       - scripts/prepare-semantic-provider-installation.py
       - scripts/semantic-provider-config.py
@@ -24,6 +25,7 @@ on:
       - ops/vps/b1-recipes-v4.sh
       - ops/vps/acceptance-v51-g7.sh
       - ops/vps/r3-lease-renewal.json
+      - ops/vps/r3-reconcile.sh
       - tests/test_semantic_provider_r3*.py
       - tests/test_frame_observer_v2.py
       - tests/test_semantic_provider_operation*.py
@@ -46,6 +48,7 @@ on:
       - docs/OUF_SEMANTIC_PROVIDER_R3_V16_ADAPTER.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V16_DRIVER_DENIAL.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V18.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_RECONCILE.md
       - tests/test_semantic_b1_acceptance.py
       - tests/test_runtime_v52_epochs.py
       - .github/workflows/semantic-provider-r3-integration.yml
@@ -66,6 +69,10 @@ jobs:
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v16_adapter.py -v
       - name: D-054 R3 v18 renewal, recovery and frozen v17 composition (portable)
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v18.py -v
+      - name: R-012 prepared-epoch reconciliation and pinned runbook
+        run: |
+          bash -n ops/vps/r3-reconcile.sh
+          sudo -n env OUF_PROVIDER_OPERATION_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_reconcile.py -v
       - name: D-050 native dependencies and explicit root gate
         run: |
           test "$(sudo -n id -u)" = 0
