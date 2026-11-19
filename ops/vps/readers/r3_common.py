@@ -192,6 +192,12 @@ def recovery_time(value):
 TIMING_SCHEMA = 'ouf.lease-renewal-timing.v1'
 # Each event begins with a fixed tag and a monotonic timestamp in seconds.
 TIMING_EVENTS = {
+    'dnsSend': 'resolver flow kind depth attempt signed signed',
+    'dnsRecv': 'resolver flow kind depth attempt signed signed bool',
+    'dnsTimeout': 'resolver flow kind depth attempt signed signed',
+    'dnsTcpFallback': 'resolver flow kind depth attempt signed signed',
+    'dnsTcpSend': 'resolver flow kind depth attempt signed signed',
+    'dnsTcpRecv': 'resolver flow kind depth attempt signed signed',
     'tick': '', 'plan': 'duration', 'wait': 'duration', 'wake': '', 'renew': '',
     'deny': '', 'guardEnd': '', 'dnsStart': '', 'dnsRound': '', 'dnsEnd': 'count',
     'ttl': 'flow ttl bool', 'compile': '', 'timeout': 'flow lease',
@@ -202,7 +208,7 @@ TIMING_EVENTS = {
     'attemptLimit': 'time', 'planLimit': 'time', 'leaseLimit': 'time',
 }
 TIMING_MAX_EVENTS = 1024
-TIMING_LIMITS = {'flow': 31, 'family': 1, 'site': 6, 'ttl': 2**31-1, 'lease': 3600,
+TIMING_LIMITS = {'resolver': 7, 'kind': 1, 'depth': 8, 'attempt': 3, 'flow': 31, 'family': 1, 'site': 6, 'ttl': 2**31-1, 'lease': 3600,
                  'margin': 300, 'count': 2**31-1}
 TIMING_MODULES = ('adaptive_supervisor', 'continuous_supervisor', 'resilient_lease_adapter',
                   'dns', 'nft_seconds_backend', 'deadline_backend', 'readback_margin_compiler',
@@ -216,7 +222,8 @@ def timing_scalar(kind, value):
     if kind in ('time', 'duration', 'signed'):
         low = -2**63 if kind == 'signed' else 0
         return type(value) in (int, float) and low <= value < 2**63
-    return type(value) is int and 0 <= value <= TIMING_LIMITS[kind]
+    lower = 1 if kind == 'attempt' else 0
+    return type(value) is int and lower <= value <= TIMING_LIMITS[kind]
 
 
 def valid_timing_frame(frame):
