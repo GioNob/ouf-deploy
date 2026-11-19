@@ -210,12 +210,12 @@ Se necessario crea `installRoot` e `authorization/` con mkdir esclusivo 0700;
 una directory authorization esistente deve essere vuota, root:root 0700.
 Un lock esclusivo sul suo inode serializza l'emissione.
 
-L'apply ricontrolla input e mandato, legge una sola volta la chiave installer
-originale 0600, ne verifica hash e chiave pubblica contro il registro e firma
-esattamente una volta con OpenSSL. Per il subprocess usa una copia temporanea
-0600 della stessa chiave verificata, sotto il claim 0700; la copia e il frame
-temporaneo sono rimossi al termine del contesto, senza conservarli nei report.
-Il contatore `privateKeysRead=1` indica l'unica lettura della chiave originale.
+L'apply ricontrolla input e mandato, verifica l'hash della chiave installer
+0600 prima e dopo la firma e confronta la chiave pubblica con il registro.
+OpenSSL usa il percorso di custodia originale per derivare il pubblico e
+firmare. Sotto il claim 0700 viene creato il solo frame temporaneo di firma,
+rimosso al termine del contesto. `privateKeysRead=1` conta un utilizzo logico
+della chiave installer.
 
 Il frame è `authorization.signing_bytes`, dominio separato
 `OUF-SEMANTIC-PROVIDER-OPERATION\0V1\0`, ruolo `RUNTIME_ARMING`.
@@ -234,6 +234,30 @@ l'apply. La rimozione riguarda solo il materiale temporaneo di firma.
 `imageManifestDigest` nel payload contiene l'ID immagine Docker A2 `.Image`,
 come impone la nota §14 del design, senza reinterpretarlo come digest del
 manifest di distribuzione.
+
+## Emissioni successive con `--supersede`
+
+1. Con la testa ancora allineata alla configurazione installata, fermare il
+   provider con `operate stop` plan/apply se i candidati sono accesi.
+2. Verificare i due CID fermi, il lease in quiescenza e il cleanup prima di
+   cambiare la testa. Ogni `FAILED` preparato (`driverHash` presente) deve
+   avere la sua ricevuta `runtime-cleanup.json`, anche nello storico.
+3. Eseguire issue plan/apply con `--supersede` e il nuovo `planSha256`.
+4. Eseguire upgrade plan/apply, quindi `operate start` con il nuovo wrapper.
+
+L’issuer autentica la testa `OPERATE` precedente e la confronta con la
+configurazione selezionata da `/usr/local/sbin/ouf-semantic-admitted-v2`.
+Legge da quella configurazione i due CID e vincola lo storico dei journal e
+le ricevute nel campo `supersession` del plan. `ISSUE_SUPERSEDE_PROVIDER_NOT_STOPPED`
+indica un’epoca aperta. `ISSUE_SUPERSEDE_PREPARED_CLEANUP_PENDING` indica una
+ricevuta assente o non valida per un `FAILED` preparato. Un puntatore, un
+binding o una configurazione indimostrabili bloccano la supersessione.
+
+In apply l’issuer acquisisce i due `operation.lock` in ordine di CID, poi il
+lock della catena. Ripete il controllo sotto lock prima del claim. I dinieghi
+del gate lasciano `privateKeysRead=0` e `signaturesIssued=0`. I lock restano
+acquisiti durante la pubblicazione e fino alla rilettura autenticata di
+N+1. La prima emissione usa la procedura descritta sopra.
 
 ## Verifiche e limiti
 

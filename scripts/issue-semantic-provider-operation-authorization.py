@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Issue exactly one R3 operation authorization. No installation or runtime actions."""
 import argparse
+from contextlib import ExitStack
 import hashlib
 import os
 from pathlib import Path
@@ -121,7 +122,11 @@ def observe(args, clock):
     version = native(verifier, ["version"], 256)
     match = re.match(rb"OpenSSL ([0-9]+[.][0-9]+[.][0-9]+[a-z]?)\b", version)
     require(match is not None and match[1].decode() == ssl["version"], "DETACHED_OPENSSL_VERSION_UNPROVEN")
-    previous = authorization_head(args, M, settings, clock) if args.supersede else None
+    previous = None
+    if args.supersede:
+        from tools.semantic_provider_operation import supersede_gate as gate
+        gate.exclude_keys(AUTH.absolute(args.install_root), reader.private_paths)
+        previous = authorization_head(args, M, settings, clock)
     if 'migrationReceipt' in files:
         from tools.semantic_provider_r3 import install_common as I
         I.coordinator_state(settings, files, reader)
@@ -214,14 +219,43 @@ def progress_initial():
             "signaturesIssued": 0, "signingAttempted": False, "writtenFiles": []}
 
 
+def chain_lock(locks, chain):
+    import fcntl
+    fd = os.open(chain, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    locks.callback(os.close, fd)
+    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    require(AUTH.attributes(os.fstat(fd)) == directory(chain), "AUTHORIZATION_ROOT_CHANGED")
+    return fd
+
+
 def execute(args, progress, clock=time.time):
-    out, chain, identity, install_identity = destinations(args)
-    plan, composed, reader, M, ledger, verifier, key, key_ref, s = observe(args, clock)
+    paths = destinations(args)
+    _, chain, _, _ = paths
+    observation = observe(args, clock)
+    plan, _, _, M, _, _, _, _, settings = observation
+    if args.supersede:
+        from tools.semantic_provider_operation import supersede_gate as gate
+        plan["supersession"] = gate.observe(chain.parent, plan["previousHead"])
     digest = sha(canonical(plan))
     if args.plan:
         return {"status": "PLAN_READY", **plan, "planSha256": digest}
     require(args.plan_sha256 == digest, "PLAN_DIGEST_MISMATCH")
-    require(destinations(args) == (out, chain, identity, install_identity), "OUTPUT_CUSTODY_CHANGED")
+    with ExitStack() as locks:
+        chain_fd = None
+        if args.supersede:
+            # Match runtime create and kernel migration: CID locks first, then authorization.
+            locks.enter_context(gate.operation_locks(chain.parent, plan["supersession"]))
+            chain_fd = chain_lock(locks, chain)
+            head = authorization_head(args, M, settings, clock)
+            require(head == plan["previousHead"], "OPERATION_CHAIN_CHANGED_DURING_ISSUANCE")
+            require(gate.observe(chain.parent, head) == plan["supersession"], "PLAN_DIGEST_MISMATCH")
+        require(destinations(args) == paths, "OUTPUT_CUSTODY_CHANGED")
+        return publish(args, progress, clock, observation, paths, digest, locks, chain_fd)
+
+
+def publish(args, progress, clock, observation, paths, digest, locks, chain_fd):
+    plan, composed, reader, M, ledger, _, key, key_ref, s = observation
+    out, chain, identity, install_identity = paths
     # Exclusive output directory is the durable claim. Every later failure is partial.
     os.mkdir(out, 0o700)
     progress.update(phase="CLAIMED", doNotRerunApply=True)
@@ -231,7 +265,6 @@ def execute(args, progress, clock=time.time):
     finally:
         os.close(parent)
     output_fd = os.open(out, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-    chain_fd = None
     try:
         os.fchmod(output_fd, 0o700)
         require(directory(chain.parent, absent=True) == install_identity, "INSTALL_ROOT_CHANGED")
@@ -250,12 +283,9 @@ def execute(args, progress, clock=time.time):
                 os.fsync(parent)
             finally:
                 os.close(parent)
-        if not args.supersede:
+        if chain_fd is None:
             require(not os.listdir(chain), "AUTHORIZATION_ROOT_NOT_EMPTY")
-        chain_fd = os.open(chain, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-        directory(chain)
-        import fcntl
-        fcntl.flock(chain_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            chain_fd = chain_lock(locks, chain)
         def chain_unchanged():
             if args.supersede:
                 require(authorization_head(args, M, s, clock) == plan["previousHead"],
@@ -317,8 +347,6 @@ def execute(args, progress, clock=time.time):
         progress["phase"] = "COMPLETE"
         return result
     finally:
-        if chain_fd is not None:
-            os.close(chain_fd)
         os.close(output_fd)
 
 

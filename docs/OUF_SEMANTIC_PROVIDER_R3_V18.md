@@ -112,14 +112,22 @@ vincola configurazione, unità e manifest ai relativi byte emessi.
 
 ## Upgrade e qualifica
 
-1. Verificare l’autorizzazione `OPERATE` v17, i due CID fermi con epoche assenti
-   o terminali e il coordinatore `QUIESCED` con lease e start a `false`.
-2. Eseguire issue plan/apply con `--supersede`. Verificare `sequence=18` e
+1. Eseguire `operate stop` plan/apply con il wrapper v17 e la testa `OPERATE`
+   ancora allineata alla configurazione v17. Se i candidati sono già fermi,
+   passare alle verifiche del punto seguente.
+2. Verificare entrambi i CID fermi, tutte le epoche assenti o terminali e
+   il coordinatore `QUIESCED` con lease e start a `false`. Per ogni epoca
+   `FAILED` con `driverHash`, verificare la ricevuta `runtime-cleanup.json`
+   del wrapper. Se il cleanup è pendente, completarlo mentre la testa
+   è ancora allineata. Una ricevuta `STOPPED` da sola non prova il cleanup.
+3. Eseguire issue plan/apply con `--supersede`. L’issuer blocca l’emissione
+   prima della firma se rileva epoche aperte, binding incoerenti o cleanup
+   pendente. Verificare `sequence=18` e
    `supersedes` pari al digest dell’autorizzazione v17. Usare gli stessi CID,
    coordinatore, kernel g2, ricette B1 v4, acceptance g7 e budget driver.
-3. Eseguire upgrade plan/apply sulla stessa collezione di input. Verificare
+4. Eseguire upgrade plan/apply sulla stessa collezione di input. Verificare
    `SEMANTIC_PROVIDER_R3_UPGRADED_WAITING`, wrapper e unità verso `versions/18`
    e hash della configurazione supervisor. [Procedura di upgrade](OUF_SEMANTIC_PROVIDER_R3_UPGRADE.md).
-4. Con il nuovo wrapper, usare `operate start` plan/apply e osservare i rinnovi
+5. Con il nuovo wrapper, usare `operate start` plan/apply e osservare i rinnovi
    e il recupero. Le prove offline usano clock e I/O controllati, incluse le
    decisioni di revoca. L’esecuzione sul VPS resta da qualificare.
