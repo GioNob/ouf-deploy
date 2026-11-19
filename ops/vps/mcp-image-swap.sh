@@ -3,7 +3,7 @@
 set -euo pipefail
 umask 077
 export PATH=/usr/sbin:/usr/bin:/sbin:/bin
-C=0000000000000000000000000000000000000000
+C=3e37fa8373672294bf77b09d9e8f94b36c0f285c
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] || {
   echo 'Fissare il commit di consegna dopo la review.' >&2; exit 2;
 }
