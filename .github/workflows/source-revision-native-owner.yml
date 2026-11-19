@@ -1,8 +1,6 @@
 name: Source revision native release owner
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['tools/source_revision_update/**', 'scripts/*source-revision-executor.py', 'scripts/execute-source-revision-update-20261018.py', 'releases/source-revision-update-selection-20261018.json', 'tests/test_source_revision_update_*.py', '.github/workflows/source-revision-native-owner.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   native-owner:

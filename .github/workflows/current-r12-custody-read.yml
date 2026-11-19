@@ -1,11 +1,6 @@
 name: Current R12 custody read without repeated preparation
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/current-r12-custody-read.yml
-      - scripts/read-current-r12-cutover-custody.py
-      - tests/test_current_r12_custody_read.py
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

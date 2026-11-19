@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 evidence-only recovery and scan of exact MinIO content
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - '.github/workflows/m2-minio-exact-copy-security.yml'
-      - 'scripts/read-m2-minio-exact-copy-20261101.py'
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   recover-and-scan:

@@ -1,8 +1,6 @@
 name: Direct GitHub acquisition artifact transport
 on:
-  push:
-    branches: [fix/registry-bound-owner-lineage-20261023]
-    paths: ['scripts/transport-acquisition-read-artifacts-20261025.py','tests/test_acquisition_artifact_transport.py','.github/workflows/acquisition-artifact-transport.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
   group: ouf-acquisition-read-artifact-transport-2f9a2336572e1bbc

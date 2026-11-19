@@ -1,10 +1,6 @@
 name: Read current discovery rollout topology after R8
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/discovery-rollout-topology-read.yml'
-      - 'tools/semantic_target_review/read_discovery_rollout_topology.py'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

@@ -1,10 +1,5 @@
 name: Provider role account binding
 on:
-  push:
-    paths:
-      - 'scripts/provider-role-accounts.py'
-      - 'scripts/test-provider-role-accounts.py'
-      - '.github/workflows/provider-role-accounts.yml'
   workflow_dispatch:
 permissions:
   contents: read

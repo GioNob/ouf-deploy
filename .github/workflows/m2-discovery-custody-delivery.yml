@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-29): solo manuale, D-055
 name: M2 discovery custody protected delivery
 on:
-  push:
-    paths: ['releases/read-m2-discovery-custody-20261029.sh','tests/qualify_m2_discovery_custody_delivery.py','.github/workflows/m2-discovery-custody-delivery.yml']
-  pull_request:
-    paths: ['releases/read-m2-discovery-custody-20261029.sh','tests/qualify_m2_discovery_custody_delivery.py','.github/workflows/m2-discovery-custody-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

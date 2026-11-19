@@ -1,8 +1,6 @@
 name: Mounted configuration custody metadata read
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/read-mounted-configuration-custody.py','tests/test_mounted_configuration_custody.py','.github/workflows/mounted-configuration-custody-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   redaction:

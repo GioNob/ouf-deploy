@@ -1,9 +1,6 @@
 name: OUF discovery operational access
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [.github/workflows/discovery-operational-access.yml, scripts/read-discovery-operational-access.py]
 permissions:
   contents: read
 concurrency:

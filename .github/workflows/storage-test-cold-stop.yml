@@ -1,17 +1,6 @@
+# Qualificazione storica (2026-11-06): solo manuale, D-055
 name: Storage nonproduction cold stop
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - scripts/storage-cold-backup-v4.py
-      - tests/test_storage_cold_mount_identity.py
-      - tests/qualify_storage_cold_backup_v4_native.py
-      - scripts/storage-test-cold-stop.py
-      - tools/storage_planning/cold_stop_proposal.py
-      - tests/test_storage_test_cold_stop.py
-      - tests/test_storage_cold_stop_proposal.py
-      - tests/qualify_storage_test_cold_stop_native.py
-      - .github/workflows/storage-test-cold-stop.yml
   workflow_dispatch:
 permissions:
   contents: read

@@ -1,11 +1,6 @@
 name: OUF existing Semantic workload credential private stage
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/stage-semantic-workload-credential.py
-      - tests/test_semantic_workload_custody.py
-      - .github/workflows/semantic-workload-custody-stage.yml
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

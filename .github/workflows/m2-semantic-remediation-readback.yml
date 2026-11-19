@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 independent Semantic remediation publisher readback
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - '.github/workflows/m2-semantic-remediation-readback.yml'
-      - 'scripts/read-m2-semantic-high-remediation-20261101.py'
-      - 'evidence/artifacts/m2-semantic-high-remediation-41351198866.zip'
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   readback:

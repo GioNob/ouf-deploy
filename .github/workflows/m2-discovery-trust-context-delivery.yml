@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-29): solo manuale, D-055
 name: M2 public trust and native context protected delivery
 on:
-  push:
-    paths: ['releases/prepare-m2-discovery-trust-context-20261029.sh','tests/qualify_m2_discovery_trust_context_delivery.py','.github/workflows/m2-discovery-trust-context-delivery.yml']
-  pull_request:
-    paths: ['releases/prepare-m2-discovery-trust-context-20261029.sh','tests/qualify_m2_discovery_trust_context_delivery.py','.github/workflows/m2-discovery-trust-context-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

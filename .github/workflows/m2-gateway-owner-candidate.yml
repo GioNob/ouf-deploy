@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 distinct Gateway operational owner executable candidate
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - '.github/workflows/m2-gateway-owner-candidate.yml'
-      - 'scripts/package-m2-gateway-owner-candidate-20261101.py'
-      - 'tests/test_m2_gateway_owner_candidate.py'
+  workflow_dispatch:
 permissions: {contents: read, id-token: write, attestations: write}
 jobs:
   qualify-new-owner:

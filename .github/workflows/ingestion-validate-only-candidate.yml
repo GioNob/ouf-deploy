@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-20): solo manuale, D-055
 name: Ingestion validate-only scanned candidate
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/package-ingestion-validate-only-candidate.py', 'releases/ingestion-validate-only-candidate-20261020.json', '.github/workflows/ingestion-validate-only-candidate.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   package:

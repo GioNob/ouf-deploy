@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-27): solo manuale, D-055
 name: Onboarding V36 reviewed migration and same-job preservation
 on:
-  push:
-    paths: ['tools/onboarding_profile_recovery_update/**','scripts/apply-onboarding-profile-recovery-update-20261027.py','tests/*profile_recovery_update*','tests/fixtures/profile-recovery-v36.sql','tests/fixtures/profile_recovery_update_terminal_probe.py','releases/apply-onboarding-profile-recovery-update-20261027.sh','.github/workflows/onboarding-profile-recovery-update.yml','releases/onboarding-profile-recovery-migration-fence-20261027.json']
-  pull_request:
-    paths: ['tools/onboarding_profile_recovery_update/**','scripts/apply-onboarding-profile-recovery-update-20261027.py','tests/*profile_recovery_update*','tests/fixtures/profile-recovery-v36.sql','tests/fixtures/profile_recovery_update_terminal_probe.py','releases/apply-onboarding-profile-recovery-update-20261027.sh','.github/workflows/onboarding-profile-recovery-update.yml','releases/onboarding-profile-recovery-migration-fence-20261027.json']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   root-crypto-and-journal:

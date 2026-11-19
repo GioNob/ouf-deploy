@@ -1,10 +1,6 @@
 name: Provider role artifact plan
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/provider-role-artifact-plan.py'
-      - '.github/workflows/provider-role-artifact-plan.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

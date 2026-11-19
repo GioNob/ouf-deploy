@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: Installation binding plan authenticated delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-installation-ingestion-binding-plan-20261019.sh'
-      - 'tests/test_installation_ingestion_binding_plan_delivery.py'
-      - 'evidence/installation-ingestion-binding-plan-delivery-pins-20261019.json'
-      - '.github/workflows/installation-ingestion-binding-plan-delivery.yml'
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

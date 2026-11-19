@@ -1,8 +1,6 @@
 name: Ingestion read MCP-only candidate
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/package-ingestion-read-transport-candidate.py', 'releases/ingestion-read-transport-candidate-20261019.json', '.github/workflows/ingestion-read-transport-candidate.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   package:

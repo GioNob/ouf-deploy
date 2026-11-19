@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-15): solo manuale, D-055
 name: Exact published chatbot registry frame and TLS
 on:
-  push:
-    branches: [codex/retained-inspection-channel-20261015]
-    paths: [.github/workflows/chatbot-exact-image-environment.yml]
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   read-published-config:

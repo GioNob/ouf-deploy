@@ -1,8 +1,6 @@
 name: Retained network allocation bounded read
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/read-retained-network-allocation.py','tests/test_retained_network_allocation_read.py','.github/workflows/retained-network-allocation-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   redaction:

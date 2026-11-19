@@ -1,19 +1,7 @@
+# Qualificazione storica (2026-10-25): solo manuale, D-055
 name: Acquisition descriptor retained mode continuation
 on:
-  push:
-    paths:
-      - releases/read-acquisition-permission-descriptors-20261025.sh
-      - releases/resume-acquisition-descriptor-read-mode-20261025.sh
-      - tests/test_acquisition_descriptor_mode_continuation.py
-      - tests/fixtures/acquisition-descriptor-retained-wrapper-077065.sh
-      - .github/workflows/acquisition-descriptor-mode-continuation.yml
-  pull_request:
-    paths:
-      - releases/read-acquisition-permission-descriptors-20261025.sh
-      - releases/resume-acquisition-descriptor-read-mode-20261025.sh
-      - tests/test_acquisition_descriptor_mode_continuation.py
-      - tests/fixtures/acquisition-descriptor-retained-wrapper-077065.sh
-      - .github/workflows/acquisition-descriptor-mode-continuation.yml
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   native-filesystem-protocol:

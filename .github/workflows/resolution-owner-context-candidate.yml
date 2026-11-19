@@ -1,8 +1,6 @@
+# Qualificazione storica (2026-10-17): solo manuale, D-055
 name: UDP Resolution owner context candidate
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['.github/workflows/resolution-owner-context-candidate.yml', 'scripts/package-resolution-owner-context-candidate.py', 'scripts/materialize-ingestion-readiness-route.py', 'releases/resolution-owner-context-candidate-20261017.json']
   workflow_dispatch:
 permissions: {contents: read}
 jobs:

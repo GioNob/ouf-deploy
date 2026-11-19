@@ -1,11 +1,6 @@
+# Qualificazione storica (2026-11-05): solo manuale, D-055
 name: Storage generation33 application writer source map
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-generation33-writer-map.yml
-      - scripts/verify-storage-writer-map33.py
-      - evidence/storage-writer-source-index-20261105.json
   workflow_dispatch:
 permissions:
   contents: read

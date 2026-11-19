@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-22): solo manuale, D-055
 name: Stage8 four-stage continuation
 on:
-  push:
-    branches: [feat/csv-e2e-owner-composition-20261020]
-    paths: ['tools/ingestion_readiness_patch_execution/stage8*.py','tests/test_readiness_patch_stage8*.py','.github/workflows/readiness-stage8-continuation.yml']
-  pull_request:
-    paths: ['tools/ingestion_readiness_patch_execution/stage8*.py','tests/test_readiness_patch_stage8*.py','.github/workflows/readiness-stage8-continuation.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   stage8-continuation-platform:

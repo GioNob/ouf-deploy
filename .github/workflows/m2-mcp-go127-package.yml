@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-30): solo manuale, D-055
 name: M2 MCP Go 1.27.3 offline package
-'on':
-  push:
-    paths:
-    - .github/workflows/m2-mcp-go127-package.yml
+on:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

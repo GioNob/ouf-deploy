@@ -1,9 +1,7 @@
 name: Source revision Spring channel diagnostic
 # Fresh bounded read after confirmed native boot recovery; never publish or retry jobs.
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/read-source-revision-spring-channels.py', 'tests/test_source_revision_spring_channel_read.py', '.github/workflows/source-revision-spring-channel-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   redaction:

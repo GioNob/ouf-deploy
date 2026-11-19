@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-17): solo manuale, D-055
 name: Resolution comparison pinned delivery verification
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['scripts/launch-resolution-comparison-update-20261017.sh', 'tests/test_resolution_comparison_delivery.py', '.github/workflows/resolution-comparison-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   pinned-delivery:

@@ -1,8 +1,6 @@
 name: Verify retained MCP public metadata mount
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['.github/workflows/chat-recovery-metadata-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   read:

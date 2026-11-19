@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-28): solo manuale, D-055
 name: Protected single-Onboarding36to38 maintenance delivery
 on:
-  push:
-    paths: ['tools/build_managed_file_owner_update_delivery.py','releases/apply-managed-file-owner-v38-20261028.sh','releases/managed-file-owner-v38-update-delivery-pins-20261028.json','tests/qualify_managed_file_owner_update_delivery.py','.github/workflows/managed-file-owner-update-delivery.yml']
-  pull_request:
-    paths: ['tools/build_managed_file_owner_update_delivery.py','releases/apply-managed-file-owner-v38-20261028.sh','releases/managed-file-owner-v38-update-delivery-pins-20261028.json','tests/qualify_managed_file_owner_update_delivery.py','.github/workflows/managed-file-owner-update-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   exact-protected-main-delivery:

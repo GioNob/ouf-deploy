@@ -1,7 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 exact current MCP CI source custody bridge
 on:
-  push:
-    paths: ['tools/m2_discovery_installation_profile/current_image_custody.py','tests/test_m2_current_image_custody.py','.github/workflows/m2-current-image-custody.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   source-custody:

@@ -1,16 +1,7 @@
+# Qualificazione storica (2026-10-24): solo manuale, D-055
 name: Onboarding V35 current configuration and native plan
 on:
-  push:
-    branches: [fix/registry-bound-owner-lineage-20261023]
-    paths:
-      - scripts/freeze-onboarding-v35-native-plan-20261024.py
-      - tools/ingestion_readiness_patch_execution/tests/test_onboarding_v35_native_plan.py
-      - .github/workflows/onboarding-v35-native-plan.yml
-  pull_request:
-    paths:
-      - scripts/freeze-onboarding-v35-native-plan-20261024.py
-      - tools/ingestion_readiness_patch_execution/tests/test_onboarding_v35_native_plan.py
-      - .github/workflows/onboarding-v35-native-plan.yml
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

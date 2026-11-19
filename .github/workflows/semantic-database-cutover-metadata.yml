@@ -1,11 +1,6 @@
 name: OUF read-only Semantic database cutover metadata
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - scripts/read-semantic-database-cutover-metadata.py
-      - .github/workflows/semantic-database-cutover-metadata.yml
 permissions:
   contents: read
 concurrency:

@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-11-08): solo manuale, D-055
 name: Archive exact Ingestion wide candidate
 on:
-  pull_request:
-    paths:
-      - tools/ingestion_wide_20261108/archive.py
-      - .github/workflows/ingestion-wide-archive.yml
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   archive:

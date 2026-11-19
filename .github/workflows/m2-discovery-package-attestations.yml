@@ -1,7 +1,7 @@
+# Qualificazione storica (2026-10-29): solo manuale, D-055
 name: M2 attest exact retained runtime package bytes
 on:
-  push:
-    paths: ['.github/workflows/m2-discovery-package-attestations.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read, attestations: write, id-token: write}
 jobs:
   attest:

@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 original retained semantic source and exact MinIO descriptor
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths: ['scripts/preserve-m2-retained-semantic-origin-20261101.py','scripts/read-m2-retained-minio-selected-20261101.py','.github/workflows/m2-retained-semantic-origin.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   original-semantic:

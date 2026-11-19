@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-26): solo manuale, D-055
 name: Onboarding diagnostic exact image inputs
 on:
-  push:
-    paths: ['scripts/prepare-onboarding-diagnostic-image-inputs-20261026.py', 'tests/test_onboarding_diagnostic_image_inputs.py', 'tests/qualify_onboarding_diagnostic_image_inputs.py', 'releases/onboarding-diagnostic-image-custody-20261026.json', '.github/workflows/onboarding-diagnostic-image-inputs.yml']
-  pull_request:
-    paths: ['scripts/prepare-onboarding-diagnostic-image-inputs-20261026.py', 'tests/test_onboarding_diagnostic_image_inputs.py', 'tests/qualify_onboarding_diagnostic_image_inputs.py', 'releases/onboarding-diagnostic-image-custody-20261026.json', '.github/workflows/onboarding-diagnostic-image-inputs.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   exact-archive-no-runtime:

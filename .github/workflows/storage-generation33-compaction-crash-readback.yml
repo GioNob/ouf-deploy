@@ -1,13 +1,8 @@
+# Qualificazione storica (2026-11-04): solo manuale, D-055
 name: Storage generation33 precommit original artifact readback
 
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-generation33-compaction-crash-readback.yml
-      - scripts/readback-storage-generation33-compaction-crash.py
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read

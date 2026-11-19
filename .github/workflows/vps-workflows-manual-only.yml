@@ -1,0 +1,13 @@
+name: VPS workflows manual only
+on: [pull_request, push]
+permissions:
+  contents: read
+jobs:
+  vps-manual-only:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check runner selectors and workflow triggers
+        run: /usr/bin/python3 -I -B tests/test_vps_workflows_manual_only.py -v

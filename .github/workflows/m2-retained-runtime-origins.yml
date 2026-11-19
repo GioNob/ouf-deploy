@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 retained public runtime origin reconciliation
 on:
-  push:
-    paths:
-      - '.github/workflows/m2-retained-runtime-origins.yml'
-      - 'scripts/reconcile-m2-retained-runtime-origins-20261101.py'
-      - 'scripts/read-m2-retained-vendor-descriptors-20261101.py'
-      - 'releases/m2-retained-runtime-origin-inventory-20261101.json'
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   public-reconciliation:

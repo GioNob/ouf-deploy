@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: Ingestion READ Gateway immutable delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-ingestion-read-gateway-update-20261019.sh'
-      - 'tests/test_ingestion_read_gateway_delivery.py'
-      - '.github/workflows/ingestion-read-gateway-delivery.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

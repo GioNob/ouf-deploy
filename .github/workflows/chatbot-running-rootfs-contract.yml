@@ -1,13 +1,7 @@
+# Qualificazione storica (2026-10-16): solo manuale, D-055
 name: Frozen Registry Java runtime rootfs qualification
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths:
-      - .github/workflows/chatbot-running-rootfs-contract.yml
-      - scripts/diagnose-chatbot-rootfs-baseline.py
-      - scripts/qualify-chatbot-running-rootfs.py
-      - tools/chatbot_file_cohort/running_rootfs.py
-      - tests/test_running_rootfs_contract.py
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   frozen-rootfs:

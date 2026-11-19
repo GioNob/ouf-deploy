@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-21): solo manuale, D-055
 name: One-Ingestion readiness patch native executor
 on:
-  push:
-    branches: [feat/csv-e2e-owner-composition-20261020]
-    paths: ['tools/ingestion_readiness_patch_execution/**', 'tests/test_readiness_patch*.py', '.github/workflows/readiness-patch-execution.yml']
-  pull_request:
-    paths: ['tools/ingestion_readiness_patch_execution/**', 'tests/test_readiness_patch*.py', '.github/workflows/readiness-patch-execution.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   scoped-signatures-cas:

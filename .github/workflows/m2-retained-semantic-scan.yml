@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 fresh scan of the signed original retained Semantic
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - '.github/workflows/m2-retained-semantic-scan.yml'
-      - 'scripts/check-m2-retained-semantic-scan-20261101.py'
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   scan-exact-retained-semantic:

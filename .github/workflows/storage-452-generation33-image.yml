@@ -1,19 +1,8 @@
+# Qualificazione storica (2026-11-04): solo manuale, D-055
 name: Storage 4.52 generation33 vendor image qualification
 
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-452-generation33-image.yml
-      - scripts/qualify-seaweedfs-452-generation33-image.py
-      - scripts/readback-seaweedfs-452-generation33-image.py
-      - scripts/verify-seaweedfs-yaml33-observation.py
-      - tools/storage_security/generation_image_v4.py
-      - tests/test_seaweedfs_452_generation33_image.py
-      - config/seaweedfs-generation33-vendor-source-profile.json
-      - releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json
   workflow_dispatch:
-
 permissions:
   contents: read
 

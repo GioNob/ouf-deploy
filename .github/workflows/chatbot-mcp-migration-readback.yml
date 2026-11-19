@@ -1,12 +1,7 @@
+# Qualificazione storica (2026-10-16): solo manuale, D-055
 name: MCP phase 2 frozen native identity and readback
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths:
-      - scripts/read-chatbot-mcp-migration-state-20261016.py
-      - scripts/qualify-chatbot-mcp-migration-readback.py
-      - tests/test_mcp_migration_readback.py
-      - .github/workflows/chatbot-mcp-migration-readback.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   frozen-mcp-readback:

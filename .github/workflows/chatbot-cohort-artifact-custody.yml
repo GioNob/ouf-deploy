@@ -1,15 +1,7 @@
+# Qualificazione storica (2026-10-14): solo manuale, D-055
 name: Original chatbot cohort artifact extraction
 on:
-  push:
-    paths:
-      - tools/chatbot_file_cohort/package_custody.py
-      - tests/qualify_chatbot_cohort_artifact.py
-      - .github/workflows/chatbot-cohort-artifact-custody.yml
-  pull_request:
-    paths:
-      - tools/chatbot_file_cohort/package_custody.py
-      - tests/qualify_chatbot_cohort_artifact.py
-      - .github/workflows/chatbot-cohort-artifact-custody.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   original-artifact:

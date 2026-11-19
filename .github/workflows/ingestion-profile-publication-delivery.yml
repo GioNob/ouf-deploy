@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: Owner7 projection authenticated delivery
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['releases/ingestion-profile-publication-bundle-20261019.json', 'scripts/launch-ingestion-profile-publication-20261019.sh', 'tests/test_ingestion_profile_publication_delivery.py', '.github/workflows/ingestion-profile-publication-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   immutable-delivery:

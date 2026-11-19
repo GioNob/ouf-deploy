@@ -1,22 +1,8 @@
+# Qualificazione storica (2026-11-03): solo manuale, D-055
 name: Storage 4.52 generation31 image qualification
 
 on:
-  push:
-    branches:
-      - feat/m2-discovery-complete-profile-20261029
-    paths:
-      - .github/workflows/storage-452-generation31-image.yml
-      - patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch
-      - scripts/qualify-seaweedfs-452-generation31-image.py
-      - scripts/readback-seaweedfs-452-generation31-image.py
-      - tools/storage_security/generation_image_v2.py
-      - tools/storage_security/generation_readback_v1.py
-      - scripts/qualify-seaweedfs-raftstore-compat.py
-      - tests/fixtures/seaweedfs-raftstore-compat/compat_test.go
-      - tests/test_seaweedfs_452_generation31_image.py
-      - releases/seaweedfs-452-generation31-build-manifest-20261103.json
   workflow_dispatch:
-
 permissions:
   contents: read
   id-token: write

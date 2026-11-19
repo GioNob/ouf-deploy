@@ -1,8 +1,6 @@
 name: Direct GitHub redaction diagnostic artifact transport
 on:
-  push:
-    branches: [fix/registry-bound-owner-lineage-20261023]
-    paths: ['scripts/transport-acquisition-redaction-artifacts-20261026.py','tests/test_acquisition_redaction_artifact_transport.py','.github/workflows/acquisition-redaction-artifact-transport.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
   group: ouf-acquisition-redaction-artifact-transport-5ab4bafadb29cdd5

@@ -1,11 +1,6 @@
 name: OUF remediated discovery migration plan
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/remediated-discovery-release-plan.yml
-      - scripts/plan-remediated-discovery-release.py
 permissions:
   contents: read
 concurrency:

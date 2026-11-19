@@ -1,18 +1,7 @@
+# Qualificazione storica (2026-10-14): solo manuale, D-055
 name: Semantic candidate archive delivery qualification
 on:
-  push:
-    branches: [codex/semantic-proposal-candidate-package-20261014, main]
-    paths:
-      - scripts/verify-semantic-proposal-candidate-archive.py
-      - tests/test_semantic_candidate_archive.py
-      - releases/semantic-candidate-stage-20261014.sh
-      - .github/workflows/semantic-candidate-delivery.yml
-  pull_request:
-    paths:
-      - scripts/verify-semantic-proposal-candidate-archive.py
-      - tests/test_semantic_candidate_archive.py
-      - releases/semantic-candidate-stage-20261014.sh
-      - .github/workflows/semantic-candidate-delivery.yml
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   offline-rejection-boundaries:

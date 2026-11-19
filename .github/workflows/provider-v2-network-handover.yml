@@ -1,11 +1,6 @@
 name: Provider v2 stopped network handover
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/handover_provider_v2_networks.py'
-      - 'tests/test_handover_provider_v2_networks.py'
-      - '.github/workflows/provider-v2-network-handover.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

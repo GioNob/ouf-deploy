@@ -1,12 +1,7 @@
+# Qualificazione storica (2026-11-08): solo manuale, D-055
 name: MCP archived analysis application upgrade
 on:
-  pull_request:
-    paths:
-      - scripts/upgrade-mcp-analysis-20261108.py
-      - tests/test_mcp_analysis_upgrade_native.py
-      - tests/test_mcp_analysis_upgrade.py
-      - tools/mcp_analysis_20261108/fixture_export_test.go
-      - .github/workflows/mcp-analysis-upgrade.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   native:

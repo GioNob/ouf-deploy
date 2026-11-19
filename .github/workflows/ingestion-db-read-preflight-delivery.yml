@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-20): solo manuale, D-055
 name: Ingestion read-only DB preflight immutable delivery
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/launch-ingestion-db-read-preflight-20261020.sh', 'tests/test_ingestion_db_preflight_delivery.py', '.github/workflows/ingestion-db-read-preflight-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   immutable-delivery:

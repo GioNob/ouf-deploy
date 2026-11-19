@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-29): solo manuale, D-055
 name: M2 discovery material protected delivery
 on:
-  push:
-    paths: ['releases/prepare-m2-discovery-material-20261029.sh','tests/qualify_m2_discovery_material_delivery.py','.github/workflows/m2-discovery-material-delivery.yml']
-  pull_request:
-    paths: ['releases/prepare-m2-discovery-material-20261029.sh','tests/qualify_m2_discovery_material_delivery.py','.github/workflows/m2-discovery-material-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

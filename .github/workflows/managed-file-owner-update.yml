@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-28): solo manuale, D-055
 name: Reviewed single Onboarding36to38 owner recovery update
 on:
-  push:
-    paths: ['tools/managed_file_owner_update/**','scripts/apply-managed-file-owner-v38-20261028.py','tests/*managed_file_owner_update*','tests/fixtures/managed_file_owner_update_terminal_probe.py','tests/fixtures/owner-v38/**','.github/workflows/managed-file-owner-update.yml']
-  pull_request:
-    paths: ['tools/managed_file_owner_update/**','scripts/apply-managed-file-owner-v38-20261028.py','tests/*managed_file_owner_update*','tests/fixtures/managed_file_owner_update_terminal_probe.py','tests/fixtures/owner-v38/**','.github/workflows/managed-file-owner-update.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   new-root-crypto-and-preserved-contracts:

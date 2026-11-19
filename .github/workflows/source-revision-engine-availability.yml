@@ -1,9 +1,7 @@
 name: Source revision bounded Engine availability read
 # Read boot guard filesystem/lifecycle constraints after the reconciled failed start; no Engine/start.
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['.github/workflows/source-revision-engine-availability.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   public-service-state:

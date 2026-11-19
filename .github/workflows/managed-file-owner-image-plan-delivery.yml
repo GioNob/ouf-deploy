@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-28): solo manuale, D-055
 name: Managed-file owner V38 image plan immutable delivery
 on:
-  push:
-    paths: ['releases/prepare-managed-file-owner-image-plan-20261028.sh','tests/qualify_managed_file_owner_image_plan_delivery.py','.github/workflows/managed-file-owner-image-plan-delivery.yml']
-  pull_request:
-    paths: ['releases/prepare-managed-file-owner-image-plan-20261028.sh','tests/qualify_managed_file_owner_image_plan_delivery.py','.github/workflows/managed-file-owner-image-plan-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   actual-https-nonroot-sudo-zip-and-negative-main:

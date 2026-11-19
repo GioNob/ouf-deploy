@@ -1,9 +1,6 @@
+# Qualificazione storica (2026-10-16): solo manuale, D-055
 name: Unsigned MCP semantic reprocessing package
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths:
-      - .github/workflows/semantic-reprocessing-package.yml
   workflow_dispatch:
 permissions: {contents: read}
 jobs:

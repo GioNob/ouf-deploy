@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-25): solo manuale, D-055
 name: Detached MCP recovery immutable delivery
 on:
-  push:
-    branches: [fix/registry-bound-owner-lineage-20261023]
-    paths: ['releases/recover-acquisition-detached-mcp-20261025.sh','.github/workflows/acquisition-detached-recovery-delivery.yml']
-  pull_request:
-    paths: ['releases/recover-acquisition-detached-mcp-20261025.sh','.github/workflows/acquisition-detached-recovery-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   download-root-copy-and-no-original-scope:

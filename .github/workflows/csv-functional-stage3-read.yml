@@ -1,8 +1,6 @@
 name: CSV stage 3 row-ledger qualification and retained target read
 on:
-  push:
-    branches: [fix/csv-functional-stage3-ledger-20261017]
-    paths: ['scripts/read-teatri-post-resolution-materialization-20261017.py', 'tests/teatri_post_resolution_read/**', '.github/workflows/csv-functional-stage3-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 concurrency:
   group: csv-functional-stage3-retained-read

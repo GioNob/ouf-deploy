@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-29): solo manuale, D-055
 name: M2 read-only stopped-provider inputs protected delivery
 on:
-  push:
-    paths: ['releases/prepare-m2-stopped-provider-inputs-20261029.sh','tests/qualify_m2_stopped_provider_inputs_delivery.py','.github/workflows/m2-stopped-provider-inputs-delivery.yml']
-  pull_request:
-    paths: ['releases/prepare-m2-stopped-provider-inputs-20261029.sh','tests/qualify_m2_stopped_provider_inputs_delivery.py','.github/workflows/m2-stopped-provider-inputs-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

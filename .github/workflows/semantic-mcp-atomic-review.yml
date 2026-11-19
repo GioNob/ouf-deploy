@@ -1,19 +1,7 @@
+# Qualificazione storica (2026-10-17): solo manuale, D-055
 name: Atomic MCP successor review qualification
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths:
-      - scripts/prepare-chatbot-semantic-mcp-atomic-review-20261017.py
-      - scripts/qualify-semantic-mcp-atomic-image.py
-      - scripts/read-chatbot-semantic-mcp-reprocessing-preflight-20261016.py
-      - tests/test_semantic_mcp_atomic_review.py
-      - .github/workflows/semantic-mcp-atomic-review.yml
-  pull_request:
-    paths:
-      - scripts/prepare-chatbot-semantic-mcp-atomic-review-20261017.py
-      - scripts/qualify-semantic-mcp-atomic-image.py
-      - tests/test_semantic_mcp_atomic_review.py
-      - .github/workflows/semantic-mcp-atomic-review.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   private-plan-and-real-image:

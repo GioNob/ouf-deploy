@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-11-08): solo manuale, D-055
 name: Semantic exact artifact application upgrade
 on:
-  pull_request:
-    paths:
-      - scripts/upgrade-semantic-application-20261108.py
-      - tests/test_semantic_application_upgrade_native.py
-      - .github/workflows/semantic-application-upgrade.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   native:

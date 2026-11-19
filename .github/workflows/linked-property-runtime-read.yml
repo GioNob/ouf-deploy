@@ -1,8 +1,5 @@
 name: Linked property retained runtime read
 on:
-  push:
-    branches: [feat/linked-property-release-20261017, fix/linked-property-runtime-binding-20261017]
-    paths: ['.github/workflows/linked-property-runtime-read.yml', 'scripts/read-linked-property-runtime.py', 'scripts/read-linked-property-runtime-comparison.py']
   workflow_dispatch:
 permissions: {contents: read}
 concurrency:

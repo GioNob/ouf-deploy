@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-26): solo manuale, D-055
 name: Two READ redaction actual sealed APPLY delivery
 on:
-  push:
-    branches: [fix/registry-bound-owner-lineage-20261023]
-    paths: ['releases/apply-acquisition-redaction-update-20261026.sh','tests/qualify_acquisition_redaction_update_delivery.py','.github/workflows/acquisition-redaction-apply-delivery.yml']
-  pull_request:
-    paths: ['releases/apply-acquisition-redaction-update-20261026.sh','tests/qualify_acquisition_redaction_update_delivery.py','.github/workflows/acquisition-redaction-apply-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   actual-sealed-delivery:

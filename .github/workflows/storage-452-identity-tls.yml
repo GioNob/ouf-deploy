@@ -1,15 +1,8 @@
+# Qualificazione storica (2026-11-03): solo manuale, D-055
 name: Storage 4.52 isolated identity TLS egress
 
 on:
-  push:
-    branches:
-      - feat/m2-discovery-complete-profile-20261029
-    paths:
-      - .github/workflows/storage-452-identity-tls.yml
-      - scripts/run-seaweedfs-452-identity-tls.py
-      - tests/test_seaweedfs_452_identity_tls.py
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read
