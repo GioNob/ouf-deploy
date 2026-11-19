@@ -95,6 +95,9 @@ SOURCE_MAP_V23 = dict(SOURCE_MAP_V22)
 SOURCE_INPUTS_V23 = frozenset(SOURCE_MAP_V23.values()) | {KERNEL_V1}
 SOURCE_MAP_V24 = dict(SOURCE_MAP_V23)
 SOURCE_INPUTS_V24 = frozenset(SOURCE_MAP_V24.values()) | {KERNEL_V1}
+SEMANTIC_IDENTITY = 'tools/semantic_provider_r3/semantic_identity_v25.py'
+SOURCE_MAP_V25 = {**SOURCE_MAP_V24, SEMANTIC_IDENTITY: SEMANTIC_IDENTITY}
+SOURCE_INPUTS_V25 = frozenset(SOURCE_MAP_V25.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -114,6 +117,7 @@ DATA_INPUTS_V21 = set(DATA_INPUTS_V20)
 DATA_INPUTS_V22 = set(DATA_INPUTS_V21)  # New version of the leaseRenewal document.
 DATA_INPUTS_V23 = set(DATA_INPUTS_V22)
 DATA_INPUTS_V24 = set(DATA_INPUTS_V23)
+DATA_INPUTS_V25 = DATA_INPUTS_V24 | {'semanticProfile'}
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -129,7 +133,8 @@ def input_set(files, sources):
             (set(files) == DATA_INPUTS_V15 and set(sources) == SOURCE_INPUTS_V15) or
             (set(files) == DATA_INPUTS_V16 and set(sources) == SOURCE_INPUTS_V16) or
             (set(files) == DATA_INPUTS_V17 and set(sources) == SOURCE_INPUTS_V17) or
-            (set(files) == DATA_INPUTS_V18 and set(sources) == SOURCE_INPUTS_V18))
+            (set(files) == DATA_INPUTS_V18 and set(sources) == SOURCE_INPUTS_V18) or
+            (set(files) == DATA_INPUTS_V25 and set(sources) == SOURCE_INPUTS_V25))
 
 
 def migration_bindings(files):
@@ -304,7 +309,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     files, sources = inputs["files"], inputs["sources"]
     if version >= 17:
         from . import driver_budget_v17
-    if version >= 24:
+    if version >= 25:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V25, SOURCE_INPUTS_V25, DATA_INPUTS_V25
+    elif version >= 24:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V24, SOURCE_INPUTS_V24, DATA_INPUTS_V24
     elif version >= 23:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V23, SOURCE_INPUTS_V23, DATA_INPUTS_V23
@@ -435,6 +442,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         if version >= 24:
             from .cache_watch_overlay_v24 import sources_v24
             emitted = sources_v24(emitted, selected_map)
+        if version >= 25:
+            from .semantic_overlay_v25 import sources_v25
+            emitted = sources_v25(emitted, selected_map, SEMANTIC_IDENTITY)
         emitted, hashes = seal_v18(sources, emitted, source_map, RECOVERY, sha)
     else:
         hashes = {target: sha(emitted[original]) for target, original in source_map.items()}
@@ -560,6 +570,16 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                         and type(p["ifindex"]) is int and p["ifindex"] > 1
                         and p["ifindex"] == data["semanticPeer"]["binding"]["hostIfindex"], "A2_INGRESS_DRIFT")
                 flow["peerIngress"] = {"kind": "BRIDGE_PORT", "ifindex": p["ifindex"]}
+                if version >= 25:
+                    stable = contract_module(sources[SEMANTIC_IDENTITY], 'semantic_v25')
+                    profile = stable.semantic_profile(data['semanticProfile'])
+                    backend = data['identityProviderPeer']['southbound']
+                    require(all(profile[k] == backend[k] for k in ('network', 'networkId', 'bridge'))
+                            and (profile['ipv4'], profile['destination'], profile['protocol'], profile['port'])
+                            == (flow['source'], flow['destination'], flow['protocol'], flow['port'])
+                            and backend['ipv4'] == flow['destination'] and flow['purpose'] == 'WORKLOAD_GATEWAY',
+                            'R3_SEMANTIC_FLOW_DRIFT')
+                    flow['peerIngress'] = {'kind': 'SEMANTIC_PROFILE', 'declaration': profile}
                 ingress += 1
         require(sibling == 1 and ingress == (role == "southbound"), "EXACT_TRANSPORT_FLOW_COUNT_REQUIRED")
         peers.declaration({"containerId": candidate["containerId"], "networkBindings": candidate["networkBindings"],
@@ -618,6 +638,15 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         supervisor.update(schema=renewal.SCHEMA, leaseRenewal=data["leaseRenewal"],
                           driverBudgetSeconds=driver_budget)
         supervisor["sourceHashes"][LEASE_RENEWAL_TARGET] = hashes[LEASE_RENEWAL_TARGET]
+    if version >= 25:
+        idp = data['identityProviderPeer']['peer']
+        template = templates['southbound']
+        supervisor['semanticIngress'] = {
+            'profile': profile, 'containerId': rows['southbound']['containerId'],
+            'table': s['tableNames']['southbound'], 'commands': {
+                'docker': idp['dockerBinding'], 'socket': idp['dockerSocket'],
+                **{k: {'path': template['commands'][k], 'sha256': template['commandHashes'][k]}
+                   for k in ('ip', 'nsenter')}}}
     sup = put("supervisor/configuration.json", supervisor)
     contract_module(emitted[selected_map[SUPERVISOR]], "supervisor").validate(docs["supervisor/configuration.json"])
     runtime = {"schema": "ouf.semantic-docker-runtime-adapter.v5.2", "sourceHash": hashes[RUNTIME],

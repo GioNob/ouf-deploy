@@ -131,6 +131,11 @@ def observe(args, clock):
         from tools.semantic_provider_r3 import install_common as I
         I.coordinator_state(settings, files, reader)
     composed = compose_next({"files": files, "sources": sources}, previous, args.issued_at)
+    if previous and previous['sequence'] >= 24:
+        from tools.semantic_provider_r3.semantic_identity_v25 import semantic_kernel_probe
+        version = previous['sequence'] + 1
+        supervisor = C.document(composed['documents'][f'versions/{version}/supervisor/configuration.json'])
+        semantic_kernel_probe(supervisor['semanticIngress']['commands']['ip'])
     reader.verify()
     plan = {"schema": SCHEMA, "payload": A.validate(composed["authorization"]),
         "payloadSha256": sha(composed["authorization"]), "documentHashes": composed["hashes"],

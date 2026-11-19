@@ -190,6 +190,9 @@ class AbsolutePosixPath(PurePosixPath):
 
 
 class RenewalFixture(unittest.TestCase):
+    def native_runtime(self, supervisor, configuration):
+        return supervisor.runtime(configuration)
+
     def setUp(self):
         scope = self.enterContext(ExitStack())
         scope.enter_context(V12.I.module_scope())
@@ -272,7 +275,7 @@ class RenewalFixture(unittest.TestCase):
         sup.compiled = compile_source
         configuration = sup.Configuration(config_path, C.sha(cfg_raw), reader=read)
         configuration.custody = lambda: verified
-        self.c, _, _ = sup.runtime(configuration)
+        self.c, _, _ = self.native_runtime(sup, configuration)
         self.backend = self.c.owner.backend
         self.backend.clock = self.c.owner.clock = self.clock
         self.backend.verify_ownership = self.verify

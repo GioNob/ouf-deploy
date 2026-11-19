@@ -95,6 +95,9 @@ def observe(args, *, published=False, unit_switched=False, switched=False):
     _, head = I.authorization(settings, sources, root)
     require(head["decision"] == "OPERATE" and head["sequence"] >= 2, "R3_UPGRADE_SUCCESSOR_OPERATE_REQUIRED")
     version = head["sequence"]
+    if version >= 25:
+        from .semantic_identity_v25 import semantic_kernel
+        semantic_kernel()
     old_root, new_root = version_root(root, version - 1), version_root(root, version)
     if os.path.lexists(root / "versions"):
         V.private_directory(root / "versions")
