@@ -1,5 +1,15 @@
 # Regola permanente sui frame MAC e sul lifecycle dei container
 
+## Revisione del 19 novembre 2026
+
+Docker alloca la MAC virtuale di ciascun endpoint e può assegnarne una diversa quando ricollega lo stesso container. La MAC del container non si conserva né si confronta, salvo che la usi un consumatore funzionale. Oggi l’unico caso operativo è quello delle regole ARP del provider R3. Per costruire quelle regole si legge la MAC dell’endpoint dallo stato vivo al plan, senza imporre un indirizzo conservato da un’esecuzione precedente.
+
+Per MCP, Caddy e APISIX usano il nome o gli alias sulla rete Docker. Nel run nativo 44602301943 il vecchio CID è tornato sulla rete originale con una nuova MAC e senza la chiave legacy nel Config. Il launcher R-033 lascia l’allocazione a Docker sia alla CREATE sia al CONNECT e verifica rete, IP e alias in apply e rollback. [Regola applicata da R-033](OUF_MCP_IMAGE_SWAP.md#confronto-del-frame-per-fase-api-144)
+
+## Storico precedente alla revisione
+
+Le regole, i profili qualificati e le ricevute riportati di seguito documentano le decisioni precedenti al 19 novembre.
+
 Questa regola nasce da errori ripetuti dell’assistente nel riutilizzare lo storico OUF. Deve essere letta prima di ogni lavoro su create, stop, detach, rename, replacement, recovery o confronto Config/NetworkSettings. Non basta aver corretto il planner se executor, guard e fixture non coprono lo stesso lifecycle.
 
 ## Precedenti realmente consultati
@@ -64,3 +74,7 @@ La ricevuta22:20CET riporta Config/rete differenti nel vecchio fermo, stessa gen
 ## Qualifica UDP a due reti — 9 novembre 2026
 
 [CI42568440028](https://github.com/GioNob/ouf-deploy/actions/runs/42568440028), source 2a9e90cfb4a18d8a221ece1cde1019257684bdf5: riusato il profilo Onboarding TWO_NETWORK_BACKEND_LEGACY_MAC_DETACH_LAST_V1. Docker29.8.1 classic/containerd, sette guard e due cicli nativi per backend, zero skip/log letti. Legacy presente all'origine in entrambi i profili; detach privato conserva legacy, detach backend finale lo rende ASSENTE. Entrambi gli IP/MAC/alias conservati nel sostituto; vecchio trattenuto spento. Nessun ignore globale o riscrittura di frame. L'archivio UDP esatto avvia V36 con ruolo ordinario e TLS JVM privato;59 tabelle sintetiche invarianti. Il guard DB viene eseguito anche dopo STOP, prima di DETACH. Il predecessore della fixture usa la stessa immagine candidata: non è il vecchio JAR VPS. [Prove e limiti](../evidence/udp-wide-upgrade-qualification-20261109.json); esecuzione target ancora attesa.
+
+## Rollback MCP R-033, predecessore ripristinato sulla rete originale
+
+Superato dalla revisione del 19 novembre (D-057). Nel run [44600561122](https://github.com/GioNob/ouf-deploy/actions/runs/44600561122) il predecessore ripristinato perdeva la chiave legacy. Nel run [44602301943](https://github.com/GioNob/ouf-deploy/actions/runs/44602301943) Docker gli assegnava anche una MAC di endpoint nuova al reconnect. Il profilo intermedio `RESTORED_PREDECESSOR_LEGACY_MAC_ABSENT_V1` (task-110b) è stato rimosso. Il launcher non imposta né confronta la MAC e verifica rete, IP e alias. Swap e rollback sono qualificati sui due store nel run [44605170503](https://github.com/GioNob/ouf-deploy/actions/runs/44605170503).

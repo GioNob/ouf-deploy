@@ -60,16 +60,14 @@ mode=$1
 tmp=
 trap 'if [[ -n $tmp ]]; then rm -f -- "$tmp"; fi' EXIT
 if [[ $mode == snapshot || $mode == plan ]]; then
-  mkdir -p -- "$D/scripts" "$D/tools/acquisition_read_native"
+  mkdir -p -- "$D/scripts"
 fi
 trusted "$D/scripts"
-trusted "$D/tools/acquisition_read_native"
-fetch scripts/swap-mcp-image.py dbc1df537d85ee1b24f8fd6003b563030edc3a9fc44372692c467e2306a4f4e0
+fetch scripts/swap-mcp-image.py 2e44ac19dfa30d7c34752d6372c19bdfd87dbfb62cc12dedd24dea774f420444
 fetch scripts/upgrade-mcp-analysis-20261108.py 5f6739852c1a0d4318d6427c229409882a0f66ab1ad7110ed3c599300fa24758
 fetch scripts/upgrade-semantic-application-20261108.py 2e7e7e42367b3329f6ebd441bba665f974ea43871049d863415524610138efb1
 fetch scripts/read-discovery-contract-20261108.py 468660ed73a24c7b8a842f5b99a9c268890c99bb4206ca2e4719865326b27277
 fetch scripts/read-analysis-discovery-runtime-20261107.py ef8dc8c4887122f2b2d76c05eaff7a8850c31004fcd661de2b3e49f51d6cc1b4
-fetch tools/acquisition_read_native/retained_mac.py cb5dbbee4a80ce71860dfe5d32362a662d98898c58fd82009e69c5eb6ac1f7ce
 if [[ $mode == plan || $mode == apply ]]; then
   trusted "$state/inputs.json"
   selection=$(/usr/bin/python3 -I -B - "$state/inputs.json" <<'PY'

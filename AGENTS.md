@@ -24,7 +24,7 @@ Giovanni ha fermato il filone parallelo e affidato anche il 403/THS al solo agen
 
 ## Regola MAC da consultare prima di modificare i container
 
-Prima di creare/sostituire container o confrontare `Config`/`NetworkSettings`, leggere [la regola permanente MAC](docs/OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md) e il [precedente del 25 ottobre](docs/handoffs/OUF_ACQUISITION_MAC_LESSON_AND_RETAINED_STATE_20261025.md). Distinguere `Config.MacAddress` legacy dagli endpoint per rete. La primitiva `tools/acquisition_read_native/retained_mac.py` copre soltanto il vecchio container dopo STOP/DETACH provati: non usarla per ammettere automaticamente differenze sui sostituti running. Vietate esclusioni globali del campo o riscritture delle impronte. Per un caso diverso riportare presenza/tipo del campo prima e dopo, corrispondenza con gli endpoint e fase del lifecycle; qualificare quel profilo prima di modificare il guard. Non riscoprire il problema come se il precedente non esistesse.
+Prima di modificare un container o confrontarne il frame, applicare la [revisione del 19 novembre 2026](docs/OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md#revisione-del-19-novembre-2026). Docker alloca le MAC virtuali. Si legge la MAC viva al plan solo per un consumatore funzionale che la usa, oggi le regole ARP del provider R3. Per MCP usare rete, IP e alias. Escludere la MAC legacy e quelle degli endpoint dalle richieste e dai confronti di identità. Il [precedente del 25 ottobre](docs/handoffs/OUF_ACQUISITION_MAC_LESSON_AND_RETAINED_STATE_20261025.md) documenta la policy storica.
 
 ## Da leggere per riprendere
 

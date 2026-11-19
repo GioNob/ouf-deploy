@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """R-033. Swap an immutable MCP image on an unchanged schema 14."""
 import argparse
+import copy
 import gzip
 import hashlib
 import importlib.util
@@ -31,7 +32,6 @@ lifecycle = helper('lifecycle', 'scripts/upgrade-semantic-application-20261108.p
 mcp = helper('mcp', 'scripts/upgrade-mcp-analysis-20261108.py')
 contract = helper('contract', 'scripts/read-discovery-contract-20261108.py')
 inventory = helper('inventory', 'scripts/read-analysis-discovery-runtime-20261107.py')
-mac = helper('mac', 'tools/acquisition_read_native/retained_mac.py')
 APP = mcp.APP
 ENTRY = mcp.ENTRY
 SERVICE = '/ouf-mcp'
@@ -62,8 +62,12 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+
+
 def digest(value):
-    return sha(mac.encoded(value))
+    return sha(encoded(value))
 
 
 def check_candidate(c):
@@ -147,8 +151,67 @@ def package(path, c, store):
     return archive, defaults
 
 
+def without_mac(fields):
+    return {key: value for key, value in fields.items() if key != 'MacAddress'}
+
+
 def frame(doc):
-    return dict(inventory.frame(doc), Name=doc['Name'], RestartCount=doc['RestartCount'])
+    result = dict(inventory.frame(doc), Name=doc['Name'], RestartCount=doc['RestartCount'])
+    result['Config'] = without_mac(doc['Config'])
+    settings = without_mac(doc['NetworkSettings'])
+    settings['Networks'] = {net: without_mac(ep) for net, ep in settings['Networks'].items()}
+    result['NetworkSettings'] = settings
+    return result
+
+
+class RestoredFrameChanged(RuntimeError):
+    def __init__(self, differences):
+        super().__init__('RESTORED_FRAME_CHANGED')
+        self.differences = differences
+
+
+def verify_restored_frame(old, gated, *, reconnected=False):
+    """Verify the predecessor's identity and functional bindings before release."""
+    differences = {}
+
+    def describe(path, before, after, key):
+        change = {'before': type(before[key]).__name__ if key in before else 'absent',
+                  'after': type(after[key]).__name__ if key in after else 'absent'}
+        if isinstance(before.get(key), list) and isinstance(after.get(key), list):
+            change['orderOnly'] = sorted(map(encoded, before[key])) == sorted(map(encoded, after[key]))
+        differences[path] = change
+
+    for key in ('Id', 'Image', 'Name', 'Path', 'Args', 'Config', 'HostConfig'):
+        expected, actual = old[key], gated[key]
+        if key == 'Config':
+            expected, actual = without_mac(expected), without_mac(actual)
+        if encoded(expected) == encoded(actual):
+            continue
+        if key in ('Config', 'HostConfig'):
+            # These direct keys belong to the Engine schema. Stop before
+            # user-controlled maps (labels, driver options, ports, etc.).
+            for field in sorted(expected.keys() | actual.keys()):
+                if (field not in expected or field not in actual or
+                        encoded(expected[field]) != encoded(actual[field])):
+                    describe(key + '.' + field, old[key], actual, field)
+        else:
+            describe(key, old, gated, key)
+    if encoded(lifecycle.mounts(old)) != encoded(lifecycle.mounts(gated)):
+        describe('Mounts', old, gated, 'Mounts')
+
+    bindings = endpoint_matches(old, gated, reconnected=reconnected)
+    for field, matches in bindings.items():
+        if not matches:
+            differences['NetworkSettings.' + field] = {'matchesOriginal': False}
+
+    if differences:
+        if 'HostConfig.NetworkMode' in differences:
+            name, endpoint_before = next(iter(old['NetworkSettings']['Networks'].items()))
+            for side, doc in [('before', old), ('after', gated)]:
+                mode = doc['HostConfig'].get('NetworkMode')
+                differences['HostConfig.NetworkMode'][side + 'MatchesName'] = mode == name
+                differences['HostConfig.NetworkMode'][side + 'MatchesId'] = mode == endpoint_before['NetworkID']
+        raise RestoredFrameChanged(differences)
 
 
 class Runtime(lifecycle.Engine):
@@ -214,7 +277,7 @@ def observe(rt, pgid):
          'EXPECTED_SERVICE_REQUIRED')
     need(old['Config']['Entrypoint'] == ENTRY and old['Config']['Cmd'] == APP
          and [old['Path'], *old['Args']] == ENTRY + APP, 'PREDECESSOR_RESTART_GATE_REQUIRED')
-    mac.policy(old)
+    need(len(old['NetworkSettings']['Networks']) == 1, 'SINGLE_BACKEND_REQUIRED')
     binary, bindings = rt.process(old, False)
     history = database_sha(rt.database(old, pgid))
     need(rt.ready(old), 'PREDECESSOR_NOT_READY')
@@ -241,14 +304,22 @@ def plan(rt, inputs, defaults):
     # Compare image-owned defaults that Docker can merge into CREATE. Inspect
     # also contains empty compatibility fields absent in an OCI config.
     original = image_config(rt, old['Image'])
-    for key in set(original) | set(defaults):
+    for key in (set(original) | set(defaults)) - {'MacAddress'}:
         a, b = original.get(key), defaults.get(key)
         if key == 'Labels':
             a, b = ({k: v for k, v in (labels or {}).items() if k not in (REVISION, SOURCE)}
                     for labels in (a, b))
         need(a == b or ((key not in original or key not in defaults) and not a and not b),
              'UNRELATED_IMAGE_DEFAULT_CHANGE')
-    req = mcp.request(old, c['imageId'])
+    # The shared request builder indexes the legacy endpoint field. Supply its
+    # optional input on a copy and strip both MAC fields before hashing or use.
+    builder_input = copy.deepcopy(old)
+    for endpoint in builder_input['NetworkSettings']['Networks'].values():
+        endpoint.setdefault('MacAddress', None)
+    req = mcp.request(builder_input, c['imageId'])
+    req.pop('MacAddress', None)
+    for endpoint in req['NetworkingConfig']['EndpointsConfig'].values():
+        endpoint.pop('MacAddress', None)
     req['Labels'] = dict(old['Config'].get('Labels') or {}, **{REVISION: c['publisherCommit'], SOURCE: c['sourceCommit']})
     host = old['HostConfig']
     need(not host.get('PublishAllPorts') and all(str(binding.get('HostPort') or '').isdigit()
@@ -260,9 +331,10 @@ def plan(rt, inputs, defaults):
     ipam = ep.get('IPAMConfig') or {}
     need(all(not ipam.get(key) or ipam[key] == ep[field] for key, field in
              [('IPv4Address', 'IPAddress'), ('IPv6Address', 'GlobalIPv6Address')]), 'ENDPOINT_IPAM_CHANGED')
+    original_frame = frame(old)
     body = {'version': 1, 'api': '1.44', 'inputs': inputs, 'requestSha256': digest(req),
             'controllerSha256': lifecycle.file_sha(__file__),
-            'oldSectionSha256': {k: digest(old[k]) for k in ('Config', 'HostConfig', 'Mounts', 'NetworkSettings')},
+            'oldSectionSha256': {k: digest(original_frame[k]) for k in ('Config', 'HostConfig', 'Mounts', 'NetworkSettings')},
             'custodyTag': 'ouf-mcp-r033-custody:' + old['Id'],
             'retainedName': SERVICE + '-before-r033-' + old['Id'][:12],
             'isolatedName': SERVICE + '-failed-r033-' + old['Id'][:12]}
@@ -277,39 +349,90 @@ def vacant(rt, body):
     need(not names.intersection((body['retainedName'], body['isolatedName'])), 'CUSTODY_NAME_OCCUPIED')
 
 
-def retained(old, actual, name):
-    mac.verify_detached(old, actual, expected_name=name)
-    need(actual['Path'] == old['Path'] and actual['Args'] == old['Args'], 'RETAINED_COMMAND_CHANGED')
-
-
-def stopped(old, doc):
-    for key in ('Id', 'Image', 'Name', 'Path', 'Args', 'Config', 'HostConfig'):
-        need(old[key] == doc[key], 'STOPPED_FRAME_CHANGED')
-    need(lifecycle.mounts(old) == lifecycle.mounts(doc) and doc['State']['Pid'] == 0
-         and not doc['State']['Running'] and doc['State']['StartedAt'] == old['State']['StartedAt']
-         and set(doc['NetworkSettings']['Networks']) == set(old['NetworkSettings']['Networks']),
+def stopped_frame(old, doc, name):
+    for key in ('Id', 'Image', 'Path', 'Args', 'HostConfig'):
+        need(encoded(old[key]) == encoded(doc[key]), 'STOPPED_FRAME_CHANGED')
+    need(doc['Name'] == name and encoded(without_mac(old['Config'])) == encoded(without_mac(doc['Config'])),
+         'STOPPED_FRAME_CHANGED')
+    need(encoded(lifecycle.mounts(old)) == encoded(lifecycle.mounts(doc)) and doc['State']['Pid'] == 0
+         and doc['State']['Running'] is False and doc['State']['StartedAt'] == old['State']['StartedAt'],
          'STOPPED_BINDINGS_CHANGED')
 
 
-def endpoint(old, req, doc):
-    net, wanted = next(iter(req['NetworkingConfig']['EndpointsConfig'].items()))
-    actual = doc['NetworkSettings']['Networks'][net]
-    prior = old['NetworkSettings']['Networks'][net]
-    need(doc['NetworkSettings'].get('Ports') == old['NetworkSettings'].get('Ports')
-         and actual['NetworkID'] == prior['NetworkID'] and actual['IPAddress'] == prior['IPAddress']
-         and actual['MacAddress'] == prior['MacAddress']
-         and set(actual.get('Aliases') or []) == set(wanted['Aliases']) | {doc['Id'][:12]}
-         and all(actual.get(k) == prior.get(k) for k in
-                 ('GlobalIPv6Address', 'GlobalIPv6PrefixLen', 'IPPrefixLen', 'Gateway', 'IPv6Gateway',
-                  'Links', 'DriverOpts', 'GwPriority')), 'ENDPOINT_BINDINGS_CHANGED')
+def retained(old, actual, name):
+    stopped_frame(old, actual, name)
+    need(actual['NetworkSettings']['Networks'] == {}, 'RETAINED_ENDPOINT_PRESENT')
 
 
-def verify_new(old, req, doc, started):
-    need(doc['Name'] == SERVICE and [doc['Path'], *doc['Args']] == ENTRY + APP, 'CANDIDATE_COMMAND_CHANGED')
-    lifecycle.verify_replacement(old, req, doc, started)
-    if started:
-        need(doc['Config'].get('MacAddress') == old['Config']['MacAddress'], 'RUNNING_LEGACY_MAC_CHANGED')
-        endpoint(old, req, doc)
+def stopped(old, doc):
+    stopped_frame(old, doc, old['Name'])
+    need(all(endpoint_matches(old, doc, active=False).values()), 'STOPPED_BINDINGS_CHANGED')
+
+
+def endpoint_matches(old, doc, *, reconnected=False, active=True):
+    net, prior = next(iter(old['NetworkSettings']['Networks'].items()))
+    networks = doc['NetworkSettings']['Networks']
+    actual = networks.get(net, {})
+    aliases = set(prior.get('Aliases') or [])
+    if reconnected:
+        aliases.add(doc['Id'][:12])
+    matches = {
+        'Networks': set(networks) == {net},
+        'Ports': doc['NetworkSettings'].get('Ports') == old['NetworkSettings'].get('Ports'),
+        'NetworkID': actual.get('NetworkID') == prior['NetworkID'],
+        'IPAddress': actual.get('IPAddress') == prior['IPAddress'],
+        'Aliases': set(actual.get('Aliases') or []) == aliases,
+    }
+    ipam = prior.get('IPAMConfig')
+    if reconnected:
+        # CREATE and CONNECT explicitly request the original live addresses,
+        # including when Docker originally assigned them dynamically.
+        ipam = dict(ipam or {}, IPv4Address=prior['IPAddress'])
+        if prior.get('GlobalIPv6Address'):
+            ipam['IPv6Address'] = prior['GlobalIPv6Address']
+    matches['IPAMConfig'] = actual.get('IPAMConfig') == ipam
+    for field in ('GlobalIPv6Address', 'GlobalIPv6PrefixLen', 'IPPrefixLen', 'Gateway', 'IPv6Gateway',
+                  'Links', 'DriverOpts', 'GwPriority'):
+        matches[field] = encoded(actual.get(field)) == encoded(prior.get(field))
+    if prior.get('DNSNames') or actual.get('DNSNames'):
+        names = set(prior.get('DNSNames') or [])
+        if reconnected:
+            names.add(doc['Id'][:12])
+        matches['DNSNames'] = set(actual.get('DNSNames') or []) == names
+    # Before START and after STOP, Engine can report cleared live allocations.
+    # Check configured addresses and aliases even with no live endpoint.
+    if not active and not actual.get('EndpointID') and not actual.get('IPAddress'):
+        for field in ('NetworkID', 'IPAddress', 'GlobalIPv6Address', 'Gateway', 'IPv6Gateway'):
+            if actual.get(field) == '':
+                matches[field] = True
+        for field in ('GlobalIPv6PrefixLen', 'IPPrefixLen'):
+            if actual.get(field) == 0:
+                matches[field] = True
+        if not doc['NetworkSettings'].get('Ports'):
+            matches['Ports'] = True
+        if not actual.get('DNSNames'):
+            matches['DNSNames'] = True
+    # EndpointID identifies an attachment, so it can change across CONNECT.
+    # The same-generation frame still compares it exactly.
+    handled = matches.keys() | {'EndpointID', 'MacAddress'}
+    matches['EndpointSettings'] = encoded({k: v for k, v in actual.items() if k not in handled}) == encoded(
+        {k: v for k, v in prior.items() if k not in handled})
+    return matches
+
+
+def verify_new(old, req, doc, started, cid):
+    need(doc['Id'] == cid and doc['Name'] == SERVICE and [doc['Path'], *doc['Args']] == ENTRY + APP,
+         'CANDIDATE_IDENTITY_CHANGED')
+    config = {k: v for k, v in req.items() if k not in ('HostConfig', 'NetworkingConfig')}
+    need(encoded(without_mac(doc['Config'])) == encoded(config), 'REPLACEMENT_CONFIG_CHANGED')
+    host = dict(req['HostConfig'])
+    if started and old['HostConfig'].get('OomKillDisable') is None and host.get('OomKillDisable') is False:
+        host['OomKillDisable'] = None
+    need(doc['Image'] == req['Image'] and encoded(doc['HostConfig']) == encoded(host)
+         and encoded(lifecycle.mounts(doc)) == encoded(lifecycle.mounts(old)), 'REPLACEMENT_IMAGE_HOST_MOUNTS_CHANGED')
+    need(doc['State']['Running'] is started, 'REPLACEMENT_RUNNING_STATE_CHANGED')
+    bindings = endpoint_matches(old, doc, reconnected=True, active=started)
+    need(all(bindings.values()), 'ENDPOINT_BINDINGS_CHANGED')
 
 
 def put(path, value):
@@ -395,13 +518,14 @@ def apply(rt, state, inputs, archive, defaults, approved):
     retained(old, rt.inspect(cid), body['retainedName'])
     new = effect(rt, journal, 'create', '/containers/create?name=ouf-mcp', req)['Id']
     need(re.fullmatch(HEX, new) and new != cid, 'INVALID_CREATED_ID')
-    verify_new(old, req, rt.inspect(new), False)
+    verify_new(old, req, rt.inspect(new), False, new)
     effect(rt, journal, 'start', '/containers/' + new + '/start')
     gated = rt.inspect(new)
-    verify_new(old, req, gated, True)
+    verify_new(old, req, gated, True, new)
     put(journal / 'gated.private.json', gated)
     live = release(rt, journal, gated, c['binarySha256'], fresh)
-    verify_new(old, req, live, True)
+    need(frame(live) == frame(gated), 'CANDIDATE_FRAME_CHANGED_AFTER_RELEASE')
+    verify_new(old, req, live, True, new)
     retained(old, rt.inspect(cid), body['retainedName'])
     receipt = {'status': 'READY', 'planSha256': approved, 'candidate': c, 'cid': new, 'imageId': live['Image'],
                'binarySha256': c['binarySha256'], 'retainedCid': cid, 'schema': 14, 'readyHttp': 204,
@@ -447,13 +571,13 @@ def rollback(rt, journal, approved):
             generation = read(journal / 'gated.private.json')
             need(candidate['State']['StartedAt'] == generation['State']['StartedAt'], 'SUCCESSOR_GENERATION_CHANGED')
             if candidate['State']['Running']:
-                verify_new(old, req, candidate, True)
+                verify_new(old, req, candidate, True, new)
             else:
                 stopped(generation, candidate)
         else:
             need(not candidate['State']['Running'] and not (journal / 'start.intent').exists(),
                  'RECONCILE_GATE_START')
-            verify_new(old, req, candidate, False)
+            verify_new(old, req, candidate, False, new)
 
     need(database_sha(rt.database(old, photo['postgresCid'])) == photo['databaseSha256'], 'DATABASE_CHANGED')
     rb = journal / 'rollback'
@@ -477,11 +601,7 @@ def rollback(rt, journal, approved):
                {'Container': cid, 'EndpointConfig': req['NetworkingConfig']['EndpointsConfig'][net]})
     effect(rt, rb, 'start', '/containers/' + cid + '/start')
     gated = rt.inspect(cid)
-    for key in ('Id', 'Image', 'Name', 'Path', 'Args', 'Config', 'HostConfig'):
-        need(gated[key] == old[key], 'RESTORED_FRAME_CHANGED')
-    need(lifecycle.mounts(gated) == lifecycle.mounts(old) and set(gated['NetworkSettings']['Networks']) == {net},
-         'RESTORED_BINDINGS_CHANGED')
-    endpoint(old, req, gated)
+    verify_restored_frame(old, gated, reconnected=not attached)
     live = release(rt, rb, gated, photo['binarySha256'], photo)
     need(frame(live) == frame(gated), 'RESTORED_FRAME_CHANGED_AFTER_RELEASE')
     receipt = {'status': 'ROLLED_BACK', 'planSha256': approved, 'cid': cid, 'imageId': live['Image'],
