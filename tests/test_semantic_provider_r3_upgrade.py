@@ -16,6 +16,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tools.semantic_provider_r3 import upgrade as U
+from test_semantic_provider_operation_issuance import issuer_command
 import test_semantic_provider_r3_operate as F
 
 I, A, C = U.I, U.A, U.C
@@ -266,7 +267,7 @@ class UpgradeFixture(F.OperateFixture):
         self.assertEqual(result.stderr, b"")
         return json.loads(result.stdout)
 
-    def supersede(self, refresh=True):
+    def supersession_args(self, refresh=True):
         # Current quiesced journal is an explicit input; never rewind it to the
         # initial journal. Only public composition input bindings are refreshed.
         owner = C.document(self.inputs["files"]["coordinator"])
@@ -274,8 +275,17 @@ class UpgradeFixture(F.OperateFixture):
             self.inputs["files"]["coordinationJournal"] = Path(owner["journalFile"]).read_bytes()
         self.publish_inputs()
         self.output = self.root/"issued-next"
-        plan = self.issuer_cli([*self.argv(), "--supersede"])
-        result = self.issuer_cli([*self.argv("--apply", plan["planSha256"]), "--supersede"])
+        return [*self.argv(), "--supersede"]
+
+    def issue_successor(self, args, code=0):
+        result = subprocess.run(issuer_command(args, self.wrapper), capture_output=True, timeout=40)
+        self.assertEqual(result.returncode, code, result.stdout.decode() + result.stderr.decode())
+        self.assertEqual(result.stderr, b"")
+        return json.loads(result.stdout)
+
+    def supersede(self):
+        plan = self.issue_successor(self.supersession_args())
+        result = self.issue_successor([*self.argv("--apply", plan["planSha256"]), "--supersede"])
         self.assertEqual(result["sequence"], 2)
         return result
 
@@ -328,9 +338,17 @@ class UpgradeFixture(F.OperateFixture):
         self.installed()
         self.docker = self.script("docker", F.DOCKER)
         self.systemctl = self.script("systemctl-upgrade", SYSTEMCTL)
+        args = self.supersession_args(refresh=False)
+        plan = self.issue_successor(args)
         self.action("start")
-        # Negative fixture only: issuing N+1 does not close the live epoch.
-        self.supersede(refresh=False)
+        for argv in (args, [*self.argv("--apply", plan["planSha256"]), "--supersede"]):
+            held = self.issue_successor(argv, code=1)
+            self.assertEqual(held["reason"], "ISSUE_SUPERSEDE_PROVIDER_NOT_STOPPED")
+            self.assertEqual((held["privateKeysRead"], held["signaturesIssued"], held["doNotRerunApply"]), (0, 0, False))
+        self.assertFalse(self.output.exists())
+        self.assertEqual(self.head()["sequence"], 1)
+        # Publish a synthetic successor outside the CLI to exercise the independent upgrade guard.
+        self.put(2, A.canonical(plan["payload"]))
         held = self.upgrade_cli(self.upgrade_args(), code=1)
         self.assertEqual(held["reason"], U.STOPPED)
         self.assertFalse(held["doNotRerunApply"])

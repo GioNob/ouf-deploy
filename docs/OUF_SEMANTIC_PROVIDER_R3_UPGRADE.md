@@ -7,14 +7,17 @@ aggiornamento o uno stato corrente del VPS.
 ## Sequenza operativa
 
 1. Con la consegna operativa della versione corrente, eseguire il plan e
-   l'apply di `operate --action stop` se il provider è acceso. Prima
+   l'apply di `operate --action stop` se il provider è acceso, con la testa
+   ancora allineata alla versione installata. Prima
    dell'emissione successiva tutte le epoche devono essere assenti o
    terminali, i due CID fermi e il lease `QUIESCED`, con autorizzazioni
-   lease/start false. Se nessuna epoca è mai stata aperta e i CID sono già
+   lease/start false. Per ogni `FAILED` preparato serve la ricevuta di cleanup
+   del wrapper. Se nessuna epoca è mai stata aperta e i CID sono già
    fermi, il comando stop non è necessario: task-42 rifiuta uno stop senza
    candidati running.
 2. Emettere l'autorizzazione successiva con l'issuer, aggiungendo
-   `--supersede` sia al plan sia all'apply. Conservare la ricevuta.
+   `--supersede` sia al plan sia all'apply. Conservare la ricevuta. [Gate di
+   supersessione nell’issuer](OUF_SEMANTIC_PROVIDER_R3_COMPOSE_AND_ISSUE.md#emissioni-successive-con---supersede).
 3. Eseguire il plan dell'upgrade; rivedere pubblicazioni, unità e wrapper.
    Usare gli stessi argomenti e il suo `planSha256` nell'apply.
 4. Dopo `SEMANTIC_PROVIDER_R3_UPGRADED_WAITING`, usare `operate --action start`
