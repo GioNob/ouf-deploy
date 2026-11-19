@@ -49,6 +49,7 @@ on:
       - docs/OUF_SEMANTIC_PROVIDER_R3_V16_DRIVER_DENIAL.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V18.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V19.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V20.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_RECONCILE.md
       - tests/test_semantic_b1_acceptance.py
       - tests/test_runtime_v52_epochs.py
@@ -72,6 +73,8 @@ jobs:
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v18.py -v
       - name: R-031 R3 v19 stale-task runtime and v18 upgrade (portable)
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v19.py -v
+      - name: D-054 R3 v20 DNS retransmission, lease renewal and v19 upgrade (portable)
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v20.py -v
       - name: R-012 prepared-epoch reconciliation and pinned runbook
         run: |
           bash -n ops/vps/r3-reconcile.sh

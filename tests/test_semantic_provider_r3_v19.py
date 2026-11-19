@@ -20,12 +20,16 @@ SUPERVISOR_CONFIG = 'supervisor/configuration.json'
 MISSING = b'container does not exist\n'
 
 
+def composition_fixture():
+    inputs, v17 = fixture()
+    old = C.compose(inputs, 18, sequence=18, supersedes=C.sha(v17['authorization']))
+    return inputs, old, C.compose(inputs, 19, sequence=19, supersedes=C.sha(old['authorization']))
+
+
 class CompositionV19(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.inputs, v17 = fixture()
-        cls.old = C.compose(cls.inputs, 18, sequence=18, supersedes=C.sha(v17['authorization']))
-        cls.result = C.compose(cls.inputs, 19, sequence=19, supersedes=C.sha(cls.old['authorization']))
+        cls.inputs, cls.old, cls.result = composition_fixture()
 
     def test_v18_golden(self):
         # Recorded from 6e5ff93b before adding the v19 overlay.
@@ -48,6 +52,18 @@ class CompositionV19(unittest.TestCase):
             raw = result['documents'][f'versions/{version}/source/' + C.RUNTIME]
             self.assertIn(C.sha(raw), trusted, version)
         self.assertEqual(len(trusted), 3)
+
+    def test_v19_golden(self):
+        # Captured at 0a5840ca and retained from the task-85 diagnostic.
+        result = self.result
+        actual = {key: C.sha(C.canonical(result[key])) for key in ('hashes', 'inputHashes', 'audit', 'layout')}
+        self.assertEqual(actual | {'authorization': C.sha(result['authorization'])}, {
+            'hashes': '3bdd788787532520b2b9463a0e5c045ea4d348766e88a420d38935723c8d82ff',
+            'inputHashes': '9b23c1ffd7c65180b07006c1da38cbea528de8420a3fe0f3cb09f1a3b1bb6a5a',
+            'audit': '302d3b526d20af5f200c95a7258d9351254ce50220df3425aa7a3749db8e8aab',
+            'layout': 'bf51fc33a58f4833a0e826465fc4f64569115afaaf2af75e91b43bda12f6e1e2',
+            'authorization': '4196bbc40c677a3960389cdd6eda4fc0d4ca2cb36e9b85a543d634faea8a8945',
+        })
 
     def test_issuance_and_final_source_seal(self):
         inputs, old, new = self.inputs, self.old, self.result
@@ -122,9 +138,7 @@ class CompositionV19(unittest.TestCase):
 class RuntimeV19(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        inputs, v17 = fixture()
-        v18 = C.compose(inputs, 18, sequence=18, supersedes=C.sha(v17['authorization']))
-        result = C.compose(inputs, 19, sequence=19, supersedes=C.sha(v18['authorization']))
+        _, _, result = composition_fixture()
         cls.source = result['documents'][PREFIX + 'source/' + C.RUNTIME]
 
     def setUp(self):

@@ -189,13 +189,7 @@ class AbsolutePosixPath(PurePosixPath):
         return self
 
 
-class RenewalRuntime(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.inputs, previous = fixture()
-        cls.result = C.compose(cls.inputs, 18, sequence=18, supersedes=C.sha(previous['authorization']))
-        cls.retained = V12.fixture()[2]
-
+class RenewalFixture(unittest.TestCase):
     def setUp(self):
         scope = self.enterContext(ExitStack())
         scope.enter_context(V12.I.module_scope())
@@ -213,16 +207,18 @@ class RenewalRuntime(unittest.TestCase):
         self.stopped = False
 
         docs = self.result['documents']
-        cfg_raw = docs[PREFIX + CONFIG]
+        sequence = C.document(self.result['authorization'])['sequence']
+        prefix = f'versions/{sequence}/'
+        cfg_raw = docs[prefix + CONFIG]
         cfg = C.document(cfg_raw)
         self.cfg, self.coordination = cfg, C.document(self.inputs['files']['coordinationJournal'])
         root = PurePosixPath(cfg['sourceRoot'])
         owner_path = cfg['coordinator']['ownerConfiguration']['path']
-        disk = {str(root / p): docs[PREFIX + 'source/' + p] for p in cfg['sourceHashes']}
+        disk = {str(root / p): docs[prefix + 'source/' + p] for p in cfg['sourceHashes']}
         disk.update({str(PurePosixPath(owner_path).parent / 'source' / p): raw for p, raw in self.retained.items()})
         config_path = str(root.parent / CONFIG)
         disk.update({config_path: cfg_raw, owner_path: self.inputs['files']['coordinator'],
-                     cfg['coordinator']['dnsProfile']['path']: docs[PREFIX + 'supervisor/dns-profile.json'],
+                     cfg['coordinator']['dnsProfile']['path']: docs[prefix + 'supervisor/dns-profile.json'],
                      cfg['mandatesModule']['path']: self.inputs['sources'][C.MANDATES]})
 
         def read(path, expected=None, **kwargs):
@@ -295,11 +291,12 @@ class RenewalRuntime(unittest.TestCase):
         self.bounded = sys.modules['bounded_recovery']
         continuous = sys.modules['continuous_supervisor']
         self.dns = sys.modules['dns']
+        self.observe_many = self.dns.observe_many
         self.dns.observe_many = self.query
         self.adapter = continuous.RenewingLeaseAdapter(self.c, self.dns, sys.modules['readback_margin_compiler'],
                                                        self.guard, lambda: None, self.clock)
         self.adapter.incident = sys.modules['recovery_journal'].Incident(
-            18, {'adapter': 7, 'southbound': 9}, lambda: self.wall, self.clock)
+            sequence, {'adapter': 7, 'southbound': 9}, lambda: self.wall, self.clock)
         self.journal = Journal()
         self.r = sys.modules['lease_recovery_budget'].ObservedRecovery(
             self.journal, self.adapter, self.bounded.Policy(), 'a' * 64, 'b' * 64,
@@ -394,6 +391,14 @@ class RenewalRuntime(unittest.TestCase):
         self.assertEqual(self.coordination['state'], 'QUIESCED')
         self.assertIs(self.coordination['leaseAuthorized'], False)
         self.assertEqual(self.elements, {})
+
+
+class RenewalRuntime(RenewalFixture):
+    @classmethod
+    def setUpClass(cls):
+        cls.inputs, previous = fixture()
+        cls.result = C.compose(cls.inputs, 18, sequence=18, supersedes=C.sha(previous['authorization']))
+        cls.retained = V12.fixture()[2]
 
     def test_lock_released_before_attempt_deadline(self):
         deadline = self.clock() + 5
