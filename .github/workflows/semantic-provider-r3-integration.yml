@@ -60,7 +60,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with: {persist-credentials: false}
+        with: {persist-credentials: false, fetch-depth: 0}
       - name: Allow exec on /run (newer runner images mount it noexec)
         run: sudo mount -o remount,exec /run
       - name: D-050 lease kernel generation 2 (portable)
