@@ -16,6 +16,7 @@ def cmd(*args,**kw):
 
 class Native(unittest.TestCase):
  schema_version=13
+ fixture_mac='02:42:ac:44:01:07'
  def load_image(self):
   cmd(*D,'load','-i',str(ROOT/'mcp-candidate/image.tar.gz'))
   self.image=json.loads(cmd(*D,'image','inspect','ouf-mcp:ci'))[0]['Id'];self.assertIn(self.image,(u.CONFIG_ID,u.NATIVE_ID))
@@ -84,7 +85,7 @@ class Native(unittest.TestCase):
    time.sleep(1)
   raise AssertionError('MCP not ready: '+cmd(*D,'logs',cid).decode())
  def create_server(self,explicit,name):
-  mac='02:42:ac:44:01:07';binds=[str(self.pub)+':/run/fixture-public:ro',str(self.secrets)+':/run/fixture-secrets:ro',str(self.ca)+':/run/fixture-ca:ro']
+  mac=self.fixture_mac;binds=[str(self.pub)+':/run/fixture-public:ro',str(self.secrets)+':/run/fixture-secrets:ro',str(self.ca)+':/run/fixture-ca:ro']
   env=['MCP_DATABASE_URL=postgres://fixture:synthetic-only@'+self.pg+':5432/fixture?sslmode=disable',
    'MCP_OIDC_CLIENT_ID=fixture','MCP_OIDC_CLIENT_SECRET_FILE=/run/fixture-secrets/client','MCP_OIDC_TOKEN_ENDPOINT='+self.origin+'/token',
    'MCP_AUTHORIZATION_BUNDLE_ENDPOINT='+self.origin+'/policy','MCP_GATEWAY_ENDPOINT='+self.origin+'/execute',
@@ -97,10 +98,11 @@ class Native(unittest.TestCase):
    'NetworkingConfig':{'EndpointsConfig':{self.tag:{'MacAddress':mac,'Aliases':['mcp-fixture']}}}}
   if explicit:req['MacAddress']=mac
   cid=self.e.api('POST','/containers/create?name='+name,req)['Id'];self.ids.append(cid);self.e.api('POST','/containers/'+cid+'/start');self.e.api('POST','/containers/'+cid+'/kill?signal=USR1')
-  old=self.ready(cid);self.assertEqual(old['Config'].get('MacAddress'),mac,'required real legacy MAC precondition');self.current=old;self.sql_pg_id=json.loads(cmd(*D,'inspect',self.pg))[0]['Id']
+  old=self.ready(cid);self.current=old;self.sql_pg_id=json.loads(cmd(*D,'inspect',self.pg))[0]['Id']
   return old
  def exercise(self,explicit):
   old=self.create_server(explicit,self.tag)
+  self.assertEqual(old['Config'].get('MacAddress'),self.fixture_mac,'required real legacy MAC precondition')
   before=self.read('before');u.verify_database(before,c.MCP_CHECKSUMS,self.oid)
   sentinel=self.sql("SELECT row_to_json(t) FROM ouf_mcp.application_session t WHERE application_conversation_ref='keep'")
   pub={n:(self.pub/n).read_bytes() for n in ('profile.json','policy.json','permit.json')}

@@ -1,5 +1,15 @@
 # Regola permanente sui frame MAC e sul lifecycle dei container
 
+## Revisione del 19 novembre 2026
+
+Docker alloca la MAC virtuale di ciascun endpoint e può assegnarne una diversa quando ricollega lo stesso container. La MAC del container non si conserva né si confronta, salvo che la usi un consumatore funzionale. Oggi l’unico caso operativo è quello delle regole ARP del provider R3. Per costruire quelle regole si legge la MAC dell’endpoint dallo stato vivo al plan, senza imporre un indirizzo conservato da un’esecuzione precedente.
+
+Per MCP, Caddy e APISIX usano il nome o gli alias sulla rete Docker. Nel run nativo 44602301943 il vecchio CID è tornato sulla rete originale con una nuova MAC e senza la chiave legacy nel Config. Il launcher R-033 lascia l’allocazione a Docker sia alla CREATE sia al CONNECT e verifica rete, IP e alias in apply e rollback. [Regola applicata da R-033](OUF_MCP_IMAGE_SWAP.md#confronto-del-frame-per-fase-api-144)
+
+## Storico precedente alla revisione
+
+Le regole, i profili qualificati e le ricevute riportati di seguito documentano le decisioni precedenti al 19 novembre.
+
 Questa regola nasce da errori ripetuti dell’assistente nel riutilizzare lo storico OUF. Deve essere letta prima di ogni lavoro su create, stop, detach, rename, replacement, recovery o confronto Config/NetworkSettings. Non basta aver corretto il planner se executor, guard e fixture non coprono lo stesso lifecycle.
 
 ## Precedenti realmente consultati

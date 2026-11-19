@@ -32,6 +32,14 @@ class NativeSwap(fixture.Native):
         self.assertNotEqual(self.image, selected)
         fixture.cmd(*docker, 'tag', self.image, 'ouf-mcp:ci')
 
+    def assert_live_binding(self, old, live):
+        network, endpoint = next(iter(old['NetworkSettings']['Networks'].items()))
+        self.assertEqual(set(live['NetworkSettings']['Networks']), {network})
+        actual = live['NetworkSettings']['Networks'][network]
+        for field in ('NetworkID', 'IPAddress', 'GlobalIPv6Address'):
+            self.assertEqual(actual.get(field), endpoint.get(field), field)
+        self.assertEqual(set(actual['Aliases']), set(endpoint['Aliases']) | {live['Id'][:12]})
+
     def exercise(self, explicit):
         self.assertEqual(os.environ['DOCKER_API_VERSION'], '1.44')
         old = self.create_server(explicit, 'ouf-mcp')
@@ -44,9 +52,9 @@ class NativeSwap(fixture.Native):
             receipt = swap.apply(self.runtime, self.root, inputs, self.archive, self.defaults, approved)
             self.assertEqual(receipt['readyHttp'], 204)
             self.assertEqual(receipt['imageId'], self.candidate['imageId'])
-            self.assertNotIn('MacAddress', self.runtime.inspect(old['Id'])['Config'])
+            self.assertEqual(self.runtime.inspect(old['Id'])['NetworkSettings']['Networks'], {})
             live = self.runtime.inspect(receipt['cid'])
-            self.assertEqual(live['Config']['MacAddress'], old['Config']['MacAddress'])
+            self.assert_live_binding(old, live)
             binary_path = ROOT / 'r033-ouf-mcp'
             fixture.cmd(*fixture.D, 'cp', live['Id'] + ':' + swap.APP[0], str(binary_path))
             self.assertEqual(swap.lifecycle.file_sha(binary_path), self.candidate['binarySha256'])
@@ -62,9 +70,7 @@ class NativeSwap(fixture.Native):
             self.assertEqual((restored['cid'], restored['imageId'], restored['binarySha256'], restored['readyHttp']),
                              (old['Id'], self.image, photo['binarySha256'], 204))
             restored_frame = self.runtime.inspect(old['Id'])
-            self.assertNotIn('MacAddress', restored_frame['Config'])
-            self.assertTrue(restored_frame['NetworkSettings']['Networks'][self.tag]['MacAddress'] ==
-                            old['Config']['MacAddress'])
+            self.assert_live_binding(old, restored_frame)
             protocol.check_restored_rejections(self, swap, old, restored_frame)
             self.assertEqual(self.runtime.inspect(receipt['cid'])['NetworkSettings']['Networks'], {})
             self.assertEqual(self.calls['business'], 0)
