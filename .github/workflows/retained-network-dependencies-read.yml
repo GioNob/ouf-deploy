@@ -1,8 +1,6 @@
 name: Retained endpoint dependency read
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/read-retained-network-dependencies.py','tests/test_retained_network_dependencies_read.py','.github/workflows/retained-network-dependencies-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   redaction:

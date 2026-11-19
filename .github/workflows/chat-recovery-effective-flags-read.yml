@@ -1,8 +1,6 @@
 name: Read effective UDP execution switches
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['.github/workflows/chat-recovery-effective-flags-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   read:

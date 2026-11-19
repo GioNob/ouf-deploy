@@ -1,8 +1,6 @@
 name: Read current application generations for chat recovery
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['.github/workflows/chat-only-recovery-installed-read.yml', 'scripts/read-chat-recovery-current-inventory.py']
+  workflow_dispatch:
 permissions: {contents: read}
 concurrency:
   group: ouf-discovery-release

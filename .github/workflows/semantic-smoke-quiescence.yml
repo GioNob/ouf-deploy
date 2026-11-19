@@ -1,11 +1,6 @@
 name: OUF quiesce exact retained Semantic R4a smoke
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - scripts/quiesce-retained-semantic-smoke.py
-      - .github/workflows/semantic-smoke-quiescence.yml
 permissions:
   contents: read
 concurrency:

@@ -1,12 +1,5 @@
 name: Current Semantic cutover host and database metadata
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/read-current-semantic-cutover-host.py
-      - scripts/read-semantic-database-admin-scope.py
-      - tests/test_current_cutover_host.py
-      - .github/workflows/semantic-current-cutover-host.yml
   workflow_dispatch:
 permissions:
   contents: read

@@ -1,10 +1,6 @@
 name: V11 ambiguous import Engine read only
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/read-v11-image-import-engine.py
-      - .github/workflows/v11-image-import-engine-read.yml
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

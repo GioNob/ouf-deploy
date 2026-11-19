@@ -1,13 +1,6 @@
 name: OUF Semantic replacement configuration read
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/read-semantic-workload-client.py
-      - tests/test_semantic_workload_client.py
-      - scripts/plan-semantic-replacement-configuration.py
-      - tests/test_semantic_replacement_configuration.py
-      - .github/workflows/semantic-replacement-configuration.yml
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

@@ -1,9 +1,5 @@
 name: Prepare current protected Semantic cutover inputs on target
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/semantic-current-cutover-inputs-target.yml
   workflow_dispatch:
 permissions:
   contents: read

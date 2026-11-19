@@ -1,9 +1,7 @@
 name: Source revision read-only target generation inventory
 # Fresh application generations after native host recovery journal-sandbox-_jz3lj9r; read only.
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['.github/workflows/source-revision-runtime-inventory.yml', 'scripts/read-source-revision-current-inventory.py']
+  workflow_dispatch:
 permissions: {contents: read}
 concurrency: {group: ouf-source-revision-read, cancel-in-progress: false}
 jobs:

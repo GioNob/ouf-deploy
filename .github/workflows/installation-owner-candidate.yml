@@ -1,8 +1,6 @@
 name: Conditional installation Onboarding-only candidate
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/package-installation-owner-candidate.py', 'releases/installation-owner-candidate-20261019.json', '.github/workflows/installation-owner-candidate.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   package:

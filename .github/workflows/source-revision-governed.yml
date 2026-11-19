@@ -1,8 +1,6 @@
 name: Governed source revision continuation qualification
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/*source-revision-governed*.py', 'tools/source_revision_update/governed_*.py', 'tests/test_source_revision_update_governed_continuation.py', 'tests/test_source_revision_governed_capsule.py', '.github/workflows/source-revision-governed.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   native-owner:

@@ -1,8 +1,6 @@
 name: Retained UDP startup bounded read
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/read-retained-udp-startup.py','tests/test_retained_udp_startup_read.py','.github/workflows/retained-udp-startup-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   redaction:

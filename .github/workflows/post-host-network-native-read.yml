@@ -1,8 +1,6 @@
 name: Post host network native read
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/read-post-host-network-native.py','tests/test_post_host_network_native_read.py','releases/post-host-network-native-health-20261018.json','.github/workflows/post-host-network-native-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   bounded-redaction:

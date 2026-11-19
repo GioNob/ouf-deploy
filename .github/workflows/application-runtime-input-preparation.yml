@@ -1,13 +1,6 @@
 name: OUF application runtime input custody qualification
 on:
-  push:
-    branches: [main]
-    paths:
-      - tools/semantic_target_review/prepare_application_runtime_inputs.py
-      - tools/semantic_target_review/test_application_runtime_inputs.py
-      - tools/semantic_target_review/test_application_runtime_input_delivery.py
-      - releases/application-runtime-input-preparation-20261010.sh
-      - .github/workflows/application-runtime-input-preparation.yml
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

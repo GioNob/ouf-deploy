@@ -1,12 +1,6 @@
 name: OUF private Semantic target backup
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/semantic-target-backup.yml
-      - scripts/backup-semantic-target.py
-      - tests/test_semantic_target_backup.py
 permissions:
   contents: read
 concurrency:

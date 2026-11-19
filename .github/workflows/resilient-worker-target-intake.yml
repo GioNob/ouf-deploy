@@ -1,9 +1,6 @@
 name: Current resilient worker protected intake
 on:
-  push:
-    branches: [main, codex/r10-continuous-recovery-20261011]
-    paths:
-      - '.github/workflows/resilient-worker-target-intake.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

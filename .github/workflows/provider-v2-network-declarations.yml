@@ -1,11 +1,6 @@
 name: Provider v2 stopped network declarations
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/pin_provider_v2_networks.py'
-      - 'tests/test_pin_provider_v2_networks.py'
-      - '.github/workflows/provider-v2-network-declarations.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

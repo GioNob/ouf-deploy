@@ -1,8 +1,5 @@
 name: Linked property Flyway configuration shape
 on:
-  push:
-    branches: [feat/linked-property-migration-rollout-20261017]
-    paths: ['.github/workflows/linked-property-config-read.yml', 'scripts/read-linked-property-config-shape.py']
   workflow_dispatch:
 permissions: {contents: read}
 concurrency:

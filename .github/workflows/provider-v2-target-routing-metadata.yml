@@ -1,10 +1,6 @@
 name: Provider target routing metadata
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tools/semantic_transaction_network/read_target_network_metadata.py'
-      - '.github/workflows/provider-v2-target-routing-metadata.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

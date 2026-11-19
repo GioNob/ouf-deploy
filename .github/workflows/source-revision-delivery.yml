@@ -1,8 +1,6 @@
 name: Stage qualified source revision package on existing runner
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['.github/workflows/source-revision-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 concurrency:
   group: ouf-source-revision-package-staging

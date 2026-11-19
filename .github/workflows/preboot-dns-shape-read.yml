@@ -1,8 +1,6 @@
 name: Retained application DNS shape read
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/read-preboot-dns-shape.py','tests/test_preboot_dns_shape.py','releases/preboot-dns-shape-selection-20261018.json','.github/workflows/preboot-dns-shape-read.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   redaction:
