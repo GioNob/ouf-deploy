@@ -18,7 +18,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=0000000000000000000000000000000000000000
+C=539ef56a68c5104903a86f9a3de9647d3f98f3ab
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
