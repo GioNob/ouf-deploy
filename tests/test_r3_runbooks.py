@@ -63,6 +63,8 @@ CLOSURE = {
     "tools/semantic_provider_r3/runtime_absent_overlay_v19.py",
     # R-022 (task-90): v20 DNS UDP retransmission overlay.
     "tools/semantic_provider_r3/dns_retransmit_overlay_v20.py",
+    # R-022 (task-97): v21 renewal timing observability overlay.
+    "tools/semantic_provider_r3/lease_timing_overlay_v21.py",
     *("tools/semantic_lease_kernel_migration/" + n for n in (
         "__init__.py", "boot_dispatcher.py", "boot_runner_v2.py", "cli.py", "migration.py", "native.py")),
     "tools/semantic_provider_r3/upgrade.py", "scripts/upgrade-semantic-provider-r3.py",
@@ -104,7 +106,7 @@ class R3Runbooks(unittest.TestCase):
         self.assertEqual(paths, CLOSURE | set(C.SOURCE_INPUTS) | set(C.SOURCE_INPUTS_V6) | set(C.SOURCE_INPUTS_V11)
                          | set(C.SOURCE_INPUTS_V12) | set(C.SOURCE_INPUTS_V13)
                          | set(C.SOURCE_INPUTS_V15) | set(C.SOURCE_INPUTS_V16)
-                         | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18) | set(C.SOURCE_INPUTS_V19) | set(C.SOURCE_INPUTS_V20))
+                         | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18) | set(C.SOURCE_INPUTS_V19) | set(C.SOURCE_INPUTS_V20) | set(C.SOURCE_INPUTS_V21))
 
     def test_sealed_hashes_are_lf_blobs_at_head(self):
         for path, digest in self.deliveries[0]:
