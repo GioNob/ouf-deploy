@@ -1,0 +1,46 @@
+{
+  "tools.m2_discovery_installation_profile.custody_capture": {
+    "path": "tools/m2_discovery_installation_profile/custody_capture.py",
+    "sha256": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf"
+  },
+  "tools.m2_discovery_installation_profile.retained_hash_reconciliation": {
+    "path": "tools/m2_discovery_installation_profile/retained_hash_reconciliation.py",
+    "sha256": "a83b4ac9449163a7fabbadb0cc47d3fc609c902dbdc17a25e091fef19376ee43"
+  },
+  "tools.m2_discovery_installation_profile.retained_mount_capture": {
+    "path": "tools/m2_discovery_installation_profile/retained_mount_capture.py",
+    "sha256": "f6cb51659af47a9d7557514da34b8bf502443bc3fc77c0b1a01078a2604fcc48"
+  },
+  "tools.m2_discovery_installation_profile.retained_mount_intake": {
+    "path": "tools/m2_discovery_installation_profile/retained_mount_intake.py",
+    "sha256": "c846285ff8acc64960c344bee06f1f1410190cc99562bf432164cc7605d26faa"
+  },
+  "tools.m2_discovery_installation_profile.retained_mount_lifecycle": {
+    "path": "tools/m2_discovery_installation_profile/retained_mount_lifecycle.py",
+    "sha256": "b0a1ac0bec981fdfac4cea7546e018ee972bfb3aa67bd23f8e5defcb53a38518"
+  },
+  "tools.m2_discovery_installation_profile.retained_mount_role_correction": {
+    "path": "tools/m2_discovery_installation_profile/retained_mount_role_correction.py",
+    "sha256": "dfd153fd7947337ac45db7a7ad2253f194938a5b0dda71ffe69a1e22f72b3a2c"
+  },
+  "tools.m2_discovery_installation_profile.retained_readonly_hashes": {
+    "path": "tools/m2_discovery_installation_profile/retained_readonly_hashes.py",
+    "sha256": "b8118cd386d57c7a77a4b9aaddca5671423f33774ab9da99e76c8faa29cdcb74"
+  },
+  "tools.m2_discovery_installation_profile.retained_static_custody": {
+    "path": "tools/m2_discovery_installation_profile/retained_static_custody.py",
+    "sha256": "99561152da8a5c725491283fb7886de783cc309dfc2fc62f4e3ec4e5cfdb435f"
+  },
+  "tools.m2_discovery_installation_profile.retained_static_intake": {
+    "path": "tools/m2_discovery_installation_profile/retained_static_intake.py",
+    "sha256": "ba14ef5e4fe3ae0f4569fd2ebcc152a76364b1876d8925b088253a7a7f1965f5"
+  },
+  "tools.m2_discovery_installation_profile.retained_view_capture": {
+    "path": "tools/m2_discovery_installation_profile/retained_view_capture.py",
+    "sha256": "71eaaad16ff2633b3a553a0216df6d92454cea6c84650cee23d21ea1a34249b5"
+  },
+  "tools.m2_discovery_installation_profile.retained_view_primitives": {
+    "path": "tools/m2_discovery_installation_profile/retained_view_primitives.py",
+    "sha256": "fd843911b5a13d474e91907a42c446890ba940a6f23034ffea360d6d425acd79"
+  }
+}

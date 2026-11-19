@@ -87,11 +87,7 @@ def completed_roots(host_raw, evidence_hash, source_closure_hash):
         with ExitStack()as held:
             identities={}
             for role,path in ROLES.items():
-                previous=binding.PARENT
-                try:
-                    binding.PARENT=Path(path)
-                    fd=held.enter_context(binding.protected_parent())
-                finally:binding.PARENT=previous
+                fd=held.enter_context(binding.protected_parent(path))
                 info=os.fstat(fd)
                 binding.require(metadata(info,len(Path(path).parts)-1)==expected[path],
                     'COMPLETED_ROOT_DESCRIPTOR_DRIFT')
@@ -274,6 +270,9 @@ class TokenOutputCustody:
         binding.require(self.authority(self.raw)is True,'CURRENT_OUTPUT_CUSTODY_HUMAN_AUTHORITY_REQUIRED')
         binding.require(legacy.boot_identity()==binding.decode(self.host_raw)['kernelBootId'],
             'OUTPUT_CUSTODY_BOOT_CHANGED')
+        if getattr(self,'pregrant_recovery',None) is not None:
+            binding.require(type(self.pregrant_recovery)is legacy.PregrantRecovery,'TYPED_PREGRANT_RECOVERY_REQUIRED')
+            self.pregrant_recovery.guard()
     def validate(self,row):
         binding.require(type(row)is dict and set(row)=={'schema','operation','scope','state','version',
             'mkdirAttemptConsumed','outputIdentity','createdMonotonic','expiresMonotonic','bootId'}
@@ -292,6 +291,8 @@ class TokenOutputCustody:
         return row
     def run(self):
         self.guard()
+        if getattr(self,'pregrant_recovery',None) is not None:
+            return self.pregrant_recovery.output(self)
         with completed_roots(self.host_raw,self.root_evidence_hash,self.root_source_hash)as identities:
             binding.require(identities['durableRecovery']==self.parent_identity,'OUTPUT_PARENT_IDENTITY_DRIFT')
             with binding.protected_parent()as directory:
@@ -322,12 +323,8 @@ class TokenOutputCustody:
                         finally:os.close(fd)
                     # Enter with the explicit parent binding; the protected
                     # reader captures that path and holds its ancestry FDs.
-                    previous=binding.PARENT
-                    try:
-                        binding.PARENT=Path(self.parent_identity['path'])
-                        parent_context=binding.protected_parent()
-                        parent=parent_context.__enter__()
-                    finally:binding.PARENT=previous
+                    parent_context=binding.protected_parent(self.parent_identity['path'])
+                    parent=parent_context.__enter__()
                     try:
                         p=os.fstat(parent)
                         binding.require({'device':p.st_dev,'inode':p.st_ino}==

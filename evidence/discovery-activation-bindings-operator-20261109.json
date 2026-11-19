@@ -1,0 +1,283 @@
+{
+  "adminRequests": 0,
+  "businessRequestsIssued": 0,
+  "components": {
+    "mcp": {
+      "containerId": "41c1e01dfd86535d75d2db6d7bd0f9e3eae27c24684af0b149d6b51c54d90943",
+      "currentFrameSha256": "a7a401d0e8a0e10712dc36bb594a46264676661b201c3535b96eb94d1f58c24a",
+      "imageId": "sha256:d76fda00f9340dcea62ed1be58b1db3ebfb4d64d4be5449ffc07ab2c845254ff",
+      "imageMatchesLatestReceipt": true,
+      "mountCount": 3,
+      "networks": [
+        "ouf-backend"
+      ],
+      "publishedPortBindings": false,
+      "readOnlyMountCount": 3,
+      "running": true,
+      "state": "running"
+    },
+    "ouf-semantic-provider": {
+      "configurationMounts": {
+        "/usr/local/apisix/conf/apisix.yaml": {
+          "contentsRead": false,
+          "status": "APPLICATION_VIEW_UNAVAILABLE_STOPPED"
+        },
+        "/usr/local/apisix/conf/config.yaml": {
+          "contentsRead": false,
+          "status": "APPLICATION_VIEW_UNAVAILABLE_STOPPED"
+        }
+      },
+      "containerId": "10a6237447b83c6e67e134e9266a74f5247fb1fa1fbe2c4528ff92fd663f767b",
+      "currentFrameSha256": "48d3f5c52a586bd8dd87cd11bacc53e4229ab024ca6e1cfdd7bf1ac02007aff8",
+      "imageId": "sha256:a697bf75bf7d51afadadfaccd3d80537e9a5fb2a08f0d194c6dfd9462e812468",
+      "mountCount": 5,
+      "networks": [],
+      "process": {
+        "contentsAreNotApplicationHealth": true,
+        "scope": "CONTAINER_INIT_AND_NETWORK_NAMESPACE_ONLY",
+        "status": "STOPPED"
+      },
+      "publishedPortBindings": false,
+      "readOnlyMountCount": 5,
+      "running": false,
+      "sharesNetworkWithSemantic": false,
+      "sharesNetworkWithSouthbound": false,
+      "state": "created",
+      "status": "CONTAINER_METADATA_READ"
+    },
+    "ouf-semantic-provider-v2": {
+      "configurationMounts": {
+        "/usr/local/apisix/conf/apisix.yaml": {
+          "contentsRead": false,
+          "status": "APPLICATION_VIEW_UNAVAILABLE_STOPPED"
+        },
+        "/usr/local/apisix/conf/config.yaml": {
+          "contentsRead": false,
+          "status": "APPLICATION_VIEW_UNAVAILABLE_STOPPED"
+        }
+      },
+      "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+      "currentFrameSha256": "d1bcd2f2a288eeb22fcfaae01a86275d5e3371c56ebf353f8bdeb73852a6adbf",
+      "imageId": "sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc",
+      "mountCount": 5,
+      "networks": [
+        "ouf-semantic-provider-egress",
+        "ouf-semantic-provider-internal"
+      ],
+      "process": {
+        "contentsAreNotApplicationHealth": true,
+        "scope": "CONTAINER_INIT_AND_NETWORK_NAMESPACE_ONLY",
+        "status": "STOPPED"
+      },
+      "publishedPortBindings": false,
+      "readOnlyMountCount": 5,
+      "running": false,
+      "sharesNetworkWithSemantic": false,
+      "sharesNetworkWithSouthbound": true,
+      "state": "exited",
+      "status": "CONTAINER_METADATA_READ"
+    },
+    "ouf-semantic-southbound-v2": {
+      "configurationMounts": {
+        "/usr/local/apisix/conf/apisix.yaml": {
+          "contentsRead": false,
+          "status": "APPLICATION_VIEW_UNAVAILABLE_STOPPED"
+        },
+        "/usr/local/apisix/conf/config.yaml": {
+          "contentsRead": false,
+          "status": "APPLICATION_VIEW_UNAVAILABLE_STOPPED"
+        }
+      },
+      "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+      "currentFrameSha256": "446e80d16964a334e528243309c74c330f896642957fea9b247522f17fb8c9de",
+      "imageId": "sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366",
+      "mountCount": 3,
+      "networks": [
+        "ouf-backend",
+        "ouf-semantic-provider-egress",
+        "ouf-semantic-provider-internal"
+      ],
+      "process": {
+        "contentsAreNotApplicationHealth": true,
+        "scope": "CONTAINER_INIT_AND_NETWORK_NAMESPACE_ONLY",
+        "status": "STOPPED"
+      },
+      "publishedPortBindings": false,
+      "readOnlyMountCount": 3,
+      "running": false,
+      "sharesNetworkWithSemantic": true,
+      "state": "exited",
+      "status": "CONTAINER_METADATA_READ"
+    },
+    "semantic": {
+      "OUF_SCHEMA_GOV_FETCH_PATH": "/internal/providers/schema-gov/fetch",
+      "OUF_SCHEMA_GOV_SEARCH_PATH": "/internal/providers/schema-gov/search",
+      "containerId": "ef35ea78dc8f5116255ce1c12186935451af6612293c95ecacab3165e220598a",
+      "credentialMount": {
+        "contentsRead": false,
+        "status": "NO_DECLARED_MOUNT"
+      },
+      "currentFrameSha256": "1ff2ed51293a5295016c0cfe713c87dba519322543b2d0c3ccbb802f3f63c3e7",
+      "declaredConfiguration": {
+        "packagedDefaultsApplied": false,
+        "precedenceResolved": false,
+        "properties": {
+          "ouf.semantic.discovery-worker.enabled": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": "false"
+            }
+          ],
+          "ouf.semantic.providers.schema-gov.enabled": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": "false"
+            }
+          ],
+          "ouf.semantic.providers.schema-gov.fetch-path": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": "OTHER_PRESENT"
+            }
+          ],
+          "ouf.semantic.providers.schema-gov.gateway-auth.client-id": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": "PRESENT"
+            }
+          ],
+          "ouf.semantic.providers.schema-gov.gateway-auth.client-secret-file": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": "PRESENT"
+            }
+          ],
+          "ouf.semantic.providers.schema-gov.gateway-auth.enabled": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": "true"
+            }
+          ],
+          "ouf.semantic.providers.schema-gov.gateway-auth.scope": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": "PRESENT"
+            }
+          ],
+          "ouf.semantic.providers.schema-gov.gateway-auth.token-endpoint": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": {
+                "knownHost": "auth.ouf-lab.it",
+                "otherHostPresent": false,
+                "pathPresent": true,
+                "scheme": "https",
+                "validUrlWithoutCredentials": true
+              }
+            }
+          ],
+          "ouf.semantic.providers.schema-gov.gateway-base-url": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": {
+                "knownHost": null,
+                "otherHostPresent": true,
+                "pathPresent": false,
+                "scheme": "https",
+                "validUrlWithoutCredentials": true
+              }
+            }
+          ],
+          "ouf.semantic.providers.schema-gov.search-path": [
+            {
+              "origin": "ENV_PACKAGED_YAML_VARIABLE",
+              "summary": "OTHER_PRESENT"
+            }
+          ],
+          "spring.config.import": [
+            {
+              "origin": "ENV_DIRECT",
+              "summary": "PRESENT"
+            }
+          ]
+        },
+        "scope": "DECLARATIONS_NOT_EFFECTIVE_SPRING_CONFIGURATION",
+        "springApplicationJsonPresent": false
+      },
+      "imageId": "sha256:89e84f7a6208afa74039de7057c46ad5c9981fb283b22d9b93fa014e92d1b048",
+      "imageMatchesLatestReceipt": true,
+      "mountCount": 4,
+      "networks": [
+        "ouf-backend"
+      ],
+      "process": {
+        "contentsAreNotApplicationHealth": true,
+        "initKind": "java",
+        "listeners": [
+          {
+            "bindScope": "wildcard",
+            "family": "tcp6",
+            "port": 8080
+          },
+          {
+            "bindScope": "other",
+            "family": "tcp",
+            "port": 36449
+          }
+        ],
+        "scope": "CONTAINER_INIT_AND_NETWORK_NAMESPACE_ONLY",
+        "status": "READ"
+      },
+      "providerGateway": {
+        "declared": true,
+        "host": "ouf-semantic-southbound-v2",
+        "pathPresent": false,
+        "port": 10443,
+        "scheme": "https",
+        "validWithoutCredentialsOrExtraParts": true
+      },
+      "publishedPortBindings": false,
+      "readOnlyMountCount": 4,
+      "running": true,
+      "selectedEnvironmentPresent": {
+        "JAVA_TOOL_OPTIONS": false,
+        "JDK_JAVA_OPTIONS": false,
+        "OUF_SCHEMA_GOV_CLIENT_ID": true,
+        "OUF_SCHEMA_GOV_CLIENT_SECRET_FILE": true,
+        "OUF_SCHEMA_GOV_TOKEN_ENDPOINT": true,
+        "OUF_SCHEMA_GOV_WORKLOAD_SCOPE": true,
+        "SPRING_CONFIG_ADDITIONAL_LOCATION": false,
+        "SPRING_CONFIG_IMPORT": true,
+        "SPRING_CONFIG_LOCATION": false,
+        "_JAVA_OPTIONS": false
+      },
+      "state": "running",
+      "tokenEndpoint": {
+        "declared": true,
+        "host": "auth.ouf-lab.it",
+        "pathPresent": true,
+        "port": 443,
+        "scheme": "https",
+        "validWithoutCredentialsOrExtraParts": true
+      }
+    }
+  },
+  "configurationFileContentsRead": 0,
+  "connectivityTested": false,
+  "credentialFileContentsRead": 0,
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "effectiveSpringConfigurationProven": false,
+  "observedAt": "2026-11-09T06:24:10.472778+00:00",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-activation-bindings-wnq2xhlz",
+  "providerRequests": 0,
+  "runtimeUnchangedDuringRead": true,
+  "s3Requests": 0,
+  "schema": "ouf.discovery-activation-bindings.v1",
+  "serviceConfigurationChanged": false,
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "status": "DISCOVERY_ACTIVATION_BINDINGS_READ",
+  "tokenRequests": 0,
+  "workerBacklogRead": false
+}

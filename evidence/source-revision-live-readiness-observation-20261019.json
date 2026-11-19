@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.source-revision-live-readiness-observation.v1",
+  "provenance": "User reported active native process after approvals; no protected current journal/container/database readback supplied",
+  "recordedAt": "2026-10-19T07:02:51.099173+00:00",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "nativeEvent": {
+    "name": "OUF_SOURCE_REVISION_WAIT",
+    "attempts": 1,
+    "nextReadAt": 1792393050.061647,
+    "stage": "onboarding.READINESS"
+  },
+  "scheduledNextReadEuropeRome": "2026-10-19T08:57:30.061647+02:00",
+  "scheduledTimeAlreadyPastAtUserMessage": true,
+  "interpretation": "Readiness not proven at that attempt. Native flow has reached new Onboarding readiness after earlier ordered effects; current stage/liveness/backup/migration/container generations are not independently read back. This line is emitted on journal version changes, not as a heartbeat.",
+  "executionContextPath": "NOT_PROVIDED",
+  "currentProcessLiveness": "UNPROVEN",
+  "currentJournalState": "UNREAD",
+  "onboardingV34MigrationProven": false,
+  "runtimeCompletionProven": false,
+  "functionalStage5Proven": false,
+  "functionalStage6Proven": false,
+  "newActionsByCloud": {
+    "runtimeWrites": 0,
+    "oauthRequests": 0,
+    "iamRequests": 0,
+    "replays": 0
+  },
+  "nextObservation": "Keep existing process open; from a second VPS terminal read only the redacted recovery run.log and provide its contextPath/latest lines. Do not restart/replay/rollback or run an additional executor."
+}

@@ -1,0 +1,87 @@
+{
+  "provenance": "PUBLIC_JSON_SUPPLIED_BY_OPERATOR",
+  "operatorLog": "/home/oufadmin/ouf-rollout-stopped-read.DwNpU43F/reader.log",
+  "receipt": {
+    "schema": "ouf.ingestion-rollout-stopped-snapshot.v1",
+    "status": "STOPPED_PREFIX_RECONCILED_NO_AUTHORITY",
+    "appliedStageCount": 18,
+    "nextStage": 18,
+    "nextStageName": "REBIND_GATEWAY_TRANSPORT",
+    "pendingStageClaim": false,
+    "readState": "IDLE",
+    "readAttempts": 18,
+    "readOnly": true,
+    "complete": true,
+    "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
+    "controlState": "RECONCILE_REQUIRED",
+    "journalHash": "c9907ea94b0c5908109e45e5e10be4641f610bc0374bb053de2851781461f2c0",
+    "reviewHash": "b0276204afeb592487428863f7c3f6392d0bb66c6dc0ca99620867b1d23f8521",
+    "logicalOperationRef": "2d41675c88b42cf7b07964fe757b71dff1dfe04902c5a06c3efa63d38cb8a966",
+    "observedAtUnix": 1792573939.9148445,
+    "recordedAuthorityExpiresAt": 1792565676,
+    "recordedExecutionExpiresAt": 1792565676.0,
+    "recordedSecondsRemaining": 0,
+    "recordedMonotonicSecondsRemaining": 0,
+    "sameBoot": true,
+    "wallClockConsistent": true,
+    "bootEvidenceAvailable": true,
+    "bearerFilesOpened": 0,
+    "humanCredentialJournalsRead": 0,
+    "privateKeysRead": 0,
+    "oauthRequests": 0,
+    "engineRequests": 0,
+    "databaseCalls": 0,
+    "gatewayRequests": 0,
+    "liveRuntimeObserved": false,
+    "providerAuthorizationReverified": false,
+    "runtimeAuthorityIssued": false,
+    "runtimeEffectsDispatched": 0,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "notReleaseAcceptance": true,
+    "completedTechnicalPhases": 8,
+    "functionalMilestonesProven": 4,
+    "remainingStages": [
+      {
+        "kind": "READ",
+        "name": "REBIND_GATEWAY_TRANSPORT"
+      },
+      {
+        "kind": "READ",
+        "name": "VERIFY_REBOUND_ROUTE_MAP"
+      },
+      {
+        "kind": "EFFECT",
+        "name": "PUT_ROUTE.mcp-ingestion-history"
+      },
+      {
+        "kind": "READ",
+        "name": "READ_ROUTE.mcp-ingestion-history"
+      },
+      {
+        "kind": "EFFECT",
+        "name": "PUT_ROUTE.mcp-ingestion-status"
+      },
+      {
+        "kind": "READ",
+        "name": "READ_ROUTE.mcp-ingestion-status"
+      },
+      {
+        "kind": "READ",
+        "name": "VERIFY_FINAL"
+      },
+      {
+        "kind": "EFFECT",
+        "name": "ingestion.RESTORE_RESTART"
+      },
+      {
+        "kind": "EFFECT",
+        "name": "gateway.RESTORE_RESTART"
+      },
+      {
+        "kind": "READ",
+        "name": "VERIFY_RESTORED_FINAL"
+      }
+    ]
+  }
+}

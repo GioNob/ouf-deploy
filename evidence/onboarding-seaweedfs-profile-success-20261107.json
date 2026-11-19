@@ -1,0 +1,234 @@
+{
+  "schema": "ouf.onboarding-seaweedfs-profile-success.v1",
+  "recordedDate": "2026-11-07",
+  "status": "APPLICATION_UPLOAD_AND_GOVERNED_PROFILE_SUCCEEDED",
+  "proposal": {
+    "proposalId": "66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-11-07T17:15:22.299924Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa",
+    "finalPolicyRef": "ouf-lab-authorization:61"
+  },
+  "policyVerification": {
+    "policyRef": "ouf-lab-authorization:61",
+    "policyHash": "sha256:47e7ae3cbfddbeb5f98f3be35774d6db861d026550b2b2bdf72d77d0ae142fca",
+    "roleCatalogueExactlyMatchesProposal": true,
+    "roles": 9,
+    "assignments": 13,
+    "modifiedAdminPermissions": 3,
+    "otherPermissionsUnchanged": 63,
+    "liveTokenClaimsRead": false
+  },
+  "upload": {
+    "handoffId": "2de7b988-da47-4231-8443-0e5043214c42",
+    "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+    "status": "STAGED",
+    "source": "LIVE_MCP_PRIOR_TURN",
+    "newUploadRequestedThisTurn": false
+  },
+  "profileReceipt": {
+    "jobId": "f460d4d5-c6f7-4b65-b305-08091e9849cf",
+    "status": "QUEUED"
+  },
+  "profileJob": {
+    "jobId": "f460d4d5-c6f7-4b65-b305-08091e9849cf",
+    "status": "SUCCEEDED",
+    "resultRef": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+    "errorCode": null
+  },
+  "preview": {
+    "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+    "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+    "profileVersion": 1,
+    "format": "CSV",
+    "metadata": {
+      "rows": 13,
+      "columns": 20,
+      "encoding": "UTF-8",
+      "delimiter": ";",
+      "headerRow": 1
+    },
+    "columns": [
+      {
+        "name": "nome_teatro",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 13
+      },
+      {
+        "name": "tipologia",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 9
+      },
+      {
+        "name": "toponimo",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 4
+      },
+      {
+        "name": "nome_indirizzo",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 13
+      },
+      {
+        "name": "civico",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 12
+      },
+      {
+        "name": "cap",
+        "dataType": "LONG",
+        "nullable": false,
+        "distinctValues": 10
+      },
+      {
+        "name": "citta",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 1
+      },
+      {
+        "name": "provincia",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 1
+      },
+      {
+        "name": "latitudine",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 10
+      },
+      {
+        "name": "longitudine",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 10
+      },
+      {
+        "name": "sistema_riferimento",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 1
+      },
+      {
+        "name": "precisione_coordinate",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 3
+      },
+      {
+        "name": "capienza_posti",
+        "dataType": "LONG",
+        "nullable": true,
+        "distinctValues": 4
+      },
+      {
+        "name": "spettacoli_stagione",
+        "dataType": "LONG",
+        "nullable": true,
+        "distinctValues": 1
+      },
+      {
+        "name": "stagione_riferimento",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 1
+      },
+      {
+        "name": "note",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 8
+      },
+      {
+        "name": "fonte_indirizzo",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 13
+      },
+      {
+        "name": "fonte_coordinate",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 10
+      },
+      {
+        "name": "fonte_altri_dati",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 5
+      },
+      {
+        "name": "data_verifica",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 1
+      }
+    ],
+    "candidateKeys": [
+      "nome_teatro",
+      "nome_indirizzo",
+      "fonte_indirizzo"
+    ],
+    "recordModel": "ONE_ROW_ONE_SOURCE_OBJECT",
+    "identityProposal": {
+      "stabilityLimit": "Identity remains stable while the proposed key remains stable",
+      "sourceFields": [
+        "nome_teatro"
+      ],
+      "strategy": "NATIVE_KEY",
+      "normalizationRuleRef": "normalization://managed-file/native-key-v1"
+    },
+    "proposalStatus": "PENDING_HUMAN_REVIEW"
+  },
+  "profileResultOrigin": "LIVE_MCP_SOURCE_FILE_PREVIEW",
+  "applicationReadEvidence": {
+    "sourceRepository": "GioNob/ouf-source-onboarding",
+    "sourceCommit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+    "worker": "ManagedFileProfileWorker reads managed object bytes before completeProfile",
+    "objectRead": "GatewayManagedFileObjectStore uses bounded governed Gateway content read",
+    "integrity": "ManagedFileService.profile checks byte count and computed content hash against registered asset before storing profile",
+    "registeredHashValueExposed": false,
+    "independentS3ReadOfThisAssetPerformed": false
+  },
+  "backendEvidence": {
+    "source": "OPERATOR_RECEIPT",
+    "path": "evidence/onboarding-seaweedfs-ready-operator-20261107.json",
+    "endpoint": "https://ouf-seaweedfs-stage:9002",
+    "sameInstalledImage": true,
+    "bindingChangedAgainThisTurn": false
+  },
+  "functionalMilestones": {
+    "F1": "PASS",
+    "F2": "OPEN_UDP_BINDING_AND_PATH_VERIFICATION",
+    "F3": "OPEN",
+    "F4": "OPEN",
+    "F5": "OPEN",
+    "F6": "OPEN"
+  },
+  "dataObservations": {
+    "coordinateColumnsInferredAs": "STRING",
+    "latitudeExample": "4.565.094",
+    "longitudeExample": "1.376.850",
+    "interpretationApproved": false,
+    "conversionApplied": false,
+    "filenameNotExposed": true
+  },
+  "effects": {
+    "newProfileJobQueued": true,
+    "profilePersisted": true,
+    "sourceDraftCreated": false,
+    "ingestionStarted": false,
+    "udpBindingChanged": false,
+    "applicationDeploymentPerformed": false,
+    "policyPublishedByAgent": false,
+    "directDatabaseQueries": 0
+  },
+  "nextAction": "Read current UDP storage config and installed SDK on VPS using the prepared read-only script; then preserve the installed image, compare/copy current lake objects, verify client/TLS and switch UDP. Continue the CSV from the existing asset/profile through governed review."
+}

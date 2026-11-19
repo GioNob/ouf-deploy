@@ -1,0 +1,27 @@
+name: Storage host-bound cold stop and capture
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - scripts/storage-host-bound-cold-backup-20261107.py
+      - tests/qualify_storage_host_bound_cold_native.py
+      - .github/workflows/storage-host-bound-cold.yml
+permissions:
+  contents: read
+concurrency:
+  group: storage-host-bound-cold-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  linked-capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Fixture encryption dependency
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y age
+      - name: Real host readback, linked Docker stop, encrypted capture and readback
+        run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S tests/qualify_storage_host_bound_cold_native.py

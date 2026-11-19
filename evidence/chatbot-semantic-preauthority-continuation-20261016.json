@@ -1,0 +1,42 @@
+{
+  "schema": "ouf.pre-authority-token-continuation-qualified.v1",
+  "sourceCommit": "e7e0b1c543c278672eb99870d1dab118721649be",
+  "launcherCommit": "bb98e42254c24983a55a8f64fd9012babfee3c25",
+  "launcherSha256": "a08112326cab8e254bfdb195d1a51f9a40860abcbdd219c8689d5068e7023d5f",
+  "targetReadbackReported": {
+    "classification": "PRE_AUTHORITY_PREPARATION_ONLY_OBSERVED",
+    "contextPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem",
+    "directoryIdentity": [
+      65028,
+      1322063
+    ],
+    "matchingProcessCount": 0,
+    "globalFencePresent": false,
+    "newAuthorityArtifactsAbsent": true,
+    "newWorkerInitialized": false,
+    "newJournalEntryCount": 0,
+    "controlledPriorGrantAttempts": 69,
+    "humanSessionStateRead": false,
+    "humanSessionCumulativeBudgetProven": false
+  },
+  "qualification": {
+    "sourceRunId": 38910246917,
+    "sourceJobId": 117003968326,
+    "sourceTests": 82,
+    "sourceResult": "PASS",
+    "deliveryRunId": 38910546838,
+    "deliveryJobId": 117004978656,
+    "deliveryResult": "PASS",
+    "dispatchOAuthAndTerminalSimulated": true,
+    "oauthContinuationUsesRealFixtureHTTP": true
+  },
+  "preservesOriginalOAuthAttemptCountAndDeadline": true,
+  "unknownMutatingOAuthOutcomeBlocks": true,
+  "expiredChallengeReplacementOnlyBeforeCredentialReceipt": true,
+  "targetContinuationObserved": false,
+  "targetNewRuntimeAuthorityObserved": false,
+  "budgetReset": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "acceptanceGranted": false
+}

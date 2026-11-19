@@ -1,0 +1,75 @@
+{
+  "schema": "ouf.property-reconciliation-policy-specification.v1",
+  "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+  "version": 1,
+  "status": "USER_APPROVED_SPECIFICATION",
+  "approvedOn": "2026-10-17",
+  "approvalBasis": "User accepted the property reconciliation policy in the OUF Teatri configuration conversation and requested its creation.",
+  "runtimeActivated": false,
+  "nativeMaterializationProfile": false,
+  "scope": {
+    "tenant": "ouf-lab",
+    "identityPrerequisite": "Existing verified source binding or explicit authorized identity match",
+    "identityMergeImplied": false,
+    "identityRulesChanged": false
+  },
+  "defaults": {
+    "missingField": "PRESERVE_EXISTING",
+    "nullOrBlankField": "NOT_A_DELETION",
+    "newField": "ADD_VALID_AUTHORIZED_CONTRIBUTION",
+    "sameNormalizedValue": "COALESCE_PRESENTATION_KEEP_ALL_PROVENANCE",
+    "differentSingleValues": "APPLY_EXPLICIT_SOURCE_AUTHORITY_OR_OPEN_PROPERTY_CONFLICT",
+    "unresolvedProperty": "KEEP_PREVIOUS_VALUE_WITH_CONFLICT_INDICATOR_OR_LEAVE_UNSET",
+    "unrelatedProperties": "CONTINUE_RECONCILIATION",
+    "multipleValues": "UNION_ONLY_IF_PROPERTY_EXPLICITLY_DECLARED_MULTI_VALUED",
+    "deletion": "REQUIRE_EXPLICIT_SUPPORTED_SOURCE_CONTRACT_AND_AUTHORITY",
+    "lastArrivalWinsAcrossSources": false,
+    "unconfiguredNormalization": "EXACT_TYPED_CANONICAL_VALUE_ONLY",
+    "unconfiguredCardinality": "SINGLE_VALUE_CONSERVATIVE",
+    "unconfiguredSourceAuthority": "EQUAL_PRIORITY_REVIEW_IF_DIFFERENT"
+  },
+  "perPropertyConfigurationRequired": [
+    "propertyIri", "datatype", "cardinality", "normalizerRefAndVersion",
+    "orderedAuthorizedSources", "validityRules", "deletionContractIfSupported"
+  ],
+  "contributionEvidenceRequired": [
+    "sourceId", "sourceObjectId", "handoffRef", "ingestionRunId", "lineageRef",
+    "rawObjectRef", "originalValueReference", "normalizedValue", "observedAtIfSupplied",
+    "validFromAndValidToIfSupplied", "accessLabel", "mappingAndPolicyVersions"
+  ],
+  "sourceUpdates": {
+    "retainHistoricalContributions": true,
+    "supersessionRequires": "Same source object and explicit valid source revision or temporal update contract",
+    "differentRowsSameSource": "DO_NOT_HIDE_CONFLICT_BY_SOURCE_ID_ALONE",
+    "observationTimestampAloneEstablishesTruth": false
+  },
+  "multiValueUnion": {
+    "retainPerMemberProvenanceAndAccessLabels": true,
+    "deduplication": "Versioned property normalizer",
+    "implicitStringSplitting": false,
+    "unsupportedRuntimeBehavior": "BLOCK_ACTIVATION_OF_MULTI_VALUE_RULE"
+  },
+  "humanReview": {
+    "identityChoiceIndependentOfPropertyChoice": true,
+    "show": ["currentValue", "incomingValue", "proposedResult", "sourceProvenance", "conflictStatus"],
+    "deferSinglePropertyWithoutBlockingOtherValidProperties": true,
+    "bindDecisionTo": ["tenant", "objectId", "propertyIri", "currentRevision", "evidenceHash", "policyVersion"],
+    "recheckChangedEvidence": true,
+    "identityReasonOptionalityDoesNotChangeAuthorityOverrideRequirements": true
+  },
+  "security": {
+    "preserveOriginalContributionsAndRevisions": true,
+    "authorizeEveryExposedContributionAndValue": true,
+    "doNotDowngradeLabelsDuringCoalescing": true,
+    "tenantAndCanonicalTypeIsolation": true,
+    "linkDoesNotPermitArbitraryPropertyOverride": true
+  },
+  "activationRequirements": [
+    "Native implementation and tests cover every enabled rule",
+    "Each mapped property has explicit cardinality and normalization",
+    "Published source configuration pins this policy and its supported native materialization profile",
+    "Preview demonstrates current, incoming and resulting values with conflict indicators",
+    "No unsupported rule is silently ignored",
+    "Existing data is not rewritten merely by approving this specification"
+  ]
+}

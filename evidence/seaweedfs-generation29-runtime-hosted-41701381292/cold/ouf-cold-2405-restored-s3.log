@@ -1,0 +1,18 @@
+I1103 19:20:29.819736 s3.go:330 S3 read filer buckets dir: /buckets
+I1103 19:20:29.819800 s3.go:331 S3 read filer maxMB: 4
+I1103 19:20:29.819806 s3.go:333 S3 read master addresses for discovery: [127.0.0.1:19333]
+I1103 19:20:29.819825 s3.go:341 connected to filers [127.0.0.1:18888]
+I1103 19:20:29.819842 s3.go:363 Starting S3 API Server with standard IAM
+I1103 19:20:29.826288 filer_client.go:180 FilerClient: started filer discovery for group '' (refresh interval: 5m0s)
+W1103 19:20:29.826340 s3_sse_s3.go:868 SSE-S3 KeyManager: neither s3.sse.kek.passphrase nor WEED_S3_SSE_KEK_PASSPHRASE is set; the KEK will be stored on the filer in plaintext. Set one to enable encrypted-at-rest KEK storage.
+I1103 19:20:29.827095 s3_sse_s3.go:566 SSE-S3 KeyManager: No KEK configured. SSE-S3 encryption is disabled. Set s3.sse.kek or s3.sse.key in security.toml to enable it.
+E1103 19:20:29.827362 s3api_server.go:420 Failed to load IAM configuration: no signing key found for STS service; please provide 'signingKey' in IAM config, configure 'jwt.filer_signing.key' in security.toml, or ensure SSE-S3 is initialized
+I1103 19:20:29.828956 masterclient.go:465 + s3@127.0.0.1:28333 noticed .filer 127.0.0.1:18888.28888
+I1103 19:20:29.829047 filer_client.go:526 FilerClient: discovered 1 new filer(s) in group '': [127.0.0.1:18888]
+I1103 19:20:29.829066 masterclient.go:465 + s3@127.0.0.1:28333 noticed .s3 127.0.0.1:28333
+I1103 19:20:29.830423 s3.go:582 Start Seaweed S3 API Server 30GB 4.52  at http port 18333
+I1103 19:20:29.897586 master_client.go:27 the cluster has 1 filer
+I1103 19:20:29.897604 filer_client.go:523 FilerClient: removed 1 filer(s) no longer in group '': [127.0.0.1:18888]
+I1103 19:20:30.795593 masterclient.go:480 LockRing: s3@127.0.0.1:28333 received ring update v1793733630795166170: [127.0.0.1:18888.28888]
+I1103 19:20:31.017446 shutdown.go:15 Gracefully stopping gRPC server
+I1103 19:20:31.017583 shutdown.go:23 gRPC server stopped gracefully

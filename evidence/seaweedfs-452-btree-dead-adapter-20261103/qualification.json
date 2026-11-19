@@ -1,0 +1,35 @@
+{
+  "tests": {
+    "needle-map-tests.jsonl": {
+      "pass_tests": 34,
+      "pass_packages": 2
+    },
+    "storage-focused-tests.jsonl": {
+      "pass_tests": 54,
+      "skip_tests": 2,
+      "pass_packages": 1
+    }
+  },
+  "compiledPackagesBefore": 1811,
+  "compiledPackagesAfter": 1810,
+  "removedCompiledPackages": [
+    "github.com/google/btree"
+  ],
+  "addedCompiledPackages": [],
+  "compiledPackagesSha256": "9f86744b14271b7bee9b75470c87aa8f78a73998f7b3555fb92cbef4e8b6e41d",
+  "rootLockfilesModified": true,
+  "binaryBuilt": false,
+  "targetOperations": 0,
+  "rootLockfileCleanup": {
+    "separatePatch": true,
+    "change": "Add // indirect only; module version and h1 unchanged",
+    "tidyFixedPoint": true,
+    "rootModuleAbsenceClaimed": false,
+    "goSumUnchanged": true
+  },
+  "bothPatchesReapplyByteIdentically": true,
+  "skippedTests": [
+    "TestSortedFileNeedleMap_HoldsNoDescriptors",
+    "TestRebuildIdx_UnwritableIdxDirSkipsOnlyThisVolume"
+  ]
+}

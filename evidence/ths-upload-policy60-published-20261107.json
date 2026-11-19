@@ -1,0 +1,79 @@
+{
+  "schema": "ouf.ths-upload-policy-publication.v1",
+  "observedAt": "2026-11-07T15:17:05Z",
+  "humanReport": "Modifica pubblicata. Policy: ouf-lab-authorization:60",
+  "liveVerification": {
+    "proposalId": "4d1388c9-8b29-410a-b942-8ad6b89f452f",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "policyRef": "ouf-lab-authorization:60",
+    "policyHash": "sha256:5cbd3c982112179be3a0b4aaeaeeed9a27e1419be57bbaf9976e022f2b34e8dc",
+    "configuredGrantsOnly": true,
+    "roleCatalogueExactlyMatchesPreparedProposal": true,
+    "roles": 9,
+    "assignments": 13,
+    "changedPermissions": 1,
+    "unrelatedPermissionsPreserved": 65
+  },
+  "delta": [
+    {
+      "role": "admin",
+      "before": {
+        "capabilityId": "ouf.managed-source.file.upload",
+        "constraints": {
+          "effect": "ALLOW",
+          "externalRoleRef": null,
+          "resourceType": null,
+          "resourceId": null,
+          "resourceAttributes": {},
+          "allowedDataLabels": [
+            "ANONYMOUS",
+            "OPEN",
+            "PERSONAL",
+            "RESTRICTED",
+            "SENSITIVE"
+          ],
+          "allowedDetailLevels": [
+            "PUBLIC_OPERATIONAL",
+            "RESTRICTED_OPERATIONAL",
+            "SECURITY_SENSITIVE",
+            "TENANT_OPERATIONAL"
+          ],
+          "requiredAcr": null,
+          "requiredAmr": [],
+          "maxAuthenticationAgeSeconds": null
+        }
+      },
+      "after": {
+        "capabilityId": "ouf.managed-source.file.upload",
+        "constraints": {
+          "effect": "ALLOW",
+          "externalRoleRef": null,
+          "resourceType": "capability",
+          "resourceId": null,
+          "resourceAttributes": {},
+          "allowedDataLabels": [],
+          "allowedDetailLevels": [],
+          "requiredAcr": null,
+          "requiredAmr": [],
+          "maxAuthenticationAgeSeconds": null
+        }
+      }
+    }
+  ],
+  "handoff": {
+    "handoffId": "1d3c1a27-5a57-4e81-bbbc-2f6bc606c6ce",
+    "pickerUrl": "https://api.ouf-lab.it/trusted-human/managed-files/?handoff=1d3c1a27-5a57-4e81-bbbc-2f6bc606c6ce",
+    "status": "AWAITING_FILE_SELECTION",
+    "account": "ouf-admin",
+    "actualBrowserPageTested": false,
+    "fileUploadVerified": false
+  },
+  "next": "Human opens picker and chooses Teatri CSV; read source.file.upload.status after completion.",
+  "storage": {
+    "backendLastReported": "MinIO",
+    "seaweedfsApplicationWriteReadVerified": false,
+    "isolated502Cause": "UNRESOLVED"
+  },
+  "priorEvidence": "evidence/ths-upload-role-diagnosis-20261107.json"
+}

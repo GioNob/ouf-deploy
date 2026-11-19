@@ -1,0 +1,92 @@
+{
+  "schema": "ouf.gateway-analysis-apply-qualification.v1",
+  "sourceCommit": "57647000a4d66ce4bc659ed54631e44ea8959978",
+  "sourceSha256": "7064c8443bb323c12a56846267e4faa9cb25bf3e6dfb35455e753fbe71ce8b01",
+  "proposalSha256": "2876c0c3a892f0dce8accb08f5cbac523cfc541c43a264dfcb5944cd003c8f19",
+  "operatorPreparationReceipt": "evidence/gateway-analysis-prepared-operator-20261108.json",
+  "status": "SOURCE_NATIVE_QUALIFIED_TARGET_APPLY_NOT_EXECUTED",
+  "targetApplyExecuted": false,
+  "ci": {
+    "run": 42501682255,
+    "job": 128795585765,
+    "mergeCommit": "9b31ea6a6562002c43d592df4b11bba86e87dc2f",
+    "tests": 10,
+    "skips": 0,
+    "conclusion": "success",
+    "logsRead": true,
+    "allFourWorkflowsSuccess": true
+  },
+  "local": {
+    "passed": 8,
+    "nativeSkipped": 2,
+    "nativeExecutedInCi": true
+  },
+  "native": {
+    "apisixImage": "apache/apisix@sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+    "etcdImage": "quay.io/coreos/etcd:v3.5.17",
+    "postgresImage": "postgres:17",
+    "fixtureDataSynthetic": true,
+    "adminTransport": "PRODUCTION_NSENTER_ADAPTER",
+    "routeWrites": 8,
+    "finalRouteCount": 87,
+    "unrelatedRoutesPreserved": 79,
+    "numericPrecisionPreserved": true,
+    "exactMountRecordOrderChangesObserved": 28,
+    "postgresMissingAndPresentColumnRead": true,
+    "postgresReadOnlyWriteRejected": true
+  },
+  "regressions": [
+    "exact proposal and desired hashes",
+    "stale full route map blocks writes",
+    "lost ACK stops without retry",
+    "foreign write after ACK stops without rollback",
+    "pre-existing attempt stops before credentials/engine reads",
+    "only APISIX create_time/update_time excluded",
+    "complete mount record order only; Source/RW/Destination changes and duplicate destinations rejected",
+    "Config.MacAddress remains exact, including absent/null/empty"
+  ],
+  "priorNativeFailures": [
+    {
+      "run": 42500996037,
+      "reason": "Synthetic APISIX configuration fixture did not have expected YAML admin key section",
+      "fixed": true
+    },
+    {
+      "run": 42501161575,
+      "reason": "APISIX_RUNTIME_CHANGED; exact field diagnostic not yet available",
+      "fixed": true
+    },
+    {
+      "run": 42501314650,
+      "reason": "APISIX_RUNTIME_CHANGED persisted after startup baseline capture",
+      "fixed": true
+    },
+    {
+      "run": 42501481808,
+      "reason": "Diagnostic identified Mounts as sole differing frame field",
+      "fixed": true
+    }
+  ],
+  "comparison": {
+    "capturedRawFrameHashesStillVerified": true,
+    "allMountRecordFieldsPreserved": true,
+    "onlyMountListOrderIgnored": true,
+    "allConfigAndMacFieldsExact": true,
+    "noHistoricalFingerprintRewritten": true
+  },
+  "bounds": {
+    "maxPutAttempts": 8,
+    "maxGetAttempts": 17,
+    "deadlineSeconds": 380,
+    "readOnlyDatabaseSessions": 1,
+    "automaticRetry": false,
+    "automaticRollback": false
+  },
+  "limitations": [
+    "No VPS application receipt yet",
+    "Per-route fresh comparison and readback are not an atomic transaction against concurrent writers",
+    "No migration applied or V12 qualification claimed",
+    "No provider requests, grants, descriptor activation or business E2E qualification",
+    "Native fixtures are not the production private route bodies"
+  ]
+}

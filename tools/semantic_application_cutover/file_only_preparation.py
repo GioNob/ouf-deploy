@@ -44,6 +44,229 @@ from tools.semantic_provider_deployment_producer import program
 
 INSTALLATION_REVIEW_HASH='92b3276992b3b3ec459e734196671728b8a49a99a02185e2c6f7c1da87ce82a1'
 BASE=Path('/etc/ouf/deploy-snapshots')
+RUNTIME_ROOT='/run/docker/runtime-runc/moby'
+BUNDLE_PARENTS=('/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby',
+                '/run/containerd/io.containerd.runtime.v2.task/moby')
+NAMESPACE_PARENTS=('/run/docker/netns','/var/run/docker/netns')
+# Exact option introduced by compose-semantic-replacement-draft.py for the
+# retired discovery provider. The file-only four-mount profile does not mount
+# that store. Never discard an applied/native or otherwise different JVM option.
+RETIRED_DISCOVERY_JVM_TRUST=(
+    '-Djavax.net.ssl.trustStore=/run/ouf-discovery-trust/java-truststore.p12 '
+    '-Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=changeit')
+RUNTIME_ENV={'PATH','JAVA_HOME','JAVA_VERSION','LANG','LANGUAGE','LC_ALL','TZ'}
+
+
+def retained_file_environment(parent,native):
+    prior=environment(parent['Env'])
+    if 'JAVA_TOOL_OPTIONS' in prior:
+        applied=environment(native['Config'].get('Env') or [])
+        require(prior['JAVA_TOOL_OPTIONS']==RETIRED_DISCOVERY_JVM_TRUST
+                and 'JAVA_TOOL_OPTIONS' not in applied,
+                'UNREVIEWED_OR_APPLIED_HISTORICAL_JVM_OPTIONS')
+        prior.pop('JAVA_TOOL_OPTIONS')
+    require(all(k in RUNTIME_ENV or k.startswith(('OUF_','SPRING_','MANAGEMENT_')) or k=='PORT' for k in prior),
+            'REVIEWED_RETAINED_APPLICATION_ENVIRONMENT_REQUIRED')
+    require(not set(prior)&{'JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS'},
+            'FILE_ONLY_JVM_PROPERTY_OVERRIDE_DENIED')
+    require(not any(k.startswith('SPRING_') and k!='SPRING_CONFIG_IMPORT' for k in prior),
+            'FILE_ONLY_SPRING_OVERRIDE_DENIED')
+    require(not any(k.lower().replace('_','') in
+        {'oufsemanticprovidersschemagovenabled','oufsemanticdiscoveryworkerenabled'} for k in prior),
+        'FILE_ONLY_FEATURE_ALIAS_OVERRIDE_DENIED')
+    return prior
+
+
+def retained_runtime_context(current,state,adapter):
+    """Select one source-defined layout; never import an arbitrary OCI policy."""
+    cid=current['Id'];require(re.fullmatch('[0-9a-f]{64}',cid),'EXACT_RETAINED_RUNTIME_ID_REQUIRED')
+    require(adapter.get('runtimeStateRoot')=='/run/docker','RETAINED_ENGINE_RUNTIME_ROOT_PROFILE_REQUIRED')
+    require(current['State']['Running'] is True and current['State'].get('Paused') is False
+            and current['State'].get('Status')=='running' and type(state.get('pid')) is int
+            and state['pid']>1 and state.get('id')==cid and state.get('status')=='running'
+            and state['pid']==current['State']['Pid'],'RETAINED_REAL_RUNC_GENERATION_REQUIRED')
+    parents=[p for p in BUNDLE_PARENTS if state.get('bundle')==p+'/'+cid]
+    require(len(parents)==1,'RETAINED_SOURCE_DEFINED_BUNDLE_LAYOUT_REQUIRED')
+    sandbox=current['NetworkSettings'].get('SandboxKey')
+    require(type(sandbox) is str and str(Path(sandbox).parent) in NAMESPACE_PARENTS
+            and re.fullmatch('[0-9a-f]{12,64}',Path(sandbox).name),'RETAINED_NATIVE_NETWORK_NAMESPACE_REQUIRED')
+    return {'schema':'ouf.semantic-docker-frame-context.v1','bundleParent':parents[0],
+        'metadataParent':'/var/lib/docker/containers','networkNamespaceParent':str(Path(sandbox).parent),
+        'cgroupDriver':'systemd','storageParent':'/var/lib/docker','rootfsLayout':'docker-containerd-overlayfs-v1'}
+
+
+def retained_native_bindings(selection,values):
+    intake=values['coordinationIntake'];directory=Path(selection['coordinationIntake']['path']).parent
+    execution_binding={'path':str(directory/'retained-execution-configuration.json'),
+                       'sha256':intake['fileHashes']['retained-execution-configuration.json']}
+    execution_raw=bound(execution_binding);execution=parse(execution_raw)
+    adapter_binding=execution['runtimeAdapterBinding'];adapter_raw=bound(adapter_binding);adapter=parse(adapter_raw)
+    preparer_binding=execution['recordsByRole']['southbound']['preparerTemplate']
+    preparer_raw=bound(preparer_binding);preparer=parse(preparer_raw)
+    commands={k:{'path':preparer['commands'][k],'sha256':preparer['commandHashes'][k]} for k in ('ip','nsenter')}
+    runtime={'path':adapter['runtimePath'],'sha256':adapter['runtimeSha256']}
+    bindings=[(execution_binding,execution_raw),(adapter_binding,adapter_raw),(preparer_binding,preparer_raw)]
+    return adapter,runtime,commands,bindings
+
+
+def verify_namespace(current,context):
+    sandbox=current['NetworkSettings']['SandboxKey'];parent=Path(context['networkNamespaceParent'])
+    require(parent.resolve()==Path('/run/docker/netns'),'RETAINED_NAMESPACE_ALIAS_TARGET_REQUIRED')
+    info=parent.stat()
+    require(stat.S_ISDIR(info.st_mode) and info.st_uid==0 and not info.st_mode&0o022,
+            'RETAINED_NAMESPACE_PARENT_CUSTODY_REQUIRED')
+    require(Path(sandbox).stat().st_ino==Path('/proc/'+str(current['State']['Pid'])+'/ns/net').stat().st_ino,
+            'RETAINED_NAMESPACE_PROCESS_IDENTITY_REQUIRED')
+
+
+def native_nic(current,commands,runner):
+    sandbox=current['NetworkSettings']['SandboxKey']
+    children=[v for v in json.loads(runner.run(commands['nsenter'],['--net='+sandbox,commands['ip']['path'],'-j','addr','show'])) if v['ifname']!='lo']
+    require(len(children)==1,'ONE_NATIVE_REGISTRY_NIC_REQUIRED');child=children[0]
+    parent=socket.if_indextoname(child['link_index'])
+    hosts=json.loads(runner.run(commands['ip'],['-j','link','show','dev',parent]))
+    require(len(hosts)==1 and hosts[0]['ifindex']==child['link_index'] and hosts[0]['link_index']==child['ifindex'],
+            'RETAINED_RECIPROCAL_REGISTRY_NIC_REQUIRED')
+    endpoints=current['NetworkSettings']['Networks'];require(len(endpoints)==1,'ONE_RETAINED_REGISTRY_ENDPOINT_REQUIRED')
+    endpoint=next(iter(endpoints.values()));address=endpoint['IPAddress']
+    require(child['address']==endpoint['MacAddress'] and [a['local'] for a in child['addr_info'] if a['family']=='inet']==[address]
+            and not any(a['family']=='inet6' for a in child['addr_info']),'RETAINED_EXACT_REGISTRY_IP_MAC_REQUIRED')
+    binding={'interface':child['ifname'],'bridge':hosts[0]['master'],'mac':endpoint['MacAddress'],'ipv4':address,
+             'workloadRef':'ouf-semantic','bindingRef':'ouf-semantic-file-native'}
+    return binding,children,hosts,parent
+
+
+def consultation_metadata(current):
+    files=[]
+    for mount in current['Mounts']:
+        info=Path(mount['Source']).lstat()
+        if stat.S_ISREG(info.st_mode):files.append((mount,info))
+    require(len(files)==1,'ONE_ORIGINAL_STATIC_CONSULTATION_KEY_REQUIRED');mount,info=files[0]
+    require(mount['Type']=='bind' and mount['RW'] is False and info.st_nlink==1 and 0<info.st_size<=256
+            and (info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode))==(10001,10001,0o400),
+            'ORIGINAL_CONSULTATION_KEY_CUSTODY_REQUIRED')
+    return mount,info
+
+
+def paired_retained_inspection(engine,old,command,budget):
+    """Keep the complete historical CLI binding and new API binding distinct.
+
+    The authenticated native CLI matches the historical observation channel.
+    API1.44 remains the channel for newly compiled action intents. Neither raw
+    dictionary nor binding is normalized; unexplained channel deltas are denied.
+    """
+    cid=old['Id'];require(re.fullmatch('[0-9a-f]{64}',cid),'EXACT_RETAINED_RUNTIME_ID_REQUIRED')
+    native_commands(command,engine);runner=NodeObservation({},budget)
+    args=['--host','unix://'+engine.path,'--config',os.environ['DOCKER_CONFIG'],
+          'inspect','--type=container',cid]
+    def cli():
+        engine.check_socket();rows=parse(runner.run(command,args,2097152))
+        require(type(rows) is list and len(rows)==1 and rows[0].get('Id')==cid,'EXACT_RETAINED_CLI_INSPECTION_REQUIRED')
+        engine.check_socket();return rows[0]
+    def api():
+        code,row=engine.request('GET','/v1.44/containers/'+cid+'/json')
+        require(code==200 and row.get('Id')==cid,'EXACT_CURRENT_REGISTRY_INSPECTION_REQUIRED');return row
+    native=cli();current=api();api_after=api();native_after=cli()
+    require(Engine.runtime_binding(native)==Engine.runtime_binding(native_after)
+            and Engine.runtime_binding(current)==Engine.runtime_binding(api_after),'RETAINED_INSPECTION_CHANNEL_UNSTABLE')
+    verify_retained_inspection(old,current,native)
+    return current,native
+
+
+def verify_retained_inspection(old,current,native):
+    require(Engine.runtime_binding(old)==Engine.runtime_binding(native),'RETAINED_REGISTRY_NATIVE_GENERATION_CHANGED')
+    cli_binding=Engine.runtime_binding(native);api_binding=Engine.runtime_binding(current)
+    require(all(cli_binding[k]==api_binding[k] for k in cli_binding if k!='networkSettingsHash'),
+            'RETAINED_INSPECTION_CHANNEL_IDENTITY_OR_CONFIGURATION_DRIFT')
+    require(native['State']['Running'] is True and current['State']['Running'] is True,
+            'CURRENT_RETAINED_REGISTRY_REQUIRED')
+    cli_net=native['NetworkSettings'];api_net=current['NetworkSettings']
+    require(set(cli_net)==set(api_net) and all(cli_net[k]==api_net[k] for k in cli_net if k!='Networks')
+            and set(cli_net['Networks'])==set(api_net['Networks']),'RETAINED_INSPECTION_CHANNEL_NETWORK_DRIFT')
+    for name,left in cli_net['Networks'].items():
+        right=api_net['Networks'][name]
+        require(set(left)==set(right) and all(left[k]==right[k] for k in left if k!='Aliases'),
+                'RETAINED_INSPECTION_CHANNEL_ENDPOINT_DRIFT')
+        if left.get('Aliases')!=right.get('Aliases'):
+            # The exact target-observed compatibility shape. DNSNames and every
+            # other endpoint field still compare in full. No general aliases
+            # normalization, list reordering or arbitrary network diff allowed.
+            aliases=right.get('Aliases')
+            dns=left.get('DNSNames') or []
+            require(type(dns) is list and len(dns)<=128 and all(type(v) is str for v in dns),
+                    'RETAINED_INSPECTION_CHANNEL_DNS_NAMES_UNPROVEN')
+            allowed={native['Id'][:12],native.get('Name','').lstrip('/'),*dns}
+            require(left.get('Aliases') is None and type(aliases) is list and len(aliases)<=128
+                    and all(type(v) is str and re.fullmatch('[A-Za-z0-9_.-]{1,253}',v) and v in allowed for v in aliases),
+                    'RETAINED_INSPECTION_CHANNEL_ALIASES_PROFILE_UNPROVEN')
+
+
+def preflight_retained_runtime(engine,selection,command_binding=None):
+    """Collect independent native failures before either interactive login.
+
+    This is redacted read evidence only. The full collector repeats every
+    successful check, with current IAM routes, before compiling the review.
+    """
+    checks={};failures={};facts={};budget=ObservationBudget(60)
+    def check(name,reader):
+        try:
+            value=reader();checks[name]=True;return value
+        except Exception as error:
+            reason=str(error)
+            failures[name]=reason if re.fullmatch('[A-Z][A-Z0-9_]{1,159}',reason) else type(error).__name__
+            checks[name]=False;return None
+    values=check('retainedInputs',lambda:retained_inputs(selection)[0])
+    if values is None:return {'allRequiredChecksPass':False,'checks':checks,'failedChecks':failures,'facts':facts}
+    prior=check('retainedEnvironment',lambda:retained_file_environment(
+        values['creationRequest'],values['declaration']['retainedNativeCreationFrame']))
+    if prior is not None:
+        facts['historicalDiscoveryJvmTrustOptionRemovedFromProposal']=(
+            'JAVA_TOOL_OPTIONS' in environment(values['creationRequest']['Env']))
+    recorded=values['installationReview']['currentRegistry'];cid=recorded['id']
+    def inspect():
+        engine.check_socket();code,row=engine.request('GET','/v1.44/containers/'+cid+'/json')
+        require(code==200 and row.get('Id')==cid,'EXACT_CURRENT_REGISTRY_INSPECTION_REQUIRED');return row
+    paired=check('historicalGeneration',lambda:paired_retained_inspection(
+        engine,values['declaration']['retainedNativeCreationFrame'],command_binding,budget)) if command_binding is not None else None
+    current=check('registryInspection',lambda:paired[0] if paired is not None else inspect())
+    if current is None:return {'allRequiredChecksPass':False,'checks':checks,'failedChecks':failures,'facts':facts}
+    if command_binding is None:
+        check('historicalGeneration',lambda:verify_retained_inspection(values['declaration']['retainedNativeCreationFrame'],current,current))
+    def current_generation():
+        require(current['Image']==recorded['image'] and current['State']['Pid']==recorded['pid']
+                and current['State']['StartedAt']==recorded['startedAt'],'CURRENT_RETAINED_REGISTRY_REQUIRED')
+    check('retainedGeneration',current_generation)
+    def engine_baseline():
+        code,info=engine.request('GET','/v1.44/info');require(code==200,'ENGINE_INFO_READ_REQUIRED')
+        for key in ('ServerVersion','Driver','CgroupDriver'):
+            value=info.get(key)
+            if type(value) is str and re.fullmatch('[A-Za-z0-9_.-]{1,40}',value):facts[key]=value
+        require({k:info.get(v) for k,v in (('serverVersion','ServerVersion'),('storageDriver','Driver'),('cgroupDriver','CgroupDriver'))}
+                =={k:FRAME_ENGINE[k] for k in ('serverVersion','storageDriver','cgroupDriver')}
+                and info.get('DockerRootDir')=='/var/lib/docker','CURRENT_ENGINE_BASELINE_PROFILE_DRIFT')
+    check('engineBaseline',engine_baseline)
+    check('consultationKeyCustody',lambda:consultation_metadata(current))
+    native=check('retainedNativeCommands',lambda:retained_native_bindings(selection,values))
+    if native is not None:
+        adapter,runtime,commands,bindings=native;runner=NodeObservation({},budget)
+        state=check('runcState',lambda:parse(runner.run(runtime,['--root',RUNTIME_ROOT,'state',cid],16384)))
+        if state is not None:
+            context=check('runtimeLayoutAndIdentity',lambda:retained_runtime_context(current,state,adapter))
+            if context is not None:
+                facts['bundleProfile']='SYSTEM_CONTAINERD' if context['bundleParent']==BUNDLE_PARENTS[1] else 'DOCKER_MANAGED_CONTAINERD'
+                facts['namespaceProfile']='VAR_RUN_ALIAS' if context['networkNamespaceParent']==NAMESPACE_PARENTS[1] else 'RUN'
+                namespace=check('networkNamespace',lambda:verify_namespace(current,context) or True)
+                if namespace is not None:check('networkNic',lambda:native_nic(current,commands,runner))
+            def stable_state():
+                require(parse(runner.run(runtime,['--root',RUNTIME_ROOT,'state',cid],16384))==state,'REGISTRY_RUNC_CHANGED_DURING_PREFLIGHT')
+            check('stableRunc',stable_state)
+        def stable_bindings():
+            require(all(bound(binding)==raw for binding,raw in bindings),'RETAINED_FRAME_INPUT_CHANGED')
+        check('stableRetainedCommands',stable_bindings)
+    def stable_engine():
+        require(Engine.runtime_binding(inspect())==Engine.runtime_binding(current),'REGISTRY_ENGINE_CHANGED_DURING_PREFLIGHT')
+    check('stableEngine',stable_engine)
+    return {'allRequiredChecksPass':all(checks.values()),'checks':checks,'failedChecks':failures,'facts':facts}
 
 def default_selection():
     """Exact completed intake references; no search or newest-file selection."""
@@ -84,39 +307,16 @@ def collect_frame_inputs(*,selection,values,current,source_directory,iam_profile
     frame={'path':str(root/'tools/semantic_frame_compiler/frame-observer.py'),'sha256':'122a1a44705892ba577d2e83467f39870627ffc16685f886757828611063b3fc'}
     bound(baseline);wrapper=bound(frame)
     owner=ProjectedFrameObservation.__new__(ProjectedFrameObservation);owner.owner(wrapper)
-    intake=values['coordinationIntake'];directory=Path(selection['coordinationIntake']['path']).parent
-    execution_binding={'path':str(directory/'retained-execution-configuration.json'),
-        'sha256':intake['fileHashes']['retained-execution-configuration.json']}
-    execution_raw=bound(execution_binding);execution=parse(execution_raw)
-    adapter_binding=execution['runtimeAdapterBinding'];adapter_raw=bound(adapter_binding);adapter=parse(adapter_raw)
-    preparer_binding=execution['recordsByRole']['southbound']['preparerTemplate']
-    preparer_raw=bound(preparer_binding);preparer=parse(preparer_raw)
-    commands={key:{'path':preparer['commands'][key],'sha256':preparer['commandHashes'][key]} for key in ('ip','nsenter')}
-    runtime={'path':adapter['runtimePath'],'sha256':adapter['runtimeSha256']}
-    require(adapter['runtimeStateRoot']=='/run/docker','RETAINED_ENGINE_RUNTIME_ROOT_PROFILE_REQUIRED')
-    context={'schema':'ouf.semantic-docker-frame-context.v1',
-        'bundleParent':'/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby',
-        'metadataParent':'/var/lib/docker/containers','networkNamespaceParent':'/run/docker/netns',
-        'cgroupDriver':'systemd','storageParent':'/var/lib/docker','rootfsLayout':'docker-containerd-overlayfs-v1'}
-    runtime_root='/run/docker/runtime-runc/moby';budget=ObservationBudget(60);runner=NodeObservation({},budget)
+    adapter,runtime,commands,retained_bindings=retained_native_bindings(selection,values)
+    runtime_root=RUNTIME_ROOT;budget=ObservationBudget(60);runner=NodeObservation({},budget)
     state=parse(runner.run(runtime,['--root',runtime_root,'state',current['Id']],16384))
-    require(state.get('id')==current['Id'] and state.get('status')=='running' and state.get('pid')==current['State']['Pid']
-        and state.get('bundle')==context['bundleParent']+'/'+current['Id'], 'RETAINED_REAL_RUNC_GENERATION_AND_LAYOUT_REQUIRED')
-    sandbox=current['NetworkSettings']['SandboxKey'];require(str(Path(sandbox).parent)==context['networkNamespaceParent'],
-        'RETAINED_NATIVE_NETWORK_NAMESPACE_REQUIRED')
+    context=retained_runtime_context(current,state,adapter)
+    verify_namespace(current,context)
+    sandbox=current['NetworkSettings']['SandboxKey']
     def child_links():
         return [v for v in json.loads(runner.run(commands['nsenter'],['--net='+sandbox,commands['ip']['path'],'-j','addr','show'])) if v['ifname']!='lo']
-    children=child_links();require(len(children)==1,'ONE_NATIVE_REGISTRY_NIC_REQUIRED');child=children[0]
-    parent=socket.if_indextoname(child['link_index'])
-    hosts=json.loads(runner.run(commands['ip'],['-j','link','show','dev',parent]))
-    require(len(hosts)==1 and hosts[0]['ifindex']==child['link_index'] and hosts[0]['link_index']==child['ifindex'],
-        'RETAINED_RECIPROCAL_REGISTRY_NIC_REQUIRED')
-    endpoints=current['NetworkSettings']['Networks'];require(len(endpoints)==1,'ONE_RETAINED_REGISTRY_ENDPOINT_REQUIRED')
-    endpoint=next(iter(endpoints.values()));address=endpoint['IPAddress']
-    require(child['address']==endpoint['MacAddress'] and [a['local'] for a in child['addr_info'] if a['family']=='inet']==[address]
-        and not any(a['family']=='inet6' for a in child['addr_info']), 'RETAINED_EXACT_REGISTRY_IP_MAC_REQUIRED')
-    binding={'interface':child['ifname'],'bridge':hosts[0]['master'],'mac':endpoint['MacAddress'],'ipv4':address,
-        'workloadRef':'ouf-semantic','bindingRef':'ouf-semantic-file-native'}
+    binding,children,hosts,parent=native_nic(current,commands,runner)
+    address=binding['ipv4']
     peers=iam_profile['peer_addresses'];issuer=urlsplit(iam_profile['issuer'])
     require(type(peers) in (list,tuple) and 1<=len(peers)<=8 and len(set(peers))==len(peers)
         and issuer.scheme=='https' and issuer.port in (None,443),'EXACT_REVIEWED_IAM_HTTPS_PEERS_REQUIRED')
@@ -130,13 +330,7 @@ def collect_frame_inputs(*,selection,values,current,source_directory,iam_profile
         ingress={'kind':'HOST','ifindex':0} if local else {'kind':'ROUTED','ifindex':socket.if_nametoindex(device)}
         flows.append({'purpose':'IDENTITY','authorityRef':'ouf-semantic-file-action','source':address,
             'destination':peer,'protocol':'tcp','port':443,'peerIngress':ingress});routes.append((peer,route))
-    files=[]
-    for mount in current['Mounts']:
-        path=Path(mount['Source']);info=path.lstat()
-        if stat.S_ISREG(info.st_mode):files.append((mount,info))
-    require(len(files)==1,'ONE_ORIGINAL_STATIC_CONSULTATION_KEY_REQUIRED');mount,info=files[0]
-    require(mount['Type']=='bind' and mount['RW'] is False and (info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode))==(10001,10001,0o400),
-        'ORIGINAL_CONSULTATION_KEY_CUSTODY_REQUIRED')
+    mount,info=consultation_metadata(current)
     content=custody.file_bytes(mount['Source'],10001,{0o400},limit=256)
     key={'source':mount['Source'],'target':mount['Destination'],'readOnly':True,'uid':10001,'gid':10001,
         'mode':0o400,'maxBytes':256,'sha256':hashlib.sha256(content).hexdigest()}
@@ -145,8 +339,7 @@ def collect_frame_inputs(*,selection,values,current,source_directory,iam_profile
         and json.loads(runner.run(commands['ip'],['-j','link','show','dev',parent]))==hosts
         and all(json.loads(runner.run(commands['ip'],['-j','route','get',p]))==r for p,r in routes),
         'REGISTRY_RUNTIME_OR_TRANSPORT_CHANGED_DURING_REVIEW')
-    require(bound(execution_binding)==execution_raw and bound(adapter_binding)==adapter_raw and bound(preparer_binding)==preparer_raw
-        and bound(frame)==wrapper,'RETAINED_FRAME_INPUT_CHANGED')
+    require(all(bound(binding)==raw for binding,raw in retained_bindings) and bound(frame)==wrapper,'RETAINED_FRAME_INPUT_CHANGED')
     return {'baselineBinding':baseline,'delegationKey':key,'dockerContext':context,'runtimeRoot':runtime_root,
         'observationConfiguration':{'runtimeBinding':runtime,'runtimeRootParents':['/run/docker'],
             'bundleParents':[context['bundleParent']],'commands':commands,
@@ -214,20 +407,18 @@ def configtree(declaration):
     require(attributes(info)==attributes(path.lstat()),'DATABASE_CONFIGTREE_CHANGED_DURING_READ')
     return result
 
-def creation(parent,declaration,actual,audit,tree,token,delegation,proposal,proposal_identity):
+def creation(parent,declaration,actual,audit,tree,token,delegation,proposal,proposal_identity,retained_native_frame=None):
     """Explicit file-only delta: retain network/resources, remove unused inputs."""
-    old=declaration['retainedNativeCreationFrame'];require(Engine.runtime_binding(old)==Engine.runtime_binding(actual),
-        'RETAINED_REGISTRY_NATIVE_GENERATION_CHANGED')
+    old=declaration['retainedNativeCreationFrame']
+    verify_retained_inspection(old,actual,actual if retained_native_frame is None else retained_native_frame)
     require(type(proposal_identity) is dict and set(proposal_identity)=={'issuer','audience','workload'}
             and all(type(v) is str and 0<len(v)<=2048 for v in proposal_identity.values()), 'EXACT_OWNER_PROPOSAL_IDENTITY_REQUIRED')
     config=audit['imageConfig'];java=['java','-XX:MaxRAMPercentage=75','-jar','/app/application.jar']
     require(config.get('User')=='10001:10001' and config.get('Entrypoint')==java and config.get('Cmd') in (None,[])
             and config.get('Volumes') in (None,{}),'EXACT_REVIEWED_REGISTRY_IMAGE_LAUNCH_REQUIRED')
-    prior=environment(parent['Env']);image=environment(config.get('Env') or [])
-    runtime={'PATH','JAVA_HOME','JAVA_VERSION','LANG','LANGUAGE','LC_ALL','TZ'}
-    require(set(image)<=runtime and all(k in runtime or k.startswith(('OUF_','SPRING_','MANAGEMENT_')) or k=='PORT' for k in prior),
-            'REVIEWED_APPLICATION_AND_IMAGE_ENVIRONMENT_REQUIRED')
-    env={**image,**{k:v for k,v in prior.items() if k not in runtime},**FLAGS}
+    prior=retained_file_environment(parent,old);image=environment(config.get('Env') or [])
+    require(set(image)<=RUNTIME_ENV,'REVIEWED_IMAGE_ENVIRONMENT_REQUIRED')
+    env={**image,**{k:v for k,v in prior.items() if k not in RUNTIME_ENV},**FLAGS}
     require(not set(env)&{'OUF_SEM_DB_PASSWORD','SPRING_DATASOURCE_PASSWORD'}
             and env.get('SPRING_CONFIG_IMPORT')=='configtree:'+tree['target']+'/', 'FILE_ONLY_RETAINED_DATABASE_SECRET_REQUIRED')
     require(env.get('OUF_IAM_ENABLED','true')!='false','EXISTING_IAM_CANNOT_BE_DISABLED')
@@ -240,7 +431,8 @@ def creation(parent,declaration,actual,audit,tree,token,delegation,proposal,prop
         OUF_SEMANTIC_PROPOSAL_RECEIPT_ISSUER=proposal_identity['issuer'],
         OUF_SEMANTIC_PROPOSAL_RECEIPT_AUDIENCE=proposal_identity['audience'],
         OUF_SEMANTIC_PROPOSAL_RECEIPT_WORKLOAD=proposal_identity['workload'])
-    result=copy.deepcopy(parent);result.update(Image=audit['imageId'],User='10001:10001',Env=[k+'='+v for k,v in sorted(env.items())],
+    from image_custody import runtime_image_id
+    result=copy.deepcopy(parent);result.update(Image=runtime_image_id(audit),User='10001:10001',Env=[k+'='+v for k,v in sorted(env.items())],
         Entrypoint=java,Cmd=[],Labels=copy.deepcopy(config.get('Labels') or {}),WorkingDir=config.get('WorkingDir') or '/')
     result.pop('Hostname',None);result.pop('Domainname',None)
     host=creation_host_config(result['HostConfig']);result['HostConfig']=host
@@ -277,6 +469,10 @@ def registry_database(postgres,request,migrations):
         current=channel.query("SELECT json_build_object('name',current_database(),'oid',oid::bigint,'allowConnections',datallowconn,'prepared',(SELECT count(*) FROM pg_prepared_xacts WHERE database=current_database())) FROM pg_database WHERE datname=current_database()",timeout=10)
         before=channel.query("SELECT COALESCE(json_agg(json_build_object('version',version,'type',type,'script',script,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM ouf_sem.flyway_schema_history",timeout=10)
     finally:channel.close()
+    # Preserve Flyway's exact schema-creation row, as the cohort DB planner does.
+    # It is retained in expected history; no SQL file is invented for this marker.
+    marker={'version':None,'type':'SCHEMA','script':'"ouf_sem"','checksum':None,'success':True}
+    if before and before[0]==marker:migrations=[marker,*migrations]
     require(current.get('name')==database and type(current.get('oid')) is int and current['oid']>0
             and current.get('allowConnections') is True and current.get('prepared')==0 and type(before) is list
             and 1<=len(before)<=len(migrations)<=256 and before==migrations[:len(before)], 'CURRENT_REGISTRY_MIGRATION_PREFIX_REQUIRED')
@@ -331,8 +527,9 @@ def prepare_file_only_installation(*,engine,selection,package_directory,semantic
     require(type(engine) is Engine and hash_value(source_closure_hash),'REAL_REGISTRY_PREPARATION_ENGINE_REQUIRED')
     native_commands(command_binding,engine)
     values,retirement=retained_inputs(selection);declaration=values['declaration'];review=values['installationReview']
-    cid=review['currentRegistry']['id'];code,actual=engine.request('GET','/v1.44/containers/'+cid+'/json')
-    require(code==200 and actual['Id']==cid and actual['Image']==review['currentRegistry']['image']
+    cid=review['currentRegistry']['id']
+    actual,retained_native=paired_retained_inspection(engine,declaration['retainedNativeCreationFrame'],command_binding,ObservationBudget(60))
+    require(actual['Id']==cid and actual['Image']==review['currentRegistry']['image']
             and actual['State']['Pid']==review['currentRegistry']['pid'] and actual['State']['StartedAt']==review['currentRegistry']['startedAt']
             and actual['State']['Running'] is True,'CURRENT_RETAINED_REGISTRY_REQUIRED')
     code,pg=engine.request('GET','/v1.44/containers/'+postgres['Id']+'/json');require(code==200 and Engine.runtime_binding(pg)==Engine.runtime_binding(postgres),'CURRENT_SELECTED_POSTGRES_REQUIRED')
@@ -345,7 +542,7 @@ def prepare_file_only_installation(*,engine,selection,package_directory,semantic
     require(type(frame_inputs) is dict and set(frame_inputs)=={'baselineBinding','delegationKey','dockerContext','runtimeRoot','observationConfiguration','frameSourceBinding'},
             'COMPLETE_INDEPENDENT_NATIVE_FRAME_INPUTS_REQUIRED')
     delegation=frame_inputs['delegationKey'];delegation_metadata=file_source(delegation)
-    request=creation(values['creationRequest'],declaration,actual,image_audit,tree,owner_mount,delegation,proposal,proposal_identity)
+    request=creation(values['creationRequest'],declaration,actual,image_audit,tree,owner_mount,delegation,proposal,proposal_identity,retained_native_frame=retained_native)
     profile=FileOnlyProfile(request,tree)
     require(frame_inputs['baselineBinding']['sha256']==BASELINE_SHA256,'PINNED_INDEPENDENT_ENGINE_BASELINE_REQUIRED')
     baseline=bound(frame_inputs['baselineBinding']);code,info=engine.request('GET','/v1.44/info')
@@ -363,7 +560,7 @@ def prepare_file_only_installation(*,engine,selection,package_directory,semantic
     require(code==200 and network['Name']==name and network['Driver']=='bridge' and network['EnableIPv6'] is False,'CURRENT_EXACT_REGISTRY_BRIDGE_REQUIRED')
     address=endpoints[name]['IPAMConfig']['IPv4Address'];port=int(environment(request['Env']).get('PORT','8080'))
     readiness={'databaseContainerId':pg['Id'],'databaseUser':db['user'],'database':db['database'],'databaseOid':db['databaseOid'],
-        'flywaySchema':'ouf_sem','flywayHistoryHash':digest(migrations),'health':{'address':address,'port':port,'path':'/actuator/health/readiness','timeoutSeconds':5}}
+        'flywaySchema':'ouf_sem','flywayHistoryHash':digest(db['expected']),'health':{'address':address,'port':port,'path':'/actuator/health/readiness','timeoutSeconds':5}}
     recipe={'schema':'ouf.semantic-file-only-node-recipe.v1','sourceClosureHash':source_closure_hash,
         'qualifiedPackageHash':digest(semantic_record),'imageConfigurationHash':image_audit['configSha256'],
         **{k:copy.deepcopy(v) for k,v in frame_inputs.items() if k not in ('baselineBinding','delegationKey')},
@@ -387,6 +584,9 @@ def prepare_file_only_installation(*,engine,selection,package_directory,semantic
     for native in [*producers,pg]:
         code,fresh=engine.request('GET','/v1.44/containers/'+native['Id']+'/json')
         require(code==200 and Engine.runtime_binding(fresh)==Engine.runtime_binding(native),'REGISTRY_PREPARATION_GENERATION_CHANGED')
+    final_api,final_cli=paired_retained_inspection(engine,declaration['retainedNativeCreationFrame'],command_binding,ObservationBudget(60))
+    require(Engine.runtime_binding(final_api)==Engine.runtime_binding(actual)
+            and Engine.runtime_binding(final_cli)==Engine.runtime_binding(retained_native),'REGISTRY_PREPARATION_GENERATION_CHANGED')
     require(registry_database(pg,request,migrations)==db and configtree(declaration)==tree
             and file_source(delegation)==delegation_metadata and file_source(proposal)==proposal['metadataHash'],
             'REGISTRY_PREPARATION_PRIVATE_INPUT_CHANGED')

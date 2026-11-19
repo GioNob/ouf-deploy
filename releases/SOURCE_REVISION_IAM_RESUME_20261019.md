@@ -1,0 +1,33 @@
+# Retained postboot executor: one IAM renewal and native gates — 2026-10-19
+
+Technical8/8, functional4/6. Protected operator read completed: tvc2ilnv has exact9files, closure e93fd92cae1105c6f5b69e617c5352d8324f65e5c3b13ac758a39dbc3e87a8bc, matching compiler, bound plan/review and no login/authority artifacts. kfy691gh preparation receipt90559c21350b737c591342163140477bcf42c7f4aa21f4819563c92b7e5ffed6 independently read. No live IAM session or runtime acceptance is inferred.
+
+This delivery reuses kfy691gh, source32f86add5b6fb1b17110ca916ed045b28a240c5e, packagebfbbed8649e8fc438e7f71f598bb22a6d2c75335cbf6e2c25969e464e0a62cb7. It embeds the exact previously qualified readonly diagnostic, repeats protected closure verification, then verifies all81frozen files, original/private input/case/plan bindings and root custody. The frozen executor is unchanged. No preparation launcher is invoked.
+
+The retained installation IAM_PROFILE explicitly binds the already documented internal kcadm server, master realm and oufadmin account; it is not a portable installation default. Docker binary and full Keycloak container ID come only from the hashed reconciled original selection, as does the current socket binding. Guards check executable bytes/custody, socket identity and Keycloak PID/StartedAt before and after login. Docker commands explicitly select that socket; native OwnerTransport inherits that same DOCKER_HOST with DOCKER_CONTEXT removed. No container/service start, stop or root container is introduced.
+
+Before login, an exclusive root0700 directory `/etc/ouf/deploy-snapshots/source-revision-iam-resume-tvc2ilnv` is fsynced, then a root0600 immutable attempt claim is fsynced. Existing directory, even an incomplete one, prevents a second login or executor invocation. No directory/claim is deleted on failure. Verify a current TTY before consuming the attempt. kcadm config credentials receives stdin/stdout/stderr directly from /dev/tty; this delivery never reads password bytes, passes passwords as arguments or logs the terminal stream. One login, maximum300seconds; timeout/uncertain outcome gets one bounded metadata GET, never a second login. Failed GET, drift or cancellation stops with reconciliation required. Metadata diagnostics are captured to bounded temporary files and never printed. No IAM resource configuration or service-token grant is performed by this renewal.
+
+After a proven current IAM GET and stable generation, repeat retained-context and81file verification and invoke the frozen executor in this new isolated root process. It rechecks complete current preparation/generations/provider and historical HUMAN lineage, then presents native RIAPRO LOGIN, fresh issuer login, APPROVO with current review hash and role THS decision. Historical HUMAN175/256 remains the starting accounting, with81remaining; no old token/session/authority is accepted by this wrapper. The native closure and guard remain unchanged. On APPROVO the existing executor may perform backup, Onboarding33→34, Onboarding/MCP replacement and two additive Gateway routes; role admission remains a native separate THS gate. No profile publication, acquisition/job retry or functional5/6 claim belongs to this delivery. Preserve13Teatri/ACK/lineage20properties/identity choices and8Cinema.
+
+PET consulted from original baseline: Onboarding1.6 §§109.14–109.15 on expired challenges/owner authority and operational signals. Admin renewal is distinct from HUMAN/THS authority. Prior documented admin login flow: POLICY_TOKEN_ADMIN_REAUTH_AND_RESUME_20261013.md (obsolete preparation continuation must not run). Reusable policy-token iam_session helper has a different retained snapshot; the new wrapper preserves its terminal/fence/readback pattern with explicit source-revision bindings instead of adopting the unrelated snapshot.
+
+Qualification completed: GitHub run39200215260/job117891435456 success,13tests PASS at delivery commit e55d180884f0b335711b84a0c0f38ebd0f9888e6. Exact launcher root shim rejects a tampered helper before protected reads; fixture tests cover all pinned classes, preservation, one-use fence including incomplete claim, cancellation, generation/executable drift, timeout reconciliation with one GET and native-gate order. This is orchestration/fixture evidence, not a live IAM or release result. [Qualification receipt](../evidence/source-revision-iam-resume-qualified-20261019.json). Target login/resume remain pending; this cloud workspace cannot supply the physical sudo/operator terminal. After STOP or interruption do not relaunch; retain log, fence and any new execution context for reconciliation.
+
+## One VPS command
+
+```bash
+(
+set -euo pipefail
+umask 077
+ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
+[[ -n "$ouf_gh" && -x "$ouf_gh" ]] || exit 1
+ouf_resume_dir="$(mktemp -d "$HOME/ouf-iam-resume-launch.XXXXXXXX")"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/launch-source-revision-iam-resume-20261019.sh?ref=e55d180884f0b335711b84a0c0f38ebd0f9888e6' --jq '.content' | base64 --decode > "$ouf_resume_dir/run.sh"
+printf '%s  %s\n' 'dcaba25fea69447456b9fc3db90bbe86c1622fbb7f7c608b21eb32b43bad2133' "$ouf_resume_dir/run.sh" | sha256sum --check
+bash "$ouf_resume_dir/run.sh"
+)
+```
+
+Read the actual native reviews and type decisions only if intended. No command is provided to delete the fence, reset budgets or accept expired authority. Return final redacted JSON/output; after STOP retain logs and do not rerun.

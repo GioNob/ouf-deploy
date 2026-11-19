@@ -1,0 +1,1332 @@
+diff --git a/weed/remote_storage/s3/default_chain_test.go b/weed/remote_storage/s3/default_chain_test.go
+index d646f4777..c70cee36d 100644
+--- a/weed/remote_storage/s3/default_chain_test.go
++++ b/weed/remote_storage/s3/default_chain_test.go
+@@ -6,20 +6,22 @@ import (
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+ )
+ 
+-// The default credential chain applies when an access key or a secret is
+-// missing, for every S3-compatible type, and only then: the servers hash the
+-// shared credentials file into the client cache key in that case alone.
++// The default credential chain applies only when both fields are absent and
++// the provider is not the anonymous generic-S3 case. Partial tuples fail
++// closed during client construction.
+ func TestUsesDefaultCredentialChain(t *testing.T) {
++	clearAWSCredentialEnv(t)
+ 	for _, tc := range []struct {
+ 		name string
+ 		conf *remote_pb.RemoteConf
+ 		want bool
+ 	}{
+ 		{"s3 with both keys", &remote_pb.RemoteConf{Type: "s3", S3AccessKey: "a", S3SecretKey: "b"}, false},
+-		{"s3 with a key, no secret", &remote_pb.RemoteConf{Type: "s3", S3AccessKey: "a"}, true},
+-		{"s3 with no keys", &remote_pb.RemoteConf{Type: "s3"}, true},
++		{"s3 with a key, no secret", &remote_pb.RemoteConf{Type: "s3", S3AccessKey: "a"}, false},
++		{"s3 with no keys", &remote_pb.RemoteConf{Type: "s3"}, false},
+ 		{"b2 with both keys (S3AccessKey unset)", &remote_pb.RemoteConf{Type: "b2", BackblazeKeyId: "a", BackblazeApplicationKey: "b", BackblazeEndpoint: "https://s3.example"}, false},
+-		{"b2 with no secret", &remote_pb.RemoteConf{Type: "b2", BackblazeKeyId: "a", BackblazeEndpoint: "https://s3.example"}, true},
++		{"b2 with no secret", &remote_pb.RemoteConf{Type: "b2", BackblazeKeyId: "a", BackblazeEndpoint: "https://s3.example"}, false},
++		{"b2 with no keys", &remote_pb.RemoteConf{Type: "b2", BackblazeEndpoint: "https://s3.example"}, true},
+ 		{"not S3-compatible", &remote_pb.RemoteConf{Type: "azure"}, false},
+ 	} {
+ 		if got := UsesDefaultCredentialChain(tc.conf); got != tc.want {
+diff --git a/weed/remote_storage/s3/s3_storage_client.go b/weed/remote_storage/s3/s3_storage_client.go
+index df9e02edd..323dfd678 100644
+--- a/weed/remote_storage/s3/s3_storage_client.go
++++ b/weed/remote_storage/s3/s3_storage_client.go
+@@ -2,6 +2,8 @@ package s3
+ 
+ import (
+ 	"context"
++	"crypto/md5"
++	"encoding/base64"
+ 	"errors"
+ 	"fmt"
+ 	"io"
+@@ -11,16 +13,19 @@ import (
+ 	"reflect"
+ 	"sort"
+ 	"strings"
+-
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/request"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	v4 "github.com/aws/aws-sdk-go/aws/signer/v4"
+-	"github.com/aws/aws-sdk-go/service/s3"
+-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
++	"sync/atomic"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
++	"github.com/aws/aws-sdk-go-v2/config"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
++	transfertypes "github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager/types"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
++	"github.com/aws/smithy-go"
++	"github.com/aws/smithy-go/middleware"
++	smithyhttp "github.com/aws/smithy-go/transport/http"
+ 	"github.com/seaweedfs/seaweedfs/weed/filer"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+@@ -56,7 +61,6 @@ type s3CompatibleOptions struct {
+ 	accessKey      string
+ 	secretKey      string
+ 	forcePathStyle bool
+-	signV4         bool
+ 	// anonymousWhenNoCreds disables SigV4 signing for public buckets when no
+ 	// credentials are supplied. Only the generic "s3" provider does this.
+ 	anonymousWhenNoCreds bool
+@@ -78,7 +82,6 @@ func s3CompatibleClientOptions(conf *remote_pb.RemoteConf) (s3CompatibleOptions,
+ 			accessKey:            conf.S3AccessKey,
+ 			secretKey:            conf.S3SecretKey,
+ 			forcePathStyle:       conf.S3ForcePathStyle,
+-			signV4:               conf.S3V4Signature,
+ 			anonymousWhenNoCreds: true,
+ 			setUserAgent:         true,
+ 		}, true
+@@ -106,7 +109,6 @@ func s3CompatibleClientOptions(conf *remote_pb.RemoteConf) (s3CompatibleOptions,
+ 			region:    conf.BaiduRegion,
+ 			accessKey: util.Nvl(conf.BaiduAccessKey, os.Getenv("BDCLOUD_ACCESS_KEY")),
+ 			secretKey: util.Nvl(conf.BaiduSecretKey, os.Getenv("BDCLOUD_SECRET_KEY")),
+-			signV4:    true,
+ 		}, true
+ 	case "contabo":
+ 		return s3CompatibleOptions{
+@@ -125,7 +127,6 @@ func s3CompatibleClientOptions(conf *remote_pb.RemoteConf) (s3CompatibleOptions,
+ 			accessKey:      util.Nvl(conf.FilebaseAccessKey, os.Getenv("AWS_ACCESS_KEY_ID")),
+ 			secretKey:      util.Nvl(conf.FilebaseSecretKey, os.Getenv("AWS_SECRET_ACCESS_KEY")),
+ 			forcePathStyle: true,
+-			signV4:         true,
+ 		}, true
+ 	case "storj":
+ 		return s3CompatibleOptions{
+@@ -170,13 +171,13 @@ func S3CompatibleEndpoint(conf *remote_pb.RemoteConf) (string, bool) {
+ 	return opt.endpoint, true
+ }
+ 
+-// UsesDefaultCredentialChain reports whether a client of conf, of any
+-// S3-compatible type, may take its credentials from the SDK's default chain
+-// (an access key or a secret missing, after the type's own environment
+-// fallbacks): the only case where they live outside the configuration.
++// UsesDefaultCredentialChain reports whether a client of conf takes its
++// credentials from the SDK default chain. A partial static tuple is invalid,
++// not a request to mix one configured value with another provider.
+ func UsesDefaultCredentialChain(conf *remote_pb.RemoteConf) bool {
+ 	opt, ok := s3CompatibleClientOptions(conf)
+-	return ok && !(opt.accessKey != "" && opt.secretKey != "")
++	return ok && opt.accessKey == "" && opt.secretKey == "" &&
++		!(opt.anonymousWhenNoCreds && !awsCredentialSourceConfigured())
+ }
+ 
+ // ResolvedCredentials returns the static credentials a client of conf carries
+@@ -218,77 +219,129 @@ func MakeWithHTTPClient(conf *remote_pb.RemoteConf, httpClient *http.Client) (re
+ 	if !ok {
+ 		return nil, fmt.Errorf("%q is not an S3-compatible remote storage type", conf.Type)
+ 	}
+-	client := &s3RemoteStorageClient{
+-		conf: conf,
++	if opt.region == "" && opt.endpoint == "" {
++		return nil, fmt.Errorf("%s remote storage requires an explicit region when using the provider endpoint", opt.name)
+ 	}
+-	config := &aws.Config{
+-		Region:                        aws.String(opt.region),
+-		Endpoint:                      aws.String(opt.endpoint),
+-		S3ForcePathStyle:              aws.Bool(opt.forcePathStyle),
+-		S3DisableContentMD5Validation: aws.Bool(true),
++	if (opt.accessKey == "") != (opt.secretKey == "") {
++		return nil, fmt.Errorf("%s remote storage requires both static credential fields or neither", opt.name)
+ 	}
+-	if httpClient != nil {
+-		config.HTTPClient = httpClient
++	if opt.endpoint != "" {
++		u, err := url.Parse(opt.endpoint)
++		if err != nil || u.Hostname() == "" || (u.Scheme != "https" && u.Scheme != "http") || u.User != nil || u.RawQuery != "" || u.ForceQuery || u.Fragment != "" || u.Opaque != "" {
++			return nil, fmt.Errorf("%s endpoint must be an explicit HTTP(S) binding without credentials, query or fragment", opt.name)
++		}
++	} else if opt.name != "s3" {
++		return nil, fmt.Errorf("%s remote storage requires an explicit endpoint", opt.name)
++	}
++
++	loadOptions := []func(*config.LoadOptions) error{
++		config.WithRegion(opt.region),
++		config.WithRetryMaxAttempts(1),
++		config.WithRequestChecksumCalculation(aws.RequestChecksumCalculationWhenRequired),
+ 	}
+ 	if opt.accessKey != "" && opt.secretKey != "" {
+-		config.Credentials = credentials.NewStaticCredentials(opt.accessKey, opt.secretKey, "")
++		loadOptions = append(loadOptions, config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(opt.accessKey, opt.secretKey, "")))
+ 	} else if opt.anonymousWhenNoCreds && opt.accessKey == "" && opt.secretKey == "" && !awsCredentialSourceConfigured() {
+-		// Explicitly disable signing for public buckets. When the environment
+-		// names an AWS credential source, leave Credentials nil so the SDK
+-		// default chain (env, web identity, container, shared profile) is used.
+-		config.Credentials = credentials.AnonymousCredentials
+-	} else if config.Credentials == nil && config.HTTPClient != nil {
++		loadOptions = append(loadOptions, config.WithCredentialsProvider(aws.AnonymousCredentials{}))
++	} else if httpClient != nil {
+ 		// Remote credential providers (container endpoints, IMDS, web
+ 		// identity) fetch through this HTTP client; the guarded one is for the
+-		// S3 endpoint and blocks the link-local credential endpoints, so the
+-		// default chain resolves on an unguarded client. Shared config stays
+-		// enabled so web identity and profiles resolve here too, and the
+-		// region carries over so STS can sign assume-role requests.
+-		credSess, err := session.NewSessionWithOptions(session.Options{
+-			Config:            aws.Config{Region: config.Region, HTTPClient: &http.Client{}},
+-			SharedConfigState: session.SharedConfigEnable,
+-		})
++		// S3 endpoint and blocks link-local credential endpoints. Resolve the
++		// credential chain through the SDK's normal transport, then pin only S3.
++		credConfig, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(opt.region), config.WithRetryMaxAttempts(1))
+ 		if err != nil {
+-			return nil, fmt.Errorf("create %s credential session: %w", opt.name, err)
++			return nil, fmt.Errorf("load %s credential configuration: %w", opt.name, err)
+ 		}
+-		config.Credentials = credSess.Config.Credentials
++		loadOptions = append(loadOptions, config.WithCredentialsProvider(credConfig.Credentials))
+ 	}
+-
+-	sess, err := session.NewSessionWithOptions(session.Options{
+-		Config:            *config,
+-		SharedConfigState: session.SharedConfigEnable,
+-	})
+-	if err != nil {
+-		return nil, fmt.Errorf("create %s session: %w", opt.name, err)
++	if httpClient != nil {
++		loadOptions = append(loadOptions, config.WithHTTPClient(httpClient))
+ 	}
+-	if opt.signV4 {
+-		sess.Handlers.Sign.PushBackNamed(v4.SignRequestHandler)
++	cfg, err := config.LoadDefaultConfig(context.Background(), loadOptions...)
++	if err != nil {
++		return nil, fmt.Errorf("load %s configuration: %w", opt.name, err)
+ 	}
+-	if opt.setUserAgent {
+-		sess.Handlers.Build.PushBack(func(r *request.Request) {
+-			r.HTTPRequest.Header.Set("User-Agent", "SeaweedFS/"+version.VERSION_NUMBER)
+-		})
++	base := s3.NewFromConfig(cfg, func(o *s3.Options) {
++		o.UsePathStyle = opt.forcePathStyle
++		if opt.endpoint != "" {
++			o.BaseEndpoint = aws.String(opt.endpoint)
++		}
++		if opt.setUserAgent {
++			o.APIOptions = append(o.APIOptions, awsmiddleware.AddUserAgentKeyValue("SeaweedFS", version.VERSION_NUMBER))
++		}
++	})
++	if opt.endpoint == "" && base.Options().BaseEndpoint != nil {
++		return nil, fmt.Errorf("%s endpoint override requires an explicit binding", opt.name)
+ 	}
+-	sess.Handlers.Build.PushFront(skipSha256PayloadSigning)
+-	client.conn = s3.New(sess)
+-	return client, nil
++	return &s3RemoteStorageClient{conf: conf, conn: &s3TransferClient{Client: base}}, nil
+ }
+ 
+-var skipSha256PayloadSigning = func(r *request.Request) {
+-	// see https://github.com/ceph/ceph/pull/15965/files
+-	if r.ClientInfo.ServiceID != "S3" {
+-		return
+-	}
+-	if r.Operation.Name == "PutObject" || r.Operation.Name == "UploadPart" {
+-		if len(r.HTTPRequest.Header.Get("X-Amz-Content-Sha256")) == 0 {
+-			r.HTTPRequest.Header.Set("X-Amz-Content-Sha256", "UNSIGNED-PAYLOAD")
+-		}
++// s3TransferClient preserves the historical omission of Content-Type when the
++// filer entry has no MIME value. SDK v2 otherwise injects application/octet-stream.
++type s3TransferClient struct{ *s3.Client }
++
++func (c *s3TransferClient) PutObject(ctx context.Context, in *s3.PutObjectInput, opts ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
++	if in.ContentType == nil {
++		opts = append(opts, omitUnspecifiedContentType)
+ 	}
++	return c.Client.PutObject(ctx, in, opts...)
++}
++
++func omitUnspecifiedContentType(o *s3.Options) {
++	o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
++		return stack.Serialize.Insert(middleware.SerializeMiddlewareFunc("PreserveMissingContentType", func(ctx context.Context, in middleware.SerializeInput, next middleware.SerializeHandler) (middleware.SerializeOutput, middleware.Metadata, error) {
++			req, ok := in.Request.(*smithyhttp.Request)
++			if !ok {
++				return middleware.SerializeOutput{}, middleware.Metadata{}, fmt.Errorf("unexpected S3 request transport")
++			}
++			req.Header.Del("Content-Type")
++			return next.HandleSerialize(ctx, in)
++		}), "OperationSerializer", middleware.After)
++	})
++}
++
++// addContentMD5 keeps DeleteObjects compatible with S3 implementations that
++// require the protocol's historical Content-MD5 header. SDK v2 otherwise uses
++// a flexible checksum header for this required-checksum operation.
++func addContentMD5(o *s3.Options) {
++	o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
++		return stack.Serialize.Insert(middleware.SerializeMiddlewareFunc("AddContentMD5", func(ctx context.Context, in middleware.SerializeInput, next middleware.SerializeHandler) (middleware.SerializeOutput, middleware.Metadata, error) {
++			req, ok := in.Request.(*smithyhttp.Request)
++			if !ok {
++				return middleware.SerializeOutput{}, middleware.Metadata{}, fmt.Errorf("unexpected S3 request transport")
++			}
++			hash := md5.New()
++			if stream := req.GetStream(); stream != nil {
++				if _, err := io.Copy(hash, stream); err != nil {
++					return middleware.SerializeOutput{}, middleware.Metadata{}, fmt.Errorf("hash DeleteObjects body: %w", err)
++				}
++				if err := req.RewindStream(); err != nil {
++					return middleware.SerializeOutput{}, middleware.Metadata{}, fmt.Errorf("rewind DeleteObjects body: %w", err)
++				}
++			}
++			req.Header.Set("Content-MD5", base64.StdEncoding.EncodeToString(hash.Sum(nil)))
++			return next.HandleSerialize(ctx, in)
++		}), "OperationSerializer", middleware.After)
++	})
++}
++
++type s3API interface {
++	transfermanager.S3APIClient
++	CopyObject(context.Context, *s3.CopyObjectInput, ...func(*s3.Options)) (*s3.CopyObjectOutput, error)
++	UploadPartCopy(context.Context, *s3.UploadPartCopyInput, ...func(*s3.Options)) (*s3.UploadPartCopyOutput, error)
++	GetObjectTagging(context.Context, *s3.GetObjectTaggingInput, ...func(*s3.Options)) (*s3.GetObjectTaggingOutput, error)
++	PutObjectTagging(context.Context, *s3.PutObjectTaggingInput, ...func(*s3.Options)) (*s3.PutObjectTaggingOutput, error)
++	DeleteObjectTagging(context.Context, *s3.DeleteObjectTaggingInput, ...func(*s3.Options)) (*s3.DeleteObjectTaggingOutput, error)
++	DeleteObject(context.Context, *s3.DeleteObjectInput, ...func(*s3.Options)) (*s3.DeleteObjectOutput, error)
++	DeleteObjects(context.Context, *s3.DeleteObjectsInput, ...func(*s3.Options)) (*s3.DeleteObjectsOutput, error)
++	ListBuckets(context.Context, *s3.ListBucketsInput, ...func(*s3.Options)) (*s3.ListBucketsOutput, error)
++	CreateBucket(context.Context, *s3.CreateBucketInput, ...func(*s3.Options)) (*s3.CreateBucketOutput, error)
++	DeleteBucket(context.Context, *s3.DeleteBucketInput, ...func(*s3.Options)) (*s3.DeleteBucketOutput, error)
+ }
+ 
+ type s3RemoteStorageClient struct {
+ 	conf *remote_pb.RemoteConf
+-	conn s3iface.S3API
++	conn s3API
+ }
+ 
+ const (
+@@ -320,51 +373,33 @@ func (s *s3RemoteStorageClient) Traverse(remote *remote_pb.RemoteStorageLocation
+ 		Bucket:              aws.String(remote.Bucket),
+ 		ContinuationToken:   nil,
+ 		Delimiter:           nil, // not aws.String("/"), iterate through all entries
+-		EncodingType:        nil,
+ 		ExpectedBucketOwner: nil,
+ 		FetchOwner:          nil,
+ 		MaxKeys:             nil, // aws.Int64(1000),
+ 		Prefix:              aws.String(pathKey),
+-		RequestPayer:        nil,
+ 		StartAfter:          nil,
+ 	}
+-	isLastPage := false
+-	for !isLastPage && err == nil {
+-		var localErr error
+-		listErr := s.conn.ListObjectsV2Pages(listInput, func(page *s3.ListObjectsV2Output, lastPage bool) bool {
+-			for _, content := range page.Contents {
+-				key := *content.Key
+-				key = "/" + key
+-				dir, name := util.FullPath(key).DirAndName()
+-				remoteEntry := &filer_pb.RemoteEntry{
+-					StorageName: s.conf.Name,
+-				}
+-				if content.LastModified != nil {
+-					remoteEntry.RemoteMtime = content.LastModified.Unix()
+-				}
+-				if content.Size != nil {
+-					remoteEntry.RemoteSize = *content.Size
+-				}
+-				if content.ETag != nil {
+-					remoteEntry.RemoteETag = *content.ETag
+-				}
+-				if err := visitFn(dir, name, false, remoteEntry); err != nil {
+-					localErr = err
+-					return false
+-				}
+-			}
+-			listInput.ContinuationToken = page.NextContinuationToken
+-			isLastPage = lastPage
+-			return true
+-		})
++	paginator := s3.NewListObjectsV2Paginator(s.conn, listInput)
++	for paginator.HasMorePages() {
++		page, listErr := paginator.NextPage(context.Background())
+ 		if listErr != nil {
+-			err = fmt.Errorf("list %v: %w", remote, listErr)
++			return fmt.Errorf("list %v: %w", remote, listErr)
+ 		}
+-		if localErr != nil {
+-			err = fmt.Errorf("process %v: %w", remote, localErr)
++		for _, content := range page.Contents {
++			key := "/" + aws.ToString(content.Key)
++			dir, name := util.FullPath(key).DirAndName()
++			remoteEntry := &filer_pb.RemoteEntry{StorageName: s.conf.Name}
++			if content.LastModified != nil {
++				remoteEntry.RemoteMtime = content.LastModified.Unix()
++			}
++			remoteEntry.RemoteSize = aws.ToInt64(content.Size)
++			remoteEntry.RemoteETag = aws.ToString(content.ETag)
++			if visitErr := visitFn(dir, name, false, remoteEntry); visitErr != nil {
++				return fmt.Errorf("process %v: %w", remote, visitErr)
++			}
+ 		}
+ 	}
+-	return
++	return nil
+ }
+ 
+ func (s *s3RemoteStorageClient) ListDirectory(ctx context.Context, loc *remote_pb.RemoteStorageLocation, visitFn remote_storage.VisitFunc) error {
+@@ -379,8 +414,12 @@ func (s *s3RemoteStorageClient) ListDirectory(ctx context.Context, loc *remote_p
+ 		Delimiter: aws.String("/"),
+ 	}
+ 
+-	var localErr error
+-	listErr := s.conn.ListObjectsV2PagesWithContext(ctx, listInput, func(page *s3.ListObjectsV2Output, lastPage bool) bool {
++	paginator := s3.NewListObjectsV2Paginator(s.conn, listInput)
++	for paginator.HasMorePages() {
++		page, listErr := paginator.NextPage(ctx)
++		if listErr != nil {
++			return fmt.Errorf("list directory %v: %w", loc, listErr)
++		}
+ 		for _, prefix := range page.CommonPrefixes {
+ 			if prefix.Prefix == nil {
+ 				continue
+@@ -388,8 +427,7 @@ func (s *s3RemoteStorageClient) ListDirectory(ctx context.Context, loc *remote_p
+ 			dirKey := "/" + strings.TrimSuffix(*prefix.Prefix, "/")
+ 			dir, name := util.FullPath(dirKey).DirAndName()
+ 			if err := visitFn(dir, name, true, nil); err != nil {
+-				localErr = err
+-				return false
++				return fmt.Errorf("process directory %v: %w", loc, err)
+ 			}
+ 		}
+ 		for _, content := range page.Contents {
+@@ -404,35 +442,23 @@ func (s *s3RemoteStorageClient) ListDirectory(ctx context.Context, loc *remote_p
+ 			if content.LastModified != nil {
+ 				remoteEntry.RemoteMtime = content.LastModified.Unix()
+ 			}
+-			if content.Size != nil {
+-				remoteEntry.RemoteSize = *content.Size
+-			}
+-			if content.ETag != nil {
+-				remoteEntry.RemoteETag = *content.ETag
+-			}
++			remoteEntry.RemoteSize = aws.ToInt64(content.Size)
++			remoteEntry.RemoteETag = aws.ToString(content.ETag)
+ 			if err := visitFn(dir, name, false, remoteEntry); err != nil {
+-				localErr = err
+-				return false
++				return fmt.Errorf("process directory %v: %w", loc, err)
+ 			}
+ 		}
+-		return true
+-	})
+-	if listErr != nil {
+-		return fmt.Errorf("list directory %v: %w", loc, listErr)
+-	}
+-	if localErr != nil {
+-		return fmt.Errorf("process directory %v: %w", loc, localErr)
+ 	}
+ 	return nil
+ }
+ 
+ func (s *s3RemoteStorageClient) StatFile(loc *remote_pb.RemoteStorageLocation) (remoteEntry *filer_pb.RemoteEntry, err error) {
+-	resp, err := s.conn.HeadObject(&s3.HeadObjectInput{
++	resp, err := s.conn.HeadObject(context.Background(), &s3.HeadObjectInput{
+ 		Bucket: aws.String(loc.Bucket),
+ 		Key:    aws.String(loc.Path[1:]),
+ 	})
+ 	if err != nil {
+-		if reqErr, ok := err.(awserr.RequestFailure); ok && reqErr.StatusCode() == http.StatusNotFound {
++		if httpStatus(err) == http.StatusNotFound {
+ 			return nil, remote_storage.ErrRemoteObjectNotFound
+ 		}
+ 		return nil, fmt.Errorf("stat s3 %s%s: %w", loc.Bucket, loc.Path, err)
+@@ -450,7 +476,7 @@ func (s *s3RemoteStorageClient) StatFile(loc *remote_pb.RemoteStorageLocation) (
+ 		remoteEntry.RemoteETag = *resp.ETag
+ 	}
+ 	// a HeadObject response is authoritative: no header means no encoding
+-	remoteEntry.RemoteContentEncoding = aws.String(aws.StringValue(resp.ContentEncoding))
++	remoteEntry.RemoteContentEncoding = aws.String(aws.ToString(resp.ContentEncoding))
+ 	return remoteEntry, nil
+ }
+ 
+@@ -462,18 +488,23 @@ func (s *s3RemoteStorageClient) ReadFileWithConcurrency(loc *remote_pb.RemoteSto
+ 	if concurrency <= 0 {
+ 		concurrency = s.downloadConcurrency()
+ 	}
+-	downloader := s3manager.NewDownloaderWithClient(s.conn, func(u *s3manager.Downloader) {
+-		u.PartSize = int64(4 * 1024 * 1024)
+-		u.Concurrency = concurrency
++	progress := new(transferProgress)
++	downloader := transfermanager.New(s.conn, func(o *transfermanager.Options) {
++		o.PartSizeBytes = int64(4 * 1024 * 1024)
++		o.Concurrency = concurrency
++		o.GetObjectType = transfertypes.GetObjectRanges
++		o.PartBodyMaxRetries = 1
++		o.ObjectProgressListeners.Register(progress)
+ 	})
+ 
+ 	dataSlice := make([]byte, int(size))
+-	writerAt := aws.NewWriteAtBuffer(dataSlice)
++	writerAt := transfertypes.NewWriteAtBuffer(dataSlice)
+ 
+-	n, err := downloader.Download(writerAt, &s3.GetObjectInput{
+-		Bucket: aws.String(loc.Bucket),
+-		Key:    aws.String(loc.Path[1:]),
+-		Range:  aws.String(fmt.Sprintf("bytes=%d-%d", offset, offset+size-1)),
++	_, err = downloader.DownloadObject(context.Background(), &transfermanager.DownloadObjectInput{
++		Bucket:   aws.String(loc.Bucket),
++		Key:      aws.String(loc.Path[1:]),
++		Range:    aws.String(fmt.Sprintf("bytes=%d-%d", offset, offset+size-1)),
++		WriterAt: writerAt,
+ 	})
+ 	if err != nil {
+ 		if isNoSuchKey(err) {
+@@ -484,7 +515,7 @@ func (s *s3RemoteStorageClient) ReadFileWithConcurrency(loc *remote_pb.RemoteSto
+ 	// The buffer is pre-sized to size, so a short read leaves the tail
+ 	// zero-padded and would be cached as valid-looking but corrupt content.
+ 	// Reject it instead.
+-	if n != size {
++	if n := progress.bytes.Load(); n != size {
+ 		return nil, fmt.Errorf("short read from %s%s at offset %d: got %d bytes, want %d", loc.Bucket, loc.Path, offset, n, size)
+ 	}
+ 
+@@ -492,7 +523,7 @@ func (s *s3RemoteStorageClient) ReadFileWithConcurrency(loc *remote_pb.RemoteSto
+ }
+ 
+ func (s *s3RemoteStorageClient) ReadFileAsStream(ctx context.Context, loc *remote_pb.RemoteStorageLocation, offset int64, size int64) (reader io.ReadCloser, err error) {
+-	output, err := s.conn.GetObjectWithContext(ctx, &s3.GetObjectInput{
++	output, err := s.conn.GetObject(ctx, &s3.GetObjectInput{
+ 		Bucket: aws.String(loc.Bucket),
+ 		Key:    aws.String(loc.Path[1:]),
+ 		Range:  aws.String(fmt.Sprintf("bytes=%d-%d", offset, offset+size-1)),
+@@ -509,8 +540,22 @@ func (s *s3RemoteStorageClient) ReadFileAsStream(ctx context.Context, loc *remot
+ // isNoSuchKey matches only a missing key: a missing bucket is also a 404 but
+ // says nothing about the object.
+ func isNoSuchKey(err error) bool {
+-	var aerr awserr.Error
+-	return errors.As(err, &aerr) && aerr.Code() == s3.ErrCodeNoSuchKey
++	var apiErr smithy.APIError
++	return errors.As(err, &apiErr) && apiErr.ErrorCode() == "NoSuchKey"
++}
++
++type transferProgress struct{ bytes atomic.Int64 }
++
++func (p *transferProgress) OnObjectBytesTransferred(_ context.Context, event *transfermanager.ObjectBytesTransferredEvent) {
++	p.bytes.Store(event.BytesTransferred)
++}
++
++func httpStatus(err error) int {
++	var responseErr *smithyhttp.ResponseError
++	if errors.As(err, &responseErr) {
++		return responseErr.HTTPStatusCode()
++	}
++	return 0
+ }
+ 
+ func (s *s3RemoteStorageClient) WriteDirectory(loc *remote_pb.RemoteStorageLocation, entry *filer_pb.Entry) (err error) {
+@@ -534,45 +579,35 @@ func (s *s3RemoteStorageClient) RemoveDirectory(loc *remote_pb.RemoteStorageLoca
+ 		Bucket: aws.String(loc.Bucket),
+ 		Prefix: aws.String(prefix),
+ 	}
+-	var deleteErr error
+-	listErr := s.conn.ListObjectsV2Pages(listInput, func(page *s3.ListObjectsV2Output, lastPage bool) bool {
+-		var objects []*s3.ObjectIdentifier
++	paginator := s3.NewListObjectsV2Paginator(s.conn, listInput)
++	for paginator.HasMorePages() {
++		page, listErr := paginator.NextPage(context.Background())
++		if listErr != nil {
++			return fmt.Errorf("list %s/%s: %w", loc.Bucket, prefix, listErr)
++		}
++		var objects []s3types.ObjectIdentifier
+ 		for _, content := range page.Contents {
+-			objects = append(objects, &s3.ObjectIdentifier{Key: content.Key})
++			objects = append(objects, s3types.ObjectIdentifier{Key: content.Key})
+ 		}
+ 		if len(objects) == 0 {
+-			return true
++			continue
+ 		}
+ 		// a listing page holds at most 1000 keys, the DeleteObjects limit
+-		req, resp := s.conn.DeleteObjectsRequest(&s3.DeleteObjectsInput{
++		resp, batchErr := s.conn.DeleteObjects(context.Background(), &s3.DeleteObjectsInput{
+ 			Bucket: aws.String(loc.Bucket),
+-			Delete: &s3.Delete{
++			Delete: &s3types.Delete{
+ 				Objects: objects,
+ 				Quiet:   aws.Bool(true),
+ 			},
+-		})
+-		// the client-level S3DisableContentMD5Validation also drops the
+-		// Content-MD5 header this operation requires; the request config is a
+-		// copy, so re-enabling it here leaves other operations untouched
+-		req.Config.S3DisableContentMD5Validation = aws.Bool(false)
+-		batchErr := req.Send()
++		}, addContentMD5)
+ 		if batchErr != nil {
+-			deleteErr = batchErr
+-			return false
++			return fmt.Errorf("remove directory %s/%s: %w", loc.Bucket, prefix, batchErr)
+ 		}
+ 		if len(resp.Errors) > 0 {
+ 			// a batch can fail 1000 keys; report the scope, not every key
+ 			failed := resp.Errors[0]
+-			deleteErr = fmt.Errorf("%d keys failed, first is %s: %s %s", len(resp.Errors), aws.StringValue(failed.Key), aws.StringValue(failed.Code), aws.StringValue(failed.Message))
+-			return false
++			return fmt.Errorf("remove directory %s/%s: %d keys failed, first is %s: %s %s", loc.Bucket, prefix, len(resp.Errors), aws.ToString(failed.Key), aws.ToString(failed.Code), aws.ToString(failed.Message))
+ 		}
+-		return true
+-	})
+-	if listErr != nil {
+-		return fmt.Errorf("list %s/%s: %w", loc.Bucket, prefix, listErr)
+-	}
+-	if deleteErr != nil {
+-		return fmt.Errorf("remove directory %s/%s: %w", loc.Bucket, prefix, deleteErr)
+ 	}
+ 	return nil
+ }
+@@ -586,10 +621,12 @@ func (s *s3RemoteStorageClient) WriteFile(loc *remote_pb.RemoteStorageLocation,
+ 		partSize *= 4
+ 	}
+ 
+-	// Create an uploader with the session and custom options
+-	uploader := s3manager.NewUploaderWithClient(s.conn, func(u *s3manager.Uploader) {
+-		u.PartSize = partSize
+-		u.Concurrency = s.uploadConcurrency()
++	uploader := transfermanager.New(s.conn, func(o *transfermanager.Options) {
++		o.PartSizeBytes = partSize
++		o.MultipartUploadThreshold = partSize
++		o.MaxUploadParts = 10000
++		o.Concurrency = s.uploadConcurrency()
++		o.RequestChecksumCalculation = aws.RequestChecksumCalculationWhenRequired
+ 	})
+ 
+ 	var awsTags *string
+@@ -601,7 +638,7 @@ func (s *s3RemoteStorageClient) WriteFile(loc *remote_pb.RemoteStorageLocation,
+ 	}
+ 
+ 	// Upload the file to S3.
+-	uploadInput := &s3manager.UploadInput{
++	uploadInput := &transfermanager.UploadObjectInput{
+ 		Bucket:  aws.String(loc.Bucket),
+ 		Key:     aws.String(loc.Path[1:]),
+ 		Body:    reader,
+@@ -614,9 +651,9 @@ func (s *s3RemoteStorageClient) WriteFile(loc *remote_pb.RemoteStorageLocation,
+ 		uploadInput.ContentEncoding = aws.String(contentEncoding)
+ 	}
+ 	if s.conf.S3StorageClass != "" {
+-		uploadInput.StorageClass = aws.String(s.conf.S3StorageClass)
++		uploadInput.StorageClass = transfertypes.StorageClass(s.conf.S3StorageClass)
+ 	}
+-	_, err = uploader.Upload(uploadInput)
++	_, err = uploader.UploadObject(context.Background(), uploadInput)
+ 
+ 	//in case it fails to upload
+ 	if err != nil {
+@@ -631,19 +668,19 @@ func (s *s3RemoteStorageClient) WriteFile(loc *remote_pb.RemoteStorageLocation,
+ // toTagging maps the entry's extended attributes to the remote object's tag
+ // set. Only X-Amz-Tagging-* attributes are S3 tags; the rest of Extended is
+ // Seaweed-internal metadata whose values are not legal tag values.
+-func toTagging(attributes map[string][]byte) *s3.Tagging {
+-	tagging := &s3.Tagging{}
++func toTagging(attributes map[string][]byte) *s3types.Tagging {
++	tagging := &s3types.Tagging{}
+ 	for k, v := range attributes {
+ 		if !strings.HasPrefix(k, s3_constants.AmzObjectTaggingPrefix) {
+ 			continue
+ 		}
+-		tagging.TagSet = append(tagging.TagSet, &s3.Tag{
++		tagging.TagSet = append(tagging.TagSet, s3types.Tag{
+ 			Key:   aws.String(k[len(s3_constants.AmzObjectTaggingPrefix):]),
+ 			Value: aws.String(string(v)),
+ 		})
+ 	}
+ 	sort.Slice(tagging.TagSet, func(i, j int) bool {
+-		return aws.StringValue(tagging.TagSet[i].Key) < aws.StringValue(tagging.TagSet[j].Key)
++		return aws.ToString(tagging.TagSet[i].Key) < aws.ToString(tagging.TagSet[j].Key)
+ 	})
+ 	return tagging
+ }
+@@ -669,7 +706,7 @@ func (s *s3RemoteStorageClient) UpdateFileMetadata(loc *remote_pb.RemoteStorageL
+ 		} else {
+ 			// the replace directive drops everything not resent, so read the
+ 			// object's current metadata and carry it over
+-			headOut, headErr := s.conn.HeadObject(&s3.HeadObjectInput{
++			headOut, headErr := s.conn.HeadObject(context.Background(), &s3.HeadObjectInput{
+ 				Bucket: aws.String(loc.Bucket),
+ 				Key:    aws.String(key),
+ 			})
+@@ -680,7 +717,7 @@ func (s *s3RemoteStorageClient) UpdateFileMetadata(loc *remote_pb.RemoteStorageL
+ 				Bucket:                  aws.String(loc.Bucket),
+ 				Key:                     aws.String(key),
+ 				CopySource:              aws.String(s3CopySource(loc.Bucket, key)),
+-				MetadataDirective:       aws.String(s3.MetadataDirectiveReplace),
++				MetadataDirective:       s3types.MetadataDirectiveReplace,
+ 				Metadata:                headOut.Metadata,
+ 				ContentType:             headOut.ContentType,
+ 				CacheControl:            headOut.CacheControl,
+@@ -691,11 +728,7 @@ func (s *s3RemoteStorageClient) UpdateFileMetadata(loc *remote_pb.RemoteStorageL
+ 				SSEKMSKeyId:             headOut.SSEKMSKeyId,
+ 				StorageClass:            headOut.StorageClass,
+ 			}
+-			if headOut.Expires != nil {
+-				if expires, parseErr := http.ParseTime(*headOut.Expires); parseErr == nil {
+-					copyInput.Expires = aws.Time(expires)
+-				}
+-			}
++			copyInput.Expires = headOut.Expires
+ 			if encoding != "" {
+ 				copyInput.ContentEncoding = aws.String(encoding)
+ 			}
+@@ -703,9 +736,9 @@ func (s *s3RemoteStorageClient) UpdateFileMetadata(loc *remote_pb.RemoteStorageL
+ 				copyInput.ContentType = aws.String(newEntry.Attributes.Mime)
+ 			}
+ 			if s.conf.S3StorageClass != "" {
+-				copyInput.StorageClass = aws.String(s.conf.S3StorageClass)
++				copyInput.StorageClass = s3types.StorageClass(s.conf.S3StorageClass)
+ 			}
+-			copyOutput, copyErr := s.conn.CopyObject(copyInput)
++			copyOutput, copyErr := s.conn.CopyObject(context.Background(), copyInput)
+ 			if copyErr != nil {
+ 				return nil, fmt.Errorf("update content encoding of %s/%s: %w", loc.Bucket, key, copyErr)
+ 			}
+@@ -714,10 +747,10 @@ func (s *s3RemoteStorageClient) UpdateFileMetadata(loc *remote_pb.RemoteStorageL
+ 			// could describe a replacement that landed in between
+ 			remoteEntry = &filer_pb.RemoteEntry{
+ 				StorageName: s.conf.Name,
+-				RemoteSize:  aws.Int64Value(headOut.ContentLength),
++				RemoteSize:  aws.ToInt64(headOut.ContentLength),
+ 			}
+ 			if result := copyOutput.CopyObjectResult; result != nil {
+-				remoteEntry.RemoteETag = aws.StringValue(result.ETag)
++				remoteEntry.RemoteETag = aws.ToString(result.ETag)
+ 				if result.LastModified != nil {
+ 					remoteEntry.RemoteMtime = result.LastModified.Unix()
+ 				}
+@@ -739,13 +772,13 @@ func (s *s3RemoteStorageClient) UpdateFileMetadata(loc *remote_pb.RemoteStorageL
+ 		return
+ 	}
+ 	if len(tagging.TagSet) > 0 {
+-		_, err = s.conn.PutObjectTagging(&s3.PutObjectTaggingInput{
++		_, err = s.conn.PutObjectTagging(context.Background(), &s3.PutObjectTaggingInput{
+ 			Bucket:  aws.String(loc.Bucket),
+ 			Key:     aws.String(loc.Path[1:]),
+ 			Tagging: tagging,
+ 		})
+ 	} else {
+-		_, err = s.conn.DeleteObjectTagging(&s3.DeleteObjectTaggingInput{
++		_, err = s.conn.DeleteObjectTagging(context.Background(), &s3.DeleteObjectTaggingInput{
+ 			Bucket: aws.String(loc.Bucket),
+ 			Key:    aws.String(loc.Path[1:]),
+ 		})
+@@ -765,25 +798,25 @@ const s3CopyPartSize = 512 * 1024 * 1024
+ // keeps the source's metadata.
+ func (s *s3RemoteStorageClient) CopyFile(src *remote_pb.RemoteStorageLocation, dst *remote_pb.RemoteStorageLocation) (remoteEntry *filer_pb.RemoteEntry, err error) {
+ 	srcKey, dstKey := src.Path[1:], dst.Path[1:]
+-	headOut, err := s.conn.HeadObject(&s3.HeadObjectInput{
++	headOut, err := s.conn.HeadObject(context.Background(), &s3.HeadObjectInput{
+ 		Bucket: aws.String(src.Bucket),
+ 		Key:    aws.String(srcKey),
+ 	})
+ 	if err != nil {
+-		if reqErr, ok := err.(awserr.RequestFailure); ok && reqErr.StatusCode() == http.StatusNotFound {
++		if httpStatus(err) == http.StatusNotFound {
+ 			return nil, remote_storage.ErrRemoteObjectNotFound
+ 		}
+ 		return nil, fmt.Errorf("stat s3 %s/%s before copy: %w", src.Bucket, srcKey, err)
+ 	}
+ 	copySource := aws.String(s3CopySource(src.Bucket, srcKey))
+-	var storageClass *string
++	var storageClass s3types.StorageClass
+ 	if s.conf.S3StorageClass != "" {
+-		storageClass = aws.String(s.conf.S3StorageClass)
++		storageClass = s3types.StorageClass(s.conf.S3StorageClass)
+ 	}
+ 
+-	if size := aws.Int64Value(headOut.ContentLength); size <= s3CopyObjectSizeLimit {
++	if size := aws.ToInt64(headOut.ContentLength); size <= s3CopyObjectSizeLimit {
+ 		// a copy takes the bucket's default encryption unless told otherwise
+-		if _, err = s.conn.CopyObject(&s3.CopyObjectInput{
++		if _, err = s.conn.CopyObject(context.Background(), &s3.CopyObjectInput{
+ 			Bucket:               aws.String(dst.Bucket),
+ 			Key:                  aws.String(dstKey),
+ 			CopySource:           copySource,
+@@ -813,13 +846,13 @@ func s3CopySource(bucket, key string) string {
+ // s3TaggingHeader encodes tags as the query string x-amz-tagging takes, with
+ // spaces as %20: a + is read back as a space by some implementations and
+ // literally by others
+-func s3TaggingHeader(tagSet []*s3.Tag) string {
++func s3TaggingHeader(tagSet []s3types.Tag) string {
+ 	escape := func(s string) string {
+ 		return strings.ReplaceAll(url.QueryEscape(s), "+", "%20")
+ 	}
+ 	pairs := make([]string, 0, len(tagSet))
+ 	for _, tag := range tagSet {
+-		pairs = append(pairs, escape(aws.StringValue(tag.Key))+"="+escape(aws.StringValue(tag.Value)))
++		pairs = append(pairs, escape(aws.ToString(tag.Key))+"="+escape(aws.ToString(tag.Value)))
+ 	}
+ 	return strings.Join(pairs, "&")
+ }
+@@ -828,7 +861,7 @@ func s3TaggingHeader(tagSet []*s3.Tag) string {
+ // multipart upload does not inherit the source's metadata or tags, so they are
+ // carried over like CopyObject would: metadata from the source's HeadObject,
+ // tags when the remote supports tagging.
+-func (s *s3RemoteStorageClient) multipartCopy(headOut *s3.HeadObjectOutput, src *remote_pb.RemoteStorageLocation, copySource *string, size int64, bucket, key string, storageClass *string) error {
++func (s *s3RemoteStorageClient) multipartCopy(headOut *s3.HeadObjectOutput, src *remote_pb.RemoteStorageLocation, copySource *string, size int64, bucket, key string, storageClass s3types.StorageClass) error {
+ 	createInput := &s3.CreateMultipartUploadInput{
+ 		Bucket:                  aws.String(bucket),
+ 		Key:                     aws.String(key),
+@@ -843,13 +876,9 @@ func (s *s3RemoteStorageClient) multipartCopy(headOut *s3.HeadObjectOutput, src
+ 		SSEKMSKeyId:             headOut.SSEKMSKeyId,
+ 		StorageClass:            storageClass,
+ 	}
+-	if headOut.Expires != nil {
+-		if expires, parseErr := http.ParseTime(*headOut.Expires); parseErr == nil {
+-			createInput.Expires = aws.Time(expires)
+-		}
+-	}
++	createInput.Expires = headOut.Expires
+ 	if s.conf.S3SupportTagging {
+-		tagOut, tagErr := s.conn.GetObjectTagging(&s3.GetObjectTaggingInput{
++		tagOut, tagErr := s.conn.GetObjectTagging(context.Background(), &s3.GetObjectTaggingInput{
+ 			Bucket: aws.String(src.Bucket),
+ 			Key:    aws.String(src.Path[1:]),
+ 		})
+@@ -860,7 +889,7 @@ func (s *s3RemoteStorageClient) multipartCopy(headOut *s3.HeadObjectOutput, src
+ 			createInput.Tagging = aws.String(s3TaggingHeader(tagOut.TagSet))
+ 		}
+ 	}
+-	createOut, err := s.conn.CreateMultipartUpload(createInput)
++	createOut, err := s.conn.CreateMultipartUpload(context.Background(), createInput)
+ 	if err != nil {
+ 		return err
+ 	}
+@@ -869,13 +898,13 @@ func (s *s3RemoteStorageClient) multipartCopy(headOut *s3.HeadObjectOutput, src
+ 	for partSize*10000 < size {
+ 		partSize *= 2
+ 	}
+-	var parts []*s3.CompletedPart
++	var parts []s3types.CompletedPart
+ 	for offset, partNumber := int64(0), int64(1); offset < size; offset, partNumber = offset+partSize, partNumber+1 {
+-		partOut, partErr := s.conn.UploadPartCopy(&s3.UploadPartCopyInput{
++		partOut, partErr := s.conn.UploadPartCopy(context.Background(), &s3.UploadPartCopyInput{
+ 			Bucket:          aws.String(bucket),
+ 			Key:             aws.String(key),
+ 			UploadId:        createOut.UploadId,
+-			PartNumber:      aws.Int64(partNumber),
++			PartNumber:      aws.Int32(int32(partNumber)),
+ 			CopySource:      copySource,
+ 			CopySourceRange: aws.String(fmt.Sprintf("bytes=%d-%d", offset, min(offset+partSize, size)-1)),
+ 			// every part from the object the HeadObject saw, not a mix of
+@@ -889,17 +918,17 @@ func (s *s3RemoteStorageClient) multipartCopy(headOut *s3.HeadObjectOutput, src
+ 			s.abortMultipartUpload(bucket, key, createOut.UploadId)
+ 			return fmt.Errorf("copy part %d: %w", partNumber, partErr)
+ 		}
+-		parts = append(parts, &s3.CompletedPart{
++		parts = append(parts, s3types.CompletedPart{
+ 			ETag:       partOut.CopyPartResult.ETag,
+-			PartNumber: aws.Int64(partNumber),
++			PartNumber: aws.Int32(int32(partNumber)),
+ 		})
+ 	}
+ 
+-	if _, err = s.conn.CompleteMultipartUpload(&s3.CompleteMultipartUploadInput{
++	if _, err = s.conn.CompleteMultipartUpload(context.Background(), &s3.CompleteMultipartUploadInput{
+ 		Bucket:          aws.String(bucket),
+ 		Key:             aws.String(key),
+ 		UploadId:        createOut.UploadId,
+-		MultipartUpload: &s3.CompletedMultipartUpload{Parts: parts},
++		MultipartUpload: &s3types.CompletedMultipartUpload{Parts: parts},
+ 	}); err != nil {
+ 		s.abortMultipartUpload(bucket, key, createOut.UploadId)
+ 		return err
+@@ -908,7 +937,7 @@ func (s *s3RemoteStorageClient) multipartCopy(headOut *s3.HeadObjectOutput, src
+ }
+ 
+ func (s *s3RemoteStorageClient) abortMultipartUpload(bucket, key string, uploadId *string) {
+-	if _, err := s.conn.AbortMultipartUpload(&s3.AbortMultipartUploadInput{
++	if _, err := s.conn.AbortMultipartUpload(context.Background(), &s3.AbortMultipartUploadInput{
+ 		Bucket:   aws.String(bucket),
+ 		Key:      aws.String(key),
+ 		UploadId: uploadId,
+@@ -918,7 +947,7 @@ func (s *s3RemoteStorageClient) abortMultipartUpload(bucket, key string, uploadI
+ }
+ 
+ func (s *s3RemoteStorageClient) DeleteFile(loc *remote_pb.RemoteStorageLocation) (err error) {
+-	_, err = s.conn.DeleteObject(&s3.DeleteObjectInput{
++	_, err = s.conn.DeleteObject(context.Background(), &s3.DeleteObjectInput{
+ 		Bucket: aws.String(loc.Bucket),
+ 		Key:    aws.String(loc.Path[1:]),
+ 	})
+@@ -943,21 +972,17 @@ func (s *s3RemoteStorageClient) DeleteFileIfUnchanged(loc *remote_pb.RemoteStora
+ 	if live.RemoteETag == "" {
+ 		return true, s.DeleteFile(loc)
+ 	}
+-	req, _ := s.conn.DeleteObjectRequest(&s3.DeleteObjectInput{
+-		Bucket: aws.String(loc.Bucket),
+-		Key:    aws.String(loc.Path[1:]),
+-	})
+-	req.Handlers.Build.PushBack(func(r *request.Request) {
+-		r.HTTPRequest.Header.Set("If-Match", live.RemoteETag)
++	_, err = s.conn.DeleteObject(context.Background(), &s3.DeleteObjectInput{
++		Bucket:  aws.String(loc.Bucket),
++		Key:     aws.String(loc.Path[1:]),
++		IfMatch: aws.String(live.RemoteETag),
+ 	})
+-	if err := req.Send(); err != nil {
+-		if reqErr, ok := err.(awserr.RequestFailure); ok {
+-			switch reqErr.StatusCode() {
+-			case http.StatusPreconditionFailed:
+-				return false, nil
+-			case http.StatusNotFound:
+-				return true, nil
+-			}
++	if err != nil {
++		switch httpStatus(err) {
++		case http.StatusPreconditionFailed:
++			return false, nil
++		case http.StatusNotFound:
++			return true, nil
+ 		}
+ 		return false, fmt.Errorf("delete s3 %s%s: %w", loc.Bucket, loc.Path, err)
+ 	}
+@@ -965,7 +990,7 @@ func (s *s3RemoteStorageClient) DeleteFileIfUnchanged(loc *remote_pb.RemoteStora
+ }
+ 
+ func (s *s3RemoteStorageClient) ListBuckets() (buckets []*remote_storage.Bucket, err error) {
+-	resp, err := s.conn.ListBuckets(&s3.ListBucketsInput{})
++	resp, err := s.conn.ListBuckets(context.Background(), &s3.ListBucketsInput{})
+ 	if err != nil {
+ 		return nil, fmt.Errorf("list buckets: %w", err)
+ 	}
+@@ -979,8 +1004,7 @@ func (s *s3RemoteStorageClient) ListBuckets() (buckets []*remote_storage.Bucket,
+ }
+ 
+ func (s *s3RemoteStorageClient) CreateBucket(name string) (err error) {
+-	_, err = s.conn.CreateBucket(&s3.CreateBucketInput{
+-		ACL:                        nil,
++	_, err = s.conn.CreateBucket(context.Background(), &s3.CreateBucketInput{
+ 		Bucket:                     aws.String(name),
+ 		CreateBucketConfiguration:  nil,
+ 		GrantFullControl:           nil,
+@@ -997,7 +1021,7 @@ func (s *s3RemoteStorageClient) CreateBucket(name string) (err error) {
+ }
+ 
+ func (s *s3RemoteStorageClient) DeleteBucket(name string) (err error) {
+-	_, err = s.conn.DeleteBucket(&s3.DeleteBucketInput{
++	_, err = s.conn.DeleteBucket(context.Background(), &s3.DeleteBucketInput{
+ 		Bucket: aws.String(name),
+ 	})
+ 	if err != nil {
+diff --git a/weed/remote_storage/s3/s3_storage_client_copy_test.go b/weed/remote_storage/s3/s3_storage_client_copy_test.go
+index a20fbf57a..cf21a5e62 100644
+--- a/weed/remote_storage/s3/s3_storage_client_copy_test.go
++++ b/weed/remote_storage/s3/s3_storage_client_copy_test.go
+@@ -1,14 +1,16 @@
+ package s3
+ 
+ import (
++	"context"
+ 	"errors"
+ 	"net/http"
+ 	"testing"
++	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	awss3 "github.com/aws/aws-sdk-go/service/s3"
+-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
++	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
++	smithyhttp "github.com/aws/smithy-go/transport/http"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
+ 	"github.com/stretchr/testify/require"
+@@ -17,7 +19,7 @@ import (
+ // copyObjectMock serves HeadObject for a source of size bytes and records the
+ // copy calls.
+ type copyObjectMock struct {
+-	s3iface.S3API
++	s3API
+ 	size        int64
+ 	missing     bool
+ 	partErr     error
+@@ -29,53 +31,54 @@ type copyObjectMock struct {
+ 	aborted     bool
+ }
+ 
+-func (m *copyObjectMock) HeadObject(input *awss3.HeadObjectInput) (*awss3.HeadObjectOutput, error) {
++func (m *copyObjectMock) HeadObject(_ context.Context, input *awss3.HeadObjectInput, _ ...func(*awss3.Options)) (*awss3.HeadObjectOutput, error) {
+ 	if m.missing {
+-		return nil, awserr.NewRequestFailure(awserr.New("NotFound", "not found", nil), http.StatusNotFound, "")
++		return nil, &smithyhttp.ResponseError{Response: &smithyhttp.Response{Response: &http.Response{StatusCode: http.StatusNotFound}}, Err: errors.New("not found")}
+ 	}
++	expires := time.Date(2026, time.October, 21, 7, 28, 0, 0, time.UTC)
+ 	return &awss3.HeadObjectOutput{
+ 		ContentLength:           aws.Int64(m.size),
+ 		ContentType:             aws.String("image/jpeg"),
+-		Expires:                 aws.String("Wed, 21 Oct 2026 07:28:00 GMT"),
++		Expires:                 &expires,
+ 		WebsiteRedirectLocation: aws.String("/elsewhere"),
+-		ServerSideEncryption:    aws.String("aws:kms"),
++		ServerSideEncryption:    s3types.ServerSideEncryptionAwsKms,
+ 		SSEKMSKeyId:             aws.String("key-1"),
+-		ETag:                    aws.String(`"etag-` + aws.StringValue(input.Key) + `"`),
++		ETag:                    aws.String(`"etag-` + aws.ToString(input.Key) + `"`),
+ 	}, nil
+ }
+ 
+-func (m *copyObjectMock) GetObjectTagging(input *awss3.GetObjectTaggingInput) (*awss3.GetObjectTaggingOutput, error) {
++func (m *copyObjectMock) GetObjectTagging(_ context.Context, input *awss3.GetObjectTaggingInput, _ ...func(*awss3.Options)) (*awss3.GetObjectTaggingOutput, error) {
+ 	m.tagInputs = append(m.tagInputs, input)
+-	return &awss3.GetObjectTaggingOutput{TagSet: []*awss3.Tag{
++	return &awss3.GetObjectTaggingOutput{TagSet: []s3types.Tag{
+ 		{Key: aws.String("album"), Value: aws.String("2026 & co")},
+ 		{Key: aws.String("a+b"), Value: aws.String("x=y")},
+ 	}}, nil
+ }
+ 
+-func (m *copyObjectMock) CopyObject(input *awss3.CopyObjectInput) (*awss3.CopyObjectOutput, error) {
++func (m *copyObjectMock) CopyObject(_ context.Context, input *awss3.CopyObjectInput, _ ...func(*awss3.Options)) (*awss3.CopyObjectOutput, error) {
+ 	m.copyInputs = append(m.copyInputs, input)
+ 	return &awss3.CopyObjectOutput{}, nil
+ }
+ 
+-func (m *copyObjectMock) CreateMultipartUpload(input *awss3.CreateMultipartUploadInput) (*awss3.CreateMultipartUploadOutput, error) {
++func (m *copyObjectMock) CreateMultipartUpload(_ context.Context, input *awss3.CreateMultipartUploadInput, _ ...func(*awss3.Options)) (*awss3.CreateMultipartUploadOutput, error) {
+ 	m.createInput = input
+ 	return &awss3.CreateMultipartUploadOutput{UploadId: aws.String("upload-1")}, nil
+ }
+ 
+-func (m *copyObjectMock) UploadPartCopy(input *awss3.UploadPartCopyInput) (*awss3.UploadPartCopyOutput, error) {
++func (m *copyObjectMock) UploadPartCopy(_ context.Context, input *awss3.UploadPartCopyInput, _ ...func(*awss3.Options)) (*awss3.UploadPartCopyOutput, error) {
+ 	m.partInputs = append(m.partInputs, input)
+ 	if m.partErr != nil && len(m.partInputs) == 2 {
+ 		return nil, m.partErr
+ 	}
+-	return &awss3.UploadPartCopyOutput{CopyPartResult: &awss3.CopyPartResult{ETag: aws.String(`"part"`)}}, nil
++	return &awss3.UploadPartCopyOutput{CopyPartResult: &s3types.CopyPartResult{ETag: aws.String(`"part"`)}}, nil
+ }
+ 
+-func (m *copyObjectMock) CompleteMultipartUpload(input *awss3.CompleteMultipartUploadInput) (*awss3.CompleteMultipartUploadOutput, error) {
++func (m *copyObjectMock) CompleteMultipartUpload(_ context.Context, input *awss3.CompleteMultipartUploadInput, _ ...func(*awss3.Options)) (*awss3.CompleteMultipartUploadOutput, error) {
+ 	m.completed = input
+ 	return &awss3.CompleteMultipartUploadOutput{}, nil
+ }
+ 
+-func (m *copyObjectMock) AbortMultipartUpload(*awss3.AbortMultipartUploadInput) (*awss3.AbortMultipartUploadOutput, error) {
++func (m *copyObjectMock) AbortMultipartUpload(context.Context, *awss3.AbortMultipartUploadInput, ...func(*awss3.Options)) (*awss3.AbortMultipartUploadOutput, error) {
+ 	m.aborted = true
+ 	return &awss3.AbortMultipartUploadOutput{}, nil
+ }
+@@ -100,10 +103,10 @@ func TestS3CopyFileUsesCopyObjectUpToTheLimit(t *testing.T) {
+ 	require.NoError(t, err)
+ 
+ 	require.Len(t, mock.copyInputs, 1)
+-	require.Equal(t, "bucket/src/a%20b.jpg", aws.StringValue(mock.copyInputs[0].CopySource))
+-	require.Equal(t, "dst/a b.jpg", aws.StringValue(mock.copyInputs[0].Key))
+-	require.Equal(t, "aws:kms", aws.StringValue(mock.copyInputs[0].ServerSideEncryption))
+-	require.Equal(t, "key-1", aws.StringValue(mock.copyInputs[0].SSEKMSKeyId))
++	require.Equal(t, "bucket/src/a%20b.jpg", aws.ToString(mock.copyInputs[0].CopySource))
++	require.Equal(t, "dst/a b.jpg", aws.ToString(mock.copyInputs[0].Key))
++	require.Equal(t, s3types.ServerSideEncryptionAwsKms, mock.copyInputs[0].ServerSideEncryption)
++	require.Equal(t, "key-1", aws.ToString(mock.copyInputs[0].SSEKMSKeyId))
+ 	require.Nil(t, mock.createInput)
+ 	// the RemoteEntry describes the destination
+ 	require.Equal(t, `"etag-dst/a b.jpg"`, remoteEntry.RemoteETag)
+@@ -119,22 +122,22 @@ func TestS3CopyFileCopiesLargeObjectsInParts(t *testing.T) {
+ 
+ 	require.Empty(t, mock.copyInputs)
+ 	require.NotNil(t, mock.createInput)
+-	require.Equal(t, "image/jpeg", aws.StringValue(mock.createInput.ContentType))
+-	require.Equal(t, "/elsewhere", aws.StringValue(mock.createInput.WebsiteRedirectLocation))
+-	require.Equal(t, "aws:kms", aws.StringValue(mock.createInput.ServerSideEncryption))
+-	require.Equal(t, "key-1", aws.StringValue(mock.createInput.SSEKMSKeyId))
+-	require.Equal(t, int64(1792567680), aws.TimeValue(mock.createInput.Expires).Unix())
++	require.Equal(t, "image/jpeg", aws.ToString(mock.createInput.ContentType))
++	require.Equal(t, "/elsewhere", aws.ToString(mock.createInput.WebsiteRedirectLocation))
++	require.Equal(t, s3types.ServerSideEncryptionAwsKms, mock.createInput.ServerSideEncryption)
++	require.Equal(t, "key-1", aws.ToString(mock.createInput.SSEKMSKeyId))
++	require.Equal(t, int64(1792567680), aws.ToTime(mock.createInput.Expires).Unix())
+ 	// tags only where the remote supports tagging
+ 	require.Empty(t, mock.tagInputs)
+ 	require.Nil(t, mock.createInput.Tagging)
+ 	require.Len(t, mock.partInputs, 11)
+-	require.Equal(t, "bytes=0-536870911", aws.StringValue(mock.partInputs[0].CopySourceRange))
+-	require.Equal(t, "bytes=5368709120-5368709120", aws.StringValue(mock.partInputs[10].CopySourceRange))
++	require.Equal(t, "bytes=0-536870911", aws.ToString(mock.partInputs[0].CopySourceRange))
++	require.Equal(t, "bytes=5368709120-5368709120", aws.ToString(mock.partInputs[10].CopySourceRange))
+ 	for _, part := range mock.partInputs {
+-		require.Equal(t, `"etag-src/a b.jpg"`, aws.StringValue(part.CopySourceIfMatch))
++		require.Equal(t, `"etag-src/a b.jpg"`, aws.ToString(part.CopySourceIfMatch))
+ 	}
+ 	require.Len(t, mock.completed.MultipartUpload.Parts, 11)
+-	require.Equal(t, int64(11), aws.Int64Value(mock.completed.MultipartUpload.Parts[10].PartNumber))
++	require.Equal(t, int32(11), aws.ToInt32(mock.completed.MultipartUpload.Parts[10].PartNumber))
+ 	require.False(t, mock.aborted)
+ }
+ 
+@@ -147,8 +150,8 @@ func TestS3CopyFileCarriesTagsIntoAMultipartCopy(t *testing.T) {
+ 	require.NoError(t, err)
+ 
+ 	require.Len(t, mock.tagInputs, 1)
+-	require.Equal(t, "src/a b.jpg", aws.StringValue(mock.tagInputs[0].Key))
+-	require.Equal(t, "album=2026%20%26%20co&a%2Bb=x%3Dy", aws.StringValue(mock.createInput.Tagging))
++	require.Equal(t, "src/a b.jpg", aws.ToString(mock.tagInputs[0].Key))
++	require.Equal(t, "album=2026%20%26%20co&a%2Bb=x%3Dy", aws.ToString(mock.createInput.Tagging))
+ }
+ 
+ func TestS3CopyFileAbortsAFailedMultipartCopy(t *testing.T) {
+diff --git a/weed/remote_storage/s3/s3_storage_client_test.go b/weed/remote_storage/s3/s3_storage_client_test.go
+index 06c1eb2b3..db7fc9761 100644
+--- a/weed/remote_storage/s3/s3_storage_client_test.go
++++ b/weed/remote_storage/s3/s3_storage_client_test.go
+@@ -11,13 +11,10 @@ import (
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/client/metadata"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/request"
+-	awss3 "github.com/aws/aws-sdk-go/service/s3"
+-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
++	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
++	"github.com/aws/smithy-go"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
+@@ -40,9 +37,9 @@ func TestS3MakeUsesAnonymousCredentialsWhenKeysAreEmpty(t *testing.T) {
+ 	client, ok := remoteClient.(*s3RemoteStorageClient)
+ 	require.True(t, ok)
+ 
+-	s3Client, ok := client.conn.(*awss3.S3)
++	s3Client, ok := client.conn.(*s3TransferClient)
+ 	require.True(t, ok)
+-	require.Same(t, credentials.AnonymousCredentials, s3Client.Config.Credentials)
++	require.Nil(t, s3Client.Options().Credentials)
+ }
+ 
+ func clearAWSCredentialEnv(t *testing.T) {
+@@ -64,7 +61,6 @@ func clearAWSCredentialEnv(t *testing.T) {
+ func TestS3MakeUsesDefaultCredentialChainWhenKeysAreEmptyAndSourceIsConfigured(t *testing.T) {
+ 	for name, value := range map[string]string{
+ 		"AWS_ACCESS_KEY_ID":                      "env-access",
+-		"AWS_PROFILE":                            "some-profile",
+ 		"AWS_WEB_IDENTITY_TOKEN_FILE":            "/var/run/secrets/token",
+ 		"AWS_CONTAINER_CREDENTIALS_FULL_URI":     "http://127.0.0.1:1/creds",
+ 		"AWS_CONTAINER_CREDENTIALS_RELATIVE_URI": "/creds",
+@@ -82,9 +78,7 @@ func TestS3MakeUsesDefaultCredentialChainWhenKeysAreEmptyAndSourceIsConfigured(t
+ 			})
+ 			require.NoError(t, err)
+ 
+-			s3Client, ok := remoteClient.(*s3RemoteStorageClient).conn.(*awss3.S3)
+-			require.True(t, ok)
+-			require.NotSame(t, credentials.AnonymousCredentials, s3Client.Config.Credentials)
++			require.True(t, UsesDefaultCredentialChain(remoteClient.(*s3RemoteStorageClient).conf))
+ 		})
+ 	}
+ }
+@@ -105,10 +99,9 @@ func TestS3MakeResolvesEnvCredentialsWithCustomHTTPClient(t *testing.T) {
+ 	}, &http.Client{})
+ 	require.NoError(t, err)
+ 
+-	s3Client, ok := remoteClient.(*s3RemoteStorageClient).conn.(*awss3.S3)
++	s3Client, ok := remoteClient.(*s3RemoteStorageClient).conn.(*s3TransferClient)
+ 	require.True(t, ok)
+-	require.NotSame(t, credentials.AnonymousCredentials, s3Client.Config.Credentials)
+-	value, err := s3Client.Config.Credentials.Get()
++	value, err := s3Client.Options().Credentials.Retrieve(context.Background())
+ 	require.NoError(t, err)
+ 	require.Equal(t, "env-access", value.AccessKeyID)
+ }
+@@ -130,16 +123,53 @@ func TestS3MakeUsesStaticCredentialsWhenKeysAreProvided(t *testing.T) {
+ 	client, ok := remoteClient.(*s3RemoteStorageClient)
+ 	require.True(t, ok)
+ 
+-	s3Client, ok := client.conn.(*awss3.S3)
++	s3Client, ok := client.conn.(*s3TransferClient)
+ 	require.True(t, ok)
+-	require.NotSame(t, credentials.AnonymousCredentials, s3Client.Config.Credentials)
+ 
+-	credValue, err := s3Client.Config.Credentials.Get()
++	credValue, err := s3Client.Options().Credentials.Retrieve(context.Background())
+ 	require.NoError(t, err)
+ 	require.Equal(t, conf.S3AccessKey, credValue.AccessKeyID)
+ 	require.Equal(t, conf.S3SecretKey, credValue.SecretAccessKey)
+ }
+ 
++func TestS3MakeRejectsAmbiguousBindings(t *testing.T) {
++	base := remote_pb.RemoteConf{
++		Type:        "s3",
++		S3Region:    "us-east-1",
++		S3Endpoint:  "https://s3.example",
++		S3AccessKey: "access",
++		S3SecretKey: "secret",
++	}
++	for _, tc := range []struct {
++		name   string
++		mutate func(*remote_pb.RemoteConf)
++		want   string
++	}{
++		{"missing region and endpoint", func(c *remote_pb.RemoteConf) { c.S3Region, c.S3Endpoint = "", "" }, "explicit region"},
++		{"partial credentials", func(c *remote_pb.RemoteConf) { c.S3SecretKey = "" }, "both static credential fields"},
++		{"endpoint credentials", func(c *remote_pb.RemoteConf) { c.S3Endpoint = "https://user:pass@s3.example" }, "explicit HTTP(S) binding"},
++		{"endpoint query", func(c *remote_pb.RemoteConf) { c.S3Endpoint = "https://s3.example?tenant=x" }, "explicit HTTP(S) binding"},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			conf := base
++			tc.mutate(&conf)
++			_, err := s3RemoteStorageMaker{}.Make(&conf)
++			require.ErrorContains(t, err, tc.want)
++		})
++	}
++}
++
++func TestS3MakeRejectsImplicitEndpointOverride(t *testing.T) {
++	t.Setenv("AWS_ENDPOINT_URL_S3", "https://implicit.example")
++	_, err := s3RemoteStorageMaker{}.Make(&remote_pb.RemoteConf{
++		Type:        "s3",
++		S3Region:    "us-east-1",
++		S3AccessKey: "access",
++		S3SecretKey: "secret",
++	})
++	require.ErrorContains(t, err, "endpoint override requires an explicit binding")
++}
++
+ func TestS3RemoteStorageClientImplementsInterface(t *testing.T) {
+ 	var _ remote_storage.RemoteStorageClient = (*s3RemoteStorageClient)(nil)
+ }
+@@ -151,7 +181,7 @@ func TestS3ErrRemoteObjectNotFoundIsAccessible(t *testing.T) {
+ 
+ // removeDirectoryMock serves canned listing pages and records the delete batches.
+ type removeDirectoryMock struct {
+-	s3iface.S3API
++	s3API
+ 	pages        []*awss3.ListObjectsV2Output
+ 	listInputs   []*awss3.ListObjectsV2Input
+ 	deleteInputs []*awss3.DeleteObjectsInput
+@@ -159,39 +189,40 @@ type removeDirectoryMock struct {
+ 	deleteErr    error
+ }
+ 
+-func (m *removeDirectoryMock) ListObjectsV2Pages(input *awss3.ListObjectsV2Input, fn func(*awss3.ListObjectsV2Output, bool) bool) error {
++func (m *removeDirectoryMock) ListObjectsV2(_ context.Context, input *awss3.ListObjectsV2Input, _ ...func(*awss3.Options)) (*awss3.ListObjectsV2Output, error) {
+ 	m.listInputs = append(m.listInputs, input)
+-	for i, page := range m.pages {
+-		if !fn(page, i == len(m.pages)-1) {
+-			return nil
+-		}
++	if len(m.pages) == 0 {
++		return &awss3.ListObjectsV2Output{}, nil
++	}
++	page := m.pages[0]
++	m.pages = m.pages[1:]
++	page.IsTruncated = aws.Bool(len(m.pages) > 0)
++	if len(m.pages) > 0 {
++		page.NextContinuationToken = aws.String(fmt.Sprintf("page-%d", len(m.listInputs)))
+ 	}
+-	return nil
++	return page, nil
+ }
+ 
+-func (m *removeDirectoryMock) DeleteObjectsRequest(input *awss3.DeleteObjectsInput) (*request.Request, *awss3.DeleteObjectsOutput) {
++func (m *removeDirectoryMock) DeleteObjects(_ context.Context, input *awss3.DeleteObjectsInput, _ ...func(*awss3.Options)) (*awss3.DeleteObjectsOutput, error) {
+ 	m.deleteInputs = append(m.deleteInputs, input)
+ 	out := m.deleteResp
+ 	if out == nil {
+ 		out = &awss3.DeleteObjectsOutput{}
+ 	}
+-	req := request.New(aws.Config{}, metadata.ClientInfo{}, request.Handlers{}, nil,
+-		&request.Operation{Name: "DeleteObjects"}, input, out)
+-	req.Error = m.deleteErr
+-	return req, out
++	return out, m.deleteErr
+ }
+ 
+ func listPage(keys ...string) *awss3.ListObjectsV2Output {
+ 	page := &awss3.ListObjectsV2Output{}
+ 	for _, key := range keys {
+-		page.Contents = append(page.Contents, &awss3.Object{Key: aws.String(key)})
++		page.Contents = append(page.Contents, s3types.Object{Key: aws.String(key)})
+ 	}
+ 	return page
+ }
+ 
+ func deletedKeys(input *awss3.DeleteObjectsInput) (keys []string) {
+ 	for _, object := range input.Delete.Objects {
+-		keys = append(keys, aws.StringValue(object.Key))
++		keys = append(keys, aws.ToString(object.Key))
+ 	}
+ 	return
+ }
+@@ -208,9 +239,9 @@ func TestS3RemoveDirectoryDeletesEveryListedObject(t *testing.T) {
+ 
+ 	require.NoError(t, client.RemoveDirectory(loc))
+ 
+-	require.Len(t, mock.listInputs, 1)
++	require.Len(t, mock.listInputs, 2)
+ 	// without the trailing slash the listing would also match /testdir2
+-	require.Equal(t, "testdir/", aws.StringValue(mock.listInputs[0].Prefix))
++	require.Equal(t, "testdir/", aws.ToString(mock.listInputs[0].Prefix))
+ 	require.Len(t, mock.deleteInputs, 2)
+ 	require.Equal(t, []string{"testdir/a.bin", "testdir/sub/b.bin"}, deletedKeys(mock.deleteInputs[0]))
+ 	require.Equal(t, []string{"testdir/z.bin"}, deletedKeys(mock.deleteInputs[1]))
+@@ -250,7 +281,7 @@ func TestS3RemoveDirectoryReturnsPerKeyError(t *testing.T) {
+ 	mock := &removeDirectoryMock{
+ 		pages: []*awss3.ListObjectsV2Output{listPage("testdir/a.bin", "testdir/b.bin")},
+ 		deleteResp: &awss3.DeleteObjectsOutput{
+-			Errors: []*awss3.Error{{
++			Errors: []s3types.Error{{
+ 				Key:     aws.String("testdir/a.bin"),
+ 				Code:    aws.String("InternalError"),
+ 				Message: aws.String("try again"),
+@@ -558,8 +589,8 @@ func TestS3ReadNotFoundClassification(t *testing.T) {
+ }
+ 
+ func TestIsNoSuchKey(t *testing.T) {
+-	require.True(t, isNoSuchKey(fmt.Errorf("download: %w", awserr.New(awss3.ErrCodeNoSuchKey, "missing", nil))))
+-	require.False(t, isNoSuchKey(awserr.New(awss3.ErrCodeNoSuchBucket, "missing", nil)))
++	require.True(t, isNoSuchKey(fmt.Errorf("download: %w", &smithy.GenericAPIError{Code: "NoSuchKey", Message: "missing"})))
++	require.False(t, isNoSuchKey(&smithy.GenericAPIError{Code: "NoSuchBucket", Message: "missing"}))
+ }
+ 
+ func TestS3MakeResolvesEnvCredentialsWhenAnonymousDefault(t *testing.T) {
+@@ -575,9 +606,9 @@ func TestS3MakeResolvesEnvCredentialsWhenAnonymousDefault(t *testing.T) {
+ 	})
+ 	require.NoError(t, err)
+ 
+-	s3Client, ok := remoteClient.(*s3RemoteStorageClient).conn.(*awss3.S3)
++	s3Client, ok := remoteClient.(*s3RemoteStorageClient).conn.(*s3TransferClient)
+ 	require.True(t, ok)
+-	value, err := s3Client.Config.Credentials.Get()
++	value, err := s3Client.Options().Credentials.Retrieve(context.Background())
+ 	require.NoError(t, err)
+ 	require.Equal(t, "env-access", value.AccessKeyID)
+ 	require.Equal(t, "env-secret", value.SecretAccessKey)
+diff --git a/weed/server/volume_grpc_remote_test.go b/weed/server/volume_grpc_remote_test.go
+index 50957a099..e69ca222d 100644
+--- a/weed/server/volume_grpc_remote_test.go
++++ b/weed/server/volume_grpc_remote_test.go
+@@ -1079,7 +1079,7 @@ func TestBuildGuardedRemoteStorageClientS3DefaultChainByCredentials(t *testing.T
+ 		t.Fatalf("a changed shared credentials file must build a new client (err %v)", err)
+ 	}
+ 	awsConfig := filepath.Join(t.TempDir(), "config")
+-	if err := os.WriteFile(awsConfig, []byte("[default]\nregion = us-east-1\n"), 0600); err != nil {
++	if err := os.WriteFile(awsConfig, []byte("[default]\nregion = us-east-1\n[profile other]\nregion = us-east-1\n[profile third]\nregion = us-east-1\n"), 0600); err != nil {
+ 		t.Fatal(err)
+ 	}
+ 	t.Setenv("AWS_CONFIG_FILE", awsConfig)
+@@ -1087,7 +1087,7 @@ func TestBuildGuardedRemoteStorageClientS3DefaultChainByCredentials(t *testing.T
+ 	if err != nil {
+ 		t.Fatalf("build: %v", err)
+ 	}
+-	if err := os.WriteFile(awsConfig, []byte("[default]\nregion = us-west-2\n"), 0600); err != nil {
++	if err := os.WriteFile(awsConfig, []byte("[default]\nregion = us-west-2\n[profile other]\nregion = us-east-1\n[profile third]\nregion = us-east-1\n"), 0600); err != nil {
+ 		t.Fatal(err)
+ 	}
+ 	if next, _ := BuildGuardedRemoteStorageClient(context.Background(), conf, false); next == withConfig {

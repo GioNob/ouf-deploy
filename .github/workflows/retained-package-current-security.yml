@@ -1,10 +1,6 @@
+# Qualificazione storica (2026-10-11): solo manuale, D-055
 name: Fresh retained package crypto and security
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/retained-package-current-security.yml
-      - scripts/verify-current-retained-security.py
   workflow_dispatch:
 permissions:
   contents: read

@@ -1,0 +1,122 @@
+{
+  "schema": "ouf.seaweedfs-ldap-mapstructure-v2-local.v1",
+  "status": "LOCAL_COMPATIBILITY_PASS_NEW_GENERATION_NOT_QUALIFIED",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "baseGeneration": 29,
+  "baseBinarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+  "patch": "patches/seaweedfs/4.52-ldap-mapstructure-v2.patch",
+  "patchSha256": "141785f5707cc2ae5dac6d53686c12bc84e13a918c7afd34aca437017ac27948",
+  "codeChange": "LDAP Initialize decoder import switches to already pinned github.com/go-viper/mapstructure/v2 v2.5.0; DecoderConfig unchanged.",
+  "rootGoModAndSumUnchanged": true,
+  "moduleAnnotationProposal": "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/module-classification-proposal.patch",
+  "moduleAnnotationProposalApplied": false,
+  "dependencyVersionsChanged": false,
+  "goToolchain": "go1.27.3",
+  "GOOS": "linux",
+  "GOARCH": "amd64",
+  "CGO_ENABLED": "0",
+  "GOPROXY": "off",
+  "baselineAndCandidate": {
+    "eachTestPassEvents": 49,
+    "eachTopLevelTests": 9,
+    "eachSubtests": 40,
+    "packages": 2,
+    "ldapTopLevelTests": 3,
+    "ldapSubtests": 18,
+    "rootIamTopLevelTests": 6,
+    "rootIamSubtests": 22,
+    "sameInputsAndExpectedValues": true
+  },
+  "coverage": [
+    "Actual LDAPProvider.Initialize with JSON maps",
+    "All JSON fields and nested attributes",
+    "Case-insensitive tags",
+    "Weak string/numeric/bool conversions",
+    "Duration strings/numeric nanoseconds/default-zero",
+    "Unknown root/nested keys ignored",
+    "Invalid types/durations rejected without initializing provider",
+    "Typed struct pointer fast path/defaults",
+    "Repeated initialization rejected without mutation"
+  ],
+  "diagnosticCompatibility": {
+    "wrapperPrefixPreserved": true,
+    "requiredFieldMessagesPreserved": true,
+    "failingFieldReported": true,
+    "vendorDiagnosticTextByteIdentical": false,
+    "observedDifference": "v1 aggregate errors use 1 error(s) decoding; v2 uses decoding failed due to the following error(s), and root type wording also changes. No runtime consumer error-text dependency is claimed."
+  },
+  "productionGraph": {
+    "packages": 1811,
+    "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+    "importPathSetIdenticalToGeneration29": true,
+    "oldMapstructurePresent": true,
+    "oldModuleImporters": [
+      "github.com/hashicorp/vault/api@v1.23.0",
+      "github.com/hashicorp/go-secure-stdlib/parseutil@v0.2.0"
+    ],
+    "sourceDirectImportersAfter": 0,
+    "globalOldModuleRemovalClaimed": false
+  },
+  "localBuild": {
+    "command": "go build -mod=readonly -trimpath -o ../weed-mapstructure30 ./weed",
+    "success": true,
+    "binarySha256": "9f75d14d87c9f5326fcc2f9b44bce9baa05f796a403bf4935931787ac6d6fca2",
+    "binaryBytes": 223545178,
+    "freshImageBuilt": false,
+    "freshScanAndSbomPerformed": false,
+    "fullGeneration29RegressionSuiteRerun": false
+  },
+  "patchApplyCheckAgainstGeneration29": true,
+  "patchReplayOutputByteIdentical": true,
+  "liveLdapConnectionPerformed": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "newGenerationSealCreated": false,
+  "evidenceFiles": {
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/baseline-ldap.jsonl": {
+      "bytes": 53048,
+      "sha256": "199fc3049136185fa0a1d8c4c564c23ff9b92f5fd606e67108faf758eb90cfd0"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/baseline-ldap.stderr": {
+      "bytes": 101,
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/build-info.txt": {
+      "bytes": 25461,
+      "sha256": "fc0f51e7e90bfdbce73487867b757d49de66f488779e1e783814bb7476848f8c"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/build.stderr": {
+      "bytes": 101,
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/build.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/candidate-ldap.jsonl": {
+      "bytes": 53130,
+      "sha256": "85b4e3d1d40283778c16792d80c1188c7ecdb4e9956d229ee5a2dcfb03470d8c"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/candidate-ldap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/module-classification-proposal.patch": {
+      "bytes": 999,
+      "sha256": "00118ed97a7800c33aa8d947a726d4802a1d2e1c8236b83dec5705aa15ab6474"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/production-dependency-summary.json": {
+      "bytes": 610,
+      "sha256": "49126aa6f1f8c6b42cfec1e95be51aea3178ed6815c366bd8ae911f34b7620b5"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/production-deps.txt": {
+      "bytes": 74977,
+      "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/production-mapstructure-importers.json": {
+      "bytes": 33870,
+      "sha256": "68468646d39d754462e9089d8794ed553660528e6ca7120f1c3600e1c52447f6"
+    }
+  }
+}

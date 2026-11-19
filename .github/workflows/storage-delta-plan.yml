@@ -1,0 +1,65 @@
+name: Storage offline final delta plan
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - 'tools/storage_planning/delta_manifest.py'
+      - 'tools/storage_planning/inventory_manifest.py'
+      - 'tests/test_storage_delta_manifest.py'
+      - '.github/workflows/storage-delta-plan.yml'
+  pull_request:
+    paths:
+      - 'tools/storage_planning/delta_manifest.py'
+      - 'tools/storage_planning/inventory_manifest.py'
+      - 'tests/test_storage_delta_manifest.py'
+      - '.github/workflows/storage-delta-plan.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: storage-delta-plan-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-delta:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate additions overwrites deletes and denied incomplete inputs
+        run: |
+          set -euo pipefail
+          mkdir delta-evidence
+          python3 -I -B -S -m unittest discover -s tests -p 'test_storage_delta_manifest.py' -v 2>&1 | tee delta-evidence/tests.txt
+      - name: Bind exact source and retain synthetic qualification only
+        if: always()
+        run: |
+          python3 -I -B -S - <<'PY'
+          import hashlib, json, os, pathlib
+          out = pathlib.Path('delta-evidence')
+          out.mkdir(exist_ok=True)
+          paths = ['tools/storage_planning/delta_manifest.py',
+                   'tools/storage_planning/inventory_manifest.py',
+                   'tests/test_storage_delta_manifest.py',
+                   '.github/workflows/storage-delta-plan.yml']
+          source = {p: hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest() for p in paths}
+          (out/'source-sha256.json').write_text(json.dumps(source, indent=2)+'\n')
+          (out/'scope.json').write_text(json.dumps({
+              'schema': 'ouf.storage-delta-test-scope.v1', 'sourceCommit': os.environ['GITHUB_SHA'],
+              'qualification': 'OFFLINE_SYNTHETIC_ONLY_SEE_JOB_CONCLUSION',
+              'targetOperations': 0, 'gatesClosed': 0, 'acceptanceTestsPassed': 0,
+              'runtimeAuthorityIssued': False, 'migrationReady': False}, indent=2)+'\n')
+          (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n'
+                                               for p in sorted(out.iterdir()) if p.is_file()))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-delta-plan-${{ github.run_id }}
+          path: delta-evidence/
+          if-no-files-found: error
+          retention-days: 90

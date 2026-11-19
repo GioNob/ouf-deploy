@@ -1,0 +1,48 @@
+{
+  "schema": "ouf.semantic-installed-package-read-qualification.v1",
+  "status": "READER_QUALIFIED_TARGET_PACKAGE_READ_COMPLETE",
+  "sourceCommit": "f636440dac4df2469e97d919c44fd64693b1fcea",
+  "script": "scripts/read-semantic-installed-package-20261108.py",
+  "scriptSha256": "9d409461d89debecdd682d541a34b226354895a5e4808b2504024760717340c1",
+  "ci": {
+    "run": 42504819787,
+    "job": 128805066674,
+    "conclusion": "success",
+    "tests": 6,
+    "skips": 0,
+    "logsRead": true,
+    "mergeCommit": "b0659c6"
+  },
+  "local": {
+    "tests": 6,
+    "skips": 0
+  },
+  "coverage": [
+    "Exact, missing, changed and additional migration files",
+    "Repeatable/non-UTF8 additions retain hash evidence",
+    "Duplicate/oversized ZIP entries rejected",
+    "Allowlisted metadata and ENV redaction",
+    "Stable regular-file identity and complete JAR hash",
+    "CRC32 normalization without extracting archive contents"
+  ],
+  "effects": {
+    "dockerGetMaximum": 2,
+    "javaExecutions": 0,
+    "databaseRequests": 0,
+    "providerRequests": 0,
+    "tokenRequests": 0,
+    "containerChanges": 0,
+    "heldAttemptModified": false
+  },
+  "targetReadExecuted": true,
+  "withdrawnInference": "Candidate source-lock and retained image equality do not prove candidate source membership of the current JAR",
+  "sourceLockExplicitRuntimeMembershipProven": false,
+  "limitations": [
+    "Archive fixtures, not the actual VPS JAR",
+    "No new container lifecycle qualification; existing exact frame helper reused",
+    "Class presence and revision labels are metadata, not behavior or provenance proof",
+    "No migration/apply continuation authorized by reader result alone"
+  ],
+  "targetReceipt": "evidence/semantic-installed-package-operator-extract-20261108.json",
+  "targetObservation": "V1_V10_MATCH_CANDIDATE_PREFIX_V11_V12_AND_DISCOVERY_CLASSES_ABSENT"
+}

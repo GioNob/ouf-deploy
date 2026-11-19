@@ -1,0 +1,175 @@
+{
+  "openbaoApiTags": [
+    {
+      "ref": "refs/tags/api/v2.0.1",
+      "sha": "7d3a5f4b45cd0718eb2f3c97bcd9b90a563f2ce9",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.1.0",
+      "sha": "758e24181d71c93a75dc36cd0d17ab55d485c475",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.2.0",
+      "sha": "bf84bfe8daa7b5e66bad39f43e3f43c065b2e1ef",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.3.0",
+      "sha": "d62e0d311ab1214e08ce06744213f3b7ff24238a",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.3.1",
+      "sha": "b9ea4d075da342d51df737de4f9711bb3cce3289",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.4.0",
+      "sha": "1f80a135b47f3b4d40d9fefd1352b7d0a96090e9",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.5.0",
+      "sha": "e9a1396b2a36d0c0cab36a470aac6919dfb0a060",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.5.1",
+      "sha": "b714251abae434a206adf956f19c28bc2948c0b8",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.6.0",
+      "sha": "4850ddf7ab5547f2abcbaf398a62909baf30bb56",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.7.0",
+      "sha": "a510a86aea98837a6d4ac8f7382434134e6effbe",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/api/v2.7.1",
+      "sha": "36ba71c26ede7ba3e89b90a8064a8cd28d37de39",
+      "type": "commit"
+    }
+  ],
+  "hashicorpParseutilTags": [
+    {
+      "ref": "refs/tags/parseutil/v0.1.0",
+      "sha": "de03bb59983586d18e25d3546058fb33f92c81e3",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.1",
+      "sha": "a23d0e17f116e871e1a847136234405ac3f847ed",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.2",
+      "sha": "39924fb80354fd1a8ca67fbdd1725075b88c1344",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.3",
+      "sha": "f9471265d38c83710533bbfb54c8d4a36b5a32cd",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.4",
+      "sha": "b45975256153f38e9f716b0751cc0db9b10c9b9f",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.5",
+      "sha": "17e9a8f06103b4ea36fc1e002c90a3cb938d64f3",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.6",
+      "sha": "43c607d97e1d4615c5140017131807d1f0b702ff",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.7",
+      "sha": "64b82fc852e9626636a3a5bf5c842ed20963c70e",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.8",
+      "sha": "41d1bc144fe07790c411877d8157b197d1f2357b",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.9",
+      "sha": "2d0aa30c0d1559dcbaffb552bd47079700e4408f",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.2.0",
+      "sha": "856520952b2937e9cf2d8368e9200c5b05e66c67",
+      "type": "commit"
+    }
+  ],
+  "openbaoParseutilTags": [
+    {
+      "ref": "refs/tags/parseutil/v0.1.0",
+      "sha": "de03bb59983586d18e25d3546058fb33f92c81e3",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.1",
+      "sha": "a23d0e17f116e871e1a847136234405ac3f847ed",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.2",
+      "sha": "39924fb80354fd1a8ca67fbdd1725075b88c1344",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.3",
+      "sha": "f9471265d38c83710533bbfb54c8d4a36b5a32cd",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.4",
+      "sha": "b45975256153f38e9f716b0751cc0db9b10c9b9f",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.5",
+      "sha": "17e9a8f06103b4ea36fc1e002c90a3cb938d64f3",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.6",
+      "sha": "43c607d97e1d4615c5140017131807d1f0b702ff",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.7",
+      "sha": "64b82fc852e9626636a3a5bf5c842ed20963c70e",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v0.1.8",
+      "sha": "41d1bc144fe07790c411877d8157b197d1f2357b",
+      "type": "commit"
+    },
+    {
+      "ref": "refs/tags/parseutil/v1.1.0",
+      "sha": "446cf3304cb9658daeea99cee5909b99bb4eeccd",
+      "type": "tag"
+    },
+    {
+      "ref": "refs/tags/parseutil/v1.1.0-development20240408",
+      "sha": "b9042f8250dcd3fd35ce15a719149f1631a42013",
+      "type": "tag"
+    }
+  ],
+  "openbaoParseutilV110Commit": "e238ea0d4570f814e033ba4fec10636735ba0bc0",
+  "openbaoApiMainCommit": "6539c32aa1d260aa0bb0ebe4dd74bc41b7aab313"
+}

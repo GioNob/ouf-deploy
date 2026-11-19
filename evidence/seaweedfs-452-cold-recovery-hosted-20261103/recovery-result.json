@@ -1,0 +1,62 @@
+{
+  "acceptanceTestsPassed": 0,
+  "allBodiesAndHashMetadataEqual": true,
+  "backupFiles": 110,
+  "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+  "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+  "crashOrPowerLoss": "NOT_TESTED",
+  "dataRecoveryFixtures": 4,
+  "deletedObjectAbsent": true,
+  "explicitRecoveryMimePreserved": "application/x-ouf-recovery-fixture",
+  "foundationProfileMaterializedVerbatim": false,
+  "fourSeparateRoles": true,
+  "fullFoundationBackupContractSatisfied": false,
+  "g2Closed": false,
+  "gatesClosed": 0,
+  "mimeCompatibilityFixtures": 1,
+  "network": "DOCKER_NONE_SHARED_LOOPBACK_ONLY_NO_PUBLISHED_PORTS",
+  "nonrootReadOnlyContainers": true,
+  "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+  "octetStreamCompatibility": {
+    "bucket": "ouf-recovery-mime-fixture",
+    "bytes": 47,
+    "findings": [
+      {
+        "expected": "application/octet-stream",
+        "key": "octet-stream.txt",
+        "method": "GET",
+        "observed": "text/plain; charset=utf-8"
+      },
+      {
+        "expected": "application/octet-stream",
+        "key": "octet-stream.txt",
+        "method": "HEAD",
+        "observed": "text/plain; charset=utf-8"
+      }
+    ],
+    "g2Closed": false,
+    "getContentType": "text/plain; charset=utf-8",
+    "headContentType": "text/plain; charset=utf-8",
+    "key": "octet-stream.txt",
+    "mutatingRequestRetries": 0,
+    "requestedContentType": "application/octet-stream",
+    "sha256": "14f9c6ae9e1875a1b804984fe42b01c4e7f7edf4e0ccb7021325e4ba34214370",
+    "status": "FAIL"
+  },
+  "originalContainersRemoved": true,
+  "overwritePreserved": true,
+  "postgresRecovery": "NOT_TESTED",
+  "releaseAdmitted": false,
+  "restoreUsesOnlyIndependentRoots": true,
+  "rpoAcceptance": false,
+  "rtoAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "s3MetadataCompatibilityQualified": false,
+  "schema": "ouf.seaweedfs-452-storage-cold-recovery.v1",
+  "status": "SYNTHETIC_STORAGE_COLD_RESTORE_PASS_NOT_ACCEPTANCE",
+  "syntheticBytes": 8388702,
+  "syntheticObjects": 5,
+  "syntheticRecoveryObservationSeconds": 5.844,
+  "targetOperations": 0,
+  "tlsAndRotation": "NOT_TESTED"
+}

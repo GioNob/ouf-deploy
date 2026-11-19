@@ -1,0 +1,10 @@
+test_hosted_receipt_cannot_claim_local_pass (test_scaffold.ScaffoldTests.test_hosted_receipt_cannot_claim_local_pass) ... ok
+test_hosted_shell_requires_real_success_and_exact_identities (test_scaffold.ScaffoldTests.test_hosted_shell_requires_real_success_and_exact_identities) ... ok
+test_legacy_packages_and_vendor_paths_are_excluded (test_scaffold.ScaffoldTests.test_legacy_packages_and_vendor_paths_are_excluded) ... ok
+test_maintained_siblings_are_not_prefix_collisions (test_scaffold.ScaffoldTests.test_maintained_siblings_are_not_prefix_collisions) ... ok
+test_required_maintenance_limit_is_explicit (test_scaffold.ScaffoldTests.test_required_maintenance_limit_is_explicit) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.004s
+
+OK

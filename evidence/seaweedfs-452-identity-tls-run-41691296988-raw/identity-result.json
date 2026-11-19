@@ -1,0 +1,23 @@
+{
+  "acceptanceTestsPassed": 0,
+  "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+  "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+  "certificateRotation": "NOT_TESTED",
+  "egressProbesPassed": 2,
+  "fixtureCredentialsOnly": true,
+  "gatesClosed": 0,
+  "interRoleLateralIsolation": "NOT_TESTED",
+  "mTLS": "NOT_TESTED",
+  "maximumContainers": 4,
+  "mutatingRequestRetries": 0,
+  "network": "DOCKER_NONE_SHARED_LOOPBACK_ONLY_NO_PUBLISHED_PORTS",
+  "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+  "publicInternetPolicy": "NOT_TESTED",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "s3CasesPassed": 23,
+  "schema": "ouf.seaweedfs-452-identity-tls.v1",
+  "status": "SYNTHETIC_IDENTITY_TLS_EGRESS_PASS_NOT_ACCEPTANCE",
+  "targetOperations": 0,
+  "tlsNegativesPassed": 2
+}

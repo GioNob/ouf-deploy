@@ -1,0 +1,15 @@
+# LDAP: decoder mapstructure mantenuto, prova locale
+
+La patch cambia soltanto l’importazione del decoder di `LDAPProvider.Initialize` verso `github.com/go-viper/mapstructure/v2 v2.5.0`, già presente nei pin della generazione 29. La configurazione del decoder (tag JSON, weak typing e hook durata) resta invariata. I test attraversano il parser reale, la validazione, i default e la costruzione del pool senza connettersi a LDAP.
+
+Gli stessi input e valori attesi passano con il decoder precedente e con quello nuovo: 3 test LDAP principali e 18 sottocasi; insieme alla regressione IAM root sono 9 test principali e 40 sottocasi, due pacchetti. Sono coperti tutti i campi JSON, attributi annidati, tag senza distinzione maiuscole, conversioni deboli, durata numerica/stringa, chiavi sconosciute, errori che non inizializzano il provider, fast path del puntatore tipizzato e rifiuto della seconda inizializzazione.
+
+Il prefisso di errore LDAP e i messaggi dei campi obbligatori sono conservati. La diagnostica interna del vendor cambia formato (`1 error(s) decoding` → `decoding failed due to the following error(s)` e testo del tipo root). Non viene dichiarata equivalenza byte per byte dei messaggi del decoder né assenza di consumer esterni che li analizzino.
+
+Compilazione locale linux/amd64, CGO=0, Go 1.27.3 e `-mod=readonly -trimpath` PASS. Il binario risultante è `9f75d14d87c9f5326fcc2f9b44bce9baa05f796a403bf4935931787ac6d6fca2`. La lista di 1.811 pacchetti produttivi rimane identica alla generazione 29 (SHA256 `cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a`), ma i byte del binario cambiano: nessuna prova runtime, scansione o licenza della precedente immagine viene promossa automaticamente.
+
+**Limite residuo:** il vecchio `github.com/mitchellh/mapstructure` rimane raggiungibile da `github.com/hashicorp/vault/api v1.23.0` e `github.com/hashicorp/go-secure-stdlib/parseutil v0.2.0`, tramite l’integrazione OpenBao. Gli importatori diretti nel sorgente SeaweedFS scendono a zero, senza chiudere il grafo del modulo archiviato. Il mantenuto fork è descritto nel [repository ufficiale](https://github.com/go-viper/mapstructure); il [repository precedente](https://github.com/mitchellh/mapstructure) è archiviato. I pin non cambiano.
+
+La proposta separata `module-classification-proposal.patch` corregge soltanto le annotazioni direct/indirect di go.mod; non è applicata al prototipo e richiede verifica tidy nel futuro lotto integrato. Nessuna rimozione indiscriminata del vecchio modulo viene proposta.
+
+La patch è verificata con `git apply --check` contro la sorgente esatta a 29 patch e riapplicata in una directory indipendente con identità dei due file risultanti. Il dossier conserva log baseline/candidato, importatori residui, lista pacchetti e build info. Restano da qualificare la combinazione finale, l’intera suite, la nuova OCI, scan/SBOM/provenienza, licenze e runtime. Nessun sigillo globale di generazione 30 è prodotto qui; zero operazioni target e nessuna ammissione.

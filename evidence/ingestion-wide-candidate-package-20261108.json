@@ -1,0 +1,158 @@
+{
+  "schema": "ouf.ingestion-wide-candidate-package.v1",
+  "status": "ARCHIVED_AND_BYTES_VERIFIED_TARGET_STARTUP_NOT_TESTED",
+  "sourceCommit": "c85d9fd3be215e518dc6e7d075797720b5afbd91",
+  "sourceTree": "2ce617c750f80ec8c3e5341af2333acf76cb275d",
+  "publisherRepository": "GioNob/ouf-deploy",
+  "publisherSourceCommit": "4a58cd82326bd3a9fccc65a329feb80ebb3b66e0",
+  "newBuild": true,
+  "historicalCiImageReused": false,
+  "ciRun": 42519952111,
+  "ciJob": 128851048633,
+  "conclusion": "success",
+  "logsRead": true,
+  "artifactId": 13633320899,
+  "artifactName": "ingestion-wide-image-42519952111",
+  "zipBytes": 132176251,
+  "zipSha256": "83e15e242528d9128ddf5a813d0a9d4512f4076d07f845bab6a63ca1456b0109",
+  "publicArchiveDownload": "https://nightly.link/GioNob/ouf-deploy/actions/artifacts/13633320899.zip",
+  "fullPublicDownloadShaVerified": true,
+  "imageArchiveBytes": 133493078,
+  "imageArchiveSha256": "6861abc6d2cbc41d8df07546c205a3b8268d0458a6f678b29cd8515350194dae",
+  "classicImageId": "sha256:ac7936d6efe094479ad9abaacc3c2ec9910e3e03df96baab9b4aad754f2a954c",
+  "ociManifestDigest": "sha256:562e4c6e19d5227f00fb3159deb506da256d2245ee4a40a652b0c03865704baa",
+  "containerdNativeIdTested": false,
+  "ociBlobHashesVerified": 18,
+  "jarBytes": 66195420,
+  "jarSha256": "d0e2acc49fe91998b7182d107d1b6f02b1f1da6b49a5520dd6f6eaefa5295523",
+  "jarLayerDigest": "sha256:fdec6c5f0471be7aadf2074f1bd680db199c45b13d38266ac730bbf669d71e20",
+  "runtimeUser": "10002:10002",
+  "runtimeEntrypoint": [
+    "java",
+    "-jar",
+    "/app/app.jar"
+  ],
+  "javaVersion": "jdk-21.0.13+9",
+  "migrations": [
+    {
+      "name": "V10__quarantine_lifecycle.sql",
+      "sha256": "41f8c2362122caa3e9e4d82df0588452a87efdde0f2c518ee47e1bd3570a03dc",
+      "flywayStyleCrc32Utf8": 1627974653
+    },
+    {
+      "name": "V11__classified_source_resilience.sql",
+      "sha256": "97243be62e65879aed425855895456ef0f9e1579cf0b271bcbfc2b0864069e17",
+      "flywayStyleCrc32Utf8": -1835304128
+    },
+    {
+      "name": "V12__governed_lifecycle_and_historical_replay.sql",
+      "sha256": "9fa09325985424125528420db82bce2c52f7ae75dffc7759207c7eb1666b5b2c",
+      "flywayStyleCrc32Utf8": -1198212964
+    },
+    {
+      "name": "V13__pressure_admission_retry_budget.sql",
+      "sha256": "30402c3c225297436b9bc4e65dceca2c3ba29a3caeffc79692ea7cccf50a000d",
+      "flywayStyleCrc32Utf8": 1850262212
+    },
+    {
+      "name": "V14__published_activation_schedule.sql",
+      "sha256": "5d6acf3516504590fe84d833803db55b87b3858a35c31a88a56e3599ceba916d",
+      "flywayStyleCrc32Utf8": -1324686996
+    },
+    {
+      "name": "V15__human_recovery_sessions.sql",
+      "sha256": "e9abf1e1c192be62a4624f8a7ba551be28013ab3a58698a4ad13231fba29abaa",
+      "flywayStyleCrc32Utf8": -1837994869
+    },
+    {
+      "name": "V16__incident_observation_time.sql",
+      "sha256": "6fcf10b6bfbc8e71002fb9378e6a1ff45b70abb4a8f5cd863a1f207c42cb2eb9",
+      "flywayStyleCrc32Utf8": -405299983
+    },
+    {
+      "name": "V17__incident_publication_and_cursor.sql",
+      "sha256": "3695a5853afac3923a3428a54739d55d09cf31cc147bf46bfab8505f1c2d0716",
+      "flywayStyleCrc32Utf8": -1241321010
+    },
+    {
+      "name": "V18__incident_publication_bookmarks.sql",
+      "sha256": "7519073ac4075c40ed743489a2aefc7f63d8dcd3b1078e6108e50104f2fa8220",
+      "flywayStyleCrc32Utf8": 1281376280
+    },
+    {
+      "name": "V1__ingestion_runtime_core.sql",
+      "sha256": "8b439684da2cc31c62cfebf4ce4d939f9c8ac9b533a8c9490f5455384c064bb8",
+      "flywayStyleCrc32Utf8": 28809713
+    },
+    {
+      "name": "V2__durable_ack_and_replay.sql",
+      "sha256": "5e3b53341e396f7bf4ba937db2c61e96e9fdedac6420eb0de15350457ee6c528",
+      "flywayStyleCrc32Utf8": -1190230229
+    },
+    {
+      "name": "V3__trusted_operations.sql",
+      "sha256": "a6e9eb043defdcd8590b94c690911955ec8957ba016b70967e9aef90943bedf4",
+      "flywayStyleCrc32Utf8": 1677862093
+    },
+    {
+      "name": "V4__scheduler_and_source_health.sql",
+      "sha256": "b112711bd994cff5b0bdd3671937754f6e33fd85a705a102eed23fe9f207b44c",
+      "flywayStyleCrc32Utf8": 960152441
+    },
+    {
+      "name": "V5__replay_execution_lifecycle.sql",
+      "sha256": "4e24738272c8fae7233d2601736662eff80d5913fbef6c88ab6dc1f511f65763",
+      "flywayStyleCrc32Utf8": -2033393121
+    },
+    {
+      "name": "V6__protected_operational_log.sql",
+      "sha256": "5bf72f99f9c861678d3e8469ed2f71cd9cd55fccb835dbcd685e9c0d9fe6d46f",
+      "flywayStyleCrc32Utf8": -2023917644
+    },
+    {
+      "name": "V7__execution_worker_and_snapshot.sql",
+      "sha256": "48527993d3d8b50d98dc396e6d9b013410cd9db28d35fb76bff14cc23e46f9f2",
+      "flywayStyleCrc32Utf8": -848911848
+    },
+    {
+      "name": "V8__schema_surveillance.sql",
+      "sha256": "33853cbd55d09ad901d4af6589ad36c1d4d6da1116f10a14bdb3bb2f0bd8332c",
+      "flywayStyleCrc32Utf8": -61585214
+    },
+    {
+      "name": "V9__runtime_issue_governance.sql",
+      "sha256": "ed0236c8b6b6c66767813a0da7d3d92457ba0968c7e4376a35b0119f22a752d9",
+      "flywayStyleCrc32Utf8": -1413097987
+    }
+  ],
+  "migrationCount": 18,
+  "applicationYamlSha256": "25c31ec4fe7004eb6c43ff0b3de90cdc747bdf21a4d51d7a2b61f1e81c111b89",
+  "selectedClasses": {
+    "BOOT-INF/classes/it/comune/trieste/ouf/ingestion/ExecutionRuntimeConfiguration.class": "dd5b48ea6fa2babc7f49fa8614d478140e7e19bc7af67c05510402d77a337529",
+    "BOOT-INF/classes/it/comune/trieste/ouf/ingestion/IngestionReadinessHealthIndicator.class": "7652454b03c753e0b3e47adf0b7d5790a097af685d970a1a6d1f53eb90d7f5f2",
+    "BOOT-INF/classes/it/comune/trieste/ouf/ingestion/ManagedTabularAdapter$CsvCursor.class": "0e1a5311a79c347e2aca4d6b0246c56b9270a763c9d9915ef758c5c65f7b46a0",
+    "BOOT-INF/classes/it/comune/trieste/ouf/ingestion/ManagedTabularAdapter.class": "36ff7eba8ff04a9a5fa9b19291e7870be796777b5ff0dc96a516b5018c7b1fc1",
+    "BOOT-INF/classes/it/comune/trieste/ouf/ingestion/ExecutionGatewayClient.class": "d5d39300e1050fa9465340a972e0f224ddac12ab4b316e596ea75e26e253d68c"
+  },
+  "sourceMigrationAndYamlBytesMatch": true,
+  "wideCsvTests": {
+    "tests": 9,
+    "skips": 0,
+    "passed": true,
+    "columns": 1024,
+    "rows": 10000,
+    "heapBytes": 402653184,
+    "elapsedMs": 1881,
+    "measurementScope": "SYNTHETIC_CI_NOT_VPS"
+  },
+  "runtimeSqliteXlsxProbe": "PASS",
+  "imageScan": {
+    "artifactId": 13632748494,
+    "evidenceZipSha256": "de1377ffaab5f311820059438dd22a89d8ac7bdbba57bb0c7a897f9b91b53788",
+    "highCriticalCount": 0,
+    "scanBypassAdded": false
+  },
+  "applicationStartupTested": false,
+  "targetChanged": false,
+  "replacementLifecycleQualified": false
+}

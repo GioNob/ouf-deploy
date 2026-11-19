@@ -1,12 +1,6 @@
+# Qualificazione storica (2026-10-10): solo manuale, D-055
 name: Semantic qualified package declaration
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/rebase-semantic-package-declaration.py
-      - tests/test_semantic_package_*.py
-      - releases/semantic-qualified-package-declaration-20261010.sh
-      - .github/workflows/semantic-qualified-package-declaration.yml
   workflow_dispatch:
 permissions:
   contents: read

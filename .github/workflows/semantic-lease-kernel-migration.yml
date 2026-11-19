@@ -1,0 +1,34 @@
+name: D-050 lease kernel blue-green migration
+on:
+  pull_request:
+    paths:
+      - tools/semantic_lease_kernel_migration/**
+      - scripts/migrate-semantic-lease-kernel.py
+      - tests/*semantic_lease_kernel_migration*.py
+      - tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_kernel*.py
+      - tools/semantic_lease_recovery/materialize_southbound_lease_refresh_v2.py
+      - .github/workflows/semantic-lease-kernel-migration.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  migration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Portable transactions and historical compiler compatibility
+        run: |
+          /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_lease_kernel_migration.py -v
+          /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_lease_kernel_v2.py -v
+      - name: Explicit native root gate and dependencies
+        run: |
+          test "$(sudo -n id -u)" = 0
+          test "$(sudo -n id -g)" = 0
+          sudo -n apt-get update
+          sudo -n apt-get install -y --no-install-recommends nftables util-linux
+          sudo -n modprobe nf_conntrack_bridge
+      - name: Native tables, atomic batch, restore, finalize and sealed boot
+        run: >-
+          sudo -n env OUF_LEASE_KERNEL_MIGRATION_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_lease_kernel_migration_native.py -v

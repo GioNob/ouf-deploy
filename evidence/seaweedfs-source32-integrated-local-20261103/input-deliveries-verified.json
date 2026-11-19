@@ -1,0 +1,50 @@
+[
+  {
+    "stage": "source31-stage",
+    "files": 15,
+    "deliveryManifestSha256": "00321cf5da3e3042621d8c40d2460e6e65cba40fea824e7b4f45998b595f76da",
+    "patches": [
+      {
+        "path": "patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch",
+        "bytes": 1408,
+        "sha256": "0120cc01549a960177294610ecd26b495b5f867af5ef8b1b9321dba17ddc16ad"
+      }
+    ]
+  },
+  {
+    "stage": "color-yaml31-stage",
+    "files": 25,
+    "deliveryManifestSha256": "8fb08e3e62cd53369b8e8d34b27aa2a1f9377a109a86631ff6bcd41b06e3ea0a",
+    "patches": [
+      {
+        "path": "patches/seaweedfs/4.52-filer-progress-maintained.patch",
+        "sha256": "d9eaf21ca405e1b4feee97d185f04acd0ae015b90b8e6cd3f27336774d04f9f2",
+        "bytes": 10898
+      }
+    ]
+  },
+  {
+    "stage": "mongodb31-stage",
+    "files": 135,
+    "deliveryManifestSha256": "cf394df258b62f4b7b00a5df0d8b15f649cd9b37f6fbed7168bae1f7c8f94191",
+    "patches": [
+      {
+        "path": "patches/seaweedfs/4.52-mongodb-driver-v2.patch",
+        "sha256": "6459dc10651a0c7cd09c8c27300652ae1069b6046c9ac32a092cef8ec2c86a0e",
+        "bytes": 38631
+      }
+    ]
+  },
+  {
+    "stage": "google-profile32-stage",
+    "files": 17,
+    "deliveryManifestSha256": "89f7c6b9281e6f298e23e9ac9ffa54d6b9b507e0b06b2f8622663eb81965f450",
+    "patches": [
+      {
+        "path": "patches/seaweedfs/4.52-ouf-standard-google-profile.patch",
+        "sha256": "2809f72e392571ef8fdd3f97a6ea229a39bf7b837b6d20c401531c22faa48990",
+        "bytes": 84459
+      }
+    ]
+  }
+]

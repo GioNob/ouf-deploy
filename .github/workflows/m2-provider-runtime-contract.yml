@@ -1,0 +1,22 @@
+name: M2 read-only provider runtime contract
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/provider_runtime_contract.py','tests/test_m2_provider_runtime_contract.py','.github/workflows/m2-provider-runtime-contract.yml']
+  pull_request:
+    paths: ['tools/m2_discovery_installation_profile/provider_runtime_contract.py','tests/test_m2_provider_runtime_contract.py','.github/workflows/m2-provider-runtime-contract.yml']
+permissions: {contents: read}
+jobs:
+  metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root private files and actual Unix HTTP peer; synthetic Engine metadata
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-rc-${GITHUB_RUN_ID}"
+          sudo install -d -m 700 "$fixture"
+          sudo cp -a . "$fixture/repo"
+          sudo chown -R root:root "$fixture"
+          sudo /usr/bin/python3 -I -B -S "$fixture/repo/tests/test_m2_provider_runtime_contract.py" -v

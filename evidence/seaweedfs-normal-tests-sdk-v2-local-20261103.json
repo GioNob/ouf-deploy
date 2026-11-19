@@ -1,0 +1,63 @@
+{
+  "baselinePatchCount": 21,
+  "changedSourceHashes": {
+    "test/s3/normal/get_object_attributes_test.go": "15a61e6d5c2398e769763c9559b0b4bb67ad8ea7c184ea01f9b45bf0bc1dd84e",
+    "test/s3/normal/s3_integration_test.go": "1e18cb823a50fffdc319d39bc34913ca88ebe6961a91a9372f3d63f3f202b45a",
+    "test/s3/normal/s3_list_empty_directory_test.go": "9c76734b82da4af1e331cbbb992f8d774a906f461b224730b470e93d5d97d1e4",
+    "test/s3/normal/s3_list_multipart_uploads_test.go": "fab153eb91393e7ab97995dfcd77819655f6e189e018f2eeb8d3992db365e764",
+    "test/s3/normal/s3_prefix_object_test.go": "190a6fd46b789b0bcb8f79c5b6be7653d1fffebf2a3eacd91ba97116bf2e6bba",
+    "test/s3/normal/sdk_v2_client_test.go": "6246a23ba5c89ea2ff0056898a5e887c6503e904128eef2ee010bd3cd12e8c2c"
+  },
+  "evidenceSha256": {
+    "normal-test-deps.txt": "04927e1a4fd1f5283abdcd1fcf63c7ceb2872c9a33aa2b179d30acf011c21889",
+    "normal-tests.log": "b7217d7dd8283093c1054ce45d879102e56ddb988aa25352ec68bf7f1297c435",
+    "remaining-direct-importers.txt": "1b95a46b010dd103afbcaf5cdacc1fbdc7ab1961490b92dc2dcbff1e163727a7"
+  },
+  "limits": [
+    "nested IAM and normal IAM client still use v1",
+    "test graph is not SDKv1-free",
+    "no live S3 or SSE roundtrip",
+    "no release/target admission"
+  ],
+  "localExactPins": true,
+  "localValidation": {
+    "exactReapplication": true,
+    "liveRoundtripExecuted": false,
+    "namedRegressionTests": 4,
+    "normalTestGraphPackages": 1841,
+    "normalTestGraphSdkV1Packages": 42,
+    "packageCompiled": true,
+    "remainingNormalImporters": [
+      "test/s3/normal/iam_test.go"
+    ],
+    "remainingRepositoryDirectImportersInIsolatedStack": 15,
+    "statusSubcases": 3
+  },
+  "patchPath": "patches/seaweedfs/4.52-normal-tests-sdk-v2.patch",
+  "patchSha256": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b",
+  "preservedWire": [
+    "explicit local HTTP endpoint",
+    "us-west-2",
+    "path style",
+    "Content-MD5 unchanged including invalid checksum fixture",
+    "base64 SSE-C key and MD5",
+    "multipart part number/XML",
+    "raw signer frozen v1 golden for escaped path and empty payload"
+  ],
+  "productionModuleChanged": false,
+  "qualifiedOciPatchCount": 15,
+  "qualifiedOciUnchanged": true,
+  "releaseAdmitted": false,
+  "resilience": [
+    "one SDK attempt",
+    "HTTP request timeout 30 seconds",
+    "test contexts",
+    "cancelled context makes no transport request"
+  ],
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs.normal-s3-sdk-v2.local.v1",
+  "status": "LOCAL_BOUNDED_PASS_HOSTED_PENDING",
+  "targetOperations": 0,
+  "toolchain": "go1.27.3",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3"
+}

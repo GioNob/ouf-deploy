@@ -1,0 +1,127 @@
+{
+  "schema": "ouf.discovery-contract-operator-summary.v1",
+  "normalizedSummary": true,
+  "source": "OPERATOR_MESSAGE_NOT_INDEPENDENT_RUNTIME_OBSERVATION",
+  "inputSchema": "ouf.discovery-contract-read.v1",
+  "status": "READ_PARTIAL",
+  "observedAt": "2026-11-08T08:31:53.125232+00:00",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-contract-read-guaps__4",
+  "runtimeUnchangedDuringRead": true,
+  "serviceConfigurationChanged": false,
+  "serviceStops": 0,
+  "databaseWrites": 0,
+  "businessRequestsIssued": 0,
+  "s3Requests": 0,
+  "providerRequests": 0,
+  "tokenRequests": 0,
+  "credentialValuesEmitted": false,
+  "policyGrantsRead": false,
+  "effectiveProviderConfigurationProven": false,
+  "adminRouteGetAttempts": 1,
+  "adminCredentialConfigurationsRead": 1,
+  "externalAdminKeyFilesRead": 1,
+  "readOnlyDatabaseSessionsAttempted": 2,
+  "mcpDatabase": {
+    "status": "DATABASE_METADATA_READ",
+    "bindingScope": "DECLARED_APPLICATION_DATABASE_ON_RETAINED_POSTGRES",
+    "databaseOid": "21560",
+    "readOnly": true,
+    "appliedVersions": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "migrationsMatchQualifiedSourcePrefix": true,
+    "remainingCandidateVersions": [
+      14
+    ],
+    "analysisTablePresent": false,
+    "analysisTaskTablePresent": false
+  },
+  "semanticDatabase": {
+    "status": "READ_INCOMPLETE",
+    "reason": "DATABASE_METADATA_READ_FAILED",
+    "causeKnown": false,
+    "discoveryBacklogKnown": false
+  },
+  "provider": {
+    "scope": "DECLARED_ENV_NOT_EFFECTIVE_SPRING_CONFIGURATION",
+    "providerEnabledDeclaration": false,
+    "workerEnabledDeclaration": false,
+    "workloadClientDeclared": true,
+    "workloadScopeDeclared": true,
+    "workloadCredentialMount": {
+      "status": "NO_DECLARED_MOUNT",
+      "contentsRead": false
+    },
+    "gatewayOrigin": {
+      "scheme": "https",
+      "host": "ouf-semantic-southbound-v2",
+      "port": 10443
+    },
+    "search_path": "/internal/providers/schema-gov/search",
+    "fetch_path": "/internal/providers/schema-gov/fetch",
+    "externalConfigurationRead": false,
+    "credentialContentsRead": false
+  },
+  "routes": {
+    "status": "ROUTE_CONFIGURATION_READ",
+    "routeCount": 84,
+    "effectiveRoutingOrAdmissionProven": false,
+    "discoveryExecuteRoutesFound": 0,
+    "providerRoutesFoundInThisApisix": 0,
+    "providerRouteAbsenceAtSeparateGatewayProven": false,
+    "managedFileCreate": {
+      "maxRequestBodyBytes": 65536,
+      "upstreamReadTimeoutSeconds": 3,
+      "schemaArrayMaxItems": [
+        32,
+        256
+      ]
+    },
+    "managedFilePreview": {
+      "maxRequestBodyBytes": 65536,
+      "upstreamReadTimeoutSeconds": 3
+    },
+    "managedFileProfile": {
+      "maxRequestBodyBytes": 65536,
+      "upstreamReadTimeoutSeconds": 3
+    },
+    "managedFileReviewPrepare": {
+      "maxRequestBodyBytes": 65536,
+      "upstreamReadTimeoutSeconds": 10,
+      "schemaArrayMaxItems": [
+        0,
+        32
+      ]
+    },
+    "mcp": {
+      "maxRequestBodyBytes": 1048576
+    },
+    "selectedRouteSha256": {
+      "/mcp": "18e8395d0d343b040cfbbf82ebab0be5af744fc5265567238a645c5ea39d269b",
+      "/internal/capabilities/v1/execute": "8e1d457704f0fe064d062cc2000cb47cac83699fcdc53d8fa7afc64423986e2e",
+      "/internal/capabilities/v1/execute/managed.file/create": "0f08e01b2893eff56769328d39168b907cfe7294c4ca3e16c2a5df5493ad25db",
+      "/internal/capabilities/v1/execute/managed.file/preview": "3e894b2eaf3b22a18adc3ef7729f7709c3ecb343d19cfafc81c4c2ad4e7a1b08",
+      "/internal/capabilities/v1/execute/managed.file/profile": "656b000c5dae1ac7bd63b8735a274d007b3b2238c99811a41ac60c90db78cc85",
+      "/internal/capabilities/v1/execute/managed.file/review-prepare": "8b3f3b29f65910e2ffc8b3a12ad9404901c2582ee42d91e344e0f28d744e0e98"
+    }
+  },
+  "interpretation": {
+    "mcp12To13ReplayRequired": false,
+    "registryDowngradeRequired": false,
+    "completeGatewayOwnerReplacementRequired": false,
+    "applyOrEnableDispatched": false,
+    "allArray32LimitsAreColumnLimits": false
+  }
+}

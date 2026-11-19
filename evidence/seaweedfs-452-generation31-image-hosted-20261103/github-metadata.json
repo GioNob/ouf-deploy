@@ -1,0 +1,454 @@
+{
+  "run": {
+    "id": 41712811559,
+    "head_sha": "5d0d456bec5073192b8a1a86e35bb0dcbd97a6b5",
+    "path": ".github/workflows/storage-452-generation31-image.yml",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "created_at": "2026-11-03T20:28:00Z",
+    "updated_at": "2026-11-03T20:39:41Z",
+    "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41712811559"
+  },
+  "jobs": [
+    {
+      "id": 126184989766,
+      "name": "qualify-standard-profile",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-03T20:28:02Z",
+      "completed_at": "2026-11-03T20:38:02Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T20:28:03Z",
+          "completed_at": "2026-11-03T20:28:04Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-03T20:28:04Z",
+          "completed_at": "2026-11-03T20:28:17Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-03T20:28:17Z",
+          "completed_at": "2026-11-03T20:28:50Z"
+        },
+        {
+          "name": "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-03T20:28:50Z",
+          "completed_at": "2026-11-03T20:28:58Z"
+        },
+        {
+          "name": "Apply the exact 31 patches for the OUF standard profile",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-03T20:28:58Z",
+          "completed_at": "2026-11-03T20:28:59Z"
+        },
+        {
+          "name": "Prove the root module closure and tidy fixed point",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-03T20:28:59Z",
+          "completed_at": "2026-11-03T20:29:16Z"
+        },
+        {
+          "name": "Run the observed generation31 main regression profile",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-03T20:29:16Z",
+          "completed_at": "2026-11-03T20:33:35Z"
+        },
+        {
+          "name": "Qualify focused server effects and storage compaction without external DNS fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-03T20:33:35Z",
+          "completed_at": "2026-11-03T20:33:50Z"
+        },
+        {
+          "name": "Race-check shutdown coordination and local bbolt raft store",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-03T20:33:50Z",
+          "completed_at": "2026-11-03T20:34:18Z"
+        },
+        {
+          "name": "Verify old-v2 and local bbolt DB compatibility in an isolated comparator module",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-03T20:34:18Z",
+          "completed_at": "2026-11-03T20:34:19Z"
+        },
+        {
+          "name": "Recheck root IAM fixtures and independently qualified nested modules",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-03T20:34:19Z",
+          "completed_at": "2026-11-03T20:34:41Z"
+        },
+        {
+          "name": "Bind the reviewed generation31 source, graph and executable",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-03T20:34:41Z",
+          "completed_at": "2026-11-03T20:37:46Z"
+        },
+        {
+          "name": "Deny excluded optional tag profiles explicitly",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-03T20:37:46Z",
+          "completed_at": "2026-11-03T20:37:51Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-03T20:37:51Z",
+          "completed_at": "2026-11-03T20:37:58Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-03T20:37:58Z",
+          "completed_at": "2026-11-03T20:37:59Z"
+        },
+        {
+          "name": "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-11-03T20:37:59Z",
+          "completed_at": "2026-11-03T20:37:59Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-11-03T20:37:59Z",
+          "completed_at": "2026-11-03T20:38:00Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 30,
+          "started_at": "2026-11-03T20:38:00Z",
+          "completed_at": "2026-11-03T20:38:00Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 31,
+          "started_at": "2026-11-03T20:38:00Z",
+          "completed_at": "2026-11-03T20:38:00Z"
+        }
+      ]
+    },
+    {
+      "id": 126184990226,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-03T20:28:02Z",
+      "completed_at": "2026-11-03T20:28:30Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T20:28:03Z",
+          "completed_at": "2026-11-03T20:28:04Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-03T20:28:04Z",
+          "completed_at": "2026-11-03T20:28:27Z"
+        },
+        {
+          "name": "Verify generation boundaries, readback and malformed evidence denials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-03T20:28:27Z",
+          "completed_at": "2026-11-03T20:28:28Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-03T20:28:28Z",
+          "completed_at": "2026-11-03T20:28:28Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-03T20:28:28Z",
+          "completed_at": "2026-11-03T20:28:28Z"
+        }
+      ]
+    },
+    {
+      "id": 126190379106,
+      "name": "runtime_candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-03T20:38:05Z",
+      "completed_at": "2026-11-03T20:39:01Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T20:38:06Z",
+          "completed_at": "2026-11-03T20:38:10Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-03T20:38:10Z",
+          "completed_at": "2026-11-03T20:38:14Z"
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-03T20:38:14Z",
+          "completed_at": "2026-11-03T20:38:20Z"
+        },
+        {
+          "name": "Read the exact reviewed generation image tag",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-03T20:38:20Z",
+          "completed_at": "2026-11-03T20:38:20Z"
+        },
+        {
+          "name": "Package the exact standard build into a deterministic OCI layout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-03T20:38:20Z",
+          "completed_at": "2026-11-03T20:38:24Z"
+        },
+        {
+          "name": "Scan the candidate image with all severities and unfixed findings",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-03T20:38:24Z",
+          "completed_at": "2026-11-03T20:38:33Z"
+        },
+        {
+          "name": "Bind SPDX and raw findings to the exact image and test its version entrypoint",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-03T20:38:34Z",
+          "completed_at": "2026-11-03T20:38:38Z"
+        },
+        {
+          "name": "Seal evidence and input source hashes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-03T20:38:38Z",
+          "completed_at": "2026-11-03T20:38:39Z"
+        },
+        {
+          "name": "Attest the candidate image evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-03T20:38:39Z",
+          "completed_at": "2026-11-03T20:38:44Z"
+        },
+        {
+          "name": "Run cp \"/home/runner/work/_temp/Z5KK6d/attestation.json\" candidate-image/provenance.json",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-03T20:38:44Z",
+          "completed_at": "2026-11-03T20:38:44Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-03T20:38:44Z",
+          "completed_at": "2026-11-03T20:38:58Z"
+        },
+        {
+          "name": "Post Scan the candidate image with all severities and unfixed findings",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-03T20:38:58Z",
+          "completed_at": "2026-11-03T20:38:58Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-11-03T20:38:58Z",
+          "completed_at": "2026-11-03T20:38:59Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-11-03T20:38:59Z",
+          "completed_at": "2026-11-03T20:38:59Z"
+        }
+      ]
+    },
+    {
+      "id": 126190884664,
+      "name": "independent_image_readback",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-03T20:39:03Z",
+      "completed_at": "2026-11-03T20:39:40Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T20:39:04Z",
+          "completed_at": "2026-11-03T20:39:05Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-03T20:39:05Z",
+          "completed_at": "2026-11-03T20:39:24Z"
+        },
+        {
+          "name": "Install the pinned provenance verifier",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-03T20:39:24Z",
+          "completed_at": "2026-11-03T20:39:24Z"
+        },
+        {
+          "name": "Re-read the exact ZIP and verify publisher provenance on a separate runner",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-03T20:39:24Z",
+          "completed_at": "2026-11-03T20:39:37Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-03T20:39:37Z",
+          "completed_at": "2026-11-03T20:39:38Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-03T20:39:38Z",
+          "completed_at": "2026-11-03T20:39:38Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-03T20:39:38Z",
+          "completed_at": "2026-11-03T20:39:38Z"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13269621176,
+      "name": "seaweedfs-generation31-build",
+      "size_in_bytes": 95260270,
+      "digest": "sha256:16641f4ba7fb2d89119ad5f5360e6db7160ac1beb5e72d4339a8427ba6d4a7d2",
+      "created_at": "2026-11-03T20:37:58Z",
+      "expires_at": "2026-11-06T20:37:51Z",
+      "expired": false
+    },
+    {
+      "id": 13269461421,
+      "name": "seaweedfs-452-generation31-candidate-image-41712811559",
+      "size_in_bytes": 190496220,
+      "digest": "sha256:ab13f8b17a2c7405f32f1cb6c858b3780cffd554823e069f98bcef5938aaab43",
+      "created_at": "2026-11-03T20:38:58Z",
+      "expires_at": "2027-02-01T20:28:00Z",
+      "expired": false
+    },
+    {
+      "id": 13269112444,
+      "name": "seaweedfs-generation31-build-evidence-41712811559",
+      "size_in_bytes": 635422,
+      "digest": "sha256:17679a13f4c40c14b9abd10e56c5ea28823a56e2df1f33363546fe032a91dc7a",
+      "created_at": "2026-11-03T20:37:59Z",
+      "expires_at": "2027-02-01T20:28:00Z",
+      "expired": false
+    },
+    {
+      "id": 13268882990,
+      "name": "seaweedfs-452-generation31-independent-image-readback-41712811559",
+      "size_in_bytes": 30441,
+      "digest": "sha256:c266081e2ffc7371cf71ee9b1f5aeab00c5795d9b573b27e74a6dd9604c86ce8",
+      "created_at": "2026-11-03T20:39:38Z",
+      "expires_at": "2027-02-01T20:28:00Z",
+      "expired": false
+    }
+  ]
+}

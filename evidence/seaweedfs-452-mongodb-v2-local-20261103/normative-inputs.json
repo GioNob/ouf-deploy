@@ -1,0 +1,22 @@
+[
+  {
+    "path": "plan-align-work/docs/OUF_RESILIENCE_POLICY.md",
+    "sha256": "009e3cfce332e2bfa4e068de3d3831d2aba7c42980f61f889f228a7caa9a6bd6"
+  },
+  {
+    "path": "storage-next-stage/docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
+    "sha256": "54ec00ee40b78082c140542fc65364767a3081d0e94f99a28985a0ae6074cc74"
+  },
+  {
+    "path": "plan-align-work/docs/baseline/v1.7/package/docs/l0/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.docx",
+    "sha256": "d48a3b36ea3dd23622da380ec498f753fcd37f49f534735fe7ef904def387b1b"
+  },
+  {
+    "path": "plan-align-work/docs/baseline/v1.7/package/docs/l1/OUF_PET_Data_Lake_UDP_Urban_Object_Registry_v1_3_Development_Ready.docx",
+    "sha256": "77700b8741f312b88348ff00f7e98780b5636e55e76c6c6407999a6d08d25e8d"
+  },
+  {
+    "path": "plan-align-work/docs/baseline/v1.7/package/docs/l1/OUF_PET_EF_Ingestion_Runtime_v1_3_Operational_Awareness.docx",
+    "sha256": "b9eb1b3011854535e89ba23ce395553c736f6a34bcca7e51c13d512e81dd8886"
+  }
+]

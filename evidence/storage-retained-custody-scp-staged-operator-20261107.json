@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.storage-retained-custody-scp-staged-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_VPS_RESULT",
+  "stagingProgramCommit": "1f501c46a93e9ee9b112795ac8b51c4eea052507",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "archiveOriginalModified": false,
+    "bytes": 6544578724,
+    "remoteArchive": "/var/tmp/ouf-historical-transfer-20261107-v1/retained-historical.tar.age",
+    "schema": "ouf.storage-retained-custody-scp-stage.v1",
+    "sha256": "c3b0de7ab9fceb9c566431a4ed5ebf8f7720dae5eee52c1a0a5c76a5eb99a886",
+    "status": "SCP_SOURCE_STAGED"
+  },
+  "matchesSealedVpsReceipt": true,
+  "windowsTransferVerified": false,
+  "acceptanceCreditAdded": 0
+}

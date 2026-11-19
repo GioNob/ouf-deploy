@@ -1,0 +1,676 @@
+diff --git a/weed/storage/backend/s3_backend/s3_backend.go b/weed/storage/backend/s3_backend/s3_backend.go
+index 689286ad0..667d5002c 100644
+--- a/weed/storage/backend/s3_backend/s3_backend.go
++++ b/weed/storage/backend/s3_backend/s3_backend.go
+@@ -10,15 +10,14 @@ import (
+ 	"strings"
+ 	"time"
+ 
+-	"github.com/seaweedfs/seaweedfs/weed/util"
+-
+-	"github.com/aws/aws-sdk-go/service/s3"
+-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/google/uuid"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/storage/backend"
++	"github.com/seaweedfs/seaweedfs/weed/util"
+ )
+ 
+ func init() {
+@@ -47,7 +46,7 @@ type S3BackendStorage struct {
+ 	uploadConcurrency     int
+ 	downloadConcurrency   int
+ 	httpOptions           httpOptions
+-	conn                  s3iface.S3API
++	conn                  s3API
+ }
+ 
+ func newS3BackendStorage(configuration backend.StringProperties, configPrefix string, id string) (s *S3BackendStorage, err error) {
+@@ -170,10 +169,9 @@ func (s *S3BackendStorage) CopyFile(f *os.File, fn func(progressed int64, percen
+ 
+ 	glog.V(1).Infof("copying dat file of %s to remote s3.%s as %s", f.Name(), s.id, key)
+ 
+-	util.Retry("upload to S3", func() error {
+-		size, err = uploadToS3(s.conn, f.Name(), s.bucket, key, s.storageClass, fn, concurrency)
+-		return err
+-	})
++	// A failed PUT or multipart completion can have an ambiguous remote outcome.
++	// Do not replay it here; durable retry/reconciliation belongs to the owner.
++	size, err = uploadToS3(s.conn, f.Name(), s.bucket, key, s.storageClass, fn, concurrency)
+ 
+ 	return
+ }
+@@ -225,10 +223,10 @@ func (s3backendStorageFile S3BackendStorageFile) ReadAt(p []byte, off int64) (n
+ 
+ 	ctx, cancel := context.WithCancel(context.Background())
+ 	defer cancel()
+-	getObjectOutput, getObjectErr := s3backendStorageFile.backendStorage.conn.GetObjectWithContext(ctx, &s3.GetObjectInput{
+-		Bucket: &s3backendStorageFile.backendStorage.bucket,
+-		Key:    &s3backendStorageFile.key,
+-		Range:  &bytesRange,
++	getObjectOutput, getObjectErr := s3backendStorageFile.backendStorage.conn.GetObject(ctx, &s3.GetObjectInput{
++		Bucket: aws.String(s3backendStorageFile.backendStorage.bucket),
++		Key:    aws.String(s3backendStorageFile.key),
++		Range:  aws.String(bytesRange),
+ 	})
+ 
+ 	if getObjectErr != nil {
+diff --git a/weed/storage/backend/s3_backend/s3_backend_test.go b/weed/storage/backend/s3_backend/s3_backend_test.go
+index f103469ad..8b601d84d 100644
+--- a/weed/storage/backend/s3_backend/s3_backend_test.go
++++ b/weed/storage/backend/s3_backend/s3_backend_test.go
+@@ -1,16 +1,15 @@
+ package s3_backend
+ 
+ import (
++	"context"
+ 	"errors"
+ 	"io"
+ 	"strings"
+ 	"testing"
+ 	"testing/iotest"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/request"
+-	"github.com/aws/aws-sdk-go/service/s3"
+-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
++	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+ )
+ 
+@@ -21,14 +20,18 @@ func (m testProperties) GetString(key string) string {
+ }
+ 
+ type stubS3Client struct {
+-	s3iface.S3API
++	transfermanager.S3APIClient
+ 	getObject func(*s3.GetObjectInput) (*s3.GetObjectOutput, error)
+ }
+ 
+-func (s *stubS3Client) GetObjectWithContext(_ aws.Context, input *s3.GetObjectInput, _ ...request.Option) (*s3.GetObjectOutput, error) {
++func (s *stubS3Client) GetObject(_ context.Context, input *s3.GetObjectInput, _ ...func(*s3.Options)) (*s3.GetObjectOutput, error) {
+ 	return s.getObject(input)
+ }
+ 
++func (s *stubS3Client) DeleteObject(context.Context, *s3.DeleteObjectInput, ...func(*s3.Options)) (*s3.DeleteObjectOutput, error) {
++	return &s3.DeleteObjectOutput{}, nil
++}
++
+ func TestReadAtReturnsEOFForShortRead(t *testing.T) {
+ 	client := &stubS3Client{getObject: func(*s3.GetObjectInput) (*s3.GetObjectOutput, error) {
+ 		return &s3.GetObjectOutput{Body: io.NopCloser(strings.NewReader("abc"))}, nil
+@@ -131,7 +134,7 @@ func TestParseConcurrency(t *testing.T) {
+ }
+ 
+ func TestS3BackendStorageConcurrencyConfigRoundTrip(t *testing.T) {
+-	s, err := newS3BackendStorage(testProperties{}, "", "test")
++	s, err := newS3BackendStorage(testProperties{"region": "us-east-1"}, "", "test")
+ 	if err != nil {
+ 		t.Fatal(err)
+ 	}
+@@ -143,6 +146,7 @@ func TestS3BackendStorageConcurrencyConfigRoundTrip(t *testing.T) {
+ 	s, err = newS3BackendStorage(testProperties{
+ 		"upload_concurrency":   "1",
+ 		"download_concurrency": "17",
++		"region":               "us-east-1",
+ 	}, "", "test")
+ 	if err != nil {
+ 		t.Fatal(err)
+diff --git a/weed/storage/backend/s3_backend/s3_download.go b/weed/storage/backend/s3_backend/s3_download.go
+index b0928e9be..5165da238 100644
+--- a/weed/storage/backend/s3_backend/s3_download.go
++++ b/weed/storage/backend/s3_backend/s3_download.go
+@@ -1,19 +1,19 @@
+ package s3_backend
+ 
+ import (
++	"context"
+ 	"fmt"
+ 	"os"
+ 	"sync/atomic"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
+-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ )
+ 
+-func downloadFromS3(sess s3iface.S3API, destFileName string, sourceBucket string, sourceKey string,
++func downloadFromS3(sess s3API, destFileName string, sourceBucket string, sourceKey string,
+ 	fn func(progressed int64, percentage float32) error, concurrency int) (fileSize int64, err error) {
+ 	if concurrency <= 0 {
+ 		concurrency = defaultDownloadConcurrency
+@@ -32,9 +32,11 @@ func downloadFromS3(sess s3iface.S3API, destFileName string, sourceBucket string
+ 	defer f.Close()
+ 
+ 	// Create a downloader with the session and custom options
+-	downloader := s3manager.NewDownloaderWithClient(sess, func(u *s3manager.Downloader) {
+-		u.PartSize = int64(64 * 1024 * 1024)
+-		u.Concurrency = concurrency
++	downloader := transfermanager.New(sess, func(o *transfermanager.Options) {
++		o.PartSizeBytes = int64(64 * 1024 * 1024)
++		o.Concurrency = concurrency
++		// The owner governs retry budgets; do not hide extra body attempts here.
++		o.PartBodyMaxRetries = 1
+ 	})
+ 
+ 	fileWriter := &s3DownloadProgressedWriter{
+@@ -45,13 +47,15 @@ func downloadFromS3(sess s3iface.S3API, destFileName string, sourceBucket string
+ 	}
+ 
+ 	// Download the file from S3.
+-	fileSize, err = downloader.Download(fileWriter, &s3.GetObjectInput{
+-		Bucket: aws.String(sourceBucket),
+-		Key:    aws.String(sourceKey),
++	result, err := downloader.DownloadObject(context.Background(), &transfermanager.DownloadObjectInput{
++		Bucket:   aws.String(sourceBucket),
++		Key:      aws.String(sourceKey),
++		WriterAt: fileWriter,
+ 	})
+ 	if err != nil {
+ 		return fileSize, fmt.Errorf("failed to download /buckets/%s/%s to %s: %v", sourceBucket, sourceKey, destFileName, err)
+ 	}
++	fileSize = aws.ToInt64(result.ContentLength)
+ 
+ 	// fsync the downloaded .dat so its content is durable before the caller trims the
+ 	// remote reference and deletes the shared remote object.
+@@ -80,11 +84,10 @@ func (w *s3DownloadProgressedWriter) WriteAt(p []byte, off int64) (int, error) {
+ 	}
+ 
+ 	// Got the length have read( or means has uploaded), and you can construct your message
+-	atomic.AddInt64(&w.written, int64(n))
++	written := atomic.AddInt64(&w.written, int64(n))
+ 
+ 	if w.fn != nil {
+-		written := w.written
+-		if err := w.fn(written, float32(written*100)/float32(w.size)); err != nil {
++		if err := w.fn(written, percentage(written, w.size)); err != nil {
+ 			return n, err
+ 		}
+ 	}
+@@ -92,16 +95,16 @@ func (w *s3DownloadProgressedWriter) WriteAt(p []byte, off int64) (int, error) {
+ 	return n, err
+ }
+ 
+-func getFileSize(svc s3iface.S3API, bucket string, key string) (filesize int64, error error) {
++func getFileSize(svc s3API, bucket string, key string) (filesize int64, error error) {
+ 	params := &s3.HeadObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(key),
+ 	}
+ 
+-	resp, err := svc.HeadObject(params)
++	resp, err := svc.HeadObject(context.Background(), params)
+ 	if err != nil {
+ 		return 0, err
+ 	}
+ 
+-	return *resp.ContentLength, nil
++	return aws.ToInt64(resp.ContentLength), nil
+ }
+diff --git a/weed/storage/backend/s3_backend/s3_sessions.go b/weed/storage/backend/s3_backend/s3_sessions.go
+index bf9f3af5f..85c32636b 100644
+--- a/weed/storage/backend/s3_backend/s3_sessions.go
++++ b/weed/storage/backend/s3_backend/s3_sessions.go
+@@ -1,24 +1,32 @@
+ package s3_backend
+ 
+ import (
++	"context"
++	"crypto/sha256"
+ 	"crypto/tls"
+ 	"fmt"
+ 	"net"
+ 	"net/http"
++	"net/url"
+ 	"sync"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/request"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/s3"
+-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
++	"github.com/aws/aws-sdk-go-v2/config"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/seaweedfs/seaweedfs/weed/util/version"
+ )
+ 
++type s3API interface {
++	transfermanager.S3APIClient
++	DeleteObject(context.Context, *s3.DeleteObjectInput, ...func(*s3.Options)) (*s3.DeleteObjectOutput, error)
++}
++
+ var (
+-	s3Sessions   = make(map[string]s3iface.S3API)
++	s3Sessions   = make(map[string]s3API)
+ 	sessionsLock sync.Mutex
+ )
+ 
+@@ -60,39 +68,54 @@ func (o httpOptions) newTransport() *http.Transport {
+ 	return t
+ }
+ 
+-func createSession(awsAccessKeyId, awsSecretAccessKey, region, endpoint string, forcePathStyle bool, httpOpts httpOptions) (s3iface.S3API, error) {
++func createSession(awsAccessKeyId, awsSecretAccessKey, region, endpoint string, forcePathStyle bool, httpOpts httpOptions) (s3API, error) {
++	if region == "" {
++		return nil, fmt.Errorf("S3 tier backend requires an explicit region")
++	}
++	if (awsAccessKeyId == "") != (awsSecretAccessKey == "") {
++		return nil, fmt.Errorf("S3 tier backend requires both static credential fields or neither")
++	}
++	if endpoint != "" {
++		u, err := url.Parse(endpoint)
++		if err != nil || u.Hostname() == "" || (u.Scheme != "https" && u.Scheme != "http") || u.User != nil || u.RawQuery != "" || u.ForceQuery || u.Fragment != "" || u.Opaque != "" {
++			return nil, fmt.Errorf("S3 tier backend endpoint must be an explicit HTTP(S) binding without credentials, query or fragment")
++		}
++	}
+ 
+ 	sessionsLock.Lock()
+ 	defer sessionsLock.Unlock()
+ 
+-	cacheKey := fmt.Sprintf("%s|%s", region, endpoint)
+-	if httpOpts != (httpOptions{}) {
+-		cacheKey = fmt.Sprintf("%s|%+v", cacheKey, httpOpts)
+-	}
++	// The previous region/endpoint-only key could reuse a client across distinct
++	// identities or addressing modes. Hash all binding inputs so credentials do
++	// not appear in memory as a readable map key.
++	cacheKey := fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%s\x00%s\x00%s\x00%s\x00%t\x00%t\x00%d\x00%d",
++		awsAccessKeyId, awsSecretAccessKey, region, endpoint, forcePathStyle, httpOpts.disableHTTP2, httpOpts.maxConnsPerHost, httpOpts.idleConnTimeout))))
+ 	if t, found := s3Sessions[cacheKey]; found {
+ 		return t, nil
+ 	}
+ 
+-	config := &aws.Config{
+-		Region:                        aws.String(region),
+-		Endpoint:                      aws.String(endpoint),
+-		S3ForcePathStyle:              aws.Bool(forcePathStyle),
+-		S3DisableContentMD5Validation: aws.Bool(true),
+-		HTTPClient:                    &http.Client{Transport: httpOpts.newTransport()},
++	opts := []func(*config.LoadOptions) error{
++		config.WithRegion(region),
++		config.WithRetryMaxAttempts(1),
++		config.WithHTTPClient(&http.Client{Transport: httpOpts.newTransport()}),
+ 	}
+ 	if awsAccessKeyId != "" && awsSecretAccessKey != "" {
+-		config.Credentials = credentials.NewStaticCredentials(awsAccessKeyId, awsSecretAccessKey, "")
++		opts = append(opts, config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(awsAccessKeyId, awsSecretAccessKey, "")))
+ 	}
+-
+-	sess, err := session.NewSession(config)
++	cfg, err := config.LoadDefaultConfig(context.Background(), opts...)
+ 	if err != nil {
+-		return nil, fmt.Errorf("create aws session in region %s: %v", region, err)
++		return nil, fmt.Errorf("load S3 tier backend configuration in region %s: %w", region, err)
+ 	}
+-	sess.Handlers.Build.PushBack(func(r *request.Request) {
+-		r.HTTPRequest.Header.Set("User-Agent", "SeaweedFS/"+version.VERSION_NUMBER)
++	t := s3.NewFromConfig(cfg, func(o *s3.Options) {
++		o.UsePathStyle = forcePathStyle
++		if endpoint != "" {
++			o.BaseEndpoint = aws.String(endpoint)
++		}
++		o.APIOptions = append(o.APIOptions, awsmiddleware.AddUserAgentKeyValue("SeaweedFS", version.VERSION_NUMBER))
+ 	})
+-
+-	t := s3.New(sess)
++	if endpoint == "" && t.Options().BaseEndpoint != nil {
++		return nil, fmt.Errorf("S3 tier backend endpoint override requires an explicit binding")
++	}
+ 
+ 	s3Sessions[cacheKey] = t
+ 
+@@ -100,8 +123,8 @@ func createSession(awsAccessKeyId, awsSecretAccessKey, region, endpoint string,
+ 
+ }
+ 
+-func deleteFromS3(sess s3iface.S3API, sourceBucket string, sourceKey string) (err error) {
+-	_, err = sess.DeleteObject(&s3.DeleteObjectInput{
++func deleteFromS3(sess s3API, sourceBucket string, sourceKey string) (err error) {
++	_, err = sess.DeleteObject(context.Background(), &s3.DeleteObjectInput{
+ 		Bucket: aws.String(sourceBucket),
+ 		Key:    aws.String(sourceKey),
+ 	})
+diff --git a/weed/storage/backend/s3_backend/s3_sessions_test.go b/weed/storage/backend/s3_backend/s3_sessions_test.go
+index eb5699259..f8606bea9 100644
+--- a/weed/storage/backend/s3_backend/s3_sessions_test.go
++++ b/weed/storage/backend/s3_backend/s3_sessions_test.go
+@@ -2,36 +2,45 @@ package s3_backend
+ 
+ import (
+ 	"bufio"
++	"io"
+ 	"math"
+ 	"net"
+ 	"net/http"
++	"net/http/httptest"
++	"os"
++	"path/filepath"
+ 	"strconv"
+ 	"strings"
+ 	"sync"
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+ )
+ 
+ func backendTransport(t *testing.T, s *S3BackendStorage) *http.Transport {
+ 	t.Helper()
+-	client, ok := s.conn.(*s3.S3)
++	client, ok := s.conn.(*s3.Client)
+ 	if !ok {
+ 		t.Fatalf("unexpected client type %T", s.conn)
+ 	}
+-	httpClient := client.Client.Config.HTTPClient
++	httpClient := client.Options().HTTPClient
+ 	if httpClient == nil {
+ 		return nil
+ 	}
+-	transport, _ := httpClient.Transport.(*http.Transport)
++	clientWithTransport, ok := httpClient.(*http.Client)
++	if !ok {
++		t.Fatalf("unexpected HTTP client type %T", httpClient)
++	}
++	transport, _ := clientWithTransport.Transport.(*http.Transport)
+ 	return transport
+ }
+ 
+ func TestS3BackendHTTPOptionsReachTheClient(t *testing.T) {
+ 	s, err := newS3BackendStorage(testProperties{
+ 		"endpoint":                        "http://127.0.0.1:1",
++		"region":                          "us-east-1",
+ 		"disable_http2":                   "true",
+ 		"max_connections":                 "64",
+ 		"idle_connection_timeout_seconds": "50",
+@@ -60,7 +69,7 @@ func TestS3BackendHTTPOptionsReachTheClient(t *testing.T) {
+ }
+ 
+ func TestS3BackendDefaultTransportHasTimeouts(t *testing.T) {
+-	s, err := newS3BackendStorage(testProperties{"endpoint": "http://127.0.0.1:2"}, "", "http-defaults")
++	s, err := newS3BackendStorage(testProperties{"endpoint": "http://127.0.0.1:2", "region": "us-east-1"}, "", "http-defaults")
+ 	if err != nil {
+ 		t.Fatal(err)
+ 	}
+@@ -179,6 +188,112 @@ func TestS3BackendSessionsDifferByHTTPOptions(t *testing.T) {
+ 	}
+ }
+ 
++func TestS3BackendSessionsIsolateIdentityAndAddressingMode(t *testing.T) {
++	a, err := createSession("id-a", "secret-a", "us-east-1", "http://127.0.0.1:30", true, httpOptions{})
++	if err != nil {
++		t.Fatal(err)
++	}
++	b, err := createSession("id-b", "secret-b", "us-east-1", "http://127.0.0.1:30", true, httpOptions{})
++	if err != nil {
++		t.Fatal(err)
++	}
++	c, err := createSession("id-a", "secret-a", "us-east-1", "http://127.0.0.1:30", false, httpOptions{})
++	if err != nil {
++		t.Fatal(err)
++	}
++	if a == b || a == c || b == c {
++		t.Fatal("distinct identity or path-style bindings shared an S3 client")
++	}
++}
++
++func TestS3BackendClientHasExplicitBindingAndOneAttempt(t *testing.T) {
++	client, err := createSession("fixture-id", "fixture-secret", "eu-west-1", "https://fixture.invalid", true, httpOptions{})
++	if err != nil {
++		t.Fatal(err)
++	}
++	s3Client, ok := client.(*s3.Client)
++	if !ok {
++		t.Fatalf("unexpected client type %T", client)
++	}
++	o := s3Client.Options()
++	creds, err := o.Credentials.Retrieve(t.Context())
++	if err != nil {
++		t.Fatal(err)
++	}
++	if o.Region != "eu-west-1" || !o.UsePathStyle || o.RetryMaxAttempts != 1 || o.BaseEndpoint == nil || *o.BaseEndpoint != "https://fixture.invalid" {
++		t.Fatalf("unexpected client binding: region=%q path=%t attempts=%d endpoint=%v", o.Region, o.UsePathStyle, o.RetryMaxAttempts, o.BaseEndpoint)
++	}
++	if creds.AccessKeyID != "fixture-id" || creds.SecretAccessKey != "fixture-secret" {
++		t.Fatal("the client did not retain the explicit static identity")
++	}
++}
++
++func TestS3BackendUploadIsSignedChecksummedAndNotRetried(t *testing.T) {
++	var attempts int
++	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		attempts++
++		_, _ = io.Copy(io.Discard, r.Body)
++		if r.Method != http.MethodPut || r.URL.Path != "/bucket/key" {
++			t.Errorf("unexpected request %s %s", r.Method, r.URL.Path)
++		}
++		if !strings.Contains(r.Header.Get("Authorization"), "AWS4-HMAC-SHA256") {
++			t.Error("request was not signed with SigV4")
++		}
++		if !strings.Contains(r.UserAgent(), "SeaweedFS/") {
++			t.Errorf("missing SeaweedFS user-agent: %q", r.UserAgent())
++		}
++		if r.Header.Get("X-Amz-Sdk-Checksum-Algorithm") == "" && r.Header.Get("X-Amz-Checksum-Crc32") == "" && r.Trailer.Get("X-Amz-Checksum-Crc32") == "" {
++			t.Error("upload did not carry a flexible checksum")
++		}
++		w.Header().Set("Content-Type", "application/xml")
++		w.WriteHeader(http.StatusServiceUnavailable)
++		_, _ = w.Write([]byte("<Error><Code>SlowDown</Code><Message>fixture</Message></Error>"))
++	}))
++	defer server.Close()
++
++	client, err := createSession("fixture-id", "fixture-secret", "us-east-1", server.URL, true, httpOptions{})
++	if err != nil {
++		t.Fatal(err)
++	}
++	name := filepath.Join(t.TempDir(), "fixture.dat")
++	if err := os.WriteFile(name, []byte("fixture payload"), 0600); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := uploadToS3(client, name, "bucket", "key", "STANDARD_IA", nil, 1); err == nil {
++		t.Fatal("upload unexpectedly succeeded")
++	}
++	if attempts != 1 {
++		t.Fatalf("upload attempts = %d, want 1", attempts)
++	}
++}
++
++func TestS3BackendRejectsAmbiguousBindings(t *testing.T) {
++	tests := []struct {
++		name, access, secret, region, endpoint string
++	}{
++		{name: "missing region", endpoint: "https://fixture.invalid"},
++		{name: "partial credentials", access: "id", region: "us-east-1", endpoint: "https://fixture.invalid"},
++		{name: "endpoint credentials", region: "us-east-1", endpoint: "https://user@example.invalid"},
++		{name: "endpoint query", region: "us-east-1", endpoint: "https://example.invalid?x=1"},
++		{name: "non HTTP endpoint", region: "us-east-1", endpoint: "ftp://example.invalid"},
++	}
++	for _, tt := range tests {
++		t.Run(tt.name, func(t *testing.T) {
++			if _, err := createSession(tt.access, tt.secret, tt.region, tt.endpoint, true, httpOptions{}); err == nil {
++				t.Fatal("createSession accepted an ambiguous binding")
++			}
++		})
++	}
++}
++
++func TestS3BackendRejectsImplicitEndpointOverride(t *testing.T) {
++	t.Setenv("AWS_ENDPOINT_URL_S3", "https://implicit.invalid")
++	t.Setenv("AWS_EC2_METADATA_DISABLED", "true")
++	if _, err := createSession("id", "secret", "us-east-1", "", true, httpOptions{}); err == nil || !strings.Contains(err.Error(), "explicit binding") {
++		t.Fatalf("want explicit-binding error, got %v", err)
++	}
++}
++
+ func TestParseNonNegative(t *testing.T) {
+ 	for _, c := range []struct {
+ 		in   string
+@@ -204,6 +319,7 @@ func TestS3BackendIdleTimeoutOverflowFallsBackToDefault(t *testing.T) {
+ 	} {
+ 		s, err := newS3BackendStorage(testProperties{
+ 			"endpoint":                        "http://127.0.0.1:4",
++			"region":                          "us-east-1",
+ 			"idle_connection_timeout_seconds": c.in,
+ 		}, "", "idle-overflow-"+strconv.Itoa(i))
+ 		if err != nil {
+diff --git a/weed/storage/backend/s3_backend/s3_upload.go b/weed/storage/backend/s3_backend/s3_upload.go
+index 61bcbe5a8..81d798336 100644
+--- a/weed/storage/backend/s3_backend/s3_upload.go
++++ b/weed/storage/backend/s3_backend/s3_upload.go
+@@ -1,18 +1,19 @@
+ package s3_backend
+ 
+ import (
++	"context"
+ 	"fmt"
+ 	"os"
+ 	"sync"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
++	transfertypes "github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager/types"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ )
+ 
+-func uploadToS3(sess s3iface.S3API, filename string, destBucket string, destKey string, storageClass string, fn func(progressed int64, percentage float32) error, concurrency int) (fileSize int64, err error) {
++func uploadToS3(sess s3API, filename string, destBucket string, destKey string, storageClass string, fn func(progressed int64, percentage float32) error, concurrency int) (fileSize int64, err error) {
+ 	if concurrency <= 0 {
+ 		concurrency = defaultUploadConcurrency
+ 	}
+@@ -36,33 +37,36 @@ func uploadToS3(sess s3iface.S3API, filename string, destBucket string, destKey
+ 		partSize *= 4
+ 	}
+ 
+-	// Create an uploader with the session and custom options
+-	uploader := s3manager.NewUploaderWithClient(sess, func(u *s3manager.Uploader) {
+-		u.PartSize = partSize
+-		u.Concurrency = concurrency
++	// Use the maintained transfer manager with flexible checksums enabled. The
++	// underlying client has one SDK attempt, so an ambiguous mutation is not
++	// silently replayed.
++	uploader := transfermanager.New(sess, func(o *transfermanager.Options) {
++		o.PartSizeBytes = partSize
++		o.MultipartUploadThreshold = partSize
++		o.MaxUploadParts = 10000
++		o.Concurrency = concurrency
+ 	})
+ 
+ 	fileReader := &s3UploadProgressedReader{
+-		fp:      f,
+-		size:    fileSize,
+-		signMap: map[int64]struct{}{},
+-		fn:      fn,
++		fp:   f,
++		size: fileSize,
++		fn:   fn,
+ 	}
+ 
+ 	// Upload the file to S3.
+-	var result *s3manager.UploadOutput
+-	result, err = uploader.Upload(&s3manager.UploadInput{
++	var result *transfermanager.UploadObjectOutput
++	result, err = uploader.UploadObject(context.Background(), &transfermanager.UploadObjectInput{
+ 		Bucket:       aws.String(destBucket),
+ 		Key:          aws.String(destKey),
+ 		Body:         fileReader,
+-		StorageClass: aws.String(storageClass),
++		StorageClass: transfertypes.StorageClass(storageClass),
+ 	})
+ 
+ 	//in case it fails to upload
+ 	if err != nil {
+ 		return 0, fmt.Errorf("failed to upload file %s: %v", filename, err)
+ 	}
+-	glog.V(1).Infof("file %s uploaded to %s\n", filename, result.Location)
++	glog.V(1).Infof("file %s uploaded to %s\n", filename, aws.ToString(result.Location))
+ 
+ 	return
+ }
+@@ -70,43 +74,41 @@ func uploadToS3(sess s3iface.S3API, filename string, destBucket string, destKey
+ // adapted from https://github.com/aws/aws-sdk-go/pull/1868
+ // https://github.com/aws/aws-sdk-go/blob/main/example/service/s3/putObjectWithProcess/putObjWithProcess.go
+ type s3UploadProgressedReader struct {
+-	fp      *os.File
+-	size    int64
+-	read    int64
+-	signMap map[int64]struct{}
+-	mux     sync.Mutex
+-	fn      func(progressed int64, percentage float32) error
++	fp   *os.File
++	size int64
++	read int64
++	mux  sync.Mutex
++	fn   func(progressed int64, percentage float32) error
+ }
+ 
+ func (r *s3UploadProgressedReader) Read(p []byte) (int, error) {
+-	return r.fp.Read(p)
+-}
+-
+-func (r *s3UploadProgressedReader) ReadAt(p []byte, off int64) (int, error) {
+-	n, err := r.fp.ReadAt(p, off)
+-	if err != nil {
++	n, err := r.fp.Read(p)
++	if n == 0 {
+ 		return n, err
+ 	}
+-
+ 	r.mux.Lock()
+-	// Ignore the first signature call
+-	if _, ok := r.signMap[off]; ok {
+-		r.read += int64(n)
+-	} else {
+-		r.signMap[off] = struct{}{}
+-	}
++	r.read += int64(n)
++	read := r.read
+ 	r.mux.Unlock()
+-
+ 	if r.fn != nil {
+-		read := r.read
+-		if err := r.fn(read, float32(read*100)/float32(r.size)); err != nil {
+-			return n, err
++		if progressErr := r.fn(read, percentage(read, r.size)); progressErr != nil {
++			return n, progressErr
+ 		}
+ 	}
+-
+ 	return n, err
+ }
+ 
++func (r *s3UploadProgressedReader) ReadAt(p []byte, off int64) (int, error) {
++	return r.fp.ReadAt(p, off)
++}
++
+ func (r *s3UploadProgressedReader) Seek(offset int64, whence int) (int64, error) {
+ 	return r.fp.Seek(offset, whence)
+ }
++
++func percentage(done, total int64) float32 {
++	if total <= 0 {
++		return 100
++	}
++	return float32(done*100) / float32(total)
++}

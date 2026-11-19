@@ -1,0 +1,15 @@
+{
+  "schema": "ouf.ingestion401-auth-contract-read-qualification.v1",
+  "sourceCommit": "7a3006782c1b273aead7e7648f8f1c3a5b597f77",
+  "readerSha256": "b539b6643817eba01736e8676be91ed3dc337a93bdca8a9a00106c608d8f2c4e",
+  "ci": {
+    "run": 39301331242,
+    "job": 118226986975,
+    "tests": 7,
+    "status": "PASS"
+  },
+  "specific401CauseProven": false,
+  "targetDiagnosticExecuted": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}

@@ -1,0 +1,553 @@
+﻿2026-11-03T21:13:07.1747157Z Current runner version: '2.338.2'
+2026-11-03T21:13:07.1762399Z ##[group]Runner Image Provisioner
+2026-11-03T21:13:07.1762956Z Hosted Compute Agent
+2026-11-03T21:13:07.1763316Z Version: 20261021.618
+2026-11-03T21:13:07.1763689Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-03T21:13:07.1764141Z Build Date: 2026-10-21T00:45:21Z
+2026-11-03T21:13:07.1764574Z Worker ID: {d68e47cf-8b50-4dc7-a5df-364f40cc4607}
+2026-11-03T21:13:07.1764972Z Region: westus3
+2026-11-03T21:13:07.1765560Z Cloud: Azure
+2026-11-03T21:13:07.1765885Z ##[endgroup]
+2026-11-03T21:13:07.1766713Z ##[group]Operating System
+2026-11-03T21:13:07.1767103Z Ubuntu
+2026-11-03T21:13:07.1767409Z 24.04.5
+2026-11-03T21:13:07.1767763Z LTS
+2026-11-03T21:13:07.1768077Z ##[endgroup]
+2026-11-03T21:13:07.1768423Z ##[group]Runner Image
+2026-11-03T21:13:07.1768810Z Image: ubuntu-24.04
+2026-11-03T21:13:07.1769143Z Version: 20261025.353.1
+2026-11-03T21:13:07.1769899Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-03T21:13:07.1770762Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-03T21:13:07.1771344Z ##[endgroup]
+2026-11-03T21:13:07.1772075Z ##[group]GITHUB_TOKEN Permissions
+2026-11-03T21:13:07.1773160Z Attestations: write
+2026-11-03T21:13:07.1773509Z Contents: read
+2026-11-03T21:13:07.1773952Z Metadata: read
+2026-11-03T21:13:07.1774282Z ##[endgroup]
+2026-11-03T21:13:07.1775719Z Secret source: Actions
+2026-11-03T21:13:07.1776256Z Cache mode: write
+2026-11-03T21:13:07.1776646Z Prepare workflow directory
+2026-11-03T21:13:07.2000207Z Prepare all required actions
+2026-11-03T21:13:07.2028885Z Getting action download info
+2026-11-03T21:13:07.5015052Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-11-03T21:13:07.6070909Z Download action repository 'actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16' (SHA:924ae3a1cded613372ab5595356fb5720e22ba16)
+2026-11-03T21:13:08.2057232Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-03T21:13:08.4046348Z Complete job name: qualify-standard-profile
+2026-11-03T21:13:08.4672881Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-11-03T21:13:08.4673370Z with:
+2026-11-03T21:13:08.4673600Z   persist-credentials: false
+2026-11-03T21:13:08.4673874Z   repository: GioNob/ouf-deploy
+2026-11-03T21:13:08.4675973Z   token: ***
+2026-11-03T21:13:08.4676192Z   ssh-strict: true
+2026-11-03T21:13:08.4676425Z   ssh-user: git
+2026-11-03T21:13:08.4676641Z   clean: true
+2026-11-03T21:13:08.4676875Z   sparse-checkout-cone-mode: true
+2026-11-03T21:13:08.4677144Z   fetch-depth: 1
+2026-11-03T21:13:08.4677367Z   fetch-tags: false
+2026-11-03T21:13:08.4677596Z   show-progress: true
+2026-11-03T21:13:08.4677836Z   lfs: false
+2026-11-03T21:13:08.4678059Z   submodules: false
+2026-11-03T21:13:08.4678294Z   set-safe-directory: true
+2026-11-03T21:13:08.4678640Z env:
+2026-11-03T21:13:08.4678847Z   CGO_ENABLED: 0
+2026-11-03T21:13:08.4679070Z   GOTOOLCHAIN: local
+2026-11-03T21:13:08.4679322Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:13:08.4679625Z   GOSUMDB: sum.golang.org
+2026-11-03T21:13:08.4679867Z ##[endgroup]
+2026-11-03T21:13:08.6857361Z Syncing repository: GioNob/ouf-deploy
+2026-11-03T21:13:08.6858748Z ##[group]Getting Git version info
+2026-11-03T21:13:08.6859122Z Working directory is '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-03T21:13:08.6859651Z [command]/usr/bin/git version
+2026-11-03T21:13:08.6938240Z git version 2.56.0
+2026-11-03T21:13:08.6950988Z ##[endgroup]
+2026-11-03T21:13:08.6960532Z Temporarily overriding HOME='/home/runner/work/_temp/5530e5d8-cac9-4c97-aee3-e37acb0d6bb5' before making global git config changes
+2026-11-03T21:13:08.6961352Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T21:13:08.6966375Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-03T21:13:08.7008417Z Deleting the contents of '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-03T21:13:08.7011017Z ##[group]Initializing the repository
+2026-11-03T21:13:08.7013866Z [command]/usr/bin/git init /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-03T21:13:08.7096474Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-03T21:13:08.7097612Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-03T21:13:08.7098588Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-03T21:13:08.7099388Z hint: call:
+2026-11-03T21:13:08.7100038Z hint:
+2026-11-03T21:13:08.7100613Z hint: 	git config --global init.defaultBranch <name>
+2026-11-03T21:13:08.7101034Z hint:
+2026-11-03T21:13:08.7101342Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-03T21:13:08.7101824Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-03T21:13:08.7102381Z hint:
+2026-11-03T21:13:08.7102629Z hint: 	git branch -m <name>
+2026-11-03T21:13:08.7102883Z hint:
+2026-11-03T21:13:08.7103209Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-03T21:13:08.7106898Z Initialized empty Git repository in /home/runner/work/ouf-deploy/ouf-deploy/.git/
+2026-11-03T21:13:08.7114051Z [command]/usr/bin/git remote add origin https://github.com/GioNob/ouf-deploy
+2026-11-03T21:13:08.7224473Z ##[endgroup]
+2026-11-03T21:13:08.7225593Z ##[group]Disabling automatic garbage collection
+2026-11-03T21:13:08.7229730Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-03T21:13:08.7231278Z ##[endgroup]
+2026-11-03T21:13:08.7231693Z ##[group]Setting up auth
+2026-11-03T21:13:08.7232086Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T21:13:08.7233412Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T21:13:08.7534326Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T21:13:08.7569738Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T21:13:08.7752221Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-03T21:13:08.7792020Z ##[endgroup]
+2026-11-03T21:13:08.7792633Z ##[group]Fetching the repository
+2026-11-03T21:13:08.7800826Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +77215bee99bf52a476a1fcebc38b68ed5f4a8e81:refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-03T21:14:31.2203679Z From https://github.com/GioNob/ouf-deploy
+2026-11-03T21:14:31.2204375Z  * [new ref]         77215bee99bf52a476a1fcebc38b68ed5f4a8e81 -> origin/feat/m2-discovery-complete-profile-20261029
+2026-11-03T21:14:31.2207625Z ##[endgroup]
+2026-11-03T21:14:31.2208089Z ##[group]Determining the checkout info
+2026-11-03T21:14:31.2209864Z ##[endgroup]
+2026-11-03T21:14:31.2215346Z [command]/usr/bin/git sparse-checkout disable
+2026-11-03T21:14:31.2264965Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-03T21:14:31.2296494Z ##[group]Checking out the ref
+2026-11-03T21:14:31.2299611Z [command]/usr/bin/git checkout --progress --force -B feat/m2-discovery-complete-profile-20261029 refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-03T21:14:31.6384027Z Switched to a new branch 'feat/m2-discovery-complete-profile-20261029'
+2026-11-03T21:14:31.6387177Z branch 'feat/m2-discovery-complete-profile-20261029' set up to track 'origin/feat/m2-discovery-complete-profile-20261029'.
+2026-11-03T21:14:31.6426737Z ##[endgroup]
+2026-11-03T21:14:31.6473946Z [command]/usr/bin/git log -1 --format=%H
+2026-11-03T21:14:31.6502848Z 77215bee99bf52a476a1fcebc38b68ed5f4a8e81
+2026-11-03T21:14:31.6510083Z ##[group]Removing auth
+2026-11-03T21:14:31.6512321Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T21:14:31.6543987Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T21:14:31.6730657Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T21:14:31.6759171Z http.https://github.com/.extraheader
+2026-11-03T21:14:31.6764386Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-03T21:14:31.6796965Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T21:14:31.6977367Z ##[endgroup]
+2026-11-03T21:14:31.7158201Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-11-03T21:14:31.7158405Z with:
+2026-11-03T21:14:31.7158525Z   repository: seaweedfs/seaweedfs
+2026-11-03T21:14:31.7158685Z   ref: 984eac6a790be89e2a11de175a7413e1e3e32dd3
+2026-11-03T21:14:31.7158837Z   path: seaweedfs
+2026-11-03T21:14:31.7158957Z   persist-credentials: false
+2026-11-03T21:14:31.7160238Z   token: ***
+2026-11-03T21:14:31.7160370Z   ssh-strict: true
+2026-11-03T21:14:31.7160499Z   ssh-user: git
+2026-11-03T21:14:31.7160605Z   clean: true
+2026-11-03T21:14:31.7160722Z   sparse-checkout-cone-mode: true
+2026-11-03T21:14:31.7160863Z   fetch-depth: 1
+2026-11-03T21:14:31.7160972Z   fetch-tags: false
+2026-11-03T21:14:31.7161085Z   show-progress: true
+2026-11-03T21:14:31.7161202Z   lfs: false
+2026-11-03T21:14:31.7161307Z   submodules: false
+2026-11-03T21:14:31.7161421Z   set-safe-directory: true
+2026-11-03T21:14:31.7161544Z env:
+2026-11-03T21:14:31.7161652Z   CGO_ENABLED: 0
+2026-11-03T21:14:31.7161782Z   GOTOOLCHAIN: local
+2026-11-03T21:14:31.7161914Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:14:31.7162062Z   GOSUMDB: sum.golang.org
+2026-11-03T21:14:31.7162190Z ##[endgroup]
+2026-11-03T21:14:31.7689609Z Syncing repository: seaweedfs/seaweedfs
+2026-11-03T21:14:31.7690108Z ##[group]Getting Git version info
+2026-11-03T21:14:31.7690425Z Working directory is '/home/runner/work/ouf-deploy/ouf-deploy/seaweedfs'
+2026-11-03T21:14:31.7711623Z [command]/usr/bin/git version
+2026-11-03T21:14:31.7773210Z git version 2.56.0
+2026-11-03T21:14:31.7789172Z ##[endgroup]
+2026-11-03T21:14:31.7793905Z Temporarily overriding HOME='/home/runner/work/_temp/02a60d97-ca40-485f-abab-6eb577874ec0' before making global git config changes
+2026-11-03T21:14:31.7794670Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T21:14:31.7797730Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy/seaweedfs
+2026-11-03T21:14:31.7828233Z ##[group]Initializing the repository
+2026-11-03T21:14:31.7831298Z [command]/usr/bin/git init /home/runner/work/ouf-deploy/ouf-deploy/seaweedfs
+2026-11-03T21:14:31.7929223Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-03T21:14:31.7929730Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-03T21:14:31.7930153Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-03T21:14:31.7930499Z hint: call:
+2026-11-03T21:14:31.7930663Z hint:
+2026-11-03T21:14:31.7930894Z hint: 	git config --global init.defaultBranch <name>
+2026-11-03T21:14:31.7931112Z hint:
+2026-11-03T21:14:31.7931267Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-03T21:14:31.7931521Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-03T21:14:31.7931713Z hint:
+2026-11-03T21:14:31.7931825Z hint: 	git branch -m <name>
+2026-11-03T21:14:31.7932141Z hint:
+2026-11-03T21:14:31.7932320Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-03T21:14:31.7932614Z Initialized empty Git repository in /home/runner/work/ouf-deploy/ouf-deploy/seaweedfs/.git/
+2026-11-03T21:14:31.7939173Z [command]/usr/bin/git remote add origin https://github.com/seaweedfs/seaweedfs
+2026-11-03T21:14:31.7967555Z ##[endgroup]
+2026-11-03T21:14:31.7967894Z ##[group]Disabling automatic garbage collection
+2026-11-03T21:14:31.7970679Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-03T21:14:31.8005728Z ##[endgroup]
+2026-11-03T21:14:31.8006187Z ##[group]Setting up auth
+2026-11-03T21:14:31.8011167Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T21:14:31.8037334Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T21:14:31.8236674Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T21:14:31.8274340Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T21:14:31.8456205Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-03T21:14:31.8496060Z ##[endgroup]
+2026-11-03T21:14:31.8496399Z ##[group]Fetching the repository
+2026-11-03T21:14:31.8502130Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 984eac6a790be89e2a11de175a7413e1e3e32dd3
+2026-11-03T21:15:11.3822768Z From https://github.com/seaweedfs/seaweedfs
+2026-11-03T21:15:11.3823086Z  * branch            984eac6a790be89e2a11de175a7413e1e3e32dd3 -> FETCH_HEAD
+2026-11-03T21:15:11.3826640Z ##[endgroup]
+2026-11-03T21:15:11.3826846Z ##[group]Determining the checkout info
+2026-11-03T21:15:11.3828196Z ##[endgroup]
+2026-11-03T21:15:11.3832823Z [command]/usr/bin/git sparse-checkout disable
+2026-11-03T21:15:11.3874965Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-03T21:15:11.3906437Z ##[group]Checking out the ref
+2026-11-03T21:15:11.3909306Z [command]/usr/bin/git checkout --progress --force 984eac6a790be89e2a11de175a7413e1e3e32dd3
+2026-11-03T21:15:11.9841465Z Note: switching to '984eac6a790be89e2a11de175a7413e1e3e32dd3'.
+2026-11-03T21:15:11.9841731Z 
+2026-11-03T21:15:11.9841903Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-03T21:15:11.9842331Z changes and commit them, and you can discard any commits you make in this
+2026-11-03T21:15:11.9842672Z state without impacting any branches by switching back to a branch.
+2026-11-03T21:15:11.9842820Z 
+2026-11-03T21:15:11.9842918Z If you want to create a new branch to retain commits you create, you may
+2026-11-03T21:15:11.9843153Z do so (now or later) by using -c with the switch command. Example:
+2026-11-03T21:15:11.9843322Z 
+2026-11-03T21:15:11.9843398Z   git switch -c <new-branch-name>
+2026-11-03T21:15:11.9843489Z 
+2026-11-03T21:15:11.9843549Z Or undo this operation with:
+2026-11-03T21:15:11.9843631Z 
+2026-11-03T21:15:11.9843680Z   git switch -
+2026-11-03T21:15:11.9843787Z 
+2026-11-03T21:15:11.9855684Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-03T21:15:11.9855844Z 
+2026-11-03T21:15:11.9855896Z HEAD is now at 984eac6 4.52
+2026-11-03T21:15:11.9896212Z ##[endgroup]
+2026-11-03T21:15:11.9938058Z [command]/usr/bin/git log -1 --format=%H
+2026-11-03T21:15:11.9966515Z 984eac6a790be89e2a11de175a7413e1e3e32dd3
+2026-11-03T21:15:11.9973210Z ##[group]Removing auth
+2026-11-03T21:15:11.9975389Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T21:15:12.0011786Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T21:15:12.0196806Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T21:15:12.0221881Z http.https://github.com/.extraheader
+2026-11-03T21:15:12.0228391Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-03T21:15:12.0264779Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T21:15:12.0444249Z ##[endgroup]
+2026-11-03T21:15:12.0611608Z ##[group]Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+2026-11-03T21:15:12.0611810Z with:
+2026-11-03T21:15:12.0611919Z   go-version: 1.27.3
+2026-11-03T21:15:12.0612029Z   cache: false
+2026-11-03T21:15:12.0612136Z   check-latest: false
+2026-11-03T21:15:12.0613448Z   token: ***
+2026-11-03T21:15:12.0613550Z env:
+2026-11-03T21:15:12.0613660Z   CGO_ENABLED: 0
+2026-11-03T21:15:12.0613766Z   GOTOOLCHAIN: local
+2026-11-03T21:15:12.0613897Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:15:12.0614043Z   GOSUMDB: sum.golang.org
+2026-11-03T21:15:12.0614164Z ##[endgroup]
+2026-11-03T21:15:12.1390177Z Setup go version spec 1.27.3
+2026-11-03T21:15:12.1404786Z Attempting to download 1.27.3...
+2026-11-03T21:15:13.1443544Z matching 1.27.3...
+2026-11-03T21:15:13.1460359Z Acquiring 1.27.3 from https://github.com/actions/go-versions/releases/download/1.27.3-39437817176/go-1.27.3-linux-x64.tar.gz
+2026-11-03T21:15:13.6866163Z Extracting Go...
+2026-11-03T21:15:13.6950297Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/ebf7f2c3-bc9e-4299-847d-209461e3d57d -f /home/runner/work/_temp/da03ade3-fcdd-42df-a38d-de56f7c9e55a
+2026-11-03T21:15:14.9179852Z Successfully extracted go to /home/runner/work/_temp/ebf7f2c3-bc9e-4299-847d-209461e3d57d
+2026-11-03T21:15:14.9180134Z Adding to the cache ...
+2026-11-03T21:15:18.1377371Z Successfully cached go to /opt/hostedtoolcache/go/1.27.3/x64
+2026-11-03T21:15:18.1378855Z Added go to the path
+2026-11-03T21:15:18.1380567Z Successfully set up Go version 1.27.3
+2026-11-03T21:15:18.1564042Z go version go1.27.3 linux/amd64
+2026-11-03T21:15:18.1564160Z 
+2026-11-03T21:15:18.1564335Z ##[group]go env
+2026-11-03T21:15:18.2584848Z AR='ar'
+2026-11-03T21:15:18.2585043Z CC='gcc'
+2026-11-03T21:15:18.2585311Z CGO_CFLAGS='-O2 -g'
+2026-11-03T21:15:18.2585506Z CGO_CPPFLAGS=''
+2026-11-03T21:15:18.2585682Z CGO_CXXFLAGS='-O2 -g'
+2026-11-03T21:15:18.2585872Z CGO_ENABLED='0'
+2026-11-03T21:15:18.2586027Z CGO_FFLAGS='-O2 -g'
+2026-11-03T21:15:18.2586173Z CGO_LDFLAGS='-O2 -g'
+2026-11-03T21:15:18.2586285Z CXX='g++'
+2026-11-03T21:15:18.2586389Z GCCGO='gccgo'
+2026-11-03T21:15:18.2586495Z GO111MODULE=''
+2026-11-03T21:15:18.2586598Z GOAMD64='v1'
+2026-11-03T21:15:18.2586701Z GOARCH='amd64'
+2026-11-03T21:15:18.2586801Z GOAUTH='netrc'
+2026-11-03T21:15:18.2586915Z GOBIN='/home/runner/go/bin'
+2026-11-03T21:15:18.2587070Z GOCACHE='/home/runner/.cache/go-build'
+2026-11-03T21:15:18.2587211Z GOCACHEPROG=''
+2026-11-03T21:15:18.2587321Z GODEBUG=''
+2026-11-03T21:15:18.2587435Z GOENV='/home/runner/.config/go/env'
+2026-11-03T21:15:18.2587570Z GOEXE=''
+2026-11-03T21:15:18.2587669Z GOEXPERIMENT=''
+2026-11-03T21:15:18.2587778Z GOFIPS140='off'
+2026-11-03T21:15:18.2587881Z GOFLAGS=''
+2026-11-03T21:15:18.2588228Z GOGCCFLAGS='-fPIC -m64 -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=/tmp/go-build3803813510=/tmp/go-build -gno-record-gcc-switches'
+2026-11-03T21:15:18.2588557Z GOHOSTARCH='amd64'
+2026-11-03T21:15:18.2588667Z GOHOSTOS='linux'
+2026-11-03T21:15:18.2588777Z GOINSECURE=''
+2026-11-03T21:15:18.2588881Z GOMOD='/dev/null'
+2026-11-03T21:15:18.2589009Z GOMODCACHE='/home/runner/go/pkg/mod'
+2026-11-03T21:15:18.2589147Z GONOPROXY=''
+2026-11-03T21:15:18.2589248Z GONOSUMDB=''
+2026-11-03T21:15:18.2589348Z GOOS='linux'
+2026-11-03T21:15:18.2589476Z GOPACKAGESDRIVER=''
+2026-11-03T21:15:18.2589597Z GOPATH='/home/runner/go'
+2026-11-03T21:15:18.2589919Z GOPRIVATE=''
+2026-11-03T21:15:18.2590065Z GOPROXY='https://proxy.golang.org'
+2026-11-03T21:15:18.2590239Z GOROOT='/opt/hostedtoolcache/go/1.27.3/x64'
+2026-11-03T21:15:18.2590397Z GOSUMDB='sum.golang.org'
+2026-11-03T21:15:18.2590523Z GOTELEMETRY='local'
+2026-11-03T21:15:18.2590663Z GOTELEMETRYDIR='/home/runner/.config/go/telemetry'
+2026-11-03T21:15:18.2590819Z GOTMPDIR=''
+2026-11-03T21:15:18.2590922Z GOTOOLCHAIN='local'
+2026-11-03T21:15:18.2591087Z GOTOOLDIR='/opt/hostedtoolcache/go/1.27.3/x64/pkg/tool/linux_amd64'
+2026-11-03T21:15:18.2591268Z GOVCS=''
+2026-11-03T21:15:18.2591373Z GOVERSION='go1.27.3'
+2026-11-03T21:15:18.2591624Z GOWORK=''
+2026-11-03T21:15:18.2591734Z PKG_CONFIG='pkg-config'
+2026-11-03T21:15:18.2591813Z 
+2026-11-03T21:15:18.2592018Z ##[endgroup]
+2026-11-03T21:15:18.2774443Z ##[group]Run set -euo pipefail
+2026-11-03T21:15:18.2774650Z [36;1mset -euo pipefail[0m
+2026-11-03T21:15:18.2774862Z [36;1mtest "$(git rev-parse HEAD)" = 984eac6a790be89e2a11de175a7413e1e3e32dd3[0m
+2026-11-03T21:15:18.2775128Z [36;1mmkdir -p "$RUNNER_TEMP/storage-ouf-standard-evidence"[0m
+2026-11-03T21:15:18.2775950Z [36;1mpython3 -I -B -S ../scripts/qualify-seaweedfs-452-generation32-image.py patch-paths > "$RUNNER_TEMP/storage-ouf-standard-evidence/ordered-patch-paths.txt"[0m
+2026-11-03T21:15:18.2776313Z [36;1mwhile IFS= read -r patch; do[0m
+2026-11-03T21:15:18.2776548Z [36;1m  sha256sum "../$patch" >> "$RUNNER_TEMP/storage-ouf-standard-evidence/patches-sha256.txt"[0m
+2026-11-03T21:15:18.2776791Z [36;1m  git apply --check "../$patch"[0m
+2026-11-03T21:15:18.2776939Z [36;1m  git apply --index "../$patch"[0m
+2026-11-03T21:15:18.2777156Z [36;1mdone < "$RUNNER_TEMP/storage-ouf-standard-evidence/ordered-patch-paths.txt"[0m
+2026-11-03T21:15:18.2777412Z [36;1mgit diff --cached --check[0m
+2026-11-03T21:15:18.2777636Z [36;1mtest "$(wc -l < "$RUNNER_TEMP/storage-ouf-standard-evidence/patches-sha256.txt")" -eq 32[0m
+2026-11-03T21:15:18.2778029Z [36;1mprintf '%s\n' 984eac6a790be89e2a11de175a7413e1e3e32dd3 > "$RUNNER_TEMP/storage-ouf-standard-evidence/upstream-source-sha.txt"[0m
+2026-11-03T21:15:18.2778420Z [36;1mgit diff --cached --stat > "$RUNNER_TEMP/storage-ouf-standard-evidence/patch-stat.txt"[0m
+2026-11-03T21:15:18.2798068Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:15:18.2798208Z env:
+2026-11-03T21:15:18.2798310Z   CGO_ENABLED: 0
+2026-11-03T21:15:18.2798422Z   GOTOOLCHAIN: local
+2026-11-03T21:15:18.2798559Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:15:18.2798704Z   GOSUMDB: sum.golang.org
+2026-11-03T21:15:18.2798825Z ##[endgroup]
+2026-11-03T21:15:19.0500680Z ##[group]Run set -euo pipefail
+2026-11-03T21:15:19.0500883Z [36;1mset -euo pipefail[0m
+2026-11-03T21:15:19.0501055Z [36;1mevidence="$RUNNER_TEMP/storage-ouf-standard-evidence"[0m
+2026-11-03T21:15:19.0501297Z [36;1mgo mod tidy -diff > "$evidence/tidy.diff" 2> "$evidence/tidy.stderr"[0m
+2026-11-03T21:15:19.0501506Z [36;1mtest ! -s "$evidence/tidy.diff"[0m
+2026-11-03T21:15:19.0501682Z [36;1mgo mod graph > "$evidence/root-module-graph.txt"[0m
+2026-11-03T21:15:19.0501890Z [36;1mgo list -m all > "$evidence/root-modules.txt"[0m
+2026-11-03T21:15:19.0502305Z [36;1mif grep -E '(^| )github.com/(aws/aws-sdk-go|aws/aws-sdk-go-v2/feature/s3/manager|olivere/elastic/v7|rclone/rclone)(@| |$)' "$evidence/root-module-graph.txt" "$evidence/root-modules.txt"; then[0m
+2026-11-03T21:15:19.0502690Z [36;1m  exit 1[0m
+2026-11-03T21:15:19.0502797Z [36;1mfi[0m
+2026-11-03T21:15:19.0502986Z [36;1m(grep -RIl --include='*.go' -F '"github.com/aws/aws-sdk-go/' . || test "$?" -eq 1) |[0m
+2026-11-03T21:15:19.0503292Z [36;1m  LC_ALL=C sort > "$evidence/remaining-direct-sdk-v1-importers.txt"[0m
+2026-11-03T21:15:19.0503538Z [36;1mtest ! -s "$evidence/remaining-direct-sdk-v1-importers.txt"[0m
+2026-11-03T21:15:19.0503775Z [36;1msha256sum go.mod go.sum > "$evidence/root-lockfiles-sha256.txt"[0m
+2026-11-03T21:15:19.0519504Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:15:19.0519638Z env:
+2026-11-03T21:15:19.0519740Z   CGO_ENABLED: 0
+2026-11-03T21:15:19.0519973Z   GOTOOLCHAIN: local
+2026-11-03T21:15:19.0520114Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:15:19.0520262Z   GOSUMDB: sum.golang.org
+2026-11-03T21:15:19.0520389Z ##[endgroup]
+2026-11-03T21:16:06.6046951Z ##[group]Run set -euo pipefail
+2026-11-03T21:16:06.6047169Z [36;1mset -euo pipefail[0m
+2026-11-03T21:16:06.6047330Z [36;1mgo test -mod=readonly -count=1 -timeout=4m -json \[0m
+2026-11-03T21:16:06.6047554Z [36;1m  ./weed/command ./weed/filer ./weed/filer/mongodb ./weed/iam \[0m
+2026-11-03T21:16:06.6047812Z [36;1m  ./weed/iam/integration ./weed/iam/ldap ./weed/iam/oidc ./weed/iam/policy \[0m
+2026-11-03T21:16:06.6048085Z [36;1m  ./weed/iam/providers ./weed/iam/sts ./weed/iam/util ./weed/iam/utils \[0m
+2026-11-03T21:16:06.6048327Z [36;1m  ./weed/iam/wire ./weed/iamapi ./weed/kms ./weed/kms/aws \[0m
+2026-11-03T21:16:06.6048582Z [36;1m  ./weed/kms/gcp ./weed/kms/local ./weed/notification ./weed/notification/aws_sqs \[0m
+2026-11-03T21:16:06.6048947Z [36;1m  ./weed/notification/gocdk_pub_sub ./weed/notification/google_pub_sub ./weed/notification/kafka ./weed/notification/log \[0m
+2026-11-03T21:16:06.6049388Z [36;1m  ./weed/notification/webhook ./weed/remote_storage ./weed/remote_storage/azure ./weed/remote_storage/gcs \[0m
+2026-11-03T21:16:06.6049754Z [36;1m  ./weed/remote_storage/s3 ./weed/replication ./weed/replication/repl_util ./weed/replication/sink \[0m
+2026-11-03T21:16:06.6050163Z [36;1m  ./weed/replication/sink/azuresink ./weed/replication/sink/b2sink ./weed/replication/sink/filersink ./weed/replication/sink/gcssink \[0m
+2026-11-03T21:16:06.6050599Z [36;1m  ./weed/replication/sink/localsink ./weed/replication/sink/s3sink ./weed/replication/source ./weed/replication/sub \[0m
+2026-11-03T21:16:06.6050940Z [36;1m  ./weed/s3api ./weed/s3api/s3_constants ./weed/s3api/s3err ./weed/s3api/wire \[0m
+2026-11-03T21:16:06.6051279Z [36;1m  ./weed/storage/backend/s3_backend ./weed/storage/needle_map ./weed/storage/needle_map/old ./weed/util/googleprofile \[0m
+2026-11-03T21:16:06.6051807Z [36;1m  ./weed/util/httpdown ./weed/util/raftstore > "$RUNNER_TEMP/storage-ouf-standard-evidence/regressions.jsonl" 2> "$RUNNER_TEMP/storage-ouf-standard-evidence/regressions.stderr"[0m
+2026-11-03T21:16:06.6052290Z [36;1mpython3 -I -B -S ../scripts/qualify-seaweedfs-452-generation32-image.py regressions \[0m
+2026-11-03T21:16:06.6052592Z [36;1m  "$RUNNER_TEMP/storage-ouf-standard-evidence/regressions.jsonl" main \[0m
+2026-11-03T21:16:06.6052862Z [36;1m  > "$RUNNER_TEMP/storage-ouf-standard-evidence/regression-counts.json"[0m
+2026-11-03T21:16:06.6068147Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:16:06.6068276Z env:
+2026-11-03T21:16:06.6068382Z   CGO_ENABLED: 0
+2026-11-03T21:16:06.6068491Z   GOTOOLCHAIN: local
+2026-11-03T21:16:06.6068630Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:16:06.6068775Z   GOSUMDB: sum.golang.org
+2026-11-03T21:16:06.6068898Z ##[endgroup]
+2026-11-03T21:18:35.0661663Z ##[group]Run set -euo pipefail
+2026-11-03T21:18:35.0661858Z [36;1mset -euo pipefail[0m
+2026-11-03T21:18:35.0662046Z [36;1mevidence="$RUNNER_TEMP/storage-ouf-standard-evidence"[0m
+2026-11-03T21:18:35.0662291Z [36;1mgo test -mod=readonly -count=1 -timeout=4m -json ./weed/server \[0m
+2026-11-03T21:18:35.0662557Z [36;1m  > "$evidence/server-focused.jsonl" 2> "$evidence/server-focused.stderr"[0m
+2026-11-03T21:18:35.0662864Z [36;1mpython3 -I -B -S ../scripts/qualify-seaweedfs-452-generation32-image.py regressions \[0m
+2026-11-03T21:18:35.0663180Z [36;1m  "$evidence/server-focused.jsonl" server > "$evidence/server-focused-counts.json"[0m
+2026-11-03T21:18:35.0663462Z [36;1mgo test -mod=readonly -count=1 -timeout=90s -json ./weed/storage \[0m
+2026-11-03T21:18:35.0663708Z [36;1m  -run 'Test.*(Compact|Compaction|NeedleMap|NeedleIndex|Idx)' \[0m
+2026-11-03T21:18:35.0663975Z [36;1m  > "$evidence/storage-focused.jsonl" 2> "$evidence/storage-focused.stderr"[0m
+2026-11-03T21:18:35.0664309Z [36;1mpython3 -I -B -S ../scripts/qualify-seaweedfs-452-generation32-image.py regressions \[0m
+2026-11-03T21:18:35.0664758Z [36;1m  "$evidence/storage-focused.jsonl" storage > "$evidence/storage-focused-counts.json"[0m
+2026-11-03T21:18:35.0680422Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:18:35.0680554Z env:
+2026-11-03T21:18:35.0680657Z   CGO_ENABLED: 0
+2026-11-03T21:18:35.0680767Z   GOTOOLCHAIN: local
+2026-11-03T21:18:35.0680910Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:18:35.0681059Z   GOSUMDB: sum.golang.org
+2026-11-03T21:18:35.0681184Z ##[endgroup]
+2026-11-03T21:20:54.6499029Z ##[group]Run set -euo pipefail
+2026-11-03T21:20:54.6499229Z [36;1mset -euo pipefail[0m
+2026-11-03T21:20:54.6499403Z [36;1mevidence="$RUNNER_TEMP/storage-ouf-standard-evidence"[0m
+2026-11-03T21:20:54.6499641Z [36;1mgo test -mod=readonly -count=1 -timeout=3m -json ./weed/shell \[0m
+2026-11-03T21:20:54.6499901Z [36;1m  > "$evidence/shell-hosted.jsonl" 2> "$evidence/shell-hosted.stderr"[0m
+2026-11-03T21:20:54.6500217Z [36;1mpython3 -I -B -S ../scripts/qualify-seaweedfs-452-generation32-image.py hosted-regressions \[0m
+2026-11-03T21:20:54.6500557Z [36;1m  "$evidence/shell-hosted.jsonl" shell > "$evidence/shell-hosted-counts.json"[0m
+2026-11-03T21:20:54.6516506Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:20:54.6516640Z env:
+2026-11-03T21:20:54.6516743Z   CGO_ENABLED: 0
+2026-11-03T21:20:54.6516852Z   GOTOOLCHAIN: local
+2026-11-03T21:20:54.6516991Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:20:54.6517139Z   GOSUMDB: sum.golang.org
+2026-11-03T21:20:54.6517298Z ##[endgroup]
+2026-11-03T21:21:03.8337451Z ##[group]Run set -euo pipefail
+2026-11-03T21:21:03.8337746Z [36;1mset -euo pipefail[0m
+2026-11-03T21:21:03.8338026Z [36;1mevidence="$RUNNER_TEMP/storage-ouf-standard-evidence"[0m
+2026-11-03T21:21:03.8338423Z [36;1mCGO_ENABLED=1 go test -mod=readonly -race -count=1 -timeout=90s -json \[0m
+2026-11-03T21:21:03.8339035Z [36;1m  ./weed/util/httpdown ./weed/util/raftstore ./weed/replication/sink/filersink > "$evidence/race.jsonl" 2> "$evidence/race.stderr"[0m
+2026-11-03T21:21:03.8339681Z [36;1mpython3 -I -B -S ../scripts/qualify-seaweedfs-452-generation32-image.py regressions \[0m
+2026-11-03T21:21:03.8340162Z [36;1m  "$evidence/race.jsonl" race > "$evidence/race-counts.json"[0m
+2026-11-03T21:21:03.8360176Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:21:03.8360326Z env:
+2026-11-03T21:21:03.8360434Z   CGO_ENABLED: 0
+2026-11-03T21:21:03.8360550Z   GOTOOLCHAIN: local
+2026-11-03T21:21:03.8360696Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:21:03.8360995Z   GOSUMDB: sum.golang.org
+2026-11-03T21:21:03.8361186Z ##[endgroup]
+2026-11-03T21:21:40.7818459Z ##[group]Run set -euo pipefail
+2026-11-03T21:21:40.7818653Z [36;1mset -euo pipefail[0m
+2026-11-03T21:21:40.7818846Z [36;1mpython3 -I -B -S scripts/qualify-seaweedfs-raftstore-compat.py \[0m
+2026-11-03T21:21:40.7819134Z [36;1m  --source seaweedfs --work "$RUNNER_TEMP/generation32-raftstore-compat" --go go[0m
+2026-11-03T21:21:40.7819430Z [36;1mcp "$RUNNER_TEMP/generation32-raftstore-compat/compat-receipt.json" \[0m
+2026-11-03T21:21:40.7819698Z [36;1m  "$RUNNER_TEMP/generation32-raftstore-compat/compat-tests.jsonl" \[0m
+2026-11-03T21:21:40.7819980Z [36;1m  "$RUNNER_TEMP/generation32-raftstore-compat/compat-tests.jsonl.stderr" \[0m
+2026-11-03T21:21:40.7820219Z [36;1m  "$RUNNER_TEMP/storage-ouf-standard-evidence/"[0m
+2026-11-03T21:21:40.7835422Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:21:40.7835551Z env:
+2026-11-03T21:21:40.7835650Z   CGO_ENABLED: 0
+2026-11-03T21:21:40.7835761Z   GOTOOLCHAIN: local
+2026-11-03T21:21:40.7835896Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:21:40.7836068Z   GOSUMDB: sum.golang.org
+2026-11-03T21:21:40.7836188Z ##[endgroup]
+2026-11-03T21:21:41.7028772Z {"candidateModuleFilesUnchanged": {"go.mod": "eb6b1c7d7871c857fae8da9e9cb6f282c2812bb988a29b76a6fbab5b9441bdc8", "go.sum": "5bf04778982209263172e76833a9800eb7b2470d8613b4ad50934570544297a4"}, "candidateRequirementPinsUnchanged": true, "crashOrPowerLossQualified": false, "dbFormatMigrationPerformed": false, "fixtureSha256": "76f2a6adcc11ed5031cf3ea324af948eae361883f7e9b5d75baa76bf41697c0c", "oracle": "github.com/hashicorp/raft-boltdb/v2@v2.4.2", "oracleContainsArchivedBoltOutsideCandidateOnly": true, "runtimeAuthorityIssued": false, "schema": "ouf.raftstore-local-compatibility.v1", "status": "LOCAL_DB_FILE_COMPATIBILITY_VERIFIED_NOT_RUNTIME_ACCEPTANCE", "targetOperations": 0, "testsPassed": ["TestLocalFileReadByOldV2AndReadOnlyLocalDoesNotChangeBytes", "TestLogStoreMonotonicInterfaceRemainsUnclaimed", "TestOldV2FileReadAndWriteWithLocalThenReopenOldV2"]}
+2026-11-03T21:21:41.7124389Z ##[group]Run set -euo pipefail
+2026-11-03T21:21:41.7124591Z [36;1mset -euo pipefail[0m
+2026-11-03T21:21:41.7124766Z [36;1mevidence="$RUNNER_TEMP/storage-ouf-standard-evidence"[0m
+2026-11-03T21:21:41.7125505Z [36;1mgo test -mod=readonly -run '^(TestBucketPolicySDKV2|TestNormalSDKV2|TestPolicyIAMSDKV2|TestNormalIAMSDKV2)' -count=1 -timeout=60s -json ./test/s3/policy ./test/s3/normal > "$evidence/root-iam-regressions.jsonl" 2> "$evidence/root-iam-regressions.stderr"[0m
+2026-11-03T21:21:41.7126180Z [36;1msha256sum test/s3/iam/go.mod test/s3/iam/go.sum test/kafka/go.mod test/kafka/go.sum > "$evidence/nested-lockfiles-before.sha256"[0m
+2026-11-03T21:21:41.7126485Z [36;1m([0m
+2026-11-03T21:21:41.7126592Z [36;1m  cd test/s3/iam[0m
+2026-11-03T21:21:41.7127075Z [36;1m  go test -mod=readonly -run '^Test(IAMFrameworkV2|IAMFixtureS3V2|IAMFixtureRawQueryV2|SignSigV4Request)' -count=1 -timeout=60s -json ./... > "$evidence/nested-iam-regressions.jsonl" 2> "$evidence/nested-iam-regressions.stderr"[0m
+2026-11-03T21:21:41.7127534Z [36;1m)[0m
+2026-11-03T21:21:41.7127633Z [36;1m([0m
+2026-11-03T21:21:41.7127738Z [36;1m  cd test/kafka[0m
+2026-11-03T21:21:41.7127939Z [36;1m  go mod tidy -diff > "$evidence/kafka-tidy.diff" 2> "$evidence/kafka-tidy.stderr"[0m
+2026-11-03T21:21:41.7128179Z [36;1m  test ! -s "$evidence/kafka-tidy.diff"[0m
+2026-11-03T21:21:41.7128461Z [36;1m  go test -mod=readonly -run '^$' -json ./... > "$evidence/kafka-compile.jsonl" 2> "$evidence/kafka-compile.stderr"[0m
+2026-11-03T21:21:41.7128719Z [36;1m)[0m
+2026-11-03T21:21:41.7128897Z [36;1msha256sum --strict --check "$evidence/nested-lockfiles-before.sha256"[0m
+2026-11-03T21:21:41.7144618Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:21:41.7144753Z env:
+2026-11-03T21:21:41.7144854Z   CGO_ENABLED: 0
+2026-11-03T21:21:41.7144964Z   GOTOOLCHAIN: local
+2026-11-03T21:21:41.7145102Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:21:41.7145417Z   GOSUMDB: sum.golang.org
+2026-11-03T21:21:41.7145545Z ##[endgroup]
+2026-11-03T21:21:55.0193016Z test/s3/iam/go.mod: OK
+2026-11-03T21:21:55.0193377Z test/s3/iam/go.sum: OK
+2026-11-03T21:21:55.0193574Z test/kafka/go.mod: OK
+2026-11-03T21:21:55.0193757Z test/kafka/go.sum: OK
+2026-11-03T21:21:55.0218514Z ##[group]Run set -euo pipefail
+2026-11-03T21:21:55.0218735Z [36;1mset -euo pipefail[0m
+2026-11-03T21:21:55.0218913Z [36;1mevidence="$RUNNER_TEMP/storage-ouf-standard-evidence"[0m
+2026-11-03T21:21:55.0219105Z [36;1mgit diff --exit-code[0m
+2026-11-03T21:21:55.0219326Z [36;1mgo list -mod=readonly -deps ./weed | LC_ALL=C sort -u > "$evidence/production-deps.txt"[0m
+2026-11-03T21:21:55.0219637Z [36;1mgo build -mod=readonly -trimpath -o "$RUNNER_TEMP/generation32-weed" ./weed[0m
+2026-11-03T21:21:55.0219917Z [36;1mgo version -m "$RUNNER_TEMP/generation32-weed" > "$evidence/build-info.txt"[0m
+2026-11-03T21:21:55.0220164Z [36;1mgit write-tree > "$evidence/patched-source-tree.txt"[0m
+2026-11-03T21:21:55.0220350Z [36;1mpython3 - <<'PYCODE'[0m
+2026-11-03T21:21:55.0220498Z [36;1mimport hashlib, json, os, pathlib, shutil[0m
+2026-11-03T21:21:55.0220751Z [36;1mevidence = pathlib.Path(os.environ["RUNNER_TEMP"]) / "storage-ouf-standard-evidence"[0m
+2026-11-03T21:21:55.0221133Z [36;1mmanifest_path = pathlib.Path("../releases/seaweedfs-452-generation32-build-manifest-20261103.json")[0m
+2026-11-03T21:21:55.0221428Z [36;1mmanifest = json.loads(manifest_path.read_bytes())[0m
+2026-11-03T21:21:55.0221643Z [36;1msha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()[0m
+2026-11-03T21:21:55.0221891Z [36;1mbinary = pathlib.Path(os.environ["RUNNER_TEMP"]) / "generation32-weed"[0m
+2026-11-03T21:21:55.0222258Z [36;1massert sha(binary) == manifest["build"]["binarySha256"][0m
+2026-11-03T21:21:55.0222535Z [36;1massert sha(evidence / "production-deps.txt") == manifest["build"]["compiledPackagesSha256"][0m
+2026-11-03T21:21:55.0222901Z [36;1massert len((evidence / "production-deps.txt").read_text().splitlines()) == manifest["build"]["compiledPackages"][0m
+2026-11-03T21:21:55.0223292Z [36;1massert (evidence / "patched-source-tree.txt").read_text().strip() == manifest["build"]["patchedSourceTree"][0m
+2026-11-03T21:21:55.0223620Z [36;1mbuild = pathlib.Path(os.environ["RUNNER_TEMP"]) / "generation32-build"[0m
+2026-11-03T21:21:55.0223824Z [36;1mbuild.mkdir()[0m
+2026-11-03T21:21:55.0223963Z [36;1mshutil.copyfile(binary, build / "weed")[0m
+2026-11-03T21:21:55.0224145Z [36;1mshutil.copyfile("LICENSE", build / "LICENSE")[0m
+2026-11-03T21:21:55.0224376Z [36;1mshutil.copyfile(evidence / "production-deps.txt", build / "compiled-deps")[0m
+2026-11-03T21:21:55.0224661Z [36;1mfor name in ("build-info.txt", "root-modules.txt", "root-module-graph.txt"):[0m
+2026-11-03T21:21:55.0224903Z [36;1m    shutil.copyfile(evidence / name, build / name)[0m
+2026-11-03T21:21:55.0225660Z [36;1msource = {"upstreamCommit": manifest["upstreamCommit"], "orderedPatchCount": 32,[0m
+2026-11-03T21:21:55.0225918Z [36;1m          "patchManifestSha256": sha(manifest_path),[0m
+2026-11-03T21:21:55.0226159Z [36;1m          "patchedTree": (evidence / "patched-source-tree.txt").read_text().strip(),[0m
+2026-11-03T21:21:55.0226475Z [36;1m          "rootLockfilesSha256": {name: sha(pathlib.Path(name)) for name in ("go.mod", "go.sum")},[0m
+2026-11-03T21:21:55.0226855Z [36;1m          "nestedKafkaLockfilesSha256": {name: sha(pathlib.Path(name)) for name in ("test/kafka/go.mod", "test/kafka/go.sum")},[0m
+2026-11-03T21:21:55.0227273Z [36;1m          "moduleEvidenceSha256": {name: sha(build / name) for name in ("root-modules.txt", "root-module-graph.txt")},[0m
+2026-11-03T21:21:55.0227655Z [36;1m          "regressionEvidence": {profile: json.loads((evidence / name).read_bytes()) for profile, name in[0m
+2026-11-03T21:21:55.0227988Z [36;1m              (("main", "regression-counts.json"), ("server", "server-focused-counts.json"),[0m
+2026-11-03T21:21:55.0228313Z [36;1m               ("storage", "storage-focused-counts.json"), ("race", "race-counts.json"))},[0m
+2026-11-03T21:21:55.0228656Z [36;1m          "hostedRegressionEvidence": {"shell": json.loads((evidence / "shell-hosted-counts.json").read_bytes())},[0m
+2026-11-03T21:21:55.0229124Z [36;1m          "dbCompatibility": json.loads((evidence / "compat-receipt.json").read_bytes())}[0m
+2026-11-03T21:21:55.0229445Z [36;1m(build / "build-source.json").write_text(json.dumps(source, sort_keys=True, indent=2) + "\n")[0m
+2026-11-03T21:21:55.0229675Z [36;1mPYCODE[0m
+2026-11-03T21:21:55.0244691Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:21:55.0244822Z env:
+2026-11-03T21:21:55.0244929Z   CGO_ENABLED: 0
+2026-11-03T21:21:55.0245044Z   GOTOOLCHAIN: local
+2026-11-03T21:21:55.0245432Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:21:55.0245584Z   GOSUMDB: sum.golang.org
+2026-11-03T21:21:55.0245706Z ##[endgroup]
+2026-11-03T21:23:37.5439655Z Traceback (most recent call last):
+2026-11-03T21:23:37.5440016Z   File "<stdin>", line 10, in <module>
+2026-11-03T21:23:37.5440240Z AssertionError
+2026-11-03T21:23:37.5542082Z ##[error]Process completed with exit code 1.
+2026-11-03T21:23:37.5616745Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-03T21:23:37.5616958Z with:
+2026-11-03T21:23:37.5617109Z   name: seaweedfs-generation32-build-evidence-41719761247
+2026-11-03T21:23:37.5617331Z   path: /home/runner/work/_temp/storage-ouf-standard-evidence/
+2026-11-03T21:23:37.5617517Z   if-no-files-found: error
+2026-11-03T21:23:37.5617640Z   retention-days: 90
+2026-11-03T21:23:37.5617758Z   compression-level: 6
+2026-11-03T21:23:37.5617872Z   overwrite: false
+2026-11-03T21:23:37.5617987Z   include-hidden-files: false
+2026-11-03T21:23:37.5618278Z env:
+2026-11-03T21:23:37.5618375Z   CGO_ENABLED: 0
+2026-11-03T21:23:37.5618482Z   GOTOOLCHAIN: local
+2026-11-03T21:23:37.5618615Z   GOPROXY: https://proxy.golang.org
+2026-11-03T21:23:37.5618760Z   GOSUMDB: sum.golang.org
+2026-11-03T21:23:37.5618876Z ##[endgroup]
+2026-11-03T21:23:37.6634979Z (node:37897) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-03T21:23:37.6635584Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-03T21:23:37.6710222Z With the provided path, there will be 40 files uploaded
+2026-11-03T21:23:37.6714916Z Artifact name is valid!
+2026-11-03T21:23:37.6715344Z Root directory input is valid!
+2026-11-03T21:23:38.0561176Z Beginning upload of artifact content to blob storage
+2026-11-03T21:23:38.1492532Z (node:37897) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-03T21:23:38.5821316Z Uploaded bytes 777019
+2026-11-03T21:23:38.6377018Z Finished uploading artifact content to blob storage!
+2026-11-03T21:23:38.6377761Z SHA256 digest of uploaded artifact zip is 50a4aa1131b8f2474f3bdb1e09e8c717c6f499375626a0e3f3e52fd06c3b3c3b
+2026-11-03T21:23:38.6378950Z Finalizing artifact upload
+2026-11-03T21:23:39.2063915Z Artifact seaweedfs-generation32-build-evidence-41719761247.zip successfully finalized. Artifact ID 13272057006
+2026-11-03T21:23:39.2064516Z Artifact seaweedfs-generation32-build-evidence-41719761247 has been successfully uploaded! Final size is 777019 bytes. Artifact ID is 13272057006
+2026-11-03T21:23:39.2068609Z Artifact download URL: https://github.com/GioNob/ouf-deploy/actions/runs/41719761247/artifacts/13272057006
+2026-11-03T21:23:39.2229768Z Post job cleanup.
+2026-11-03T21:23:39.2748632Z [command]/usr/bin/git version
+2026-11-03T21:23:39.2781775Z git version 2.56.0
+2026-11-03T21:23:39.2805486Z Temporarily overriding HOME='/home/runner/work/_temp/3cd8a1f4-9775-4c0c-b453-d07ea4bd6e1c' before making global git config changes
+2026-11-03T21:23:39.2805998Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T21:23:39.2809122Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy/seaweedfs
+2026-11-03T21:23:39.2839846Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T21:23:39.2867765Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T21:23:39.3068662Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T21:23:39.3100511Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T21:23:39.3453737Z Post job cleanup.
+2026-11-03T21:23:39.3977642Z [command]/usr/bin/git version
+2026-11-03T21:23:39.4011886Z git version 2.56.0
+2026-11-03T21:23:39.4034676Z Temporarily overriding HOME='/home/runner/work/_temp/0d613f5e-61f2-4559-96a1-9a636ee0096e' before making global git config changes
+2026-11-03T21:23:39.4035445Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T21:23:39.4037562Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-03T21:23:39.4069029Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T21:23:39.4095442Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T21:23:39.4327517Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T21:23:39.4400619Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T21:23:39.4791326Z Cleaning up orphan processes
+2026-11-03T21:23:39.5002864Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

@@ -1,0 +1,6 @@
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_google_tag.go:6:9: undefined: OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE
+weed/command/ouf_unsupported_kafka_tag.go:7:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_KAFKA_NOTIFICATION_OR_REPLICATION
+weed/command/ouf_unsupported_openbao_tags.go:7:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_OPENBAO_OR_VAULT
+weed/command/ouf_unsupported_optional_tags.go:8:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE
+weed/command/filer_meta_tail.go:98:24: undefined: sendToElasticSearchFunc

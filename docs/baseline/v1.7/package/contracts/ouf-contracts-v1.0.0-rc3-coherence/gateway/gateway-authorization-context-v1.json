@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/gateway/gateway-authorization-context-v1.json",
+  "title": "OUF Gateway Authorization Context v1",
+  "description": "Minimal audit/security context propagated from Gateway to backend owner; bearer tokens are not application data.",
+  "type": "object",
+  "required": [
+    "correlationId",
+    "principal",
+    "actorType",
+    "capabilityId"
+  ],
+  "properties": {
+    "correlationId": {
+      "type": "string"
+    },
+    "principal": {
+      "type": "string"
+    },
+    "actorType": {
+      "type": "string",
+      "enum": [
+        "HUMAN_USER",
+        "AI_AGENT",
+        "MCP_SERVER",
+        "SERVICE_IDENTITY",
+        "EXTERNAL_SYSTEM"
+      ]
+    },
+    "capabilityId": {
+      "type": "string"
+    },
+    "delegatedVia": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "policyVersion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "authorizationDecisionRef": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "requestId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Urban API Gateway v1.2"
+  ],
+  "x-ouf-scope-control": "Gateway boundary/runtime contracts only. No Query Complexity Governor, fine-grained data authorization, Durable ACK authority, schema-drift classification, ETL, semantic processing, Object Resolution, UDP materialization, THS decision logic or MCP Server implementation.",
+  "x-ouf-invariants": [
+    "fine-grained authorization is re-evaluated by backend owner",
+    "cluster origin alone is never trusted",
+    "token or full sensitive application payload is not propagated as audit metadata"
+  ]
+}

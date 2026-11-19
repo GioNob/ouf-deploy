@@ -1,0 +1,23 @@
+{
+  "schema": "ouf.ingestion-readiness-source-lock.v1",
+  "cohortId": "ingestion-validate-only-20261020",
+  "modules": [
+    {
+      "module": "ingestion",
+      "repository": "ouf-ingestion-runtime",
+      "commit": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "kind": "DOCKER_SAVE"
+    }
+  ],
+  "startupQualification": {
+    "repository": "GioNob/ouf-deploy",
+    "sourceCommit": "2690a4e755d266e7076aacda52fc1c81b14d016f",
+    "runId": 39380669962,
+    "jobId": 118488827804,
+    "testsPassed": 17
+  },
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "scope": "Package only: guarded VALIDATE_ONLY bootstrap and exact read-only SQL18 readiness; no target admission or deployment"
+}

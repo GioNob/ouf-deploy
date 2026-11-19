@@ -1,0 +1,78 @@
+{
+  "name": "storage-kafka-module-cleanup",
+  "workflowPath": ".github/workflows/storage-kafka-module-cleanup.yml",
+  "runId": 41687967241,
+  "jobId": 126098659836,
+  "conclusion": "success",
+  "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967241",
+  "artifact": {
+    "id": 13257195609,
+    "name": "storage-kafka-module-cleanup-41687967241",
+    "sha256": "fb041e6217b969ad7e394942a5b88a72a4845ee30dafe17559fe91a75eca00ad",
+    "sizeInBytes": 6918,
+    "downloadVerified": true,
+    "expiresAt": "2027-02-01T17:49:39Z"
+  },
+  "manifestSha256": "fa2b532cd41df53a048a19b711a3f46e7abc48d1dad38d7c19340656a0ce960f",
+  "manifestEntriesVerified": 8,
+  "fileManifest": [
+    {
+      "file": "kafka-test-deps.txt",
+      "sha256": "0fa878379ad8880a509373de572190c7b92697096e28bd1fb63f687297d71cdc",
+      "size": 26997
+    },
+    {
+      "file": "upstream-source-sha.txt",
+      "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+      "size": 41
+    },
+    {
+      "file": "compile.log",
+      "sha256": "5c431b4d0db032d400f32ad0f021105518aba131b92584b9bac6b58592cc2638",
+      "size": 472
+    },
+    {
+      "file": "patch-sha256.txt",
+      "sha256": "70d639824e406fe915c2add11077b0b94537789b894445c9178550ae571f2ee0",
+      "size": 130
+    },
+    {
+      "file": "root-module-sha256.txt",
+      "sha256": "c267a9524016a8b1c1cae3f8699704d5c0daae8cea7a0b1695695ef2b3dd9e74",
+      "size": 146
+    },
+    {
+      "file": "tidy.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "kafka-module-sha256.txt",
+      "sha256": "f021f736a6f601f4d0b0deee292b0552b068aaa35e90fb37fad43cccac3bd956",
+      "size": 168
+    },
+    {
+      "file": "boundaries.txt",
+      "sha256": "f1936885abd3023c013d19b0dbe335d4ed8f7478cdbf614e472049551d928718",
+      "size": 186
+    }
+  ],
+  "tests": {
+    "topLevelPass": 0,
+    "subcasesPass": 0,
+    "names": [],
+    "subcases": [],
+    "liveIntegrationRun": false
+  },
+  "dependencyGraphs": [
+    {
+      "file": "kafka-test-deps.txt",
+      "packageCount": 763,
+      "sdkV1Packages": 0,
+      "sha256": "0fa878379ad8880a509373de572190c7b92697096e28bd1fb63f687297d71cdc"
+    }
+  ],
+  "directImporters": null,
+  "tidyDiffBytes": 0
+}

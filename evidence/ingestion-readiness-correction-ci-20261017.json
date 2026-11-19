@@ -1,0 +1,64 @@
+{
+  "schema": "ouf.ingestion-readiness-correction-ci.v1",
+  "candidates": [
+    {
+      "module": "onboarding",
+      "repository": "ouf-source-onboarding",
+      "commit": "382cbec488bf219d28326c9d59df4a4b95ac6876",
+      "kind": "DOCKER_SAVE"
+    },
+    {
+      "module": "ingestion",
+      "repository": "ouf-ingestion-runtime",
+      "commit": "f869d8b86b892a0c03c147dac9bb40cd5f873ff2",
+      "kind": "DOCKER_SAVE"
+    },
+    {
+      "module": "gateway",
+      "repository": "ouf-api-gateway",
+      "commit": "425a0377c278ff52e00ce962ffd24809ee66f2e5",
+      "kind": "SOURCE_AND_ROUTE_PACKAGE"
+    }
+  ],
+  "runs": [
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "id": 39011677968,
+      "status": "SUCCESS",
+      "scope": "Java/PostgreSQL, image scan, non-root build and staging smoke"
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "id": 39011677971,
+      "status": "SUCCESS",
+      "scope": "THS browser including explicit resume, retained approval and no automatic activation"
+    },
+    {
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "id": 39011682281,
+      "status": "SUCCESS",
+      "scope": "Native HTTP client, Java/PostgreSQL, image/SBOM/scan, restore drill"
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "id": 39011806193,
+      "status": "SUCCESS",
+      "scope": "Config compilation, installation projection, actual M2M route materializer, contract and network qualification"
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "id": 39011806192,
+      "status": "SUCCESS",
+      "scope": "Retained semantic proposal qualification"
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "id": 39011934307,
+      "status": "IN_PROGRESS",
+      "scope": "Source-locked scoped candidates; no target authority"
+    }
+  ],
+  "runtimeMutations": 0,
+  "budgetReset": false,
+  "functionalMilestonesProven": 1
+}

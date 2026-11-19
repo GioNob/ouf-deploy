@@ -1,0 +1,9 @@
+{"Time":"2026-11-03T20:18:55.799246323+01:00","Action":"start","Package":"github.com/seaweedfs/seaweedfs/weed/server"}
+{"Time":"2026-11-03T20:18:55.847606417+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/server","Test":"TestBuildGuardedRemoteStorageClient"}
+{"Time":"2026-11-03T20:18:55.847702241+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/server","Test":"TestBuildGuardedRemoteStorageClient","Output":"=== RUN   TestBuildGuardedRemoteStorageClient\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:55.84907693+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/server","Test":"TestBuildGuardedRemoteStorageClient","Output":"    volume_grpc_remote_test.go:681: valid gcs credentials file should build: reject remote endpoint: resolve remote endpoint host \"oauth2.googleapis.com\": lookup oauth2.googleapis.com on 168.63.129.16:53: dial udp 168.63.129.16:53: connect: network is unreachable\n","OutputType":"error"}
+{"Time":"2026-11-03T20:18:55.849340357+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/server","Test":"TestBuildGuardedRemoteStorageClient","Output":"--- FAIL: TestBuildGuardedRemoteStorageClient (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:55.849351033+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/server","Test":"TestBuildGuardedRemoteStorageClient","Elapsed":0}
+{"Time":"2026-11-03T20:18:55.849401889+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/server","Output":"FAIL\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:55.901051088+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/server","Output":"FAIL\tgithub.com/seaweedfs/seaweedfs/weed/server\t0.101s\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:55.901117538+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/server","Elapsed":0.102}

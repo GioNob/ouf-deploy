@@ -44,6 +44,14 @@ from tools.semantic_provider_deployment_authentication import DetachedAuthentica
 
 
 class CompleteActionAssembly(unittest.TestCase):
+    def test_complete_bundle_can_be_read_by_the_retained_history_reader(self):
+        from tools.chatbot_file_cohort.action_process import observed_private_json
+        compiled=self.assemble();binding=compiled['processPlan']['bundle'];path=Path(binding['path'])
+        self.assertGreater(path.stat().st_size,524288)
+        value,observed=observed_private_json(path,8388608)
+        self.assertEqual(observed,binding)
+        self.assertEqual(value['prepared'],json.loads(encoded(self.prepared)))
+
     def setUp(self):
         roots=custody_fixture.RootCustodyTest();roots.setUp();self.addCleanup(roots.doCleanups)
         self.roots=roots;self.f=roots.f.f
@@ -118,7 +126,8 @@ class CompleteActionAssembly(unittest.TestCase):
             'cohortPlan':cohort,'gatewayRuntimePlan':None,
             'gatewayPlan':{'previousRuntimeHash':'1'*64,'proposedRuntimeHash':'2'*64,
                 'transportBinding':{'syntheticTargetObservation':True,'pythonExecutable':program},'proposalKeyBinding':{'sha256':'3'*64}},
-            'authorization':{'plan':{'baseline':{'active':{'policyRef':'fixture','contentHash':'4'*64}},
+            'authorization':{'plan':{'profile':'ouf.chatbot-file-authorization.v1','baseline':{'active':{'policyRef':'fixture','contentHash':'4'*64}},
+                'targetRoles':{'issuer':issuer,'roles':[],'assignments':[]},
                 'registrationAdditions':[],'addedDescriptors':[],'roleProposal':{},'scopeCreations':[],'scopeBindings':[]}},
             'imagePlan':{'schema':'ouf.chatbot-cohort-image-import-plan.v1','cohortManifestHash':'e'*64,
                 'images':[{'module':m} for m in ('semantic','udp','onboarding','ingestion','mcp')],
@@ -152,6 +161,32 @@ class CompleteActionAssembly(unittest.TestCase):
         self.assertEqual(len(result['processPlan']['directoryPlan']),19)
         self.assertEqual(json.loads(Path(result['reviewBinding']['path']).read_bytes()),review)
         self.assertEqual(self.assemble()['review'],review)
+
+    def test_operator_review_contains_the_exact_conditional_database_privileges(self):
+        database={'modules':[{'module':'mcp','database':'fixture_mcp','user':'fixture_app'}],
+                  'mcpAuditRoleAdministration':{'admin':'fixture_admin','temporaryIncidentTrigger':True},
+                  'mcpAuditRolePreflight':{'incidentBinding':{'ownerOid':123,'aclHash':'a'*64}}}
+        self.prepared['databasePlan']=database
+        self.prepared['cohortPlan']['databasePlanHash']=digest(database)
+        self.prepared['registry']['cohortPlanHash']=digest(self.prepared['cohortPlan'])
+        review=self.assemble()['review']
+        self.assertEqual(review['mcpMigrationReview']['administration'],database['mcpAuditRoleAdministration'])
+        self.assertEqual(review['mcpMigrationReview']['preflight'],database['mcpAuditRolePreflight'])
+        self.assertEqual(review['mcpMigrationReview']['databasePlanHash'],digest(database))
+        self.assertEqual(review['mcpMigrationReview']['applicationRole'],'fixture_app')
+        self.assert_no_runtime_effects()
+
+    def test_native_layout_is_concrete_and_bound_to_the_private_review(self):
+        recipe=self.prepared['registry']['nodeRecipe']
+        recipe.update(dockerContext={'bundleParent':'/run/containerd/io.containerd.runtime.v2.task/moby',
+            'networkNamespaceParent':'/var/run/docker/netns'},runtimeRoot='/run/docker/runtime-runc/moby',
+            observationConfiguration={'runtimeBinding':{'path':'/usr/bin/runc','sha256':'a'*64}},
+            expectedRootfsSeal='b'*64)
+        review=self.assemble()['review']
+        self.assertEqual(review['registryNativeFrameReview']['dockerContext'],recipe['dockerContext'])
+        self.assertEqual(review['registryNativeFrameReview']['runtimeBinding'],recipe['observationConfiguration']['runtimeBinding'])
+        self.assertEqual(review['privateInputHashes']['preparedInputs'],digest(self.prepared))
+        self.assert_no_runtime_effects()
         self.assert_no_runtime_effects()
 
     def test_foreign_custody_or_owner_binding_denied_before_private_bundle(self):

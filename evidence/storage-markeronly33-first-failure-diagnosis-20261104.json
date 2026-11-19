@@ -1,0 +1,577 @@
+{
+  "status": "FAILED_NATIVE_ARCHIVE_DIAGNOSED_NOT_QUALIFIED",
+  "originalZipSha256": "ee6220bfc751860ce366b859838b5cd6f5154853e22574b93a7849890b8a0a03",
+  "originalZipBytes": 12992336,
+  "members": 1483,
+  "checksumsVerified": 1482,
+  "nativeRun": 41878669053,
+  "nativeJob": 126745091191,
+  "producerCommit": "87fc66ca9a2b24fb55e983392f573c0c1f54d96c",
+  "readbackRun": 41878956434,
+  "verifierCommit": "3767de36cb23876739bbb255e088e74dd2ca92fb",
+  "underlyingFailure": "ValueError: PENDING_INDEX_RELOCATES_VALID_WITNESS",
+  "harnessFailure": "POSTMARKER_OBSERVATION_BUDGET",
+  "diagnosis": "Hardcoded pending witness offset 8 rejects valid live prefix in selected volume.",
+  "retainedPreRenameCopiesDecoded": {
+    "volumeId": "2",
+    "datFile": "ouf-identity-fixture_2.dat",
+    "needleId": 281474976710689,
+    "cookieHex": "33aabbcc",
+    "fileId": "2,0100000000002133aabbcc",
+    "dataBytes": 1048593,
+    "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+    "oldNeedleOffset": 12583096,
+    "pendingNeedleOffset": 8388712,
+    "needleSize": 1048651,
+    "newDatBytes": 9437392,
+    "oldIndexInvalidForNewDat": true,
+    "pendingIndexBodyVerified": true,
+    "mutatingRequests": 0
+  },
+  "beforeDatBytes": 13631776,
+  "compactedCopyBytes": 9437392,
+  "localArchiveReadback": true,
+  "nativeMarkerOnlyExecuted": false,
+  "nativeQualification": false,
+  "cleanupFailure": "STOP_OR_CLEANUP_FAILED:CLEAN_STOP_REQUIRED:ouf-lateral33-30777-volume-recovered",
+  "completeFailure": {
+    "status": "UNQUALIFIED",
+    "instrumentation": "external read-only ptrace scheduling",
+    "vacuumResubmissions": 0,
+    "processBefore": {
+      "pid": 31922,
+      "startTicks": 83470,
+      "networkNamespace": "net:[4026532640]",
+      "cgroup": "0::/system.slice/docker-b156bead3fe3d3aac4ed262609c79528ec03e44a7cefbab89f30f118ca65a7b3.scope\n"
+    },
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "filesBefore": {
+      ".dat": {
+        "bytes": 13631776,
+        "sha256": "0eb968e6bbbe093ca4165f753d93fea0b4bbc74f6efc78a3ba4e53d065f129c4",
+        "inode": 9701371,
+        "device": 2049,
+        "allocatedBytes": 13635584
+      },
+      ".idx": {
+        "bytes": 80,
+        "sha256": "ca392c6891115b2c8b612c54949b6679a3a5d714d82d7bce29c6b9421b91ed6c",
+        "inode": 9701428,
+        "device": 2049,
+        "allocatedBytes": 4096
+      }
+    },
+    "rawStorageBefore": {
+      "ouf-identity-fixture_1.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9701422,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9701425,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      },
+      "ouf-identity-fixture_2.dat": {
+        ".dat": {
+          "bytes": 13631776,
+          "sha256": "0eb968e6bbbe093ca4165f753d93fea0b4bbc74f6efc78a3ba4e53d065f129c4",
+          "inode": 9701371,
+          "device": 2049,
+          "allocatedBytes": 13635584
+        },
+        ".idx": {
+          "bytes": 80,
+          "sha256": "ca392c6891115b2c8b612c54949b6679a3a5d714d82d7bce29c6b9421b91ed6c",
+          "inode": 9701428,
+          "device": 2049,
+          "allocatedBytes": 4096
+        }
+      },
+      "ouf-identity-fixture_3.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9701424,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9701431,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      },
+      "ouf-identity-fixture_4.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9701427,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9701434,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      },
+      "ouf-identity-fixture_5.dat": {
+        ".dat": {
+          "bytes": 312,
+          "sha256": "477db77e514a655d9376036636789f90f3a16b8671a59e186b5f01c4c1eb82fb",
+          "inode": 9701430,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 16,
+          "sha256": "b7a48c7280defc512250c7bc35ba3d193bac2ff6907456d358bbd5c5ba5def32",
+          "inode": 9701437,
+          "device": 2049,
+          "allocatedBytes": 4096
+        }
+      },
+      "ouf-identity-fixture_6.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9701433,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9701440,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      },
+      "ouf-identity-fixture_7.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9701436,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9701443,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      }
+    },
+    "beforeDatRenamePhase": {
+      "tid": 31922,
+      "number": 264,
+      "operation": "entry",
+      "oldPath": "/data/ouf-identity-fixture_2.cpd",
+      "newPath": "/data/ouf-identity-fixture_2.dat",
+      "syscallNotResumed": true,
+      "threadStates": {
+        "31922": "t",
+        "32206": "t",
+        "32207": "t",
+        "32208": "t",
+        "32213": "t",
+        "32214": "t",
+        "32222": "t",
+        "32223": "t"
+      },
+      "successfulSyncs": [
+        {
+          "kind": "marker",
+          "tid": 31922,
+          "returnValue": 0
+        },
+        {
+          "kind": "directory",
+          "tid": 31922,
+          "returnValue": 0
+        }
+      ],
+      "cloneEvents": []
+    },
+    "filesBeforeDatRename": {
+      ".dat": {
+        "bytes": 13631776,
+        "sha256": "0eb968e6bbbe093ca4165f753d93fea0b4bbc74f6efc78a3ba4e53d065f129c4",
+        "inode": 9701371,
+        "device": 2049,
+        "allocatedBytes": 13635584
+      },
+      ".idx": {
+        "bytes": 80,
+        "sha256": "ca392c6891115b2c8b612c54949b6679a3a5d714d82d7bce29c6b9421b91ed6c",
+        "inode": 9701428,
+        "device": 2049,
+        "allocatedBytes": 4096
+      },
+      ".cpd": {
+        "bytes": 9437392,
+        "sha256": "c4f684830624a42f280db1afac06fc0c87382a2002616797afa9c43cf09e70ab",
+        "inode": 9701558,
+        "device": 2049,
+        "allocatedBytes": 9441280
+      },
+      ".cpx": {
+        "bytes": 48,
+        "sha256": "9ddbd85f0dee13cc250a620276a7e4e7ee0d64cc18f9be59e85299402be19310",
+        "inode": 9701559,
+        "device": 2049,
+        "allocatedBytes": 4096
+      },
+      ".cpc": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "inode": 9701560,
+        "device": 2049,
+        "allocatedBytes": 0
+      }
+    },
+    "witnessBeforeDatRename": {
+      "cookieHex": "33aabbcc",
+      "datFile": "ouf-identity-fixture_2.dat",
+      "dataBytes": 1048593,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "2,0100000000002133aabbcc",
+      "needleId": 281474976710689,
+      "volumeId": "2",
+      "needleOffset": 12583096,
+      "needleSize": 1048651,
+      "dataOffset": 12583116,
+      "datBytes": 13631776,
+      "datSha256": "0eb968e6bbbe093ca4165f753d93fea0b4bbc74f6efc78a3ba4e53d065f129c4",
+      "indexBytes": 80,
+      "indexSha256": "ca392c6891115b2c8b612c54949b6679a3a5d714d82d7bce29c6b9421b91ed6c",
+      "indexRecord": 4,
+      "indexPrefixSha256": "87d6a8337938fadc67181dbd24a7b160b8527021131d4447c657e503c34590fa",
+      "prefixSha256": "83544ec4413bddcc2b51c3894ce845de0752056affd28187a433108cfc866afd",
+      "mutatingRequests": 0
+    },
+    "failure": "ValueError: PENDING_INDEX_RELOCATES_VALID_WITNESS"
+  },
+  "targetOperations": 0,
+  "artifacts": {
+    "original": [
+      {
+        "id": 13348782049,
+        "name": "storage-generation33-lateral-isolation-41878669053",
+        "size_in_bytes": 12992336,
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13348782049",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13348782049/zip",
+        "expired": false,
+        "created_at": "2026-11-04T17:47:36Z",
+        "expires_at": "2027-02-02T17:34:36Z",
+        "updated_at": "2026-11-04T17:47:36Z",
+        "digest": "sha256:ee6220bfc751860ce366b859838b5cd6f5154853e22574b93a7849890b8a0a03",
+        "workflow_run": {
+          "id": 41878669053,
+          "repository_id": 1409074354,
+          "head_repository_id": 1409074354,
+          "head_branch": "feat/m2-discovery-complete-profile-20261029",
+          "head_sha": "87fc66ca9a2b24fb55e983392f573c0c1f54d96c"
+        }
+      }
+    ],
+    "readbackCopy": [
+      {
+        "id": 13348816994,
+        "name": "storage-generation33-markeronly-readback-41878956434",
+        "size_in_bytes": 12622636,
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13348816994",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13348816994/zip",
+        "expired": false,
+        "created_at": "2026-11-04T17:47:49Z",
+        "expires_at": "2027-02-02T17:36:46Z",
+        "updated_at": "2026-11-04T17:47:49Z",
+        "digest": "sha256:9c76a5a00a7a5edce188b2206c2e3fd36fc5ac09fedec8e50c747b11de31fe57",
+        "workflow_run": {
+          "id": 41878956434,
+          "repository_id": 1409074354,
+          "head_repository_id": 1409074354,
+          "head_branch": "feat/m2-discovery-complete-profile-20261029",
+          "head_sha": "3767de36cb23876739bbb255e088e74dd2ca92fb"
+        }
+      }
+    ]
+  },
+  "nativeJobs": [
+    {
+      "id": 126745091191,
+      "name": "exact-cohort-lateral-isolation",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41878669053,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Install bounded fixture tooling and build the static launch barrier",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Test service recovery, compaction persistence, launch barriers and credential and TLS boundaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test phase discrimination and rollback invariants",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Test post-marker phase rejection and native ptrace mechanics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Test mixed generation rejection and actual first-rename execution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Test completed pair marker-only phase and real unlink entry freeze",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Bind reviewed compaction source through all generation33 patches",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Fetch and bind the exact successful generation33 cohort and image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Verify the successful cohort publisher with its exact source commit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Exercise five distinct namespaces with rules installed before service execution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "SIGKILL the acknowledged volume and recover through a fresh gated namespace",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "SIGKILL the filer and recover persistent metadata without reseeding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "SIGKILL the master and verify fresh topology and peer registration",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "SIGKILL all services and recover from retained roots behind fresh gates",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Interrupt an incomplete PUT after its prefix reaches the volume and reconcile without replay",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        },
+        {
+          "name": "Qualify automatic orphan tombstone and direct chunk absence with the single required gRPC link",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Compact only the orphan volume and verify allocated space and every live chunk",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Restart all services after compaction and verify retained allocation and absence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Relocate a live native chunk across a tombstoned record and verify restart persistence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        },
+        {
+          "name": "Crash the observed precommit compaction and recover without resubmission",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22
+        },
+        {
+          "name": "Crash after durable commit marker before first rename and verify rollforward",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23
+        },
+        {
+          "name": "Crash after DAT rename before IDX rename and verify coherent rollforward",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 24
+        },
+        {
+          "name": "Crash after both renames before marker removal and preserve the completed pair",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 25
+        },
+        {
+          "name": "Preserve bounded public evidence and reject private-key material",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26
+        },
+        {
+          "name": "Attest successful native isolation and joint and individual crash evidence",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 27
+        },
+        {
+          "name": "Retain public diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 56
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 57
+        }
+      ]
+    }
+  ],
+  "readbackJobs": [
+    {
+      "id": 126746115330,
+      "name": "original-artifact-readback",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41878956434,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Acquire the exact original before waiting for delayed terminal metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Verify every member source and the completed pair and held marker unlink evidence",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5
+        },
+        {
+          "name": "Confirm successful native terminal run and job separately from archive contents",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6
+        },
+        {
+          "name": "Preserve original bytes readback and control-plane observations even on failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    }
+  ]
+}

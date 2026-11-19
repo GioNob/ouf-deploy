@@ -1,0 +1,24 @@
+{
+  "schema": "ouf.storage.generation33-workflow-context-correction.v1",
+  "failedRun": {
+    "id": 41780306657,
+    "commit": "0cdfe1b9cb7e64414648fe8f3110c651618cb79a",
+    "status": "failure",
+    "jobsCreated": 0,
+    "sourceOrImageProduced": false
+  },
+  "identifiedIssue": "runner context was used in jobs.qualify-standard-profile.env, where GitHub Actions does not make it available",
+  "correction": "Bind observer cache paths through GITHUB_ENV from a runner step after the fresh source reconstruction",
+  "checks": {
+    "workflowJobCount": 4,
+    "jobEnvironmentContextPlacement": "PASS",
+    "shellSnippetsParsed": 18,
+    "pythonHeredocsParsed": 1,
+    "cacheEnvironmentPositiveAndNegative": "PASS",
+    "fullCurrentPlanRunId": 41780309777,
+    "planTestsPassed": 64
+  },
+  "newHostedImageQualification": "PENDING",
+  "targetOperations": 0,
+  "releaseAdmitted": false
+}

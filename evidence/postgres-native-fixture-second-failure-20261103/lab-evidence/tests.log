@@ -1,0 +1,40 @@
+test_corrupt_body_is_detected_despite_valid_database_metadata (__main__.NativeTests.test_corrupt_body_is_detected_despite_valid_database_metadata) ... ERROR
+test_mixed_generations_block_snapshot (__main__.NativeTests.test_mixed_generations_block_snapshot) ... ok
+test_pending_ack_blocks_snapshot (__main__.NativeTests.test_pending_ack_blocks_snapshot) ... ok
+test_pending_counter_blocks_snapshot (__main__.NativeTests.test_pending_counter_blocks_snapshot) ... ok
+test_real_snapshot_and_file_body_hash_reconcile (__main__.NativeTests.test_real_snapshot_and_file_body_hash_reconcile) ... ERROR
+test_select_only_role_cannot_mutate_and_owner_read_only_is_enforced (__main__.NativeTests.test_select_only_role_cannot_mutate_and_owner_read_only_is_enforced) ... ok
+test_uncommitted_changes_are_invisible_and_atomic_commit_is_coherent (__main__.NativeTests.test_uncommitted_changes_are_invisible_and_atomic_commit_is_coherent) ... ok
+
+======================================================================
+ERROR: test_corrupt_body_is_detected_despite_valid_database_metadata (__main__.NativeTests.test_corrupt_body_is_detected_despite_valid_database_metadata)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 255, in test_corrupt_body_is_detected_despite_valid_database_metadata
+    report = self.lab.reconcile(snapshot)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 194, in reconcile
+    backup = manifest.build_manifest(self.profile, self.artifacts, backup_id="native-fixture-0001",
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/manifest.py", line 161, in build_manifest
+    raise ManifestError("LAB_BACKUP_ID_REQUIRED")
+tools.storage_recovery.manifest.ManifestError: LAB_BACKUP_ID_REQUIRED
+
+======================================================================
+ERROR: test_real_snapshot_and_file_body_hash_reconcile (__main__.NativeTests.test_real_snapshot_and_file_body_hash_reconcile)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 245, in test_real_snapshot_and_file_body_hash_reconcile
+    report = self.lab.reconcile(self.lab.snapshot())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 194, in reconcile
+    backup = manifest.build_manifest(self.profile, self.artifacts, backup_id="native-fixture-0001",
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/manifest.py", line 161, in build_manifest
+    raise ManifestError("LAB_BACKUP_ID_REQUIRED")
+tools.storage_recovery.manifest.ManifestError: LAB_BACKUP_ID_REQUIRED
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.147s
+
+FAILED (errors=2)

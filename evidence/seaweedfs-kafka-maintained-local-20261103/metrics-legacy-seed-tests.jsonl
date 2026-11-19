@@ -1,0 +1,332 @@
+{"Time":"2026-11-03T20:18:51.361218162+01:00","Action":"start","Package":"github.com/rcrowley/go-metrics"}
+{"Time":"2026-11-03T20:18:51.365881084+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterClear"}
+{"Time":"2026-11-03T20:18:51.365941866+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterClear","Output":"=== RUN   TestCounterClear\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.365967595+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterClear","Output":"--- PASS: TestCounterClear (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.365972612+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterClear","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.365979633+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterDec1"}
+{"Time":"2026-11-03T20:18:51.365982607+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterDec1","Output":"=== RUN   TestCounterDec1\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.365991531+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterDec1","Output":"--- PASS: TestCounterDec1 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.365994886+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterDec1","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.365998081+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterDec2"}
+{"Time":"2026-11-03T20:18:51.366003419+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterDec2","Output":"=== RUN   TestCounterDec2\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366007184+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterDec2","Output":"--- PASS: TestCounterDec2 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366010549+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterDec2","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.366013203+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterInc1"}
+{"Time":"2026-11-03T20:18:51.366016028+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterInc1","Output":"=== RUN   TestCounterInc1\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366020655+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterInc1","Output":"--- PASS: TestCounterInc1 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366023459+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterInc1","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.366026283+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterInc2"}
+{"Time":"2026-11-03T20:18:51.366028536+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterInc2","Output":"=== RUN   TestCounterInc2\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366031881+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterInc2","Output":"--- PASS: TestCounterInc2 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366034776+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterInc2","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.36603764+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterSnapshot"}
+{"Time":"2026-11-03T20:18:51.366040424+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterSnapshot","Output":"=== RUN   TestCounterSnapshot\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.36604418+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterSnapshot","Output":"--- PASS: TestCounterSnapshot (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366047395+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterSnapshot","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.366059593+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterZero"}
+{"Time":"2026-11-03T20:18:51.366062808+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterZero","Output":"=== RUN   TestCounterZero\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366067054+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterZero","Output":"--- PASS: TestCounterZero (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366070209+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestCounterZero","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.366072673+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterCounter"}
+{"Time":"2026-11-03T20:18:51.366075878+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterCounter","Output":"=== RUN   TestGetOrRegisterCounter\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366081126+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterCounter","Output":"--- PASS: TestGetOrRegisterCounter (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366085051+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterCounter","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.366088517+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsBlocking"}
+{"Time":"2026-11-03T20:18:51.366091501+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsBlocking","Output":"=== RUN   TestDebugGCStatsBlocking\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.366094626+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsBlocking","Output":"    debug_test.go:30: i++ during debug.ReadGCStats: 0\n"}
+{"Time":"2026-11-03T20:18:51.366099002+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsBlocking","Output":"    debug_test.go:33: 2.764µs\n"}
+{"Time":"2026-11-03T20:18:51.366103229+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsBlocking","Output":"    debug_test.go:35: i++ during time.Sleep: 0\n"}
+{"Time":"2026-11-03T20:18:51.366107245+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsBlocking","Output":"--- PASS: TestDebugGCStatsBlocking (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.36611062+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsBlocking","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.366113815+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsDoubleRegister"}
+{"Time":"2026-11-03T20:18:51.366117911+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsDoubleRegister","Output":"=== RUN   TestDebugGCStatsDoubleRegister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.37139361+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsDoubleRegister","Output":"--- PASS: TestDebugGCStatsDoubleRegister (0.01s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371463405+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestDebugGCStatsDoubleRegister","Elapsed":0.01}
+{"Time":"2026-11-03T20:18:51.371486941+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMAConcurrency"}
+{"Time":"2026-11-03T20:18:51.371492319+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMAConcurrency","Output":"=== RUN   TestEWMAConcurrency\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371647152+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMAConcurrency","Output":"--- PASS: TestEWMAConcurrency (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371657588+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMAConcurrency","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371668344+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA1"}
+{"Time":"2026-11-03T20:18:51.371671919+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA1","Output":"=== RUN   TestEWMA1\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371677508+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA1","Output":"--- PASS: TestEWMA1 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371680873+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA1","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371683987+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA5"}
+{"Time":"2026-11-03T20:18:51.371686651+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA5","Output":"=== RUN   TestEWMA5\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371689396+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA5","Output":"--- PASS: TestEWMA5 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371692701+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA5","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371695735+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA15"}
+{"Time":"2026-11-03T20:18:51.371698339+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA15","Output":"=== RUN   TestEWMA15\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371701844+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA15","Output":"--- PASS: TestEWMA15 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371706381+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestEWMA15","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371709265+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeFloat64"}
+{"Time":"2026-11-03T20:18:51.371711659+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeFloat64","Output":"=== RUN   TestGaugeFloat64\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371715244+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeFloat64","Output":"--- PASS: TestGaugeFloat64 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.37171875+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeFloat64","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371721634+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeFloat64Snapshot"}
+{"Time":"2026-11-03T20:18:51.371724378+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeFloat64Snapshot","Output":"=== RUN   TestGaugeFloat64Snapshot\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371729286+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeFloat64Snapshot","Output":"--- PASS: TestGaugeFloat64Snapshot (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371732551+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeFloat64Snapshot","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371735515+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterGaugeFloat64"}
+{"Time":"2026-11-03T20:18:51.371740322+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterGaugeFloat64","Output":"=== RUN   TestGetOrRegisterGaugeFloat64\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371744919+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterGaugeFloat64","Output":"    gauge_float64_test.go:44: registry: \u0026{map[foo:0x4dd2e8d4218] {{{} {0 0}} 0 0 {{} 0} {{} 0}}}\n"}
+{"Time":"2026-11-03T20:18:51.371751068+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterGaugeFloat64","Output":"--- PASS: TestGetOrRegisterGaugeFloat64 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371757107+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterGaugeFloat64","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371760072+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestFunctionalGaugeFloat64"}
+{"Time":"2026-11-03T20:18:51.371763016+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestFunctionalGaugeFloat64","Output":"=== RUN   TestFunctionalGaugeFloat64\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371767153+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestFunctionalGaugeFloat64","Output":"--- PASS: TestFunctionalGaugeFloat64 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371770137+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestFunctionalGaugeFloat64","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371773162+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterFunctionalGaugeFloat64"}
+{"Time":"2026-11-03T20:18:51.371776246+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterFunctionalGaugeFloat64","Output":"=== RUN   TestGetOrRegisterFunctionalGaugeFloat64\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371782646+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterFunctionalGaugeFloat64","Output":"--- PASS: TestGetOrRegisterFunctionalGaugeFloat64 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371786121+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterFunctionalGaugeFloat64","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371790237+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeConcurrency"}
+{"Time":"2026-11-03T20:18:51.371792881+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeConcurrency","Output":"=== RUN   TestGaugeConcurrency\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371949307+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeConcurrency","Output":"--- PASS: TestGaugeConcurrency (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.371979031+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeConcurrency","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.371996918+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGauge"}
+{"Time":"2026-11-03T20:18:51.372012271+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGauge","Output":"=== RUN   TestGauge\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372017089+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGauge","Output":"--- PASS: TestGauge (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372033303+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGauge","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.372036248+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeSnapshot"}
+{"Time":"2026-11-03T20:18:51.372050379+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeSnapshot","Output":"=== RUN   TestGaugeSnapshot\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372054605+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeSnapshot","Output":"--- PASS: TestGaugeSnapshot (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.37205785+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGaugeSnapshot","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.372072763+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterGauge"}
+{"Time":"2026-11-03T20:18:51.372075757+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterGauge","Output":"=== RUN   TestGetOrRegisterGauge\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372082828+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterGauge","Output":"--- PASS: TestGetOrRegisterGauge (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372086123+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterGauge","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.372089337+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestFunctionalGauge"}
+{"Time":"2026-11-03T20:18:51.372092072+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestFunctionalGauge","Output":"=== RUN   TestFunctionalGauge\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372095507+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestFunctionalGauge","Output":"--- PASS: TestFunctionalGauge (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372100174+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestFunctionalGauge","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.372103268+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterFunctionalGauge"}
+{"Time":"2026-11-03T20:18:51.372105983+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterFunctionalGauge","Output":"=== RUN   TestGetOrRegisterFunctionalGauge\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372110479+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterFunctionalGauge","Output":"--- PASS: TestGetOrRegisterFunctionalGauge (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372113654+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterFunctionalGauge","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.372116659+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterHistogram"}
+{"Time":"2026-11-03T20:18:51.372119473+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterHistogram","Output":"=== RUN   TestGetOrRegisterHistogram\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372123369+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterHistogram","Output":"--- PASS: TestGetOrRegisterHistogram (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372126844+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterHistogram","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.37213077+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogram10000"}
+{"Time":"2026-11-03T20:18:51.372133784+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogram10000","Output":"=== RUN   TestHistogram10000\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372358272+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogram10000","Output":"--- PASS: TestHistogram10000 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.37238357+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogram10000","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.372388568+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogramEmpty"}
+{"Time":"2026-11-03T20:18:51.372391292+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogramEmpty","Output":"=== RUN   TestHistogramEmpty\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372395018+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogramEmpty","Output":"--- PASS: TestHistogramEmpty (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372398002+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogramEmpty","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.372400946+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogramSnapshot"}
+{"Time":"2026-11-03T20:18:51.372406605+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogramSnapshot","Output":"=== RUN   TestHistogramSnapshot\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372697172+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogramSnapshot","Output":"--- PASS: TestHistogramSnapshot (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.372706386+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestHistogramSnapshot","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.372709911+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryMarshallJSON"}
+{"Time":"2026-11-03T20:18:51.372712866+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryMarshallJSON","Output":"=== RUN   TestRegistryMarshallJSON\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.377537096+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryMarshallJSON","Output":"--- PASS: TestRegistryMarshallJSON (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.377566801+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryMarshallJSON","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.377574052+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryWriteJSONOnce"}
+{"Time":"2026-11-03T20:18:51.377578008+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryWriteJSONOnce","Output":"=== RUN   TestRegistryWriteJSONOnce\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.377582695+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryWriteJSONOnce","Output":"--- PASS: TestRegistryWriteJSONOnce (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.37758612+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryWriteJSONOnce","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.377589685+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterConcurrency"}
+{"Time":"2026-11-03T20:18:51.377592309+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterConcurrency","Output":"=== RUN   TestMeterConcurrency\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.377597277+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterConcurrency","Output":"--- PASS: TestMeterConcurrency (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.377600401+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterConcurrency","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.377602905+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterMeter"}
+{"Time":"2026-11-03T20:18:51.377605609+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterMeter","Output":"=== RUN   TestGetOrRegisterMeter\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.377610817+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterMeter","Output":"--- PASS: TestGetOrRegisterMeter (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.377614052+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterMeter","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.377617617+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterDecay"}
+{"Time":"2026-11-03T20:18:51.377620802+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterDecay","Output":"=== RUN   TestMeterDecay\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478542824+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterDecay","Output":"--- PASS: TestMeterDecay (0.10s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.47859345+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterDecay","Elapsed":0.1}
+{"Time":"2026-11-03T20:18:51.478610766+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterNonzero"}
+{"Time":"2026-11-03T20:18:51.478613791+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterNonzero","Output":"=== RUN   TestMeterNonzero\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478618638+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterNonzero","Output":"--- PASS: TestMeterNonzero (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478621703+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterNonzero","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478624246+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterStop"}
+{"Time":"2026-11-03T20:18:51.478627291+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterStop","Output":"=== RUN   TestMeterStop\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478631177+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterStop","Output":"--- PASS: TestMeterStop (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478634031+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterStop","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478637677+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterSnapshot"}
+{"Time":"2026-11-03T20:18:51.47863993+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterSnapshot","Output":"=== RUN   TestMeterSnapshot\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478643315+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterSnapshot","Output":"--- PASS: TestMeterSnapshot (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478646239+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterSnapshot","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478649524+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterZero"}
+{"Time":"2026-11-03T20:18:51.478652719+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterZero","Output":"=== RUN   TestMeterZero\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478656265+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterZero","Output":"--- PASS: TestMeterZero (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478658678+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestMeterZero","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478661162+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistry"}
+{"Time":"2026-11-03T20:18:51.478663786+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistry","Output":"=== RUN   TestRegistry\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478666961+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistry","Output":"--- PASS: TestRegistry (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478669765+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistry","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478672158+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryDuplicate"}
+{"Time":"2026-11-03T20:18:51.478674322+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryDuplicate","Output":"=== RUN   TestRegistryDuplicate\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478677697+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryDuplicate","Output":"--- PASS: TestRegistryDuplicate (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478681503+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryDuplicate","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478684647+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGet"}
+{"Time":"2026-11-03T20:18:51.478703175+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGet","Output":"=== RUN   TestRegistryGet\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478707962+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGet","Output":"--- PASS: TestRegistryGet (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478710887+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGet","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478713721+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGetOrRegister"}
+{"Time":"2026-11-03T20:18:51.478715814+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGetOrRegister","Output":"=== RUN   TestRegistryGetOrRegister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478719059+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGetOrRegister","Output":"--- PASS: TestRegistryGetOrRegister (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478721933+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGetOrRegister","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478725929+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGetOrRegisterWithLazyInstantiation"}
+{"Time":"2026-11-03T20:18:51.478737186+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGetOrRegisterWithLazyInstantiation","Output":"=== RUN   TestRegistryGetOrRegisterWithLazyInstantiation\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478741843+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGetOrRegisterWithLazyInstantiation","Output":"--- PASS: TestRegistryGetOrRegisterWithLazyInstantiation (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478746651+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryGetOrRegisterWithLazyInstantiation","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478749695+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryUnregister"}
+{"Time":"2026-11-03T20:18:51.478752259+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryUnregister","Output":"=== RUN   TestRegistryUnregister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478755784+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryUnregister","Output":"--- PASS: TestRegistryUnregister (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478758749+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRegistryUnregister","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478761152+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedChildRegistryGetOrRegister"}
+{"Time":"2026-11-03T20:18:51.478763756+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedChildRegistryGetOrRegister","Output":"=== RUN   TestPrefixedChildRegistryGetOrRegister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478767883+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedChildRegistryGetOrRegister","Output":"--- PASS: TestPrefixedChildRegistryGetOrRegister (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478770607+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedChildRegistryGetOrRegister","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478773421+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryGetOrRegister"}
+{"Time":"2026-11-03T20:18:51.478775674+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryGetOrRegister","Output":"=== RUN   TestPrefixedRegistryGetOrRegister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478780922+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryGetOrRegister","Output":"--- PASS: TestPrefixedRegistryGetOrRegister (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478783736+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryGetOrRegister","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478800762+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryRegister"}
+{"Time":"2026-11-03T20:18:51.478803176+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryRegister","Output":"=== RUN   TestPrefixedRegistryRegister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478806721+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryRegister","Output":"--- PASS: TestPrefixedRegistryRegister (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478809625+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryRegister","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478812249+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryUnregister"}
+{"Time":"2026-11-03T20:18:51.478814923+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryUnregister","Output":"=== RUN   TestPrefixedRegistryUnregister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478818158+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryUnregister","Output":"--- PASS: TestPrefixedRegistryUnregister (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478821002+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryUnregister","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478823767+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryGet"}
+{"Time":"2026-11-03T20:18:51.47882599+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryGet","Output":"=== RUN   TestPrefixedRegistryGet\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478828984+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryGet","Output":"--- PASS: TestPrefixedRegistryGet (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478831769+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedRegistryGet","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478833982+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedChildRegistryGet"}
+{"Time":"2026-11-03T20:18:51.478836255+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedChildRegistryGet","Output":"=== RUN   TestPrefixedChildRegistryGet\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478850617+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedChildRegistryGet","Output":"--- PASS: TestPrefixedChildRegistryGet (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478853692+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestPrefixedChildRegistryGet","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478856256+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestChildPrefixedRegistryRegister"}
+{"Time":"2026-11-03T20:18:51.478858479+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestChildPrefixedRegistryRegister","Output":"=== RUN   TestChildPrefixedRegistryRegister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478886411+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestChildPrefixedRegistryRegister","Output":"--- PASS: TestChildPrefixedRegistryRegister (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478890327+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestChildPrefixedRegistryRegister","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478895545+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestChildPrefixedRegistryOfChildRegister"}
+{"Time":"2026-11-03T20:18:51.478897928+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestChildPrefixedRegistryOfChildRegister","Output":"=== RUN   TestChildPrefixedRegistryOfChildRegister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478901764+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestChildPrefixedRegistryOfChildRegister","Output":"--- PASS: TestChildPrefixedRegistryOfChildRegister (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478904458+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestChildPrefixedRegistryOfChildRegister","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478906962+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestWalkRegistries"}
+{"Time":"2026-11-03T20:18:51.478908865+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestWalkRegistries","Output":"=== RUN   TestWalkRegistries\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478912871+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestWalkRegistries","Output":"--- PASS: TestWalkRegistries (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478915795+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestWalkRegistries","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478918219+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestConcurrentRegistryAccess"}
+{"Time":"2026-11-03T20:18:51.478920532+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestConcurrentRegistryAccess","Output":"=== RUN   TestConcurrentRegistryAccess\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478923547+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestConcurrentRegistryAccess","Output":"--- PASS: TestConcurrentRegistryAccess (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478926311+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestConcurrentRegistryAccess","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478928725+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRegisterAndRegisteredConcurrency"}
+{"Time":"2026-11-03T20:18:51.478931298+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegisterAndRegisteredConcurrency","Output":"=== RUN   TestRegisterAndRegisteredConcurrency\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478934844+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRegisterAndRegisteredConcurrency","Output":"--- PASS: TestRegisterAndRegisteredConcurrency (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.478937898+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRegisterAndRegisteredConcurrency","Elapsed":0}
+{"Time":"2026-11-03T20:18:51.478940422+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsDoubleRegister"}
+{"Time":"2026-11-03T20:18:51.478942555+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsDoubleRegister","Output":"=== RUN   TestRuntimeMemStatsDoubleRegister\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.502721491+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsDoubleRegister","Output":"--- PASS: TestRuntimeMemStatsDoubleRegister (0.02s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:51.502769924+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsDoubleRegister","Elapsed":0.02}
+{"Time":"2026-11-03T20:18:51.502780009+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStats"}
+{"Time":"2026-11-03T20:18:51.502783424+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStats","Output":"=== RUN   TestRuntimeMemStats\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.621321569+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStats","Output":"--- PASS: TestRuntimeMemStats (2.12s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.621371374+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStats","Elapsed":2.12}
+{"Time":"2026-11-03T20:18:53.621378074+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsNumThread"}
+{"Time":"2026-11-03T20:18:53.621381009+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsNumThread","Output":"=== RUN   TestRuntimeMemStatsNumThread\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.621386988+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsNumThread","Output":"--- PASS: TestRuntimeMemStatsNumThread (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.621394509+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsNumThread","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.621397964+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsBlocking"}
+{"Time":"2026-11-03T20:18:53.621400037+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsBlocking","Output":"=== RUN   TestRuntimeMemStatsBlocking\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.624480914+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsBlocking","Output":"    runtime_test.go:93: i++ during runtime.ReadMemStats: 696507\n"}
+{"Time":"2026-11-03T20:18:53.624506453+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsBlocking","Output":"    runtime_test.go:96: 2.929724ms\n"}
+{"Time":"2026-11-03T20:18:53.630626593+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsBlocking","Output":"    runtime_test.go:98: i++ during time.Sleep: 858947\n"}
+{"Time":"2026-11-03T20:18:53.630690699+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsBlocking","Output":"--- PASS: TestRuntimeMemStatsBlocking (0.01s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.63069804+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestRuntimeMemStatsBlocking","Elapsed":0.01}
+{"Time":"2026-11-03T20:18:53.630707875+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample10"}
+{"Time":"2026-11-03T20:18:53.630734025+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample10","Output":"=== RUN   TestExpDecaySample10\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.63073784+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample10","Output":"--- PASS: TestExpDecaySample10 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.630739883+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample10","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.630741886+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample100"}
+{"Time":"2026-11-03T20:18:53.630743559+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample100","Output":"=== RUN   TestExpDecaySample100\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.630746754+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample100","Output":"--- PASS: TestExpDecaySample100 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.630752192+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample100","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.630754566+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample1000"}
+{"Time":"2026-11-03T20:18:53.63096352+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample1000","Output":"=== RUN   TestExpDecaySample1000\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.630973064+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample1000","Output":"--- PASS: TestExpDecaySample1000 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.630977561+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySample1000","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.630979774+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleNanosecondRegression"}
+{"Time":"2026-11-03T20:18:53.630981447+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleNanosecondRegression","Output":"=== RUN   TestExpDecaySampleNanosecondRegression\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.630985603+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleNanosecondRegression","Output":"--- PASS: TestExpDecaySampleNanosecondRegression (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.630988127+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleNanosecondRegression","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.630990541+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleRescale"}
+{"Time":"2026-11-03T20:18:53.630992173+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleRescale","Output":"=== RUN   TestExpDecaySampleRescale\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.630994517+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleRescale","Output":"--- PASS: TestExpDecaySampleRescale (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.63099654+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleRescale","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.630998423+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleSnapshot"}
+{"Time":"2026-11-03T20:18:53.630999755+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleSnapshot","Output":"=== RUN   TestExpDecaySampleSnapshot\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.631003951+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleSnapshot","Output":"--- PASS: TestExpDecaySampleSnapshot (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.631005814+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleSnapshot","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.631007446+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleStatistics"}
+{"Time":"2026-11-03T20:18:53.631008788+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleStatistics","Output":"=== RUN   TestExpDecaySampleStatistics\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.635536126+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleStatistics","Output":"--- PASS: TestExpDecaySampleStatistics (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.635841526+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleStatistics","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.635849308+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSample"}
+{"Time":"2026-11-03T20:18:53.635852292+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSample","Output":"=== RUN   TestUniformSample\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.635857891+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSample","Output":"--- PASS: TestUniformSample (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.635886934+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSample","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.635891101+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleIncludesTail"}
+{"Time":"2026-11-03T20:18:53.635893434+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleIncludesTail","Output":"=== RUN   TestUniformSampleIncludesTail\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.63589732+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleIncludesTail","Output":"--- PASS: TestUniformSampleIncludesTail (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.635900224+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleIncludesTail","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.635901917+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot"}
+{"Time":"2026-11-03T20:18:53.635903439+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"=== RUN   TestUniformSampleSnapshot\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.637402225+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"--- PASS: TestUniformSampleSnapshot (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.637419461+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Elapsed":0}
+{"Time":"2026-11-03T20:18:53.637423607+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleStatistics"}
+{"Time":"2026-11-03T20:18:53.637426601+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleStatistics","Output":"=== RUN   TestUniformSampleStatistics\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.644400462+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleStatistics","Output":"--- PASS: TestUniformSampleStatistics (0.01s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:53.6444324+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleStatistics","Elapsed":0.01}
+{"Time":"2026-11-03T20:18:53.644438669+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleConcurrentUpdateCount"}
+{"Time":"2026-11-03T20:18:53.644440722+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleConcurrentUpdateCount","Output":"=== RUN   TestUniformSampleConcurrentUpdateCount\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.710435541+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleConcurrentUpdateCount","Output":"--- PASS: TestUniformSampleConcurrentUpdateCount (6.06s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.710490974+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleConcurrentUpdateCount","Elapsed":6.06}
+{"Time":"2026-11-03T20:18:59.710535241+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterTimer"}
+{"Time":"2026-11-03T20:18:59.710538586+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterTimer","Output":"=== RUN   TestGetOrRegisterTimer\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.710548611+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterTimer","Output":"--- PASS: TestGetOrRegisterTimer (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.710552256+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestGetOrRegisterTimer","Elapsed":0}
+{"Time":"2026-11-03T20:18:59.710555922+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerExtremes"}
+{"Time":"2026-11-03T20:18:59.710558085+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerExtremes","Output":"=== RUN   TestTimerExtremes\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.71056836+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerExtremes","Output":"--- PASS: TestTimerExtremes (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.710570394+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerExtremes","Elapsed":0}
+{"Time":"2026-11-03T20:18:59.710572587+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerStop"}
+{"Time":"2026-11-03T20:18:59.71057493+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerStop","Output":"=== RUN   TestTimerStop\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.710577544+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerStop","Output":"--- PASS: TestTimerStop (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.710579637+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerStop","Elapsed":0}
+{"Time":"2026-11-03T20:18:59.71058132+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerFunc"}
+{"Time":"2026-11-03T20:18:59.710582742+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerFunc","Output":"=== RUN   TestTimerFunc\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.757967759+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerFunc","Output":"    timer_test.go:51: tm.Max(): 45e6 \u003e 57085768 || 57085768 \u003e 55e6\n","OutputType":"error"}
+{"Time":"2026-11-03T20:18:59.758023804+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerFunc","Output":"--- FAIL: TestTimerFunc (0.06s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.75802771+01:00","Action":"fail","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerFunc","Elapsed":0.06}
+{"Time":"2026-11-03T20:18:59.7580346+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerZero"}
+{"Time":"2026-11-03T20:18:59.758037244+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerZero","Output":"=== RUN   TestTimerZero\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758042241+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerZero","Output":"--- PASS: TestTimerZero (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758044305+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerZero","Elapsed":0}
+{"Time":"2026-11-03T20:18:59.758046177+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestMetricsSorting"}
+{"Time":"2026-11-03T20:18:59.75804778+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMetricsSorting","Output":"=== RUN   TestMetricsSorting\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758051255+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestMetricsSorting","Output":"--- PASS: TestMetricsSorting (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758053148+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestMetricsSorting","Elapsed":0}
+{"Time":"2026-11-03T20:18:59.758055662+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"ExampleGetOrRegisterGauge"}
+{"Time":"2026-11-03T20:18:59.758057154+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"ExampleGetOrRegisterGauge","Output":"=== RUN   ExampleGetOrRegisterGauge\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758211196+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"ExampleGetOrRegisterGauge","Output":"--- PASS: ExampleGetOrRegisterGauge (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758215452+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"ExampleGetOrRegisterGauge","Elapsed":0}
+{"Time":"2026-11-03T20:18:59.758223865+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"Example"}
+{"Time":"2026-11-03T20:18:59.758225647+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"Example","Output":"=== RUN   Example\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758262142+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"Example","Output":"--- PASS: Example (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758264656+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"Example","Elapsed":0}
+{"Time":"2026-11-03T20:18:59.758266479+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"ExampleGetOrRegisterTimer"}
+{"Time":"2026-11-03T20:18:59.758267891+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"ExampleGetOrRegisterTimer","Output":"=== RUN   ExampleGetOrRegisterTimer\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758304056+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"ExampleGetOrRegisterTimer","Output":"--- PASS: ExampleGetOrRegisterTimer (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.758321952+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"ExampleGetOrRegisterTimer","Elapsed":0}
+{"Time":"2026-11-03T20:18:59.758323805+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Output":"FAIL\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.764412459+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Output":"FAIL\tgithub.com/rcrowley/go-metrics\t8.403s\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:59.764438599+01:00","Action":"fail","Package":"github.com/rcrowley/go-metrics","Elapsed":8.403}

@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.storage-g0-capacity-preparation-local-validation.v1",
+  "date": "2026-11-06",
+  "localCasesPassed": 11,
+  "failures": 0,
+  "skips": 0,
+  "localProcMeminfoFixture": true,
+  "ciRequiresRealProcMeminfo": true,
+  "originalCapacityAndPreflightUsed": true,
+  "providerCalls": 0,
+  "targetExecuted": false,
+  "dedicatedCiStatus": "PENDING_NEW_COMMIT",
+  "sourceSha256": {
+    "scripts/prepare-storage-g0-capacity-directories-20261106.py": "4408b107d5f32061c965d2d1b9aa6dd618594f11a15cce4c1164239da23724fd",
+    "tests/test_storage_g0_capacity_directories.py": "ee214e0880c6a191b5d9320a7914a7e54c03e70a52b925a366288bcd725c438b",
+    ".github/workflows/storage-g0-capacity-directories.yml": "abe78083eca712724b745ecd53a4756bcf17a28344c70342730e19ad428e9b06"
+  },
+  "prePublicationHistory": [
+    {
+      "cases": 10,
+      "passed": 8,
+      "failed": 2,
+      "reason": "Local sandbox lacks /proc/meminfo; original capacity reader raised FileNotFoundError, preparation remained HELD and preserved directories."
+    },
+    {
+      "cases": 10,
+      "passed": 10,
+      "change": "Only test fixture supplies memory text locally. CI retains real proc file without fallback; production reader unchanged."
+    },
+    {
+      "cases": 11,
+      "passed": 11,
+      "change": "Pin six already-observed connection/network/runtime hashes before effects and in final check; add changed-connection denial."
+    }
+  ],
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.storage-historical-minio-http-operator-decision.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_CHAT_APPROVAL",
+  "operatorResponse": "autorizzo",
+  "decisionReference": "GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-03",
+  "approvedProgramCommit": "fc15882c6f4a8786a49efd88e09c9f3bd8e2f7c5",
+  "approvedProgramBytes": 21823,
+  "approvedProgramSha256": "c363c38e6a1a9b5768e40ae0c21ba7aef9b74a06a85914b890a6a84afb15bb93",
+  "manifestSupportCommit": "5ae47689adeaf39f241527c9364a2c0c9e9b0b9b",
+  "manifestSupportSha256": "3ff2281f380dcab555d22966f78622a4f4bd00798e5e623e5db8fb95dee2513d",
+  "status": "APPROVED_PENDING_VPS_EXECUTION",
+  "scope": "historical-minio-restore-20261107-v1/s3-proof-v2",
+  "maximumAttempts": 1,
+  "maximumSeconds": 900,
+  "maximumContainerRuns": 1,
+  "maximumHttpGetRequests": 320,
+  "networkMode": "none",
+  "reusesExtractedVolume": true,
+  "acceptanceCreditAdded": 0
+}

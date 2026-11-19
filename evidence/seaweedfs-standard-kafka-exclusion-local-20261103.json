@@ -1,0 +1,326 @@
+{
+  "schema": "ouf.seaweedfs-standard-kafka-exclusion-local.v1",
+  "observedAt": "2026-11-03T19:38:19.049719+00:00",
+  "status": "LOCAL_QUALIFIED_PATCH_PROPOSAL_NOT_ADMITTED",
+  "baseOrderedPatchCount": 29,
+  "baseCandidateBinarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+  "patch": {
+    "patch": "patches/seaweedfs/4.52-ouf-standard-kafka-exclusion.patch",
+    "sha256": "14a2df91229fa79ca06e849793dbf0be5afb79273492964bb05a15e49d68ff47",
+    "bytes": 52558,
+    "changedFiles": [
+      "go.mod",
+      "go.sum",
+      "weed/command/ouf_unsupported_kafka_tag.go",
+      "weed/notification/kafka/event_filter.go",
+      "weed/notification/kafka/event_filter_test.go",
+      "weed/notification/kafka/kafka_queue.go",
+      "weed/notification/kafka/kafka_sasl_tls.go",
+      "weed/notification/kafka/kafka_sasl_tls_test.go",
+      "weed/notification/kafka/ouf_profile_test.go",
+      "weed/replication/sub/notification_kafka.go",
+      "weed/replication/sub/notification_kafka_ouf_profile_test.go",
+      "weed/replication/sub/notification_kafka_test.go",
+      "weed/server/filer_server.go",
+      "weed/server/filer_server_ouf_kafka_profile_test.go",
+      "weed/server/filer_server_ouf_profile.go"
+    ],
+    "exactIndexedReplay": "PASS"
+  },
+  "localDeveloperBinary": {
+    "sha256": "85cd18c92d05807308c7133b899c5b8db09700dd5df42e5ab17e24c7fbcf02c1",
+    "bytes": 221337722,
+    "moduleCount": 250,
+    "ShopifySaramaModules": 0,
+    "IBMVersionSelected": false,
+    "rcrowleyModules": 0,
+    "releaseQualification": false,
+    "buildvcs": false,
+    "CGO_ENABLED": "0"
+  },
+  "selectedProductionPackages": {
+    "before": 1811,
+    "after": 1765,
+    "removed": [
+      "github.com/Shopify/sarama",
+      "github.com/davecgh/go-spew/spew",
+      "github.com/eapache/go-resiliency/breaker",
+      "github.com/eapache/go-xerial-snappy",
+      "github.com/eapache/queue",
+      "github.com/hashicorp/go-uuid",
+      "github.com/jcmturner/aescts/v2",
+      "github.com/jcmturner/dnsutils/v2",
+      "github.com/jcmturner/gofork/encoding/asn1",
+      "github.com/jcmturner/gofork/x/crypto/pbkdf2",
+      "github.com/jcmturner/gokrb5/v8/asn1tools",
+      "github.com/jcmturner/gokrb5/v8/client",
+      "github.com/jcmturner/gokrb5/v8/config",
+      "github.com/jcmturner/gokrb5/v8/credentials",
+      "github.com/jcmturner/gokrb5/v8/crypto",
+      "github.com/jcmturner/gokrb5/v8/crypto/common",
+      "github.com/jcmturner/gokrb5/v8/crypto/etype",
+      "github.com/jcmturner/gokrb5/v8/crypto/rfc3961",
+      "github.com/jcmturner/gokrb5/v8/crypto/rfc3962",
+      "github.com/jcmturner/gokrb5/v8/crypto/rfc4757",
+      "github.com/jcmturner/gokrb5/v8/crypto/rfc8009",
+      "github.com/jcmturner/gokrb5/v8/gssapi",
+      "github.com/jcmturner/gokrb5/v8/iana",
+      "github.com/jcmturner/gokrb5/v8/iana/addrtype",
+      "github.com/jcmturner/gokrb5/v8/iana/adtype",
+      "github.com/jcmturner/gokrb5/v8/iana/asnAppTag",
+      "github.com/jcmturner/gokrb5/v8/iana/chksumtype",
+      "github.com/jcmturner/gokrb5/v8/iana/errorcode",
+      "github.com/jcmturner/gokrb5/v8/iana/etypeID",
+      "github.com/jcmturner/gokrb5/v8/iana/flags",
+      "github.com/jcmturner/gokrb5/v8/iana/keyusage",
+      "github.com/jcmturner/gokrb5/v8/iana/msgtype",
+      "github.com/jcmturner/gokrb5/v8/iana/nametype",
+      "github.com/jcmturner/gokrb5/v8/iana/patype",
+      "github.com/jcmturner/gokrb5/v8/kadmin",
+      "github.com/jcmturner/gokrb5/v8/keytab",
+      "github.com/jcmturner/gokrb5/v8/krberror",
+      "github.com/jcmturner/gokrb5/v8/messages",
+      "github.com/jcmturner/gokrb5/v8/pac",
+      "github.com/jcmturner/gokrb5/v8/types",
+      "github.com/jcmturner/rpc/v2/mstypes",
+      "github.com/jcmturner/rpc/v2/ndr",
+      "github.com/rcrowley/go-metrics",
+      "golang.org/x/net/internal/socks",
+      "golang.org/x/net/proxy",
+      "log/syslog"
+    ],
+    "added": [],
+    "ShopifySaramaPackages": 0,
+    "rcrowleyPackages": 0
+  },
+  "rootModuleGraph": {
+    "afterEdges": 4554,
+    "historicalLegacyEdgesRetained": [
+      "github.com/jaegertracing/jaeger@v1.47.0 github.com/Shopify/sarama@v1.33.0",
+      "github.com/jaegertracing/jaeger@v1.47.0 github.com/rcrowley/go-metrics@v0.0.0-20201227073835-cf1acfcdf475",
+      "github.com/openzipkin/zipkin-go@v0.4.3 github.com/rcrowley/go-metrics@v0.0.0-20201227073835-cf1acfcdf475"
+    ],
+    "completeGraphLegacyFree": false,
+    "reason": "Uncompiled native SQL parser tracing dependencies; no removal of native SQL authorized"
+  },
+  "tests": {
+    "focused-tests": {
+      "testPassEvents": 88,
+      "packagePassEvents": 4,
+      "testFailEvents": 0,
+      "packageFailEvents": 0,
+      "skipEvents": 0,
+      "expectedFailure": false
+    },
+    "filer-preflight-tests": {
+      "testPassEvents": 6,
+      "packagePassEvents": 1,
+      "testFailEvents": 0,
+      "packageFailEvents": 0,
+      "skipEvents": 0,
+      "expectedFailure": false
+    },
+    "security-regression-tests": {
+      "testPassEvents": 39,
+      "packagePassEvents": 1,
+      "testFailEvents": 0,
+      "packageFailEvents": 0,
+      "skipEvents": 0,
+      "expectedFailure": false
+    },
+    "preflight-negative-control": {
+      "testPassEvents": 0,
+      "packagePassEvents": 0,
+      "testFailEvents": 5,
+      "packageFailEvents": 1,
+      "skipEvents": 0,
+      "expectedFailure": true
+    }
+  },
+  "rootCompilation": "PASS",
+  "rootTidyFixedPoint": "PASS_EMPTY_DIFF",
+  "kafkaBuildTag": "EXPECTED_COMPILE_FAILURE_WITH_PROFILE_GUARD",
+  "independentReview": "PASS_12_TEST_SUBTEST_EVENTS_3_PACKAGES_AND_TAG_GUARD",
+  "preflight": {
+    "filerConfigAndNotificationReadOnceInOriginalMergeOrder": true,
+    "originalJWT_CORS_exposeDirectoryPrecedencePreserved": true,
+    "tlsSnapshotEffectiveStringKeys": 15,
+    "guardsBefore": [
+      "caller option writes",
+      "TLS certificate provider construction",
+      "goroutines",
+      "DNS master refresh",
+      "master connection",
+      "filesystem/store initialization",
+      "other queue provider initialization"
+    ],
+    "replicationGuardBeforeSink": true,
+    "noDroppedOrAcknowledgedEvents": true
+  },
+  "bytePreservedTrees": {
+    "weed/mq": {
+      "fileCount": 196,
+      "byteIdenticalTo29": true
+    },
+    "weed/query": {
+      "fileCount": 58,
+      "byteIdenticalTo29": true
+    },
+    "weed/server/postgres": {
+      "fileCount": 4,
+      "byteIdenticalTo29": true
+    },
+    "test/kafka": {
+      "fileCount": 98,
+      "byteIdenticalTo29": true
+    }
+  },
+  "targetBinding": "OPEN_PROFILE_INADMISSIBLE_IF_EXTERNAL_KAFKA_NOTIFICATION_OR_REPLICATION_REQUIRED",
+  "otherLifecycleFindings": "OPEN_SEPARATE_EXTENDED_AUDIT_NOT_CLOSED_BY_THIS_PATCH",
+  "hostedGeneration30Qualification": "NOT_EXECUTED_BY_THIS_PROPOSAL",
+  "targetOperationsPerformed": false,
+  "consumedScopesChanged": false,
+  "TeatriFarmacieResultsChanged": false,
+  "evidenceFiles": [
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/denied-kafka-tag.stderr",
+      "sha256": "dc9aa7875eaf92fba081bf39af3b63616be479c5bfd1b96ade94960997eb2a79",
+      "bytes": 328
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/denied-kafka-tag.txt",
+      "sha256": "3a56caedac2c98c9585f19a99cc6e20a5811db464184f71626fceb0d73a1bf60",
+      "bytes": 69
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/filer-preflight-tests.jsonl",
+      "sha256": "6e045c37687d81412d505c25b300480521e90f13a80dff06bdef93ec702240a7",
+      "bytes": 6444
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/filer-preflight-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/focused-tests.jsonl",
+      "sha256": "838a8f624ab63a090241216522a76de5e8d50ce4714b8cafce43a76de402fb8c",
+      "bytes": 123428
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/focused-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/independent-review-kafka-focused-tests.jsonl",
+      "sha256": "3a1b4ab9562acbd2ee6382f964d6117c1df1092481b49ed867bb773de3cf36d0",
+      "bytes": 14165
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/independent-review-kafka-focused-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/independent-review-kafka-tag-negative.log",
+      "sha256": "1157b495ce607818480aa357bf38c3eb2df5fd65e5fc6886e8d5c28071ff206c",
+      "bytes": 397
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/local-build-info.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/local-build-info.txt",
+      "sha256": "349d367ffeb7dda41238069d6dd06d5d3f8411343b5217eb8fde627f256d0607",
+      "bytes": 24118
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/local-build.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/local-build.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/patch-replay.json",
+      "sha256": "43d44d40c1406d33df58978d8e71ec499c2d8d1e7ab90618cf359c28a64c75dd",
+      "bytes": 917
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/preflight-negative-control.jsonl",
+      "sha256": "df1193c770712bfbcd4872ea112e07101eb8ff287f7b08a40846d25e70ee2a33",
+      "bytes": 31582
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/preflight-negative-control.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/production-deps.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/production-deps.txt",
+      "sha256": "182bd9f22ceb08afda68f7f3ae009b525b9e6678772460cd8d7579a2f10a67f2",
+      "bytes": 73210
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/root-historical-trace-module-reasons.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/root-historical-trace-module-reasons.txt",
+      "sha256": "278695f1ad48e5bed132307adef2ca368d5b2aff5039bf6a14fd7acb37b59c8a",
+      "bytes": 851
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/root-module-graph.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/root-module-graph.txt",
+      "sha256": "6f326025857a602cc2480e1b9b26371201e6cb18dd1cd012c16597a6d560ffd2",
+      "bytes": 364088
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/security-regression-tests.jsonl",
+      "sha256": "b632c6c8c24b51470bc9abffcba59b9cabed06126acefe141eda06d9e8b5b982",
+      "bytes": 34772
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/security-regression-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/tidy-fixed-point.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/tidy-fixed-point.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/weed-compile.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/weed-compile.txt",
+      "sha256": "a4a3125d4767fab19a8bdc86fa6b9a886049ea606a78d8c1ab808a530bdafa1b",
+      "bytes": 57
+    }
+  ]
+}

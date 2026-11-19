@@ -94,8 +94,11 @@ def host_config_matches(expected, actual):
     a missing key or another type is never accepted as this default. The native
     dictionaries and their signed/generation hashes are never rewritten.
     """
+    # Keep this pure planner independently importable. The owner Engine uses
+    # the same narrowly tested empty-spec and OOM comparisons.
     if type(expected) is not dict or type(actual) is not dict:return False
     for key,value in expected.items():
+        if key=='Mounts' and type(value)is list and not value and actual.get(key)is None:continue
         if key=='OomKillDisable':
             if key not in actual:return False
             current=actual[key]
@@ -106,14 +109,36 @@ def host_config_matches(expected, actual):
     return True
 
 
+def validate_packaged_search_path(request,image_config):
+    """Reject inherited environment that hides the packaged Java launcher.
+
+    Paths come from the authenticated image, never an installation default.
+    Changing an explicit installation PATH requires a reviewed environment delta.
+    """
+    entry=request.get('Entrypoint')or[]
+    if not entry or entry[0]!='java':return
+    inherited=environment(image_config.get('Env')or[])
+    home=inherited.get('JAVA_HOME')
+    if not home:return
+    effective={**inherited,**environment(request.get('Env')or[])}
+    require(home.rstrip('/')+'/bin'in effective.get('PATH','').split(':'),
+        'PACKAGED_JAVA_SEARCH_PATH_REQUIRES_EXPLICIT_REVIEW')
+
 def compile_replacement(module, old, image, package, cohort_id, env_changes):
     require(module in MODULES and re.fullmatch(r'[a-z0-9-]{1,60}', cohort_id or '') is not None,
             'EXACT_COHORT_MODULE_AND_ID_REQUIRED')
     require(old.get('Name') == '/ouf-'+module, 'SELECTED_CONTAINER_NAME_DRIFT')
     pin = runtime_pin(old)
+    package_image=image.get('Id')
+    if 'archiveAudit' in image:
+        from image_custody import runtime_image_id
+        audit=image['archiveAudit']
+        require(runtime_image_id(audit)==image.get('Id') and audit['sourceCommit']==package.get('sourceCommit')
+                and audit['imageConfig']==image.get('Config'),'EXACT_PACKAGE_NATIVE_IMAGE_BINDING_REQUIRED')
+        package_image=audit['imageId']
     require(package.get('module') == module and COMMIT.fullmatch(package.get('sourceCommit', ''))
             and package.get('artifactKind') == 'DOCKER_SAVE'
-            and package.get('imageId') == image.get('Id')
+            and package.get('imageId') == package_image
             and IMAGE.fullmatch(image.get('Id', '')) is not None
             and package.get('scanGate') == 'PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED',
             'EXACT_QUALIFIED_IMAGE_PACKAGE_REQUIRED')
@@ -162,6 +187,7 @@ def compile_replacement(module, old, image, package, cohort_id, env_changes):
         config[key] = deepcopy(candidate.get(key))
     require(type(config.get('Entrypoint')) is list and config['Entrypoint'],
             'PACKAGED_ENTRYPOINT_REQUIRED')
+    validate_packaged_search_path(config,candidate)
     require(not config.get('Healthcheck') or config['Healthcheck'] == candidate.get('Healthcheck'),
             'EXISTING_HEALTHCHECK_REQUIRES_EXACT_REVIEW')
     if config.get('Hostname') == old['Id'][:12]:

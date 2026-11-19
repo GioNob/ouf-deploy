@@ -1,0 +1,36 @@
+{
+  "status": "MODIFIED_SOURCE_LOCALLY_PRESERVED_LEGAL_REVIEW_AND_COHORT30_BINDING_PENDING",
+  "derivedFrom": "github.com/hashicorp/raft-boltdb/v2@v2.4.2",
+  "license": "MPL-2.0",
+  "licenseDecisionOrPermissionCreated": false,
+  "tarSha256": "47f6e48d0f51e0f43cb1bab060a3fb56b5af9b78e9ca10ab0f93a7ba3b2f0a91",
+  "tarBytes": 51200,
+  "gzipSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+  "gzipBytes": 11139,
+  "files": {
+    "weed/util/raftstore/LICENSE": {
+      "sha256": "977d08f671b26f63c6e8b9783aa1dc91ba8a01afe1aa10549281a9d388749857",
+      "bytes": 15952
+    },
+    "weed/util/raftstore/UPSTREAM.md": {
+      "sha256": "d7c67890a561eb332479e3577bd83c35e655ba151a1a7ee71ea2054816ed58d0",
+      "bytes": 1179
+    },
+    "weed/util/raftstore/bolt_store.go": {
+      "sha256": "443f15c70e8abe4c6242538983bf0b28eb7ae8db9109e463ced14a2d50e5d73b",
+      "bytes": 7903
+    },
+    "weed/util/raftstore/bolt_store_test.go": {
+      "sha256": "1c0abc6f2e5e5181135739bd9afb580b0448774aaccc8af9ad5f4590debc9e6b",
+      "bytes": 9045
+    },
+    "weed/util/raftstore/metrics.go": {
+      "sha256": "2eb9d3dba67f37ba2962233ecb88aeb2ef167439ef5038161dde3d1f99008998",
+      "bytes": 2833
+    },
+    "weed/util/raftstore/util.go": {
+      "sha256": "bc8fb0b8f9a51ab655babbade157ffcec84ee5a65aecae33c24dd5630c31ed48",
+      "bytes": 1020
+    }
+  }
+}

@@ -1,12 +1,6 @@
 name: Provider v2 admission manifest reader preparation
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/read_provider_v2_admission_manifest.py'
-      - 'tests/test_read_provider_v2_admission_manifest.py'
-      - 'releases/READ_PROVIDER_V2_ADMISSION_MANIFEST.sh'
-      - '.github/workflows/provider-v2-admission-manifest-reader.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

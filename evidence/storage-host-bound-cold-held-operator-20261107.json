@@ -1,0 +1,32 @@
+{
+  "schema": "ouf.storage-host-bound-cold-held-operator.v1",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT",
+  "installation": {
+    "schema": "ouf.storage-host-bound-cold-installation.v1",
+    "status": "PINNED_TOOLS_INSTALLED_NO_STOP_OR_CAPTURE",
+    "filesInstalled": 1,
+    "exactExistingFilesReused": 0,
+    "providerRequests": 0,
+    "legacyPlanModified": false,
+    "runtimeAuthorityIssued": false,
+    "targetStopPerformed": false,
+    "targetCapturePerformed": false,
+    "acceptanceCreditAdded": 0
+  },
+  "operation": {
+    "status": "HELD",
+    "reason": "UNEXPECTED_CONTAINER_EVENT",
+    "partialOperationPreserved": true,
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
+  },
+  "decisionReference": "GIOVANNI-NONPROD-HOST-BOUND-COLD-20261107-01",
+  "codeLocationInference": "This stop driver checks this reason only after five stop groups and its final offline inventory, before writing stop success or invoking capture. Retained target journal and current live state are not yet independently read.",
+  "journalReadbackPending": true,
+  "currentLiveStateProven": false,
+  "targetCaptureSuccessProven": false,
+  "scopeConsumed": true,
+  "acceptanceCreditAdded": 0
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "ouf.upstream-release-observation.v1",
+  "observedAt": "2026-11-03T21:20:25Z",
+  "source": "https://api.github.com/repos/seaweedfs/seaweedfs/releases/latest",
+  "tag": "4.52",
+  "releaseId": 431377530,
+  "publishedAt": "2026-11-02T11:24:12Z",
+  "url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.52",
+  "draft": false,
+  "prerelease": false,
+  "selectedVersion": "4.52",
+  "selectedUpstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "claim": "Latest upstream release observation only; not maintenance, scan or release admission",
+  "targetOperations": 0
+}

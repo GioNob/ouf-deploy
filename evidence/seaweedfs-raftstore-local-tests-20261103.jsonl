@@ -1,0 +1,52 @@
+{"Time":"2026-11-03T20:18:19.065260734+01:00","Action":"start","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore"}
+{"Time":"2026-11-03T20:18:19.069917548+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_Implements"}
+{"Time":"2026-11-03T20:18:19.06999893+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_Implements","Output":"=== RUN   TestBoltStore_Implements\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.070037589+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_Implements","Output":"--- PASS: TestBoltStore_Implements (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.070043057+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_Implements","Elapsed":0}
+{"Time":"2026-11-03T20:18:19.070173423+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltOptionsTimeout"}
+{"Time":"2026-11-03T20:18:19.070176628+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltOptionsTimeout","Output":"=== RUN   TestBoltOptionsTimeout\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.132818312+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltOptionsTimeout","Output":"--- PASS: TestBoltOptionsTimeout (0.06s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.132917671+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltOptionsTimeout","Elapsed":0.06}
+{"Time":"2026-11-03T20:18:19.132942559+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltOptionsReadOnly"}
+{"Time":"2026-11-03T20:18:19.132946955+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltOptionsReadOnly","Output":"=== RUN   TestBoltOptionsReadOnly\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.139119175+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltOptionsReadOnly","Output":"--- PASS: TestBoltOptionsReadOnly (0.01s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.139154889+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltOptionsReadOnly","Elapsed":0.01}
+{"Time":"2026-11-03T20:18:19.139170753+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestNewBoltStore"}
+{"Time":"2026-11-03T20:18:19.139173867+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestNewBoltStore","Output":"=== RUN   TestNewBoltStore\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.14525159+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestNewBoltStore","Output":"--- PASS: TestNewBoltStore (0.01s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.145297439+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestNewBoltStore","Elapsed":0.01}
+{"Time":"2026-11-03T20:18:19.145304019+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_FirstIndex"}
+{"Time":"2026-11-03T20:18:19.145306382+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_FirstIndex","Output":"=== RUN   TestBoltStore_FirstIndex\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.147768373+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_FirstIndex","Output":"--- PASS: TestBoltStore_FirstIndex (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.147807141+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_FirstIndex","Elapsed":0}
+{"Time":"2026-11-03T20:18:19.147812209+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_LastIndex"}
+{"Time":"2026-11-03T20:18:19.147821523+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_LastIndex","Output":"=== RUN   TestBoltStore_LastIndex\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.15294576+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_LastIndex","Output":"--- PASS: TestBoltStore_LastIndex (0.01s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.152970758+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_LastIndex","Elapsed":0.01}
+{"Time":"2026-11-03T20:18:19.152977528+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_GetLog"}
+{"Time":"2026-11-03T20:18:19.152980613+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_GetLog","Output":"=== RUN   TestBoltStore_GetLog\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.156811898+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_GetLog","Output":"--- PASS: TestBoltStore_GetLog (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.156831318+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_GetLog","Elapsed":0}
+{"Time":"2026-11-03T20:18:19.156835364+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetLog"}
+{"Time":"2026-11-03T20:18:19.156837577+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetLog","Output":"=== RUN   TestBoltStore_SetLog\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.160296579+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetLog","Output":"--- PASS: TestBoltStore_SetLog (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.160318411+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetLog","Elapsed":0}
+{"Time":"2026-11-03T20:18:19.160323429+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetLogs"}
+{"Time":"2026-11-03T20:18:19.160325592+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetLogs","Output":"=== RUN   TestBoltStore_SetLogs\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.163755194+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetLogs","Output":"--- PASS: TestBoltStore_SetLogs (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.163777698+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetLogs","Elapsed":0}
+{"Time":"2026-11-03T20:18:19.163783026+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_DeleteRange"}
+{"Time":"2026-11-03T20:18:19.163786762+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_DeleteRange","Output":"=== RUN   TestBoltStore_DeleteRange\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.167337475+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_DeleteRange","Output":"--- PASS: TestBoltStore_DeleteRange (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.167359519+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_DeleteRange","Elapsed":0}
+{"Time":"2026-11-03T20:18:19.167363344+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_Set_Get"}
+{"Time":"2026-11-03T20:18:19.167365718+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_Set_Get","Output":"=== RUN   TestBoltStore_Set_Get\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.171125567+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_Set_Get","Output":"--- PASS: TestBoltStore_Set_Get (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.171140639+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_Set_Get","Elapsed":0}
+{"Time":"2026-11-03T20:18:19.171144305+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetUint64_GetUint64"}
+{"Time":"2026-11-03T20:18:19.171146188+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetUint64_GetUint64","Output":"=== RUN   TestBoltStore_SetUint64_GetUint64\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.175540632+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetUint64_GetUint64","Output":"--- PASS: TestBoltStore_SetUint64_GetUint64 (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.175563777+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Test":"TestBoltStore_SetUint64_GetUint64","Elapsed":0}
+{"Time":"2026-11-03T20:18:19.175568624+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:19.176367231+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Output":"ok  \tgithub.com/seaweedfs/seaweedfs/weed/util/raftstore\t0.109s\n"}
+{"Time":"2026-11-03T20:18:19.176392259+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/util/raftstore","Elapsed":0.111}

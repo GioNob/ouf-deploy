@@ -1,0 +1,84 @@
+name: Storage 4.52 YAML33 source observation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-452-yaml33-source-observation.yml
+      - scripts/observe-seaweedfs-yaml33.py
+      - scripts/replay-seaweedfs-source-tree.py
+      - scripts/prepare_iceberg_vendor_patch.py
+      - scripts/verify_iceberg_vendor_source_profile.py
+      - scripts/collect_vendor_module_origins.py
+      - tools/storage_security/vendor_yaml_source.py
+      - tools/storage_security/vendor_module_origins.py
+      - config/seaweedfs-yaml33-observation-inputs.json
+      - patches/iceberg-go/0.7.0-maintained-yaml-vendor.patch
+      - tests/test_seaweedfs_yaml33_observation.py
+      - tests/test_prepare_iceberg_vendor_patch.py
+      - tests/test_vendor_yaml_source_profile.py
+      - tests/test_vendor_module_origins.py
+      - tests/fixtures/compare_iceberg_yaml.go
+
+permissions:
+  contents: read
+
+concurrency:
+  group: storage-452-yaml33-source-observation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  observe-source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CGO_ENABLED: '0'
+      GOTOOLCHAIN: local
+      GOFLAGS: ''
+      GOWORK: 'off'
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          path: upstream-seaweedfs-yaml33
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Verify bounded observer guards
+        run: python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_yaml33_observation.py -v
+      - name: Observe complete vendored source, real graph and two clean builds
+        run: |
+          python3 -I -B -S scripts/observe-seaweedfs-yaml33.py \
+            --repo "$GITHUB_WORKSPACE" \
+            --upstream "$GITHUB_WORKSPACE/upstream-seaweedfs-yaml33" \
+            --work "$RUNNER_TEMP/yaml33-observation-work" \
+            --evidence "$RUNNER_TEMP/yaml33-observation-evidence"
+      - name: Preserve source-only diagnostics even after failure
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/yaml33-observation-evidence"
+          python3 -I -B -S - <<'PY'
+          import hashlib,json,os,pathlib
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])/'yaml33-observation-evidence'
+          report=root/'observation.json'
+          if not report.exists():
+              report.write_text(json.dumps({'status':'OBSERVATION_NOT_COMPLETED_NOT_RELEASE_QUALIFIED','releaseAdmitted':False,'runtimeAuthorityIssued':False,'targetOperations':0,'runId':os.environ.get('GITHUB_RUN_ID'),'repositoryCommit':os.environ.get('GITHUB_SHA')},indent=2)+'\n')
+          files={p.relative_to(root).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file() and p.name!='SHA256SUMS'}
+          (root/'SHA256SUMS').write_text(''.join(files[n]+'  '+n+'\n' for n in sorted(files)))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: seaweedfs-yaml33-source-observation-${{ github.run_id }}
+          path: ${{ runner.temp }}/yaml33-observation-evidence/
+          if-no-files-found: error
+          retention-days: 90

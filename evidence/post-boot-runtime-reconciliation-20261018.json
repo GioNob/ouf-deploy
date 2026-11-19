@@ -1,0 +1,192 @@
+{
+  "schema": "ouf.post-boot-runtime-reconciliation.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "hostRecovery": {
+    "source": "operator receipt in current chat",
+    "complete": true,
+    "dockerActive": true,
+    "nativeGuardPassed": true,
+    "contextPath": "/etc/ouf/deploy-snapshots/boot-lock-recovery-ct030dx0/journal-sandbox-_jz3lj9r",
+    "applicationReadinessProven": false,
+    "providerReconciliationRequired": true,
+    "runtimeAuthorityIssued": false,
+    "realSubsequentRebootProven": false
+  },
+  "udp": {
+    "automaticRetry": false,
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "credentialFilesRead": 0,
+    "credentialValuesPrinted": false,
+    "databaseCalls": 0,
+    "functionalMilestonesProven": 4,
+    "generationMatches": true,
+    "jobsRetried": 0,
+    "network": {
+      "candidateConflicts": [
+        {
+          "configuredAddressOverlapCount": 1,
+          "containerId": "733c5bdeca250fba778d431e121120e6653296d84c747552d8f95290ad01e8d9",
+          "containerName": "/ouf-apisix",
+          "imageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+          "networkAddressOverlapCount": 1,
+          "networks": [
+            {
+              "configuredIPv4": null,
+              "configuredIPv6": null,
+              "currentIPv4": "172.18.0.5",
+              "currentIPv6": null,
+              "networkReferenceSha256": "b3b47b05ddc5fb34363f38576b4f2922d56e47b55ef17e1fdf9c6adced057ff3"
+            },
+            {
+              "configuredIPv4": null,
+              "configuredIPv6": null,
+              "currentIPv4": "172.20.0.3",
+              "currentIPv6": null,
+              "networkReferenceSha256": "badd3f89993c4e19d74843297c5065f7144917e17e3716da391dddce7488d446"
+            }
+          ],
+          "possibleHostPortOverlaps": [],
+          "sourceCommit": null
+        }
+      ],
+      "kernelListenerReadAvailable": true,
+      "matchingKernelListeners": [],
+      "ownerStopOrRestartPerformed": false,
+      "rawEngineErrorPrinted": false,
+      "runningContainersRead": 10,
+      "targetBindings": [],
+      "targetNetworks": [
+        {
+          "configuredIPv4": "172.18.0.5",
+          "configuredIPv6": null,
+          "currentIPv4": null,
+          "currentIPv6": null,
+          "networkReferenceSha256": "b3b47b05ddc5fb34363f38576b4f2922d56e47b55ef17e1fdf9c6adced057ff3"
+        }
+      ]
+    },
+    "profilePublications": 0,
+    "runtimeMutations": 0,
+    "schema": "ouf.retained-udp-startup-read.v1",
+    "sourceCommit": "0d40da05408a14db31d4d41af2372d6a71480291",
+    "startup": {
+      "exceptionClasses": [],
+      "exceptionMessagesPrinted": false,
+      "markers": {
+        "authenticationFailed": false,
+        "certificateValidationFailure": false,
+        "connectionRefused": false,
+        "connectionTimeout": false,
+        "databaseUnavailable": false,
+        "migrationChecksumMismatch": false,
+        "permissionDenied": false,
+        "readOnlyFilesystem": false
+      },
+      "otherExceptionClassCount": 0,
+      "rawLogsPrinted": false,
+      "stackFrameCount": 0
+    },
+    "state": {
+      "Dead": false,
+      "FinishedAt": "2026-10-18T08:09:50.930047249Z",
+      "OOMKilled": false,
+      "Paused": false,
+      "Restarting": false,
+      "Running": false,
+      "StartedAt": "2026-10-18T00:28:46.850574934Z",
+      "engineErrorMarkers": {
+        "missingMountSource": false,
+        "mountTypeMismatch": false,
+        "networkSetupFailure": true,
+        "packetFilterFailure": false,
+        "permissionDenied": false,
+        "portAlreadyAllocated": true,
+        "readOnlyFilesystem": false,
+        "runtimeCreateFailure": false
+      },
+      "engineErrorPresent": true,
+      "exitCode": 143,
+      "restartPolicy": "unless-stopped",
+      "status": "exited"
+    }
+  },
+  "spring": {
+    "automaticRetry": false,
+    "channels": [
+      {
+        "classification": "UNCLASSIFIED",
+        "name": "SPRING_APPLICATION_JSON",
+        "properties": [
+          {
+            "canonicalProperty": "ouf.authorization.ths.enabled",
+            "property": "oufauthorizationthsenabled",
+            "type": "bool"
+          },
+          {
+            "canonicalProperty": "ouf.managedfilepicker.gatewayuploadurl",
+            "property": "oufmanagedfilepickergatewayuploadurl",
+            "type": "str"
+          },
+          {
+            "canonicalProperty": "ouf.onboarding.udpidentity.gatewayurl",
+            "property": "oufonboardingudpidentitygatewayurl",
+            "type": "str"
+          },
+          {
+            "canonicalProperty": "ouf.onboarding.udpidentity.tokenfile",
+            "property": "oufonboardingudpidentitytokenfile",
+            "type": "str"
+          },
+          {
+            "canonicalProperty": "ouf.resolution.ths.gatewaybaseurl",
+            "property": "oufresolutionthsgatewaybaseurl",
+            "type": "str"
+          },
+          {
+            "canonicalProperty": "ouf.workflow.ths.gatewaybaseurl",
+            "property": "oufworkflowthsgatewaybaseurl",
+            "type": "str"
+          },
+          {
+            "canonicalProperty": "spring.security.oauth2.client.registration.ouf-ths.scope",
+            "property": "springsecurityoauth2clientregistrationoufthsscope",
+            "type": "list"
+          }
+        ]
+      },
+      {
+        "classification": "RETAINED_LOCATION_REQUIRES_EXISTING_FILE_BINDING",
+        "name": "SPRING_CONFIG_ADDITIONAL_LOCATION"
+      }
+    ],
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "configurationValuesPrinted": false,
+    "credentialFilesRead": 0,
+    "credentialValuesPrinted": false,
+    "functionalMilestonesProven": 4,
+    "generationMatches": true,
+    "installationSpecific": true,
+    "jobsRetried": 0,
+    "maximumEngineReads": 3,
+    "maximumSeconds": 50,
+    "profilePublications": 0,
+    "runtimeAuthorityIssued": false,
+    "runtimeMutations": 0,
+    "schema": "ouf.source-revision-spring-channel-read.v1"
+  },
+  "mcp": {
+    "systemStatus": "HEALTHY",
+    "partial": false,
+    "wholePlatformHealthProven": false,
+    "ingestionStatus": "AUTHORIZATION_DENIED",
+    "retryable": false
+  },
+  "pending": {
+    "sourceRevisionInstalled": false,
+    "nativeProfilePublished": false,
+    "postBootPreparedBindingsReconciled": false
+  }
+}

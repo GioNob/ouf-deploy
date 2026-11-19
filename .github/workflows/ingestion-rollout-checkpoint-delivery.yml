@@ -1,0 +1,13 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
+name: Ingestion rollout checkpoint delivery
+on:
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  immutable-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -I -B -S -m unittest discover -s tests -p test_ingestion_rollout_checkpoint_delivery.py -v

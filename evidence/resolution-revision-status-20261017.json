@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.resolution-revision-status.v1",
+  "deployedContext": "/etc/ouf/deploy-snapshots/resolution-comparison-execution-fdqv48fp",
+  "deployedJournalVersion": 51,
+  "operatorReportedComplete": true,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "confirmation400RootCauseProven": false,
+  "boundedLogRead": {
+    "onboardingReadSucceeded": true,
+    "udpReadSucceeded": true,
+    "allSelectedMarkerCounts": 0,
+    "diagnosisFromMarkers": false
+  },
+  "newSources": {
+    "udp": "6a306b0b8235ad1696dff13d5053c5157750752d",
+    "onboarding": "9d7b64cbbf45f87c0219394e2e908cfe8fddc0bc"
+  },
+  "newChecks": {
+    "udpModuleRun": 39040834712,
+    "udpTests": 223,
+    "udpFailures": 0,
+    "udpExistingSkips": 2,
+    "httpContractTests": 2,
+    "onboardingModuleRun": 39039763181,
+    "onboardingBrowserRun": 39039763194
+  },
+  "vpsUpdatedByRevision": false,
+  "activeIdentityPolicyChanged": false,
+  "quarantineDecisionsPerformed": false
+}

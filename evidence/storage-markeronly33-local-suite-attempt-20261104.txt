@@ -1,0 +1,68 @@
+Windows full-suite attempt: FAILED at first module; not a native qualification. Local paths redacted.
+
+setUpClass (test_storage_lateral_isolation_generation33.LaunchBarrierTests) ... ERROR
+test_application_cannot_reach_internal_or_admin_ports (test_storage_lateral_isolation_generation33.PolicyTests.test_application_cannot_reach_internal_or_admin_ports) ... ok
+test_complete_interrole_matrix_is_default_deny (test_storage_lateral_isolation_generation33.PolicyTests.test_complete_interrole_matrix_is_default_deny) ... ok
+test_embedded_dns_block_precedes_loopback_and_destination_nat (test_storage_lateral_isolation_generation33.PolicyTests.test_embedded_dns_block_precedes_loopback_and_destination_nat) ... ok
+test_real_socket_probe_distinguishes_listener_from_refusal (test_storage_lateral_isolation_generation33.PolicyTests.test_real_socket_probe_distinguishes_listener_from_refusal) ... FAIL
+test_role_bindings_use_exact_advertised_ips (test_storage_lateral_isolation_generation33.PolicyTests.test_role_bindings_use_exact_advertised_ips) ... ok
+test_rules_have_symmetric_exact_allow_and_observable_denials (test_storage_lateral_isolation_generation33.PolicyTests.test_rules_have_symmetric_exact_allow_and_observable_denials) ... ok
+
+======================================================================
+ERROR: setUpClass (test_storage_lateral_isolation_generation33.LaunchBarrierTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_storage_lateral_isolation_generation33.py", line 71, in setUpClass
+    subprocess.run(['cc','-std=c11','-O2','-Wall','-Wextra','-Werror','-static',
+  File "<local-path>", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<local-path>", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "<local-path>", line 1538, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [WinError 2] Impossibile trovare il file specificato
+
+======================================================================
+FAIL: test_real_socket_probe_distinguishes_listener_from_refusal (test_storage_lateral_isolation_generation33.PolicyTests.test_real_socket_probe_distinguishes_listener_from_refusal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<workspace>\tests\test_storage_lateral_isolation_generation33.py", line 61, in test_real_socket_probe_distinguishes_listener_from_refusal
+    self.assertFalse(result['connected']);self.assertIsNotNone(result['errno'])
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None
+
+----------------------------------------------------------------------
+Ran 6 tests in 2.075s
+
+FAILED (failures=1, errors=1)
+Traceback (most recent call last):
+  File "<local-path>", line 637, in _rmtree_unsafe
+    os.rmdir(path)
+PermissionError: [WinError 5] Accesso negato: '<local-environment>'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<local-path>", line 666, in _exitfunc
+    f()
+  File "<local-path>", line 590, in __call__
+    return info.func(*info.args, **(info.kwargs or {}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<local-path>", line 939, in _cleanup
+    cls._rmtree(name, ignore_errors=ignore_errors)
+  File "<local-path>", line 934, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "<local-path>", line 781, in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<local-path>", line 639, in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+  File "<local-path>", line 906, in onexc
+    _resetperms(path)
+  File "<local-path>", line 286, in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+  File "<local-path>", line 277, in _dont_follow_symlinks
+    func(path, *args)
+PermissionError: [WinError 5] Accesso negato: '<local-environment>'

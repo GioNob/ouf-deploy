@@ -1,0 +1,29 @@
+name: Gateway authority probe deploy
+on:
+  pull_request:
+    paths:
+      - scripts/apply-gateway-authority-probe-20261114.py
+      - ops/vps/gateway-authority-probe.sh
+      - tests/test_gateway_authority_probe_deploy_20261114.py
+      - docs/OUF_GATEWAY_AUTHORITY_PROBE_DEPLOY_20261114.md
+      - .github/workflows/gateway-authority-probe-deploy-20261114.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  deploy-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Plan/apply contract with simulated host
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_gateway_authority_probe_deploy_20261114.py -v
+      - name: Candidate is the task-31 collector
+        run: |
+          curl --fail --silent --show-error --proto '=https' --tlsv1.2 -o /tmp/collector.py \
+            https://raw.githubusercontent.com/GioNob/ouf-api-gateway/5b93e56748034ec678d732cfd40ca915695fefb5/tools/gateway_operational_collector.py
+          echo 'a0599016495b4794ab60c8b9f9bc488bbe23ea65f39312176353858fb676bcdf  /tmp/collector.py' | sha256sum --check
+      - name: Runbook syntax and ShellCheck
+        run: |
+          bash -n ops/vps/gateway-authority-probe.sh
+          shellcheck -S warning ops/vps/gateway-authority-probe.sh

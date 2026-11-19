@@ -1,0 +1,61 @@
+{
+  "actualCollectorRuntimeProven": false,
+  "actualTokenOwnerAdmissionProven": false,
+  "expectedMountPermissionPolicyEstablished": false,
+  "gatewayRetainedImageId": "sha256:979de5eb0a554e0adfe924969627eb62362c4165974357afcee5bf30450f8f21",
+  "gatewaySourceRevision": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+  "interpretation": {
+    "externalCollectorUpdatesSameSQLiteStore": true,
+    "gatewayReadsSQLiteModeRo": true,
+    "liveFileContentsExcludedFromStaticHashPreparation": true,
+    "liveMembersStillRequireIndependentOwnerAdmission": true,
+    "readonlyIsAccessModeNotByteImmutability": true,
+    "sidecarInheritsExistingOwnerReadOnlyMounts": true,
+    "tokenAtomicReplacementBetweenObservationsIsSupported": true
+  },
+  "publicNameReferenceMatches": {
+    "gateway-operations.sqlite": "0a16e95fb5267ab72eede1b8bb873356566e89b849a9bc24744fc09c5b193db2",
+    "token": "3d872b2ab22a2475ca9ba197dc3cc954d8c991e44284994557fbcaf873cdb73f"
+  },
+  "releaseAcceptance": false,
+  "schema": "ouf.retained-mount-lifecycle-source-contracts.v1",
+  "sources": [
+    {
+      "path": "operational-owner/src/main/java/it/comune/trieste/ouf/gateway/GatewaySummary.java",
+      "repository": "GioNob/ouf-api-gateway",
+      "revision": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+      "sha256": "077642d7bf821673c7dfeac7d8bff56b7e6ed014f19c3aecd52f185724ba7a03"
+    },
+    {
+      "path": "ops/systemd/ouf-gateway-operational-collector.service",
+      "repository": "GioNob/ouf-api-gateway",
+      "revision": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+      "sha256": "e8c36c32ea5f7c086ac1903c77cab6002da8bc40c55707e9805fac214a6b8426"
+    },
+    {
+      "path": "tools/operational_incidents.py",
+      "repository": "GioNob/ouf-api-gateway",
+      "revision": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+      "sha256": "6afeb598905550acaceab75ef314eaf0f6de9a5f9508eb6ea71e943eb70f51d1"
+    },
+    {
+      "path": "tools/semantic_policy_token_owner/producer.py",
+      "repository": "GioNob/ouf-deploy",
+      "revision": "abdb908b4748227ef678f432a85514ad4bb1ba08",
+      "sha256": "2b218432f719c4bb4efa47a2786238b518617ac09023e588e8e605cb18f7c4dd"
+    },
+    {
+      "path": "tools/semantic_policy_token_owner/mount_observation.py",
+      "repository": "GioNob/ouf-deploy",
+      "revision": "abdb908b4748227ef678f432a85514ad4bb1ba08",
+      "sha256": "4e1ed5032d33ba6a249f7909cb8cbb8cbe70a8fdef0e4443c05375aeba9ec837"
+    },
+    {
+      "path": "tools/acquisition_read_native/plan_helper.py",
+      "repository": "GioNob/ouf-deploy",
+      "revision": "abdb908b4748227ef678f432a85514ad4bb1ba08",
+      "sha256": "09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd"
+    }
+  ],
+  "targetApplyAuthorized": false
+}

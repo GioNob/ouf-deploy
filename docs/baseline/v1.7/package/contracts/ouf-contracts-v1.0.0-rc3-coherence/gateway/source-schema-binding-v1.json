@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/gateway/source-schema-binding-v1.json",
+  "title": "OUF Source Schema Binding v1",
+  "type": "object",
+  "required": [
+    "sourceId",
+    "schemaName",
+    "schemaVersion",
+    "protocol"
+  ],
+  "properties": {
+    "sourceId": {
+      "type": "string"
+    },
+    "schemaName": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "type": "string"
+    },
+    "protocol": {
+      "type": "string"
+    },
+    "mediaType": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schemaFingerprint": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "catalogVersion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "etag": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lastModified": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Urban API Gateway v1.2"
+  ],
+  "x-ouf-scope-control": "Gateway boundary/runtime contracts only. No Query Complexity Governor, fine-grained data authorization, Durable ACK authority, schema-drift classification, ETL, semantic processing, Object Resolution, UDP materialization, THS decision logic or MCP Server implementation.",
+  "x-ouf-invariants": [
+    "technical schema indicators are propagated without classifying drift",
+    "no OUF semantic classification is authoritative in this binding"
+  ]
+}

@@ -1,0 +1,992 @@
+{
+  "cloud.google.com/go/pubsub": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/notification/google_pub_sub",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "cloud.google.com/go/pubsub",
+      "importedModule": "cloud.google.com/go/pubsub"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/replication/sub",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "cloud.google.com/go/pubsub",
+      "importedModule": "cloud.google.com/go/pubsub"
+    }
+  ],
+  "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp": [
+    {
+      "importerPackage": "go.opentelemetry.io/contrib/detectors/gcp",
+      "importerModule": "go.opentelemetry.io/contrib/detectors/gcp",
+      "importedPackage": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+      "importedModule": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp"
+    }
+  ],
+  "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric": [
+    {
+      "importerPackage": "cloud.google.com/go/storage",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric",
+      "importedModule": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
+    }
+  ],
+  "github.com/Shopify/sarama": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/notification/kafka",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/Shopify/sarama",
+      "importedModule": "github.com/Shopify/sarama"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/replication/sub",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/Shopify/sarama",
+      "importedModule": "github.com/Shopify/sarama"
+    }
+  ],
+  "github.com/arangodb/go-driver": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/arangodb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/arangodb/go-driver",
+      "importedModule": "github.com/arangodb/go-driver"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/arangodb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/arangodb/go-driver/http",
+      "importedModule": "github.com/arangodb/go-driver"
+    }
+  ],
+  "github.com/armon/go-metrics": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/server",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/armon/go-metrics",
+      "importedModule": "github.com/armon/go-metrics"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/server",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/armon/go-metrics/prometheus",
+      "importedModule": "github.com/armon/go-metrics"
+    }
+  ],
+  "github.com/boltdb/bolt": [
+    {
+      "importerPackage": "github.com/hashicorp/raft-boltdb/v2",
+      "importerModule": "github.com/hashicorp/raft-boltdb/v2",
+      "importedPackage": "github.com/boltdb/bolt",
+      "importedModule": "github.com/boltdb/bolt"
+    }
+  ],
+  "github.com/envoyproxy/protoc-gen-validate": [
+    {
+      "importerPackage": "github.com/cncf/xds/go/xds/core/v3",
+      "importerModule": "github.com/cncf/xds/go",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/type/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/type/matcher/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/core/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/transport_sockets/tls/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/cncf/xds/go/xds/type/v3",
+      "importerModule": "github.com/cncf/xds/go",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/cncf/xds/go/xds/type/matcher/v3",
+      "importerModule": "github.com/cncf/xds/go",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/common/mutation_rules/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/type/metadata/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/type/tracing/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/route/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/data/accesslog/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/accesslog/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/endpoint/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/metrics/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/cluster/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/listener/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/overload/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/trace/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/bootstrap/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/common/matcher/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/tap/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/admin/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/service/discovery/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/clusters/aggregate/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/http/gcp_authn/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/type/http/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/network/http_connection_manager/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/cncf/xds/go/xds/data/orca/v3",
+      "importerModule": "github.com/cncf/xds/go",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/http/ext_proc/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/service/ext_proc/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/common/fault/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/http/fault/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/config/rbac/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/http/router/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/load_balancing_policies/autosharding/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/load_balancing_policies/common/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/load_balancing_policies/client_side_weighted_round_robin/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/load_balancing_policies/least_request/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/load_balancing_policies/ring_hash/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    },
+    {
+      "importerPackage": "github.com/envoyproxy/go-control-plane/envoy/extensions/load_balancing_policies/wrr_locality/v3",
+      "importerModule": "github.com/envoyproxy/go-control-plane/envoy",
+      "importedPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+      "importedModule": "github.com/envoyproxy/protoc-gen-validate"
+    }
+  ],
+  "github.com/facebookgo/clock": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/util/httpdown",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/facebookgo/clock",
+      "importedModule": "github.com/facebookgo/clock"
+    }
+  ],
+  "github.com/facebookgo/stats": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/util/httpdown",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/facebookgo/stats",
+      "importedModule": "github.com/facebookgo/stats"
+    }
+  ],
+  "github.com/golang/protobuf": [
+    {
+      "importerPackage": "go.etcd.io/etcd/api/v3/etcdserverpb",
+      "importerModule": "go.etcd.io/etcd/api/v3",
+      "importedPackage": "github.com/golang/protobuf/proto",
+      "importedModule": "github.com/golang/protobuf"
+    },
+    {
+      "importerPackage": "go.etcd.io/etcd/client/v3",
+      "importerModule": "go.etcd.io/etcd/client/v3",
+      "importedPackage": "github.com/golang/protobuf/proto",
+      "importedModule": "github.com/golang/protobuf"
+    },
+    {
+      "importerPackage": "github.com/tsuna/gohbase/pb",
+      "importerModule": "github.com/tsuna/gohbase",
+      "importedPackage": "github.com/golang/protobuf/proto",
+      "importedModule": "github.com/golang/protobuf"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/mq/client/pub_client",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/golang/protobuf/proto",
+      "importedModule": "github.com/golang/protobuf"
+    },
+    {
+      "importerPackage": "github.com/jhump/protoreflect/desc/internal",
+      "importerModule": "github.com/jhump/protoreflect",
+      "importedPackage": "github.com/golang/protobuf/proto",
+      "importedModule": "github.com/golang/protobuf"
+    },
+    {
+      "importerPackage": "github.com/jhump/protoreflect/internal",
+      "importerModule": "github.com/jhump/protoreflect",
+      "importedPackage": "github.com/golang/protobuf/proto",
+      "importedModule": "github.com/golang/protobuf"
+    },
+    {
+      "importerPackage": "github.com/jhump/protoreflect/desc",
+      "importerModule": "github.com/jhump/protoreflect",
+      "importedPackage": "github.com/golang/protobuf/proto",
+      "importedModule": "github.com/golang/protobuf"
+    }
+  ],
+  "github.com/google/btree": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/storage/needle_map",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/google/btree",
+      "importedModule": "github.com/google/btree"
+    }
+  ],
+  "github.com/mitchellh/colorstring": [
+    {
+      "importerPackage": "github.com/schollz/progressbar/v3",
+      "importerModule": "github.com/schollz/progressbar/v3",
+      "importedPackage": "github.com/mitchellh/colorstring",
+      "importedModule": "github.com/mitchellh/colorstring"
+    }
+  ],
+  "github.com/mitchellh/mapstructure": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/iam/ldap",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/mitchellh/mapstructure",
+      "importedModule": "github.com/mitchellh/mapstructure"
+    },
+    {
+      "importerPackage": "github.com/hashicorp/go-secure-stdlib/parseutil",
+      "importerModule": "github.com/hashicorp/go-secure-stdlib/parseutil",
+      "importedPackage": "github.com/mitchellh/mapstructure",
+      "importedModule": "github.com/mitchellh/mapstructure"
+    },
+    {
+      "importerPackage": "github.com/hashicorp/vault/api",
+      "importerModule": "github.com/hashicorp/vault/api",
+      "importedPackage": "github.com/mitchellh/mapstructure",
+      "importedModule": "github.com/mitchellh/mapstructure"
+    }
+  ],
+  "github.com/pkg/errors": [
+    {
+      "importerPackage": "github.com/Jille/raft-grpc-transport",
+      "importerModule": "github.com/Jille/raft-grpc-transport",
+      "importedPackage": "github.com/pkg/errors",
+      "importedModule": "github.com/pkg/errors"
+    },
+    {
+      "importerPackage": "github.com/arangodb/go-driver",
+      "importerModule": "github.com/arangodb/go-driver",
+      "importedPackage": "github.com/pkg/errors",
+      "importedModule": "github.com/pkg/errors"
+    },
+    {
+      "importerPackage": "github.com/ThreeDotsLabs/watermill/message",
+      "importerModule": "github.com/ThreeDotsLabs/watermill",
+      "importedPackage": "github.com/pkg/errors",
+      "importedModule": "github.com/pkg/errors"
+    },
+    {
+      "importerPackage": "github.com/ThreeDotsLabs/watermill/message/router/middleware",
+      "importerModule": "github.com/ThreeDotsLabs/watermill",
+      "importedPackage": "github.com/pkg/errors",
+      "importedModule": "github.com/pkg/errors"
+    },
+    {
+      "importerPackage": "github.com/ThreeDotsLabs/watermill/pubsub/gochannel",
+      "importerModule": "github.com/ThreeDotsLabs/watermill",
+      "importedPackage": "github.com/pkg/errors",
+      "importedModule": "github.com/pkg/errors"
+    }
+  ],
+  "github.com/rcrowley/go-metrics": [
+    {
+      "importerPackage": "github.com/Shopify/sarama",
+      "importerModule": "github.com/Shopify/sarama",
+      "importedPackage": "github.com/rcrowley/go-metrics",
+      "importedModule": "github.com/rcrowley/go-metrics"
+    }
+  ],
+  "github.com/syndtr/goleveldb": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/storage/needle_map",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/storage/needle_map",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/iterator",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/storage/needle_map",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/opt",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/storage/needle_map",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/storage",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/storage",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/storage",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/errors",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/storage",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/opt",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/util/chunk_cache",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/opt",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/errors",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/filter",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/opt",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/util",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb2",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb2",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/errors",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb2",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/filter",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb2",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/opt",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb2",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/util",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb3",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb3",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/errors",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb3",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/filter",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb3",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/opt",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb3",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/storage",
+      "importedModule": "github.com/syndtr/goleveldb"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/leveldb3",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "github.com/syndtr/goleveldb/leveldb/util",
+      "importedModule": "github.com/syndtr/goleveldb"
+    }
+  ],
+  "go.mongodb.org/mongo-driver": [
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/mongodb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "go.mongodb.org/mongo-driver/bson",
+      "importedModule": "go.mongodb.org/mongo-driver"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/mongodb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "go.mongodb.org/mongo-driver/mongo",
+      "importedModule": "go.mongodb.org/mongo-driver"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/filer/mongodb",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "go.mongodb.org/mongo-driver/mongo/options",
+      "importedModule": "go.mongodb.org/mongo-driver"
+    }
+  ],
+  "go.opencensus.io": [
+    {
+      "importerPackage": "cloud.google.com/go/pubsub",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "go.opencensus.io/stats",
+      "importedModule": "go.opencensus.io"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "go.opencensus.io/stats/view",
+      "importedModule": "go.opencensus.io"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "go.opencensus.io/tag",
+      "importedModule": "go.opencensus.io"
+    }
+  ],
+  "google.golang.org/api": [
+    {
+      "importerPackage": "github.com/googleapis/gax-go/v2/apierror",
+      "importerModule": "github.com/googleapis/gax-go/v2",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/googleapis/gax-go/v2",
+      "importerModule": "github.com/googleapis/gax-go/v2",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/googleapis/gax-go/v2/iterator",
+      "importerModule": "github.com/googleapis/gax-go/v2",
+      "importedPackage": "google.golang.org/api/iterator",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/auth/httptransport",
+      "importerModule": "cloud.google.com/go/auth",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/longrunning/autogen",
+      "importerModule": "cloud.google.com/go/longrunning",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/longrunning/autogen",
+      "importerModule": "cloud.google.com/go/longrunning",
+      "importedPackage": "google.golang.org/api/iterator",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/longrunning/autogen",
+      "importerModule": "cloud.google.com/go/longrunning",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/longrunning/autogen",
+      "importerModule": "cloud.google.com/go/longrunning",
+      "importedPackage": "google.golang.org/api/option/internaloption",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/longrunning/autogen",
+      "importerModule": "cloud.google.com/go/longrunning",
+      "importedPackage": "google.golang.org/api/transport/grpc",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/longrunning/autogen",
+      "importerModule": "cloud.google.com/go/longrunning",
+      "importedPackage": "google.golang.org/api/transport/http",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/kms/apiv1",
+      "importerModule": "cloud.google.com/go/kms",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/kms/apiv1",
+      "importerModule": "cloud.google.com/go/kms",
+      "importedPackage": "google.golang.org/api/iterator",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/kms/apiv1",
+      "importerModule": "cloud.google.com/go/kms",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/kms/apiv1",
+      "importerModule": "cloud.google.com/go/kms",
+      "importedPackage": "google.golang.org/api/option/internaloption",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/kms/apiv1",
+      "importerModule": "cloud.google.com/go/kms",
+      "importedPackage": "google.golang.org/api/transport/grpc",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/kms/apiv1",
+      "importerModule": "cloud.google.com/go/kms",
+      "importedPackage": "google.golang.org/api/transport/http",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/kms/gcp",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/internal/detect",
+      "importerModule": "cloud.google.com/go",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/internal/detect",
+      "importerModule": "cloud.google.com/go",
+      "importedPackage": "google.golang.org/api/transport",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub/apiv1",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub/apiv1",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/iterator",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub/apiv1",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub/apiv1",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/option/internaloption",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub/apiv1",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/transport/grpc",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub/apiv1",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/transport/http",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub/internal/scheduler",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/support/bundler",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/option/internaloption",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/pubsub",
+      "importerModule": "cloud.google.com/go/pubsub",
+      "importedPackage": "google.golang.org/api/support/bundler",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/notification/google_pub_sub",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/internal",
+      "importerModule": "cloud.google.com/go",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/internal/trace",
+      "importerModule": "cloud.google.com/go",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage/experimental",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage/internal/apiv2",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/iterator",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage/internal/apiv2",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage/internal/apiv2",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/option/internaloption",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage/internal/apiv2",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/transport/grpc",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/monitoring/apiv3/v2",
+      "importerModule": "cloud.google.com/go/monitoring",
+      "importedPackage": "google.golang.org/api/iterator",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/monitoring/apiv3/v2",
+      "importerModule": "cloud.google.com/go/monitoring",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/monitoring/apiv3/v2",
+      "importerModule": "cloud.google.com/go/monitoring",
+      "importedPackage": "google.golang.org/api/option/internaloption",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/monitoring/apiv3/v2",
+      "importerModule": "cloud.google.com/go/monitoring",
+      "importedPackage": "google.golang.org/api/transport/grpc",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric",
+      "importerModule": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/iamcredentials/v1",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/iterator",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/option/internaloption",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/storage/v1",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/transport",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "cloud.google.com/go/storage",
+      "importerModule": "cloud.google.com/go/storage",
+      "importedPackage": "google.golang.org/api/transport/http",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/remote_storage/gcs",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "google.golang.org/api/googleapi",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/remote_storage/gcs",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "google.golang.org/api/iterator",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/remote_storage/gcs",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/replication/sink/gcssink",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    },
+    {
+      "importerPackage": "github.com/seaweedfs/seaweedfs/weed/replication/sub",
+      "importerModule": "github.com/seaweedfs/seaweedfs",
+      "importedPackage": "google.golang.org/api/option",
+      "importedModule": "google.golang.org/api"
+    }
+  ],
+  "gopkg.in/yaml.v3": [
+    {
+      "importerPackage": "github.com/apache/iceberg-go/config",
+      "importerModule": "github.com/apache/iceberg-go",
+      "importedPackage": "gopkg.in/yaml.v3",
+      "importedModule": "gopkg.in/yaml.v3"
+    }
+  ]
+}

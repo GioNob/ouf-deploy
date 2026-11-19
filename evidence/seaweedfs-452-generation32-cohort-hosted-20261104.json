@@ -1,0 +1,59 @@
+{
+  "generation": 32,
+  "runId": 41778371999,
+  "sourceCommit": "5dfb1995d1eadd33caeb923594866c1e380d25db",
+  "wholeWorkflowConclusion": "success",
+  "jobs": [
+    {
+      "id": 126403922831,
+      "name": "verify-boundaries",
+      "conclusion": "success",
+      "headSha": "5dfb1995d1eadd33caeb923594866c1e380d25db"
+    },
+    {
+      "id": 126403970928,
+      "name": "qualify-cohort",
+      "conclusion": "success",
+      "headSha": "5dfb1995d1eadd33caeb923594866c1e380d25db"
+    },
+    {
+      "id": 126404723521,
+      "name": "runtime-labs / verified-cohort-then-sequential-labs",
+      "conclusion": "success",
+      "headSha": "5dfb1995d1eadd33caeb923594866c1e380d25db"
+    }
+  ],
+  "candidateLockSha256": "91a7c874deb5b11f1a18dc483e99f6031644b62abb769a9e11ff1ad29250fb7d",
+  "cohortReceiptSha256": "cf3a01b6426bdb64725b155d252089026a3cf08bc94859da7619ac17a88af19c",
+  "binarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+  "ociManifestDigest": "sha256:5531868a8acc4ac8b1581339e5cae79c7a6211402c936eb74f2bcfcd070831f6",
+  "targetOperations": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "schema": "ouf.seaweedfs-generation32-hosted-cohort-readback.v1",
+  "status": "TECHNICAL_COHORT_HOSTED_PASS_NOT_ADMITTED",
+  "artifact": {
+    "id": 13297514697,
+    "name": "seaweedfs-generation32-cohort-41778371999",
+    "digest": "sha256:b235c9e9b53d20d7c4eb58250602a051f9e6d66b5faf4cf55417afa905234772",
+    "bytes": 118228,
+    "head": "5dfb1995d1eadd33caeb923594866c1e380d25db",
+    "expiresAt": "2027-02-02T05:17:45Z",
+    "path": "evidence/artifacts/seaweedfs-generation32-cohort-41778371999.zip"
+  },
+  "members": 11,
+  "checksumMembersVerified": 10,
+  "localReplayReceiptByteIdentical": true,
+  "thirdPartyModules": 215,
+  "thirdPartyLegalTexts": 304,
+  "mplSourceArchives": 7,
+  "modifiedMplSource": {
+    "archiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+    "manifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+  },
+  "licenceReview": "OPEN",
+  "redistributionAccepted": false,
+  "durableImageCustody": "OPEN"
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "status": "LOCAL_PASS_HOSTED_PENDING",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "parentRepositoryCheckpoint": "cc5ddc3606e5f1fc9a4cc0a9546985895f3236ea",
+  "patchCount": 22,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch",
+    "sha256": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19"
+  },
+  "scope": [
+    "test/s3/policy/bucket_policy_idempotency_test.go",
+    "test/s3/policy/bucket_policy_sdk_v2_test.go"
+  ],
+  "local": {
+    "goVersion": "go1.27.3 linux/amd64",
+    "testCommand": "go test -mod=readonly -json -run '^TestBucketPolicySDKV2' -count=1 -timeout=60s ./test/s3/policy",
+    "deterministicTestsPassed": 4,
+    "integrationPackageCompiles": true,
+    "exactReapplicationByteIdenticalFiles": 2,
+    "packageDependencyCount": 1850,
+    "packageSdkV1DependencyCount": 51,
+    "directSdkV1ImportersBefore": 20,
+    "directSdkV1ImportersAfter": 19,
+    "remainingIamImporters": 12,
+    "remainingOtherImporters": 7
+  },
+  "claims": {
+    "liveRoundtripPerformed": false,
+    "entirePolicyPackageSdkV1Free": false,
+    "exact15PatchOciChanged": false,
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "runtimeAuthority": false,
+    "gatesPassed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0
+  },
+  "preserved": [
+    "Scope17/52 Engine GET",
+    "Teatri/M1 8/8 technical and6/6 functional",
+    "Farmacie61/10 OPEN/STRING",
+    "MinIO remains active"
+  ],
+  "evidenceHashes": {
+    "test-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reapply.log": "4643ca58163c938efcd252f13be550335841f0433fa5d070d165c867e4a35451",
+    "compile.log": "f13e2e5298c80d687378e2a75928b6bb175835d4b76cf8df6d90e2b9c9810adf",
+    "test.jsonl": "1e8de49a963c16f1361d63d0a205e37bc183c97164f582268943d7e970e88586",
+    "remaining-direct-importers.txt": "cb56acf64a5d7598b5de3fa44aff547adcab30e743bd5b61d614e3fce06b3411",
+    "policy-test-deps.txt": "6464cf8316af9d392c6fa7fb2ed47df3042eb35a4f50b17083a4a916a014eaa9",
+    "test.log": "38aa8a4753a2338f8a43d6c45eb941216c8fcc3a5e0cef221c2136739443f3a4"
+  }
+}

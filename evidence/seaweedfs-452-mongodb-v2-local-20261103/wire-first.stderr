@@ -1,0 +1,1 @@
+failed to start telemetry sidecar: os.Executable: readlink /proc/self/exe: no such file or directory

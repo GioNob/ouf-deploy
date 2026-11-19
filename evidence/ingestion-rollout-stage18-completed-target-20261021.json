@@ -1,0 +1,429 @@
+{
+  "schema": "ouf.ingestion-rollout-stage18-completed-target-evidence.v1",
+  "provenance": "OWNER_PASTED_PUBLIC_TARGET_RECEIPTS_NOT_INDEPENDENT_LIVE_READBACK",
+  "sourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+  "qualificationRun": 39634414797,
+  "predecessorContext": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
+  "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+  "humanWindow": {
+    "receipt": {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "complete": false,
+      "completedTechnicalPhases": 8,
+      "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a",
+      "functionalMilestonesProven": 4,
+      "maximumCumulativeOAuthAttempts": 292,
+      "notReleaseAcceptance": true,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.ingestion-rollout-stage18-human-result.v1",
+      "attempts": 288,
+      "newHumanWindowOpened": true,
+      "oauthRequestsReservedThisInvocation": 0,
+      "remainingAttempts": 4,
+      "state": "NEW",
+      "windowExpiresAt": 1792608930
+    },
+    "logPath": "/home/oufadmin/ouf-stage18-human.lxTdiJ4v/operator.log"
+  },
+  "providerSteps": [
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a",
+        "functionalMilestonesProven": 4,
+        "maximumCumulativeOAuthAttempts": 292,
+        "notReleaseAcceptance": true,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-human-result.v1",
+        "attempts": 289,
+        "expiresAt": 1792608930,
+        "oauthRequestsReservedThisInvocation": 1,
+        "remainingAttempts": 3,
+        "state": "DEVICE_START"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-human.0Ok880ob/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a",
+        "functionalMilestonesProven": 4,
+        "maximumCumulativeOAuthAttempts": 292,
+        "notReleaseAcceptance": true,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-human-result.v1",
+        "attempts": 290,
+        "expiresAt": 1792608930,
+        "oauthRequestsReservedThisInvocation": 1,
+        "remainingAttempts": 2,
+        "state": "DEVICE_POLL"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-human.okVEsC05/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a",
+        "functionalMilestonesProven": 4,
+        "maximumCumulativeOAuthAttempts": 292,
+        "notReleaseAcceptance": true,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-human-result.v1",
+        "attempts": 291,
+        "expiresAt": 1792608930,
+        "oauthRequestsReservedThisInvocation": 1,
+        "remainingAttempts": 1,
+        "state": "VERIFYING"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-human.dLwKvBby/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": true,
+        "completedTechnicalPhases": 8,
+        "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a",
+        "functionalMilestonesProven": 4,
+        "maximumCumulativeOAuthAttempts": 292,
+        "notReleaseAcceptance": true,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-human-result.v1",
+        "attempts": 292,
+        "expiresAt": 1792608930,
+        "nativeClientProfilePublished": false,
+        "oauthRequestsReservedThisInvocation": 1,
+        "privateHumanReadProfilePath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a/human-read-profile.json",
+        "productionTokenMarginCovered": true,
+        "providerVerificationCompleted": true,
+        "remainingAttempts": 0,
+        "state": "READY",
+        "tokenSecondsRemaining": 1133
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-human.0it4gAAV/operator.log"
+    }
+  ],
+  "runtimeReview": {
+    "receipt": {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "complete": false,
+      "completedTechnicalPhases": 8,
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+      "functionalMilestonesProven": 4,
+      "newLoginPerformed": false,
+      "notReleaseAcceptance": true,
+      "refreshPerformed": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.ingestion-rollout-stage18-result.v1",
+      "maximumRuntimeSeconds": 900,
+      "nextStage": 18,
+      "oauthRequests": 0,
+      "remainingStages": 10,
+      "status": "STAGE18_RUNTIME_REVIEW_READY_EXPLICIT_APPROVAL_REQUIRED"
+    },
+    "logPath": "/home/oufadmin/ouf-stage18-runtime.BulFKWIn/operator.log"
+  },
+  "runtimeIssuance": {
+    "receipt": {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "complete": false,
+      "completedTechnicalPhases": 8,
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+      "functionalMilestonesProven": 4,
+      "newLoginPerformed": false,
+      "notReleaseAcceptance": true,
+      "refreshPerformed": false,
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.ingestion-rollout-stage18-result.v1",
+      "oauthRequests": 0,
+      "runtimeEffectsDispatched": 0,
+      "status": "STAGE18_AUTHORITY_ISSUED_EXPLICIT_IMPORT_REQUIRED"
+    },
+    "logPath": "/home/oufadmin/ouf-stage18-runtime.XqD0pZNs/operator.log"
+  },
+  "prefixImport": {
+    "receipt": {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "complete": false,
+      "completedTechnicalPhases": 8,
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+      "functionalMilestonesProven": 4,
+      "newLoginPerformed": false,
+      "notReleaseAcceptance": true,
+      "refreshPerformed": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.ingestion-rollout-stage18-result.v1",
+      "appliedStageCount": 18,
+      "nextStage": 18,
+      "oauthRequests": 0,
+      "retainedReadAttempts": 18,
+      "runtimeEffectsDispatched": 0,
+      "status": "STAGE18_PREFIX_IMPORTED_NO_RUNTIME_EFFECTS"
+    },
+    "logPath": "/home/oufadmin/ouf-stage18-runtime.Egd14vUD/operator.log"
+  },
+  "remainingNativeStages": [
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "REBIND_GATEWAY_TRANSPORT",
+        "journalVersion": 2139,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.vh5CPNCN/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "VERIFY_REBOUND_ROUTE_MAP",
+        "journalVersion": 2243,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.ik14NKGr/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "PUT_ROUTE.mcp-ingestion-history",
+        "journalVersion": 2413,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.JoAyMMqR/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "READ_ROUTE.mcp-ingestion-history",
+        "journalVersion": 2517,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.hA7mmE6W/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "PUT_ROUTE.mcp-ingestion-status",
+        "journalVersion": 2687,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.gA5yl2Ar/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "READ_ROUTE.mcp-ingestion-status",
+        "journalVersion": 2791,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.tGKZU9es/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "VERIFY_FINAL",
+        "journalVersion": 2941,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.cqp8RN0H/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "ingestion.RESTORE_RESTART",
+        "journalVersion": 3063,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.m9Wxngl7/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "gateway.RESTORE_RESTART",
+        "journalVersion": 3187,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.AYCUg725/operator.log"
+    },
+    {
+      "receipt": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "completedTechnicalPhases": 8,
+        "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+        "functionalMilestonesProven": 4,
+        "newLoginPerformed": false,
+        "notReleaseAcceptance": true,
+        "refreshPerformed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.ingestion-rollout-stage18-result.v1",
+        "completedStage": "VERIFY_RESTORED_FINAL",
+        "journalVersion": 3337,
+        "releaseAcceptance": false,
+        "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+      },
+      "logPath": "/home/oufadmin/ouf-stage18-runtime.IClxzMF4/operator.log"
+    }
+  ],
+  "completion": {
+    "receipt": {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "complete": true,
+      "completedTechnicalPhases": 8,
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+      "functionalMilestonesProven": 4,
+      "newLoginPerformed": false,
+      "notReleaseAcceptance": true,
+      "refreshPerformed": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.ingestion-rollout-stage18-result.v1",
+      "nativeProfilePublished": false,
+      "releaseAcceptance": false,
+      "runtimeEffectsAcceptedByPorts": true,
+      "status": "STAGE18_EXPLICIT_NATIVE_INVOCATION_COMPLETED"
+    },
+    "logPath": "/home/oufadmin/ouf-stage18-runtime.PLmQdXaZ/operator.log"
+  },
+  "retainedLaunchers": {
+    "human": "/home/oufadmin/ouf-stage18-launchers.tmgmExrv/human.sh",
+    "runtime": "/home/oufadmin/ouf-stage18-launchers.tmgmExrv/runtime.sh"
+  },
+  "duplicateGatewayRestoreReceipt": {
+    "sameJournalVersion": 3187,
+    "sameLogPath": "/home/oufadmin/ouf-stage18-runtime.AYCUg725/operator.log",
+    "countedAsNewStage": false,
+    "note": "The repeated terminal transcript included the previous receipt followed by the distinct final-verification receipt; no separate repeat execution inferred."
+  },
+  "interpretation": {
+    "nativeRolloutComplete": true,
+    "totalAppliedStages": 28,
+    "preservedPrefixStages": 18,
+    "residualNativeStagesCompleted": 10,
+    "completedTechnicalPhases": 8,
+    "functionalMilestonesProven": 4,
+    "currentOAuthAttemptsAtReadyReceipt": 292,
+    "maximumCumulativeOAuthAttempts": 292,
+    "remainingOAuthAttemptsAtReadyReceipt": 0,
+    "budgetReset": false,
+    "refreshPerformed": false,
+    "sourceOrSemanticApprovalGranted": false,
+    "nativeProfilePublished": false,
+    "releaseAcceptance": false,
+    "currentAuthorityExpiryOrRevocationIndependentlyObserved": false,
+    "nextRequiredScope": "NATIVE_PROFILE_REVIEW_APPROVAL_IN_THS_AND_EXACT_PUBLICATION_BEFORE_F5_F6",
+    "runtimeElapsedOrHumanEffortKnown": false
+  }
+}

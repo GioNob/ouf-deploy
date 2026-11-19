@@ -1,0 +1,50 @@
+{
+  "evidenceSource": "operator pasted redacted target result",
+  "logPath": "/home/oufadmin/ouf-postboot-stop-read.bt0CZuu8/read.log",
+  "receipt": {
+    "schema": "ouf.postboot-stop-read.v1",
+    "authorityArtifactsAbsent": true,
+    "automaticRetry": false,
+    "budgetReset": false,
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "completionReceiptAbsent": true,
+    "configurationValuesPrinted": false,
+    "contextClosureSha256": "e693804def0e2494404cfb7cc025bef1f5ee6c80cac1b9dfdadb51a4db7a86e1",
+    "contextFiles": 90,
+    "contextPath": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-f6w3lo6z",
+    "credentialValuesPrinted": false,
+    "databaseCalls": 0,
+    "engineCalls": 0,
+    "exactCompilerSources": 7,
+    "exactFrozenCodeFiles": 81,
+    "exactPrivateDocuments": 2,
+    "functionalMilestonesProven": 4,
+    "originalConsumerBindingVerified": true,
+    "overlayClassification": {
+      "configurationValuesPrinted": false,
+      "depthBoundExceeded": false,
+      "duplicateJsonKeys": false,
+      "jsonLeafCount": 21,
+      "jsonParseFailed": false,
+      "propertyNamesPrinted": false,
+      "reservedSpringOrLoaderKeyCount": 1,
+      "strictJsonObject": true,
+      "syntaxCounts": {
+        "anchorAliasTag": 0,
+        "directive": 0,
+        "explicitKey": 0,
+        "flowArray": 0,
+        "flowObject": 1,
+        "mergeKey": 0,
+        "quotedLine": 40
+      }
+    },
+    "overlayMatchesCompletedHostPlan": true,
+    "overlaySha256": "6d546047448495746d7eaad6d83e7942fa2950f137d4a240a3aef9309f7f39be",
+    "preparationRetried": false,
+    "runtimeAuthorityIssued": false,
+    "runtimeMutations": 0,
+    "targetGenerationRevalidated": false
+  }
+}

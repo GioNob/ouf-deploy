@@ -1,0 +1,28 @@
+{
+  "canonicalScannerIdentityModified": false,
+  "canonicalSpdxIdentityModified": false,
+  "downstreamNoticePresent": true,
+  "licenceReview": "OPEN",
+  "modifiedConfigSha256": "9983e5e82a9372e9f47db6ccc5a55d9b747fd503caaedb5619e4b37e95c75ab4",
+  "module": "github.com/apache/iceberg-go",
+  "originalChecksumsDescribeModifiedSource": false,
+  "originalConfigSha256": "30ec8eebf86cd2f5df0c8d6bbf8661c0bf72d10fc8c025d6943c9565ae13a604",
+  "originalLegalTexts": {
+    "LICENSE": {
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "NOTICE": {
+      "bytes": 251,
+      "sha256": "f519dc027959fc106b1b53706b70eb3bd5da2c0bac79336888c58a79d03c8f52"
+    }
+  },
+  "originalZipH1InputOnly": "h1:bTD6Pb4uM4sWcMfIx0/cV1haHMc84r+CvPieUqYzD4I=",
+  "originalZipSha256": "a042ec87708c376362859041b1741213dc4e05400cad7ad0220ea4361a250d55",
+  "patchPath": "patches/iceberg-go/0.7.0-maintained-yaml-vendor.patch",
+  "patchSha256": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef",
+  "redistributionAccepted": false,
+  "sourceProfilePath": "config/seaweedfs-generation33-vendor-source-profile.json",
+  "sourceProfileSha256": "2331b929c579e778a76072d279f8aa47e31cc054c0c8165936de8a7d7a6a5464",
+  "version": "v0.7.0"
+}

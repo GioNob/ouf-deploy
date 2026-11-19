@@ -1,0 +1,62 @@
+{
+  "checks": [
+    "Real S3 bootstrap validates selected config before credential store, filer client, options, or background workers",
+    "Startup uses same validated bytes; reload mutex spans file read and publication",
+    "Denied reload preserves identities, credentials, prior KMS provider, default and bucket binding",
+    "KMS all-provider prevalidation precedes factory, existing instance Close, cached instance reuse, manager creation and health probes",
+    "Replication/backup preflight precedes cached SSE state, source/sink construction and checkpoint/remote reads",
+    "Explicit excluded-provider sentinel cannot become warning-and-success; unrelated legacy SSE fallback preserved",
+    "Correct21file patch metadata including deleted upstream OpenBao implementation/test"
+  ],
+  "component": "OpenBao/Vault exclusion",
+  "githubWrites": 0,
+  "independentlyRepeated": {
+    "failedTests": 0,
+    "packagesPassed": 5,
+    "subTestsPassed": 23,
+    "tagsOpenbaoAndVaultFailWithExplicitGuard": true,
+    "topTestsPassed": 10
+  },
+  "limits": [
+    "Profile excludes features rather than replacing KMS with another backend",
+    "Actual target feature compatibility remains OPEN",
+    "No hosted generation30 image or runtime qualification claimed",
+    "No universal maintained-dependency certification"
+  ],
+  "patchSha256": "33de23d893ca6d7cb9bf3a7a76bf6ef491ea30f96b74f6e93d5ccc326a52a950",
+  "rawEvidence": {
+    "openbao-focused-tests.jsonl": "3bb442c5f10d072dc1376c3a9fd402725375982d8c972766b459c0314a370704",
+    "openbao-focused-tests.stderr": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "openbao-tag-negative.log": "a56b713bab506682f0436e31a5620183734e377c80ee9d7272f8ec019dbdf6df",
+    "vault-tag-negative.log": "a56b713bab506682f0436e31a5620183734e377c80ee9d7272f8ec019dbdf6df"
+  },
+  "resolvedReviewFindings": [
+    "Replication SSE initially swallowed profile denial and ran remote key initialization first",
+    "S3 bootstrap initially created credential store before file guard",
+    "Intermediate file-bytes refactor narrowed reload mutex; original read+publish serialization restored",
+    "Intermediate constructor propagated unrelated SSE errors; prior fallback restored"
+  ],
+  "reviewedFiles": {
+    "weed/command/filer_backup.go": "0cce5fc195ad4fc5f2d4e2d23f85301979f5bd2c2babe304815e7d016bd8bb36",
+    "weed/command/filer_replication.go": "f6b6d40bc122476c191fb8d1c0e890d7fe3ebbc795ced1daed242239eef4fa71",
+    "weed/command/ouf_standard_profile_test.go": "c74c76aa0eb00dfed8c80d6c93ecd3c83e4de29f32dfd02027921cdae0718cd0",
+    "weed/command/ouf_unsupported_openbao_tags.go": "4ffd9a5c1b33e1ae24d9922678ec71be139dd8188066fe233f2e5220b914e9df",
+    "weed/kms/config.go": "23435954096bc56efd7b402302722327006cd7ef3bc69601b7771e4171be2a23",
+    "weed/kms/config_loader.go": "7f08978311e5185a771757d4aeea66709681f094b61bf418a849cebde668f4d4",
+    "weed/kms/ouf_standard_profile.go": "f2289da3a88e68a69ef5c4f1040770fa322f297177c68ca8aa8cb8dc7938763f",
+    "weed/kms/ouf_standard_profile_test.go": "96a9d38475f5f586fe41c06fb1d300a37d6649a41b6153ee2f27abbf632f320e",
+    "weed/kms/registry.go": "92fd405c06f8d06803e81da43e8d6d5a93764473328d7491465cc4be34ed60eb",
+    "weed/replication/ouf_standard_profile_test.go": "59cdc3efb06506bd0cce9a030fd64dba257a132fc67547c04663d31ffc88fb5c",
+    "weed/replication/repl_util/ouf_standard_profile_test.go": "272ca636701baef966e96391d79a74bd230752c8df313397406ad7842f111535",
+    "weed/replication/repl_util/sse_init.go": "02d73a4a8529f16242656a3d9595df0be1a20d3442624f33221b2098e02e946c",
+    "weed/replication/replicator.go": "fdd19d75cb46cf1d75356434b8ecad5881ebeb33dd444b7fdf7eacdb5e43b8b0",
+    "weed/s3api/auth_credentials.go": "d6f2a358a436317aee43cdab4e96f901ae969c920f802eca1aaf0c57b0833758",
+    "weed/s3api/ouf_standard_kms_config.go": "2632c8a5d65f6d7a44478c8fc488c861168684dffb61d50c952cdb1b596d2d49",
+    "weed/s3api/ouf_standard_kms_config_test.go": "024c5d94b51802984e7a463608f26efe4b8301a7ad4d44d14d9f53a5508b3e5b",
+    "weed/s3api/s3api_server.go": "a2a677f38bbf4a5804650900d978a8468c3bde62dd524b2c9bb46aa096965a54"
+  },
+  "schema": "ouf.profile30-independent-review.v1",
+  "sourceModifiedByReviewer": false,
+  "status": "PASS_BOUNDED_LOCAL_REVIEW",
+  "targetOperations": 0
+}

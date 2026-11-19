@@ -1,0 +1,81 @@
+{
+  "schema": "ouf.mcp-update-completed-ingestion503-cloud-checkpoint.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "operatorReceiptProjection": {
+    "contextPath": "/etc/ouf/deploy-snapshots/mcp-ingestion-read-transport-execution-srz6__wf",
+    "status": "MCP_TRANSPORT_UPDATE_READBACK_COMPLETE",
+    "sourceCommit": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+    "containerId": "8b199a6767bd39dadf82f6d70f964ab6da9c914a3b327229214d88991893647b",
+    "imageId": "sha256:a0a6f9562ba0b28ba3fef2b3a78bf46e90d9e14c99448d413bacf5d5cb75f182",
+    "pid": 312624,
+    "startedAt": "2026-10-19T13:07:59.712730076Z",
+    "httpStatus": 204,
+    "journalVersion": 27,
+    "routeMapHash": "d5a4040e30e289c150f9d2862ff41e83e22809a9e2202ac19388e744f2c5e927",
+    "oauthAttemptsAfter": 236,
+    "maximumCumulativeOAuthAttempts": 256,
+    "gatewayWrites": 0,
+    "databaseMigrationsPerformed": 0,
+    "grantChanges": 0,
+    "jobsRetried": 0,
+    "publicMetadataChanged": false,
+    "sourceActivated": false,
+    "applicationReady": true
+  },
+  "freshClient": {
+    "account": "ouf-admin",
+    "sourceId": "teatri-csv-6609b245",
+    "statusCall": {
+      "count": 1,
+      "limit": 1,
+      "httpStatus": 503,
+      "retryAfter": "",
+      "code": ""
+    },
+    "historyCall": {
+      "count": 1,
+      "limit": 2,
+      "since": "2026-10-16T00:00:00Z",
+      "httpStatus": 503,
+      "retryAfter": "",
+      "code": ""
+    },
+    "retries": 0,
+    "successfulIngestionReadProven": false,
+    "specificCauseProven": false
+  },
+  "revisionRead": {
+    "state": "APPROVED",
+    "lockVersion": 3,
+    "onboardingVersionId": "c9fec43c-19b3-4ffb-9111-781bc347c5b0",
+    "configurationHash": "sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d",
+    "challengeStatus": "CONFIRMED",
+    "challengeExpired": true,
+    "humanApprovalRequired": false,
+    "activationPhase": "NOT_STARTED",
+    "readinessAttempts": 0,
+    "ingestionCompatibilityObserved": false,
+    "humanActivationRequired": true
+  },
+  "diagnostic": {
+    "sourceCommit": "6c1659b44ce1c39b2495b053f719215c1d836cfa",
+    "runId": 39258559949,
+    "jobId": 118079958102,
+    "passed": 11,
+    "deliveryCommit": "badf1824b2731c5de4e00385762dd713adfb2953",
+    "deliveryRunId": 39258891627,
+    "deliveryJobId": 118081080773,
+    "deliveryPassed": 3,
+    "launcherSha256": "77b71e403f0e6efaadebba1f9036cb3fb1fe88b16a3945b93f15de58f43815e2",
+    "readOnly": true,
+    "executedOnTargetByCloud": false,
+    "maximumEngineGetRequests": 6
+  },
+  "completedActionsReplayed": false,
+  "sourceActivated": false,
+  "runtimeAuthorityIssuedByCloud": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "notReleaseAcceptance": true
+}

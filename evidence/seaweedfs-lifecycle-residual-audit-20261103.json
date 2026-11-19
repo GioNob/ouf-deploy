@@ -1,0 +1,114 @@
+{
+  "schema": "ouf.candidate-dependency-lifecycle-audit.v1",
+  "observedAt": "2026-11-03T19:23:09.313987+00:00",
+  "candidateGeneration": 29,
+  "candidateBinarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+  "candidateImageManifest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+  "inventorySha256": "4d0a9eabc3fb020456824361b0bb944c6de92c3250ae5df5e2ae3bf6785e0c11",
+  "scope": "Bounded review of known historical/deprecated modules in the exact 262-module binary inventory; not an exhaustive maintenance certification",
+  "findings": [
+    {
+      "module": "github.com/Shopify/sarama",
+      "version": "v1.38.1",
+      "classification": "LEGACY_MODULE_PATH_AFTER_UPSTREAM_OWNERSHIP_TRANSFER",
+      "archivedRepositoryClaim": false,
+      "evidence": [
+        "https://github.com/IBM/sarama/releases/tag/v1.40.0",
+        "https://github.com/IBM/sarama/releases/tag/v1.61.1"
+      ],
+      "importers": [
+        "weed/notification/kafka",
+        "weed/replication/sub"
+      ],
+      "proposedAction": "Migrate to pinned IBM/sarama v1.61.1 preserving broker baseline; retain rcrowley lifecycle gap"
+    },
+    {
+      "module": "github.com/rcrowley/go-metrics",
+      "version": "v0.0.0-20201227073835-cf1acfcdf475",
+      "classification": "ARCHIVED_NO_LONGER_MAINTAINED",
+      "archived": true,
+      "maintenanceEnded": "2025-04-01",
+      "evidence": [
+        "https://api.github.com/repos/rcrowley/go-metrics",
+        "https://github.com/rcrowley/go-metrics/blob/65e299d6c5c9/README.md",
+        "https://github.com/IBM/sarama/issues/3136"
+      ],
+      "importers": [
+        "github.com/Shopify/sarama"
+      ],
+      "migrationLimitation": "IBM/sarama v1.61.1 still requires archived rcrowley/go-metrics at 65e299d6c5c9; migration is not full lifecycle closure",
+      "proposedAction": "Resolve maintained instrumentation or explicitly qualify a Kafka-excluded candidate profile; target feature requirements remain a binding gate"
+    },
+    {
+      "module": "github.com/boltdb/bolt",
+      "version": "v1.3.1",
+      "classification": "ARCHIVED_AUTHOR_STOPPED_MAINTENANCE",
+      "archived": true,
+      "evidence": [
+        "https://api.github.com/repos/boltdb/bolt",
+        "https://github.com/boltdb/bolt/blob/master/README.md"
+      ],
+      "importers": [
+        "github.com/hashicorp/raft-boltdb/v2.MigrateToV2"
+      ],
+      "runtimeInterpretation": "Compiled dependency; active store implementation already uses maintained bbolt v1.5.0. No claim legacy migration function is reached on OUF target",
+      "proposedAction": "Qualified storage adapter excluding unused legacy migration while preserving persistence/restore contracts"
+    },
+    {
+      "module": "github.com/mitchellh/mapstructure",
+      "version": "v1.5.1-0.20220423185008-bf980b35cac4",
+      "classification": "ARCHIVED",
+      "archived": true,
+      "evidence": [
+        "https://api.github.com/repos/mitchellh/mapstructure",
+        "https://github.com/go-viper/mapstructure/blob/main/README.md"
+      ],
+      "importers": [
+        "weed/iam/ldap",
+        "github.com/hashicorp/vault/api",
+        "github.com/hashicorp/go-secure-stdlib/parseutil"
+      ],
+      "proposedAction": "Migrate direct LDAP to existing go-viper/mapstructure/v2 v2.5.0; separately resolve indirect Vault/parseutil closure"
+    },
+    {
+      "module": "github.com/armon/go-metrics",
+      "version": "v0.4.1",
+      "classification": "DEPRECATED_NAMESPACE_SUPERSEDED",
+      "evidence": [
+        "https://github.com/hashicorp/go-metrics",
+        "https://github.com/hashicorp/raft-boltdb/releases/tag/v2.4.2"
+      ],
+      "importers": [
+        "weed/server (base and prometheus packages)"
+      ],
+      "proposedAction": "Use already selected hashicorp/go-metrics v0.7.0 and prove shared sink emission; retained old Go module graph edges are a separate question"
+    },
+    {
+      "module": "github.com/golang/protobuf",
+      "version": "v1.5.4",
+      "classification": "SUPERSEDED_COMPATIBILITY_LAYER_NOT_CONFIRMED_UNMAINTAINED",
+      "archived": false,
+      "evidence": [
+        "https://api.github.com/repos/golang/protobuf",
+        "https://github.com/golang/protobuf/blob/master/README.md"
+      ],
+      "note": "Upstream recommends google.golang.org/protobuf for new code; v1.4+ delegates to it. Do not equate superseded compatibility layer with an archived project"
+    },
+    {
+      "module": "github.com/jcmturner/gokrb5/v8",
+      "version": "v8.4.4",
+      "classification": "MAINTENANCE_QUESTION_UNCONFIRMED",
+      "archived": false,
+      "evidence": [
+        "https://api.github.com/repos/jcmturner/gokrb5",
+        "https://github.com/IBM/sarama/issues/3413"
+      ],
+      "note": "Downstream issue alleges no maintenance, but primary repository is not archived and inspected README does not announce end of maintenance; do not promote allegation to confirmed finding"
+    }
+  ],
+  "zeroVulnerabilityFindingsDoNotProveMaintenance": true,
+  "allUnmaintainedDependenciesRemoved": false,
+  "targetOperations": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false
+}

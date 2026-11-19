@@ -1,0 +1,27 @@
+{
+  "sourcePlan": "releases/minio-seaweedfs-plan-20261102.json",
+  "sourceCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+  "status": "CAPTURED_NOT_ADMITTED",
+  "control": 16,
+  "records": 120,
+  "buckets": 2,
+  "objectAttributeCounts": {
+    "encryptedObjects": 0,
+    "objectsWithCacheControl": 0,
+    "objectsWithContentEncoding": 0,
+    "objectsWithKmsKeyReference": 0,
+    "objectsWithLegalHold": 0,
+    "objectsWithRetentionDate": 0,
+    "objectsWithTags": 0
+  },
+  "bucketEncryptionCounts": {
+    "ABSENT": 2,
+    "PRESENT": 0,
+    "UNSUPPORTED": 0,
+    "configured": 0
+  },
+  "writerInventoryComplete": false,
+  "externalConsumersProvenAbsent": false,
+  "pointInTimeSnapshotProven": false,
+  "scopeOfInference": "Observed object/bucket counters do not prove absence of required OpenBao/Vault KMS bindings for every consumer or future accepted profile."
+}

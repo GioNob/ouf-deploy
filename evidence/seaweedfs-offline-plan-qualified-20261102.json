@@ -1,0 +1,133 @@
+{
+  "schema": "ouf.storage-offline-plan-qualified.v1",
+  "date": "2026-11-02",
+  "status": "QUALIFIED_AWAITING_OPERATOR",
+  "priorTarget": {
+    "control": 16,
+    "consumed": true,
+    "cumulativeEngineGets": 52,
+    "completeMetadataInventory": true,
+    "buckets": 2,
+    "records": 120,
+    "logicalBytes": 203743,
+    "advertisedHashMissing": 10,
+    "unsupportedBucketFeatures": 2,
+    "sourcePrivateInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+    "receipt": "evidence/seaweedfs-private-baseline-target-20261102.json"
+  },
+  "producer": {
+    "source": "969e45ee3bdbcb426aeaca2b93872b46c6932445",
+    "runId": 41488131645,
+    "jobId": 125423749984,
+    "workflow": ".github/workflows/storage-offline-plan-qualification.yml",
+    "artifact": {
+      "id": 13162726994,
+      "size": 21488,
+      "sha": "4af47106c1a55c0a88bf225e60b2591d57f11389d06b61df7a8a614981fb0525"
+    },
+    "archive": "evidence/artifacts/storage-offline-plan-qualified-41488131645.zip",
+    "pythonTests": 33,
+    "skippedTests": 0,
+    "rootFilesystemReal": true,
+    "networkNamespaceIsolated": true,
+    "fixtureInputHashesAndReceipt": "MODELLED",
+    "sourceInspectionOnlyForProductionBindings": true,
+    "allPrior28SourcesUnchanged": true,
+    "targetOperations": 0
+  },
+  "independent": {
+    "source": "835ffb7626ea1c6c95c1a87b0c674dbb7d57494b",
+    "runId": 41488523185,
+    "jobId": 125425098708,
+    "workflow": ".github/workflows/storage-plan-readback.yml",
+    "artifact": {
+      "id": 13162673485,
+      "size": 21035,
+      "sha": "1ea8ed1c4d21ba430dc47ca7fe773bad512e821ccd66a7bf89dbc78f8710c953"
+    },
+    "archive": "evidence/artifacts/storage-offline-plan-independent-readback-41488523185.zip",
+    "status": "PASS",
+    "checksumMembers": 6,
+    "checksumSubjectSha256": "e4b34f43c8dc4d223771b135ffb382722bf0f6cee05ecf364b8108c129c22f87",
+    "publisherWorkflowAndSourceAndRefVerified": true,
+    "hostedRunnerRequired": true,
+    "verifierVersion": "2.97.0",
+    "publishedReadback": {
+      "status": "PASS",
+      "publication": "a8f767edd7e9cd8b043f4092c73279b1b1c2c052",
+      "producerSource": "969e45ee3bdbcb426aeaca2b93872b46c6932445",
+      "filesComparedByteForByte": 2,
+      "bytesCompared": 28089,
+      "launcherSha256": "bbb8ea975dbfd9978b753a27c3e21e448bdcabedcae50443650fbeb1deb5ae2a",
+      "entryAndBootstrapMatchQualifiedProducer": true,
+      "sourceInspectionOnly": true,
+      "oldScopeRearmed": false,
+      "targetOperations": 0
+    }
+  },
+  "publication": {
+    "commit": "a8f767edd7e9cd8b043f4092c73279b1b1c2c052",
+    "launcherCommit": "835ffb7626ea1c6c95c1a87b0c674dbb7d57494b",
+    "launcherSha256": "bbb8ea975dbfd9978b753a27c3e21e448bdcabedcae50443650fbeb1deb5ae2a",
+    "capsuleSha256": "da26578f948dccba32d092fe987108af13cc697699880cb8d4e4e6c043aa51db",
+    "capsuleBytes": 27055,
+    "compilerSourceCount": 2,
+    "bootstrapAndBuilderReadBackSeparately": true
+  },
+  "failedQualification": {
+    "source": "4d737fe63f7d1a2baccd333da21343bb74f5d060",
+    "runId": 41487826809,
+    "jobId": 125422689833,
+    "status": "TESTS_PASS_COMPLETE_JOB_FAILURE_NOT_QUALIFIED",
+    "observedFailure": "ATTESTATION_BUNDLE_COPY_PERMISSION_DENIED_IN_ROOT_OWNED_OUTPUT_DIRECTORY",
+    "correction": "COPY_BUNDLE_WITH_SUDO_THEN_REPEAT_COMPLETE_QUALIFICATION",
+    "targetOperations": 0
+  },
+  "next": {
+    "control": 17,
+    "scope": "/etc/ouf/deploy-snapshots/seaweedfs-offline-plan-20261102-v1",
+    "install": "/usr/local/lib/ouf-storage-offline-plan-20261102",
+    "targetExecuted": false,
+    "maximumNewEngineGets": 0,
+    "maximumS3Requests": 0,
+    "maximumCredentialFileReads": 0,
+    "objectBodiesRead": 0,
+    "privateInputArtifacts": 4,
+    "sourceInventoryControl": 16,
+    "retainedHostBaselineControl": 14,
+    "cumulativeEngineGetsAfterAnalysis": 52,
+    "maximumAttempts": 1,
+    "automaticReplayAllowed": false,
+    "copyEngineImplemented": false,
+    "instructions": "docs/OUF_SEAWEEDFS_OFFLINE_PLAN_20261102.md"
+  },
+  "limits": {
+    "inputInventoryBytes": 67108864,
+    "inputHostBytes": 2097152,
+    "inputReceiptBytes": 32768,
+    "inputClaimBytes": 4096,
+    "outputPlanBytes": 67108864,
+    "workerSeconds": 45,
+    "watchdogSeconds": 60,
+    "memoryBytes": 536870912
+  },
+  "invariants": {
+    "allBodiesRequireVerification": true,
+    "advertisedHashesAreNotProof": true,
+    "missingHashesDoNotCreateHistoricalMetadata": true,
+    "unsupportedIsNotAbsent": true,
+    "retainedBindingsAreNotWriterProof": true,
+    "privateValuesNeverPublished": true,
+    "priorScopesRearmed": false,
+    "currentMinioReplaced": false,
+    "rawServerGate": "HELD_ONE_UNKNOWN",
+    "allEightGates": "OPEN",
+    "all21AcceptanceTests": "OPEN",
+    "m2Accepted": false,
+    "teatriAndSameFarmaciePreserved": true,
+    "migrationPerformed": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "newTargetOperationsSinceReceipt16": 0
+  }
+}

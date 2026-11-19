@@ -1,0 +1,18 @@
+{
+  "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+  "configDigest": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+  "dockerArchiveSha256": "5445f54bb1aab0b3ad5e8f4aa8c759959b1e7554dda7330cc426de6be73d02c7",
+  "layerDigest": "sha256:71d9c727671a69b5211dcb91a1c1c32d18b70b2455a81adbc7043ded18e72fb4",
+  "manifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+  "overallSwG1": "OPEN",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.storage-runtime-image.v1",
+  "scratchRootfs": true,
+  "sourceCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "status": "PACKAGED_NOT_ADMITTED",
+  "targetOperations": 0,
+  "thirdPartyLicencesAccepted": false,
+  "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613",
+  "user": "10001:10001"
+}

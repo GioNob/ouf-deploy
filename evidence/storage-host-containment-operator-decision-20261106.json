@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.storage-host-containment-operator-decision.v1",
+  "date": "2026-11-06",
+  "decisionReference": "GIOVANNI-NONPROD-HOST-CONTAIN-20261106-01",
+  "actor": "Giovanni",
+  "provenance": "User replied 'autorizzo' to exact host operation proposal in this conversation",
+  "userText": "autorizzo",
+  "decision": "APPROVED_ONE_HOST_CONTAINMENT_ATTEMPT",
+  "reviewedPackageCommit": "b05ab55403cbd0e3c96576e213c8c5b090d7f35b",
+  "reviewedPackage": "docs/OUF_STORAGE_HOST_CONTAINMENT_OPERATION_20261106.md",
+  "draftSha256": "c4d59b3894f59d6679f11d48dbec2a3d7f5cbba6c8aa89bbee78b63e86475d0a",
+  "codeCommit": "c742943800252099c56ac60ef448b712d9d007f3",
+  "productionSha256": "6d5e41d71150c8e59394002473e6eee728981f540bad94a09fd633f493004004",
+  "scope": {
+    "persistentServiceOverrides": 6,
+    "timersDisabledAndStopped": 5,
+    "oneshotsNaturalCompletion": 5,
+    "registryDisabledAndStopped": true,
+    "maximumSeconds": 600,
+    "attempts": 1,
+    "forcedServiceKills": 0
+  },
+  "targetExecuted": false,
+  "oldDockerAttemptRemainsConsumed": true,
+  "automaticReplayAllowed": false,
+  "automaticRestartAllowed": false,
+  "authenticatedHumanRuntimeApproval": false,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0
+}

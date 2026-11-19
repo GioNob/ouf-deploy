@@ -1,0 +1,11 @@
+{
+  "acceptanceCreditAdded": 0,
+  "captureEventCoverageProven": false,
+  "commonCutProven": false,
+  "custodyManifestVerified": true,
+  "dockerReadCommands": 0,
+  "reason": "G0_BINDING",
+  "schema": "ouf.storage-retained-source-comparison.v1",
+  "sources": {},
+  "status": "HELD"
+}

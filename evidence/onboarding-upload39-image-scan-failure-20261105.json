@@ -1,0 +1,44 @@
+{
+  "schema": "ouf.onboarding-upload39-image-scan-failure.v1",
+  "sourceCommit": "9d8a1ecea00ac5f614c8e3d6fed61d3d1df85e5f",
+  "testedPrMerge": "f6b99fdca84650617db9045c3e57b3e7b3aa9d4a",
+  "runId": 41989641231,
+  "jobId": 127118526452,
+  "conclusion": "failure",
+  "failedStep": "Scan exact production image including unfixed HIGH CRITICAL UNKNOWN",
+  "mavenTests": 380,
+  "mavenFailures": 0,
+  "mavenErrors": 0,
+  "mavenSkipped": 15,
+  "skippedNativeScenariosPassedSeparately": 15,
+  "artifactId": 13397389168,
+  "artifactBytes": 669468,
+  "artifactSha256": "c681a51dfee58a1e23a7d18099cf94c2d40f0593c5302b075031269c93129b66",
+  "scanBytes": 749813,
+  "scanSha256": "c742533b1510d078da4bb291364507229c75f5622c6a28aad448840a79a037f7",
+  "findings": [
+    {
+      "target": "ouf-source-onboarding:f6b99fdca84650617db9045c3e57b3e7b3aa9d4a (ubuntu 26.04)",
+      "id": "CVE-2026-109518",
+      "package": "apt",
+      "installed": "3.2.0",
+      "fixed": "3.2.1ubuntu0.1",
+      "severity": "HIGH"
+    },
+    {
+      "target": "ouf-source-onboarding:f6b99fdca84650617db9045c3e57b3e7b3aa9d4a (ubuntu 26.04)",
+      "id": "CVE-2026-109518",
+      "package": "libapt-pkg7.0",
+      "installed": "3.2.0",
+      "fixed": "3.2.1ubuntu0.1",
+      "severity": "HIGH"
+    }
+  ],
+  "candidateFixCommit": "b64e8b5bc514223aa562719d31eb027e7f27b7b9",
+  "changedFiles": [
+    "Dockerfile"
+  ],
+  "productionJavaUnchanged": true,
+  "blockingThresholdUnchanged": true,
+  "targetOperations": 0
+}

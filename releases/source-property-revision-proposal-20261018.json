@@ -1,0 +1,254 @@
+{
+  "schema": "ouf.source-property-revision-prepared-proposal.v1",
+  "preparedOnly": true,
+  "submitted": false,
+  "readyForSubmission": false,
+  "nativeProfilePublished": false,
+  "targetMutations": 0,
+  "tool": "source.onboarding.revision.prepare",
+  "arguments": {
+    "sourceId": "teatri-csv-6609b245",
+    "parentVersionId": "9860853e-e8f3-4b93-b9d2-03521a039962",
+    "expectedVersion": 4,
+    "configurationHash": "sha256:ae7f46b4214d09c55a9885530920026258f0dcd588462c353b06d82185e12c9b",
+    "commandKey": "linked-property-v1:teatri-csv-6609b245:9860853e",
+    "publicationEffect": "NEW_PUBLICATION_MAY_START_ACQUISITION",
+    "changes": [
+      {
+        "propertyIri": "https://schema.org/name",
+        "sourceField": "https://schema.org/name",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://schema.org/additionalType",
+        "sourceField": "https://schema.org/additionalType",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#civico",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#cap",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#citta",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#provincia",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#note",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      },
+      {
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+        "reconciliation": {
+          "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+          "cardinality": "SINGLE",
+          "normalizerRef": "EXACT_TYPED",
+          "normalizerVersion": 1,
+          "validity": "SOURCE_INTERVAL"
+        }
+      }
+    ]
+  },
+  "preconditions": [
+    "Exact code and route rollout/registration/grants proven through native review",
+    "Fresh owner property-rule projection matches all20 existing properties and approved typed constraints",
+    "No unfinished source revision; reconcile any original command before retry",
+    "Native HUMAN explicitly reviews publication/acquisition effects before activation"
+  ],
+  "expectedEffects": {
+    "preparation": "One frozen IN_REVIEW version and one native challenge; no publication or acquisition",
+    "activation": "New publication of the same source, possibly consumed by the scheduler as the explicitly intended second acquisition",
+    "historicalReplayAllowed": false,
+    "identityDecisionsRepeated": false
+  },
+  "policyReference": "https://github.com/GioNob/ouf-deploy/blob/83e2e85a0ae4107ba52486de7bdcbfe4502761cc/docs/LINKED_OBJECT_PROPERTY_RECONCILIATION_V1.md",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}

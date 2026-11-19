@@ -1,11 +1,6 @@
+# Qualificazione storica (2026-10-11): solo manuale, D-055
 name: Exact durable V11 package startup and current-state recovery
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/durable-v11-configtree.yml
-      - tests/durable_v11_configtree_fixture.py
-      - scripts/verify-durable-v11-package.py
   workflow_dispatch:
 permissions:
   contents: read

@@ -1,0 +1,43 @@
+denied-elastic 1
+failed to start telemetry sidecar: os.Executable: readlink /proc/self/exe: no such file or directory
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_optional_tags.go:8:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE
+weed/command/filer_meta_tail.go:98:24: undefined: sendToElasticSearchFunc
+
+denied-rclone 1
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_optional_tags.go:8:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE
+
+denied-kafka 1
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_kafka_tag.go:7:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_KAFKA_NOTIFICATION_OR_REPLICATION
+
+denied-openbao 1
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_openbao_tags.go:7:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_OPENBAO_OR_VAULT
+
+denied-vault 1
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_openbao_tags.go:7:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_OPENBAO_OR_VAULT
+
+denied-gcs 1
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_google_tag.go:6:9: undefined: OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE
+
+denied-google_pub_sub 1
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_google_tag.go:6:9: undefined: OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE
+
+denied-googlecloud 1
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_google_tag.go:6:9: undefined: OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE
+
+denied-elastic-rclone-kafka-openbao-vault-gcs-google_pub_sub-googlecloud 1
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_google_tag.go:6:9: undefined: OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE
+weed/command/ouf_unsupported_kafka_tag.go:7:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_KAFKA_NOTIFICATION_OR_REPLICATION
+weed/command/ouf_unsupported_openbao_tags.go:7:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_OPENBAO_OR_VAULT
+weed/command/ouf_unsupported_optional_tags.go:8:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE
+weed/command/filer_meta_tail.go:98:24: undefined: sendToElasticSearchFunc
+
+PASS: all9 negative tag builds rejected with exact profile diagnostic

@@ -1,0 +1,432 @@
+{
+  "artifact": {
+    "allRepositorySourceHashesMatchPublishedFix": true,
+    "bytes": 107903,
+    "expiresAt": "2027-02-01T21:13:04Z",
+    "id": 13272805054,
+    "members": 90,
+    "path": "evidence/artifacts/postgres-native-fixture-second-failure-41719760642.zip",
+    "sha256": "cf3788bb59c6daa0f2ea4587fea63af6ce9208c63592b0363903a33335468629",
+    "verifiedManifestEntries": 89
+  },
+  "attestationCreated": false,
+  "binaryBytesRehashedLocally": false,
+  "bodyReconciliationCompleted": false,
+  "dumpRestoreOriginVerified": false,
+  "failureCode": "LAB_BACKUP_ID_REQUIRED",
+  "jobId": 126209111409,
+  "livePostgresRecoveryQualified": false,
+  "nativeBinaries": {
+    "initdb": {
+      "sha256": "d919587b9eda07667af44fdc3610e6ff17eb759e569fbe31740a0b81e8eb75fd",
+      "version": "initdb (PostgreSQL) 17.11"
+    },
+    "pg_ctl": {
+      "sha256": "1699167eb3c18b0e91746760e2518a51506348afa08fb4fbf48712353a1441b1",
+      "version": "pg_ctl (PostgreSQL) 17.11"
+    },
+    "postgres": {
+      "sha256": "4b8e7290d77836faf28e6d52f23e2f00878bb5ee35dece25967b08a471ceab3d",
+      "version": "postgres (PostgreSQL) 17.11"
+    },
+    "psql": {
+      "sha256": "d63d8c5da9371da6a52e5f3cd80ef332219db752a83917f359649c8223df9e9f",
+      "version": "psql (PostgreSQL) 17.11"
+    }
+  },
+  "nativePostgresVersion": "17.11",
+  "nativeTestOutcome": {
+    "errors": 2,
+    "failures": 0,
+    "passed": 5,
+    "skipped": 0,
+    "testsRun": 7
+  },
+  "normalShutdownSucceeded": true,
+  "offlineHarnessTestsPassed": 9,
+  "partialCasesPassed": [
+    "mixed generation rejection",
+    "pending row ACK rejection",
+    "pending counter rejection",
+    "SELECT-only role and read-only transaction",
+    "MVCC uncommitted-old/atomic-committed-new generation"
+  ],
+  "passfileWarningEliminatedInRetainedStderr": true,
+  "pitrQualified": false,
+  "priorFailurePreserved": true,
+  "priorFailureRun": 41715990786,
+  "releaseAdmitted": false,
+  "retainedRawEvidence": {
+    "evidence/postgres-native-fixture-second-failure-20261103/SHA256SUMS": {
+      "bytes": 8518,
+      "sha256": "4f196ba7054a2790426b098d10a9c6590df97b1af9353ee1eb0e1dd4ba3eeb37"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/artifacts-final.json": {
+      "bytes": 777,
+      "sha256": "178664c72b35982152f08a15d5e0664ed1440bf6393a258c4b6f8f676c5d4347"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/build-evidence/binary-sha256.txt": {
+      "bytes": 476,
+      "sha256": "8089feedbefc820b9a6b6773c4061116964e8d729a90eb27ffcd96f9745400a4"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/build-evidence/offline-contract-tests.log": {
+      "bytes": 1712,
+      "sha256": "fa67e1308987e512800bc8adac6e190b0e7ec0ffbf7aa7152c18aa2aa129c042"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/build-evidence/repository-commit.txt": {
+      "bytes": 41,
+      "sha256": "7c7cdfb9bb7e3bb5eb58325bad06cb187b28dd6cc8ae5d1674533819916913f7"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/build-evidence/repository-source-sha256.txt": {
+      "bytes": 978,
+      "sha256": "5b35164e5a09bf6942d2fc583548f607d002195fb181cdbfaab2e5a9f9373630"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/build-evidence/source.sha256": {
+      "bytes": 91,
+      "sha256": "f9208b5775f150824186dd2597fb14e7a44d2323253904e5903c6f1be8e09d8e"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/build-evidence/toolchain.txt": {
+      "bytes": 956,
+      "sha256": "3acdb58ebb3e10f58e7cfe36ee5328ee40b291bc0d51463e3853eb338e6e6966"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/job.log": {
+      "bytes": 31502,
+      "sha256": "0938c629a03daea06d70786f2ac5f8ab083e939b324649135f8365fc4ee9c21b"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/jobs-final.json": {
+      "bytes": 1754,
+      "sha256": "334a3e97f271d156c662df5551277b3ffe1cc9ef5c313dea90897560b0392c00"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/binary-identities.json": {
+      "bytes": 501,
+      "sha256": "50c34c2523429471e0165cf31f15facc616c8748b13c7a0904d59dc90fb191bc"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/initdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/initdb.stdout": {
+      "bytes": 850,
+      "sha256": "1f21f58f789db7e636bd00aefa9ab0f9d1bd39124f03a5f9485e0c0cdec09c84"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/postgres.log": {
+      "bytes": 2125,
+      "sha256": "3eb2c94aae9e6a93b9044b912084ecd3898760657f32cbf1c73716983d41f1ba"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/receipt.json": {
+      "bytes": 4852,
+      "sha256": "7dd822c206b8685488c001f24d98f242a674762c625f8883ef071ed653a25f15"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-00-catalogSnapshot.json": {
+      "bytes": 909,
+      "sha256": "acead092733e26c0e25cef1fe1ffa59d5149d00daccdebc6fc734521c121069a"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-00-fenceEvidence.json": {
+      "bytes": 183,
+      "sha256": "4603fea029573a5e212038aeec7eaa996ba1717e8e959ee4d2efa0a73ca0c723"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-01-catalogSnapshot.json": {
+      "bytes": 909,
+      "sha256": "acead092733e26c0e25cef1fe1ffa59d5149d00daccdebc6fc734521c121069a"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-01-fenceEvidence.json": {
+      "bytes": 183,
+      "sha256": "4603fea029573a5e212038aeec7eaa996ba1717e8e959ee4d2efa0a73ca0c723"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-02-catalogSnapshot.json": {
+      "bytes": 909,
+      "sha256": "acead092733e26c0e25cef1fe1ffa59d5149d00daccdebc6fc734521c121069a"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-02-fenceEvidence.json": {
+      "bytes": 183,
+      "sha256": "4603fea029573a5e212038aeec7eaa996ba1717e8e959ee4d2efa0a73ca0c723"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-03-catalogSnapshot.json": {
+      "bytes": 909,
+      "sha256": "acead092733e26c0e25cef1fe1ffa59d5149d00daccdebc6fc734521c121069a"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-03-fenceEvidence.json": {
+      "bytes": 183,
+      "sha256": "4603fea029573a5e212038aeec7eaa996ba1717e8e959ee4d2efa0a73ca0c723"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-04-catalogSnapshot.json": {
+      "bytes": 909,
+      "sha256": "cac13f413ea9a0b9b477518f15ce107c98ee76fc44010df9b70895a9cc7c98ba"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/snapshot-04-fenceEvidence.json": {
+      "bytes": 183,
+      "sha256": "557d13fa80f148ea73720f5103192cd6dc140200709decbd9ad39702e62947dd"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-001.sql": {
+      "bytes": 1165,
+      "sha256": "ee6f9ca98adbdef8f75f21162878da7982c2195fef585c44b352799aa89a62db"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-001.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-002.sql": {
+      "bytes": 412,
+      "sha256": "ab3d990bbbd8884627abb1848dbf426627817eac5c12e70c4bd2db5c1310889b"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-002.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-002.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-003.sql": {
+      "bytes": 758,
+      "sha256": "8c71061b34bce1bc5bd435919085ec9e263dfd787e2b3bc12e1c3fd803cae44f"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-003.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-003.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-004.sql": {
+      "bytes": 758,
+      "sha256": "8c71061b34bce1bc5bd435919085ec9e263dfd787e2b3bc12e1c3fd803cae44f"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-004.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-004.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-005.sql": {
+      "bytes": 95,
+      "sha256": "3147914ac79469b0867514f95ce6a749c8364c1ecc5ff212c4d30d9312b2290a"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-005.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-005.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-006.sql": {
+      "bytes": 758,
+      "sha256": "8c71061b34bce1bc5bd435919085ec9e263dfd787e2b3bc12e1c3fd803cae44f"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-006.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-006.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-007.sql": {
+      "bytes": 85,
+      "sha256": "f6ddfa13cce20e9d153b8fb2ede98bdb179c9fa0bc049f80c196d80285dffeaf"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-007.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-007.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-008.sql": {
+      "bytes": 758,
+      "sha256": "8c71061b34bce1bc5bd435919085ec9e263dfd787e2b3bc12e1c3fd803cae44f"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-008.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-008.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-009.sql": {
+      "bytes": 69,
+      "sha256": "d4ec9e7df597e08f7c6530d2c1a3e80f16eb60374a39a9cb99be2930e9b0a49c"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-009.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-009.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-010.sql": {
+      "bytes": 758,
+      "sha256": "8c71061b34bce1bc5bd435919085ec9e263dfd787e2b3bc12e1c3fd803cae44f"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-010.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-010.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-011.sql": {
+      "bytes": 758,
+      "sha256": "8c71061b34bce1bc5bd435919085ec9e263dfd787e2b3bc12e1c3fd803cae44f"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-011.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-011.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-012.sql": {
+      "bytes": 64,
+      "sha256": "d291349261856f82fd342456ef3ef9ed6704e8ae0fc1c783e8dccc92be92f348"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-012.stderr": {
+      "bytes": 95,
+      "sha256": "c46fbe80d933e023c783c27279f57d78434992fc3ba0b21c0f268eb2dfabd155"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-012.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-013.sql": {
+      "bytes": 81,
+      "sha256": "fb256287629bf5d8ba97c3848f7879c4e59ee4c63384c94d6a9504559c88ef12"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-013.stderr": {
+      "bytes": 115,
+      "sha256": "4b52dc305d5b70a898e7a5fb20463975abc9928ac0e9e892ef5f02c920d569b9"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-013.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-014.sql": {
+      "bytes": 21,
+      "sha256": "9fc110a678ce99ce77820cddcabc1ec9f86cd4fbc859ad595d12d06f738ef3bb"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-014.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-014.stdout": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-015.sql": {
+      "bytes": 758,
+      "sha256": "8c71061b34bce1bc5bd435919085ec9e263dfd787e2b3bc12e1c3fd803cae44f"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-015.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-015.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-016.sql": {
+      "bytes": 110,
+      "sha256": "6410105178be515dcb41f618a2b418845eddad574873918497ca9610d0dd52ee"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-016.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-016.stdout": {
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-017.sql": {
+      "bytes": 110,
+      "sha256": "6410105178be515dcb41f618a2b418845eddad574873918497ca9610d0dd52ee"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-017.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-017.stdout": {
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-018.sql": {
+      "bytes": 99,
+      "sha256": "5f9477d5277258b1b823142cf0e05068bcb58a479afbc247bbd36454e618bd13"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-018.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-018.stdout": {
+      "bytes": 2,
+      "sha256": "fe8edeeb98cc6d3b93cf2d57000254b84bd9eba34b4df7ce4b87db8b937b7703"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-019.sql": {
+      "bytes": 182,
+      "sha256": "3f227678a9e057de807aa162e9c69e523e3e5a61684aefeba003af962c904d99"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-019.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/sql-019.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/stop.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/stop.stdout": {
+      "bytes": 56,
+      "sha256": "ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/tests.log": {
+      "bytes": 3293,
+      "sha256": "4744d8994ac6a0951d066f053ecbc576ad20aadfd6ce684edd6fe1fdaf2586e1"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/writer.stderr": {
+      "bytes": 101,
+      "sha256": "50436b8d7b6e45a8a9f065ae7d4775b1c03e98ce6207ef55c6c27fab0dfa14e7"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/lab-evidence/writer.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-second-failure-20261103/run-final.json": {
+      "bytes": 12397,
+      "sha256": "ff5daa9524953d003fd21301e0ea91b921c8eae607771b75396a55e4f5a6a865"
+    }
+  },
+  "rpoMeasured": false,
+  "rtoMeasured": false,
+  "runAttempt": 1,
+  "runId": 41719760642,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41719760642",
+  "runtimeAuthorityIssued": false,
+  "runtimeHealthyClaimed": false,
+  "schema": "ouf.postgres-native-fixture-hosted-negative.v2",
+  "snapshotCount": 5,
+  "snapshotExpectedObjectBytesEach": 1064,
+  "snapshotHashBindingsVerified": true,
+  "snapshotObjectCountEach": 3,
+  "sourceBuildHosted": "PASS",
+  "sourceBuildReproducedLocally": false,
+  "sourceCommit": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+  "status": "HOSTED_PARTIAL_PROGRESS_FAILURE_PRESERVED",
+  "targetOperations": 0,
+  "verifiedCause": "NativeLab.reconcile supplies backup_id='native-fixture-0001'; existing manifest guard requires prefix lab-. Both body reconciliation cases error before stream reconciliation.",
+  "writerFenceEnforcedByAdapter": false
+}

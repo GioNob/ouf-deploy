@@ -1,0 +1,326 @@
+﻿2026-11-03T21:13:07.1968486Z Current runner version: '2.338.2'
+2026-11-03T21:13:07.1994526Z ##[group]Runner Image Provisioner
+2026-11-03T21:13:07.1995842Z Hosted Compute Agent
+2026-11-03T21:13:07.1996775Z Version: 20261028.624
+2026-11-03T21:13:07.1997490Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-03T21:13:07.1998336Z Build Date: 2026-10-28T21:51:42Z
+2026-11-03T21:13:07.1999032Z Worker ID: {62b6e622-5997-4bcb-8e77-66556de237fe}
+2026-11-03T21:13:07.1999779Z Region: eastus2
+2026-11-03T21:13:07.2000361Z Cloud: Azure
+2026-11-03T21:13:07.2000950Z ##[endgroup]
+2026-11-03T21:13:07.2003005Z ##[group]Operating System
+2026-11-03T21:13:07.2003677Z Ubuntu
+2026-11-03T21:13:07.2004195Z 24.04.5
+2026-11-03T21:13:07.2004839Z LTS
+2026-11-03T21:13:07.2005398Z ##[endgroup]
+2026-11-03T21:13:07.2006451Z ##[group]Runner Image
+2026-11-03T21:13:07.2007082Z Image: ubuntu-24.04
+2026-11-03T21:13:07.2007642Z Version: 20261101.360.1
+2026-11-03T21:13:07.2009018Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-03T21:13:07.2010649Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-03T21:13:07.2011861Z ##[endgroup]
+2026-11-03T21:13:07.2013127Z ##[group]GITHUB_TOKEN Permissions
+2026-11-03T21:13:07.2015630Z Attestations: write
+2026-11-03T21:13:07.2016238Z Contents: read
+2026-11-03T21:13:07.2016997Z Metadata: read
+2026-11-03T21:13:07.2017559Z ##[endgroup]
+2026-11-03T21:13:07.2019888Z Secret source: Actions
+2026-11-03T21:13:07.2020996Z Cache mode: write
+2026-11-03T21:13:07.2022250Z Prepare workflow directory
+2026-11-03T21:13:07.2356527Z Prepare all required actions
+2026-11-03T21:13:07.2405735Z Getting action download info
+2026-11-03T21:13:07.4976998Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-11-03T21:13:07.6670108Z Download action repository 'actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be' (SHA:e8998f949152b193b063cb0ec769d69d929409be)
+2026-11-03T21:13:07.8241108Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-03T21:13:08.0307246Z Getting action download info
+2026-11-03T21:13:08.1629693Z Download action repository 'actions/attest-build-provenance@1176ef556905f349f669722abf30bce1a6e16e01' (SHA:1176ef556905f349f669722abf30bce1a6e16e01)
+2026-11-03T21:13:08.3186556Z Download action repository 'actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc' (SHA:ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc)
+2026-11-03T21:13:08.5163075Z Complete job name: verify-foundation
+2026-11-03T21:13:08.6318506Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-11-03T21:13:08.6320396Z with:
+2026-11-03T21:13:08.6321318Z   persist-credentials: false
+2026-11-03T21:13:08.6322649Z   repository: GioNob/ouf-deploy
+2026-11-03T21:13:08.6332691Z   token: ***
+2026-11-03T21:13:08.6333615Z   ssh-strict: true
+2026-11-03T21:13:08.6334584Z   ssh-user: git
+2026-11-03T21:13:08.6335480Z   clean: true
+2026-11-03T21:13:08.6336431Z   sparse-checkout-cone-mode: true
+2026-11-03T21:13:08.6337543Z   fetch-depth: 1
+2026-11-03T21:13:08.6338462Z   fetch-tags: false
+2026-11-03T21:13:08.6339411Z   show-progress: true
+2026-11-03T21:13:08.6340375Z   lfs: false
+2026-11-03T21:13:08.6341254Z   submodules: false
+2026-11-03T21:13:08.6342343Z   set-safe-directory: true
+2026-11-03T21:13:08.6343656Z ##[endgroup]
+2026-11-03T21:13:08.9430271Z Syncing repository: GioNob/ouf-deploy
+2026-11-03T21:13:08.9433641Z ##[group]Getting Git version info
+2026-11-03T21:13:08.9435733Z Working directory is '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-03T21:13:08.9438603Z [command]/usr/bin/git version
+2026-11-03T21:13:08.9542001Z git version 2.56.0
+2026-11-03T21:13:08.9575556Z ##[endgroup]
+2026-11-03T21:13:08.9592775Z Temporarily overriding HOME='/home/runner/work/_temp/2c6ec6c3-f175-45a8-86d7-d0989bad04f3' before making global git config changes
+2026-11-03T21:13:08.9598150Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T21:13:08.9601290Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-03T21:13:08.9664797Z Deleting the contents of '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-03T21:13:08.9669322Z ##[group]Initializing the repository
+2026-11-03T21:13:08.9675021Z [command]/usr/bin/git init /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-03T21:13:08.9799617Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-03T21:13:08.9802687Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-03T21:13:08.9804664Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-03T21:13:08.9806220Z hint: call:
+2026-11-03T21:13:08.9807055Z hint:
+2026-11-03T21:13:08.9808108Z hint: 	git config --global init.defaultBranch <name>
+2026-11-03T21:13:08.9809384Z hint:
+2026-11-03T21:13:08.9810581Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-03T21:13:08.9812914Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-03T21:13:08.9815174Z hint:
+2026-11-03T21:13:08.9816697Z hint: 	git branch -m <name>
+2026-11-03T21:13:08.9818445Z hint:
+2026-11-03T21:13:08.9820781Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-03T21:13:08.9824953Z Initialized empty Git repository in /home/runner/work/ouf-deploy/ouf-deploy/.git/
+2026-11-03T21:13:08.9830904Z [command]/usr/bin/git remote add origin https://github.com/GioNob/ouf-deploy
+2026-11-03T21:13:08.9885641Z ##[endgroup]
+2026-11-03T21:13:08.9888733Z ##[group]Disabling automatic garbage collection
+2026-11-03T21:13:08.9891965Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-03T21:13:08.9927139Z ##[endgroup]
+2026-11-03T21:13:08.9929641Z ##[group]Setting up auth
+2026-11-03T21:13:08.9932980Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T21:13:08.9974983Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T21:13:09.0400639Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T21:13:09.0444704Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T21:13:09.0718031Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-03T21:13:09.0770517Z ##[endgroup]
+2026-11-03T21:13:09.0772387Z ##[group]Fetching the repository
+2026-11-03T21:13:09.0785516Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +77215bee99bf52a476a1fcebc38b68ed5f4a8e81:refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-03T21:15:16.4810344Z From https://github.com/GioNob/ouf-deploy
+2026-11-03T21:15:16.4811179Z  * [new ref]         77215bee99bf52a476a1fcebc38b68ed5f4a8e81 -> origin/feat/m2-discovery-complete-profile-20261029
+2026-11-03T21:15:16.4819402Z ##[endgroup]
+2026-11-03T21:15:16.4820046Z ##[group]Determining the checkout info
+2026-11-03T21:15:16.4820548Z ##[endgroup]
+2026-11-03T21:15:16.4825925Z [command]/usr/bin/git sparse-checkout disable
+2026-11-03T21:15:16.4896922Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-03T21:15:16.4938274Z ##[group]Checking out the ref
+2026-11-03T21:15:16.4944444Z [command]/usr/bin/git checkout --progress --force -B feat/m2-discovery-complete-profile-20261029 refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-03T21:15:17.0932939Z Switched to a new branch 'feat/m2-discovery-complete-profile-20261029'
+2026-11-03T21:15:17.0946871Z branch 'feat/m2-discovery-complete-profile-20261029' set up to track 'origin/feat/m2-discovery-complete-profile-20261029'.
+2026-11-03T21:15:17.0980109Z ##[endgroup]
+2026-11-03T21:15:17.1035020Z [command]/usr/bin/git log -1 --format=%H
+2026-11-03T21:15:17.1071303Z 77215bee99bf52a476a1fcebc38b68ed5f4a8e81
+2026-11-03T21:15:17.1080952Z ##[group]Removing auth
+2026-11-03T21:15:17.1084790Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T21:15:17.1125790Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T21:15:17.1384859Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T21:15:17.1422043Z http.https://github.com/.extraheader
+2026-11-03T21:15:17.1430904Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-03T21:15:17.1474198Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T21:15:17.1717674Z ##[endgroup]
+2026-11-03T21:15:17.1936397Z ##[group]Run set -euo pipefail
+2026-11-03T21:15:17.1936818Z [36;1mset -euo pipefail[0m
+2026-11-03T21:15:17.1937200Z [36;1mevidence="$RUNNER_TEMP/storage-452-recovery-foundation"[0m
+2026-11-03T21:15:17.1937578Z [36;1mmkdir -p "$evidence"[0m
+2026-11-03T21:15:17.1938257Z [36;1mtest "$(sha256sum releases/seaweedfs-452-candidate-lock-20261103.json | cut -d' ' -f1)" = 81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea[0m
+2026-11-03T21:15:17.1939206Z [36;1mPYTHONPATH=. python3 -I -B -S tools/storage_recovery/profile.py profiles/seaweedfs-452-lab/profile.json |[0m
+2026-11-03T21:15:17.1939767Z [36;1m  tee "$evidence/profile-validation.json"[0m
+2026-11-03T21:15:17.1940320Z [36;1mPYTHONPATH=. python3 -I -B -S -m unittest discover -s tests -p 'test_storage_recovery_*.py' -v 2>&1 |[0m
+2026-11-03T21:15:17.1940864Z [36;1m  tee "$evidence/tests.log"[0m
+2026-11-03T21:15:17.1941122Z [36;1msha256sum \[0m
+2026-11-03T21:15:17.1941817Z [36;1m  releases/seaweedfs-452-candidate-lock-20261103.json \[0m
+2026-11-03T21:15:17.1942326Z [36;1m  profiles/seaweedfs-452-lab/profile.json \[0m
+2026-11-03T21:15:17.1942693Z [36;1m  tools/storage_recovery/__init__.py \[0m
+2026-11-03T21:15:17.1943015Z [36;1m  tools/storage_recovery/profile.py \[0m
+2026-11-03T21:15:17.1943336Z [36;1m  tools/storage_recovery/manifest.py \[0m
+2026-11-03T21:15:17.1943655Z [36;1m  tools/storage_recovery/coordinated.py \[0m
+2026-11-03T21:15:17.1943996Z [36;1m  tools/storage_recovery/postgres_fixture.py \[0m
+2026-11-03T21:15:17.1944342Z [36;1m  tests/test_storage_recovery_profile.py \[0m
+2026-11-03T21:15:17.1944704Z [36;1m  tests/test_storage_recovery_manifest.py \[0m
+2026-11-03T21:15:17.1945038Z [36;1m  tests/test_storage_recovery_coordinated.py \[0m
+2026-11-03T21:15:17.1945397Z [36;1m  tests/test_storage_recovery_postgres_fixture.py \[0m
+2026-11-03T21:15:17.1945778Z [36;1m  tests/fixtures/storage-recovery/catalog.sql \[0m
+2026-11-03T21:15:17.1946163Z [36;1m  docs/OUF_SEAWEEDFS_COORDINATED_RECONCILER_20261103.md \[0m
+2026-11-03T21:15:17.1946575Z [36;1m  docs/OUF_SEAWEEDFS_POSTGRES_FIXTURE_ADAPTER_20261103.md \[0m
+2026-11-03T21:15:17.1946984Z [36;1m  docs/OUF_SEAWEEDFS_452_RECOVERY_FOUNDATION_20261103.md \[0m
+2026-11-03T21:15:17.1947366Z [36;1m  | LC_ALL=C sort > "$evidence/source-sha256.txt"[0m
+2026-11-03T21:15:17.1947674Z [36;1mprintf '%s\n' \[0m
+2026-11-03T21:15:17.1947989Z [36;1m  'status=SYNTHETIC_FOUNDATION_VERIFIED_NOT_ACCEPTANCE' \[0m
+2026-11-03T21:15:17.1948352Z [36;1m  'releaseAdmitted=false' \[0m
+2026-11-03T21:15:17.1948638Z [36;1m  'runtimeAuthorityIssued=false' \[0m
+2026-11-03T21:15:17.1948932Z [36;1m  'targetOperations=0' \[0m
+2026-11-03T21:15:17.1949187Z [36;1m  'rpoMeasured=false' \[0m
+2026-11-03T21:15:17.1949486Z [36;1m  'rtoMeasured=false' > "$evidence/boundaries.txt"[0m
+2026-11-03T21:15:17.1949992Z [36;1mcd "$evidence"[0m
+2026-11-03T21:15:17.1950256Z [36;1msha256sum ./* | LC_ALL=C sort > SHA256SUMS[0m
+2026-11-03T21:15:17.1950589Z [36;1msha256sum --strict --check SHA256SUMS[0m
+2026-11-03T21:15:17.1975173Z shell: /usr/bin/bash -e {0}
+2026-11-03T21:15:17.1975447Z ##[endgroup]
+2026-11-03T21:15:17.2406105Z {"profileSha256": "6291a5b64fc1250ef3530fda95ee1d2559280980eb6f7ef415d847e3c9c622b8", "releaseAdmitted": false, "runtimeAuthorityIssued": false, "status": "VALID_SYNTHETIC_PROFILE_NOT_ACCEPTANCE", "targetOperations": 0}
+2026-11-03T21:15:17.3932892Z test_actual_stream_bytes_reconcile_and_close_without_runtime_acceptance (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_actual_stream_bytes_reconcile_and_close_without_runtime_acceptance) ... ok
+2026-11-03T21:15:17.3960763Z test_corrupted_body_with_unchanged_hash_metadata_is_detected (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_corrupted_body_with_unchanged_hash_metadata_is_detected) ... ok
+2026-11-03T21:15:17.3998716Z test_incomplete_or_duplicate_snapshot_cannot_yield_success (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_incomplete_or_duplicate_snapshot_cannot_yield_success) ... ok
+2026-11-03T21:15:17.4024931Z test_metadata_cannot_override_measured_length_or_bytes (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_metadata_cannot_override_measured_length_or_bytes) ... ok
+2026-11-03T21:15:17.4051707Z test_missing_and_unreferenced_objects_block_reconciliation (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_missing_and_unreferenced_objects_block_reconciliation) ... ok
+2026-11-03T21:15:17.4087555Z test_mixed_generations_and_dump_bindings_rejected_before_get (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_mixed_generations_and_dump_bindings_rejected_before_get) ... ok
+2026-11-03T21:15:17.4117537Z test_object_count_and_byte_budgets_bound_inputs_before_network (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_object_count_and_byte_budgets_bound_inputs_before_network) ... ok
+2026-11-03T21:15:17.4144323Z test_object_generation_mismatch_does_not_become_healthy (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_object_generation_mismatch_does_not_become_healthy) ... ok
+2026-11-03T21:15:17.4182374Z test_pending_ack_and_active_writer_prevent_reads (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_pending_ack_and_active_writer_prevent_reads) ... ok
+2026-11-03T21:15:17.4202997Z test_stale_writer_and_closed_fence_reject_admission (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_stale_writer_and_closed_fence_reject_admission) ... ok
+2026-11-03T21:15:17.4227804Z test_stream_read_failure_produces_blocked_report_and_closes_stream (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_stream_read_failure_produces_blocked_report_and_closes_stream) ... ok
+2026-11-03T21:15:17.4266143Z test_truncated_and_overlong_streams_fail_closed_and_are_closed (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_truncated_and_overlong_streams_fail_closed_and_are_closed) ... ok
+2026-11-03T21:15:17.4292093Z test_unbounded_listing_iterator_is_stopped_before_get (test_storage_recovery_coordinated.CoordinatedReconciliationTests.test_unbounded_listing_iterator_is_stopped_before_get) ... ok
+2026-11-03T21:15:17.4320080Z test_manifest_binds_all_required_components_and_zero_authority (test_storage_recovery_manifest.StorageRecoveryManifestTest.test_manifest_binds_all_required_components_and_zero_authority) ... ok
+2026-11-03T21:15:17.4367504Z test_manifest_rejects_missing_component_duplicates_and_generation_drift (test_storage_recovery_manifest.StorageRecoveryManifestTest.test_manifest_rejects_missing_component_duplicates_and_generation_drift) ... ok
+2026-11-03T21:15:17.4402446Z test_manifest_tamper_and_authority_escalation_are_rejected (test_storage_recovery_manifest.StorageRecoveryManifestTest.test_manifest_tamper_and_authority_escalation_are_rejected) ... ok
+2026-11-03T21:15:17.4474844Z test_read_only_verification_detects_tamper_and_makes_no_rpo_rto_claim (test_storage_recovery_manifest.StorageRecoveryManifestTest.test_read_only_verification_detects_tamper_and_makes_no_rpo_rto_claim) ... ok
+2026-11-03T21:15:17.4490077Z test_record_rejects_traversal_symlink_and_empty_file (test_storage_recovery_manifest.StorageRecoveryManifestTest.test_record_rejects_traversal_symlink_and_empty_file) ... ok
+2026-11-03T21:15:17.4535344Z test_restore_plan_is_independent_and_not_executed (test_storage_recovery_manifest.StorageRecoveryManifestTest.test_restore_plan_is_independent_and_not_executed) ... ok
+2026-11-03T21:15:17.4702770Z test_child_environment_does_not_inherit_pg_credentials_or_connection (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_child_environment_does_not_inherit_pg_credentials_or_connection) ... ok
+2026-11-03T21:15:17.6223384Z test_command_timeout_is_finite (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_command_timeout_is_finite) ... ok
+2026-11-03T21:15:17.6384637Z test_exit_status_and_diagnostics_preserved (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_exit_status_and_diagnostics_preserved) ... ok
+2026-11-03T21:15:17.6393698Z test_failed_forced_cleanup_does_not_claim_server_stopped (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_failed_forced_cleanup_does_not_claim_server_stopped) ... ok
+2026-11-03T21:15:17.6403232Z test_fast_stop_timeout_attempts_forced_cleanup_and_remains_failure (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_fast_stop_timeout_attempts_forced_cleanup_and_remains_failure) ... ok
+2026-11-03T21:15:17.6408571Z test_harness_rejects_root_without_creating_database_or_output (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_harness_rejects_root_without_creating_database_or_output) ... ok
+2026-11-03T21:15:17.6410757Z test_local_fixed_database_argv_and_claim_boundaries (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_local_fixed_database_argv_and_claim_boundaries) ... ok
+2026-11-03T21:15:17.6573823Z test_overbudget_output_is_rejected (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_overbudget_output_is_rejected) ... ok
+2026-11-03T21:15:17.6582730Z test_success_requires_all_seven_native_cases_and_no_skips (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_success_requires_all_seven_native_cases_and_no_skips) ... ok
+2026-11-03T21:15:17.6584140Z test_ambiguous_or_nonquiescent_fence_rejected (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_ambiguous_or_nonquiescent_fence_rejected) ... ok
+2026-11-03T21:15:17.6589277Z test_bad_reference_or_socket_rejected_before_process (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_bad_reference_or_socket_rejected_before_process) ... ok
+2026-11-03T21:15:17.8105834Z test_descendant_retaining_pipes_cannot_hold_adapter_open (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_descendant_retaining_pipes_cannot_hold_adapter_open) ... ok
+2026-11-03T21:15:17.8112251Z test_duplicate_json_fields_trailing_frames_and_invalid_json_rejected (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_duplicate_json_fields_trailing_frames_and_invalid_json_rejected) ... ok
+2026-11-03T21:15:17.8142585Z test_export_feeds_body_reconciler_and_corruption_remains_visible (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_export_feeds_body_reconciler_and_corruption_remains_visible) ... ok
+2026-11-03T21:15:17.8319566Z test_nonzero_exit_with_valid_json_never_yields_snapshot (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_nonzero_exit_with_valid_json_never_yields_snapshot) ... ok
+2026-11-03T21:15:17.8461316Z test_oversized_or_inconsistent_catalog_rejected (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_oversized_or_inconsistent_catalog_rejected) ... ok
+2026-11-03T21:15:17.8691730Z test_password_file_is_private_empty_regular_and_removed_after_success (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_private_empty_regular_and_removed_after_success) ... ok
+2026-11-03T21:15:17.8699876Z test_password_file_is_removed_if_process_cannot_start (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_removed_if_process_cannot_start) ... ok
+2026-11-03T21:15:18.0681706Z test_password_file_is_removed_on_warning_exit_and_timeout (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_removed_on_warning_exit_and_timeout) ... ok
+2026-11-03T21:15:18.0923957Z test_psql_command_is_fixed_readonly_and_environment_is_not_inherited (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_psql_command_is_fixed_readonly_and_environment_is_not_inherited) ... ok
+2026-11-03T21:15:18.1100606Z test_real_subprocess_exports_compatible_complete_inputs_without_health_claim (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_real_subprocess_exports_compatible_complete_inputs_without_health_claim) ... ok
+2026-11-03T21:15:18.1276916Z test_stderr_warning_blocks_otherwise_valid_snapshot (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_stderr_warning_blocks_otherwise_valid_snapshot) ... ok
+2026-11-03T21:15:18.1430725Z test_streaming_stderr_limit_stops_producer_and_redacts_payload (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_streaming_stderr_limit_stops_producer_and_redacts_payload) ... ok
+2026-11-03T21:15:18.1620004Z test_streaming_stdout_limit_stops_producer_without_unbounded_buffer (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_streaming_stdout_limit_stops_producer_without_unbounded_buffer) ... ok
+2026-11-03T21:15:18.3144838Z test_timeout_kills_process_and_does_not_retry (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_timeout_kills_process_and_does_not_retry) ... ok
+2026-11-03T21:15:18.3150207Z test_authority_or_acceptance_claim_is_rejected (test_storage_recovery_profile.StorageRecoveryProfileTest.test_authority_or_acceptance_claim_is_rejected) ... ok
+2026-11-03T21:15:18.3154199Z test_candidate_identity_is_exact (test_storage_recovery_profile.StorageRecoveryProfileTest.test_candidate_identity_is_exact) ... ok
+2026-11-03T21:15:18.3158905Z test_exact_synthetic_profile_passes_without_authority (test_storage_recovery_profile.StorageRecoveryProfileTest.test_exact_synthetic_profile_passes_without_authority) ... ok
+2026-11-03T21:15:18.3161257Z test_non_loopback_or_egress_is_rejected (test_storage_recovery_profile.StorageRecoveryProfileTest.test_non_loopback_or_egress_is_rejected) ... ok
+2026-11-03T21:15:18.3168743Z test_role_set_paths_and_hardening_are_fail_closed (test_storage_recovery_profile.StorageRecoveryProfileTest.test_role_set_paths_and_hardening_are_fail_closed) ... ok
+2026-11-03T21:15:18.3176766Z test_unknown_fields_and_relaxed_backup_policy_are_rejected (test_storage_recovery_profile.StorageRecoveryProfileTest.test_unknown_fields_and_relaxed_backup_policy_are_rejected) ... ok
+2026-11-03T21:15:18.3178073Z 
+2026-11-03T21:15:18.3178336Z ----------------------------------------------------------------------
+2026-11-03T21:15:18.3178913Z Ran 50 tests in 0.928s
+2026-11-03T21:15:18.3179137Z 
+2026-11-03T21:15:18.3179266Z OK
+2026-11-03T21:15:18.3365931Z ./source-sha256.txt: OK
+2026-11-03T21:15:18.3366392Z ./tests.log: OK
+2026-11-03T21:15:18.3366769Z ./profile-validation.json: OK
+2026-11-03T21:15:18.3367198Z ./boundaries.txt: OK
+2026-11-03T21:15:18.3509435Z ##[group]Run actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+2026-11-03T21:15:18.3509889Z with:
+2026-11-03T21:15:18.3510235Z   subject-path: /home/runner/work/_temp/storage-452-recovery-foundation/SHA256SUMS
+2026-11-03T21:15:18.3510660Z   push-to-registry: false
+2026-11-03T21:15:18.3510891Z   show-summary: true
+2026-11-03T21:15:18.3513876Z   github-token: ***
+2026-11-03T21:15:18.3514101Z ##[endgroup]
+2026-11-03T21:15:18.3572331Z ##[start-action display=Run actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01;id=__actions_attest-build-provenance.generate-build-provenance-predicate]
+2026-11-03T21:15:18.3607105Z ##[group]Run actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01
+2026-11-03T21:15:18.3607571Z ##[endgroup]
+2026-11-03T21:15:18.9215549Z ##[end-action id=__actions_attest-build-provenance.generate-build-provenance-predicate;outcome=success;conclusion=success;duration_ms=564]
+2026-11-03T21:15:18.9220487Z ##[start-action display=Run actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc;id=__actions_attest-build-provenance.attest]
+2026-11-03T21:15:18.9259150Z ##[group]Run actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc
+2026-11-03T21:15:18.9259510Z with:
+2026-11-03T21:15:18.9259857Z   subject-path: /home/runner/work/_temp/storage-452-recovery-foundation/SHA256SUMS
+2026-11-03T21:15:18.9260329Z   predicate-type: https://slsa.dev/provenance/v1
+2026-11-03T21:15:18.9264083Z   predicate: {"buildDefinition":{"buildType":"https://actions.github.io/buildtypes/workflow/v1","externalParameters":{"workflow":{"ref":"refs/heads/feat/m2-discovery-complete-profile-20261029","repository":"https://github.com/GioNob/ouf-deploy","path":".github/workflows/storage-452-recovery-foundation.yml"}},"internalParameters":{"github":{"event_name":"push","repository_id":"1409074354","repository_owner_id":"96419716","runner_environment":"github-hosted"}},"resolvedDependencies":[{"uri":"git+https://github.com/GioNob/ouf-deploy@refs/heads/feat/m2-discovery-complete-profile-20261029","digest":{"gitCommit":"77215bee99bf52a476a1fcebc38b68ed5f4a8e81"}}]},"runDetails":{"builder":{"id":"https://github.com/GioNob/ouf-deploy/.github/workflows/storage-452-recovery-foundation.yml@refs/heads/feat/m2-discovery-complete-profile-20261029"},"metadata":{"invocationId":"https://github.com/GioNob/ouf-deploy/actions/runs/41719760718/attempts/1"}}}
+2026-11-03T21:15:18.9267454Z   push-to-registry: false
+2026-11-03T21:15:18.9267700Z   show-summary: true
+2026-11-03T21:15:18.9270365Z   github-token: ***
+2026-11-03T21:15:18.9270590Z ##[endgroup]
+2026-11-03T21:15:20.4183410Z Attestation created for SHA256SUMS@sha256:a40de936f259607be3f80e88ce6ede804c8e0248305c1b43dcce2b772742642c
+2026-11-03T21:15:20.4185389Z ##[group][36mAttestation signed using certificate from Public Good Sigstore instance[39m
+2026-11-03T21:15:20.4186179Z -----BEGIN CERTIFICATE-----
+2026-11-03T21:15:20.4186843Z MIIIKTCCB7CgAwIBAgIUO3hPIveSQRszZXLy+rn8o1dbd7AwCgYIKoZIzj0EAwMw
+2026-11-03T21:15:20.4187841Z NzEVMBMGA1UEChMMc2lnc3RvcmUuZGV2MR4wHAYDVQQDExVzaWdzdG9yZS1pbnRl
+2026-11-03T21:15:20.4188836Z cm1lZGlhdGUwHhcNMjYxMTAzMjExNTE5WhcNMjYxMTAzMjEyNTE5WjAAMFkwEwYH
+2026-11-03T21:15:20.4189798Z KoZIzj0CAQYIKoZIzj0DAQcDQgAEY8ndmVXKWf5BBbAulDK4XTD3qXOCVuUznVBR
+2026-11-03T21:15:20.4190766Z GGjOm5SV1+OgfDx4tly2WEjgWbtyyrui3B+cmInP4JigzBMfuqOCBs8wggbLMA4G
+2026-11-03T21:15:20.4191981Z A1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggrBgEFBQcDAzAfBgNVHSMEGDAWgBTf
+2026-11-03T21:15:20.4192916Z 0+nPViQRlvmo2OkoVaLGLhhkPzCBogYDVR0RAQH/BIGXMIGUhoGRaHR0cHM6Ly9n
+2026-11-03T21:15:20.4193859Z aXRodWIuY29tL0dpb05vYi9vdWYtZGVwbG95Ly5naXRodWIvd29ya2Zsb3dzL3N0
+2026-11-03T21:15:20.4194889Z b3JhZ2UtNDUyLXJlY292ZXJ5LWZvdW5kYXRpb24ueW1sQHJlZnMvaGVhZHMvZmVh
+2026-11-03T21:15:20.4195826Z dC9tMi1kaXNjb3ZlcnktY29tcGxldGUtcHJvZmlsZS0yMDI2MTAyOTA5BgorBgEE
+2026-11-03T21:15:20.4196781Z AYO/MAEBBCtodHRwczovL3Rva2VuLmFjdGlvbnMuZ2l0aHVidXNlcmNvbnRlbnQu
+2026-11-03T21:15:20.4198084Z Y29tMBIGCisGAQQBg78wAQIEBHB1c2gwNgYKKwYBBAGDvzABAwQoNzcyMTViZWU5
+2026-11-03T21:15:20.4199116Z OWJmNTJhNDc2YTFmY2ViYzM4YjY4ZWQ1ZjRhOGU4MTAuBgorBgEEAYO/MAEEBCBT
+2026-11-03T21:15:20.4200113Z dG9yYWdlIDQuNTIgcmVjb3ZlcnkgZm91bmRhdGlvbjAfBgorBgEEAYO/MAEFBBFH
+2026-11-03T21:15:20.4201049Z aW9Ob2Ivb3VmLWRlcGxveTBEBgorBgEEAYO/MAEGBDZyZWZzL2hlYWRzL2ZlYXQv
+2026-11-03T21:15:20.4202235Z bTItZGlzY292ZXJ5LWNvbXBsZXRlLXByb2ZpbGUtMjAyNjEwMjkwOwYKKwYBBAGD
+2026-11-03T21:15:20.4203198Z vzABCAQtDCtodHRwczovL3Rva2VuLmFjdGlvbnMuZ2l0aHVidXNlcmNvbnRlbnQu
+2026-11-03T21:15:20.4204320Z Y29tMIGjBgorBgEEAYO/MAEJBIGUDIGRaHR0cHM6Ly9naXRodWIuY29tL0dpb05v
+2026-11-03T21:15:20.4205100Z Yi9vdWYtZGVwbG95Ly5naXRodWIvd29ya2Zsb3dzL3N0b3JhZ2UtNDUyLXJlY292
+2026-11-03T21:15:20.4205914Z ZXJ5LWZvdW5kYXRpb24ueW1sQHJlZnMvaGVhZHMvZmVhdC9tMi1kaXNjb3Zlcnkt
+2026-11-03T21:15:20.4206758Z Y29tcGxldGUtcHJvZmlsZS0yMDI2MTAyOTA4BgorBgEEAYO/MAEKBCoMKDc3MjE1
+2026-11-03T21:15:20.4207546Z YmVlOTliZjUyYTQ3NmExZmNlYmMzOGI2OGVkNWY0YThlODEwHQYKKwYBBAGDvzAB
+2026-11-03T21:15:20.4208344Z CwQPDA1naXRodWItaG9zdGVkMDQGCisGAQQBg78wAQwEJgwkaHR0cHM6Ly9naXRo
+2026-11-03T21:15:20.4209293Z dWIuY29tL0dpb05vYi9vdWYtZGVwbG95MDgGCisGAQQBg78wAQ0EKgwoNzcyMTVi
+2026-11-03T21:15:20.4210159Z ZWU5OWJmNTJhNDc2YTFmY2ViYzM4YjY4ZWQ1ZjRhOGU4MTBGBgorBgEEAYO/MAEO
+2026-11-03T21:15:20.4211057Z BDgMNnJlZnMvaGVhZHMvZmVhdC9tMi1kaXNjb3ZlcnktY29tcGxldGUtcHJvZmls
+2026-11-03T21:15:20.4212192Z ZS0yMDI2MTAyOTAaBgorBgEEAYO/MAEPBAwMCjE0MDkwNzQzNTQwKQYKKwYBBAGD
+2026-11-03T21:15:20.4213093Z vzABEAQbDBlodHRwczovL2dpdGh1Yi5jb20vR2lvTm9iMBgGCisGAQQBg78wAREE
+2026-11-03T21:15:20.4214041Z CgwIOTY0MTk3MTYwgaMGCisGAQQBg78wARIEgZQMgZFodHRwczovL2dpdGh1Yi5j
+2026-11-03T21:15:20.4214868Z b20vR2lvTm9iL291Zi1kZXBsb3kvLmdpdGh1Yi93b3JrZmxvd3Mvc3RvcmFnZS00
+2026-11-03T21:15:20.4215761Z NTItcmVjb3ZlcnktZm91bmRhdGlvbi55bWxAcmVmcy9oZWFkcy9mZWF0L20yLWRp
+2026-11-03T21:15:20.4216694Z c2NvdmVyeS1jb21wbGV0ZS1wcm9maWxlLTIwMjYxMDI5MDgGCisGAQQBg78wARME
+2026-11-03T21:15:20.4217656Z KgwoNzcyMTViZWU5OWJmNTJhNDc2YTFmY2ViYzM4YjY4ZWQ1ZjRhOGU4MTAUBgor
+2026-11-03T21:15:20.4218574Z BgEEAYO/MAEUBAYMBHB1c2gwWAYKKwYBBAGDvzABFQRKDEhodHRwczovL2dpdGh1
+2026-11-03T21:15:20.4219472Z Yi5jb20vR2lvTm9iL291Zi1kZXBsb3kvYWN0aW9ucy9ydW5zLzQxNzE5NzYwNzE4
+2026-11-03T21:15:20.4220385Z L2F0dGVtcHRzLzEwFgYKKwYBBAGDvzABFgQIDAZwdWJsaWMwdQYKKwYBBAGDvzAB
+2026-11-03T21:15:20.4221370Z GARnDGVyZXBvOkdpb05vYkA5NjQxOTcxNi9vdWYtZGVwbG95QDE0MDkwNzQzNTQ6
+2026-11-03T21:15:20.4222403Z cmVmOnJlZnMvaGVhZHMvZmVhdC9tMi1kaXNjb3ZlcnktY29tcGxldGUtcHJvZmls
+2026-11-03T21:15:20.4223263Z ZS0yMDI2MTAyOTCBiwYKKwYBBAHWeQIEAgR9BHsAeQB3AN09MGrGxxEyYxkeHJln
+2026-11-03T21:15:20.4224113Z NwKiSl643jyt/4eKcoAvKe6OAAABoaNEODkAAAQDAEgwRgIhAIlXO6WZzmL8pPVh
+2026-11-03T21:15:20.4225002Z Zj5D69rvEf5c0l8BRsv2BcjfuLSBAiEA1gHs2RlOHP3oQ2By5PIN+bXwdnlaeYwq
+2026-11-03T21:15:20.4225864Z F6rClFAqV+AwCgYIKoZIzj0EAwMDZwAwZAIwHUg1XjbHLpcqdw6Ozl2GSINCpMII
+2026-11-03T21:15:20.4226731Z IAsobVUVqFA2Bly5LpiPUbt0QKOcHYP0f4RiAjA8EkdxQ3gk/IyzDwU96YifR7NS
+2026-11-03T21:15:20.4227427Z jbdu3QCUMHZcCAuLlraibKqr1VzDGka8Hnn7Ays=
+2026-11-03T21:15:20.4227918Z -----END CERTIFICATE-----
+2026-11-03T21:15:20.4228147Z 
+2026-11-03T21:15:20.4228538Z ##[endgroup]
+2026-11-03T21:15:20.4229166Z [36mAttestation signature uploaded to Rekor transparency log[39m
+2026-11-03T21:15:20.4229864Z https://search.sigstore.dev?logIndex=3679693400
+2026-11-03T21:15:20.4230467Z [36mAttestation uploaded to repository[39m
+2026-11-03T21:15:20.4231006Z https://github.com/GioNob/ouf-deploy/attestations/63301464
+2026-11-03T21:15:20.4814302Z ##[end-action id=__actions_attest-build-provenance.attest;outcome=success;conclusion=success;duration_ms=1559]
+2026-11-03T21:15:20.4908319Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-03T21:15:20.4908738Z with:
+2026-11-03T21:15:20.4908990Z   name: storage-452-recovery-foundation-41719760718
+2026-11-03T21:15:20.4909388Z   path: /home/runner/work/_temp/storage-452-recovery-foundation/
+2026-11-03T21:15:20.4909744Z   if-no-files-found: error
+2026-11-03T21:15:20.4909983Z   retention-days: 90
+2026-11-03T21:15:20.4910199Z   compression-level: 6
+2026-11-03T21:15:20.4910411Z   overwrite: false
+2026-11-03T21:15:20.4910629Z   include-hidden-files: false
+2026-11-03T21:15:20.4910866Z ##[endgroup]
+2026-11-03T21:15:20.6609121Z (node:2460) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-03T21:15:20.6610057Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-03T21:15:20.6672008Z With the provided path, there will be 5 files uploaded
+2026-11-03T21:15:20.6678972Z Artifact name is valid!
+2026-11-03T21:15:20.6679785Z Root directory input is valid!
+2026-11-03T21:15:20.8839133Z Beginning upload of artifact content to blob storage
+2026-11-03T21:15:20.9100319Z (node:2460) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-03T21:15:20.9532786Z Uploaded bytes 3689
+2026-11-03T21:15:20.9735160Z Finished uploading artifact content to blob storage!
+2026-11-03T21:15:20.9736339Z SHA256 digest of uploaded artifact zip is 9841433d070fba369ecad12d7c8a6d39d55f1112af3331915662bd61bcd51351
+2026-11-03T21:15:20.9738175Z Finalizing artifact upload
+2026-11-03T21:15:21.4121919Z Artifact storage-452-recovery-foundation-41719760718.zip successfully finalized. Artifact ID 13270884291
+2026-11-03T21:15:21.4123489Z Artifact storage-452-recovery-foundation-41719760718 has been successfully uploaded! Final size is 3689 bytes. Artifact ID is 13270884291
+2026-11-03T21:15:21.4128606Z Artifact download URL: https://github.com/GioNob/ouf-deploy/actions/runs/41719760718/artifacts/13270884291
+2026-11-03T21:15:21.4330215Z Post job cleanup.
+2026-11-03T21:15:21.5211688Z [command]/usr/bin/git version
+2026-11-03T21:15:21.5260677Z git version 2.56.0
+2026-11-03T21:15:21.5306235Z Temporarily overriding HOME='/home/runner/work/_temp/c35f26e5-17ae-4e31-a573-87c7b1d74b07' before making global git config changes
+2026-11-03T21:15:21.5307740Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T21:15:21.5312783Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-03T21:15:21.5363223Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T21:15:21.5402291Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T21:15:21.5677443Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T21:15:21.5731817Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T21:15:21.6219378Z Cleaning up orphan processes
+2026-11-03T21:15:21.6608793Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01, actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc, actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

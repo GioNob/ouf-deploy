@@ -1,0 +1,37 @@
+{
+  "schema": "ouf.installation-binding-custody-stop-qualification.v1",
+  "sourceCommit": "0a6438cad877dd356e0cc512c9883e52c5c37583",
+  "scriptPath": "scripts/read-installation-binding-custody-stop.py",
+  "scriptSha256": "c159ee9c93cb5ccd0e6404542296976e200f9ea218df53c53ea3f0e39d306ff4",
+  "ci": {
+    "runId": 39290858181,
+    "jobId": 118190816178,
+    "tests": 8,
+    "passed": true,
+    "actualNonRootAncestorUsed": true
+  },
+  "local": {
+    "tests": 8,
+    "passed": true,
+    "uidGidVirtualizedOnlyForSelectedFixtureInode": true,
+    "reason": "Local filesystem rejects nonzero chown; CI uses actual chown."
+  },
+  "reads": {
+    "sealedSourcesOnlyAstCustodyHelpersExecuted": true,
+    "retainedRuntimeMainCalled": false,
+    "authorityFilesOpened": false,
+    "bearerFilesOpened": 0,
+    "humanCredentialJournalsRead": 0,
+    "ownerRequests": 0,
+    "engineCalls": 0,
+    "oauthRequests": 0,
+    "journalWrites": 0,
+    "gatewayWrites": 0,
+    "privateKeyFilesOpened": 0
+  },
+  "targetReadExecuted": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

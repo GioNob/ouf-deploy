@@ -1,0 +1,21 @@
+name: Acquisition permission descriptor read qualification
+on:
+  push:
+    paths:
+      - scripts/read-acquisition-permission-descriptors-20261025.py
+      - tests/test_acquisition_permission_descriptor_read.py
+      - .github/workflows/acquisition-permission-descriptor-read.yml
+  pull_request:
+    paths:
+      - scripts/read-acquisition-permission-descriptors-20261025.py
+      - tests/test_acquisition_permission_descriptor_read.py
+      - .github/workflows/acquisition-permission-descriptor-read.yml
+permissions: {contents: read}
+jobs:
+  read-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: python3 -m unittest discover -s tests -p test_acquisition_permission_descriptor_read.py -v
+      - run: python3 -m py_compile scripts/read-acquisition-permission-descriptors-20261025.py

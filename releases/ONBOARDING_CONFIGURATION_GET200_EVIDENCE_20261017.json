@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.onboarding-configuration-get200-evidence.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 1,
+  "contextPath": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-i220f2c0",
+  "journalVersion": 29,
+  "reviewSha256": "21ca88f1c5aa682eb74612ead95c9bc6154ddf79a18a52af8f5d281e32abc605",
+  "applicationGenerationsMatch": true,
+  "rootArtifactReviewLinksMatch": true,
+  "configurationGet": {
+    "httpStatus": 200,
+    "approvedConfigurationReturned": true,
+    "exactConfigurationHashReturned": true,
+    "hostTransportOnly": true
+  },
+  "policyGet": {
+    "httpStatus": 200,
+    "bundleVersion": 40
+  },
+  "sourceActivationProven": false,
+  "readinessReconciled": false,
+  "approvalReplayed": false,
+  "loadedSnapshotProven": false,
+  "localSignaturesVerified": false,
+  "expiryEpoch": 1792227727
+}

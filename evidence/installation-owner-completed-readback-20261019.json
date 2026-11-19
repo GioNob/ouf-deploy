@@ -1,0 +1,73 @@
+{
+  "schema": "ouf.installation-owner-completed-readback-checkpoint.v1",
+  "observedAt": "2026-10-19T15:03:17.789Z",
+  "userReportedResult": {
+    "atomicOwnerApiDeployed": true,
+    "atomicOwnerApiLiveWriteTestPerformed": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "completedInstallationPlanHash": "6bebb5d19b337d4156bd63be78e4068c7117ecec3f3199ef142046cb20d695e9",
+    "completedTechnicalPhases": 8,
+    "contextPath": "/etc/ouf/deploy-snapshots/installation-owner-update-execution-hnfn0zwg",
+    "databaseMigrationsPerformed": 0,
+    "finalEvidence": {
+      "databaseMigrationsPerformed": 0,
+      "metadataChanged": false,
+      "onboarding": {
+        "health": {
+          "bodyHash": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946",
+          "httpStatus": 200
+        },
+        "runtimeBinding": {
+          "configHash": "7083a2ab8e42a9b5b2c601bfb588ea47a8bc378f63f04de6d7624e55fa9381c8",
+          "containerId": "0165a7d260a9c146101ac1471c843b1300587c579a18e99ea0c3a78cadcb0aae",
+          "hostConfigHash": "102e08cc114b3f9459d5c691a46c9bbb3634b7243a6bddd81d0bd5ad7a14bde9",
+          "imageId": "sha256:c124a832a1f9f07967a8f3ef9ba9692610ab5c97aa4719e614867f44e6aa63ae",
+          "mountsHash": "831a67eb22989130c63d836388f2509b6d3924dd04f8feef3dfab1b040d54763",
+          "networkSettingsHash": "2efff26b2a7699091f048c65dc147e36ba5f54eae42ac02f7a4e0d12ca02490c",
+          "pid": 335586,
+          "startedAt": "2026-10-19T14:55:21.10058135Z"
+        }
+      },
+      "readinessAttempts": 1,
+      "routeMapHash": "d5a4040e30e289c150f9d2862ff41e83e22809a9e2202ac19388e744f2c5e927",
+      "sourceActivationProven": false,
+      "unchangedApplicationBindingsHash": "9ac4714ce7aab249bbd5aa967495d06d19927c6eb2f55f3cbad67a1b4335d158"
+    },
+    "functionalMilestonesProven": 4,
+    "gatewayWrites": 0,
+    "grantChanges": 0,
+    "humanWindowExpiresAt": 1792425259,
+    "installationBindingApplied": false,
+    "jobsRetried": 0,
+    "maximumCumulativeOAuthAttempts": 256,
+    "nativeProfilePublished": false,
+    "notReleaseAcceptance": true,
+    "oauthAttemptsAfter": 251,
+    "publicMetadataChanged": false,
+    "result": {
+      "acceptanceGranted": false,
+      "applicationReady": true,
+      "complete": true,
+      "databaseMigrationsPerformed": 0,
+      "gatewayWrites": 0,
+      "jobsRetried": 0,
+      "journalVersion": 29,
+      "nativeProfilePublished": false,
+      "publicMetadataChanged": false,
+      "semanticDispatchPerformed": false,
+      "sourceActivationProven": false
+    },
+    "schema": "ouf.installation-binding-owner-update-result.v1",
+    "sourceActivated": false,
+    "sourceCommit": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+    "status": "ONBOARDING_OWNER_UPDATE_READBACK_COMPLETE"
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "doNotReplayOwnerUpdate": true,
+  "installationBindingApplied": false,
+  "remainingOAuthAttempts": 5,
+  "maximumCumulativeOAuthAttempts": 256,
+  "atomicOwnerApiLiveWriteTestPerformed": false
+}

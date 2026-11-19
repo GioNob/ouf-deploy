@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.semantic-root-binding-target-stop.v1",
+  "source": "user supplied target receipt",
+  "retainedDirectory": "/home/oufadmin/ouf-rootfs-reconcile.Uk99sbAx",
+  "reported": {
+    "schema": "ouf.semantic-registry-paused-rootfs-reconciliation.v1",
+    "status": "STOP_RECONCILE",
+    "reasonCode": "SAME_HOST_IMAGE_AND_OCI_ROOT_REQUIRED",
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "runtimeAuthorityIssued": false,
+    "runtimeEffectsDispatched": 0
+  },
+  "failedSubpredicateIdentified": false,
+  "currentRootfsReadEstablished": false,
+  "rootfsMismatchCauseEstablished": false,
+  "currentContainerStateEstablished": false,
+  "oldClaimsMustRemainConsumed": true,
+  "releaseAcceptance": false
+}

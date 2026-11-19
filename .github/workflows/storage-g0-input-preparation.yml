@@ -1,0 +1,43 @@
+name: Storage private G0 input preparation
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - tools/storage_planning/g0_input_draft.py
+      - tools/storage_migration/minio_input_observation.py
+      - tools/storage_migration/minio_credential_binding.py
+      - tools/m2_discovery_installation_profile/custody_capture.py
+      - scripts/prepare-storage-g0-inputs-20261106.py
+      - scripts/package-storage-g0-inputs-20261106.py
+      - tests/test_storage_g0_input_draft.py
+      - releases/storage-g0-input-preparation-profile-20261106.json
+      - docs/OUF_STORAGE_G0_INPUT_PREPARATION_20261106.md
+      - .github/workflows/storage-g0-input-preparation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: storage-g0-inputs-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Test private input composition with synthetic local fixtures
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/g0-input-tools/evidence"
+          sudo -n env GITHUB_ACTIONS=true python3 -B -m unittest discover -s tests -p test_storage_g0_input_draft.py -v 2>&1 | tee "$RUNNER_TEMP/g0-input-tools/evidence/tests.log"
+      - name: Package exact source-only input tools
+        run: python3 -I -B -S scripts/package-storage-g0-inputs-20261106.py "$RUNNER_TEMP/g0-input-tools"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-g0-input-tools-${{ github.run_id }}
+          path: ${{ runner.temp }}/g0-input-tools/evidence/
+          retention-days: 90
+          if-no-files-found: error

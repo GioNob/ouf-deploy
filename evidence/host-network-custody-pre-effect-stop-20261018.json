@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.host-network-custody-pre-effect-stop.v1",
+  "runtimeDeliveryCommit": "54d3f48c9c89c801e3a3ed000e4d49dc8ad61d18",
+  "reason": "CONFIGURATION_CUSTODY_REQUIRED",
+  "reportedFrames": [
+    [
+      "compile_plan",
+      55
+    ],
+    [
+      "scan",
+      49
+    ],
+    [
+      "configuration_bytes",
+      34
+    ]
+  ],
+  "providerGatePassed": true,
+  "prebootApplicationProofPassed": true,
+  "planCreated": false,
+  "privateIncidentCreated": false,
+  "dockerWriteReached": false,
+  "failingPredicate": "UNKNOWN_COMPOUND_CUSTODY_CHECK",
+  "failingFileContentsRead": false,
+  "earlierPrivateScansMayHaveReadContents": true,
+  "credentialValuesPrinted": false,
+  "runtimeAuthorityIssued": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}

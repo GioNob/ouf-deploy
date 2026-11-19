@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.source-revision-iam-resume-qualification.v1",
+  "technicalPhases": 8,
+  "functionalMilestones": 4,
+  "sourceCommit": "7f9d752e9dce87295b734647dff66a873a7302eb",
+  "deliveryCommit": "e55d180884f0b335711b84a0c0f38ebd0f9888e6",
+  "sourceSha256": "8dc594b9c7cc07477d66303b4b0e86ddcdaf50dbe19eec9e630459848f5ee8f8",
+  "launcherSha256": "dcaba25fea69447456b9fc3db90bbe86c1622fbb7f7c608b21eb32b43bad2133",
+  "ciRunId": 39200215260,
+  "ciJobId": 117891435456,
+  "conclusion": "success",
+  "testsPassed": 13,
+  "nativeFrozenExecutorSourceCommit": "32f86add5b6fb1b17110ca916ed045b28a240c5e",
+  "nativeFrozenExecutorUnchanged": true,
+  "preparedContextReused": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-kfy691gh",
+  "stoppedContextPreserved": "/etc/ouf/deploy-snapshots/source-revision-execution-tvc2ilnv",
+  "stoppedContextClosureSha256": "e93fd92cae1105c6f5b69e617c5352d8324f65e5c3b13ac758a39dbc3e87a8bc",
+  "maximumAdminLoginAttempts": 1,
+  "maximumAdminLoginSeconds": 300,
+  "durableFenceDirectory": "/etc/ouf/deploy-snapshots/source-revision-iam-resume-tvc2ilnv",
+  "automaticRetry": false,
+  "budgetReset": false,
+  "runtimeAuthorityIssuedByCloud": false,
+  "targetAdminLoginPerformed": false,
+  "targetExecutorResumePerformed": false,
+  "scopeLimit": "root fixtures and orchestration; no live IAM, rollout or functional acceptance proven",
+  "petConsulted": [
+    "Onboarding1.6 109.14",
+    "Onboarding1.6 109.15"
+  ]
+}

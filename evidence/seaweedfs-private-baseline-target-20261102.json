@@ -1,0 +1,134 @@
+{
+  "allFifteenPriorScopesPreserved": true,
+  "automaticReplayAllowed": false,
+  "capacityAndMemoryObservedAtControl": 14,
+  "credentialInputMetadata": {
+    "candidates": [
+      {
+        "kind": "MISSING",
+        "location": "SECRETS_PREFIX",
+        "required": false,
+        "source": "LEGACY_USER"
+      },
+      {
+        "kind": "MISSING",
+        "location": "DECLARED",
+        "required": true,
+        "source": "LEGACY_USER"
+      },
+      {
+        "kind": "MISSING",
+        "location": "SECRETS_PREFIX",
+        "required": false,
+        "source": "LEGACY_PASSWORD"
+      },
+      {
+        "kind": "MISSING",
+        "location": "DECLARED",
+        "required": true,
+        "source": "LEGACY_PASSWORD"
+      },
+      {
+        "kind": "MISSING",
+        "location": "SECRETS_PREFIX",
+        "required": false,
+        "source": "ROOT_USER"
+      },
+      {
+        "kind": "MISSING",
+        "location": "DECLARED",
+        "required": true,
+        "source": "ROOT_USER"
+      },
+      {
+        "kind": "MISSING",
+        "location": "SECRETS_PREFIX",
+        "required": false,
+        "source": "ROOT_PASSWORD"
+      },
+      {
+        "kind": "REGULAR",
+        "location": "DECLARED",
+        "mode": "0600",
+        "previousGuardFailedPredicates": [
+          "NON_ROOT_OWNER"
+        ],
+        "required": true,
+        "rootOwned": false,
+        "singleLink": true,
+        "sizeWithinLimit": true,
+        "source": "ROOT_PASSWORD"
+      },
+      {
+        "kind": "MISSING",
+        "location": "DECLARED",
+        "required": true,
+        "source": "CONFIG_ENV"
+      }
+    ],
+    "filesOpened": 1,
+    "metadataComplete": true,
+    "policyBlocked": false,
+    "rawValuesSpooled": false,
+    "readPolicy": "EXISTING_DECLARED_REGULAR_BOUNDED_STABLE_INPUTS_ONLY",
+    "sourceBytesRead": 65,
+    "sourceCustodyAdmitted": false
+  },
+  "credentialSourceCustodyAdmitted": false,
+  "credentialSources": {
+    "metadataCandidates": 7,
+    "rawValuesSpooled": false,
+    "secretFilesOpened": 1,
+    "selectedSources": [
+      "EXPLICIT_ENV",
+      "DECLARED_SECRET_FILE"
+    ],
+    "sourceBytesRead": 65
+  },
+  "credentialValuesSpooled": false,
+  "cumulativeControlAttempts": 16,
+  "cumulativeDirectEngineGets": 52,
+  "directEngineGets": 2,
+  "externalConsumersProvenAbsent": false,
+  "hostBaselineFromControl": 14,
+  "inventoryReconciliationProducer": "91dc1f079bf7f6760d6dcf1f613b6c8a418f03d2",
+  "inventoryReconciliationPublication": "14006308605553483b9a5ba0df9bf51ed56761f2",
+  "inventorySummary": {
+    "buckets": 2,
+    "bytesAcrossVersions": 203743,
+    "defaultEncryptedBuckets": 0,
+    "deleteMarkers": 0,
+    "fileDirectoryCollisions": 0,
+    "incompleteMultipartBytes": 0,
+    "incompleteMultipartUploads": 0,
+    "lifecycleBuckets": 0,
+    "namespaceGate": "PASS",
+    "notificationConfiguredBuckets": 0,
+    "objectLockEnabledBuckets": 0,
+    "objectVersions": 120,
+    "objectsWithAdvertisedOufHash": 110,
+    "replicatedBuckets": 0,
+    "trailingSlashKeys": 0,
+    "unsafePathKeys": 0,
+    "unsupportedBucketFeatures": 2,
+    "versionedRecords": 0,
+    "versioningEnabledBuckets": 0
+  },
+  "memoryAvailableBytes": 11830857728,
+  "otherTwelveContainerBindingsRefreshed": false,
+  "pointInTimeSnapshotProven": false,
+  "privateInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+  "readerFailureCategory": "NONE",
+  "records": 120,
+  "releaseAcceptance": false,
+  "retainedContainerSnapshots": 13,
+  "retainedHostBaselineHash": "49aaea817bff55ff5ab901f2f54784e97ac85b7e2bbf2ec489055bab94c790c4",
+  "runtimeAuthorityIssued": false,
+  "s3Complete": true,
+  "s3Requests": 265,
+  "status": "PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED",
+  "storageDataFreeBytes": 293381369856,
+  "storageDataTotalBytes": 539792977920,
+  "targetApplyAuthorized": false,
+  "thirteenInspectScanReplayed": false
+}

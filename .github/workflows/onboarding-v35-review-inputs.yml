@@ -1,0 +1,40 @@
+name: Onboarding V35 package and private review inputs
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths:
+      - scripts/prepare-onboarding-v35-review-inputs-20261024.py
+      - scripts/verify-onboarding-v35-artifact-20261024.py
+      - releases/onboarding-v35-image-source-contract-20261024.json
+      - tools/ingestion_readiness_patch_execution/tests/test_onboarding_v35_review_inputs.py
+      - .github/workflows/onboarding-v35-review-inputs.yml
+  pull_request:
+    paths:
+      - scripts/prepare-onboarding-v35-review-inputs-20261024.py
+      - scripts/verify-onboarding-v35-artifact-20261024.py
+      - releases/onboarding-v35-image-source-contract-20261024.json
+      - tools/ingestion_readiness_patch_execution/tests/test_onboarding_v35_review_inputs.py
+      - .github/workflows/onboarding-v35-review-inputs.yml
+permissions:
+  contents: read
+concurrency:
+  group: onboarding-v35-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  protected-offline-preparation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Root-custodied disposable filesystem fixtures
+        run: |
+          sudo install -d -m 0700 /root/ouf-v35-review-tests
+          sudo cp -a . /root/ouf-v35-review-tests/repository
+          sudo chown -R root:root /root/ouf-v35-review-tests
+      - name: Offline package history schema and proposal guards
+        run: |
+          sudo env OUF_NATIVE_V35_REVIEW=1 /usr/bin/python3 -I -B -S -m unittest discover \
+            -s /root/ouf-v35-review-tests/repository/tools/ingestion_readiness_patch_execution/tests \
+            -p 'test_onboarding_v35_review_inputs.py' -v

@@ -1,0 +1,40 @@
+{
+  "schema": "ouf.postgres-native-backupid-correction-local.v1",
+  "status": "LOCAL_BRIDGE_REGRESSION_PASS_NEW_HOSTED_REQUIRED",
+  "failedHostedRun": 41719760642,
+  "publishedFailure": {
+    "nativeTests": 7,
+    "passed": 5,
+    "errors": 2,
+    "failures": 0,
+    "skipped": 0
+  },
+  "priorFailureRunPreserved": 41715990786,
+  "implementationChange": "backup_id literal native-fixture-0001 -> lab-native-fixture-0001",
+  "oldRunnerSha256": "dea40878e6e3abd774bf7edd27a969b68dbe7c3cfdfae68f3d82bdd6bafedfab",
+  "newRunnerSha256": "c7035e3d368bc1473bfb2231660f49650a75f49ba280e46bfe9cba4eea1a9220",
+  "localTests": {
+    "fullFoundationPassed": 51,
+    "adapterPassed": 16,
+    "harnessPassed": 10,
+    "profileManifestCoordinatorPassed": 25,
+    "failed": 0,
+    "skipped": 0
+  },
+  "redBaseline": {
+    "testsRun": 10,
+    "passed": 9,
+    "errors": 1,
+    "logSha256": "6c15b507190369349827b6c07727b5f15bf1e0ae9d8dc8747c54ba05e6e7fb03"
+  },
+  "newBridgeTestMocksManifestOrCoordinator": false,
+  "manifestGuardsUnchanged": true,
+  "adapterUnchanged": true,
+  "nativeCasesStillExactlySeven": true,
+  "hostedFixExecuted": false,
+  "targetOperations": 0,
+  "pitrQualified": false,
+  "writerFenceEnforcedByAdapter": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false
+}

@@ -1,12 +1,6 @@
 name: OUF release readiness
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/release-readiness.yml
-      - scripts/read-release-readiness.py
-      - requests/release-readiness.json
 permissions:
   contents: read
 concurrency:

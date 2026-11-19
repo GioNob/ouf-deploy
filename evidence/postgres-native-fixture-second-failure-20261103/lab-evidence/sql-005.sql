@@ -1,0 +1,1 @@
+UPDATE ouf_recovery_fixture.objects SET generation='other-generation' WHERE object_key='binary'

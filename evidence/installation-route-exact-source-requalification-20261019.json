@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.installation-route-exact-source-requalification.v1",
+  "sourceCommit": "6e36d6f5faa8c0c8e129aac7d843fcf9e7d535e4",
+  "deliveryCommit": "01c7b8e0e4b763b0b5b3cb64e86c131bd6c234cb",
+  "launcherSha256": "8c4aa8efdf4d95252cf41f20b0e1ba376d00232015516086e149eaf28b4d1052",
+  "targetRead": {
+    "schema": "ouf.installation-route-preparation-guard-stop-read.v1",
+    "packageHash": "de440e91d204e30bd99daea42e4a19c9affee97e3044cf6ae2fa8bf613592efc",
+    "sourceClosureHash": "2fb31db4ffd6188bcdd0bb7b8cc71aaf284b0f5581413ca3a05081624442e56d",
+    "humanSourceSha256": "305c7804b084b02f0bf7d6c1521c3c5a4f8e7f4e2fb0a15e27f5886a2a685dcc",
+    "bodyAstSha256Python313": "73206ceb446741025c99993abb0e665996d40f4be8a0bc1ad2704c1f7178b75d",
+    "pythonVersion": [
+      3,
+      13,
+      5
+    ],
+    "methodCount": 1,
+    "extensionAlreadyPresent": false,
+    "newPreparationClaimPresent": false,
+    "credentialJournalsOpened": 0,
+    "oauthRequests": 0,
+    "journalWrites": 0,
+    "sourceExecuted": false
+  },
+  "fix": "Pin the entire authenticated HUMAN source305c7804, preserve its exact bytes before appending the explicit264 extension. Do not compare version-dependent ast.dump text. Retain historical MCP compatibility branch.",
+  "ci": [
+    {
+      "run": 39299796409,
+      "job": 118221669926,
+      "tests": 18,
+      "status": "PASS"
+    },
+    {
+      "run": 39299839291,
+      "job": 118221820698,
+      "tests": 3,
+      "status": "PASS"
+    }
+  ],
+  "qualificationLimits": [
+    "HUMAN provider and Gateway network exchanges use fixtures; no current target acceptance proven.",
+    "Preparation fixture explicitly substitutes paths/package pins and synthetic full-source hash. Target exact hash305c7804 is checked as a production constant; public retained guard includes compatibility branch.",
+    "All runtime authority requires native approvals. No new264 budget approved by this repository change."
+  ],
+  "maximumCumulativeOAuthAttemptsAuthorized": 256,
+  "lastReportedOAuthAttempts": 255,
+  "proposedMaximumCumulativeOAuthAttempts": 264,
+  "startBeforeItalian": "2026-10-19T20:35:55+02:00",
+  "preservedExpiryItalian": "2026-10-19T20:55:55+02:00",
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}

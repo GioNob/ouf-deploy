@@ -1,0 +1,7 @@
+{
+  "schema": "ouf.current-udp-storage-bindings.v1",
+  "status": "READ_INCOMPLETE",
+  "reason": "KNOWN_UDP_JAR_LAUNCH_REQUIRED",
+  "serviceConfigurationChanged": false,
+  "credentialValuesEmitted": false
+}

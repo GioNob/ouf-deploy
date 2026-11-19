@@ -1,0 +1,63 @@
+{
+  "schema": "ouf.postpatch-readiness-http-observation.v1",
+  "recordedAt": "2026-10-22T13:23:59Z",
+  "source": "user-pasted public diagnostic receipt; duplicate pasted log is one execution",
+  "operatorLog": "/home/oufadmin/ouf-postpatch-diagnostic.9Hzuuniq/operator.log",
+  "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-stage8-execution-e1c13776c158064f9e1012a4993a409b459ae0711a77486dc59f7dd7a722ce92",
+  "since": 1792674720,
+  "until": 1792674900,
+  "engineGets": 9,
+  "maximumEngineGets": 9,
+  "complete": true,
+  "readOnly": true,
+  "activationResubmitted": false,
+  "oauthRequests": 0,
+  "runtimeEffectsDispatched": 0,
+  "rootCauseEstablished": false,
+  "observations": [
+    {
+      "routeClass": "FROZEN_CONFIGURATION",
+      "status": 200,
+      "timestamp": "2026-10-22T13:13:21.106372664Z"
+    },
+    {
+      "routeClass": "COMPATIBILITY",
+      "status": 200,
+      "timestamp": "2026-10-22T13:13:21.106417922Z"
+    },
+    {
+      "routeClass": "SEMANTIC_REFERENCE",
+      "status": 502,
+      "timestamp": "2026-10-22T13:13:24.196119097Z"
+    },
+    {
+      "routeClass": "INGESTION_READINESS",
+      "status": 503,
+      "timestamp": "2026-10-22T13:13:24.218050948Z"
+    },
+    {
+      "routeClass": "SOURCE_REVIEW",
+      "status": 503,
+      "timestamp": "2026-10-22T13:13:24.227608674Z"
+    }
+  ],
+  "gatewayTransportCategories": {
+    "NO_ROUTE_TO_HOST": 1
+  },
+  "ingestionLogBytes": 0,
+  "onboardingLogBytes": 10920,
+  "gatewayLogBytes": 24963,
+  "interpretation": "Frozen configuration/compatibility endpoint GET success observed; not full ingestion compatibility attestation. Semantic-reference502 precedes readiness503. Same-line transport-error/route association and current binding remain unproven. Historical Registry ID is retained from pinned Oct16 reader,not discovered by name or assumed current.",
+  "nextDiagnostic": {
+    "path": "tools/semantic_transport_correlation",
+    "maximumEngineGets": 5,
+    "maximumSeconds": 35,
+    "localFixtureTestsPassed": 5,
+    "targetExecuted": false,
+    "mutations": 0
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "patchStagesComplete": 12,
+  "releaseAcceptance": false
+}

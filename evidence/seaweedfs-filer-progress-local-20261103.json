@@ -1,0 +1,193 @@
+{
+  "schema": "ouf.seaweedfs-filer-progress-local.v1",
+  "observedAt": "2026-11-03T20:27:51.455460+00:00",
+  "status": "LOCAL_QUALIFIED_PATCH_PROPOSAL_NOT_ADMITTED",
+  "baseGeneration": 30,
+  "activeGeneration31IsSeparateNestedKafkaCleanup": true,
+  "candidateSequence": "FUTURE32_PROPOSAL_ONLY_HISTORICAL_STAGE_NAME31",
+  "baseBinarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+  "patch": {
+    "patch": "patches/seaweedfs/4.52-filer-progress-maintained.patch",
+    "sha256": "d9eaf21ca405e1b4feee97d185f04acd0ae015b90b8e6cd3f27336774d04f9f2",
+    "bytes": 10898,
+    "changedFiles": [
+      "go.mod",
+      "go.sum",
+      "weed/replication/sink/filersink/chunk_progress.go",
+      "weed/replication/sink/filersink/chunk_progress_test.go",
+      "weed/replication/sink/filersink/fetch_write.go"
+    ],
+    "exactIndexedReplay": "PASS"
+  },
+  "productionPackageGraph": {
+    "before": 1740,
+    "after": 1737,
+    "removed": [
+      "github.com/mitchellh/colorstring",
+      "github.com/rivo/uniseg",
+      "github.com/schollz/progressbar/v3"
+    ],
+    "added": []
+  },
+  "localBinary": {
+    "sha256": "be8e7d49c222a59de9aff125cd002372fc9ced2eca3bc27405f10851df400ceb",
+    "bytes": 219759582,
+    "moduleCount": 231,
+    "removedModules": [
+      "github.com/mitchellh/colorstring",
+      "github.com/rivo/uniseg",
+      "github.com/schollz/progressbar/v3"
+    ],
+    "addedModules": [],
+    "CGO_ENABLED": 0,
+    "buildvcs": false,
+    "qualifiedReleaseIdentity": false,
+    "hostedQualification": false
+  },
+  "tests": {
+    "filersink-tests": {
+      "pass": 159,
+      "skip": 0,
+      "fail": 0
+    },
+    "filersink-race-tests": {
+      "pass": 159,
+      "skip": 0,
+      "fail": 0
+    },
+    "stdout-correction-tests": {
+      "pass": 5,
+      "skip": 0,
+      "fail": 0
+    },
+    "stdout-correction-race": {
+      "pass": 5,
+      "skip": 0,
+      "fail": 0
+    }
+  },
+  "testSequence": "Full159 normal/race on initial proposal; bounded5 normal/race after stdout correction, no duplicate full suite",
+  "tidyFixedPoint": "PASS_EMPTY_DIFF",
+  "rootGraphMitchellhColorstringAndProgressbarAbsent": true,
+  "retainedUncompiledDifferentModule": "github.com/k0kubun/colorstring",
+  "displayChange": "Plain copied/total chunks counter on original stdout stream, final state retained; full-width/ETA/clear-on-finish rendering removed; final newline moves from separate stderr callback to stdout",
+  "replicationBehavior": "Executor, retry/error handling and both success-only Add callsites unchanged",
+  "maintenanceOwner": "SeaweedFS OUF local fork for small chunkProgress helper",
+  "newDependencyPins": [],
+  "otherLifecycleGaps": "OPEN_INCLUDING_YAMLV3_NOT_CHANGED_HERE",
+  "targetOperationsPerformed": false,
+  "HUMAN_THS_ScopesConsumed": false,
+  "TeatriFarmacieResultsChanged": false,
+  "evidenceFiles": [
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/baseline-production-import-edges.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/baseline-production-import-edges.txt",
+      "sha256": "e42658112222b6c8311de3e93d37482a6c838d4ecee3f844b84134a96140cc0a",
+      "bytes": 464790
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/build-info.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/build-info.txt",
+      "sha256": "80fe68469cfdd6119817b7b65ee622f36a48b6c91d8bda28323a0ae245174795",
+      "bytes": 22235
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/build.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/build.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/filersink-race-tests.jsonl",
+      "sha256": "425ec8f0ecf09f0584f3c370e3545b9c18bc0713f66022d4d216a5ec5b6b5557",
+      "bytes": 172435
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/filersink-race-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/filersink-tests.jsonl",
+      "sha256": "89d839566c81e8fbc26d6776c1845426a16f03564b9234ee35d9e53023806db1",
+      "bytes": 171903
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/filersink-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/patch-replay.json",
+      "sha256": "03ff5849ab13f7ff4bfded40b61f061e6bc9db804fd6351113dd9ae9076490b9",
+      "bytes": 427
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/primary-source-evidence.json",
+      "sha256": "ed31ff0c9b6d1aef92820bed46f872a6a5cef4566e567ae517363efbb632c8a6",
+      "bytes": 9685
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/production-deps.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/production-deps.txt",
+      "sha256": "20e33501d9307a84fbe559e9bae8c6c7afb01e7d8997ef7152810a15abcc0401",
+      "bytes": 72286
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/root-module-graph.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/root-module-graph.txt",
+      "sha256": "2bcd5af2922a242701d0dd94d400b8b602a02c828fe3e8d1baf7d913130493cb",
+      "bytes": 354562
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/stdout-correction-race.jsonl",
+      "sha256": "700303f1d319ae88ebde877df66c1f536e66f06ab70b984013568215b30355b2",
+      "bytes": 6121
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/stdout-correction-race.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/stdout-correction-tests.jsonl",
+      "sha256": "f432c6ea6f8eb1ed29ad3d0b888e3a75b88c339b597518f2b3a814d03d35e563",
+      "bytes": 5616
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/stdout-correction-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/tidy-fixed-point.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-filer-progress-local-20261103/tidy-fixed-point.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    }
+  ]
+}

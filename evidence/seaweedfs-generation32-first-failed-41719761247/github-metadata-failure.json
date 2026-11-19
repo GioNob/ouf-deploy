@@ -1,0 +1,590 @@
+{
+  "run": {
+    "id": 41719761247,
+    "name": "Storage 4.52 generation32 image qualification",
+    "node_id": "WFR_kwLOU_zEss8AAAAJtrEJXw",
+    "head_branch": "feat/m2-discovery-complete-profile-20261029",
+    "head_sha": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+    "path": ".github/workflows/storage-452-generation32-image.yml",
+    "display_title": "feat(storage): qualify generation31 and build maintained generation32…",
+    "run_number": 1,
+    "event": "push",
+    "status": "completed",
+    "conclusion": "failure",
+    "workflow_id": 406216552,
+    "check_suite_id": 113055795764,
+    "check_suite_node_id": "CS_kwDOU_zEss8AAAAaUqaKNA",
+    "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247",
+    "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41719761247",
+    "pull_requests": [
+      {
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/pulls/54",
+        "id": 5064510535,
+        "number": 54,
+        "head": {
+          "ref": "feat/m2-discovery-complete-profile-20261029",
+          "sha": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+          "repo": {
+            "id": 1409074354,
+            "url": "https://api.github.com/repos/GioNob/ouf-deploy",
+            "name": "ouf-deploy"
+          }
+        },
+        "base": {
+          "ref": "feat/m2-discovery-authorization-profile-20261029",
+          "sha": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
+          "repo": {
+            "id": 1409074354,
+            "url": "https://api.github.com/repos/GioNob/ouf-deploy",
+            "name": "ouf-deploy"
+          }
+        }
+      }
+    ],
+    "created_at": "2026-11-03T21:13:03Z",
+    "updated_at": "2026-11-03T21:23:43Z",
+    "actor": {
+      "login": "GioNob",
+      "id": 96419716,
+      "node_id": "U_kgDOBb8_hA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/96419716?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/GioNob",
+      "html_url": "https://github.com/GioNob",
+      "followers_url": "https://api.github.com/users/GioNob/followers",
+      "following_url": "https://api.github.com/users/GioNob/following{/other_user}",
+      "gists_url": "https://api.github.com/users/GioNob/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/GioNob/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/GioNob/subscriptions",
+      "organizations_url": "https://api.github.com/users/GioNob/orgs",
+      "repos_url": "https://api.github.com/users/GioNob/repos",
+      "events_url": "https://api.github.com/users/GioNob/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/GioNob/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "run_attempt": 1,
+    "referenced_workflows": [],
+    "run_started_at": "2026-11-03T21:13:03Z",
+    "triggering_actor": {
+      "login": "GioNob",
+      "id": 96419716,
+      "node_id": "U_kgDOBb8_hA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/96419716?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/GioNob",
+      "html_url": "https://github.com/GioNob",
+      "followers_url": "https://api.github.com/users/GioNob/followers",
+      "following_url": "https://api.github.com/users/GioNob/following{/other_user}",
+      "gists_url": "https://api.github.com/users/GioNob/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/GioNob/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/GioNob/subscriptions",
+      "organizations_url": "https://api.github.com/users/GioNob/orgs",
+      "repos_url": "https://api.github.com/users/GioNob/repos",
+      "events_url": "https://api.github.com/users/GioNob/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/GioNob/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "jobs_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247/jobs",
+    "logs_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247/logs",
+    "check_suite_url": "https://api.github.com/repos/GioNob/ouf-deploy/check-suites/113055795764",
+    "artifacts_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247/artifacts",
+    "cancel_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247/cancel",
+    "rerun_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247/rerun",
+    "previous_attempt_url": null,
+    "workflow_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/workflows/406216552",
+    "head_commit": {
+      "id": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+      "tree_id": "a58fc30084147a175d3f3f89c2adfc944ce69135",
+      "message": "feat(storage): qualify generation31 and build maintained generation32 candidate",
+      "timestamp": "2026-11-03T21:12:55Z",
+      "author": {
+        "name": "GioNob",
+        "email": "96419716+GioNob@users.noreply.github.com"
+      },
+      "committer": {
+        "name": "GioNob",
+        "email": "96419716+GioNob@users.noreply.github.com"
+      }
+    },
+    "repository": {
+      "id": 1409074354,
+      "node_id": "R_kgDOU_zEsg",
+      "name": "ouf-deploy",
+      "full_name": "GioNob/ouf-deploy",
+      "private": false,
+      "owner": {
+        "login": "GioNob",
+        "id": 96419716,
+        "node_id": "U_kgDOBb8_hA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/96419716?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/GioNob",
+        "html_url": "https://github.com/GioNob",
+        "followers_url": "https://api.github.com/users/GioNob/followers",
+        "following_url": "https://api.github.com/users/GioNob/following{/other_user}",
+        "gists_url": "https://api.github.com/users/GioNob/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/GioNob/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/GioNob/subscriptions",
+        "organizations_url": "https://api.github.com/users/GioNob/orgs",
+        "repos_url": "https://api.github.com/users/GioNob/repos",
+        "events_url": "https://api.github.com/users/GioNob/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/GioNob/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/GioNob/ouf-deploy",
+      "description": "ouf-deploy",
+      "fork": false,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy",
+      "forks_url": "https://api.github.com/repos/GioNob/ouf-deploy/forks",
+      "keys_url": "https://api.github.com/repos/GioNob/ouf-deploy/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/GioNob/ouf-deploy/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/GioNob/ouf-deploy/teams",
+      "hooks_url": "https://api.github.com/repos/GioNob/ouf-deploy/hooks",
+      "issue_events_url": "https://api.github.com/repos/GioNob/ouf-deploy/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/GioNob/ouf-deploy/events",
+      "assignees_url": "https://api.github.com/repos/GioNob/ouf-deploy/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/GioNob/ouf-deploy/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/GioNob/ouf-deploy/tags",
+      "blobs_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/GioNob/ouf-deploy/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/GioNob/ouf-deploy/languages",
+      "stargazers_url": "https://api.github.com/repos/GioNob/ouf-deploy/stargazers",
+      "contributors_url": "https://api.github.com/repos/GioNob/ouf-deploy/contributors",
+      "subscribers_url": "https://api.github.com/repos/GioNob/ouf-deploy/subscribers",
+      "subscription_url": "https://api.github.com/repos/GioNob/ouf-deploy/subscription",
+      "commits_url": "https://api.github.com/repos/GioNob/ouf-deploy/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/GioNob/ouf-deploy/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/GioNob/ouf-deploy/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/GioNob/ouf-deploy/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/GioNob/ouf-deploy/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/GioNob/ouf-deploy/merges",
+      "archive_url": "https://api.github.com/repos/GioNob/ouf-deploy/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/GioNob/ouf-deploy/downloads",
+      "issues_url": "https://api.github.com/repos/GioNob/ouf-deploy/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/GioNob/ouf-deploy/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/GioNob/ouf-deploy/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/GioNob/ouf-deploy/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/GioNob/ouf-deploy/labels{/name}",
+      "releases_url": "https://api.github.com/repos/GioNob/ouf-deploy/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/GioNob/ouf-deploy/deployments"
+    },
+    "head_repository": {
+      "id": 1409074354,
+      "node_id": "R_kgDOU_zEsg",
+      "name": "ouf-deploy",
+      "full_name": "GioNob/ouf-deploy",
+      "private": false,
+      "owner": {
+        "login": "GioNob",
+        "id": 96419716,
+        "node_id": "U_kgDOBb8_hA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/96419716?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/GioNob",
+        "html_url": "https://github.com/GioNob",
+        "followers_url": "https://api.github.com/users/GioNob/followers",
+        "following_url": "https://api.github.com/users/GioNob/following{/other_user}",
+        "gists_url": "https://api.github.com/users/GioNob/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/GioNob/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/GioNob/subscriptions",
+        "organizations_url": "https://api.github.com/users/GioNob/orgs",
+        "repos_url": "https://api.github.com/users/GioNob/repos",
+        "events_url": "https://api.github.com/users/GioNob/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/GioNob/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/GioNob/ouf-deploy",
+      "description": "ouf-deploy",
+      "fork": false,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy",
+      "forks_url": "https://api.github.com/repos/GioNob/ouf-deploy/forks",
+      "keys_url": "https://api.github.com/repos/GioNob/ouf-deploy/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/GioNob/ouf-deploy/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/GioNob/ouf-deploy/teams",
+      "hooks_url": "https://api.github.com/repos/GioNob/ouf-deploy/hooks",
+      "issue_events_url": "https://api.github.com/repos/GioNob/ouf-deploy/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/GioNob/ouf-deploy/events",
+      "assignees_url": "https://api.github.com/repos/GioNob/ouf-deploy/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/GioNob/ouf-deploy/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/GioNob/ouf-deploy/tags",
+      "blobs_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/GioNob/ouf-deploy/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/GioNob/ouf-deploy/languages",
+      "stargazers_url": "https://api.github.com/repos/GioNob/ouf-deploy/stargazers",
+      "contributors_url": "https://api.github.com/repos/GioNob/ouf-deploy/contributors",
+      "subscribers_url": "https://api.github.com/repos/GioNob/ouf-deploy/subscribers",
+      "subscription_url": "https://api.github.com/repos/GioNob/ouf-deploy/subscription",
+      "commits_url": "https://api.github.com/repos/GioNob/ouf-deploy/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/GioNob/ouf-deploy/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/GioNob/ouf-deploy/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/GioNob/ouf-deploy/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/GioNob/ouf-deploy/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/GioNob/ouf-deploy/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/GioNob/ouf-deploy/merges",
+      "archive_url": "https://api.github.com/repos/GioNob/ouf-deploy/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/GioNob/ouf-deploy/downloads",
+      "issues_url": "https://api.github.com/repos/GioNob/ouf-deploy/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/GioNob/ouf-deploy/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/GioNob/ouf-deploy/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/GioNob/ouf-deploy/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/GioNob/ouf-deploy/labels{/name}",
+      "releases_url": "https://api.github.com/repos/GioNob/ouf-deploy/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/GioNob/ouf-deploy/deployments"
+    }
+  },
+  "jobs": {
+    "total_count": 4,
+    "jobs": [
+      {
+        "id": 126209111545,
+        "run_id": 41719761247,
+        "workflow_name": "Storage 4.52 generation32 image qualification",
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "run_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOU_zEss8AAAAdYqY1-Q",
+        "head_sha": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/jobs/126209111545",
+        "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41719761247/job/126209111545",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-03T21:13:04Z",
+        "started_at": "2026-11-03T21:13:06Z",
+        "completed_at": "2026-11-03T21:23:42Z",
+        "name": "qualify-standard-profile",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-03T21:13:07Z",
+            "completed_at": "2026-11-03T21:13:08Z"
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-03T21:13:08Z",
+            "completed_at": "2026-11-03T21:14:31Z"
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-03T21:14:31Z",
+            "completed_at": "2026-11-03T21:15:12Z"
+          },
+          {
+            "name": "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-03T21:15:12Z",
+            "completed_at": "2026-11-03T21:15:18Z"
+          },
+          {
+            "name": "Apply the exact 32 patches for the OUF standard profile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-03T21:15:18Z",
+            "completed_at": "2026-11-03T21:15:19Z"
+          },
+          {
+            "name": "Prove the root module closure and tidy fixed point",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-03T21:15:19Z",
+            "completed_at": "2026-11-03T21:16:06Z"
+          },
+          {
+            "name": "Run the observed generation32 main regression profile",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-03T21:16:06Z",
+            "completed_at": "2026-11-03T21:18:35Z"
+          },
+          {
+            "name": "Qualify the complete observed server suite and focused storage compaction",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-03T21:18:35Z",
+            "completed_at": "2026-11-03T21:20:54Z"
+          },
+          {
+            "name": "Execute shell integration requirements needing Unix sockets on the hosted runner",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-03T21:20:54Z",
+            "completed_at": "2026-11-03T21:21:03Z"
+          },
+          {
+            "name": "Race-check shutdown coordination and local bbolt raft store",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10,
+            "started_at": "2026-11-03T21:21:03Z",
+            "completed_at": "2026-11-03T21:21:40Z"
+          },
+          {
+            "name": "Verify old-v2 and local bbolt DB compatibility in an isolated comparator module",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-03T21:21:40Z",
+            "completed_at": "2026-11-03T21:21:41Z"
+          },
+          {
+            "name": "Recheck root IAM fixtures and independently qualified nested modules",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12,
+            "started_at": "2026-11-03T21:21:41Z",
+            "completed_at": "2026-11-03T21:21:55Z"
+          },
+          {
+            "name": "Bind the reviewed generation32 source, graph and executable",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 13,
+            "started_at": "2026-11-03T21:21:55Z",
+            "completed_at": "2026-11-03T21:23:37Z"
+          },
+          {
+            "name": "Deny excluded optional tag profiles explicitly",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 14,
+            "started_at": "2026-11-03T21:23:37Z",
+            "completed_at": "2026-11-03T21:23:37Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 15,
+            "started_at": "2026-11-03T21:23:37Z",
+            "completed_at": "2026-11-03T21:23:37Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16,
+            "started_at": "2026-11-03T21:23:37Z",
+            "completed_at": "2026-11-03T21:23:39Z"
+          },
+          {
+            "name": "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 30,
+            "started_at": "2026-11-03T21:23:39Z",
+            "completed_at": "2026-11-03T21:23:39Z"
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 31,
+            "started_at": "2026-11-03T21:23:39Z",
+            "completed_at": "2026-11-03T21:23:39Z"
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 32,
+            "started_at": "2026-11-03T21:23:39Z",
+            "completed_at": "2026-11-03T21:23:39Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 33,
+            "started_at": "2026-11-03T21:23:39Z",
+            "completed_at": "2026-11-03T21:23:39Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/GioNob/ouf-deploy/check-runs/126209111545",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000106469,
+        "runner_name": "GitHub Actions 1000106469",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 126209111859,
+        "run_id": 41719761247,
+        "workflow_name": "Storage 4.52 generation32 image qualification",
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "run_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOU_zEss8AAAAdYqY3Mw",
+        "head_sha": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/jobs/126209111859",
+        "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41719761247/job/126209111859",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-03T21:13:04Z",
+        "started_at": "2026-11-03T21:13:06Z",
+        "completed_at": "2026-11-03T21:13:45Z",
+        "name": "verify",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-03T21:13:07Z",
+            "completed_at": "2026-11-03T21:13:07Z"
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-03T21:13:07Z",
+            "completed_at": "2026-11-03T21:13:42Z"
+          },
+          {
+            "name": "Verify generation boundaries, readback and malformed evidence denials",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-03T21:13:42Z",
+            "completed_at": "2026-11-03T21:13:43Z"
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-03T21:13:43Z",
+            "completed_at": "2026-11-03T21:13:43Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-03T21:13:43Z",
+            "completed_at": "2026-11-03T21:13:43Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/GioNob/ouf-deploy/check-runs/126209111859",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000106471,
+        "runner_name": "GitHub Actions 1000106471",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 126214804409,
+        "run_id": 41719761247,
+        "workflow_name": "Storage 4.52 generation32 image qualification",
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "run_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOU_zEss8AAAAdYv0TuQ",
+        "head_sha": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/jobs/126214804409",
+        "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41719761247/job/126214804409",
+        "status": "completed",
+        "conclusion": "skipped",
+        "created_at": "2026-11-03T21:23:43Z",
+        "started_at": "2026-11-03T21:23:43Z",
+        "completed_at": "2026-11-03T21:23:43Z",
+        "name": "runtime_candidate",
+        "steps": [],
+        "check_run_url": "https://api.github.com/repos/GioNob/ouf-deploy/check-runs/126214804409",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": null,
+        "runner_name": null,
+        "runner_group_id": null,
+        "runner_group_name": null
+      },
+      {
+        "id": 126214805052,
+        "run_id": 41719761247,
+        "workflow_name": "Storage 4.52 generation32 image qualification",
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "run_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41719761247",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOU_zEss8AAAAdYv0WPA",
+        "head_sha": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/jobs/126214805052",
+        "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41719761247/job/126214805052",
+        "status": "completed",
+        "conclusion": "skipped",
+        "created_at": "2026-11-03T21:23:43Z",
+        "started_at": "2026-11-03T21:23:43Z",
+        "completed_at": "2026-11-03T21:23:43Z",
+        "name": "independent_image_readback",
+        "steps": [],
+        "check_run_url": "https://api.github.com/repos/GioNob/ouf-deploy/check-runs/126214805052",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": null,
+        "runner_name": null,
+        "runner_group_id": null,
+        "runner_group_name": null
+      }
+    ]
+  },
+  "artifacts": {
+    "total_count": 1,
+    "artifacts": [
+      {
+        "id": 13272057006,
+        "node_id": "MDg6QXJ0aWZhY3QxMzI3MjA1NzAwNg==",
+        "name": "seaweedfs-generation32-build-evidence-41719761247",
+        "size_in_bytes": 777019,
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13272057006",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13272057006/zip",
+        "expired": false,
+        "digest": "sha256:50a4aa1131b8f2474f3bdb1e09e8c717c6f499375626a0e3f3e52fd06c3b3c3b",
+        "created_at": "2026-11-03T21:23:38Z",
+        "updated_at": "2026-11-03T21:23:38Z",
+        "expires_at": "2027-02-01T21:13:04Z",
+        "workflow_run": {
+          "id": 41719761247,
+          "repository_id": 1409074354,
+          "head_repository_id": 1409074354,
+          "head_branch": "feat/m2-discovery-complete-profile-20261029",
+          "head_sha": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81"
+        }
+      }
+    ]
+  }
+}

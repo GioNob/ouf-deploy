@@ -1,0 +1,19 @@
+name: OPS VPS runbooks
+on:
+  pull_request:
+    paths:
+      - ops/vps/**
+      - .github/workflows/ops-vps-runbooks.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  runbooks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Syntax
+        run: for f in ops/vps/*.sh; do bash -n "$f"; done
+      - name: ShellCheck (warnings and errors)
+        run: shellcheck --version && shellcheck -S warning ops/vps/*.sh

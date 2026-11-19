@@ -1,0 +1,37 @@
+{
+  "schema": "ouf.storage-g0-package-profile.v1",
+  "qualifiedSourceSha256": {
+    "tools/storage_inventory/main.go": "2a97b0d850d820892856077cdc1ce62b78a774de4a33fefccbce68027373bd2a",
+    "tools/storage_inventory/g0.go": "d7a94efe27e606f0f0f3ba2151ab94cc2925e9d3174b63014040c0a83b00c5d3",
+    "tools/storage_inventory/go.mod": "efa37120cd22fd7fe43d93e940f6f2d44a49e46a0d30a8daf44fcf6639051658",
+    "tools/storage_inventory/go.sum": "c21db9d6513ea34c35b439d2bab40cf951a5fc3a70052dcd303f4a45b201edb6",
+    "tools/storage_planning/g0_database.py": "177e17774541b9661b25f110219f66a24a7d99c17739352f001a443916d42eb1",
+    "tools/storage_planning/g0_reconciliation.py": "91ad9b02151cd3ee27b0035bdefe2311f7c6fc85d60a666bb888b2e94985e8f3",
+    "tools/storage_planning/inventory_manifest.py": "5aabd44d0df99e08f95cfa7d085e449b05ad1d4fd5c5c581364675d2930baec1"
+  },
+  "qualifiedBodyRun": 42111278483,
+  "qualifiedDatabaseRun": 42114275442,
+  "newQualificationScope": "Full operator package across distinct pinned Linux network namespaces: network-only children, unchanged body collector/SQL exporter, bounded process groups and current owner lifetime checks.",
+  "bodyAndDatabaseNativeLabsRepeated": false,
+  "runtimeAuthorityIssued": false,
+  "historicalControlsPreserved": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "newNamespaceCompositionNativeRequired": true
+}

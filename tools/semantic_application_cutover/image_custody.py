@@ -9,8 +9,10 @@ from pathlib import PurePosixPath
 LIMIT=2147483648
 FIELDS=('User','Entrypoint','Cmd','Env','WorkingDir','Labels','Volumes','ExposedPorts','StopSignal','Healthcheck','Shell')
 
+class ImageCustodyDenied(ValueError):pass
+
 def require(ok, reason):
-    if not ok:raise ValueError(reason)
+    if not ok:raise ImageCustodyDenied(reason)
 
 def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
 def digest(value):return hashlib.sha256(encoded(value)).hexdigest()
@@ -79,12 +81,44 @@ def archive(stream,expected_tar_sha256,expected_image,expected_source):
                 and all(type(x) is str and 0<len(x)<=256 for x in tags),'BOUNDED_IMAGE_TAGS_REQUIRED')
         return {'schema':'ouf.image-archive-byte-custody.v1','imageId':expected_image,
                 'sourceCommit':expected_source,'archiveSha256':expected_tar_sha256,
-                'configSha256':expected_image[7:],'layers':observations,'platform':'linux/amd64',
+                'configSha256':expected_image[7:],'configBytes':len(raw),'layers':observations,'platform':'linux/amd64',
                 'repositoryTags':tags or [],'imageConfig':config['config'],
                 'configMember':image['Config'],'layerMembers':layers,
                 'archiveByteCustodyProven':True,'targetApplyAuthorized':False}
 
-def tagless_archive(source,output,audit):
+def manifest_bytes(audit):
+    """Exact Docker schema2 descriptors, with unchanged config/layer bytes."""
+    require(audit.get('imageId')=='sha256:'+audit['configSha256']
+            and type(audit.get('configBytes')) is int and 0<audit['configBytes']<=2097152,
+            'EXACT_CONFIGURATION_BYTE_IDENTITY_REQUIRED')
+    descriptor=lambda media,digest,size:{'mediaType':media,'digest':digest,'size':size}
+    layers=[]
+    for row in audit['layers']:
+        plain='sha256:'+row['blobSha256']==row['diffId']
+        layers.append(descriptor('application/vnd.docker.image.rootfs.diff.tar'+('' if plain else '.gzip'),
+            'sha256:'+row['blobSha256'],row['archiveBytes']))
+    value={'schemaVersion':2,'mediaType':'application/vnd.docker.distribution.manifest.v2+json',
+        'config':descriptor('application/vnd.docker.container.image.v1+json',audit['imageId'],audit['configBytes']),
+        'layers':layers}
+    # Descriptor order matches the image-spec encoding; no native metadata is
+    # normalized or guessed. This exact byte string is included in the archive.
+    return json.dumps(value,separators=(',',':'),allow_nan=False).encode()
+
+def native_identity(audit):
+    raw=manifest_bytes(audit)
+    return {'profile':'ouf.config-and-native-manifest-identity.v1',
+        'configurationImageId':audit['imageId'],'nativeImageId':'sha256:'+hashlib.sha256(raw).hexdigest(),
+        'manifestBytes':len(raw),'platform':'linux/amd64'}
+
+def runtime_image_id(audit):
+    binding=audit.get('nativeIdentity')
+    if binding is None:return audit['imageId']
+    require(binding==native_identity(audit),'EXACT_NATIVE_MANIFEST_IDENTITY_REQUIRED')
+    return binding['nativeImageId']
+
+def unbound_audit(audit):return {k:v for k,v in audit.items() if k!='nativeIdentity'}
+
+def tagless_archive(source,output,audit,*,containerd=False):
     """Re-envelope exact authenticated config/layers without repository tags.
 
     No image rebuild, new config, layer or publisher signature. Caller reaudits
@@ -98,8 +132,27 @@ def tagless_archive(source,output,audit):
         manifest=[{'Config':audit['configMember'],'RepoTags':None,'Layers':audit['layerMembers']}]
         raw=encoded(manifest);row=tarfile.TarInfo('manifest.json');row.size=len(raw);row.mode=0o600
         target.addfile(row,io.BytesIO(raw))
-        for name in [audit['configMember'],*audit['layerMembers']]:
-            old=original.getmember(name);require(old.isfile(),'EXACT_IMAGE_MEMBER_REQUIRED')
+        if containerd:
+            content=manifest_bytes(audit);binding=native_identity(audit)
+            entries={'oci-layout':encoded({'imageLayoutVersion':'1.0.0'}),
+                'index.json':encoded({'schemaVersion':2,'manifests':[{
+                    'mediaType':'application/vnd.docker.distribution.manifest.v2+json',
+                    'digest':binding['nativeImageId'],'size':len(content),
+                    'platform':{'architecture':'amd64','os':'linux'}}]}),
+                'blobs/sha256/'+binding['nativeImageId'][7:]:content}
+            require(not set(entries)&{audit['configMember'],*audit['layerMembers']},'NATIVE_MANIFEST_MEMBER_COLLISION')
+            # An explicit OCI index prevents the legacy importer from choosing
+            # alternative compressed layer descriptors from its local cache.
+            for name,body in entries.items():
+                row=tarfile.TarInfo(name);row.size=len(body);row.mode=0o600
+                target.addfile(row,io.BytesIO(body))
+        copies={name:name for name in [audit['configMember'],*audit['layerMembers']]}
+        if containerd:
+            copies['blobs/sha256/'+audit['configSha256']]=audit['configMember']
+            for name,layer in zip(audit['layerMembers'],audit['layers']):
+                copies['blobs/sha256/'+layer['blobSha256']]=name
+        for name,source_name in copies.items():
+            old=original.getmember(source_name);require(old.isfile(),'EXACT_IMAGE_MEMBER_REQUIRED')
             row=tarfile.TarInfo(name);row.size=old.size;row.mode=0o600
             with original.extractfile(old) as content:target.addfile(row,content)
     output.flush();output.seek(0);result,size=hashed(output,LIMIT);output.seek(0)
@@ -107,11 +160,12 @@ def tagless_archive(source,output,audit):
             'archiveBytes':size,'imageRebuilt':False,'newSignatureIssued':False}
 
 def loaded(audit,native):
-    require(type(native) is dict and native.get('Id')==audit['imageId']
+    expected=runtime_image_id(audit)
+    require(type(native) is dict and native.get('Id')==expected
             and native.get('Os')=='linux' and native.get('Architecture')=='amd64','NATIVE_IMAGE_IDENTITY_DRIFT')
     require(native.get('RootFS')=={'Type':'layers','Layers':[r['diffId'] for r in audit['layers']]},'NATIVE_ROOTFS_CUSTODY_DRIFT')
     require(type(native.get('Config')) is dict and all(native['Config'].get(k)==audit['imageConfig'].get(k) for k in FIELDS),'NATIVE_IMAGE_EXECUTION_CONFIG_DRIFT')
-    return {'schema':'ouf.loaded-image-byte-custody.v1','imageId':audit['imageId'],
+    return {'schema':'ouf.loaded-image-byte-custody.v1','imageId':expected,
             'sourceCommit':audit['sourceCommit'],'archiveSha256':audit['archiveSha256'],
             'rootfsLayerCount':len(audit['layers']),'nativeConfigProjectionHash':digest({k:native['Config'].get(k) for k in FIELDS}),
             'nativeRootfsHash':digest(native['RootFS']),'imageByteCustodyProven':True,

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "test",
+    "-mod=readonly",
+    "-json",
+    "-count=1",
+    "-timeout=240s",
+    "./weed/kms/...",
+    "./weed/s3api/...",
+    "./weed/iam/...",
+    "./weed/replication/...",
+    "./weed/command"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 44.162
+}

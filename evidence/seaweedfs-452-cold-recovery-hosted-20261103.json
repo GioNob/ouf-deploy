@@ -1,0 +1,445 @@
+{
+  "schema": "ouf.seaweedfs-452-storage-cold-recovery-readback.v1",
+  "status": "HOSTED_SYNTHETIC_STORAGE_COLD_RESTORE_PASS_MIME_COMPATIBILITY_FAIL_NOT_ACCEPTANCE",
+  "sourceCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+  "runId": 41696541366,
+  "jobId": 126128465865,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41696541366",
+  "workflow": ".github/workflows/storage-452-cold-recovery.yml",
+  "unitTestsPassed": 15,
+  "artifact": {
+    "id": 13262411150,
+    "bytes": 30548,
+    "sha256": "73bcbb68624d16d044b106aa9c2a86bdfdd983d962e07f68e8d10f11fa9b843e",
+    "members": 31,
+    "checksummedMembers": 30,
+    "allInternalHashesVerified": true,
+    "independentlyDownloadedAndHashVerified": true,
+    "expiresAt": "2027-02-01T18:43:38Z",
+    "retention": "TEMPORARY_CI",
+    "durableCustodyEstablished": false
+  },
+  "attestation": {
+    "workflowStepSuccessObserved": true,
+    "url": "https://github.com/GioNob/ouf-deploy/attestations/63247763",
+    "subject": "SHA256SUMS",
+    "subjectSha256": "69a249518bcc159eb035f9a28973d4da4d6f52b30047f0acf715711012ef5a88",
+    "independentSignatureVerificationPerformed": false
+  },
+  "sourceHashes": {
+    "scripts/run-seaweedfs-452-cold-recovery.py": "a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089",
+    "tests/test_seaweedfs_452_cold_recovery.py": "34b5da5f3e623f64634ebee8d5fcb92d38af61f92b0db537758ed99fd022d01a",
+    "releases/seaweedfs-452-candidate-lock-20261103.json": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+    ".github/workflows/storage-452-cold-recovery.yml": "bb55f726fbed4e6af44db129d0f4107fb74a973b296138f77147f5bd71d27831"
+  },
+  "exactImage": {
+    "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+    "configDigest": "sha256:add1988121001fe6339a31635d5f61bc560b3c9a540da8027e376a4ebdf0df35",
+    "dockerArchiveSha256": "39f44d649644264ff58aa1d76a2214f134a1034873affb6271420082bdce2566",
+    "layerDigest": "sha256:1071b47f3530b0ce21db1256db07643836cfbce358bab7e294cdab4f4be485c4",
+    "manifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+    "overallSwG1": "OPEN",
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-runtime-image.v1",
+    "scratchRootfs": true,
+    "sourceCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "status": "PACKAGED_NOT_ADMITTED",
+    "targetOperations": 0,
+    "thirdPartyLicencesAccepted": false,
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613",
+    "user": "10001:10001"
+  },
+  "hostedResult": {
+    "acceptanceTestsPassed": 0,
+    "allBodiesAndHashMetadataEqual": true,
+    "backupFiles": 110,
+    "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+    "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+    "crashOrPowerLoss": "NOT_TESTED",
+    "dataRecoveryFixtures": 4,
+    "deletedObjectAbsent": true,
+    "explicitRecoveryMimePreserved": "application/x-ouf-recovery-fixture",
+    "foundationProfileMaterializedVerbatim": false,
+    "fourSeparateRoles": true,
+    "fullFoundationBackupContractSatisfied": false,
+    "g2Closed": false,
+    "gatesClosed": 0,
+    "mimeCompatibilityFixtures": 1,
+    "network": "DOCKER_NONE_SHARED_LOOPBACK_ONLY_NO_PUBLISHED_PORTS",
+    "nonrootReadOnlyContainers": true,
+    "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+    "octetStreamCompatibility": {
+      "bucket": "ouf-recovery-mime-fixture",
+      "bytes": 47,
+      "findings": [
+        {
+          "expected": "application/octet-stream",
+          "key": "octet-stream.txt",
+          "method": "GET",
+          "observed": "text/plain; charset=utf-8"
+        },
+        {
+          "expected": "application/octet-stream",
+          "key": "octet-stream.txt",
+          "method": "HEAD",
+          "observed": "text/plain; charset=utf-8"
+        }
+      ],
+      "g2Closed": false,
+      "getContentType": "text/plain; charset=utf-8",
+      "headContentType": "text/plain; charset=utf-8",
+      "key": "octet-stream.txt",
+      "mutatingRequestRetries": 0,
+      "requestedContentType": "application/octet-stream",
+      "sha256": "14f9c6ae9e1875a1b804984fe42b01c4e7f7edf4e0ccb7021325e4ba34214370",
+      "status": "FAIL"
+    },
+    "originalContainersRemoved": true,
+    "overwritePreserved": true,
+    "postgresRecovery": "NOT_TESTED",
+    "releaseAdmitted": false,
+    "restoreUsesOnlyIndependentRoots": true,
+    "rpoAcceptance": false,
+    "rtoAcceptance": false,
+    "runtimeAuthorityIssued": false,
+    "s3MetadataCompatibilityQualified": false,
+    "schema": "ouf.seaweedfs-452-storage-cold-recovery.v1",
+    "status": "SYNTHETIC_STORAGE_COLD_RESTORE_PASS_NOT_ACCEPTANCE",
+    "syntheticBytes": 8388702,
+    "syntheticObjects": 5,
+    "syntheticRecoveryObservationSeconds": 5.844,
+    "targetOperations": 0,
+    "tlsAndRotation": "NOT_TESTED"
+  },
+  "independentReadback": {
+    "fixtureHashesRecomputedLocally": true,
+    "seedAndRestoreReceiptsEqualExcludingAction": true,
+    "objectCount": 5,
+    "objectBytes": 8388702,
+    "dataFixtureCount": 4,
+    "compatibilityProbeCount": 1,
+    "listPagesBeforeAndAfter": 2,
+    "overwritePreserved": true,
+    "deletedObjectAbsentBeforeAndAfter": true,
+    "backupFiles": 110,
+    "backupBytes": 8417419,
+    "backupFileCountsByRole": {
+      "master": 4,
+      "volume": 65,
+      "filer": 40,
+      "s3": 0,
+      "config": 1
+    },
+    "eightDistinctContainerIdentities": true,
+    "allExitCodesZero": true,
+    "oomKilled": false,
+    "uidGid": "65532:65532",
+    "readOnlyRootfs": true,
+    "capabilitiesDropped": "ALL",
+    "noNewPrivileges": true,
+    "memoryBytesPerContainer": 536870912,
+    "pidsPerContainer": 128,
+    "cpusPerContainer": 1,
+    "network": "DOCKER_NONE_SHARED_LOOPBACK_ONLY_NO_PUBLISHED_PORTS",
+    "allObservedRouteDevices": [
+      "lo"
+    ],
+    "lastOriginalStoppedAt": "2026-11-03T18:44:36.744156071Z",
+    "firstRestoredStartedAt": "2026-11-03T18:44:37.028974556Z",
+    "generations": {
+      "original": [
+        {
+          "role": "master",
+          "id": "557a7307e3142a5cd656a8cdeb66cbbfc3698ef45ecb5c4ea3509ab2fbbb1f41",
+          "dataMount": "/home/runner/work/_temp/storage-452-cold-recovery/original/master",
+          "configMount": "/home/runner/work/_temp/storage-452-cold-recovery/original/config",
+          "finishedAt": "2026-11-03T18:44:36.744156071Z"
+        },
+        {
+          "role": "volume",
+          "id": "0ccc18f9e904ed9c7c051f7da5dde6827b144b5f0dac9a2ab8ce92785caf4a3c",
+          "dataMount": "/home/runner/work/_temp/storage-452-cold-recovery/original/volume",
+          "configMount": "/home/runner/work/_temp/storage-452-cold-recovery/original/config",
+          "finishedAt": "2026-11-03T18:44:36.637325598Z"
+        },
+        {
+          "role": "filer",
+          "id": "8ead75b7e338be03751cde027a0960a93e88fe81a8fdac4c59a79bde6175aacf",
+          "dataMount": "/home/runner/work/_temp/storage-452-cold-recovery/original/filer",
+          "configMount": "/home/runner/work/_temp/storage-452-cold-recovery/original/config",
+          "finishedAt": "2026-11-03T18:44:35.528180039Z"
+        },
+        {
+          "role": "s3",
+          "id": "286ac26938df4c46c26c36366c290914a6be9a548c5ec08171cf86070650820b",
+          "dataMount": "/home/runner/work/_temp/storage-452-cold-recovery/original/s3",
+          "configMount": "/home/runner/work/_temp/storage-452-cold-recovery/original/config",
+          "finishedAt": "2026-11-03T18:44:35.115132951Z"
+        }
+      ],
+      "restored": [
+        {
+          "role": "master",
+          "id": "daf38ae13640f2aedb4db5d536189e79a498029e0c9c390ac50b1bf86cbbfc1d",
+          "dataMount": "/home/runner/work/_temp/storage-452-cold-recovery/restored/master",
+          "configMount": "/home/runner/work/_temp/storage-452-cold-recovery/restored/config",
+          "finishedAt": "2026-11-03T18:44:44.414852722Z"
+        },
+        {
+          "role": "volume",
+          "id": "77f0abc8fa9878e02d718c5eec8818c87866d4eb98d2c9ce761393d7cca3d232",
+          "dataMount": "/home/runner/work/_temp/storage-452-cold-recovery/restored/volume",
+          "configMount": "/home/runner/work/_temp/storage-452-cold-recovery/restored/config",
+          "finishedAt": "2026-11-03T18:44:44.30090395Z"
+        },
+        {
+          "role": "filer",
+          "id": "587ca902c55689dd4811093365d0a9c25692e2795af285af6e2e4c8f41d9e3f9",
+          "dataMount": "/home/runner/work/_temp/storage-452-cold-recovery/restored/filer",
+          "configMount": "/home/runner/work/_temp/storage-452-cold-recovery/restored/config",
+          "finishedAt": "2026-11-03T18:44:43.187801188Z"
+        },
+        {
+          "role": "s3",
+          "id": "8cf2cccb37746a4f32d14d45ab32ebc1cb934251d3abcbe29685286786babd6b",
+          "dataMount": "/home/runner/work/_temp/storage-452-cold-recovery/restored/s3",
+          "configMount": "/home/runner/work/_temp/storage-452-cold-recovery/restored/config",
+          "finishedAt": "2026-11-03T18:44:42.854290522Z"
+        }
+      ]
+    },
+    "octetStreamCompatibility": {
+      "bucket": "ouf-recovery-mime-fixture",
+      "bytes": 47,
+      "findings": [
+        {
+          "expected": "application/octet-stream",
+          "key": "octet-stream.txt",
+          "method": "GET",
+          "observed": "text/plain; charset=utf-8"
+        },
+        {
+          "expected": "application/octet-stream",
+          "key": "octet-stream.txt",
+          "method": "HEAD",
+          "observed": "text/plain; charset=utf-8"
+        }
+      ],
+      "g2Closed": false,
+      "getContentType": "text/plain; charset=utf-8",
+      "headContentType": "text/plain; charset=utf-8",
+      "key": "octet-stream.txt",
+      "mutatingRequestRetries": 0,
+      "requestedContentType": "application/octet-stream",
+      "sha256": "14f9c6ae9e1875a1b804984fe42b01c4e7f7edf4e0ccb7021325e4ba34214370",
+      "status": "FAIL"
+    }
+  },
+  "evidenceInterpretation": {
+    "byteVerification": "Hosted script compared every GET body with its fixture and validated GET/HEAD hash metadata; local readback recomputed fixture hashes and compared both receipts. Raw GET bodies are not in the artifact.",
+    "coldCopy": "Hosted script compared SHA256 inventories of stopped source, backup and independent restored root; artifact contains the final 110-file inventory, not the backup payload. Local readback verified inventory structure and its artifact checksum, not backup file bytes a second time.",
+    "originalRemoval": "Hosted script required clean docker stop/rm and renamed the original root. Independent Docker snapshots prove different container IDs and restored-only mounts; no standalone post-removal docker-inspect receipt was retained.",
+    "duration": "5.844 seconds measures this tiny hosted synthetic restore observation only; it is not RTO or representative infrastructure evidence.",
+    "candidateBoundary": "This proof binds the exact 15-patch OCI only, not the separate later rebuilt candidate."
+  },
+  "open": [
+    "S3 explicit octet-stream preservation fails GET and HEAD",
+    "PostgreSQL coordinated live dump/restore",
+    "PITR/WAL",
+    "Crash/power-loss and complete original-host loss",
+    "TLS/rotation in this cold drill",
+    "Representative workload and infrastructure RPO/RTO acceptance",
+    "Full foundation backup contract",
+    "Durable custody and independent attestation signature verification"
+  ],
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "realObjectsCopied": 0,
+  "minioRemainsActive": true,
+  "preserved": [
+    "Scope17/52 Engine GET",
+    "Teatri/M1 8/8 technical and 6/6 functional",
+    "Farmacie 61/10 OPEN/STRING"
+  ],
+  "rawEvidencePreservation": {
+    "repositoryDirectory": "evidence/seaweedfs-452-cold-recovery-hosted-20261103",
+    "status": "PREPARED_FOR_REPOSITORY_PUBLICATION",
+    "sourceArtifactId": 13262411150,
+    "membersPreserved": 31,
+    "allUtf8": true,
+    "allOriginalNamesPreserved": true,
+    "allBytesIdenticalToArtifact": true,
+    "all31HashesVerified": true,
+    "originalChecksumManifestPreservedByteForByte": true,
+    "manifestPath": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/SHA256SUMS",
+    "manifestSha256": "69a249518bcc159eb035f9a28973d4da4d6f52b30047f0acf715711012ef5a88",
+    "excludedMembers": [],
+    "redactedOrRewrittenMembers": [],
+    "secretReview": "No private key, secret credential value, authorization header or populated container environment was found. The two filer warnings mention Bearer tokens generically; configuration credentials and real data payloads are absent.",
+    "zipIncluded": false,
+    "backupPayloadIncluded": false,
+    "rawGetBodiesIncluded": false,
+    "candidateImageCustodyEstablished": false,
+    "files": [
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/SHA256SUMS",
+        "bytes": 3090,
+        "sha256": "69a249518bcc159eb035f9a28973d4da4d6f52b30047f0acf715711012ef5a88"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/cold-backup-manifest.json",
+        "bytes": 15224,
+        "sha256": "5f71197c17130c421675dbfaea563e6d7046479c4bde0fd196978f7cb934951b"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/exact-image.json",
+        "bytes": 902,
+        "sha256": "82887d39f4407f95b21bcf7d0bd3d03d2712e2e76cff8b2d654b6c2703e68917"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-containers.json",
+        "bytes": 30424,
+        "sha256": "aa40a4c1a55a5b631faaa5fb5591fd2749a3773c436a572b1f25602632c50ab2"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-filer-stopped.json",
+        "bytes": 269,
+        "sha256": "ecfb019ffcc853271238f159128ed6496543e74f96b28c2907297307beeeb6c3"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-filer.log",
+        "bytes": 5608,
+        "sha256": "6266d6e9955c31c3432dc8cd95c00498e6702fb17b95eb68646986a34fc817e3"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-lock-ring-ready.json",
+        "bytes": 133,
+        "sha256": "92031239240df960b8481aab08a6c607a5125289207f8aad922f9c9f502bb593"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-master-stopped.json",
+        "bytes": 269,
+        "sha256": "eb49d488a6f164be0f04c1d149306cc3c8c3f97c8dfa56de032c8298ab04cb9b"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-master.log",
+        "bytes": 18773,
+        "sha256": "95081e795be63682feae4f2baeb837f68958b88b44147840db906a9d69747261"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-ready.json",
+        "bytes": 29,
+        "sha256": "787cf41be328745ebb351d4da2866aaab8b16fa9e2f9ac948e37da6a12bb358b"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-routes.json",
+        "bytes": 735,
+        "sha256": "c98867bed49710425e06db702912151cabe4bd36878477c70f150006c5c546d9"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-s3-stopped.json",
+        "bytes": 269,
+        "sha256": "6515921481a0fe588a9362b07102701cd15726c73a597aafefc31dc8ba7a3381"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-s3.log",
+        "bytes": 2033,
+        "sha256": "b2225c19648907e98604756f51b2dd3e3fd5aa060b2fb079e6ce118ce71490e8"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-seed.json",
+        "bytes": 2026,
+        "sha256": "d2e1f8d73318823f3a22a9c38a0d79c1ea58ea36655115b6892ccb3efc07ab17"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-volume-stopped.json",
+        "bytes": 269,
+        "sha256": "9b8c4e40e8512371742d6cbb55b67c77b7ae5518ed10c02ebf412891f7a64383"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-original-volume.log",
+        "bytes": 7006,
+        "sha256": "f922f884eb8510d959e1e49277b83fc8639af9ab16925e107e8c9419568c53f0"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-containers.json",
+        "bytes": 30423,
+        "sha256": "e155d948ce21922986238d7b1e803b7e27e4baa0c59f7d31b3fc901675523129"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-filer-stopped.json",
+        "bytes": 269,
+        "sha256": "6c6787326c12dab5dfe7efcd52803920cb191d6b73b5c6a2eb3c030bc70adb24"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-filer.log",
+        "bytes": 4524,
+        "sha256": "a2b5a3e71dfc9f6d48592bfc005dbf77c1f4fe357928d56e28a42d2048fdd0b2"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-lock-ring-ready.json",
+        "bytes": 132,
+        "sha256": "06e8a2e26392350f484e617c965e8df966a2df097aa9ab6b1ecfb1ccd24d7aef"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-master-stopped.json",
+        "bytes": 269,
+        "sha256": "c6531c3f2bdd0462448d574de81649eb137aabb381c70aa3bca13c5e19c99692"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-master.log",
+        "bytes": 13296,
+        "sha256": "1e27a3b8f91c59a4046906b94c317e333b70954367280b414c73367169cf61c8"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-ready.json",
+        "bytes": 29,
+        "sha256": "787cf41be328745ebb351d4da2866aaab8b16fa9e2f9ac948e37da6a12bb358b"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-routes.json",
+        "bytes": 735,
+        "sha256": "c98867bed49710425e06db702912151cabe4bd36878477c70f150006c5c546d9"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-s3-stopped.json",
+        "bytes": 269,
+        "sha256": "dc24dcb9f1c124a06f422ac14cdd0b3b5b38beeaaa78e5672652c4b226a134c3"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-s3.log",
+        "bytes": 1957,
+        "sha256": "67deb206a1885f9bb142b4cfec00e6fd572aa179e1fef4f3f15472617596c45a"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-verify.json",
+        "bytes": 2028,
+        "sha256": "b02990fc0e4613fb6a91031338441740876ad8dea58d22b25678ce60173b1cc4"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-volume-stopped.json",
+        "bytes": 268,
+        "sha256": "97902be32f0c89add4634d672acb635317e6482062f1d1acbbf89869a1d6ab5f"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/ouf-cold-2368-restored-volume.log",
+        "bytes": 880,
+        "sha256": "f7a5737d86da8f3c9c85bf470b4ff84146850456d0ce586e8c782089135900b2"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/recovery-result.json",
+        "bytes": 2259,
+        "sha256": "d60e556c49ec68a6b592cc670e01844d37f76653de450be478617d90b32b07b7"
+      },
+      {
+        "path": "evidence/seaweedfs-452-cold-recovery-hosted-20261103/source-sha256.txt",
+        "bytes": 449,
+        "sha256": "3b7f3e21f1b5d32320dc6fef5c968938b448d84fda83c5efc5293b90371e7431"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1209 @@
+{
+  "schema": "ouf.onboarding-owner-common-cut-qualification.v1",
+  "date": "2026-11-05",
+  "source": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+  "status": "QUALIFIED_IN_FIXTURE",
+  "steps": [
+    "owner drain, bounded reconciliation and freeze implemented",
+    "physical named recovery and stale-writer rejection qualified in isolated fixture"
+  ],
+  "nativeOwner": {
+    "run": {
+      "id": 41995519285,
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995519285",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    },
+    "tests": 24,
+    "apiStoreTests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "jobs": {
+      "jobs": [
+        {
+          "id": 127137606795,
+          "name": "postgres-seaweed-owner",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 41995519285,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Initialize containers",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run actions/setup-java@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Bind and boot the exact qualified storage image",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Compile actual owner and execute native crash scenarios",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Preserve native receipts and exact producer bindings",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Run actions/upload-artifact@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Post Run actions/setup-java@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            },
+            {
+              "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16
+            },
+            {
+              "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17
+            },
+            {
+              "name": "Stop containers",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 19
+            }
+          ]
+        }
+      ]
+    },
+    "artifacts": {
+      "artifacts": [
+        {
+          "id": 13400107144,
+          "name": "onboarding-upload-native-41995519285",
+          "size_in_bytes": 69793,
+          "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13400107144",
+          "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13400107144/zip",
+          "expired": false,
+          "created_at": "2026-11-05T08:36:17Z",
+          "expires_at": "2027-02-03T08:34:28Z",
+          "updated_at": "2026-11-05T08:36:17Z",
+          "digest": "sha256:5db1c2e7d9d3e1264b3b1ceb5eaca68dde75bb86b08724fceb30cc9c6a41f433",
+          "workflow_run": {
+            "id": 41995519285,
+            "repository_id": 1365812393,
+            "head_repository_id": 1365812393,
+            "head_branch": "feat/storage-upload-intent-20261105",
+            "head_sha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68"
+          }
+        }
+      ]
+    }
+  },
+  "physical": {
+    "run": {
+      "id": 41995519200,
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995519200",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    },
+    "jobs": {
+      "jobs": [
+        {
+          "id": 127137606699,
+          "name": "native-cut",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 41995519200,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run actions/setup-java@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Compile the actual owner and fresh-process fixture driver",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Bind the exact qualified OCI33",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Drain actual owner and restore the physical common cut from exported backups",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Preserve sources and complete success or failure evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Post Run actions/setup-java@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16
+            },
+            {
+              "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17
+            },
+            {
+              "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 19
+            }
+          ]
+        },
+        {
+          "id": 127138482747,
+          "name": "independent-readback",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 41995519200,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Acquire the original artifact with exact GitHub metadata",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Verify every checksum source binding backup byte and owner receipt",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            }
+          ]
+        }
+      ]
+    },
+    "artifacts": {
+      "artifacts": [
+        {
+          "id": 13399883382,
+          "name": "onboarding-common-cut-readback-41995519200",
+          "size_in_bytes": 7086781,
+          "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399883382",
+          "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399883382/zip",
+          "expired": false,
+          "created_at": "2026-11-05T08:36:44Z",
+          "expires_at": "2027-02-03T08:34:28Z",
+          "updated_at": "2026-11-05T08:36:44Z",
+          "digest": "sha256:ce3b2ba4e5b5f5311b3291cb05f39b5c778f900aef273b2e1e2dea0e2eddd2c7",
+          "workflow_run": {
+            "id": 41995519200,
+            "repository_id": 1365812393,
+            "head_repository_id": 1365812393,
+            "head_branch": "feat/storage-upload-intent-20261105",
+            "head_sha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68"
+          }
+        },
+        {
+          "id": 13399518195,
+          "name": "onboarding-common-cut-41995519200",
+          "size_in_bytes": 7088032,
+          "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399518195",
+          "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399518195/zip",
+          "expired": false,
+          "created_at": "2026-11-05T08:36:27Z",
+          "expires_at": "2027-02-03T08:34:28Z",
+          "updated_at": "2026-11-05T08:36:27Z",
+          "digest": "sha256:59c53ae342458350e25c7fe9a628983aae3b6310f10347a76991d65ba95da0cf",
+          "workflow_run": {
+            "id": 41995519200,
+            "repository_id": 1365812393,
+            "head_repository_id": 1365812393,
+            "head_branch": "feat/storage-upload-intent-20261105",
+            "head_sha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68"
+          }
+        }
+      ]
+    },
+    "receipt": {
+      "status": "PASS",
+      "targetOperations": 0,
+      "releaseAdmitted": false,
+      "namedPhysicalRecovery": true,
+      "actualOwnerTablesPreserved": true,
+      "pendingReconciledWithoutPut": true,
+      "staleApplicationWriterBlocked": true,
+      "staleS3PutDenied": true,
+      "missingWalBlocksS3": true,
+      "objects": 2,
+      "objectBytes": 36,
+      "cleanStorageStops": 12,
+      "cleanPostgresStops": 2,
+      "targetName": "ouf_onboarding_upload_frozen_v39",
+      "systemIdentifier": "7704603305971687464",
+      "postgresImageId": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+      "backupFiles": 1671,
+      "scope": "synthetic Onboarding owner only; no UDP/Ingestion or operational binding"
+    }
+  },
+  "independentReadback": {
+    "archiveSha256": "59c53ae342458350e25c7fe9a628983aae3b6310f10347a76991d65ba95da0cf",
+    "backupFiles": 1671,
+    "checksums": 31,
+    "commit": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+    "independentNativeRestore": false,
+    "members": 32,
+    "negativeReadbacks": [
+      "EXACT_SOURCE_BINDING_SET",
+      "TERMINAL_PASS",
+      "COMPONENT_BINDING",
+      "EXACT_OWNER_AFTER_RESTORE",
+      "NEGATIVE_WAL_GATE"
+    ],
+    "objects": 2,
+    "sources": 263,
+    "status": "PASS",
+    "targetOperations": 0
+  },
+  "localValidation": {
+    "pythonRegressionTests": 1,
+    "pythonSyntax": "PASS",
+    "yamlParse": "PASS",
+    "gitDiffCheck": "PASS",
+    "javaNativeExecutedLocally": false,
+    "archiveDownloadedLocally": false
+  },
+  "previousDeployCi": {
+    "commit": "99594c878a3130a353531841e91c53c38741dbd0",
+    "runs": [
+      {
+        "id": 41991818535,
+        "name": "OUF policy-token bounded admin GET diagnosis",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818780,
+        "name": "M2 sealed private review assembly",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818769,
+        "name": "M2 isolated transport template",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818611,
+        "name": "M2 corrected material roles native peers",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818987,
+        "name": "M2 public trust and current native context",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819017,
+        "name": "M2 private material preparation native peers",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818461,
+        "name": "M2 hash only captured readonly regular files",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819304,
+        "name": "M2 discovery custody protected delivery",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819138,
+        "name": "M2 native operational lease generation probe",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819310,
+        "name": "M2 private archives of the thirteen exact native images",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819021,
+        "name": "M2 distinct discovery lease worker",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819227,
+        "name": "M2 parent-owned native gate peer window",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818335,
+        "name": "M2 corrective material roles protected delivery",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819118,
+        "name": "M2 consumed private image intake and native byte verification",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819007,
+        "name": "M2 read-only stopped-provider inputs protected delivery",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819642,
+        "name": "M2 read-only provider runtime contract",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819224,
+        "name": "M2 discovery single MCP native lifecycle",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818811,
+        "name": "M2 exact diagnosed selected runtime byte verification",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819059,
+        "name": "M2 retained runtime origin join after consumed byte proof",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818993,
+        "name": "M2 installed Ingestion to Onboarding HTTP contract",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818494,
+        "name": "M2 stopped provider installation inputs",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818436,
+        "name": "M2 retained mount metadata capture",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818374,
+        "name": "M2 classify retained lifecycle and prepare static host-file custody",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818322,
+        "name": "M2 retained mount role correction",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818760,
+        "name": "M2 current retained mount intake and metadata witness",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819175,
+        "name": "M2 discovery native Docker frame",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818940,
+        "name": "M2 current retained effective mount views and static bytes",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819365,
+        "name": "M2 explicit public Java truststore",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819055,
+        "name": "M2 offline native publisher cryptography",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818393,
+        "name": "M2 retained archive graph diagnosis without image admission",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818812,
+        "name": "M2 reconcile exact gateway mount metadata mismatch",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819423,
+        "name": "M2 sealed infrastructure review fragment",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819213,
+        "name": "M2 selected Registry MCP images native CLI",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819098,
+        "name": "M2 discovery material protected delivery",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819133,
+        "name": "M2 capture retained effective kernel views and live metadata",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818325,
+        "name": "M2 reuse installed Teatri owner contracts",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819049,
+        "name": "M2 read-only provider representation reconciliation",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819050,
+        "name": "M2 read-only provider reconciliation protected delivery",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818945,
+        "name": "M2 sealed complete parent review",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818822,
+        "name": "M2 composed provider v4 native installation",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819023,
+        "name": "M2 public trust and native context protected delivery",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819128,
+        "name": "M2 read-only provider runtime contract protected delivery",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991819099,
+        "name": "M2 compiled discovery lease sandbox",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818748,
+        "name": "Registry recovery components and Unix Engine transport",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818966,
+        "name": "M2 governed publication owner protocol",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818939,
+        "name": "M2 real Docker admitted provider worker handoff",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818944,
+        "name": "OUF policy-token online IAM and installed owner qualification",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818261,
+        "name": "M2 running Registry admission protocol",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818570,
+        "name": "Chatbot cohort delivery native owners",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      },
+      {
+        "id": 41991818707,
+        "name": "Discovery authorization and complete installation proposal",
+        "status": "completed",
+        "conclusion": "success",
+        "sha": "99594c878a3130a353531841e91c53c38741dbd0"
+      }
+    ]
+  },
+  "sourceCi": [
+    {
+      "id": 41995525191,
+      "name": "R2f trusted review browser",
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995525191",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    },
+    {
+      "id": 41995525199,
+      "name": "Managed profile minimized diagnostic",
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995525199",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    },
+    {
+      "id": 41995525291,
+      "name": "Source Onboarding module CI",
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995525291",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    },
+    {
+      "id": 41995519310,
+      "name": "Managed profile minimized diagnostic",
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995519310",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    },
+    {
+      "id": 41995519311,
+      "name": "R2f trusted review browser",
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995519311",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    },
+    {
+      "id": 41995519285,
+      "name": "Onboarding durable upload native owner",
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995519285",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    },
+    {
+      "id": 41995519200,
+      "name": "Onboarding physical common cut and stale writer recovery",
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995519200",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    },
+    {
+      "id": 41995519218,
+      "name": "Source Onboarding module CI",
+      "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41995519218",
+      "headSha": "bf6bcf926727b5ea738155ac70a71b73f1b21f68",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1
+    }
+  ],
+  "limits": {
+    "objects": 2,
+    "bytes": 36,
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "sourceLockPromoted": false,
+    "productionFencingQualified": false,
+    "allWritersQualified": false,
+    "independentNativeRestore": false,
+    "minipet": "18.3/46 = 39.78%",
+    "next": "Operational authority/quiescence binding and additional writers remain open"
+  },
+  "history": [
+    "onboarding-common-cut-first-failure-20261105.json",
+    "onboarding-common-cut-restore-settings-failure-20261105.json",
+    "onboarding-common-cut-before-deadline-20261105.json"
+  ],
+  "fullModuleJobs": {
+    "pr": {
+      "jobs": [
+        {
+          "id": 127137627837,
+          "name": "java21-postgresql17",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 41995525291,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Initialize containers",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Run pip install -r .pairwise/permission-gateway/requirements-dev.txt",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Run actions/setup-java@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Verify frozen rc3 contract pin",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Verify R4a Authorization lifecycle planner",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Verify Keycloak scope and binding reconciliation",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Verify Onboarding workload token claim inspector",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Verify R4a admin grant manifest and private deploy snapshot",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12
+            },
+            {
+              "name": "Verify Onboarding staged rollout failure recovery",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Compile, test and package",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14
+            },
+            {
+              "name": "Verify shared SDK production packaging",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            },
+            {
+              "name": "Build non-root container",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16
+            },
+            {
+              "name": "Scan exact production image including unfixed HIGH CRITICAL UNKNOWN",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17
+            },
+            {
+              "name": "Boot image with managed-file staging enabled",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18
+            },
+            {
+              "name": "Preserve tested image for governed delivery",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 19
+            },
+            {
+              "name": "Upload tested image without publishing a release",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 20
+            },
+            {
+              "name": "Upload evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21
+            },
+            {
+              "name": "Post Scan exact production image including unfixed HIGH CRITICAL UNKNOWN",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 37
+            },
+            {
+              "name": "Post Run actions/setup-java@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 38
+            },
+            {
+              "name": "Post Run actions/setup-python@v5",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 39
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 40
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 41
+            },
+            {
+              "name": "Stop containers",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 42
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 43
+            }
+          ]
+        }
+      ]
+    },
+    "push": {
+      "jobs": [
+        {
+          "id": 127137606150,
+          "name": "java21-postgresql17",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 41995519218,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Initialize containers",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Run pip install -r .pairwise/permission-gateway/requirements-dev.txt",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Run actions/setup-java@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Verify frozen rc3 contract pin",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Verify R4a Authorization lifecycle planner",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Verify Keycloak scope and binding reconciliation",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Verify Onboarding workload token claim inspector",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Verify R4a admin grant manifest and private deploy snapshot",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12
+            },
+            {
+              "name": "Verify Onboarding staged rollout failure recovery",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Compile, test and package",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14
+            },
+            {
+              "name": "Verify shared SDK production packaging",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            },
+            {
+              "name": "Build non-root container",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16
+            },
+            {
+              "name": "Scan exact production image including unfixed HIGH CRITICAL UNKNOWN",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17
+            },
+            {
+              "name": "Boot image with managed-file staging enabled",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18
+            },
+            {
+              "name": "Preserve tested image for governed delivery",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 19
+            },
+            {
+              "name": "Upload tested image without publishing a release",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 20
+            },
+            {
+              "name": "Upload evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21
+            },
+            {
+              "name": "Post Scan exact production image including unfixed HIGH CRITICAL UNKNOWN",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 37
+            },
+            {
+              "name": "Post Run actions/setup-java@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 38
+            },
+            {
+              "name": "Post Run actions/setup-python@v5",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 39
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 40
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 41
+            },
+            {
+              "name": "Stop containers",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 42
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 43
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "fullModuleTests": {
+    "reported": 389,
+    "skippedNative": 24,
+    "executed": 365,
+    "failures": 0,
+    "errors": 0,
+    "nativeExecutedSeparately": 24
+  }
+}

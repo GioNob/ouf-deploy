@@ -1,0 +1,71 @@
+{
+  "schema": "ouf.semantic-process-read-preparation.v1",
+  "date": "2026-11-07",
+  "status": "LOCAL_CHECKS_PASS_VPS_READ_PENDING",
+  "previousReceipt": "evidence/semantic-upstream-dns-pass-tcp-fail-operator-20261107.json",
+  "observed": {
+    "dnsResolvesOnlyCurrentRegistry": true,
+    "tcpToConfiguredRegistryPort": false,
+    "retainedContainersRunning": true,
+    "liveApplicationJavaProcessKnown": false,
+    "numericUpstreamPortPreviouslyExposed": false
+  },
+  "conclusions": {
+    "wrongDnsTargetSupported": false,
+    "applicationReadinessProven": false,
+    "exactCause": "UNKNOWN_PENDING_PROCESS_AND_LISTENER_READ",
+    "apisixConnectionRefusedLogCorrelated": false
+  },
+  "source": {
+    "repository": "GioNob/ouf-semantic-registry",
+    "commit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+    "evidence": "evidence/m2-retained-semantic-provenance-readback-20261101.json",
+    "dockerfileDefault": [
+      "java",
+      "-XX:MaxRAMPercentage=75",
+      "-jar",
+      "/app/application.jar"
+    ],
+    "packagedServerPort": "${PORT:8080}",
+    "meaning": "SOURCE_DEFAULTS_NOT_CURRENT_CONTAINER_PROCESS_OR_EFFECTIVE_SPRING_CONFIGURATION"
+  },
+  "script": "scripts/read-current-semantic-upstream-20261107.py",
+  "scriptSha256": "22e67557cf3d6b453ba15e2d72cb04139edc8b2d4d75325dec9fc6a5c387b07a",
+  "additions": [
+    "NUMERIC_UPSTREAM_PORTS",
+    "CONTAINER_VERSUS_IMAGE_DEFAULT_LAUNCH",
+    "PROCESS_KINDS_AND_JAVA_COUNT",
+    "ALLOWLISTED_PORT_BINDING_DECLARATIONS",
+    "IPV4_IPV6_LISTENERS_AND_JAVA_SOCKET_OWNERSHIP"
+  ],
+  "reads": {
+    "dockerContainerAndImageInspect": true,
+    "dockerTop": true,
+    "procfsSelectedContainerOnly": true,
+    "rawArgumentsEmitted": false,
+    "credentialsEmitted": false,
+    "adminRouteGetRequests": 1
+  },
+  "localChecks": [
+    {
+      "command": "python3 tests/check_semantic_upstream_read.py scripts/read-current-semantic-upstream-20261107.py",
+      "result": "PASS",
+      "scope": "Existing key selection, redaction, route selection, stopped registry, explicit DNS namespace, GET-only contract"
+    },
+    {
+      "command": "python3 tests/check_semantic_process_read.py scripts/read-current-semantic-upstream-20261107.py",
+      "result": "PASS",
+      "scope": "Secret redaction in Java arguments, env/JSON/JVM properties; IPv4/IPv6 and loopback; sleep-only init and image launch comparison; Java socket ownership"
+    }
+  ],
+  "limitations": [
+    "Not an atomic process/socket snapshot; process-set stability is reported.",
+    "No readiness or semantic business request issued.",
+    "Live cause and any repair remain unverified."
+  ],
+  "runtimeModified": false,
+  "servicesStartedOrStopped": 0,
+  "permissionsChanged": false,
+  "databaseRequests": 0,
+  "s3Requests": 0
+}

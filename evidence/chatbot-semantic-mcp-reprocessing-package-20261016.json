@@ -1,0 +1,30 @@
+{
+  "acceptanceGranted": false,
+  "artifactId": 12059844351,
+  "artifactZipSha256": "4924985e236c03976287c7dcb130c4cc579c71499e6c53371b05f3a0cb5ce359",
+  "binarySha256": "ce84a6bb96cf2e203adddb28639c26589524b0a18f14008fc02a26a403fea034",
+  "conclusion": "success",
+  "dockerArchiveSha256": "e198e65df866ce8aec6d1b1b7dca774bd1d46864571450ef4aba6f1dbd3b91bd",
+  "functionalMilestonesProven": 0,
+  "futureBuildByteReproducibilityProven": false,
+  "historicalMigrationBytesUnchanged": true,
+  "imageAndScanBindingVerified": true,
+  "imageId": "sha256:65ca27e9e9a4378b58c01efacb1ca7c6b518280d655300efb84b617585bf40ea",
+  "independentArchiveChecksumsVerified": true,
+  "job": 117087636654,
+  "migration13Sha256": "fe9ab352cbf649efecc708b08a9f61ff3c9aadb358211ebd763011ee9fd695b5",
+  "run": 38934847558,
+  "runtimeAuthorityIssued": false,
+  "runtimeUser": "10005:10005",
+  "scanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED",
+  "schema": "ouf.chatbot-semantic-mcp-reprocessing-unsigned-package.v1",
+  "signatureIssued": false,
+  "sourceCI": {
+    "conclusion": "success",
+    "run": 38934531605
+  },
+  "sourceCommit": "1cbc496e1632ec3b1f2f0d9bf1e1f59a308278ef",
+  "targetApplyAuthorized": false,
+  "targetImported": false,
+  "workflowCommit": "1412ff4cfd9ff9c90aa961caa71f33f1007376d8"
+}

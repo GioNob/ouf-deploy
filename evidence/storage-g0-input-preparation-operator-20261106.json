@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.storage-g0-input-preparation-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "preparerCommit": "6c9de0f4cd7fe1831ebbfdc2104b32f544ce719d",
+  "deliveryCheckpoint": "978b64f68ca6a347e73a9fec89cc830b2b2c0584",
+  "reportedResult": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "collectionScopeCreated": false,
+    "connectionDraftsPrepared": [
+      "s3"
+    ],
+    "credentialFileWritesAttempted": 2,
+    "credentialFilesRead": 1,
+    "credentialFilesWritten": 2,
+    "credentialSourceBytesRead": 65,
+    "credentialsMayBePresentInDraft": true,
+    "g0Complete": false,
+    "historicalRolesPrepared": 13,
+    "missingInputs": [
+      "INPUTS_DATASOURCE_OVERRIDE_REQUIRES_REVIEW",
+      "INPUTS_DATASOURCE_OVERRIDE_REQUIRES_REVIEW",
+      "INPUTS_DATASOURCE_OVERRIDE_REQUIRES_REVIEW",
+      "CURRENT_DOCKER_ROLE_IMAGE_AND_MOUNT_REVIEW",
+      "EFFECTIVE_APPLICATION_CONFIGURATION_REVIEW",
+      "ONBOARDING_RETAINED_PROFILE_REVIEW",
+      "SOURCE_AND_PROPOSED_CAPACITY_PATH_CUSTODY_REVIEW",
+      "OPERATOR_ACCESS_WRITERS_CAPACITY_CUSTODY_WINDOW",
+      "SEPARATE_COLLECTION_DECISION"
+    ],
+    "networkBindingDraftPresent": true,
+    "originalPreparationPreserved": true,
+    "processEnvironmentsRead": 4,
+    "processGenerationsChecked": 5,
+    "providerRequests": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-input-draft-result.v1",
+    "status": "PRIVATE_INPUT_DRAFT_PREPARED_REVIEW_REQUIRED",
+    "targetInputCheckPassed": false
+  },
+  "interpretation": {
+    "s3DraftPrepared": true,
+    "databaseDraftsPrepared": 0,
+    "databaseOverrideCausesKnown": false,
+    "currentDockerConfigurationProven": false,
+    "effectiveSpringConfigurationProven": false,
+    "preparerReplayRequired": false,
+    "backupDiscoveryDeferredForPreparation": true,
+    "g0Complete": false,
+    "acceptanceCreditAdded": 0
+  },
+  "nextAction": "One separately bounded local investigation of the three observed datasource denials, with fixed-name presence/equality output only; no source selection, provider requests or grant."
+}

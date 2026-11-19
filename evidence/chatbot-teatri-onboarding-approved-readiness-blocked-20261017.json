@@ -1,0 +1,40 @@
+{
+  "schema": "ouf.teatri-onboarding-approved-readiness-blocked.v1",
+  "readOnlyObservation": true,
+  "sourceId": "teatri-csv-6609b245",
+  "onboardingVersionId": "9860853e-e8f3-4b93-b9d2-03521a039962",
+  "state": "APPROVED",
+  "lockVersion": 3,
+  "configurationHash": "sha256:ae7f46b4214d09c55a9885530920026258f0dcd588462c353b06d82185e12c9b",
+  "challengeId": "ecf36c5c-10b2-4393-bf81-0ff7d28b8d5b",
+  "challengeStatus": "CONFIRMED",
+  "humanApprovalRequired": false,
+  "ingestionCompatibilityObserved": false,
+  "activationProgress": {
+    "readiness_attempts": 1,
+    "readiness_generation": 1,
+    "readiness_phase": "BLOCKED",
+    "readiness_last_code": "ONB_READINESS_DEPENDENCY_403"
+  },
+  "diagnosis": {
+    "dependencyHttpStatus": 403,
+    "denyingHopProven": false,
+    "expiredWorkloadCredentialProven": false
+  },
+  "activationRetriedByAgent": false,
+  "approvalReplayed": false,
+  "claimsRearmedOrDeleted": false,
+  "budgetReset": false,
+  "functionalMilestonesProven": 1,
+  "completedTechnicalPhases": 8,
+  "readinessDiagnostic": {
+    "maximumSeconds": 35,
+    "maximumEngineReads": 2,
+    "maximumCredentialFiles": 2,
+    "tokenValuesPrinted": false,
+    "requestsToReadinessOrGateway": 0,
+    "serviceMutations": 0,
+    "claimsAreMetadataOnly": true,
+    "localVerification": "PASS config binding, read-only mount, no-symlink read, JWT expiry metadata, canonical property names"
+  }
+}

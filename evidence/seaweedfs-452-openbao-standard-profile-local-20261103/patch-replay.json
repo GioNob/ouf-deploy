@@ -1,0 +1,90 @@
+{
+  "base": "generation29 plus frozen LDAP mapstructure patch",
+  "exitCode": 0,
+  "checks": [
+    {
+      "path": "go.mod",
+      "matches": true
+    },
+    {
+      "path": "go.sum",
+      "matches": true
+    },
+    {
+      "path": "test/kms/openbao_integration_test.go",
+      "matches": true
+    },
+    {
+      "path": "weed/command/filer_backup.go",
+      "matches": true
+    },
+    {
+      "path": "weed/command/filer_replication.go",
+      "matches": true
+    },
+    {
+      "path": "weed/command/ouf_standard_profile_test.go",
+      "matches": true
+    },
+    {
+      "path": "weed/command/ouf_unsupported_openbao_tags.go",
+      "matches": true
+    },
+    {
+      "path": "weed/kms/config.go",
+      "matches": true
+    },
+    {
+      "path": "weed/kms/config_loader.go",
+      "matches": true
+    },
+    {
+      "path": "weed/kms/openbao/openbao_kms.go",
+      "matches": true
+    },
+    {
+      "path": "weed/kms/ouf_standard_profile.go",
+      "matches": true
+    },
+    {
+      "path": "weed/kms/ouf_standard_profile_test.go",
+      "matches": true
+    },
+    {
+      "path": "weed/kms/registry.go",
+      "matches": true
+    },
+    {
+      "path": "weed/replication/ouf_standard_profile_test.go",
+      "matches": true
+    },
+    {
+      "path": "weed/replication/repl_util/ouf_standard_profile_test.go",
+      "matches": true
+    },
+    {
+      "path": "weed/replication/repl_util/sse_init.go",
+      "matches": true
+    },
+    {
+      "path": "weed/replication/replicator.go",
+      "matches": true
+    },
+    {
+      "path": "weed/s3api/auth_credentials.go",
+      "matches": true
+    },
+    {
+      "path": "weed/s3api/ouf_standard_kms_config.go",
+      "matches": true
+    },
+    {
+      "path": "weed/s3api/ouf_standard_kms_config_test.go",
+      "matches": true
+    },
+    {
+      "path": "weed/s3api/s3api_server.go",
+      "matches": true
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "ouf.semantic-operational-owner-resume-preparation.v3",
+  "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+  "operatorReceipt": "evidence/semantic-systemd-get-unit-not-loaded-operator-20261107.json",
+  "finding": {
+    "failedPhase": "GET_UNIT",
+    "error": "UNIT_NOT_LOADED",
+    "exitCode": 1,
+    "garbageCollectionTimingNotObserved": true
+  },
+  "correction": {
+    "directDbusCalls": 0,
+    "startHookCheck": "HASH_PINNED_MAIN_UNIT_AND_ALL_LOADED_DROPIN_FILES",
+    "requiresNoPendingDaemonReload": true,
+    "sourceByteReadbackBeforeStartAndEnable": true,
+    "admittedDropinDirectives": [
+      "IPAddressAllow",
+      "Restart",
+      "SendSIGKILL",
+      "RuntimeDirectoryPreserve",
+      "TimeoutStopSec"
+    ],
+    "continuationsOrUnknownSyntax": "HELD",
+    "omittedCliFieldsAloneAreNotEvidence": true,
+    "existingCaptureOverrideRestorationRetained": true,
+    "existingLedgerChecksRetained": true
+  },
+  "localValidation": {
+    "result": "PASS",
+    "scenarios": 25,
+    "systemdAndHttp": "MOCKED",
+    "temporaryOverrideFileIo": "REAL",
+    "directBusSubprocessWouldFailTest": true,
+    "vpsExecution": false
+  },
+  "script": {
+    "path": "scripts/resume-current-semantic-operational-owner-20261107.py",
+    "bytes": 19129,
+    "sha256": "32fc3f89772e16877654bf6fdab647ec2cf0307e1ced1a406e8314998f510295"
+  },
+  "sources": [
+    "https://www.freedesktop.org/software/systemd/man/260/systemd.unit.html#Unit%20Garbage%20Collection",
+    "https://github.com/systemd/systemd/blob/v252/man/org.freedesktop.systemd1.xml",
+    "https://github.com/systemd/systemd/blob/v252/src/core/dbus-manager.c"
+  ],
+  "applicationLoadedPolicyProven": false,
+  "automaticRenewalCycleProven": false
+}

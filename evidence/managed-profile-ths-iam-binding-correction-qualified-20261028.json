@@ -1,0 +1,204 @@
+{
+  "schema": "ouf.managed-profile-ths-iam-binding-correction-qualified.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "status": "QUALIFIED_AND_SUCCESSFULLY_CONSUMED_CONFIGURATION_PROFILE_PREPARED",
+  "source": {
+    "commit": "78282b120dffa063ff8bc86f96071de1f2e8766f",
+    "path": "scripts/correct-managed-profile-ths-iam-bindings-20261028.py",
+    "bytes": 82522,
+    "sha256": "3e3d665eaee8c9f4699259b52a5c8403ad64cf494e9cf92684fb6cf1b74eed1a"
+  },
+  "wrapper": {
+    "commit": "dc848eba194a4e43abffcd97ba9791f37fc44884",
+    "path": "releases/correct-managed-profile-ths-iam-bindings-20261028.sh",
+    "sha256": "ca018484e6196366cd0c83f4ec17e09a6bc4b94a66bb871a2c4232a0a0db40d5"
+  },
+  "qualification": {
+    "commit": "8986be7b38b1ef7df6fe8a1b5fda3c4b987457ad",
+    "pushRun": 40697903097,
+    "prRun": 40697916270,
+    "conclusion": "success",
+    "unitTests": 81,
+    "newCorrectionTests": 22,
+    "preservedTests": 59,
+    "skips": 0,
+    "actualProviderVersions": [
+      "26.0.8",
+      "26.2.5"
+    ],
+    "profilesPerVersion": 2,
+    "lostWriteResponseScenarioPerVersion": true,
+    "nativeTerminalWrongLineCorrectedWithinOriginalWindow": true,
+    "sourceReproducedFromTrackedCodeAndEvidence": true,
+    "pushJobs": [
+      122849489267,
+      122849489628,
+      122849489632
+    ],
+    "prJobs": [
+      122849536931,
+      122849537614,
+      122849537636
+    ],
+    "directLogsRead": 6,
+    "actualDockerNamespaceProcessRootMountAndProvider": true,
+    "actualProtectedRoot400Main": true,
+    "actualHttpsNonrootSudoRoot400Delivery": true,
+    "privateFiles600": true,
+    "nonTtyBeforeScopeOrAuth": true,
+    "oldInputFilesUnchanged": true,
+    "replayDenied": true,
+    "fixtureConsentOnly": true,
+    "productionConsentSimulated": false,
+    "targetCalls": 0
+  },
+  "parent": {
+    "resultHash": "bfbff1b10039bcca43ad587167bb0fe4314055866c214926daaf4c2570f3fa7b",
+    "receipt": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json",
+    "contextPath": "/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-read-5dfd7b7a-20261028-v1",
+    "consumed": true,
+    "status": "THS_IAM_BINDINGS_OBSERVED_CONFIGURATION_PROFILE_BLOCKED",
+    "administrativeAuthenticationReservations": 1,
+    "adminGetReservations": 14,
+    "retainedClientInputsHash": "5dfd7b7a903c07f546c42ba1915bf6f8fd1430ab91addc4879988cd4c1727892"
+  },
+  "operationRef": "a258d03d9283225f938e658a01db474a949afe2bb206d127f96a56fd253b89e9",
+  "proposedIamDelta": {
+    "realm": "ouf",
+    "clientId": "ouf-authorization-ths",
+    "clientUuid": "a53bc77e-1b21-4a54-8f1a-b236fadb759a",
+    "baselineBindingHash": "ba556e9fce5fb31de5f53af0bf6d3fe7a77e8e09d9048529d8283eaaa6afabc2",
+    "definitionToCreate": {
+      "id": "3dbfa25c-89da-53ec-89b0-4ba6458017c9",
+      "name": "ouf.onboarding.quarantine.release",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "ouf.provisioning.operation-ref": "a258d03d9283225f938e658a01db474a949afe2bb206d127f96a56fd253b89e9"
+      },
+      "protocolMappers": []
+    },
+    "optionalLinks": [
+      {
+        "name": "ouf.managed-source.preview",
+        "id": "e369f8fd-fe4d-4fa2-8ff2-4cd806398417"
+      },
+      {
+        "name": "ouf.managed-source.file.profile",
+        "id": "226b20cd-7798-4da9-af03-eb2bca3d2c5a"
+      },
+      {
+        "name": "ouf.onboarding.quarantine.release",
+        "id": "3dbfa25c-89da-53ec-89b0-4ba6458017c9"
+      }
+    ],
+    "expectedPostCounts": {
+      "definitions": 70,
+      "defaultClientScopes": 14,
+      "optionalClientScopes": 9
+    },
+    "preservedOldDefaultLinks": 14,
+    "preservedOldOptionalLinks": 6,
+    "preservedOldDefinitions": 69,
+    "realmDefaultsMutationAuthorized": false,
+    "existingDefinitionsMutationAuthorized": false,
+    "clientSettingsOrSecretsMutationAuthorized": false,
+    "rolesOrMappersMutationAuthorized": false
+  },
+  "limits": {
+    "totalSeconds": 600,
+    "reviewSeconds": 90,
+    "maximumReviewInputEvents": 128,
+    "passwordInputSeconds": 90,
+    "maximumSecondsAfterApproval": 210,
+    "maximumSecondsAfterPassword": 120,
+    "minimumRemainingAdminTokenBeforeFirstWriteSeconds": 30,
+    "privateMetadataReads": 3,
+    "engineGets": 7,
+    "administrativeAuthenticationRequests": 1,
+    "normalAdminGets": 29,
+    "maximumAdminGets": 40,
+    "maximumGetRetryReservations": 4,
+    "maximumIamWriteDispatches": 4,
+    "maximumPostCreates": 1,
+    "maximumOptionalPuts": 3,
+    "maximumBytes": 25165824
+  },
+  "reconciliation": {
+    "fixedUuidApprovedBeforeLogin": true,
+    "freshSnapshotMustEqualReviewedRetainedBaseline": true,
+    "claimsFsyncedBeforeDispatch": true,
+    "httpReceiptsFsyncedBeforeProcessParserAndExpiryGuards": true,
+    "mutationAutoRetryAllowed": false,
+    "ambiguousWriteReconciledByGetSameIdSameSession": true,
+    "foreignScopeOrMarkerRejected": true,
+    "explicitPermissionDenialStops": true,
+    "automaticRollbackAllowed": false,
+    "countersAndDeadlinesCannotReset": true,
+    "oldScopeNotReopened": true
+  },
+  "dataBoundary": {
+    "passwordHiddenInNativeTty": true,
+    "passwordOrTokenInArgvEnvironmentLogsOrJournals": false,
+    "returnedRefreshMaterialDiscarded": true,
+    "rawIamEnvironmentRepersisted": false,
+    "retainedOnboardingEnvironmentMayContainCredentials": true,
+    "conditionalProfilePrivate600": true,
+    "standaloneCredentialFilesRead": 0,
+    "ownerConfigurationContentReads": 0
+  },
+  "newScope": "/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-correction-ba556e9f-20261028-v1",
+  "applicationEffectsAuthorized": {
+    "engineWrites": 0,
+    "sqlSessions": 0,
+    "imageImports": 0,
+    "sourceActivations": 0,
+    "newApplicationGrants": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "newJobs": 0,
+    "uploads": 0,
+    "acquisitionsExecuted": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "scopeRequestPatchApplied": false
+  },
+  "remainingGates": [
+    "Fresh target IAM correction result",
+    "Separate owner same-image configuration installation with concrete HUMAN review and current runtime/job/schema36 fences",
+    "User-only fresh OAuth/card,then separate3attempts/900s budget and resume of same retained job",
+    "Original/hash/parser/61rows to UDP and full M2/two-client acceptance"
+  ],
+  "primarySources": [
+    "https://github.com/keycloak/keycloak/blob/26.2.5/services/src/main/java/org/keycloak/services/resources/admin/ClientScopesResource.java",
+    "https://github.com/keycloak/keycloak/blob/26.2.5/services/src/main/java/org/keycloak/services/resources/admin/ClientResource.java",
+    "https://github.com/keycloak/keycloak/blob/26.2.5/server-spi-private/src/main/java/org/keycloak/models/utils/RepresentationToModel.java"
+  ],
+  "failedPrequalification": {
+    "run": 40697152487,
+    "job": 122846859903,
+    "reason": "Delivery test generated an incorrect filename from a broad string replacement;404 occurred before source execution. Exact immutable test references corrected; production wrapper/source unchanged."
+  },
+  "targetExecuted": true,
+  "currentDeliveryUsable": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "effectiveBrowserTokenScopesProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "targetFollowUp": {
+    "receipt": "evidence/managed-profile-ths-iam-binding-correction-target-20261028.json",
+    "resultHash": "c82b1b1025086faf4acf0899485643209f8929c4fa8ce6ca045fc2bfbdd7d027",
+    "scopeConsumed": true,
+    "configurationProfileHash": "d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c",
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "iamMutations": 4,
+    "scopePatchApplied": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "nextQualifiedPlan": "evidence/managed-profile-ths-native-plan-qualified-20261028.json"
+  }
+}

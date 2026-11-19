@@ -1,0 +1,173 @@
+{
+  "schema": "ouf.minio33-qualified.v1",
+  "date": "2026-11-05",
+  "status": "PASS_SYNTHETIC_NOT_ACCEPTANCE",
+  "producerSource": "4555f7dc2be2e44aa25277a22a35d7e2597c80ea",
+  "runId": 42068964202,
+  "jobId": 127391244238,
+  "runConclusion": "success",
+  "artifact": {
+    "id": 13435386238,
+    "bytes": 369047,
+    "sha256": "6d7b2953ad6e432b9a73c013593cfa679d488e2bd888092f767c308a6a6a596b",
+    "expiresAt": "2027-02-03T16:52:41Z",
+    "durableCustodyEstablished": false
+  },
+  "qualification": {
+    "schema": "ouf.minio-oci33-rehearsal.v1",
+    "status": "PASS_SYNTHETIC_NOT_ACCEPTANCE",
+    "producerSource": "4555f7dc2be2e44aa25277a22a35d7e2597c80ea",
+    "sourceImage": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+    "destinationImage": "sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6",
+    "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+    "passedTests": [
+      "TestRealFunctionalReadiness/source",
+      "TestRealFunctionalReadiness/destination",
+      "TestRealFunctionalReadiness",
+      "TestMinio33RoundTrip",
+      "TestMinio33PostWriteReturn",
+      "TestRealProcessCrashResumeNoSecondPut/BEFORE_PUT",
+      "TestRealProcessCrashResumeNoSecondPut/AFTER_PUT",
+      "TestRealProcessCrashResumeNoSecondPut/BEFORE_CHECKPOINT",
+      "TestRealProcessCrashResumeNoSecondPut",
+      "TestRealAmbiguous503RespectsRetryAfterAndReconciles",
+      "TestMinio33TagsAndEncoding",
+      "TestRealSourceIfMatchAndVersionedDestinationDenials"
+    ],
+    "realProcessCrashPoints": [
+      "BEFORE_PUT",
+      "AFTER_PUT",
+      "BEFORE_CHECKPOINT"
+    ],
+    "destinationPutsPerCrashCase": 1,
+    "ambiguous503AfterStoreReconciledWithoutSecondPut": true,
+    "retryAfterQualifiedWithVirtualClock": true,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "gatesClosed": 0,
+    "realObjectsCopied": 0
+  },
+  "readback": {
+    "schema": "ouf.minio33-archive-readback.v1",
+    "status": "PASS_NOT_SECOND_NATIVE_EXECUTION",
+    "sourceCommit": "4555f7dc2be2e44aa25277a22a35d7e2597c80ea",
+    "archiveBytes": 369047,
+    "archiveSha256": "6d7b2953ad6e432b9a73c013593cfa679d488e2bd888092f767c308a6a6a596b",
+    "members": 27,
+    "checksums": 26,
+    "exactGitSources": 137,
+    "nativePassesIncludingSubtests": 12,
+    "syntheticObjects": 120,
+    "bytesPerCopy": 203743,
+    "conditionalBodyReads": 360,
+    "postWriteMutations": [
+      "REPLACE_BODY",
+      "REPLACE_METADATA",
+      "DELETE",
+      "ADD"
+    ],
+    "threeCleanStops": true,
+    "targetOperations": 0
+  },
+  "readerPath": "scripts/readback-storage-minio33-rehearsal.py",
+  "readerSha256": "92b6a14cd5e3225557747c92b9e18deaaef79d6532045f98537266839227e130",
+  "timing": {
+    "fixtureForwardInventoryCompilerCopySeconds": 3.206591048,
+    "fixtureReverseCopySeconds": 2.273352373,
+    "representativeVpsThroughputOrRto": false
+  },
+  "postWriteReturn": {
+    "acknowledgedMutations": [
+      "REPLACE_BODY",
+      "REPLACE_METADATA",
+      "DELETE",
+      "ADD"
+    ],
+    "dbReferencesReconciled": false,
+    "deletedObjectAbsent": true,
+    "returnInitiallyEmpty": true,
+    "returnedCurrentObjects": 3,
+    "runtimeRollbackAdmitted": false,
+    "sourceOriginalsUnchanged": true,
+    "status": "PASS_SYNTHETIC_NOT_ACCEPTANCE"
+  },
+  "tagCompatibility": {
+    "gzipBytesPreserved": true,
+    "legacySpecialTagRejected": "InvalidTag",
+    "metadataPreserved": true,
+    "rejectedWritePreservedOriginal": true,
+    "status": "PASS_SYNTHETIC_NOT_ACCEPTANCE",
+    "supportedTagPreserved": true
+  },
+  "toolScanFindings": {
+    "trivy-tools.json": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "UNKNOWN": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "trivy-binaries.json": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "UNKNOWN": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    }
+  },
+  "legacyMinioSecurityGate": "HELD_UNCHANGED",
+  "legacyMinioOriginalPublisherAuthenticated": false,
+  "failedCandidates": [
+    {
+      "commit": "adf87ccfe9aed0efecf5a037c6ae599f3e524c0c",
+      "runId": 42066811016,
+      "jobId": 127383049320,
+      "artifactId": 13434252761,
+      "bytes": 29094,
+      "sha256": "dbb906b455a07289417fa9ad165b184825514e8dce9dd2c272b2676d53ef9763",
+      "cause": "nsenter root UID violates inventory private ancestry owner; readiness passed, inventory not executed",
+      "fix": "drop to original runner UID/GID after entering namespace; guards unchanged"
+    },
+    {
+      "commit": "44d359d94f54850067bf5506dba026edaa311339",
+      "runId": 42067463342,
+      "jobId": 127385476745,
+      "artifactId": 13433424731,
+      "bytes": 26672,
+      "sha256": "8a6e2f6d989041f12087e9188526f1ec07cf90664f545e2b6f0e06b045fb2207",
+      "cause": "Go reporter tried root build cache after UID drop, before native tests",
+      "fix": "prebuild and scan reporter before entering isolated namespace"
+    },
+    {
+      "commit": "fd90c93f5e34be681b5f4e3c8902e91dbbd9c119",
+      "runId": 42068130474,
+      "jobId": 127387978776,
+      "artifactId": 13434639031,
+      "bytes": 367135,
+      "sha256": "392fe2e7fb46fdfcfb4eb78906552ac38ee42ee2e1c1b75ebad22105a067ef08",
+      "cause": "legacy MinIO rejects historical special tag with InvalidTag after copy/return/fault cases passed",
+      "fix": "retain denial and original-body check; positive copy uses tag admitted by source; historical SeaweedFS test unchanged"
+    }
+  ],
+  "unchanged": {
+    "copyCore": true,
+    "inventoryCollector": true,
+    "inventoryCompiler": true,
+    "sourceOnboardingCommit": "d5155899b09dda298494b68cefa7e1f281167652",
+    "historicalPlanGitBlob": "c0da9e4f21b7ea17c18e139e541367eb9fee71aa",
+    "miniPetWeightedCredits": 18.3,
+    "miniPetTotal": 46,
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0,
+    "targetOperations": 0,
+    "runtimeAuthorityIssued": false
+  },
+  "acceptanceGaps": {
+    "SW-AT14": "After-checkpoint and versioned resume not qualified; versioned profile remains rejected, applicability requires G0",
+    "SW-AT15": "No deployed writer census/fence or online precopy delta executor",
+    "SW-AT16": "No real body/DB-reference reconciliation",
+    "SW-AT17": "Object return after writes qualified; DB divergence/operational return not qualified"
+  },
+  "nextPair": "Prepare a single concrete current G0 collection package including body hashes/ACL/writers/DB/capacity and reconcile existing final-cohort G2-G4 evidence. Resolve actual operator-only inputs before further isolated recovery work; prefer measured full quiescence over unneeded online delta complexity."
+}

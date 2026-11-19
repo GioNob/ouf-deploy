@@ -1,0 +1,1 @@
+BEGIN READ ONLY; UPDATE ouf_recovery_fixture.generation SET accepting_writes=true

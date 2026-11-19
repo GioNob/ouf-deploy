@@ -1,0 +1,52 @@
+=== RUN   TestBucketPolicySDKV2Configuration
+--- PASS: TestBucketPolicySDKV2Configuration (0.00s)
+=== RUN   TestBucketPolicySDKV2RoundTrip
+--- PASS: TestBucketPolicySDKV2RoundTrip (0.00s)
+=== RUN   TestBucketPolicySDKV2SingleAttempt
+--- PASS: TestBucketPolicySDKV2SingleAttempt (0.00s)
+=== RUN   TestBucketPolicySDKV2Cancellation
+--- PASS: TestBucketPolicySDKV2Cancellation (0.00s)
+=== RUN   TestPolicyIAMSDKV2Configuration
+=== RUN   TestPolicyIAMSDKV2Configuration/fallback
+=== RUN   TestPolicyIAMSDKV2Configuration/configured
+--- PASS: TestPolicyIAMSDKV2Configuration (0.00s)
+    --- PASS: TestPolicyIAMSDKV2Configuration/fallback (0.00s)
+    --- PASS: TestPolicyIAMSDKV2Configuration/configured (0.00s)
+=== RUN   TestPolicyIAMSDKV2WireAndModels
+--- PASS: TestPolicyIAMSDKV2WireAndModels (0.00s)
+=== RUN   TestPolicyIAMSDKV2ErrorsAndBudget
+=== RUN   TestPolicyIAMSDKV2ErrorsAndBudget/NoSuchEntity
+=== RUN   TestPolicyIAMSDKV2ErrorsAndBudget/DeleteConflict
+=== RUN   TestPolicyIAMSDKV2ErrorsAndBudget/ServiceFailure
+--- PASS: TestPolicyIAMSDKV2ErrorsAndBudget (0.00s)
+    --- PASS: TestPolicyIAMSDKV2ErrorsAndBudget/NoSuchEntity (0.00s)
+    --- PASS: TestPolicyIAMSDKV2ErrorsAndBudget/DeleteConflict (0.00s)
+    --- PASS: TestPolicyIAMSDKV2ErrorsAndBudget/ServiceFailure (0.00s)
+=== RUN   TestPolicyIAMSDKV2Cancellation
+--- PASS: TestPolicyIAMSDKV2Cancellation (0.00s)
+PASS
+ok  	github.com/seaweedfs/seaweedfs/test/s3/policy	0.148s
+=== RUN   TestNormalIAMSDKV2Configuration
+--- PASS: TestNormalIAMSDKV2Configuration (0.00s)
+=== RUN   TestNormalIAMSDKV2WireAndModels
+--- PASS: TestNormalIAMSDKV2WireAndModels (0.00s)
+=== RUN   TestNormalIAMSDKV2SingleAttempt
+--- PASS: TestNormalIAMSDKV2SingleAttempt (0.00s)
+=== RUN   TestNormalIAMSDKV2Cancellation
+--- PASS: TestNormalIAMSDKV2Cancellation (0.00s)
+=== RUN   TestNormalSDKV2PutWireAndNoRetry
+=== RUN   TestNormalSDKV2PutWireAndNoRetry/OK
+=== RUN   TestNormalSDKV2PutWireAndNoRetry/Bad_Request
+=== RUN   TestNormalSDKV2PutWireAndNoRetry/Service_Unavailable
+--- PASS: TestNormalSDKV2PutWireAndNoRetry (0.00s)
+    --- PASS: TestNormalSDKV2PutWireAndNoRetry/OK (0.00s)
+    --- PASS: TestNormalSDKV2PutWireAndNoRetry/Bad_Request (0.00s)
+    --- PASS: TestNormalSDKV2PutWireAndNoRetry/Service_Unavailable (0.00s)
+=== RUN   TestNormalSDKV2MultipartAndCancellation
+--- PASS: TestNormalSDKV2MultipartAndCancellation (0.00s)
+=== RUN   TestNormalSDKV2RawSignerLegacyGolden
+--- PASS: TestNormalSDKV2RawSignerLegacyGolden (0.00s)
+=== RUN   TestNormalSDKV2SSECKeyEncoding
+--- PASS: TestNormalSDKV2SSECKeyEncoding (0.00s)
+PASS
+ok  	github.com/seaweedfs/seaweedfs/test/s3/normal	0.138s

@@ -1,0 +1,13 @@
+{
+  "automaticReplayAllowed": false,
+  "cumulativeControlAttempts": 13,
+  "cumulativeDirectEngineGets": 36,
+  "directEngineGets": 1,
+  "reasonCode": "BOUNDED_NONEMPTY_OUF_CONTAINER_SET_REQUIRED",
+  "runtimeAuthorityIssued": false,
+  "scopeConsumed": true,
+  "status": "STOP_RECONCILE",
+  "targetApplyAuthorized": false,
+  "inventoryDeliveryProducer": "6cddeee707b67bd27568aa7a3890e28ebecf274f",
+  "inventoryDeliveryPublication": "0f446ddb4a1ed19b2c139bb496d06f84edb6062a"
+}

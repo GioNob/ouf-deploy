@@ -1,0 +1,51 @@
+{
+  "evidenceKind": "User-pasted immutable executor result",
+  "receipt": {
+    "schema": "ouf.host-network-reconciliation-result.v1",
+    "complete": true,
+    "contextPath": "/etc/ouf/deploy-snapshots/host-network-reconciliation-c_zpdhof",
+    "planSha256": "e8dd1322daea4ee8b2f1b8fbe332c76014d998ff89577443fca0ba0ccd2d2b0b",
+    "endpointCorrections": 6,
+    "engineWrites": 13,
+    "derivedMacMetadataUpdates": 5,
+    "configurationRepresentationProfile": "ouf.retained-endpoint-derived-mac.v1",
+    "retainedApplicationRunning": true,
+    "applicationReadinessProven": false,
+    "emptyProviderProof": {
+      "emptyKernelProven": true,
+      "nativeReconciliationStillRequired": true,
+      "ownerState": "BLOCKED",
+      "providerStartAllowed": false
+    },
+    "prebootRepresentationProofs": {
+      "mcp": {
+        "allOtherImmutableFieldsMatch": true,
+        "emptyDnsRepresentationOnly": true,
+        "historicalBaselineChanged": false,
+        "profile": "ouf.preboot-empty-dns-representation.v1"
+      },
+      "onboarding": {
+        "allOtherImmutableFieldsMatch": true,
+        "emptyDnsRepresentationOnly": true,
+        "historicalBaselineChanged": false,
+        "profile": "ouf.preboot-empty-dns-representation.v1"
+      },
+      "udp": {
+        "allOtherImmutableFieldsMatch": true,
+        "emptyDnsRepresentationOnly": true,
+        "historicalBaselineChanged": false,
+        "profile": "ouf.preboot-empty-dns-representation.v1"
+      }
+    },
+    "configurationFilesRead": 5,
+    "profilePublications": 0,
+    "explicitJobRetries": 0,
+    "sourceRevisionReleasePerformed": false,
+    "runtimeAuthorityIssued": false,
+    "completedTechnicalPhases": 8,
+    "functionalMilestonesProven": 4,
+    "credentialValuesPrinted": false,
+    "existingWorkersMayResume": true
+  },
+  "independentRootJournalReadbackPerformed": false
+}

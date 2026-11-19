@@ -1,0 +1,129 @@
+{
+  "actualDeterministicLayout": {
+    "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "configDigest": "sha256:31b99e914181a85a3e0ca3ca6b66621827df298235b215ccf1d0042fd4653771",
+    "dockerArchiveSha256": "2b273d56f5476d910f2656d251922256b7ed2a953ffc7a7022ab1e2495a181e4",
+    "layerDigest": "sha256:0c19dd2e3da79b470fe9cf3fb3f0573bcd1e5a836c4040ca4f9561c2b439ea34",
+    "manifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484",
+    "overallSwG1": "OPEN",
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-runtime-image.v1",
+    "scratchRootfs": true,
+    "sourceCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "status": "PACKAGED_NOT_ADMITTED",
+    "targetOperations": 0,
+    "thirdPartyLicencesAccepted": false,
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613",
+    "user": "10001:10001"
+  },
+  "actualRegressionRecords": {
+    "main": {
+      "counts": {
+        "pass_packages": 30,
+        "pass_tests": 6371,
+        "skip_packages": 4,
+        "skip_tests": 5
+      },
+      "environmentConditionalOutcomes": {},
+      "logSha256": "e2a4c86cf9c1599dbb9868b2258875dca1eb8cedaf575de14ebf33f6aabbce5c",
+      "profile": "main",
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0,
+      "terminalPackagesSha256": "0a413b22aaf0ff0bdaa3fd57128d72c38fcdb465d750293130b8ab33960ac972",
+      "terminalTestsSha256": "ac5404abdc4137518911561b1af7f19e69bb805591d1023ddff55423ea135f0e"
+    },
+    "race": {
+      "counts": {
+        "pass_packages": 2,
+        "pass_tests": 25
+      },
+      "environmentConditionalOutcomes": {},
+      "logSha256": "02c6b3ff2794a8f3d2cda59338edad87559292a8ffc92bd969f53ec25ab1f3d4",
+      "profile": "race",
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0,
+      "terminalPackagesSha256": "8c9b7d821a314333db697beef89ce06c92c06cb500543c773d2e1232490b7a6f",
+      "terminalTestsSha256": "e103b2d1a615669d91637c79ea894c5827c6e35bb4d15b22163ab95819b5c745"
+    },
+    "server": {
+      "counts": {
+        "pass_packages": 1,
+        "pass_tests": 7
+      },
+      "environmentConditionalOutcomes": {},
+      "logSha256": "00423a06aa6f347153abf5a9ec95680c22a3e145bd38eb3e4135f07afa6fabf7",
+      "profile": "server",
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0,
+      "terminalPackagesSha256": "4a9e99d596111f0d7e05a0bc625ee4067ef915dde2b577ed18497cca0e5a4201",
+      "terminalTestsSha256": "284bed3612f12af2a94b6a6c412b2f67f09beffd89a8196331bd2b478bbe3230"
+    },
+    "storage": {
+      "counts": {
+        "pass_packages": 1,
+        "pass_tests": 54,
+        "skip_tests": 2
+      },
+      "environmentConditionalOutcomes": {
+        "TestRebuildIdx_UnwritableIdxDirSkipsOnlyThisVolume": "skip",
+        "TestSortedFileNeedleMap_HoldsNoDescriptors": "skip"
+      },
+      "logSha256": "8cc7cd6dc55d1185485b3ebc802a1a58c18f70dad8e37bf5d984a42b5e2b2936",
+      "profile": "storage",
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0,
+      "terminalPackagesSha256": "211d61f322c3c35d86ec1413455e0d69533c0343227db95bef23f2037cd84c91",
+      "terminalTestsSha256": "6ad75c5b9bf23def24c0a1891393a5b4ee28d737782bcef9dba46cf5291b2ff3"
+    }
+  },
+  "binaryModules": 234,
+  "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+  "checks": [
+    "Exact generation29 prefix and frozen prior manifest digest",
+    "Fresh scan inventory all234 dep modules plus main and stdlib, exact versions, no omissions or duplicates",
+    "SPDX exact236 versioned plus2 descriptive components",
+    "Missing/invalid finding severity denied; HIGH CRITICAL UNKNOWN stop producer and readback",
+    "Producer negative evidence may persist but readback does not create successful output",
+    "22artifact members/20checksums and44source hashes checked; publisher signature separate pinned gh2.97.0",
+    "Maintained-dependency status OPEN; no old29 scan/SPDX/provenance/cohort transfer"
+  ],
+  "compiledPackages": 1740,
+  "deliveryFilesVerified": 21,
+  "frozenLegacyFilesByteIdentical": [
+    "tools/storage_security/runtime_image.py",
+    "scripts/assess-storage-sdk-lifecycle.py",
+    "scripts/assess-storage-runtime-image-20261102.py",
+    "tests/test_storage_runtime_image.py"
+  ],
+  "githubWrites": 0,
+  "hostedQualificationPending": true,
+  "immutableRuntimeTestsPassed": 12,
+  "manifestSha256": "6e68ba7288bb0e7011003be34646fc01775a17aedff063d5c277e0c2841d0c8c",
+  "newCohortAndRuntimePending": true,
+  "patchSha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422",
+  "patchedSourceTree": "13b3de2f130667ed060e94291fcf64b37b7f037a",
+  "rawUnitLogs": {
+    "image30-immutable-tests.log": "72fc56d589708e2feb2fc02b8d8f74e962679f1667c452c30f06c69b18c5d10b",
+    "image30-unit-tests.log": "07fc0fa279f784f31e4db53dedcfa1d4fd030e55d180346a3cf02207237bf4a7"
+  },
+  "realFreshSPDXPerformed": false,
+  "realFreshScanPerformed": false,
+  "resolvedReviewFindings": [
+    "Conditional test parent and child package now bound explicitly",
+    "Build-source enforces regression records and isolated DB compatibility rather than merely retaining metadata",
+    "DB record schema/status/external archived-oracle limitation checked"
+  ],
+  "schema": "ouf.generation30-image-independent-review.v1",
+  "sourceModifiedByReviewer": false,
+  "sourceSealFiles": 44,
+  "status": "PASS_BOUNDED_PREPUBLICATION_REVIEW",
+  "syntax": {
+    "bashBlocks": 17,
+    "inlinePythonBlocks": 2,
+    "pinnedActionRefs": 13,
+    "pythonFiles": 6
+  },
+  "targetOperations": 0,
+  "unitTestsPassed": 34
+}

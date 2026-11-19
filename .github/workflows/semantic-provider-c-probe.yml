@@ -1,0 +1,29 @@
+name: Semantic provider C probe offline
+on:
+  pull_request:
+    paths:
+      - tools/semantic_provider_c/**
+      - tools/semantic_provider_r3/**
+      - scripts/probe-semantic-provider-c.py
+      - scripts/prepare-semantic-provider-installation.py
+      - ops/vps/c-probe.sh
+      - tests/test_semantic_provider_c.py
+      - docs/OUF_SEMANTIC_PROVIDER_C_PROBE.md
+      - .github/workflows/semantic-provider-c-probe.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  offline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Portable contracts and loopback TLS (synthetic credentials)
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_c.py -v
+      - name: Runbook syntax
+        run: bash -n ops/vps/c-probe.sh
+      - name: Child setns boundary in an empty local namespace
+        run: >-
+          sudo -n env OUF_C_NETNS_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_c.py -k real_netns -v

@@ -1,0 +1,11 @@
+{
+  "acceptanceCreditAdded": 0,
+  "applicationContainersStarted": 0,
+  "onboardingDaemonImageId": "sha256:2dd55525d4a6969cf59f4d5e811c5f502976211c0cb49f9ba081dab5e4806c15",
+  "onboardingImageBound": true,
+  "onboardingImageLoaded": true,
+  "onboardingZipVerified": true,
+  "schema": "ouf.storage-oci33-application-images.v1",
+  "status": "ISOLATED_APPLICATION_IMAGES_READY",
+  "udpImagePresent": true
+}

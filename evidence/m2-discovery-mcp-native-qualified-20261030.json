@@ -1,0 +1,188 @@
+{
+  "schema": "ouf.m2-discovery-mcp-native-qualification.v1",
+  "date": "2026-10-30",
+  "timezone": "Europe/Rome",
+  "objective": "Reuse Teatri components for a complete repeatable resilient managed-file flow; Farmacie is the current representative file",
+  "retained": {
+    "teatri": "M1_G4_ACQUIRED_STEPWISE_NOT_GENERAL_M2_ACCEPTANCE",
+    "technical": "8/8",
+    "functional": "6/6",
+    "farmacieProfile": "SUCCEEDED_61_ROWS_10_COLUMNS",
+    "farmacieChoices": "MINISTERIAL_CODE_STRING_ALL_10_FIELDS_OPEN",
+    "newUploadOrProfileOrAcquisition": false
+  },
+  "baselineActuallyConsulted": {
+    "Matrix1.7": [
+      "1",
+      "7",
+      "7.1",
+      "7.2"
+    ],
+    "Blueprint0.3": [
+      "9",
+      "10"
+    ],
+    "Registry1.3": [
+      "26",
+      "26.1",
+      "26.3",
+      "26.4"
+    ],
+    "MCP1.4": [
+      "33 concurrency",
+      "34 streaming",
+      "33 Operational Awareness"
+    ],
+    "miniPetCsv": "1.1",
+    "miniPetM2": "1.3",
+    "resiliencePolicy": "v3"
+  },
+  "initialNativeQualification": {
+    "sourceCommit": "d4410db9d812f5031a580a1643e59a38a26e3b35",
+    "push": {
+      "run": 41123284685,
+      "job": 124295154220,
+      "conclusion": "success",
+      "finalReportsRead": true,
+      "testSeconds": 24.054
+    },
+    "pullRequest": {
+      "run": 41123296106,
+      "job": 124295188395,
+      "conclusion": "success",
+      "finalReportsRead": true,
+      "testSeconds": 21.978
+    },
+    "testsPerEvent": 1,
+    "skips": 0,
+    "actualDockerVersion": "29.8.1",
+    "actualEngineLifecycleAndHealthHttp": true,
+    "actualEd25519AndJournals": true,
+    "lostStartReplyReconciledAfterOwnerReconstruction": true,
+    "repeatLeavesJournalsUnchanged": true,
+    "preservedMountContentAndRestartPolicy": true,
+    "lifecycleDispatches": 4,
+    "parentRevocationBlocks": true
+  },
+  "transientReadinessSuccessor": {
+    "sourceCommit": "dc16fa46e8162b0e984e80fe4f1272aa5b280c71",
+    "qualification": "PASS_PUSH_AND_PR_FINAL_REPORTS_READ",
+    "realHttp503RetryAfterThen204": true,
+    "assertions": "persisted backoff denies health/lifecycle; reconstruction keeps original start and cumulative attempts",
+    "push": {
+      "run": 41123600168,
+      "job": 124296302282,
+      "conclusion": "success",
+      "finalReportsRead": true,
+      "testSeconds": 29.78
+    },
+    "pullRequest": {
+      "run": 41123610248,
+      "job": 124296342265,
+      "conclusion": "success",
+      "finalReportsRead": true,
+      "testSeconds": 28.443
+    },
+    "testsPerEvent": 1,
+    "skips": 0
+  },
+  "protocolBaseline": {
+    "sourceCommit": "be085d5a4c9f3a660a65d6cc9114c3270761746a",
+    "testsPerEvent": 391,
+    "suitesPerEvent": 46,
+    "skips": 0,
+    "push": {
+      "run": 41104186568,
+      "job": 124229042849,
+      "finalReportsRead": true
+    },
+    "pullRequest": {
+      "run": 41104175355,
+      "job": 124229002473,
+      "finalReportsRead": true
+    }
+  },
+  "localObservation": {
+    "beforeChangeFullSuite": {
+      "tests": 13,
+      "errors": 1,
+      "reason": "MCP_INVOKING_RECORD_DRIFT",
+      "case": "lost_create_or_start_reply"
+    },
+    "isolatedDiagnosticRerunPassed": true,
+    "strictLostReplyTestPassed": true,
+    "strictTestSeconds": 44.406,
+    "causeEstablished": false,
+    "productionGuardRelaxed": false,
+    "subsequentSuccessDoesNotProveCauseResolution": true,
+    "afterChangeFullSuite": {
+      "tests": 13,
+      "errors": 1,
+      "seconds": 207.59,
+      "reason": "DETACHED_VERIFICATION_UNPROVEN",
+      "case": "unreviewed_journal_and_historical_adoption",
+      "point": "fixture image guard before the actual negative assertion",
+      "causeEstablished": false
+    },
+    "fullLocalSuitePassed": false
+  },
+  "limitations": {
+    "staticHttpApplicationFixture": true,
+    "syntheticRegistryAdmissionParentAndPackages": true,
+    "realMcpApplicationProven": false,
+    "combinedProviderWorkerNativeProven": false,
+    "fullCurrentCohortProven": false,
+    "targetInstallProven": false,
+    "capabilityPublicationProven": false,
+    "csvToUdpProven": false,
+    "bootRotationProven": false,
+    "twoRealClientsProven": false
+  },
+  "liveReadsThisContinuation": {
+    "account": "ouf-admin",
+    "mcpSystemStatus": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "ingestionStatus": "AUTHORIZATION_DENIED_RETRYABLE_FALSE",
+    "deniedReadRetried": false,
+    "doesNotReopenTeatri": true,
+    "localSemanticSearch": {
+      "q": "Farmacia",
+      "type": "CLASS",
+      "limit": 5,
+      "result": [],
+      "isError": false,
+      "provesAllEquivalentsAbsent": false
+    }
+  },
+  "acceptance": {
+    "M1_G4": "ACQUIRED",
+    "M2_G5_G6_G7": "OPEN",
+    "csvAcceptanceTests": 24,
+    "uxCriteria": 8,
+    "discoveryStabilityCriteria": 8,
+    "targetApplyAuthorized": false,
+    "runtimeAuthorityIssued": false,
+    "releaseAcceptance": false,
+    "budgetReset": false
+  },
+  "protocolSuccessor": {
+    "sourceCommit": "d4410db9d812f5031a580a1643e59a38a26e3b35",
+    "testsPerEvent": 391,
+    "suitesPerEvent": 46,
+    "skips": 0,
+    "push": {
+      "run": 41123284691,
+      "job": 124295154658,
+      "conclusion": "success",
+      "finalReportsRead": true
+    },
+    "pullRequest": {
+      "run": 41123296096,
+      "job": 124295188542,
+      "conclusion": "success",
+      "finalReportsRead": true
+    },
+    "sameProtocolSourcesInTransientNativeSuccessor": true
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "schema": "ouf.ingestion-candidate-db-read-manifest.v1",
+  "sourceCommit": "663faa03288f9ad7775382b9757e44eaba4f51ca",
+  "imageId": "sha256:51a514d8e07ad7448f98a3886e0c9c6d5b50829f85d320785038a2c76eae46f3",
+  "migrationCount": 18,
+  "migrations": [
+    {
+      "version": "1",
+      "script": "V1__ingestion_runtime_core.sql",
+      "type": "SQL",
+      "checksum": 28809713,
+      "success": true,
+      "resourceSha256": "8b439684da2cc31c62cfebf4ce4d939f9c8ac9b533a8c9490f5455384c064bb8"
+    },
+    {
+      "version": "2",
+      "script": "V2__durable_ack_and_replay.sql",
+      "type": "SQL",
+      "checksum": -1190230229,
+      "success": true,
+      "resourceSha256": "5e3b53341e396f7bf4ba937db2c61e96e9fdedac6420eb0de15350457ee6c528"
+    },
+    {
+      "version": "3",
+      "script": "V3__trusted_operations.sql",
+      "type": "SQL",
+      "checksum": 1677862093,
+      "success": true,
+      "resourceSha256": "a6e9eb043defdcd8590b94c690911955ec8957ba016b70967e9aef90943bedf4"
+    },
+    {
+      "version": "4",
+      "script": "V4__scheduler_and_source_health.sql",
+      "type": "SQL",
+      "checksum": 960152441,
+      "success": true,
+      "resourceSha256": "b112711bd994cff5b0bdd3671937754f6e33fd85a705a102eed23fe9f207b44c"
+    },
+    {
+      "version": "5",
+      "script": "V5__replay_execution_lifecycle.sql",
+      "type": "SQL",
+      "checksum": -2033393121,
+      "success": true,
+      "resourceSha256": "4e24738272c8fae7233d2601736662eff80d5913fbef6c88ab6dc1f511f65763"
+    },
+    {
+      "version": "6",
+      "script": "V6__protected_operational_log.sql",
+      "type": "SQL",
+      "checksum": -2023917644,
+      "success": true,
+      "resourceSha256": "5bf72f99f9c861678d3e8469ed2f71cd9cd55fccb835dbcd685e9c0d9fe6d46f"
+    },
+    {
+      "version": "7",
+      "script": "V7__execution_worker_and_snapshot.sql",
+      "type": "SQL",
+      "checksum": -848911848,
+      "success": true,
+      "resourceSha256": "48527993d3d8b50d98dc396e6d9b013410cd9db28d35fb76bff14cc23e46f9f2"
+    },
+    {
+      "version": "8",
+      "script": "V8__schema_surveillance.sql",
+      "type": "SQL",
+      "checksum": -61585214,
+      "success": true,
+      "resourceSha256": "33853cbd55d09ad901d4af6589ad36c1d4d6da1116f10a14bdb3bb2f0bd8332c"
+    },
+    {
+      "version": "9",
+      "script": "V9__runtime_issue_governance.sql",
+      "type": "SQL",
+      "checksum": -1413097987,
+      "success": true,
+      "resourceSha256": "ed0236c8b6b6c66767813a0da7d3d92457ba0968c7e4376a35b0119f22a752d9"
+    },
+    {
+      "version": "10",
+      "script": "V10__quarantine_lifecycle.sql",
+      "type": "SQL",
+      "checksum": 1627974653,
+      "success": true,
+      "resourceSha256": "41f8c2362122caa3e9e4d82df0588452a87efdde0f2c518ee47e1bd3570a03dc"
+    },
+    {
+      "version": "11",
+      "script": "V11__classified_source_resilience.sql",
+      "type": "SQL",
+      "checksum": -1835304128,
+      "success": true,
+      "resourceSha256": "97243be62e65879aed425855895456ef0f9e1579cf0b271bcbfc2b0864069e17"
+    },
+    {
+      "version": "12",
+      "script": "V12__governed_lifecycle_and_historical_replay.sql",
+      "type": "SQL",
+      "checksum": -1198212964,
+      "success": true,
+      "resourceSha256": "9fa09325985424125528420db82bce2c52f7ae75dffc7759207c7eb1666b5b2c"
+    },
+    {
+      "version": "13",
+      "script": "V13__pressure_admission_retry_budget.sql",
+      "type": "SQL",
+      "checksum": 1850262212,
+      "success": true,
+      "resourceSha256": "30402c3c225297436b9bc4e65dceca2c3ba29a3caeffc79692ea7cccf50a000d"
+    },
+    {
+      "version": "14",
+      "script": "V14__published_activation_schedule.sql",
+      "type": "SQL",
+      "checksum": -1324686996,
+      "success": true,
+      "resourceSha256": "5d6acf3516504590fe84d833803db55b87b3858a35c31a88a56e3599ceba916d"
+    },
+    {
+      "version": "15",
+      "script": "V15__human_recovery_sessions.sql",
+      "type": "SQL",
+      "checksum": -1837994869,
+      "success": true,
+      "resourceSha256": "e9abf1e1c192be62a4624f8a7ba551be28013ab3a58698a4ad13231fba29abaa"
+    },
+    {
+      "version": "16",
+      "script": "V16__incident_observation_time.sql",
+      "type": "SQL",
+      "checksum": -405299983,
+      "success": true,
+      "resourceSha256": "6fcf10b6bfbc8e71002fb9378e6a1ff45b70abb4a8f5cd863a1f207c42cb2eb9"
+    },
+    {
+      "version": "17",
+      "script": "V17__incident_publication_and_cursor.sql",
+      "type": "SQL",
+      "checksum": -1241321010,
+      "success": true,
+      "resourceSha256": "3695a5853afac3923a3428a54739d55d09cf31cc147bf46bfab8505f1c2d0716"
+    },
+    {
+      "version": "18",
+      "script": "V18__incident_publication_bookmarks.sql",
+      "type": "SQL",
+      "checksum": 1281376280,
+      "success": true,
+      "resourceSha256": "7519073ac4075c40ed743489a2aefc7f63d8dcd3b1078e6108e50104f2fa8220"
+    }
+  ]
+}

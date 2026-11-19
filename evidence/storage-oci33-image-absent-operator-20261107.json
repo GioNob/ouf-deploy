@@ -1,0 +1,10 @@
+{
+  "schema": "ouf.storage-oci33-image-absent-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_DOCKER_IMAGE_INSPECT",
+  "imageConfigDigest": "sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6",
+  "result": "NO_SUCH_IMAGE",
+  "next": "STAGE_EXACT_ACTIONS_ZIP",
+  "acceptanceCreditAdded": 0
+}

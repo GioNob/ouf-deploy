@@ -1,9 +1,5 @@
 name: Stage exact signed durable V11 package on existing VPS without import or apply
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/durable-v11-target-stage.yml
   workflow_dispatch:
 permissions:
   contents: read

@@ -1,0 +1,81 @@
+I1103 20:40:09.839571 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.839571 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.17: no such file or directory
+I1103 20:40:09.839696 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.839696 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.17: no such file or directory
+I1103 20:40:09.839785 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.839785 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.17: no such file or directory
+I1103 20:40:09.839894 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.839894 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.17: no such file or directory
+I1103 20:40:09.839919 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.839919 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.17: no such file or directory
+I1103 20:40:09.839937 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.839937 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.17: no such file or directory
+I1103 20:40:09.840004 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.840004 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.17: no such file or directory
+I1103 20:40:09.840020 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.840020 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.17: no such file or directory
+I1103 20:40:09.840094 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.840094 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.17: no such file or directory
+E1103 20:40:09.840691 filer_backup.go:99 backup configuration rejected: OUF standard profile excludes OpenBao/Vault KMS
+E1103 20:40:09.840691 filer_backup.go:99 backup configuration rejected: OUF standard profile excludes OpenBao/Vault KMS
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.ERROR.20261103-204009.17: no such file or directory
+
+Example: weed filer.backup -filer=<filerHost>:<filerPort> 
+Default Usage:
+  -concurrency int
+    	the maximum number of files that will be backed up concurrently. (default 32)
+  -debug
+    	debug mode to print out received files
+  -disableErrorRetry
+    	disables errors retry, only logs will print
+  -doDeleteFiles
+    	delete files on the destination
+  -filer string
+    	filer of one SeaweedFS cluster (default "localhost:8888")
+  -filerExcludeFileName string
+    	[DEPRECATED: use -filerExcludeFileNames] exclude file names that match the regexp
+  -filerExcludeFileNames string
+    	comma-separated wildcard patterns to exclude file names, e.g., "*.tmp,._*"
+  -filerExcludePathPatterns string
+    	comma-separated wildcard patterns to exclude paths where any component matches, e.g., ".snapshot,temp*"
+  -filerExcludePaths string
+    	exclude directories to sync on filer
+  -filerPath string
+    	directory to sync on filer (default "/")
+  -filerProxy
+    	read and write file chunks by filer instead of volume servers
+  -ignore404Error
+    	ignore 404 errors from filer (default true)
+  -initialSnapshot
+    	before subscribing to metadata updates, walk the live filer tree under -filerPath and seed the destination, then subscribe from the walk-start timestamp so concurrent changes are still captured. Runs on every start when -timeAgo is 0 and overwrites the saved checkpoint, so it also re-seeds a reinitialized destination. Remove it once the backup is caught up, otherwise it re-walks the whole tree on each restart.
+  -options string
+    	a file of command line options, each line in optionName=optionValue format
+  -retentionDays int
+    	incremental backup retention days
+  -s3.flattenVersions
+    	mirror the current S3 view of versioned buckets: under each <key>.versions directory only the latest version is written to <key>, a latest delete marker or the removal of the last version deletes <key> when -doDeleteFiles is set, and version files are not mirrored individually
+  -timeAgo duration
+    	start time before now. "300ms", "1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h"
+Description:
+  resume-able continuously replicate files from a SeaweedFS cluster to another location defined in replication.toml
+
+	filer.backup listens on filer notifications. If any file is updated, it will fetch the updated content,
+	and write to the destination. This is to replace filer.replicate command since additional message queue is not needed.
+
+	If restarted and "-timeAgo" is not set, the synchronization will resume from the previous checkpoints, persisted every minute.
+	A fresh sync will start from the earliest metadata logs.
+
+	On a fresh sync the metadata event log only re-materializes files that still exist on the source; entries that were
+	created and later deleted are replayed as a create-then-delete pair and therefore never appear on the destination.
+	Pass "-initialSnapshot" to walk the live filer tree first and seed the destination with the current tree, then
+	subscribe from the walk-start timestamp. This also re-seeds a reinitialized destination: it overwrites the saved
+	checkpoint and re-walks on every start, so remove it once the backup is caught up.

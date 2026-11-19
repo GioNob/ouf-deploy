@@ -1,0 +1,215 @@
+{
+  "status": "LAB_QUALIFIED_NOT_RUNTIME_ADMITTED",
+  "upstream": "seaweedfs/seaweedfs@984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "previous_ouf_checkpoint": "cb4b356f417e7a4250f08032a6e4fedcd32c721f",
+  "patches": 8,
+  "go": "1.27.3",
+  "CGO_ENABLED": 0,
+  "GOPROXY_during_tests": "off",
+  "module_mode_during_tests": "readonly",
+  "test_pass_events": 5524,
+  "test_skip_events": 5,
+  "packages": [
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/wire",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/sts",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/utils",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/s3err",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/notification/aws_sqs",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/wire",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sub",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/policy",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/kms/aws",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/kms",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iamapi",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/s3sink",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/integration",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/oidc",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/command",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "status": "pass"
+    }
+  ],
+  "all_eight_patches_byte_equal_files": 55,
+  "graph": {
+    "total_packages": 1864,
+    "sdk_v1_packages": 52,
+    "sdk_v1_direct_importer_packages": 3,
+    "sdk_v1_direct_import_edges": 18,
+    "delta_from_seven_patches": {
+      "added_packages": 16,
+      "added_manifest": "patches/seaweedfs/4.52-s3sink-sdk-v2-added-packages.txt",
+      "removed": []
+    },
+    "remaining_importers": [
+      "weed/remote_storage/s3",
+      "weed/storage/backend/s3_backend",
+      "weed/s3api"
+    ],
+    "deprecated_v2_feature_s3_manager_packages": 0
+  },
+  "transfer_manager": "github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager v0.4.3 (checksums already present; now direct go.mod requirement)",
+  "service_s3": "github.com/aws/aws-sdk-go-v2/service/s3 v1.114.1 (already pinned)",
+  "maintainer_lifecycle_source": "https://github.com/aws/aws-sdk-go-v2/discussions/3306",
+  "ci": {
+    "six_patches": {
+      "run": 41580991342,
+      "status": "success"
+    },
+    "seven_patches": {
+      "run": 41582635594,
+      "source": "cb4b356f417e7a4250f08032a6e4fedcd32c721f",
+      "status": "in_progress_at_local_checkpoint"
+    },
+    "eight_patches": {
+      "status": "not_yet_published_at_local_checkpoint"
+    }
+  },
+  "files": [
+    {
+      "path": "deploy/patches/seaweedfs/4.52-s3sink-sdk-v2.patch",
+      "bytes": 24390,
+      "sha256": "fdb8cfc105b2cf5a8254085c8518ff35ad2d2dd00b3b4b13e05f33cc31d75cd4"
+    },
+    {
+      "path": "deploy/patches/seaweedfs/4.52-s3sink-sdk-v2-added-packages.txt",
+      "bytes": 868,
+      "sha256": "79673541fbea602644374232bc16121e221c35c8975b39da02f7d3554865cd3c"
+    },
+    {
+      "path": "toolchain/s3sink-v2-exact-tests.jsonl",
+      "bytes": 7210855,
+      "sha256": "15256aa357a66a69b916d314bf1f14b1a14ac2ca8ac3afcf0063d278f05687a0"
+    },
+    {
+      "path": "toolchain/s3sink-v2-import-edges.txt",
+      "bytes": 490531,
+      "sha256": "e03c0fa6b31a5807e7e3616c0059a8b098aa7f4bbc6ade0d8489d69ddbc6dc09"
+    },
+    {
+      "path": "toolchain/weed-4.52-s3sink-v2-exact-lab",
+      "bytes": 233148026,
+      "sha256": "2a908dec2304c27dbe5ea3abe75b060b341498fab1c33ec38fefe8f65c3f4033"
+    },
+    {
+      "path": "toolchain/s3sink-v2-build-info.txt",
+      "bytes": 25612,
+      "sha256": "63ac2c28542648eeb9c8598510b8b63463376dd6d4ef4f889ae1b7936746c0cb"
+    },
+    {
+      "path": "seaweed-452/go.mod",
+      "bytes": 26755,
+      "sha256": "d3ec93b126b552ed1d49b35a0ec5622270c40c83970ee4884cfc305151238079"
+    },
+    {
+      "path": "seaweed-452/go.sum",
+      "bytes": 168592,
+      "sha256": "85b94bbcb8f085383e68e1de6d372609fed7d5b3b82114fb7db68f8af8571757"
+    }
+  ],
+  "verified_contracts": [
+    "Actual maintained transfermanager and S3 serializer/SigV4 with synthetic HTTP; no AWS or target calls",
+    "Existing tagging/MIME/mtime/user metadata, size limits, RFC2047 and case collision tests retained",
+    "Whole-object ContentMD5 on single PUT plus flexible CRC32; never attach full-object MD5 to multipart parts",
+    "6MiB multipart success uses two parts and one completion; failed part returns error and aborts upload without completion",
+    "No hidden SDK retries for ambiguous single PUT, part upload or DELETE",
+    "SDKv2 default Content-Type insertion initially failed the original omission regression; serialize middleware now preserves absence before signing, explicit MIME unchanged",
+    "Static/environment credential precedence, explicit region/path style/endpoint and request timeout30s",
+    "Partial credentials, implicit endpoints, malformed endpoint URLs and checksum downgrade denied",
+    "All eight patch touched files reapplied and byte-equal to tested sources; exact expected dependency closure checked"
+  ],
+  "intentional_configuration_changes": [
+    "Region must be explicit instead of implicit us-east-2.",
+    "s3_disable_content_md5_validation defaults false; explicit true is rejected. Flexible checksum integrity is not disabled to achieve compatibility.",
+    "One SDK attempt and30s per-request HTTP bound; outer owner recovery remains unchanged/unqualified.",
+    "Transfermanager keeps historical5MiB default/keep_part_size behavior; legacy uploader_part_size key remains as in original source.",
+    "Endpoint logging removed before binding validation to avoid logging rejected credential-bearing URLs."
+  ],
+  "limitations": [
+    "Synthetic HTTP tests do not qualify real S3 service, TLS, egress, destination storage or OUF client acceptance.",
+    "Credential chain, profile/role/process/SSO and endpoint behaviors require production identity binding qualification.",
+    "Original interface has no caller context; no new cancellation authority or durable operation ledger is implemented.",
+    "Ambiguous multipart create/complete and process-crash recovery require owner reconciliation; part-failure cleanup tests are not exactly-once migration proof.",
+    "Original keep_part_size/configuration semantics remain; full transfer sizing, resource pressure and inherited retry loops require separate qualification.",
+    "New shared modules and16compiled packages need fresh SBOM/security/licence/custody/cohort qualification.",
+    "SDKv1 remains52packages through the two other S3 clients and XML parser/helpers; historical VEX not applicable to new binary.",
+    "No target operation/copy/replay/reset/grant/merge/deploy/admission; scope17/52EngineGET,Teatri/M1 and same Farmacie61rows/10OPEN/STRING preserved."
+  ],
+  "minipet": {
+    "estimated_engineering_progress_percent": 33,
+    "uncertainty_percentage_points": 10,
+    "gates_closed": 0,
+    "gates_total": 8,
+    "AT_accepted": 0,
+    "AT_total": 21,
+    "real_objects_copied": 0,
+    "real_objects_total": 120
+  },
+  "normative_baseline": "Same Matrix1.7§1/4/5,UDP1.3§109.4/109.5 and resilience policyv3 consulted for seventh-patch qualification; see seaweedfs-kms-v2-local-20261103.json.",
+  "post_publication_readback": {
+    "source": "adee567bae520e2d93fcc8cdcad282ed79b820cb",
+    "all_six_published_files_verified_exact": true,
+    "seven_patch_ci": {
+      "id": 41582635594,
+      "status": "success",
+      "both_jobs_success": true
+    },
+    "eight_patch_ci": {
+      "id": 41583531119,
+      "status": "in_progress"
+    }
+  }
+}

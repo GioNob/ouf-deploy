@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "changedFiles": 6,
+  "patchSha256": "6459dc10651a0c7cd09c8c27300652ae1069b6046c9ac32a092cef8ec2c86a0e",
+  "base": "frozen maintained30-stage/source",
+  "matchedFiles": [
+    "go.mod",
+    "go.sum",
+    "weed/filer/mongodb/mongodb_store.go",
+    "weed/filer/mongodb/mongodb_store_kv.go",
+    "weed/filer/mongodb/mongodb_wire_test.go",
+    "weed/filer/mongodb/mongodb_options_v2_test.go"
+  ]
+}

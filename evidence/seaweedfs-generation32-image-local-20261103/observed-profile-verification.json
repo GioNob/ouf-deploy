@@ -1,0 +1,98 @@
+{
+  "status": "SOURCE32_MANIFEST_AND_LOCAL_OBSERVATIONS_VERIFIED_HOSTED_QUALIFICATION_PENDING",
+  "manifestSha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+  "sourceFilesSealed": 46,
+  "regressionProfiles": {
+    "main": {
+      "profile": "main",
+      "counts": {
+        "pass_tests": 6656,
+        "pass_packages": 41,
+        "skip_packages": 9,
+        "skip_tests": 12
+      },
+      "logSha256": "e9d101c4747114d87f89ac4143234f9223e2da635725171d0327faf1dc6c9992",
+      "terminalTestsSha256": "31b8013f28af6703b64cb48cb2c7849578a54c9401bdca3732663cbb50e4d283",
+      "terminalPackagesSha256": "41ee96be03d54f90ffd27ed05e7430ea204f812241cf557fdceac2ae19c44fcf",
+      "environmentConditionalOutcomes": {},
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "server": {
+      "profile": "server",
+      "counts": {
+        "pass_tests": 982,
+        "skip_tests": 2,
+        "pass_packages": 1
+      },
+      "logSha256": "d8c9238e0807d9a1714c5e67825b0533cf684a6cc75d1af1f25d817fd0f4030c",
+      "terminalTestsSha256": "b05d54925d930f4e3d550ebddd6f8182bb4a3fa90683d5a2ab8a0cc56763e148",
+      "terminalPackagesSha256": "4a9e99d596111f0d7e05a0bc625ee4067ef915dde2b577ed18497cca0e5a4201",
+      "environmentConditionalOutcomes": {
+        "TestGuardedPeerHTTPClientUploadsOverTLS": "skip",
+        "TestGuardedPeerHTTPClientRejectsHTTPSDowngrade": "skip"
+      },
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "storage": {
+      "profile": "storage",
+      "counts": {
+        "pass_tests": 54,
+        "skip_tests": 2,
+        "pass_packages": 1
+      },
+      "logSha256": "db4c0562975f3efbe547819e24d8044a5fbcad9b6777627c4f5fc6add6dcff4c",
+      "terminalTestsSha256": "6ad75c5b9bf23def24c0a1891393a5b4ee28d737782bcef9dba46cf5291b2ff3",
+      "terminalPackagesSha256": "211d61f322c3c35d86ec1413455e0d69533c0343227db95bef23f2037cd84c91",
+      "environmentConditionalOutcomes": {
+        "TestSortedFileNeedleMap_HoldsNoDescriptors": "skip",
+        "TestRebuildIdx_UnwritableIdxDirSkipsOnlyThisVolume": "skip"
+      },
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "race": {
+      "profile": "race",
+      "counts": {
+        "pass_tests": 185,
+        "pass_packages": 3
+      },
+      "logSha256": "e5aef26337cc176aa0cfac6669c0a14b84e29439c375b5ff300edd673a7bffe9",
+      "terminalTestsSha256": "75b78befff533cc7d25da5b8ce7cc4e68ed580a25b348209ea51b1556f81022a",
+      "terminalPackagesSha256": "e61b223abd9c126c02a1c823464279533023377980e98566a40531cabd03dae0",
+      "environmentConditionalOutcomes": {},
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    }
+  },
+  "localShellObservedFailureDenied": "HOSTED_REQUIRED_TESTS_MUST_ALL_PASS",
+  "serverTLSLocalSkipsPreserved": true,
+  "serverTLSHostedPassRequired": [
+    "TestGuardedPeerHTTPClientUploadsOverTLS",
+    "TestGuardedPeerHTTPClientRejectsHTTPSDowngrade"
+  ],
+  "workflowMainPackagesMatchActual": 50,
+  "requiredHostedShellTerminalTests": 306,
+  "syntax": {
+    "yamlParsed": true,
+    "shellBlocks": 18,
+    "inlinePythonBlocks": 1,
+    "pinnedActions": 13
+  },
+  "historicalFilesUnchanged": {
+    "tools/storage_security/generation_image_v1.py": "4ac1a9d21d30007903aa342c8eef9c1ea865a79e0a818ff5c0902ac3a6507a7c",
+    "tools/storage_security/generation_image_v2.py": "0435a7ce2507ddee1fdcd306ac856a18733c6d7fe1af53e5fe470c5ad373b719",
+    "tools/storage_security/generation_readback_v1.py": "d90a633307be766e3a7266226b3da2e8fadbdcff57fd9f11fb16b41e1909b59f",
+    "tools/storage_security/runtime_image.py": "54ee20d7d25cbcf20249e7502c597fc17adda4487e06cdeefc9748b370a6041a",
+    "scripts/qualify-seaweedfs-452-generation31-image.py": "5e2904162446e9f806f0ed5c9953047551ea3efa1107d9622484e4dc7c91231a",
+    "scripts/readback-seaweedfs-452-generation31-image.py": "a6a5b4b724f37bc27f45e12ebed5427461f8bba79111c93998a814ebe7a73be9",
+    "releases/seaweedfs-452-generation31-build-manifest-20261103.json": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719"
+  },
+  "actualImageScanRun": false,
+  "actualSPDXProduced": false,
+  "localQualifiedOCIProduced": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0
+}

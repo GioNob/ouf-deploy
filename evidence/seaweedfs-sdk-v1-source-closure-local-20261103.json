@@ -1,0 +1,78 @@
+{
+  "schema": "ouf.seaweedfs-sdk-v1-source-closure.v1",
+  "status": "LOCAL_EXACT_PASS_HOSTED_PENDING",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "patchCount": 27,
+  "qualifiedImagePatchCount": 15,
+  "directAwsSdkV1ImportersBefore": 20,
+  "directAwsSdkV1ImportersAfter": 0,
+  "remainingIamTestImporters": 0,
+  "remainingOtherTestImporters": 0,
+  "combinedTests": {
+    "root": {
+      "topLevelPass": 16,
+      "subcasesPass": 8,
+      "rawLogSha256": "24ef72493ce8bbb881d75a5a65db08bd8384f5c736abd5a33093612a7efdd573"
+    },
+    "iam": {
+      "topLevelPass": 14,
+      "subcasesPass": 4,
+      "rawLogSha256": "7a5c97a24a75e9261e4962cbab8c433e8ec0b02c00117fa2c6581b39a6b3bee6"
+    }
+  },
+  "exactPins": true,
+  "modfileSubstitutions": false,
+  "kafkaTidyDiffEmpty": true,
+  "sharedWorkflowPatchSequence": [
+    "4.52-listing-remove-sdk-v1.patch",
+    "4.52-bucket-xml-response-remove-sdk-v1.patch",
+    "4.52-master-follower-remove-sdk-v1.patch",
+    "4.52-iam-wire-remove-sdk-v1.patch",
+    "4.52-s3-wire-remove-sdk-v1.patch",
+    "4.52-sqs-sdk-v2.patch",
+    "4.52-kms-sdk-v2.patch",
+    "4.52-s3sink-sdk-v2.patch",
+    "4.52-s3backend-sdk-v2.patch",
+    "4.52-remote-storage-s3-sdk-v2.patch",
+    "4.52-s3-wire-parser-remove-sdk-v1.patch",
+    "4.52-test-fixtures-remove-sdk-v1.patch",
+    "4.52-storage-test-tools-sdk-v2.patch",
+    "4.52-remote-cache-tests-sdk-v2.patch",
+    "4.52-go-network-security-fixes.patch",
+    "4.52-basic-tests-sdk-v2.patch",
+    "4.52-multipart-tool-sdk-v2.patch",
+    "4.52-volume-grpc-s3-test-sdk-v2.patch",
+    "4.52-s3tables-signer-sdk-v2.patch",
+    "4.52-sse-tests-sdk-v2.patch",
+    "4.52-iam-sts-signer-sdk-v2.patch",
+    "4.52-bucket-policy-tests-sdk-v2.patch",
+    "4.52-normal-tests-sdk-v2.patch",
+    "4.52-iam-service-account-sdk-v2.patch",
+    "4.52-kafka-test-module-remove-sdk-v1.patch",
+    "4.52-root-iam-tests-sdk-v2.patch",
+    "4.52-iam-module-sdk-v2.patch"
+  ],
+  "patches22to27Sha256": {
+    "4.52-bucket-policy-tests-sdk-v2.patch": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19",
+    "4.52-iam-module-sdk-v2.patch": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a",
+    "4.52-iam-service-account-sdk-v2.patch": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5",
+    "4.52-kafka-test-module-remove-sdk-v1.patch": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7",
+    "4.52-normal-tests-sdk-v2.patch": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b",
+    "4.52-root-iam-tests-sdk-v2.patch": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883"
+  },
+  "productionGraphPackages": 1811,
+  "productionGraphSha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+  "productionBinarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+  "productionIdentityProof": "evidence/seaweedfs-root-iam-tests-sdk-v2-local-20261103.json",
+  "qualifiedOciUnchanged": true,
+  "optionalModuleGraphEradicationClaimed": false,
+  "optionalResidualEdges": [
+    "github.com/olivere/elastic/v7@v7.0.32 -> AWS SDK Go v1",
+    "github.com/rclone/rclone@v1.75.1 -> deprecated feature/s3/manager"
+  ],
+  "remainingNestedKafkaModulesQualified": false,
+  "liveIamRoundtripPerformed": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0
+}

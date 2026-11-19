@@ -1,13 +1,6 @@
 name: OUF current R9 transition read only
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - tools/semantic_target_review/read_current_r9_transition.py
-      - tools/semantic_target_review/test_current_r9_transition.py
-      - tools/semantic_target_review/try_current_r9_transition.py
-      - .github/workflows/semantic-current-r9-transition-read.yml
 permissions:
   contents: read
 concurrency:

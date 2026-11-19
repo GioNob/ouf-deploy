@@ -1,0 +1,132 @@
+name: Storage Kafka module dependency cleanup
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-kafka-module-cleanup.yml
+      - patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-kafka-module-cleanup-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-kafka-module:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GOTOOLCHAIN: local
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          path: seaweedfs
+          persist-credentials: false
+
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+
+      - name: Apply the exact patch sequence and bind the remaining source scope
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          for patch in \
+            ../patches/seaweedfs/4.52-listing-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-sqs-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-kms-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3sink-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3backend-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-go-network-security-fixes.patch \
+            ../patches/seaweedfs/4.52-basic-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-sse-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-normal-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-iam-module-sdk-v2.patch
+          do
+            git apply --check "$patch"
+            git apply "$patch"
+          done
+          git diff --check
+          evidence="$RUNNER_TEMP/storage-kafka-module-cleanup-evidence"
+          mkdir -p "$evidence"
+          if grep -E '^\s*github.com/(aws/aws-sdk-go|jmespath/go-jmespath)( |$)' test/kafka/go.mod; then
+            exit 1
+          fi
+          printf '%s\n' 984eac6a790be89e2a11de175a7413e1e3e32dd3 > "$evidence/upstream-source-sha.txt"
+          sha256sum ../patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch > "$evidence/patch-sha256.txt"
+          sha256sum go.mod go.sum > "$evidence/root-module-sha256.txt"
+          sha256sum test/kafka/go.mod test/kafka/go.sum > "$evidence/kafka-module-sha256.txt"
+          test "$(sha256sum test/kafka/go.mod | cut -d' ' -f1)" = 8baf9d4f13817d9aae1b401160dc8d9fbc8d8c2dea332bd14168b315a8b12601
+          test "$(sha256sum test/kafka/go.sum | cut -d' ' -f1)" = 4ef43b62ed89d0b777f93c6ab26c5e9d44bad8bef7e0a1796a6d3c58878c27e9
+
+      - name: Prove tidy fixed point and compile the nested module without live tests
+        working-directory: seaweedfs/test/kafka
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-kafka-module-cleanup-evidence"
+          go mod tidy -diff > "$evidence/tidy.diff"
+          test ! -s "$evidence/tidy.diff"
+          go test -mod=readonly -run '^$' -count=1 ./... | tee "$evidence/compile.log"
+          go list -mod=readonly -deps -test ./... | LC_ALL=C sort -u > "$evidence/kafka-test-deps.txt"
+          if grep -E '^github.com/aws/aws-sdk-go(/|$)|^github.com/aws/aws-sdk-go-v2/feature/s3/manager(/|$)' "$evidence/kafka-test-deps.txt"; then
+            exit 1
+          fi
+          test "$(wc -l < "$evidence/kafka-test-deps.txt")" -eq 763
+          printf '%s\n' \
+            'status=KAFKA_LOCKFILE_AND_COMPILE_VERIFIED_NOT_LIVE_ACCEPTANCE' \
+            'liveKafkaRoundtrip=false' \
+            'qualifiedImageChanged=false' \
+            'releaseAdmitted=false' \
+            'runtimeAuthorityIssued=false' \
+            'targetOperations=0' > "$evidence/boundaries.txt"
+          cd "$evidence"
+          sha256sum ./* | LC_ALL=C sort > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest the bounded evidence manifest
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-kafka-module-cleanup-evidence/SHA256SUMS
+
+      - name: Retain the bounded evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-kafka-module-cleanup-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-kafka-module-cleanup-evidence/
+          if-no-files-found: error
+          retention-days: 90
+

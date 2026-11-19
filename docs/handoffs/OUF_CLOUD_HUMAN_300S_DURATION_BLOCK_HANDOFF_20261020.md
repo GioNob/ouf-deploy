@@ -1,0 +1,25 @@
+# OUF CLOUD — issued300seconds proven; IAM policy read required
+
+Checkpoint 2026-10-20T20:01:06.573Z. Measured active technical effort 6.567817h. Technical8/8,functional4/6; G0–G2PASS, G3–G7/F5/F6/M1/M2open. Frozen MiniPET1.1 central G3 H+19, M1 H+24, M2 H+55 unchanged. No residual forecast obtained by subtraction. Unknown operator/turn intervals excluded; no human hours inferred.
+
+## Target receipt reconciled — no replay
+
+Exact public receipt: evidence/ingestion-human-timing-target-20261020.json. Launcher /home/oufadmin/ouf-human-timing-launcher.ogHkOOhq; log /home/oufadmin/ouf-human-timing.8zYO205y/timing.log. Observation timestamp2026-10-20T21:52:32.644250+02:00; runtime start/end/elapsed were not returned, do not invent them. Recorded JWT iat20:56:35+02:00, exp21:01:35+02:00: lifetime300seconds. Required production guard>930seconds, incompatible from issuance. It was not an operator-speed failure. Snapshot remains READY history, token expired, no runtime authority. Window deadline22:40:41+02:00 is distinct.282/288,6remaining; zero new OAuth/Engine/Owner/Gateway/SQL/lifecycle/journal writes. One exact credential-journal content read, no bearer-file read, no credential strings/hashes printed. Current provider policy/signature/authorization was not reverified. Completed timing inspection must not replay. Owner7/projection7/production bootstrap/private profiles/DB preflight/all prior completed contexts and claims stay retained.
+
+## Work completed without target mutations
+
+Unsigned generic preparation planner tools/ingestion_rollout_preparation/duration_profile.py compares explicit installation/full-selection binding, recorded lifetime,900second native cap, safety/preparation allowance and cumulative four-request budget. No network/IAM/login/policy/issuer/runtime code. Source7e10bde6e460908eb8644c8da53aa227181bc314; CI39488060246 jobs118853579012(3.13.5)/118853579460(3.12), each12timing regressions+6planner cases PASS, zero skips. Other HUMAN39488060266/capture39488060337/profiles39488060327/production39488060291 PASS. Frozen native114modules+loader and existing production bridge unchanged; no source/case mismatch forced into retained context.
+
+This planner is NOT wired into a new authentication entrypoint and not an executable installation-specific review. The exact full selection is still private in the matched completed-owner history. New authentication continuation within retained claims/budget is not implemented or authorized by the planner. A new four-step HUMAN authentication would nominally282→286/288, leaving2; administrative OAuth is not silently excluded/accounted as a free request. No reset/reopen/refresh/login instruction now.
+
+## Candidate profile and necessary administrative input
+
+Planning record: evidence/ingestion-human-duration-proposal-20261020.json. Candidate only: issued lifetime1200seconds, native maximum900+safety30+review/approval allowance120=1050seconds exclusive minimum. Values are explicit installation-review inputs, not universal Ente defaults. This is not a mandate to increase token lifespan. Client-scoped changes affect all tokens issued for that client and require revocation/freshness review under AuthorizationPET1.5§2.1. No realm-wide change proposed; no privilege/scope/role change or IAM write authorized.
+
+Official Keycloak server-administration guide confirms a client Access Token Lifespan override exists. It does not establish installed version, current realm/client settings, session caps, concrete client UUID, policy-change authority or effective1200second issuance. Current received300seconds may derive from realm/client/session limits; do not guess.
+
+Next necessary HUMAN intervention: read administrative metadata only for the client used by the native HUMAN contract (ouf-human-admin) in its actual existing realm. In Clients → exact client → Advanced → Advanced Settings, report Access Token Lifespan, Client Session Idle and Client Session Max, including inheritance. If inherited, also report matching realm values; realm Sessions SSO Session Idle/Max can further bound effective session lifetime. Report Keycloak version if visible. No Save, realm/client edit, new login script, automatic admin-session renewal or credential sharing. If administrative access is unavailable, say so; existing kcadm adapters may refresh/relogin and must not be used as a supposedly read-only shortcut.
+
+No qualified administrative-policy reader or root VPS executor is exposed by current26 typed ouf-admin application tools. Protected-provider calls were not used to probe authentication. This is the concrete external-input dependency before policy proposal can be bound and reviewed. After actual metadata, prepare an exact reviewed client-scoped proposal or qualify a design compatible with unchanged policy; no guard weakening, expired-token use or background work.
+
+Normative sections consulted: Matrix1.7§1; Blueprint0.3§§9–10; AuthorizationPET1.5§§2.1,11.1–11.3,12.1,25; IngestionPET1.3§§146–146.1. DB admission/native client profile/F5/F6 remain unproven.

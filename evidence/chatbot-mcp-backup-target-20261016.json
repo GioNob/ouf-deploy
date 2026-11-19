@@ -1,0 +1,24 @@
+{
+  "schema": "ouf.chatbot-mcp-backup-confirmed-target.v1",
+  "date": "2026-10-16",
+  "source": "operator-provided fixed-reader output in current conversation",
+  "readerSourceCommit": "fd29b2ca7b5a2ab8d65b4194f3a912261dc096fa",
+  "executedRuntimeSourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+  "authorityHash": "936d15d844e0d11bd95ee3c463843fbb5e5e2361e10c3d9ac22901f4557a9b36",
+  "databaseJournalHash": "2c55b26774660d1e56d6855b5425c18b2cc26a6ab09da463fe324229b744094c",
+  "archives": [
+    {"module": "udp", "state": "COMPLETE", "bytes": 247357, "sha256": "5f4a048ae5ebd3b752fc346b5fceaedd8011be4d5f548746a1cbcfdc2318e714"},
+    {"module": "onboarding", "state": "COMPLETE", "bytes": 325831, "sha256": "7a1871458b0d4e58bda32ef069996332ede8fbb2b9f0a87f45484098118ec831"},
+    {"module": "ingestion", "state": "COMPLETE", "bytes": 94318, "sha256": "2f185509a9404fb8f6bffa5ca0f706b32f122b0adbf19d5414a3a195f28ec373"},
+    {"module": "mcp", "state": "CLAIMED", "bytes": 0, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+  ],
+  "currentApplicationRoleDumpProbe": {"classification": "INSUFFICIENT_PRIVILEGE", "exitCode": 1, "dumpBytes": 0, "stderrBytes": 584},
+  "originalStderrAvailable": false,
+  "migrationStarted": false,
+  "retainedBackupsAndJournalUnchanged": true,
+  "reconciliationPerformed": false,
+  "newRuntimeAuthorityIssued": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}

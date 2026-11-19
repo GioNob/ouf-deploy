@@ -1,0 +1,151 @@
+{
+  "schema": "ouf.m2-provider-worker-native-handoff-qualification.v1",
+  "date": "2026-10-31",
+  "timezone": "Europe/Rome",
+  "sourceCommit": "099306196613e3ad5988f8d5e3d6d0806edd862e",
+  "status": "PASS_PUSH_AND_PR_FINAL_NATIVE_REPORTS_READ",
+  "scope": "FINITE_INSTALLATION_HANDOFF_NOT_SEALED_INSTALLED_WORKER_OR_FULL_DOCKER_COMPOSITION",
+  "productionSourcesChanged": false,
+  "frozenCapsulesChanged": false,
+  "localWorkerTests": {
+    "tests": 13,
+    "seconds": 0.115,
+    "failures": 0,
+    "skips": 0
+  },
+  "retainedInitialFailure": {
+    "sourceCommit": "4d3965a999d43f9a6ad592eeae5a52883e7b02f0",
+    "push": {
+      "run": 41143707713,
+      "job": 124363746484
+    },
+    "pullRequest": {
+      "run": 41143712908,
+      "job": 124363763535
+    },
+    "finalLogsRead": true,
+    "state": "RETRY_WAIT",
+    "reason": "DNS_WINDOW_TOO_SHORT",
+    "attempts": 1,
+    "publicationCount": 0,
+    "initialInvocationElapsedSeconds": [
+      25.516,
+      25.275
+    ],
+    "initialFixtureRecompiledFullInstallerAdmissionOnEveryGuard": true,
+    "successor": "Validate actual admission predecessor once; retain exact current record custody/bytes, finite signed expiry and current parent/child and native generation checks. No production guard, TTL or retry policy changed."
+  },
+  "originalBaselineConsulted": {
+    "Matrix": "1.7 sections7.1–7.2",
+    "Blueprint": "0.3 sections9–10",
+    "Registry": "1.3 sections26.1/26.3",
+    "miniPetM2": "v1.3 and M2-DISC-STABLE criteria",
+    "resilience": "v3 rules4–10/15–16"
+  },
+  "limitations": {
+    "modeledDockerBoundary": true,
+    "syntheticImagesReviewAndRegistryPredecessor": true,
+    "sealedWorkerInstallationQualifiedInJointProof": false,
+    "workerMaterializationExecutedInJointProof": false,
+    "combinedNativeDockerCompositionProven": false,
+    "fullCohortProven": false,
+    "realMcpApplicationProven": false,
+    "capabilitiesPublished": false,
+    "farmacieToUdpProven": false,
+    "bootRotationAndTwoClientsProven": false,
+    "priorLocalMcpWorkerAnomalyCausesEstablished": false
+  },
+  "retained": {
+    "TeatriM1G4": "ACQUIRED_STEPWISE",
+    "FarmacieProfile": "SAME_SUCCEEDED_61_ROWS_10_COLUMNS",
+    "FarmacieChoices": "MINISTERIAL_STRING_ALL10OPEN",
+    "M2_G5_G6_G7": "OPEN",
+    "acceptanceTests": 24,
+    "uxCriteria": 8,
+    "discoveryStabilityCriteria": 8
+  },
+  "effects": {
+    "targetOperations": 0,
+    "newUploadsOrProfiling": 0,
+    "sourceAcquisitions": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "grants": 0,
+    "budgetReset": false,
+    "automaticReplayAllowed": false,
+    "merge": false,
+    "releaseAcceptance": false
+  },
+  "native": {
+    "push": {
+      "run": 41144149193,
+      "job": 124365161963,
+      "conclusion": "success",
+      "finalReportsRead": true,
+      "proof": {
+        "applicationE2EProven": false,
+        "combinedNativeDockerCompositionProven": false,
+        "concurrentInvocationDenied": true,
+        "currentFiniteAdmissionRecordSealsCheckedWithoutRecompilingInstaller": true,
+        "distinctWorkerProcess": true,
+        "dnsFailureRevokesBothFamiliesAndPersistsBackoff": true,
+        "finiteInstallerAdmissionOnly": true,
+        "fullCohortProven": false,
+        "fullInitialAdmissionSeconds": 2.526,
+        "modeledDockerBoundaryAndSyntheticImagesReviewRegistryPredecessor": true,
+        "nativeProviderPauseBlocksWorkerAndResumeDoesNotRearm": true,
+        "noDnsOrAttemptDuringPersistedWait": true,
+        "realDnsNftTwoFamilyPublicationAndRenewal": true,
+        "realV4ProviderAdmissionFeedsWorkerGuard": true,
+        "recoveryPreservesOriginalClocksIncidentAndCumulativeCounters": true,
+        "registryRemainsPausedAtClosedGate": true,
+        "releaseAcceptance": false,
+        "runtimeAuthorityIssued": false,
+        "sameKernelDnsBindingAndPreservedProviderJournal": true,
+        "sameRegistryProviderParentChildAndCommonLock": true,
+        "schema": "ouf.m2-provider-worker-native-handoff-ci.v1",
+        "sealedWorkerInstallationProven": false,
+        "targetApplyAuthorized": false
+      }
+    },
+    "pullRequest": {
+      "run": 41144156259,
+      "job": 124365184371,
+      "conclusion": "success",
+      "finalReportsRead": true,
+      "proof": {
+        "applicationE2EProven": false,
+        "combinedNativeDockerCompositionProven": false,
+        "concurrentInvocationDenied": true,
+        "currentFiniteAdmissionRecordSealsCheckedWithoutRecompilingInstaller": true,
+        "distinctWorkerProcess": true,
+        "dnsFailureRevokesBothFamiliesAndPersistsBackoff": true,
+        "finiteInstallerAdmissionOnly": true,
+        "fullCohortProven": false,
+        "fullInitialAdmissionSeconds": 2.113,
+        "modeledDockerBoundaryAndSyntheticImagesReviewRegistryPredecessor": true,
+        "nativeProviderPauseBlocksWorkerAndResumeDoesNotRearm": true,
+        "noDnsOrAttemptDuringPersistedWait": true,
+        "realDnsNftTwoFamilyPublicationAndRenewal": true,
+        "realV4ProviderAdmissionFeedsWorkerGuard": true,
+        "recoveryPreservesOriginalClocksIncidentAndCumulativeCounters": true,
+        "registryRemainsPausedAtClosedGate": true,
+        "releaseAcceptance": false,
+        "runtimeAuthorityIssued": false,
+        "sameKernelDnsBindingAndPreservedProviderJournal": true,
+        "sameRegistryProviderParentChildAndCommonLock": true,
+        "schema": "ouf.m2-provider-worker-native-handoff-ci.v1",
+        "sealedWorkerInstallationProven": false,
+        "targetApplyAuthorized": false
+      }
+    }
+  },
+  "retainedProductionQualification": {
+    "sourceCommit": "05456554165d73731f8a259c35d9f2f5d696cb19",
+    "testsPerEvent": 432,
+    "suitesPerEvent": 50,
+    "skips": 0,
+    "sourceFilesChangedByThisIncrement": false,
+    "newFullProtocolClaimed": false
+  }
+}

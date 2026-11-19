@@ -1,0 +1,14 @@
+{
+  "schema": "ouf.storage-host-containment-native-failure.v1",
+  "runId": 42306145691,
+  "jobId": 128195825395,
+  "sourceCommit": "8071d0bf776ad5a4dd0fef0196e7a80fb6605bed",
+  "unitTestsPass": 3,
+  "status": "FAIL",
+  "failure": "HOST_CLI_FAILED_NO_RETRY during GetUnitProcesses after five oneshots inactive",
+  "phase": "WAIT_ONESHOTS_BEFORE_REGISTRY_STOP",
+  "exactProviderErrorNotCaptured": true,
+  "targetOperationPerformed": false,
+  "correction": "Use exact bound cgroup v2 populated state or absent group, never interpret a failed method call as empty; native fixture covers initially inactive and active groups",
+  "acceptanceCreditAdded": 0
+}

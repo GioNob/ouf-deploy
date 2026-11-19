@@ -1,0 +1,68 @@
+{
+  "schema": "ouf.storage-g0-held-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "entryCommit": "a159a9bcf75eeb3de0b35da808dfdb09835ca0fd",
+  "collectorCommit": "9053aa382e8058b4bc30123750e719614a5ef564",
+  "operationId": "seaweedfs-g0-20261106-v1",
+  "decisionRef": "OUF-G0-COLLECT-20261106-01",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "childScopes": {},
+    "cumulativeEngineGets": 53,
+    "databaseExportsAttempted": 0,
+    "engineBytes": 285226,
+    "engineGets": 1,
+    "g0Complete": false,
+    "phase": "HOST_BEFORE",
+    "priorControls": 17,
+    "priorEngineGets": 52,
+    "reason": "G0_HOST_CONTAINER_LIMIT",
+    "runtimeAuthorityIssued": false,
+    "s3Requests": null,
+    "schema": "ouf.storage-g0-package-result.v1",
+    "scopeConsumed": true,
+    "sections": {
+      "ACCESS": {
+        "status": "NOT_COLLECTED"
+      },
+      "CAPACITY": {
+        "status": "NOT_COLLECTED"
+      },
+      "CUSTODY": {
+        "status": "NOT_COLLECTED"
+      },
+      "DB": {
+        "status": "NOT_COLLECTED"
+      },
+      "OBJECTS": {
+        "status": "NOT_COLLECTED"
+      },
+      "RUNTIME": {
+        "status": "NOT_COLLECTED"
+      },
+      "WINDOW": {
+        "status": "NOT_COLLECTED"
+      },
+      "WRITERS": {
+        "status": "NOT_COLLECTED"
+      }
+    },
+    "status": "HELD",
+    "targetWrites": 0,
+    "technicalCaptureComplete": false
+  },
+  "interpretation": {
+    "status": "CONSUMED_HELD_NOT_REPLAYABLE",
+    "sourceGuard": "type(rows) is list and 0 < len(rows) <= 64",
+    "listIncludesStoppedContainers": true,
+    "actualContainerCountKnown": false,
+    "rawListResponsePersisted": false,
+    "expectedRoleCount": 13,
+    "providerPhaseS3Reached": false,
+    "providerPhaseDatabaseReached": false,
+    "localReceiptReadbackPending": true,
+    "correctionDelivered": false
+  }
+}

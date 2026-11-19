@@ -1,0 +1,13 @@
+environment: dev
+identityProfileRef: contracts://identity/m2m-identity-integration-profile-v1
+telemetry:
+  otlpEndpointRef: env://telemetry/otlp
+secrets:
+  providerRef: env://secrets/provider
+database:
+  endpointRef: env://database/main
+  schema: ouf_module
+gateway:
+  serviceRef: env://gateway/service
+objectStorage:
+  endpointRef: env://object-storage/service

@@ -1,0 +1,242 @@
+{
+  "evidence/seaweedfs-source30-integrated-local-20261103/binary-module-delta.json": {
+    "sha256": "a28bd24953dc300c1bde6ff9b193c67a0909eb34601014423fff26f3ce70e553",
+    "bytes": 1159
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/build-info.txt": {
+    "sha256": "e8d477c3462d388954a1a3777e69c85f63aa101839959eead77d8d1abde7d87a",
+    "bytes": 22692
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/build.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/build.stdout": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/candidate-module/go.mod": {
+    "sha256": "2e7ef58f17dc8606f18c2c6851b79958b5240d6a1bc50ec637893437854bd070",
+    "bytes": 18876
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/candidate-module/go.sum": {
+    "sha256": "c9b923fd2b52b3780a41e785c95c20364dc63d4910ab30f907f0e31e8fe6e395",
+    "bytes": 134467
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/changed-source-files.json": {
+    "sha256": "f48b267c9604d4c7275dc173e17fcffabfd46d4d9e63b373eb6211f3d8f26a99",
+    "bytes": 9151
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/compat/compat-receipt.json": {
+    "sha256": "08febd174ebe46f5ede3ca86f1d38ff7980ea2ed7db9323c440adf6eec4ef45f",
+    "bytes": 920
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/compat/compat-tests.jsonl": {
+    "sha256": "0e9b95c4f50bdcd9995e36e8a72b53566290ac073bcacd4181859573c46cdfa9",
+    "bytes": 3159
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/compat/compat-tests.jsonl.stderr": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/compat/compat_test.go": {
+    "sha256": "76f2a6adcc11ed5031cf3ea324af948eae361883f7e9b5d75baa76bf41697c0c",
+    "bytes": 4438
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/compat/go.mod": {
+    "sha256": "9df974dcd0afe5a1758925caa90a3b570eac2bb4204d8cd2ab031a9fbf2af70e",
+    "bytes": 19101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/compat/go.sum": {
+    "sha256": "3cac299252e9f83555d613a171c7346ea539671d0f7fe08d69efa7dc438a4126",
+    "bytes": 134819
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/denied-elastic.log": {
+    "sha256": "5356f6b4b779463f717c1be2a582342fb377f73443ac78f71d2df78b289de884",
+    "bytes": 339
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/denied-kafka-openbao-vault.log": {
+    "sha256": "f11803ba23977e0db8db52c6696d533d405d2181b337e70476e2a6ff3bb3a3fa",
+    "bytes": 292
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/denied-kafka.log": {
+    "sha256": "6bca47fdfffbaf2756501ba0128bb5505ee02f796d2fe6a499332eabe447c970",
+    "bytes": 176
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/denied-openbao.log": {
+    "sha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+    "bytes": 162
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/denied-profiles.json": {
+    "sha256": "2c1e104b507fc599a3972e78cc59e19bb7539da6d09f38e08d95b68728a50cf7",
+    "bytes": 779
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/denied-rclone.log": {
+    "sha256": "19efbfc1192c284b61fc2e17b1ebf7205cce8ee5627ff0628ac25e3ba80fde53",
+    "bytes": 164
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/denied-vault.log": {
+    "sha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+    "bytes": 162
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/execution-record.json": {
+    "sha256": "5d9d93d4d236e9400d5be589672cdd132adbe645ca8fec54b55449a76a1e3187",
+    "bytes": 4607
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/facts-initial.json": {
+    "sha256": "60155bff7218414de35a274ffac890d4aa3652dfd1b35c28e3f69f56f0be2080",
+    "bytes": 2412
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/bolt30-DELIVERY_FILES.json": {
+    "sha256": "3fa042a98e3b86962d301d8514129f21f883cf709c1bf9cb6e400701afac6c6f",
+    "bytes": 2864
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/btree30-DELIVERY_FILES.json": {
+    "sha256": "c0c0021869c51d8e625a2789a808bed637cf9769373ef3546eea88e1057d5784",
+    "bytes": 1540
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/httpdown30-DELIVERY_FILES.json": {
+    "sha256": "d34e5a94336b2206a455f82332ce68fa2f67f2d7f389f1e5d33276e4a3cd44db",
+    "bytes": 2354
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/kafka-profile30-DELIVERY_FILES.json": {
+    "sha256": "d8e8105700bc46a8cc9c60c4831cbeb430f59bb16393c1bf11b513d3920761e2",
+    "bytes": 6753
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/mapstructure30-DELIVERY_FILES.json": {
+    "sha256": "f41dd816c39ec5167d147a4f48e85f538a38a822a69751bbb5f29814a36b5600",
+    "bytes": 2829
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/metrics30-DELIVERY_FILES.json": {
+    "sha256": "0a6095fc51c524c236c3ff43394baa93b4a7979c82b46704e7b0406a09be90cf",
+    "bytes": 6257
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/openbao-profile30-DELIVERY_FILES.json": {
+    "sha256": "0c76ac8941f4c83ec8dca850ff104ce5ea6431c158a95fd419f617221f88f002",
+    "bytes": 9770
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs.json": {
+    "sha256": "8373768cc9a9d7673c3538ce7c3f8743438f07055bd1fa130c48c79e5323b301",
+    "bytes": 2269
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/indexed-replay-receipt.json": {
+    "sha256": "de34d1c99a41c58d6971a0b7c7d3daceb415b3b2384a22216a4c9d46be2f4812",
+    "bytes": 345
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/module-input-parity.json": {
+    "sha256": "b45899a370375423f0ca9db8605db604e37a837c1c9d8da660a8496b1a0b2124",
+    "bytes": 2206
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/production-deps-delta.json": {
+    "sha256": "78791111afa623e496787231acd5c1907775298facff69a19187c411468b0538",
+    "bytes": 3468
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/production-deps.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/production-deps.txt": {
+    "sha256": "b5463bc0795b319fa6195640a419bd369fd5c9638ab99b153ba3aae7eb336a08",
+    "bytes": 72376
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/production-deps.unsorted": {
+    "sha256": "de9f2d482ce1795c06062f7839373967e6b95376987c973bb44fb64ea2bb0a2d",
+    "bytes": 72376
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/race.jsonl": {
+    "sha256": "02c6b3ff2794a8f3d2cda59338edad87559292a8ffc92bd969f53ec25ab1f3d4",
+    "bytes": 24903
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/race.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source-manifest.json": {
+    "sha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53",
+    "bytes": 1368
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source.tar.gz": {
+    "sha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+    "bytes": 11139
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/raw-retention.json": {
+    "sha256": "c2364b01ed93f64a2e1b57e6ce3708eab68b23ffb240f3ed948109e2a2ad6db2",
+    "bytes": 15388
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/regressions.jsonl.gz": {
+    "sha256": "e3a8b9a7db0399fe3a495a32e5da4a45192d5fbc4de3e5570cf8b04344e128a9",
+    "bytes": 500676
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/regressions.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/replayed-binary-identity.json": {
+    "sha256": "4d4a5b860dcd1e217d7d9d9d55085c4f643cefe860e2277f95adcdc9d15d18e3",
+    "bytes": 2169
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/replayed-binary-sha256.txt": {
+    "sha256": "8e9858e4f932a5337b70e9265f4a3cd0d858dce15ea2232c577220b2c7d02489",
+    "bytes": 193
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/replayed-build.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/replayed-build.stdout": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/root-module-graph.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/root-module-graph.txt": {
+    "sha256": "97e8b0ab27a020e79b05c952b091f25ce8ace095d075229f762a8b055bdf4f0a",
+    "bytes": 355805
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/root-modules.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/root-modules.txt": {
+    "sha256": "62a705884da9c05b13bfbec489d817c811dcda0ea4f2ed54942f9ea1d3408365",
+    "bytes": 34610
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/server-focused.jsonl": {
+    "sha256": "00423a06aa6f347153abf5a9ec95680c22a3e145bd38eb3e4135f07afa6fabf7",
+    "bytes": 7388
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/server-focused.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/storage-focused.jsonl": {
+    "sha256": "8cc7cd6dc55d1185485b3ebc802a1a58c18f70dad8e37bf5d984a42b5e2b2936",
+    "bytes": 89219
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/storage-focused.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/test-terminal-summary.json": {
+    "sha256": "57273d71b56fd7b234eb66a45192f7cdfcfe384445b2af84dd23e148b42c0ef8",
+    "bytes": 9510
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/tidy-after.diff": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/tidy-after.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/tidy.stderr": {
+    "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "bytes": 101
+  },
+  "evidence/seaweedfs-source30-integrated-local-20261103/tidy.stdout": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

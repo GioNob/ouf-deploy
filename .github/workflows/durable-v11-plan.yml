@@ -1,14 +1,6 @@
+# Qualificazione storica (2026-10-11): solo manuale, D-055
 name: Durable V11 source-bound declaration preparation qualification
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/durable-v11-plan.yml
-      - tools/semantic_application_cutover/rebase_verified_package.py
-      - scripts/prepare-current-durable-v11-plan.py
-      - tests/test_durable_v11_*.py
-      - releases/current-durable-v11-plan-20261011.sh
-      - tests/durable_v11_rebind_native.py
   workflow_dispatch:
 permissions:
   contents: read

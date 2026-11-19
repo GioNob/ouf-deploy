@@ -1,0 +1,27 @@
+{
+  "schema": "ouf.storage-capture-unsealed-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_TERMINAL_OUTPUT",
+  "readerCommit": "3cf8e2422ba4a56519dc39e6c113ff4120f369b9",
+  "decisionReference": "GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "archivePresent": false,
+    "archiveRehashed": false,
+    "captureDirectoryPresent": true,
+    "claimPresent": true,
+    "encryptedPartialPresent": false,
+    "innerClaimPresent": true,
+    "innerReceiptPresent": false,
+    "planPresent": true,
+    "providerRequests": 0,
+    "schema": "ouf.storage-capture-claim-readback.v1",
+    "status": "CAPTURE_OUTCOME_UNSEALED",
+    "targetWrites": 0
+  },
+  "captureLivenessProven": false,
+  "captureFailureCauseProven": false,
+  "readyForWindows": false,
+  "acceptanceCreditAdded": 0
+}

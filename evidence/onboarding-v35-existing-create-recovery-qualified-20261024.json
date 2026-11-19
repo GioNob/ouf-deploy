@@ -1,0 +1,84 @@
+{
+  "schema": "ouf.onboarding-v35-existing-create-recovery-qualification.v1",
+  "qualified": true,
+  "codeCommit": "45842a2dd38a1fde1b25052d5118b9fd9621cb62",
+  "sourceWorkflowCommit": "da274ab3f9cb303e3665fee0213f80979a9ed2e2",
+  "sourceProductCommit": "1b1222ceaa5af85a25c20857e7c8c1b548b12dc1",
+  "testedProductCommit": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+  "originalArtifactId": 12559990549,
+  "bundleSha256": "b1fea932736097753741ade8d70e0ab5de4fa4a27de585522c71aaa3abea3f4f",
+  "files": {
+    "recover.py": "8791d7e34368813fb2d9c5f51b30ab915e6054e0d3a93c501c5e2178dc24aba5",
+    "recovery.py": "6b4f8e3dd0d10992e7f0e35f01789b6227666887c0c41be391d2511bf28abff4",
+    "recovery_sql.py": "4e293886db276f9efcd4a32c7859836152e99230c1e447ae131daf13ff156c4a"
+  },
+  "bootstrapSha256": "d74d381777974f577da535df6a041a09334283bd25310b39dfb2859283728eba",
+  "sourceReadbackMatches": true,
+  "ci": [
+    {
+      "runId": 40135450245,
+      "jobId": 120995893916,
+      "nativePassed": 3,
+      "mainPassed": 2,
+      "skipped": 0,
+      "nativeSeconds": 176.191,
+      "mainSeconds": 0.01,
+      "logsRead": true
+    },
+    {
+      "runId": 40135454733,
+      "jobId": 120995906829,
+      "nativePassed": 3,
+      "mainPassed": 2,
+      "skipped": 0,
+      "nativeSeconds": 194.077,
+      "mainSeconds": 0.011,
+      "logsRead": true
+    }
+  ],
+  "qualification": {
+    "realDockerApi": "1.44",
+    "postgresMajor": 17,
+    "originalCiImage": true,
+    "actualNewContextConstructorAndOperator": true,
+    "actualPtyAndEd25519": true,
+    "sameCandidateAndOriginalJournalCas": true,
+    "oldSevenAppliedProofsPreserved": true,
+    "creationClaimExplicitlyReconciled": true,
+    "onePhysicalPsqlBackend": true,
+    "twoClosedReadOnlyTransactions": true,
+    "externalVerifierObservedSameBackendPidIdleWithoutTransaction": true,
+    "cumulativeSqlSessions": 6,
+    "cumulativeImageLoadAttempts": 1,
+    "cumulativeBackupProcesses": 2,
+    "cumulativeEngineWrites": 6,
+    "sourceAttempts": 3,
+    "sourceGeneration": 4,
+    "sourcePhase": "PAUSED",
+    "sourceBudgetSessions": 0,
+    "sourceReviewAndRevisionRowsPreserved": true,
+    "sixPeerGenerationsPreserved": true,
+    "wrongTerminalDeniedBeforeAdoption": true,
+    "parentSigkillStopsKnownCandidateOnce": true,
+    "parentSigkillClosesSql": true,
+    "receiptSignatureVerified": true
+  },
+  "fixtures": [
+    "historical private bindings and authority inputs/bootstrap",
+    "old authority expiry observation only in constructor; real clock restored before fresh authority",
+    "five hold-container peers"
+  ],
+  "notProven": [
+    "whole private target bootstrap",
+    "target recovery/current state/hostname short-id equality",
+    "host or Engine failure/reboot/permanent resilience",
+    "application E2E/F5/F6/release acceptance"
+  ],
+  "targetExecuted": false,
+  "targetRecoveryAuthorizedByTerminal": false,
+  "targetApplicationReadinessProven": false,
+  "oldRuntimeScopesConsumed": true,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

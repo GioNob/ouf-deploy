@@ -1,0 +1,178 @@
+{
+  "acceptanceTestsPassed": 0,
+  "artifact": {
+    "bytes": 123479,
+    "checksummedMembers": 10,
+    "expiresAt": "2027-02-01T20:48:45Z",
+    "id": 13269159873,
+    "members": 11,
+    "name": "seaweedfs-generation31-cohort-41715991128",
+    "path": "evidence/artifacts/seaweedfs-generation31-cohort-41715991128.zip",
+    "sha256": "f7e6a0a112f5aecc2cd8081c9769d4e3fd351fc8a6e4288f37f4f308bbeed998"
+  },
+  "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+  "candidateLockSha256": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba",
+  "checkedAtUtc": "2026-11-03T20:53:39.232753+00:00",
+  "checks": {
+    "cohortAttestationCreatedHosted": true,
+    "cohortAttestationCryptographicallyReverifiedLocally": false,
+    "cohortAttestationSubjectSha256": "150d932b7cea1c1b3831f627e5d6217b45c3dd78c4bbe198b780713e707fe767",
+    "cohortAttestationUrl": "https://github.com/GioNob/ouf-deploy/attestations/63293492",
+    "exactModuleDownloadRecords": 234,
+    "hostedReceiptEqualsIndependentLocalReplay": true,
+    "modifiedLocalMplFiles": 6,
+    "moduleLegalTexts": 324,
+    "moduleZipBytesReverifiedHosted": 387899941,
+    "mplSourceArchives": 7,
+    "orderedPatches": 31,
+    "publisherSignatureReverifiedHosted": true,
+    "publisherVerificationRecordLocallyBound": true,
+    "rootLegalFiles": [
+      {
+        "path": "LICENSE",
+        "sha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613"
+      },
+      {
+        "path": "seaweed-volume/vendor/reed-solomon-erasure/LICENSE",
+        "sha256": "590944b7d6584b19e089020fb61305d2ac45c83e1bff7cdea9831bc1ec435e5d"
+      },
+      {
+        "path": "weed/admin/static/licenses/bootstrap-icons-LICENSE.txt",
+        "sha256": "0fb3e11bd57e896c5a512afd64864d28a37de45d19835016c87ca1ad19ead969"
+      },
+      {
+        "path": "weed/admin/static_gz/licenses/bootstrap-icons-LICENSE.txt.gz",
+        "sha256": "518cff9d74416ebe27c6f5ba1acc026ea68b1f621af21dfcfad126b19c7a3fe1"
+      },
+      {
+        "path": "weed/glog/LICENSE",
+        "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68"
+      },
+      {
+        "path": "weed/iam/wire/LICENSE",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "weed/iam/wire/NOTICE",
+        "sha256": "a6e830174d62dafad3a718384772ea1f4c0e27989f050932dc442a5e3ddad080"
+      },
+      {
+        "path": "weed/s3api/wire/LICENSE",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "weed/s3api/wire/NOTICE",
+        "sha256": "a6e830174d62dafad3a718384772ea1f4c0e27989f050932dc442a5e3ddad080"
+      },
+      {
+        "bytes": 15952,
+        "path": "weed/util/raftstore/LICENSE",
+        "sha256": "977d08f671b26f63c6e8b9783aa1dc91ba8a01afe1aa10549281a9d388749857",
+        "source": "modified-local-raftstore-MPL"
+      }
+    ]
+  },
+  "cohortJobs": [
+    {
+      "completedAt": "2026-11-03T20:48:57Z",
+      "conclusion": "success",
+      "id": 126195989629,
+      "name": "verify-boundaries"
+    },
+    {
+      "completedAt": "2026-11-03T20:51:48Z",
+      "conclusion": "success",
+      "id": 126196091521,
+      "name": "qualify-cohort"
+    }
+  ],
+  "cohortReceiptSha256": "b9d72ddeee6f96c392604008f6f9b4b1f4bffaef56142851fe3cea3bbf37c798",
+  "dependencyMaintenance": {
+    "allDependenciesMaintained": false,
+    "status": "OPEN"
+  },
+  "durableImageCustody": "OPEN",
+  "finalWorkflowConclusion": "success",
+  "gatesClosed": 0,
+  "generation": 31,
+  "legalTextRebindingSha256": "afbd138bd0bf5db48dd6b4c223695a2a20d03c6ac66f8805c010076f3aac26b9",
+  "licenceReview": "OPEN",
+  "modifiedMplSource": {
+    "archiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+    "manifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+  },
+  "ociManifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484",
+  "producerCommit": "5d0d456bec5073192b8a1a86e35bb0dcbd97a6b5",
+  "producerRunId": 41712811559,
+  "redistributionAccepted": false,
+  "relatedRuntimeReceipt": {
+    "path": "evidence/seaweedfs-generation31-runtime-hosted-20261103.json",
+    "sha256": "ff19d07d485e287492593f8439e426b293be8dc2669ba064e93dff9d0b60b0a3"
+  },
+  "releaseAdmitted": false,
+  "retainedRawEvidence": {
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort-metadata.json": {
+      "bytes": 29317,
+      "sha256": "2e49974e9b9c9fc65f44702b59d8071315ae1eee6d6527d8bfceb3a83d3a9fbc"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/SHA256SUMS": {
+      "bytes": 948,
+      "sha256": "150d932b7cea1c1b3831f627e5d6217b45c3dd78c4bbe198b780713e707fe767"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/cohort-receipt.json": {
+      "bytes": 1313,
+      "sha256": "b9d72ddeee6f96c392604008f6f9b4b1f4bffaef56142851fe3cea3bbf37c798"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/licence-rebinding.json": {
+      "bytes": 189079,
+      "sha256": "afbd138bd0bf5db48dd6b4c223695a2a20d03c6ac66f8805c010076f3aac26b9"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/modified-raftstore-source-manifest.json": {
+      "bytes": 1368,
+      "sha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/modified-raftstore-source.tar.gz": {
+      "bytes": 11139,
+      "sha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/module-downloads.jsonl": {
+      "bytes": 165001,
+      "sha256": "6a3371a0deeacdf7e4fd3bceb477ad31e7a2516e165c8cd81927d0ea3818cb14"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/ordered-patches.txt": {
+      "bytes": 1641,
+      "sha256": "083f8605478d0fe5a53418fcff622c0d11926cc23e59f8151c3e67e4eaea3a5d"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/producer/SHA256SUMS": {
+      "bytes": 1876,
+      "sha256": "c30455a9b5aba7730e2eac74f2445ab9c0f279f4047ae0458f70d89a11002873"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/producer/provenance.json": {
+      "bytes": 11992,
+      "sha256": "7678c24718b3b4ec26d8c7fa36b533148c2412f195594d572cfb228ee5a26fe9"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/publisher-verification.json": {
+      "bytes": 15264,
+      "sha256": "ff17e4f74630fe9c6cbbebfbe8245aaea98fcc3716ce967f9cef15b452978c87"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/seaweedfs-452-generation31-candidate-lock-20261103.json": {
+      "bytes": 5826,
+      "sha256": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba"
+    },
+    "evidence/seaweedfs-452-generation31-cohort-hosted-20261103/qualify-cohort.log": {
+      "bytes": 51246,
+      "sha256": "297c129fc3dac237b2848af5b5474a8ddf84250aca13f6c506fb1cd0168c0cf9"
+    }
+  },
+  "runAttempt": 1,
+  "runId": 41715991128,
+  "runtimeAuthorityIssued": false,
+  "runtimeLabsStatusAtCheck": "SEPARATE_RECEIPT_REQUIRED",
+  "schema": "ouf.seaweedfs-generation31-hosted-cohort.v1",
+  "scope": "Repository synthetic qualification only; no target scope consumed or acceptance gate closure.",
+  "sourceCommit": "9ead15c56717c2e301eeb1a2bc1af38b007bfdb8",
+  "status": "HOSTED_TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
+  "targetOperations": 0,
+  "wholeWorkflowConclusionAtCheck": null,
+  "workflow": ".github/workflows/storage-452-generation31-cohort.yml"
+}

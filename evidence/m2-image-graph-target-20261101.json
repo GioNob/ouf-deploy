@@ -1,0 +1,272 @@
+{
+  "absentExplicitOtherPlatformManifests": 13,
+  "absentManifestReferences": 22,
+  "absentUnknownNonruntimeManifests": 9,
+  "affectedArchiveOrdinals": [
+    0,
+    1,
+    5,
+    7
+  ],
+  "all13ClassicMissingMemberCountsZero": true,
+  "all13ClassicToOciRuntimeMatchesUnique": true,
+  "automaticReplayAllowed": false,
+  "cumulativeControlAttempts": 10,
+  "cumulativeDirectEngineGets": 35,
+  "date": "2026-11-01",
+  "evidenceOrigin": "OPERATOR_PASTED_PUBLIC_RESULT_AND_EXIT_FOOTER",
+  "exitFooter": "ImageGraphDiagnosticExit=0",
+  "independentPrivateRecordReadByAgent": false,
+  "next": "Qualify exact native-index-to-classic selected runtime byte proof. Validate missing sibling contexts rather than blanket skip; config/every selected layer/diffID mandatory; source/publisher/admission separate.",
+  "oldDiagnosticCommandRetired": true,
+  "privateGraphProofHash": "f54c14e334545054a4c6d3f56d51c3ad9d8c4038653dd2c813b4408dabc295ea",
+  "publicResultCanonicalSha256": "95e66e217be370477f7bece3a3ac7313857c92d73dd7d6fabd41c2200f67cea7",
+  "receipt": {
+    "allNinePriorScopesPreserved": true,
+    "archiveBytesHashed": 2774726144,
+    "archives": [
+      {
+        "archiveOrdinal": 0,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 18,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [
+          {
+            "context": "INDEX_MEMBER",
+            "count": 1,
+            "inlineDataPresent": false,
+            "mediaClass": "IMAGE_MANIFEST",
+            "platformClass": "EXPLICIT_OTHER_PLATFORM",
+            "presenceClass": "ABSENT"
+          },
+          {
+            "context": "INDEX_MEMBER",
+            "count": 1,
+            "inlineDataPresent": false,
+            "mediaClass": "IMAGE_MANIFEST",
+            "platformClass": "UNKNOWN_NONRUNTIME",
+            "presenceClass": "ABSENT"
+          }
+        ],
+        "missingReferences": 2,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 2
+      },
+      {
+        "archiveOrdinal": 1,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 26,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [
+          {
+            "context": "INDEX_MEMBER",
+            "count": 8,
+            "inlineDataPresent": false,
+            "mediaClass": "IMAGE_MANIFEST",
+            "platformClass": "EXPLICIT_OTHER_PLATFORM",
+            "presenceClass": "ABSENT"
+          },
+          {
+            "context": "INDEX_MEMBER",
+            "count": 6,
+            "inlineDataPresent": false,
+            "mediaClass": "IMAGE_MANIFEST",
+            "platformClass": "UNKNOWN_NONRUNTIME",
+            "presenceClass": "ABSENT"
+          }
+        ],
+        "missingReferences": 14,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 14
+      },
+      {
+        "archiveOrdinal": 2,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 15,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [],
+        "missingReferences": 0,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 0
+      },
+      {
+        "archiveOrdinal": 3,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 10,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [],
+        "missingReferences": 0,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 0
+      },
+      {
+        "archiveOrdinal": 4,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 10,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [],
+        "missingReferences": 0,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 0
+      },
+      {
+        "archiveOrdinal": 5,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 15,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [
+          {
+            "context": "INDEX_MEMBER",
+            "count": 2,
+            "inlineDataPresent": false,
+            "mediaClass": "IMAGE_MANIFEST",
+            "platformClass": "EXPLICIT_OTHER_PLATFORM",
+            "presenceClass": "ABSENT"
+          },
+          {
+            "context": "INDEX_MEMBER",
+            "count": 2,
+            "inlineDataPresent": false,
+            "mediaClass": "IMAGE_MANIFEST",
+            "platformClass": "UNKNOWN_NONRUNTIME",
+            "presenceClass": "ABSENT"
+          }
+        ],
+        "missingReferences": 4,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 4
+      },
+      {
+        "archiveOrdinal": 6,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 6,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [],
+        "missingReferences": 0,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 0
+      },
+      {
+        "archiveOrdinal": 7,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 14,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [
+          {
+            "context": "INDEX_MEMBER",
+            "count": 2,
+            "inlineDataPresent": false,
+            "mediaClass": "IMAGE_MANIFEST",
+            "platformClass": "EXPLICIT_OTHER_PLATFORM",
+            "presenceClass": "ABSENT"
+          }
+        ],
+        "missingReferences": 2,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 2
+      },
+      {
+        "archiveOrdinal": 8,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 12,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [],
+        "missingReferences": 0,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 0
+      },
+      {
+        "archiveOrdinal": 9,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 19,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [],
+        "missingReferences": 0,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 0
+      },
+      {
+        "archiveOrdinal": 10,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 12,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [],
+        "missingReferences": 0,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 0
+      },
+      {
+        "archiveOrdinal": 11,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 10,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [],
+        "missingReferences": 0,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 0
+      },
+      {
+        "archiveOrdinal": 12,
+        "classicMatchesPresentRuntimeManifests": 1,
+        "classicMissingMembers": 0,
+        "descriptorReferencesObserved": 10,
+        "layoutKind": "OCI",
+        "missingReferenceGroups": [],
+        "missingReferences": 0,
+        "requestedDigestDocumentPresent": true,
+        "unobservedManifestSubgraphs": 0
+      }
+    ],
+    "automaticReplayAllowed": false,
+    "captureReplayed": false,
+    "completeDiagnostic": true,
+    "configurationMembersOpened": 0,
+    "credentialFileReads": 0,
+    "cumulativeControlAttempts": 10,
+    "cumulativeDirectEngineGets": 35,
+    "directEngineGets": 0,
+    "expandedLayerBytesRead": 0,
+    "externalBlobFetches": 0,
+    "failedResultHash": "8bec830155b26ee665298b6e35f8bb53d41e1ee8ba0333e4e2209829dfea1380",
+    "imageCount": 13,
+    "layerMembersOpened": 0,
+    "metadataBytesRead": 56385,
+    "missingBlobAdmitted": false,
+    "missingReferences": 22,
+    "mountedHostFileContentBytesRead": 0,
+    "nativeImageByteIdentityProven": false,
+    "newDiagnosticControlScopeCreated": true,
+    "privateEvidenceHash": "f54c14e334545054a4c6d3f56d51c3ad9d8c4038653dd2c813b4408dabc295ea",
+    "publisherTrustAccepted": false,
+    "releaseAcceptance": false,
+    "runtimeAuthorityIssued": false,
+    "runtimeBudgetResetOrGrant": false,
+    "schema": "ouf.retained-image-graph-diagnostic-result.v1",
+    "sourcePublisherAuthenticated": false,
+    "status": "PRIVATE_IMAGE_GRAPH_STRUCTURE_DIAGNOSED_NOT_ADMITTED",
+    "targetApplyAuthorized": false,
+    "verificationReplayed": false
+  },
+  "releaseAcceptance": false,
+  "remainingArchiveCountWithoutAbsentReferences": 9,
+  "runtimeAuthorityIssued": false,
+  "runtimeBudgetResetOrGrant": false,
+  "schema": "ouf.m2-image-graph-target.v1",
+  "scope": "/etc/ouf/deploy-snapshots/m2-image-graph-diagnostic-fa95a719-20261101-v1",
+  "scopeConsumed": true,
+  "targetApplyAuthorized": false,
+  "targetSelectedRuntimeBytesVerified": false,
+  "timezone": "Europe/Rome"
+}

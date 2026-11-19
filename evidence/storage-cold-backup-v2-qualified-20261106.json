@@ -1,0 +1,72 @@
+{
+  "schema": "ouf.storage-cold-backup-v2-qualification.v1",
+  "status": "PASS_SYNTHETIC_NOT_TARGET_ACCEPTANCE",
+  "sourceCommit": "562f2ca3efe0dd9052d3dce3f5abffb25380a918",
+  "runId": 42280383267,
+  "jobId": 128107502246,
+  "localTestsPassed": 17,
+  "hostedTestsPassed": 17,
+  "sameCasesNot34Distinct": true,
+  "rerunReason": "Changed production handling for exact protected /run files and stopped outside-roster source sharing; native fixture extended for both cases.",
+  "artifact": {
+    "id": 13534113972,
+    "bytes": 576,
+    "sha256": "575c8dd3eec098616eb60cfec37865d9cb572a4f5a18341c4496d282bae40d2b",
+    "expiresAt": "2027-02-04T19:31:34Z",
+    "members": [
+      "native-result.json"
+    ],
+    "memberSha256": "e17156991a330259d43592746210c12187e805ebfe058e500df6919a99341ce7",
+    "downloadedAndVerified": true
+  },
+  "nativeResult": "evidence/storage-cold-backup-v2-native-result-20261106.json",
+  "sources": {
+    "scripts/storage-cold-backup.py": {
+      "bytes": 27538,
+      "sha256": "74164357d05631f71c2dd86cf4a071abed61fa2a132e1652d77b927f86a58c2a"
+    },
+    "tests/test_storage_cold_backup.py": {
+      "bytes": 10659,
+      "sha256": "e471242c6caad16a5f9d423f4ce5ff371013c26d5d064f7cd3d92dc9ce6ed1e9"
+    },
+    "tests/qualify_storage_cold_backup_native.py": {
+      "bytes": 14276,
+      "sha256": "e05113e68555530d229359ac82ce1211e2456318457c149bcbd731d3b020ac4a"
+    },
+    ".github/workflows/storage-cold-backup.yml": {
+      "bytes": 1457,
+      "sha256": "fdd23aa1651785ff3575acaf0a1852a9aa1d46156aed2cc7d3952496c14be3ca"
+    }
+  },
+  "exactGitSourcesCompared": 4,
+  "nativeScenarios": {
+    "reviewedRunFileRestored": true,
+    "unsafeWritableRunFileRejected": true,
+    "neverStartedSharingContainerBound": true,
+    "databasesRestored": 3,
+    "objectsRestored": 1,
+    "objectBytes": 118784,
+    "encryptedArchiveBytesSyntheticOnly": 1538608068,
+    "sameDaemonSeparateDataRoots": true,
+    "replayRejected": true
+  },
+  "operatorMountReceipt": "evidence/storage-cold-mounts-operator-20261106.json",
+  "targetV2Prepared": false,
+  "targetStopped": false,
+  "targetCaptured": false,
+  "independentTargetRestore": false,
+  "effectiveRuntimeMountContentsProven": false,
+  "wholeTargetCohortQualified": false,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0,
+  "v1AttemptPreserved": true,
+  "v1InstalledProgramMustRemainUnchanged": true,
+  "installerChecks": [
+    "bash-and-python-syntax",
+    "exact-bytes-and-mode",
+    "existing-target-not-overwritten",
+    "bad-download-rejected"
+  ],
+  "installerTargetExecuted": false,
+  "previousQualificationHistory": "evidence/storage-cold-backup-qualified-20261106.json"
+}

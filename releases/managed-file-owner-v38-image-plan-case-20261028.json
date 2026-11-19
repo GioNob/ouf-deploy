@@ -1,0 +1,108 @@
+{
+  "additionalMigrations": [
+    {
+      "flywayChecksum": -1759510701,
+      "script": "V37__managed_file_intake_tenant.sql",
+      "sha256": "08391f9a0c0e433be45c57cd3a59eee7b2b9e817fcb4fcf3cc0ab1f1a8967014",
+      "version": "37"
+    },
+    {
+      "flywayChecksum": 1580630731,
+      "script": "V38__managed_file_legacy_owner_reconciliation.sql",
+      "sha256": "97c4f01241f99ec6547955e2eccbac1eeb2034f9bec2aa03b8f577fee5e2bde1",
+      "version": "38"
+    }
+  ],
+  "candidateNativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+  "candidateSourceCommit": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+  "captureHash": "8a4c84756a663c3eb3a6b6c615d5efccf0c67b3c6ac2281ff9633c9a93de6224",
+  "captureResult": {
+    "acquisitionsExecuted": 0,
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "captureAccounting": {
+      "cumulativeCounts": {
+        "bytes": 1293351,
+        "engineGets": 32,
+        "privateMetadataReads": 7,
+        "sqlSessions": 1
+      },
+      "currentScopeCounts": {
+        "bytes": 719512,
+        "engineGets": 27,
+        "privateMetadataReads": 4,
+        "sqlSessions": 0
+      },
+      "lineageStart": "/etc/ouf/deploy-snapshots/managed-file-ownership-read-0990401f-20261028-v1",
+      "retainedConsumedScopeCounts": {
+        "bytes": 573839,
+        "engineGets": 5,
+        "privateMetadataReads": 3,
+        "sqlSessions": 1
+      }
+    },
+    "cohortSize": 13,
+    "complete": true,
+    "configurationFileContentReads": 0,
+    "contextPath": "/etc/ouf/deploy-snapshots/managed-file-owner-recovery-inputs-1c0cff56-20261028-v1",
+    "counts": {
+      "bytes": 719512,
+      "engineGets": 27,
+      "privateMetadataReads": 4
+    },
+    "credentialFileReads": 0,
+    "currentJobOrBudgetStateObserved": false,
+    "databaseSchemaObservedByThisCapture": false,
+    "engineWrites": 0,
+    "humanBudgetsGranted": 0,
+    "iamRequests": 0,
+    "imageImports": 0,
+    "inputsHash": "8a4c84756a663c3eb3a6b6c615d5efccf0c67b3c6ac2281ff9633c9a93de6224",
+    "nativePlanPrepared": false,
+    "newGrantsGranted": 0,
+    "newJobs": 0,
+    "oauthRequests": 0,
+    "releaseAcceptance": false,
+    "resumes": 0,
+    "retainedJobObservation": {
+      "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+      "cumulativeAttempts": 5,
+      "expectedVersion": 0,
+      "generation": 0,
+      "hasRecoverySession": false,
+      "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+      "status": "FAILED"
+    },
+    "retainedOwnershipReadHash": "1c0cff56d38d831bb0b0ea90674d754f2331601b771b7b347f2249977c7f7ad1",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.managed-file-owner-recovery-input-capture-result.v1",
+    "signingKeyReads": 0,
+    "sourceActivations": 0,
+    "sqlSessions": 0,
+    "status": "MANAGED_FILE_OWNER_RECOVERY_INPUTS_CAPTURED_NOT_AUTHORIZED",
+    "targetApplyAuthorized": false,
+    "targetRoles": [
+      "onboarding"
+    ],
+    "unchangedPeers": 12,
+    "uploads": 0
+  },
+  "captureResultHash": "e79af0afea1ae9518cbb9dea9f45efbf423757e1d5786cca7255308392d9ffb1",
+  "captureRoot": "/etc/ouf/deploy-snapshots/managed-file-owner-recovery-inputs-1c0cff56-20261028-v1",
+  "helperHashes": {
+    "common_image_plan": "d95720bd315b2f7e08378ecc60250088b4173601705297ca65a904f9316a3375",
+    "image_custody": "5d0fc0edb1ebd9386326eadbbee08f2cf0a9fd1e122940c0661b5ac5e3655ed8",
+    "plan_helper": "09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd",
+    "retained_mac": "cb5dbbee4a80ce71860dfe5d32362a662d98898c58fd82009e69c5eb6ac1f7ce",
+    "stage_image": "9c036afc5256c6f845d545439ee8c677e720b0b2036dc3ed0b5b0fac78109955"
+  },
+  "imageReceiptHash": "86fc046d024e1942992631881e07e4d6600151616623e4fc3b8be05c77e9fb6c",
+  "installedNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
+  "outputRoot": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-image-plan-8a4c8475-20261028-v1",
+  "ownershipReadHash": "1c0cff56d38d831bb0b0ea90674d754f2331601b771b7b347f2249977c7f7ad1",
+  "retainedApplyResultHash": "1c452fa61251395b18c800ee0aceefa9cce09e068807b85729d0857ff9b547bf",
+  "retainedReviewHash": "0990401fb938c73c13bd6be090c04a5291bfe52aa06d9546cdaf7e13659a10b8",
+  "schema": "ouf.managed-file-owner-recovery-image-plan-case.v1",
+  "targetApplyAuthorized": false
+}

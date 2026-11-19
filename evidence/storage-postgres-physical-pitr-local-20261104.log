@@ -1,0 +1,14 @@
+test_archive_duplicate_is_verified_and_corruption_not_overwritten (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_archive_duplicate_is_verified_and_corruption_not_overwritten) ... ok
+test_backup_symlink_cannot_escape_original_tree (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_backup_symlink_cannot_escape_original_tree) ... ok
+test_missing_wal_returns_failure_without_making_destination (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_missing_wal_returns_failure_without_making_destination) ... ok
+test_name_path_traversal_and_absolute_destination_are_rejected (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_name_path_traversal_and_absolute_destination_are_rejected) ... ok
+test_packaging_retains_all_original_file_bytes (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_packaging_retains_all_original_file_bytes) ... ok
+test_regular_file_byte_limit (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_regular_file_byte_limit) ... ok
+test_restore_requires_the_actual_archived_bytes (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_restore_requires_the_actual_archived_bytes) ... ok
+test_shell_config_paths_do_not_accept_interpolation (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_shell_config_paths_do_not_accept_interpolation) ... ok
+test_symlink_wal_and_destination_are_rejected (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_symlink_wal_and_destination_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.011s
+
+OK

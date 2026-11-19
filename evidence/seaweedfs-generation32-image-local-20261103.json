@@ -1,0 +1,76 @@
+{
+  "schema": "ouf.seaweedfs-generation32-image-pipeline-local.v1",
+  "status": "PIPELINE_AND_ACTUAL_SOURCE_PINS_VERIFIED_HOSTED_QUALIFICATION_PENDING",
+  "generation": 32,
+  "manifestSha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "orderedPatches": 32,
+  "lastPatch": {
+    "path": "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch",
+    "sha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9"
+  },
+  "patchedSourceTree": "d58d388bd4b791ffbc41814cc670af44af20f47c",
+  "binarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+  "compiledPackages": 1533,
+  "binaryDependencyModules": 215,
+  "source32Receipt": {
+    "path": "evidence/seaweedfs-source32-integrated-local-20261103.json",
+    "sha256": "3bda090e8b62cd0e5cc0fcf18b1e26d1bdec6b3f10cb2e51c9d7bd34891952f0"
+  },
+  "tests": {
+    "generation32PipelinePassed": 43,
+    "immutableRuntimePassed": 12,
+    "preliminaryBoundaryPassed": 5
+  },
+  "actualObservedProfiles": {
+    "main": {
+      "pass_tests": 6656,
+      "pass_packages": 41,
+      "skip_packages": 9,
+      "skip_tests": 12
+    },
+    "server": {
+      "pass_tests": 982,
+      "skip_tests": 2,
+      "pass_packages": 1
+    },
+    "storage": {
+      "pass_tests": 54,
+      "skip_tests": 2,
+      "pass_packages": 1
+    },
+    "race": {
+      "pass_tests": 185,
+      "pass_packages": 3
+    }
+  },
+  "shellLocalObservation": {
+    "pass": 296,
+    "fail": 10,
+    "requiredHostedTestsAllPass": 306,
+    "convertedFailuresToPass": false
+  },
+  "serverTLSLocalSkipsPreserved": true,
+  "serverTLSHostedPassRequired": [
+    "TestGuardedPeerHTTPClientUploadsOverTLS",
+    "TestGuardedPeerHTTPClientRejectsHTTPSDowngrade"
+  ],
+  "sourceFilesSealed": 46,
+  "artifactMemberCount": 22,
+  "checksumMemberCount": 20,
+  "freshRawScanAndSPDXRequired": true,
+  "newProducerProvenanceAndIndependentReadbackRequired": true,
+  "actualImageScanRun": false,
+  "actualSPDXProduced": false,
+  "actualOCIQualifiedLocally": false,
+  "syntheticUnitImagesAreNotCandidateEvidence": true,
+  "dependencyMaintenance": {
+    "status": "OPEN",
+    "allDependenciesMaintained": false
+  },
+  "yamlLifecycleStatus": "OPEN",
+  "rootModuleGraphLegacyEdgesRemain": true,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0
+}

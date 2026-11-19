@@ -1,0 +1,1041 @@
+diff --git a/go.mod b/go.mod
+--- a/go.mod
++++ b/go.mod
+@@ -64,7 +64,7 @@
+ 	github.com/xdg-go/stringprep v1.0.4 // indirect
+ 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
+ 	go.etcd.io/etcd/client/v3 v3.7.1
+-	go.mongodb.org/mongo-driver v1.17.9
++	go.mongodb.org/mongo-driver/v2 v2.9.2
+ 	go.opencensus.io v0.24.0 // indirect
+ 	gocloud.dev v0.47.0
+ 	gocloud.dev/pubsub/natspubsub v0.46.0
+@@ -307,7 +307,6 @@
+ 	github.com/mattn/go-colorable v0.1.15 // indirect
+ 	github.com/mattn/go-runewidth v0.0.24 // indirect
+ 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
+-	github.com/montanaflynn/stats v0.7.1 // indirect
+ 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+ 	github.com/nats-io/nats.go v1.49.0 // indirect
+ 	github.com/nats-io/nkeys v0.4.15 // indirect
+diff --git a/go.sum b/go.sum
+--- a/go.sum
++++ b/go.sum
+@@ -680,8 +680,6 @@
+ github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
+ github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
+ github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
+-github.com/montanaflynn/stats v0.7.1 h1:etflOAAHORrCC44V+aR6Ftzort912ZU+YLiSTuV8eaE=
+-github.com/montanaflynn/stats v0.7.1/go.mod h1:etXPPgVO6n31NxCd9KQUMvCM+ve0ruNzt6R8Bnaayow=
+ github.com/morikuni/aec v1.1.0 h1:vBBl0pUnvi/Je71dsRrhMBtreIqNMYErSAbEeb8jrXQ=
+ github.com/morikuni/aec v1.1.0/go.mod h1:xDRgiq/iw5l+zkao76YTKzKttOp2cwPEne25HDkJnBw=
+ github.com/mschoch/smat v0.2.0 h1:8imxQsjDm8yFEAVBe7azKmKSgzSkZXDuKkSq9374khM=
+@@ -1051,8 +1049,8 @@
+ go.etcd.io/etcd/client/pkg/v3 v3.7.1/go.mod h1:cnzZGIUzSfjEwLC6UBVsSXlEK1eepS/JUD7wE6PLRT0=
+ go.etcd.io/etcd/client/v3 v3.7.1 h1:0PEMMC0KuZmVIN+RAbdqfkZ45pYTgKVtmBEbRCvZFUg=
+ go.etcd.io/etcd/client/v3 v3.7.1/go.mod h1:ffNqALa8tRCYhYo1F9oR489y23K39Gz+BSR3ApAGYq0=
+-go.mongodb.org/mongo-driver v1.17.9 h1:IexDdCuuNJ3BHrELgBlyaH9p60JXAvdzWR128q+U5tU=
+-go.mongodb.org/mongo-driver v1.17.9/go.mod h1:LlOhpH5NUEfhxcAwG0UEkMqwYcc4JU18gtCdGudk/tQ=
++go.mongodb.org/mongo-driver/v2 v2.9.2 h1:OCAdjI37pC/SVxucz/9CM8zD4jCdegtsY5QcKzYFCgE=
++go.mongodb.org/mongo-driver/v2 v2.9.2/go.mod h1:SHKN0IWkKmEVGHLjXnni6s4wPKX4v86FTgOeJJFuXcA=
+ go.opencensus.io v0.24.0 h1:y73uSU6J157QMP2kn2r30vwW1A2W2WFwSCGnAVxeaD0=
+ go.opencensus.io v0.24.0/go.mod h1:vNK8G9p7aAivkbmorf4v+7Hgx+Zs0yY+0fOtgBfjQKo=
+ go.opentelemetry.io/auto/sdk v1.2.1 h1:jXsnJ4Lmnqd11kwkBV2LgLoFMZKizbCi5fNZ/ipaZ64=
+diff --git a/weed/filer/mongodb/mongodb_options_v2_test.go b/weed/filer/mongodb/mongodb_options_v2_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/filer/mongodb/mongodb_options_v2_test.go
+@@ -0,0 +1,248 @@
++package mongodb
++
++import (
++	"context"
++	"crypto/ecdsa"
++	"crypto/elliptic"
++	"crypto/rand"
++	"crypto/x509"
++	"crypto/x509/pkix"
++	"encoding/pem"
++	"errors"
++	"go.mongodb.org/mongo-driver/v2/bson"
++	"math/big"
++	"os"
++	"path/filepath"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/seaweedfs/seaweedfs/weed/filer"
++	"go.mongodb.org/mongo-driver/v2/mongo"
++	"go.mongodb.org/mongo-driver/v2/mongo/options"
++	"go.mongodb.org/mongo-driver/v2/mongo/writeconcern"
++)
++
++func TestMongoV2OptionsPreserveAuthTopologyAndExplicitOverrides(t *testing.T) {
++	uri := "mongodb://uriuser:uripass@127.0.0.1:27017/db?authSource=authdb&authMechanism=SCRAM-SHA-256&replicaSet=rs-fixture&maxPoolSize=9&readPreference=secondaryPreferred&retryWrites=true&retryReads=false&timeoutMS=1200&w=majority&compressors=zstd"
++	opts, err := mongodbClientOptions(uri, 3, false, "", "", "", "override-user", "override-pass", false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if opts.Auth == nil || opts.Auth.Username != "override-user" || opts.Auth.Password != "override-pass" || !opts.Auth.PasswordSet || opts.Auth.AuthSource != "authdb" || opts.Auth.AuthMechanism != "SCRAM-SHA-256" {
++		t.Fatal("URI authentication fields or explicit credentials changed")
++	}
++	if opts.MaxPoolSize == nil || *opts.MaxPoolSize != 3 || opts.ReplicaSet == nil || *opts.ReplicaSet != "rs-fixture" || opts.Timeout == nil || *opts.Timeout != 1200*time.Millisecond || opts.WriteConcern.W != "majority" || opts.ReadPreference.Mode().String() != "secondaryPreferred" || len(opts.Compressors) != 1 || opts.Compressors[0] != "zstd" {
++		t.Fatal("URI topology/timeout/write/read/compression settings changed")
++	}
++	if opts.RetryWrites == nil || !*opts.RetryWrites || opts.RetryReads == nil || *opts.RetryReads {
++		t.Fatal("explicit retry configuration changed")
++	}
++	inherited, err := mongodbClientOptions(uri, 0, false, "", "", "", "", "", false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if inherited.Auth.Username != "uriuser" || inherited.Auth.Password != "uripass" || *inherited.MaxPoolSize != 9 {
++		t.Fatal("URI settings lost without override")
++	}
++	defaults, err := mongodbClientOptions("mongodb://127.0.0.1:27017", 0, false, "", "", "", "", "", false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if defaults.MaxAdaptiveRetries == nil || *defaults.MaxAdaptiveRetries != 0 {
++		t.Fatal("new adaptive retry default not explicitly disabled")
++	}
++	if defaults.RetryWrites != nil || defaults.RetryReads != nil {
++		t.Fatal("driver retry defaults silently changed")
++	}
++}
++func TestMongoV2RejectsUnsafeOrLostSettingsBeforeConnection(t *testing.T) {
++	for _, query := range []string{"w=0", "socketTimeoutMS=10", "wTimeoutMS=20", "SOCKETTIMEOUTMS=10", "maxAdaptiveRetries=1", "enableOverloadRetargeting=true"} {
++		t.Run(query, func(t *testing.T) {
++			f := newMongoWireFixture(t)
++			uri := f.uri() + "&" + query
++			store := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++			err := store.connection(uri, 0, false, "", "", "", "", "", false)
++			if err == nil {
++				store.Shutdown()
++				t.Fatal("unsafe/removed option accepted")
++			}
++			if store.connect != nil {
++				t.Fatal("failed options published client")
++			}
++			f.mu.Lock()
++			defer f.mu.Unlock()
++			if len(f.connections) != 0 || len(f.commands) != 0 {
++				t.Fatal("invalid configuration reached server")
++			}
++		})
++	}
++	for _, uri := range []string{"not-a-mongodb-uri", "mongodb://127.0.0.1/?maxPoolSize=garbage"} {
++		if _, err := mongodbClientOptions(uri, 0, false, "", "", "", "", "", false); err == nil {
++			t.Fatal("invalid URI accepted")
++		}
++	}
++}
++func mongoTLSFixture(t *testing.T) (string, string, string) {
++	t.Helper()
++	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
++	if err != nil {
++		t.Fatal(err)
++	}
++	now := time.Now()
++	template := &x509.Certificate{SerialNumber: big.NewInt(1), Subject: pkix.Name{CommonName: "fixture"}, NotBefore: now.Add(-time.Hour), NotAfter: now.Add(time.Hour), IsCA: true, BasicConstraintsValid: true, KeyUsage: x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature, ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth}}
++	der, err := x509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)
++	if err != nil {
++		t.Fatal(err)
++	}
++	keyDER, err := x509.MarshalPKCS8PrivateKey(key)
++	if err != nil {
++		t.Fatal(err)
++	}
++	dir := t.TempDir()
++	cert := filepath.Join(dir, "cert.pem")
++	keyFile := filepath.Join(dir, "key.pem")
++	if err := os.WriteFile(cert, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der}), 0600); err != nil {
++		t.Fatal(err)
++	}
++	if err := os.WriteFile(keyFile, pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: keyDER}), 0600); err != nil {
++		t.Fatal(err)
++	}
++	return cert, cert, keyFile
++}
++func TestMongoV2TLSConfigurationAndFailures(t *testing.T) {
++	ca, cert, key := mongoTLSFixture(t)
++	opts, err := mongodbClientOptions("mongodb://127.0.0.1", 0, true, ca, cert, key, "", "", false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if opts.TLSConfig == nil || opts.TLSConfig.InsecureSkipVerify || len(opts.TLSConfig.Certificates) != 1 || opts.TLSConfig.RootCAs == nil {
++		t.Fatal("TLS client configuration not preserved")
++	}
++	insecure, err := mongodbClientOptions("mongodb://127.0.0.1", 0, true, ca, cert, key, "", "", true)
++	if err != nil || !insecure.TLSConfig.InsecureSkipVerify {
++		t.Fatal("explicit historical insecure option changed")
++	}
++	if _, err := mongodbClientOptions("mongodb://127.0.0.1", 0, true, ca, cert, "missing-key", "", "", false); err == nil {
++		t.Fatal("missing client key accepted")
++	}
++	invalidCA := filepath.Join(t.TempDir(), "bad-ca")
++	if err := os.WriteFile(invalidCA, []byte("not a certificate"), 0600); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := mongodbClientOptions("mongodb://127.0.0.1", 0, true, invalidCA, cert, key, "", "", false); err == nil {
++		t.Fatal("invalid CA accepted")
++	}
++}
++func TestMongoV2UnacknowledgedResultsNeverSucceed(t *testing.T) {
++	operations := map[string]func(*MongodbStore) error{"entry": func(s *MongodbStore) error { return s.UpdateEntry(context.Background(), &filer.Entry{FullPath: "/a"}) }, "kv-put": func(s *MongodbStore) error {
++		return s.KvPut(context.Background(), []byte("fixture-key"), []byte("value"))
++	}, "entry-delete": func(s *MongodbStore) error { return s.DeleteEntry(context.Background(), "/a") }, "folder-delete": func(s *MongodbStore) error { return s.DeleteFolderChildren(context.Background(), "/a") }, "kv-delete": func(s *MongodbStore) error { return s.KvDelete(context.Background(), []byte("fixture-key")) }}
++	for name, operation := range operations {
++		t.Run(name, func(t *testing.T) {
++			f := newMongoWireFixture(t, mongoOK())
++			opts := options.Client().ApplyURI(f.uri()).SetWriteConcern(writeconcern.Unacknowledged())
++			client, err := mongo.Connect(opts)
++			if err != nil {
++				t.Fatal(err)
++			}
++			s := &MongodbStore{connect: client, database: "fixture", collectionName: "filemeta"}
++			t.Cleanup(s.Shutdown)
++			if err := operation(s); err == nil || !strings.Contains(err.Error(), "unacknowledged") {
++				t.Fatalf("unacknowledged operation returned %v", err)
++			}
++		})
++	}
++}
++
++func TestMongoV2AuthenticationAndTLSFailuresDoNotPublishClient(t *testing.T) {
++	t.Run("SCRAM-denial", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoError(18))
++		s := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++		err := s.connection(strings.Replace(f.uri(), "mongodb://", "mongodb://fixture-user:fixture-password@", 1)+"&authMechanism=SCRAM-SHA-256", 0, false, "", "", "", "fixture-user", "fixture-password", false)
++		if err == nil || s.connect != nil {
++			if s.connect != nil {
++				s.Shutdown()
++			}
++			t.Fatal("authentication failure accepted")
++		}
++		f.mu.Lock()
++		defer f.mu.Unlock()
++		sawAuth := false
++		for _, command := range f.commands {
++			if len(command) > 0 && strings.EqualFold(command[0].Key, "saslStart") {
++				sawAuth = true
++			}
++			if len(command) > 0 && strings.EqualFold(command[0].Key, "createIndexes") {
++				t.Fatal("authentication denial reached DDL")
++			}
++		}
++		if !sawAuth {
++			t.Fatal("fixture did not observe real driver SCRAM request")
++		}
++	})
++	t.Run("TLS-no-plaintext-fallback", func(t *testing.T) {
++		f := newMongoWireFixture(t)
++		ca, cert, key := mongoTLSFixture(t)
++		s := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++		err := s.connection(f.uri(), 0, true, ca, cert, key, "", "", false)
++		if err == nil || s.connect != nil {
++			if s.connect != nil {
++				s.Shutdown()
++			}
++			t.Fatal("TLS failure accepted")
++		}
++		f.mu.Lock()
++		defer f.mu.Unlock()
++		if len(f.commands) != 0 {
++			t.Fatal("TLS failure fell back to plaintext commands")
++		}
++	})
++}
++
++func TestMongoV2RejectsServerBelowMinimumBeforeIndex(t *testing.T) {
++	f := newMongoWireFixtureVersion(t, 8)
++	store := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++	err := store.connection(f.uri(), 0, false, "", "", "", "", "", false)
++	if err == nil || store.connect != nil {
++		if store.connect != nil {
++			store.Shutdown()
++		}
++		t.Fatal("pre-4.4 wire version accepted")
++	}
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	if len(f.commands) != 0 {
++		t.Fatal("unsupported server received DDL")
++	}
++}
++
++func TestMongoV2AdaptiveRetriesRemainDisabledInProfile(t *testing.T) {
++	overload := mongoError(16500)
++	overload = append(overload, bson.E{Key: "errorLabels", Value: bson.A{"RetryableError", "SystemOverloadedError"}})
++	f := newMongoWireFixture(t, mongoOK(), overload, mongoOK())
++	uri := strings.Replace(f.uri(), "&retryReads=false&retryWrites=false", "", 1)
++	s := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++	if err := s.connection(uri, 0, false, "", "", "", "", "", false); err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(s.Shutdown)
++	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
++	defer cancel()
++	err := s.KvPut(ctx, []byte("fixture-key"), []byte("value"))
++	var commandError mongo.CommandError
++	if !errors.As(err, &commandError) || !commandError.HasErrorLabel("SystemOverloadedError") {
++		t.Fatalf("overload was hidden or retried: %v", err)
++	}
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	writes := 0
++	for _, command := range f.commands {
++		if len(command) > 0 && command[0].Key == "update" {
++			writes++
++		}
++	}
++	if writes != 1 {
++		t.Fatalf("new adaptive retries changed the v1 profile: writes=%d", writes)
++	}
++}
+diff --git a/weed/filer/mongodb/mongodb_store.go b/weed/filer/mongodb/mongodb_store.go
+--- a/weed/filer/mongodb/mongodb_store.go
++++ b/weed/filer/mongodb/mongodb_store.go
+@@ -4,7 +4,9 @@
+ 	"context"
+ 	"crypto/tls"
+ 	"crypto/x509"
++	"errors"
+ 	"fmt"
++	"net/url"
+ 	"os"
+ 	"regexp"
+ 	"strings"
+@@ -14,9 +16,9 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+-	"go.mongodb.org/mongo-driver/bson"
+-	"go.mongodb.org/mongo-driver/mongo"
+-	"go.mongodb.org/mongo-driver/mongo/options"
++	"go.mongodb.org/mongo-driver/v2/bson"
++	"go.mongodb.org/mongo-driver/v2/mongo"
++	"go.mongodb.org/mongo-driver/v2/mongo/options"
+ )
+ 
+ func init() {
+@@ -56,10 +58,49 @@
+ }
+ 
+ func (store *MongodbStore) connection(uri string, poolSize uint64, ssl bool, sslCAFile, sslCertFile, sslKeyFile string, username, password string, insecure bool) (err error) {
+-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+-	defer cancel()
+-
++	opts, err := mongodbClientOptions(uri, poolSize, ssl, sslCAFile, sslCertFile, sslKeyFile, username, password, insecure)
++	if err != nil {
++		return err
++	}
++	client, err := mongo.Connect(opts)
++	if err != nil {
++		return err
++	}
++	c := client.Database(store.database).Collection(store.collectionName)
++	if err := store.indexUnique(c); err != nil {
++		cleanup, cancel := context.WithTimeout(context.Background(), 10*time.Second)
++		defer cancel()
++		_ = client.Disconnect(cleanup)
++		return err
++	}
++	store.connect = client
++	return nil
++}
++
++// Keep URI topology/auth/read/write settings and explicit overrides intact.
++// Legacy timeout options cannot silently disappear during the v2 migration.
++func mongodbClientOptions(uri string, poolSize uint64, ssl bool, sslCAFile, sslCertFile, sslKeyFile, username, password string, insecure bool) (*options.ClientOptions, error) {
+ 	opts := options.Client().ApplyURI(uri)
++	if !opts.WriteConcern.Acknowledged() {
++		return nil, fmt.Errorf("mongodb requires acknowledged writes; w=0 is unsupported")
++	}
++	// Preserve the v1 profile: v2 adaptive overload retries are a new feature,
++	// distinct from existing retryWrites/session/txnNumber behavior.
++	if (opts.MaxAdaptiveRetries != nil && *opts.MaxAdaptiveRetries > 0) || (opts.EnableOverloadRetargeting != nil && *opts.EnableOverloadRetargeting) {
++		return nil, fmt.Errorf("mongodb adaptive overload retry/retargeting is not qualified in this profile")
++	}
++	opts.SetMaxAdaptiveRetries(0)
++	if parsed, err := url.Parse(uri); err == nil {
++		for key, values := range parsed.Query() {
++			if strings.EqualFold(key, "socketTimeoutMS") || strings.EqualFold(key, "wTimeoutMS") {
++				for _, value := range values {
++					if value != "0" {
++						return nil, fmt.Errorf("mongodb driver v2 requires an explicit timeoutMS/context migration for legacy %s", key)
++					}
++				}
++			}
++		}
++	}
+ 
+ 	if poolSize > 0 {
+ 		opts.SetMaxPoolSize(poolSize)
+@@ -68,7 +109,7 @@
+ 	if ssl {
+ 		tlsConfig, err := configureTLS(sslCAFile, sslCertFile, sslKeyFile, insecure)
+ 		if err != nil {
+-			return err
++			return nil, err
+ 		}
+ 		opts.SetTLSConfig(tlsConfig)
+ 	}
+@@ -86,16 +127,10 @@
+ 		opts.SetAuth(creds)
+ 	}
+ 
+-	client, err := mongo.Connect(ctx, opts)
+-	if err != nil {
+-		return err
+-	}
+-
+-	c := client.Database(store.database).Collection(store.collectionName)
+-	err = store.indexUnique(c)
+-
+-	store.connect = client
+-	return err
++	if err := opts.Validate(); err != nil {
++		return nil, err
++	}
++	return opts, nil
+ }
+ 
+ func configureTLS(caFile, certFile, keyFile string, insecure bool) (*tls.Config, error) {
+@@ -123,25 +158,17 @@
+ 	return tlsConfig, nil
+ }
+ 
+-func (store *MongodbStore) createIndex(c *mongo.Collection, index mongo.IndexModel, opts *options.CreateIndexesOptions) error {
+-	_, err := c.Indexes().CreateOne(context.Background(), index, opts)
++func (store *MongodbStore) indexUnique(c *mongo.Collection) error {
++	// v2 removed CreateIndexes.SetMaxTime. Bound selection, network and server
++	// work through one operation context instead of losing the old limit.
++	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
++	defer cancel()
++	index := mongo.IndexModel{
++		Keys:    bson.D{{Key: "directory", Value: int32(1)}, {Key: "name", Value: int32(1)}},
++		Options: options.Index().SetUnique(true),
++	}
++	_, err := c.Indexes().CreateOne(ctx, index)
+ 	return err
+-}
+-
+-func (store *MongodbStore) indexUnique(c *mongo.Collection) error {
+-	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
+-
+-	unique := new(bool)
+-	*unique = true
+-
+-	index := mongo.IndexModel{
+-		Keys: bson.D{{Key: "directory", Value: int32(1)}, {Key: "name", Value: int32(1)}},
+-		Options: &options.IndexOptions{
+-			Unique: unique,
+-		},
+-	}
+-
+-	return store.createIndex(c, index, opts)
+ }
+ 
+ func (store *MongodbStore) BeginTransaction(ctx context.Context) (context.Context, error) {
+@@ -180,19 +207,22 @@
+ 
+ 	c := store.connect.Database(store.database).Collection(store.collectionName)
+ 
+-	opts := options.Update().SetUpsert(true)
++	opts := options.UpdateOne().SetUpsert(true)
+ 	// Use BSON builders for type-safe query construction (prevents injection)
+ 	// lgtm[go/sql-injection]
+ 	// Safe: Using BSON type-safe builders (bson.D) + validated inputs (null byte check above)
+ 	filter := bson.D{{Key: "directory", Value: dir}, {Key: "name", Value: name}}
+ 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "meta", Value: meta}}}}
+ 
+-	_, err = c.UpdateOne(ctx, filter, update, opts)
+-
+-	if err != nil {
+-		return fmt.Errorf("UpdateEntry %s: %v", entry.FullPath, err)
+-	}
+-
++	result, err := c.UpdateOne(ctx, filter, update, opts)
++
++	if err != nil {
++		return fmt.Errorf("UpdateEntry %s: %w", entry.FullPath, err)
++	}
++
++	if !result.Acknowledged {
++		return fmt.Errorf("UpdateEntry %s: unacknowledged write", entry.FullPath)
++	}
+ 	return nil
+ }
+ 
+@@ -212,9 +242,11 @@
+ 	// Safe: Using BSON type-safe builders (bson.M) + validated inputs (null byte check above)
+ 	var where = bson.M{"directory": dir, "name": name}
+ 	err = store.connect.Database(store.database).Collection(store.collectionName).FindOne(ctx, where).Decode(&data)
+-	if err != mongo.ErrNoDocuments && err != nil {
+-		glog.ErrorfCtx(ctx, "find %s: %v", fullpath, err)
++	if errors.Is(err, mongo.ErrNoDocuments) {
+ 		return nil, filer_pb.ErrNotFound
++	}
++	if err != nil {
++		return nil, fmt.Errorf("find %s: %w", fullpath, err)
+ 	}
+ 
+ 	if len(data.Meta) == 0 {
+@@ -244,11 +276,14 @@
+ 	// lgtm[go/sql-injection]
+ 	// Safe: Using BSON type-safe builders (bson.M) + validated inputs (null byte check above)
+ 	where := bson.M{"directory": dir, "name": name}
+-	_, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteMany(ctx, where)
+-	if err != nil {
+-		return fmt.Errorf("delete %s : %v", fullpath, err)
+-	}
+-
++	result, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteMany(ctx, where)
++	if err != nil {
++		return fmt.Errorf("delete %s : %w", fullpath, err)
++	}
++
++	if !result.Acknowledged {
++		return fmt.Errorf("delete %s: unacknowledged write", fullpath)
++	}
+ 	return nil
+ }
+ 
+@@ -261,11 +296,14 @@
+ 	// lgtm[go/sql-injection]
+ 	// Safe: Using BSON type-safe builders (bson.M) + validated inputs (null byte check above)
+ 	where := bson.M{"directory": fullpath}
+-	_, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteMany(ctx, where)
+-	if err != nil {
+-		return fmt.Errorf("delete %s : %v", fullpath, err)
+-	}
+-
++	result, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteMany(ctx, where)
++	if err != nil {
++		return fmt.Errorf("delete %s : %w", fullpath, err)
++	}
++
++	if !result.Acknowledged {
++		return fmt.Errorf("delete %s: unacknowledged write", fullpath)
++	}
+ 	return nil
+ }
+ 
+@@ -300,8 +338,7 @@
+ 		where["name"] = nameQuery
+ 	}
+ 
+-	optLimit := int64(limit)
+-	opts := &options.FindOptions{Limit: &optLimit, Sort: bson.M{"name": 1}}
++	opts := options.Find().SetLimit(limit).SetSort(bson.M{"name": 1})
+ 	cur, err := store.connect.Database(store.database).Collection(store.collectionName).Find(ctx, where, opts)
+ 	if err != nil {
+ 		return lastFileName, fmt.Errorf("failed to list directory entries: find error: %w", err)
+@@ -335,6 +372,9 @@
+ 		}
+ 	}
+ 
++	if err == nil {
++		err = cur.Err()
++	}
+ 	if errClose := cur.Close(ctx); errClose != nil {
+ 		glog.V(0).InfofCtx(ctx, "list iterator close: %v", errClose)
+ 		if err == nil {
+@@ -352,5 +392,7 @@
+ func (store *MongodbStore) Shutdown() {
+ 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+ 	defer cancel()
+-	store.connect.Disconnect(ctx)
+-}
++	if store.connect != nil {
++		_ = store.connect.Disconnect(ctx)
++	}
++}
+diff --git a/weed/filer/mongodb/mongodb_store_kv.go b/weed/filer/mongodb/mongodb_store_kv.go
+--- a/weed/filer/mongodb/mongodb_store_kv.go
++++ b/weed/filer/mongodb/mongodb_store_kv.go
+@@ -6,9 +6,9 @@
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/filer"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+-	"go.mongodb.org/mongo-driver/bson"
+-	"go.mongodb.org/mongo-driver/mongo"
+-	"go.mongodb.org/mongo-driver/mongo/options"
++	"go.mongodb.org/mongo-driver/v2/bson"
++	"go.mongodb.org/mongo-driver/v2/mongo"
++	"go.mongodb.org/mongo-driver/v2/mongo/options"
+ )
+ 
+ func (store *MongodbStore) KvPut(ctx context.Context, key []byte, value []byte) (err error) {
+@@ -17,7 +17,7 @@
+ 
+ 	c := store.connect.Database(store.database).Collection(store.collectionName)
+ 
+-	opts := options.Update().SetUpsert(true)
++	opts := options.UpdateOne().SetUpsert(true)
+ 	filter := bson.D{
+ 		{Key: "directory", Value: dir},
+ 		{Key: "name", Value: name},
+@@ -28,12 +28,15 @@
+ 		}},
+ 	}
+ 
+-	_, err = c.UpdateOne(ctx, filter, update, opts)
++	result, err := c.UpdateOne(ctx, filter, update, opts)
+ 
+ 	if err != nil {
+ 		return fmt.Errorf("kv put: %w", err)
+ 	}
+ 
++	if !result.Acknowledged {
++		return fmt.Errorf("kv put: unacknowledged write")
++	}
+ 	return nil
+ }
+ 
+@@ -61,11 +64,14 @@
+ 	dir, name := genDirAndName(key)
+ 
+ 	where := bson.M{"directory": dir, "name": name}
+-	_, err = store.connect.Database(store.database).Collection(store.collectionName).DeleteOne(ctx, where)
++	result, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteOne(ctx, where)
+ 	if err != nil {
+ 		return fmt.Errorf("kv delete: %w", err)
+ 	}
+ 
++	if !result.Acknowledged {
++		return fmt.Errorf("kv delete: unacknowledged write")
++	}
+ 	return nil
+ }
+ 
+diff --git a/weed/filer/mongodb/mongodb_wire_test.go b/weed/filer/mongodb/mongodb_wire_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/filer/mongodb/mongodb_wire_test.go
+@@ -0,0 +1,423 @@
++package mongodb
++
++import (
++	"context"
++	"encoding/binary"
++	"encoding/hex"
++	"errors"
++	"fmt"
++	"io"
++	"net"
++	"reflect"
++	"strings"
++	"sync"
++	"testing"
++	"time"
++
++	"github.com/seaweedfs/seaweedfs/weed/filer"
++	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"go.mongodb.org/mongo-driver/v2/bson"
++	"go.mongodb.org/mongo-driver/v2/mongo"
++	"go.mongodb.org/mongo-driver/v2/mongo/options"
++)
++
++// This deliberately limited TCP fixture uses the real driver serializer,
++// connection pool, command encoding and response decoding. It is not MongoDB
++// and does not prove database durability, query execution, auth, or failover.
++type mongoWireFixture struct {
++	listener    net.Listener
++	wireVersion int32
++	mu          sync.Mutex
++	connections []net.Conn
++	replies     []bson.D
++	commands    []bson.D
++	wg          sync.WaitGroup
++}
++
++func newMongoWireFixture(t *testing.T, replies ...bson.D) *mongoWireFixture {
++	return newMongoWireFixtureVersion(t, 25, replies...)
++}
++
++func newMongoWireFixtureVersion(t *testing.T, version int32, replies ...bson.D) *mongoWireFixture {
++	t.Helper()
++	listener, err := net.Listen("tcp", "127.0.0.1:0")
++	if err != nil {
++		t.Fatal(err)
++	}
++	f := &mongoWireFixture{listener: listener, replies: replies, wireVersion: version}
++	f.wg.Add(1)
++	go func() {
++		defer f.wg.Done()
++		for {
++			c, err := listener.Accept()
++			if err != nil {
++				return
++			}
++			f.mu.Lock()
++			f.connections = append(f.connections, c)
++			f.mu.Unlock()
++			f.wg.Add(1)
++			go func() { defer f.wg.Done(); defer c.Close(); f.serve(c) }()
++		}
++	}()
++	t.Cleanup(func() {
++		listener.Close()
++		f.mu.Lock()
++		for _, c := range f.connections {
++			c.Close()
++		}
++		f.mu.Unlock()
++		f.wg.Wait()
++	})
++	return f
++}
++func (f *mongoWireFixture) uri() string {
++	return "mongodb://" + f.listener.Addr().String() + "/?directConnection=true&serverSelectionTimeoutMS=500&connectTimeoutMS=500&retryReads=false&retryWrites=false"
++}
++func (f *mongoWireFixture) serve(c net.Conn) {
++	for {
++		var header [16]byte
++		if _, err := io.ReadFull(c, header[:]); err != nil {
++			return
++		}
++		length := int(binary.LittleEndian.Uint32(header[:4]))
++		if length < 16 || length > 2<<20 {
++			return
++		}
++		body := make([]byte, length-16)
++		if _, err := io.ReadFull(c, body); err != nil {
++			return
++		}
++		opcode := binary.LittleEndian.Uint32(header[12:])
++		command, err := decodeMongoTestCommand(opcode, body)
++		if err != nil || len(command) == 0 {
++			return
++		}
++		name := strings.ToLower(command[0].Key)
++		var response bson.D
++		if name == "ismaster" || name == "hello" {
++			response = bson.D{{Key: "ok", Value: 1}, {Key: "ismaster", Value: true}, {Key: "isWritablePrimary", Value: true}, {Key: "helloOk", Value: true}, {Key: "minWireVersion", Value: 0}, {Key: "maxWireVersion", Value: f.wireVersion}, {Key: "maxBsonObjectSize", Value: 16777216}, {Key: "maxMessageSizeBytes", Value: 48000000}, {Key: "maxWriteBatchSize", Value: 100000}, {Key: "logicalSessionTimeoutMinutes", Value: 30}}
++		} else if name == "endsessions" {
++			response = bson.D{{Key: "ok", Value: 1}}
++		} else {
++			f.mu.Lock()
++			f.commands = append(f.commands, command)
++			if len(f.replies) > 0 {
++				response = f.replies[0]
++				f.replies = f.replies[1:]
++			} else {
++				response = bson.D{{Key: "ok", Value: 0}, {Key: "code", Value: 59}, {Key: "errmsg", Value: "unexpected test command"}}
++			}
++			f.mu.Unlock()
++		}
++		doc, err := bson.Marshal(response)
++		if err != nil {
++			return
++		}
++		var out []byte
++		if opcode == 2004 {
++			out = make([]byte, 36)
++			binary.LittleEndian.PutUint32(out[12:], 1)
++			binary.LittleEndian.PutUint32(out[32:], 1)
++		} else {
++			out = make([]byte, 21)
++			binary.LittleEndian.PutUint32(out[12:], 2013)
++		}
++		out = append(out, doc...)
++		binary.LittleEndian.PutUint32(out[:4], uint32(len(out)))
++		binary.LittleEndian.PutUint32(out[4:], 1)
++		copy(out[8:12], header[4:8])
++		if _, err := c.Write(out); err != nil {
++			return
++		}
++	}
++}
++func decodeMongoTestCommand(opcode uint32, body []byte) (bson.D, error) {
++	var command bson.D
++	if opcode == 2004 {
++		if len(body) < 5 {
++			return nil, io.ErrUnexpectedEOF
++		}
++		i := 4
++		for i < len(body) && body[i] != 0 {
++			i++
++		}
++		i += 9
++		if i >= len(body) {
++			return nil, io.ErrUnexpectedEOF
++		}
++		err := bson.Unmarshal(body[i:], &command)
++		return command, err
++	}
++	if opcode != 2013 || len(body) < 5 {
++		return nil, fmt.Errorf("unsupported opcode %d", opcode)
++	}
++	for i := 4; i < len(body); {
++		kind := body[i]
++		i++
++		if i+4 > len(body) {
++			return nil, io.ErrUnexpectedEOF
++		}
++		size := int(binary.LittleEndian.Uint32(body[i:]))
++		if size < 4 || i+size > len(body) {
++			return nil, io.ErrUnexpectedEOF
++		}
++		if kind == 0 {
++			if err := bson.Unmarshal(body[i:i+size], &command); err != nil {
++				return nil, err
++			}
++			i += size
++			continue
++		}
++		if kind != 1 {
++			return nil, fmt.Errorf("unsupported section %d", kind)
++		}
++		end := i + size
++		i += 4
++		start := i
++		for i < end && body[i] != 0 {
++			i++
++		}
++		identifier := string(body[start:i])
++		i++
++		var documents bson.A
++		for i < end {
++			if i+4 > end {
++				return nil, io.ErrUnexpectedEOF
++			}
++			n := int(binary.LittleEndian.Uint32(body[i:]))
++			if n < 5 || i+n > end {
++				return nil, io.ErrUnexpectedEOF
++			}
++			var document bson.D
++			if err := bson.Unmarshal(body[i:i+n], &document); err != nil {
++				return nil, err
++			}
++			documents = append(documents, document)
++			i += n
++		}
++		command = append(command, bson.E{Key: identifier, Value: documents})
++	}
++	return command, nil
++}
++func (f *mongoWireFixture) command(t *testing.T, n int) bson.Raw {
++	t.Helper()
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	if n >= len(f.commands) {
++		t.Fatalf("wanted command %d, got %d", n, len(f.commands))
++	}
++	data, err := bson.Marshal(f.commands[n])
++	if err != nil {
++		t.Fatal(err)
++	}
++	return bson.Raw(data)
++}
++func mongoOK() bson.D {
++	return bson.D{{Key: "ok", Value: 1}, {Key: "n", Value: 1}, {Key: "nModified", Value: 1}}
++}
++func mongoCursor(batch string, id int64, docs ...bson.D) bson.D {
++	values := bson.A{}
++	for _, d := range docs {
++		values = append(values, d)
++	}
++	return bson.D{{Key: "ok", Value: 1}, {Key: "cursor", Value: bson.D{{Key: "id", Value: id}, {Key: "ns", Value: "fixture.filemeta"}, {Key: batch, Value: values}}}}
++}
++func mongoError(code int32) bson.D {
++	return bson.D{{Key: "ok", Value: 0}, {Key: "code", Value: code}, {Key: "errmsg", Value: "synthetic server error"}}
++}
++func mongoTestClient(t *testing.T, f *mongoWireFixture) *mongo.Client {
++	t.Helper()
++	opts := options.Client().ApplyURI(f.uri())
++	client, err := mongo.Connect(opts)
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() {
++		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
++		defer cancel()
++		_ = client.Disconnect(ctx)
++	})
++	return client
++}
++func mongoTestStore(t *testing.T, f *mongoWireFixture) *MongodbStore {
++	return &MongodbStore{connect: mongoTestClient(t, f), database: "fixture", collectionName: "filemeta"}
++}
++
++func TestMongoModelBSONFixture(t *testing.T) {
++	data, err := bson.Marshal(Model{Directory: "/é", Name: "x.$", Meta: []byte{0, 255}})
++	if err != nil {
++		t.Fatal(err)
++	}
++	const want = "33000000026469726563746f727900040000002fc3a900026e616d650004000000782e2400056d65746100020000000000ff00"
++	if hex.EncodeToString(data) != want {
++		t.Fatalf("BSON changed: %x", data)
++	}
++	var decoded Model
++	if err := bson.Unmarshal(data, &decoded); err != nil {
++		t.Fatal(err)
++	}
++	if decoded.Directory != "/é" || decoded.Name != "x.$" || !reflect.DeepEqual(decoded.Meta, []byte{0, 255}) {
++		t.Fatalf("bad model: %#v", decoded)
++	}
++}
++func TestMongoWireIndexAndEntryRoundTrip(t *testing.T) {
++	entry := &filer.Entry{FullPath: util.FullPath("/café/a.$[x]"), Attr: filer.Attr{Mtime: time.Unix(123, 0), Crtime: time.Unix(100, 0), Mode: 0644, Uid: 42, Mime: "application/octet-stream"}, Content: []byte{0, 255, 1}}
++	meta, err := entry.EncodeAttributesAndChunks()
++	if err != nil {
++		t.Fatal(err)
++	}
++	f := newMongoWireFixture(t, mongoOK(), mongoOK(), mongoCursor("firstBatch", 0, bson.D{{Key: "directory", Value: "/café"}, {Key: "name", Value: "a.$[x]"}, {Key: "meta", Value: meta}}), mongoOK())
++	store := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++	if err := store.connection(f.uri(), 3, false, "", "", "", "", "", false); err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(store.Shutdown)
++	index := f.command(t, 0)
++	if index.Lookup("createIndexes").StringValue() != "filemeta" {
++		t.Fatal(index)
++	}
++	indexes := index.Lookup("indexes").Array()
++	idx := indexes.Index(0).Document()
++	if !idx.Lookup("unique").Boolean() || idx.Lookup("key", "directory").Int32() != 1 || idx.Lookup("key", "name").Int32() != 1 {
++		t.Fatal(idx)
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
++	defer cancel()
++	if err := store.UpdateEntry(ctx, entry); err != nil {
++		t.Fatal(err)
++	}
++	update := f.command(t, 1).Lookup("updates").Array().Index(0).Document()
++	if !update.Lookup("upsert").Boolean() || update.Lookup("q", "directory").StringValue() != "/café" || update.Lookup("q", "name").StringValue() != "a.$[x]" {
++		t.Fatal(update)
++	}
++	_, actual := update.Lookup("u", "$set", "meta").Binary()
++	if !reflect.DeepEqual(actual, meta) {
++		t.Fatal("metadata encoding changed")
++	}
++	got, err := store.FindEntry(ctx, entry.FullPath)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if got.FullPath != entry.FullPath || got.Mime != entry.Mime || got.Uid != 42 || !reflect.DeepEqual(got.Content, entry.Content) {
++		t.Fatalf("roundtrip mismatch %#v", got)
++	}
++	if err := store.DeleteEntry(ctx, entry.FullPath); err != nil {
++		t.Fatal(err)
++	}
++	del := f.command(t, 3).Lookup("deletes").Array().Index(0).Document()
++	if del.Lookup("limit").Int32() != 0 {
++		t.Fatal("DeleteEntry no longer deletes matching metadata rows")
++	}
++}
++func TestMongoWireKVAndMissingBehavior(t *testing.T) {
++	f := newMongoWireFixture(t, mongoOK(), mongoCursor("firstBatch", 0, bson.D{{Key: "meta", Value: []byte{0, 1, 255}}}), mongoOK(), mongoCursor("firstBatch", 0), mongoCursor("firstBatch", 0))
++	store := mongoTestStore(t, f)
++	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
++	defer cancel()
++	key := []byte("abcdefghsuffix")
++	if err := store.KvPut(ctx, key, []byte{0, 1, 255}); err != nil {
++		t.Fatal(err)
++	}
++	q := f.command(t, 0).Lookup("updates").Array().Index(0).Document().Lookup("q").Document()
++	if q.Lookup("directory").StringValue() != "abcdefgh" || q.Lookup("name").StringValue() != "suffix" {
++		t.Fatal(q)
++	}
++	got, err := store.KvGet(ctx, key)
++	if err != nil || !reflect.DeepEqual(got, []byte{0, 1, 255}) {
++		t.Fatalf("kv %v %v", got, err)
++	}
++	if err := store.KvDelete(ctx, key); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := store.KvGet(ctx, key); !errors.Is(err, filer.ErrKvNotFound) {
++		t.Fatalf("missing kv %v", err)
++	}
++	if _, err := store.FindEntry(ctx, "/absent"); !errors.Is(err, filer_pb.ErrNotFound) {
++		t.Fatalf("missing entry %v", err)
++	}
++}
++func TestMongoWireFailuresRemainFailures(t *testing.T) {
++	t.Run("index-does-not-publish-client", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoError(11000))
++		store := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++		err := store.connection(f.uri(), 0, false, "", "", "", "", "", false)
++		if err == nil {
++			t.Fatal("index error accepted")
++		}
++		if store.connect != nil {
++			store.Shutdown()
++			t.Fatal("failed index published unusable client")
++		}
++	})
++	t.Run("find-server-error-is-not-missing", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoError(13))
++		store := mongoTestStore(t, f)
++		_, err := store.FindEntry(context.Background(), "/a")
++		var commandError mongo.CommandError
++		if errors.Is(err, filer_pb.ErrNotFound) || !errors.As(err, &commandError) || commandError.Code != 13 {
++			t.Fatalf("server failure lost: %v", err)
++		}
++	})
++	t.Run("cursor-failure-is-not-complete", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoCursor("firstBatch", 12), mongoError(43), mongoOK())
++		store := mongoTestStore(t, f)
++		_, err := store.ListDirectoryEntries(context.Background(), "/", "", false, 4, func(*filer.Entry) (bool, error) { t.Fatal("unexpected entry"); return false, nil })
++		var commandError mongo.CommandError
++		if !errors.As(err, &commandError) || commandError.Code != 43 {
++			t.Fatalf("cursor failure lost: %v", err)
++		}
++	})
++	t.Run("cancelled-find-is-not-missing", func(t *testing.T) {
++		f := newMongoWireFixture(t)
++		store := mongoTestStore(t, f)
++		ctx, cancel := context.WithCancel(context.Background())
++		cancel()
++		_, err := store.FindEntry(ctx, "/a")
++		if !errors.Is(err, context.Canceled) {
++			t.Fatalf("cancellation lost: %v", err)
++		}
++	})
++	t.Run("write-server-error-preserves-code", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoError(13))
++		store := mongoTestStore(t, f)
++		err := store.UpdateEntry(context.Background(), &filer.Entry{FullPath: "/a"})
++		var commandError mongo.CommandError
++		if !errors.As(err, &commandError) || commandError.Code != 13 {
++			t.Fatalf("write failure lost: %v", err)
++		}
++	})
++}
++func TestMongoWireListingFiltersAndCallbackFailure(t *testing.T) {
++	entry := &filer.Entry{FullPath: "/dir/a.[x]"}
++	meta, err := entry.EncodeAttributesAndChunks()
++	if err != nil {
++		t.Fatal(err)
++	}
++	f := newMongoWireFixture(t, mongoCursor("firstBatch", 0, bson.D{{Key: "name", Value: "a.[x]"}, {Key: "meta", Value: meta}}))
++	store := mongoTestStore(t, f)
++	sentinel := errors.New("callback stopped")
++	last, err := store.ListDirectoryPrefixedEntries(context.Background(), "/dir", "a", true, 7, "a.[", func(got *filer.Entry) (bool, error) {
++		if got.FullPath != "/dir/a.[x]" {
++			t.Fatal(got.FullPath)
++		}
++		return false, sentinel
++	})
++	if last != "a.[x]" || !errors.Is(err, sentinel) {
++		t.Fatalf("last=%q err=%v", last, err)
++	}
++	cmd := f.command(t, 0)
++	if cmd.Lookup("filter", "name", "$regex").StringValue() != `^a\.\[` || cmd.Lookup("filter", "name", "$gte").StringValue() != "a" || cmd.Lookup("sort", "name").Int32() != 1 || cmd.Lookup("limit").Int64() != 7 {
++		t.Fatal(cmd)
++	}
++}
++func TestMongoInvalidPathsAreRejectedWithoutClient(t *testing.T) {
++	store := &MongodbStore{}
++	ctx := context.Background()
++	for _, op := range []func() error{func() error { return store.UpdateEntry(ctx, &filer.Entry{FullPath: "/bad\x00"}) }, func() error { _, err := store.FindEntry(ctx, "/bad\x00"); return err }, func() error { return store.DeleteEntry(ctx, "/bad\x00") }, func() error { return store.DeleteFolderChildren(ctx, "/bad\x00") }, func() error { _, err := store.ListDirectoryEntries(ctx, "/bad\x00", "", false, 1, nil); return err }} {
++		if err := op(); err == nil {
++			t.Fatal("invalid path accepted")
++		}
++	}
++}

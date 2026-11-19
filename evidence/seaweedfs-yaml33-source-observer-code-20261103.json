@@ -1,0 +1,76 @@
+{
+  "schema": "ouf.yaml33-source-observer-code.v1",
+  "status": "WORKFLOW_PREPARED_CORRECTED_PARENT_NOT_HOSTED_EXECUTED",
+  "intendedGeneration": 33,
+  "baseGeneration": 32,
+  "baseManifestSha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+  "rootSourceTree32": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "tests": {
+    "observerGuardsCurrent": 11,
+    "previousReusedFixtureGuardTests": 41,
+    "fixtureRerunRequiredForPinOnlyChange": false,
+    "unchangedFixtureHelpersAndTestsSha256": {
+      "scripts/prepare_iceberg_vendor_patch.py": "a8f919469002c42995aa94d96d3adeb28f93b6e9fe3df3c3d366c55077b9e4d2",
+      "scripts/verify_iceberg_vendor_source_profile.py": "87d61fad048b47a61a1a0fdd1aececd45efb2293b3f07ec6d3ab2578c6736dfb",
+      "scripts/collect_vendor_module_origins.py": "f8df3630a01ea537f3cfc8f5e571d7d239f838a64e41fa3813e9b88507589b3b",
+      "tools/storage_security/vendor_yaml_source.py": "26e50694e65ef86c3ddc942a9c2d34ccbdeaeb8d276f64cd6c20487f2815cf09",
+      "tools/storage_security/vendor_module_origins.py": "afa80ed1e00f56151e33f252e9c37eff40a4d46e011599df571a181f6a5529a9",
+      "tests/test_prepare_iceberg_vendor_patch.py": "ef253f68ccd3fe8a4a4b0566919b9d97e4e96bf42501c981f549cfe36804a003",
+      "tests/test_vendor_yaml_source_profile.py": "a1ba151a02126a37fbe2c5979b2b6e89371b7483d721133c894abb5b8f37814a",
+      "tests/test_vendor_module_origins.py": "0bd9949b33c763eb43bed5a4c3bef6340bb571d9124162ac0f363f5496104e46",
+      "tests/fixtures/compare_iceberg_yaml.go": "b542a9814900fdc3b324abf92a8fd46e9cf33eb90a1f4fb7b3d23ef360105394"
+    },
+    "canonicalReplayHelperSha256": "b2dabb6dfdb64fecd1f27d9fe896ad96c98707b6bc25b4e19c8edd1feaa8511b",
+    "canonicalReplayHelperParentTests": 8,
+    "fullVendorLocallyGenerated": false,
+    "fullBinaryLocallyBuilt": false
+  },
+  "review": "Independent final read-only review requested; original observer review was PASS. Final review outcome supplied separately.",
+  "workflow": ".github/workflows/storage-452-yaml33-source-observation.yml",
+  "workflowSha256": "c9763b3f5b28e718b0104c7074c752e872b8bdc93f60d2472b08fc524d822bf8",
+  "runnerSha256": "f7bd5cf59c43c14d063a6561424543bb5da432ad5d01e0e828df4cbfe84cbd2e",
+  "observationInputsSha256": "c8245f4d62268630e6a1049c53878d19ffc6639cc36ba9b61c83847316fde0d1",
+  "sourcePatchCount": 32,
+  "dependencyPatchCount": 1,
+  "unknownUntilRun": [
+    "complete vendor file count",
+    "complete vendor module count",
+    "vendor before/after tree hashes",
+    "vendor binary SHA256",
+    "actual production graph",
+    "test results under complete vendor build"
+  ],
+  "boundaries": {
+    "generation32PipelineChanged": false,
+    "originalSourceMutated": false,
+    "moduleCacheSourcePatched": false,
+    "rawScannerOrSpdxRewritten": false,
+    "githubWrites": 0,
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "allDependenciesMaintained": false,
+    "technicalOwner": null
+  },
+  "evidence": {
+    "evidence/yaml33-source-observer-code-20261103/fixture-reuse/commands.json": "99a28cb6dacb35045e3015a28753d75f305b3fee9a79e0b3c99c5f508e622872",
+    "evidence/yaml33-source-observer-code-20261103/fixture-reuse/guard-test-summary.json": "999bcd02dddc798c750fa1d6d2c6e78033b71e38ae35a54edbc4dc5d1eacfdf6",
+    "evidence/yaml33-source-observer-code-20261103/fixture-reuse/test_prepare_iceberg_vendor_patch.stderr": "57124123467dbbe1ca5d436859efdfe93af582d2d99a5638d3579053357894e8",
+    "evidence/yaml33-source-observer-code-20261103/fixture-reuse/test_prepare_iceberg_vendor_patch.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evidence/yaml33-source-observer-code-20261103/fixture-reuse/test_vendor_module_origins.stderr": "d18670e34280535b78b2bcd252178173ea248c0179274239b6730085106f21c9",
+    "evidence/yaml33-source-observer-code-20261103/fixture-reuse/test_vendor_module_origins.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evidence/yaml33-source-observer-code-20261103/fixture-reuse/test_vendor_yaml_source_profile.stderr": "4182629240b73a3e654371410238acfc54c16b0991acb8c166c3b40ba0d41edc",
+    "evidence/yaml33-source-observer-code-20261103/fixture-reuse/test_vendor_yaml_source_profile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evidence/yaml33-source-observer-code-20261103/observer-fixture-reuse.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evidence/yaml33-source-observer-code-20261103/observer-fixture-reuse.stdout": "0500717b07c854f661fffdedc4d2249bf177b83a8b19c5db763a9876244bb525",
+    "evidence/yaml33-source-observer-code-20261103/observer-tests.stderr": "1334ff372977a0d97ac6a1cb021d3941c47876288b7870630e6b16a23a7a7563",
+    "evidence/yaml33-source-observer-code-20261103/observer-tests.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evidence/yaml33-source-observer-final-code-20261103/observer-tests.stderr": "f2bfd568651f5c31f963917897d0056e4df8b78b55c0086db4cf5d7cef427216",
+    "evidence/yaml33-source-observer-final-code-20261103/observer-tests.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "supersedesPrepin": {
+    "manifestSha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+    "sourceTree": "d58d388bd4b791ffbc41814cc670af44af20f47c",
+    "reason": "The previous empty-index reconstruction omitted 24 files already tracked upstream because they matched ignore rules. Canonical reconstruction preserves these upstream tracked files by starting from the upstream tree; source patches, binary bytes, lockfiles and test results are unchanged."
+  }
+}

@@ -1,0 +1,408 @@
+{
+  "schema": "ouf.ingestion-readiness-private-preparation-selection.v1",
+  "installationSpecific": true,
+  "artifact": {
+    "runId": 39011934307,
+    "producerCommit": "88140b19828466c584432d3c793f7e09408ddff3",
+    "id": 12092994033,
+    "zipSha256": "0f744ae117672199ccf7309988122b75e48bf37fb5da98796a428abb70a30033",
+    "sourceLockSha256": "0df7661769a91482125a56c9fc9215f2da1d1ec6c7df4621331143f643532f6d"
+  },
+  "modules": [
+    {
+      "module": "onboarding",
+      "sourceCommit": "382cbec488bf219d28326c9d59df4a4b95ac6876",
+      "imageId": "sha256:2dc2b5bda3181cbf524f9d82cbe62ad9b3b77455edf0e3144b57521a3fb44cd9",
+      "runtimeName": "ouf-onboarding"
+    },
+    {
+      "module": "ingestion",
+      "sourceCommit": "f869d8b86b892a0c03c147dac9bb40cd5f873ff2",
+      "imageId": "sha256:391c7fab50bcbee4162f3fbe2f707ce0e522e2c412d4fab7c74caa7758815188",
+      "runtimeName": "ouf-ingestion"
+    },
+    {
+      "module": "gateway",
+      "sourceCommit": "425a0377c278ff52e00ce962ffd24809ee66f2e5",
+      "imageId": null,
+      "runtimeName": "ouf-apisix"
+    }
+  ],
+  "expectedRuntimeBindings": {
+    "ouf-onboarding": {
+      "configHash": "5ec4936a9b0d6d972930ee3c3f6ec46a8f48d2dfc68be8fab10e34509b492450",
+      "containerId": "c50ca059a4d07cb7debd2e762800e2bdf10529bae5e5789ddf84e5cf148e0efa",
+      "hostConfigHash": "8ed9299cfe671197aca65cd6c83b3eb645f9b2fe2e478ee79352f13ffb735b67",
+      "imageId": "sha256:e3466ff0dd29f55bee31e1600485d7441980c8a669ea129ba23ccda93c3febcb",
+      "mountsHash": "831a67eb22989130c63d836388f2509b6d3924dd04f8feef3dfab1b040d54763",
+      "networkSettingsHash": "cad8264c237dd002998f3818a534d09aeaf28552d62dd1830c0d32b13d798095",
+      "pid": 3625179,
+      "startedAt": "2026-10-16T02:28:50.474037546Z"
+    },
+    "ouf-ingestion": {
+      "configHash": "97a6b81fb483c558853a97da46e8a89e564fd1f56e5e9a8ea8b3e0ff122890a5",
+      "containerId": "055b06c98cd5f27362ebd6672f88c2db3a5b119846450d56976ba2dea3daf6a3",
+      "hostConfigHash": "59c3436348b8e55548ae86e9a769a0aabad44fc1f2defe47c2e3f09e03081ffc",
+      "imageId": "sha256:85529961c932bc013fb4fe85bd542a2248901ed0b5c154c7c276e830179bf78a",
+      "mountsHash": "0505e054ff2c332f9308eac9f958c18ddb57210833efa531bddcc904629904a5",
+      "networkSettingsHash": "429a3d2f611d32843c82622dd763e8a45d3f1b15519c82a0c6ab533d8c2a8c0a",
+      "pid": 3735930,
+      "startedAt": "2026-10-16T09:57:48.82714722Z"
+    },
+    "ouf-apisix": {
+      "configHash": "35866de3c692108093191d3fd633f4006e671b2494863de37bd68f0242ea4b0c",
+      "containerId": "733c5bdeca250fba778d431e121120e6653296d84c747552d8f95290ad01e8d9",
+      "hostConfigHash": "6970408eb666b8f95b333299d5730dd5c86444ad7ca7b6e447ea7875326eb8b7",
+      "imageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+      "mountsHash": "f3d787da502d99890c8ca436235d3eed8a48ab939a9f12213d16990ef9efdb30",
+      "networkSettingsHash": "3b41d16c82d3097ac3db21c81e075e8055811fa6cd3f19e5976345bb385218dd",
+      "pid": 3678339,
+      "startedAt": "2026-10-16T06:26:35.210202618Z"
+    }
+  },
+  "expectedMigrationTrees": {
+    "onboarding": [
+      {
+        "path": "src/main/resources/db/migration/V10__runtime_projection_schema_surveillance.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d340ba46341f1afcb203908a91c2146b5379b980"
+      },
+      {
+        "path": "src/main/resources/db/migration/V11__trusted_human_protected_operations.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5e85b30cd75bb5dcea7c97c0e51849cc8a7f1255"
+      },
+      {
+        "path": "src/main/resources/db/migration/V12__semantic_gap_workflow.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b6e6f4fc770a634ae457f7b987cb811a2c308464"
+      },
+      {
+        "path": "src/main/resources/db/migration/V13__managed_file_quarantine.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0d6c4203612fbb52f8bdb1e94cddaead6eefda1b"
+      },
+      {
+        "path": "src/main/resources/db/migration/V14__schema_mapping_governance.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "27c87d093f2fd83b6df65598150e642d203c88b6"
+      },
+      {
+        "path": "src/main/resources/db/migration/V15__authorization_policy_registry.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e25b2409050418ec00099ad539fcb00de9570f61"
+      },
+      {
+        "path": "src/main/resources/db/migration/V16__authorization_admin_lifecycle.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "73366c05f99482cca1be652a99d904dbce5d775d"
+      },
+      {
+        "path": "src/main/resources/db/migration/V17__geopackage_profiles.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6770c43d096fdb2f3eaee0b78ef426f43cbf5679"
+      },
+      {
+        "path": "src/main/resources/db/migration/V18__access_profiles.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fff44792dc9a1e295d87a2380c5350c9795741d5"
+      },
+      {
+        "path": "src/main/resources/db/migration/V19__access_semantic_proposals.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2f0999a657a919afcacd2d15372c42a75ea33e97"
+      },
+      {
+        "path": "src/main/resources/db/migration/V1__onboarding_core.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "168b129896d0dcd5725197aae71698206b0213a3"
+      },
+      {
+        "path": "src/main/resources/db/migration/V20__authorization_bootstrap_latch.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cd04ed35fab0f36cabc338f1eca6954ad56e15a3"
+      },
+      {
+        "path": "src/main/resources/db/migration/V21__installation_configuration_lifecycle.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d1b1535b56046e8165b4b9cef561a9ccb8e4f260"
+      },
+      {
+        "path": "src/main/resources/db/migration/V22__installation_environment_validation.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f3f2d6a08c9191b802f1844202b4dfad9eb9fcf5"
+      },
+      {
+        "path": "src/main/resources/db/migration/V23__installation_projection_export_audit.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "52c4f1cc866695e1d80ea4d7e70463b476c4d273"
+      },
+      {
+        "path": "src/main/resources/db/migration/V24__installation_environment_validation_correlation.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0520bd2b20a182f1a9083a779311f2b4c2b2627e"
+      },
+      {
+        "path": "src/main/resources/db/migration/V25__candidate_installation_projection_export.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e4abfd9f482ecdbfddfb2af609cceecfee43d362"
+      },
+      {
+        "path": "src/main/resources/db/migration/V26__protected_superadmin_role.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b90638b45822813f69ce1758cf025a3ade360f31"
+      },
+      {
+        "path": "src/main/resources/db/migration/V27__authorization_permission_proposals.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "73fc1571dd60c2fbb952d4f3b561ee688517416d"
+      },
+      {
+        "path": "src/main/resources/db/migration/V28__nominal_superadmin.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "11c4f9e7c14944857622ed7af99853a1d614c16d"
+      },
+      {
+        "path": "src/main/resources/db/migration/V29__ouf_role_catalogue.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bc254ff38407450a8338ce0cfa4a0ae70196d67d"
+      },
+      {
+        "path": "src/main/resources/db/migration/V2__validation_engine.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1e92cb36bfb1002d7062e8674aaa6235a061bb0d"
+      },
+      {
+        "path": "src/main/resources/db/migration/V30__managed_file_onboarding_idempotency.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ab94663abb455a66e348b9d2148c3c7d9b2a381e"
+      },
+      {
+        "path": "src/main/resources/db/migration/V31__managed_file_upload_idempotency.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6cc231d30f709b464353d6c7428d2c693ddb1d0e"
+      },
+      {
+        "path": "src/main/resources/db/migration/V32__managed_onboarding_review_handoff.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b0555213ae6bf72d0814f2dfd64816c62b88713d"
+      },
+      {
+        "path": "src/main/resources/db/migration/V33__managed_review_activation_progress.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0f07b0c5905d2ca211e34ca56cb29bffba859935"
+      },
+      {
+        "path": "src/main/resources/db/migration/V3__technical_discovery.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "19f147178cd149a2ed7241df4d4f614a8d6438ea"
+      },
+      {
+        "path": "src/main/resources/db/migration/V4__mapping_workspace.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5bd8c7b937e12030a3c3ffdc007059cedff77a2f"
+      },
+      {
+        "path": "src/main/resources/db/migration/V5__managed_file_profiles.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6862db82411d06306260166442925ccbea50cab8"
+      },
+      {
+        "path": "src/main/resources/db/migration/V6__initial_ingestion_and_pull_scheduler.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b25b216ab1a257edd327c4ceb77b123843190c80"
+      },
+      {
+        "path": "src/main/resources/db/migration/V7__restore_onboarding_boundary.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6e599f823604843409099498197120963101a738"
+      },
+      {
+        "path": "src/main/resources/db/migration/V8__managed_file_preview.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8fc9833897c3c88e5d7c39012d81e3a9388d5e40"
+      },
+      {
+        "path": "src/main/resources/db/migration/V9__managed_file_contract_hardening.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13cdba365197ee82c520ce74f1a294d9375dc181"
+      }
+    ],
+    "ingestion": [
+      {
+        "path": "src/main/resources/db/migration/V10__quarantine_lifecycle.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9e09b51c5341397f8ac7a4bb3856c2c39e73e489"
+      },
+      {
+        "path": "src/main/resources/db/migration/V11__classified_source_resilience.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5a175d1203fc7877088246a8f3f9c5209a19fda5"
+      },
+      {
+        "path": "src/main/resources/db/migration/V12__governed_lifecycle_and_historical_replay.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dce9331ca8dc557fb6481b7edd2ee32073b1b471"
+      },
+      {
+        "path": "src/main/resources/db/migration/V13__pressure_admission_retry_budget.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "73558e8b3d6487f9e819cb2ecb9ea6cfde8b233a"
+      },
+      {
+        "path": "src/main/resources/db/migration/V14__published_activation_schedule.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4934ee2c8a8661a37266731122e99e2a3a2937d6"
+      },
+      {
+        "path": "src/main/resources/db/migration/V15__human_recovery_sessions.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "62f09a62379f4798771f34f5da4fe064e40441e2"
+      },
+      {
+        "path": "src/main/resources/db/migration/V16__incident_observation_time.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "69576ca2e39b71b663104abe45c9b6dc10cacdc2"
+      },
+      {
+        "path": "src/main/resources/db/migration/V17__incident_publication_and_cursor.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6cb4517ee030958cd8b87ec9aaa19c1099a58ae9"
+      },
+      {
+        "path": "src/main/resources/db/migration/V18__incident_publication_bookmarks.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "81601af0bf856df7d9ce8852a0504594f2a75579"
+      },
+      {
+        "path": "src/main/resources/db/migration/V1__ingestion_runtime_core.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "abb212187a17f4780bc8efa2480e78beb04a5875"
+      },
+      {
+        "path": "src/main/resources/db/migration/V2__durable_ack_and_replay.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0364b1c5d359696424cf148e46d96f4ec5580f8e"
+      },
+      {
+        "path": "src/main/resources/db/migration/V3__trusted_operations.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5702b8c19eb2a0326011a06086ea9f3a30c67e33"
+      },
+      {
+        "path": "src/main/resources/db/migration/V4__scheduler_and_source_health.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8cee49d901e616ffc885e09dfbace7c82e3a4999"
+      },
+      {
+        "path": "src/main/resources/db/migration/V5__replay_execution_lifecycle.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4a5047c7ff499d47db73adcbe3b9692a8b50c171"
+      },
+      {
+        "path": "src/main/resources/db/migration/V6__protected_operational_log.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "180e364d475e951a89c734716a04f3ce033d12e4"
+      },
+      {
+        "path": "src/main/resources/db/migration/V7__execution_worker_and_snapshot.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "35fff4384dc503eaeb3bf371b1a710d1fe69219a"
+      },
+      {
+        "path": "src/main/resources/db/migration/V8__schema_surveillance.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dd1cb219ef4f125a51681176cceb9e2258b7db66"
+      },
+      {
+        "path": "src/main/resources/db/migration/V9__runtime_issue_governance.sql",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bcd0556915bb1f362da35c5609f4f0904472fc0b"
+      }
+    ]
+  },
+  "worker": {
+    "contextPath": "/etc/ouf/deploy-snapshots/semantic-mcp-update-execution-9xl_yy2c",
+    "reviewSha256": "9e2d9aa969abe97feacd2f91b374d1c3fc6d7120b51c1f3c71ce04f68a6b23a6",
+    "authoritySha256": "5a0ed5855aecfa9ed509839c7fa37398918c08ff6dd094fb4070f77e78f4e5c8",
+    "journalPath": "/etc/ouf/deploy-snapshots/chatbot-file-intake-9f754dbcf7caf450d1d1eef50c0288f2102cfac191a65cfc60a5c1fcbf60ba5e/attempt-f8d38137fc4cca9d36910c19/semantic-functional-worker-f9d572dde0b549b11f7a704e765e9568dbfef9525b58d085efcf0459ee158d84",
+    "recordHashes": {
+      "owner-admission.json": "db769117c4d8ccdbd70de76e9b59101cecfedb61dc10d407590465d81486b134",
+      "owner-session.json": "c617154684ce6cf126200fdce7c700f364bc6bffb97f44b7689f0a6eaa42252c",
+      "owner-status.json": "0fa3d63b03642cc9d7241df3a2b0254743490ed69c2eed695d30a69f5b044694",
+      "recovery.json": "0958271f8656808cffefda2778739c8aa0d868b53ed00f2cd9b8014edc8a6d7b"
+    },
+    "controlledAttempts": 188,
+    "historicalCeiling": 197
+  },
+  "finiteTestProfile": {
+    "schema": "ouf.policy-token-test-session-profile.v1",
+    "maximumNewTokenGrantAttempts": 128,
+    "maximumSeconds": 3600,
+    "renewalIntervalSeconds": 60,
+    "automaticRenewalAllowed": false,
+    "purpose": "CONFIGURATION_AND_VALIDATION",
+    "preserveCumulativeHistory": true
+  },
+  "source": {
+    "sourceId": "teatri-csv-6609b245",
+    "onboardingVersionId": "9860853e-e8f3-4b93-b9d2-03521a039962",
+    "configurationHash": "sha256:ae7f46b4214d09c55a9885530920026258f0dcd588462c353b06d82185e12c9b",
+    "challengeId": "ecf36c5c-10b2-4393-bf81-0ff7d28b8d5b",
+    "expectedVersion": 3,
+    "readinessGeneration": 1,
+    "blockedCode": "ONB_READINESS_DEPENDENCY_403"
+  }
+}
+

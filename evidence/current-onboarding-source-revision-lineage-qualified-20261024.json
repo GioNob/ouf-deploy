@@ -1,0 +1,52 @@
+{
+  "schema": "ouf.current-onboarding-source-revision-lineage-qualification.v1",
+  "sourceCommit": "5a389f3bcc8d5b368c3ecd7f4683bad2a5164114",
+  "script": "scripts/read-current-onboarding-source-revision-lineage-20261024.py",
+  "scriptSha256": "4afbab94d27472c7584e7d16ceb92e6aa3468707152dfc3dc4c25ea7bd432399",
+  "publishedReadbackEqual": true,
+  "ci": [
+    {
+      "runId": 40091123700,
+      "jobId": 120863833996,
+      "event": "push",
+      "tests": 5,
+      "skipped": 0,
+      "seconds": 0.034,
+      "conclusion": "success",
+      "directLogsRead": true
+    },
+    {
+      "runId": 40091127068,
+      "jobId": 120863843798,
+      "event": "pull_request",
+      "testedMerge": "5df4b73e18c9abe3dad1b8815eaaa7b2dac46d50",
+      "tests": 5,
+      "skipped": 0,
+      "seconds": 0.044,
+      "conclusion": "success",
+      "directLogsRead": true
+    }
+  ],
+  "proofScope": [
+    "later complete24-stage/version57 source-revision history and exact V34 contract",
+    "reject wrong/changed V34 budget SQL, partial history, wrong intent/authority/context",
+    "actual protected root files/socket filesystem/proc identity; private hash receipts/no replay",
+    "Engine/SQL/old prepare/query/Popen/socket connections explicitly forbidden in full metadata capture"
+  ],
+  "limits": [
+    "runtime/history/review/authority fixtures synthetic; no actual Docker/PostgreSQL in this suite",
+    "full installation bootstrap and current target lineage not CI-proven",
+    "labels are declarations; current schema/DB privileges/API identity/lifecycle and mutation authority remain unproven"
+  ],
+  "targetLineageReadExecuted": false,
+  "maximumEngineGets": 0,
+  "maximumSqlAttempts": 0,
+  "oldBudgetImageBlocked": true,
+  "newSqlAttemptAuthorized": false,
+  "newBindingAcceptedForRuntime": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

@@ -1,0 +1,496 @@
+{
+  "serviceHumanRequired": {
+    "principal": {
+      "subject": "svc-ingestion",
+      "actorType": "SERVICE_IDENTITY",
+      "issuer": "https://iam.example/realms/evo",
+      "audiences": [
+        "ouf-onboarding"
+      ],
+      "clientId": "ingestion-runtime",
+      "externalRoleRefs": [
+        "EVO:RESPONSABILE_SUO"
+      ],
+      "orgRefs": [
+        "ORG:SUO"
+      ],
+      "acr": "2",
+      "amr": [
+        "pwd",
+        "otp"
+      ],
+      "delegatedVia": null,
+      "sessionRef": "ths-session-77"
+    },
+    "resource": {
+      "resourceType": "SOURCE_ONBOARDING_VERSION",
+      "resourceId": "ov-suo-12",
+      "ownerOrgRef": "ORG:SUO",
+      "domainRef": "SUO",
+      "dataAccessLabels": [
+        {
+          "labelId": "OPEN",
+          "version": "1"
+        }
+      ]
+    },
+    "capability": {
+      "capabilityId": "source.onboarding.approve",
+      "version": "1",
+      "owner": "Onboarding",
+      "operationType": "approve",
+      "riskClass": "HIGH_IMPACT",
+      "humanRequired": true,
+      "toolEligibility": false,
+      "resourceTypes": [
+        "SOURCE_ONBOARDING_VERSION"
+      ]
+    },
+    "grant": {
+      "grantId": "g-001",
+      "effect": "ALLOW",
+      "subject": {
+        "externalRoleRef": "EVO:RESPONSABILE_SUO"
+      },
+      "capabilityId": "source.onboarding.approve",
+      "actorTypes": [
+        "HUMAN_USER"
+      ],
+      "organizationScope": {
+        "mode": "SUBJECT_ORG_TREE"
+      },
+      "assurance": {
+        "level": "NORMAL"
+      },
+      "status": "ACTIVE"
+    },
+    "bundle": {
+      "publicationId": "authz-pub-2026-09-001",
+      "policyVersion": "1.3.0",
+      "createdAt": "2026-09-07T10:00:00Z",
+      "contentHash": "sha256:authz-example",
+      "capabilitySchemaVersion": "1",
+      "grants": [
+        {
+          "grantId": "g-001",
+          "effect": "ALLOW",
+          "subject": {
+            "externalRoleRef": "EVO:RESPONSABILE_SUO"
+          },
+          "capabilityId": "source.onboarding.approve",
+          "actorTypes": [
+            "HUMAN_USER"
+          ],
+          "organizationScope": {
+            "mode": "SUBJECT_ORG_TREE"
+          },
+          "assurance": {
+            "level": "NORMAL"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "denyRules": []
+    },
+    "decision": {
+      "decision": "ALLOW",
+      "reasonCode": "GRANT_MATCH",
+      "policyVersion": "1.3.0",
+      "bundleContentHash": "sha256:authz-example",
+      "capabilityId": "source.onboarding.approve",
+      "correlationId": "corr-authz-01",
+      "resourceScope": {
+        "resourceId": "ov-suo-12"
+      }
+    },
+    "evidence": {
+      "evaluationId": "eval-01",
+      "timestamp": "2026-09-07T10:01:00Z",
+      "subject": "user-123",
+      "actorType": "HUMAN_USER",
+      "clientId": "ouf-ths",
+      "capabilityId": "source.onboarding.approve",
+      "resourceRef": "ov-suo-12",
+      "decision": "ALLOW",
+      "reasonCode": "GRANT_MATCH",
+      "policyVersion": "1.3.0",
+      "bundleContentHash": "sha256:authz-example",
+      "correlationId": "corr-authz-01"
+    }
+  },
+  "unknownCapability": {
+    "principal": {
+      "subject": "user-123",
+      "actorType": "HUMAN_USER",
+      "issuer": "https://iam.example/realms/evo",
+      "audiences": [
+        "ouf-onboarding"
+      ],
+      "clientId": "ouf-ths",
+      "externalRoleRefs": [
+        "EVO:RESPONSABILE_SUO"
+      ],
+      "orgRefs": [
+        "ORG:SUO"
+      ],
+      "acr": "2",
+      "amr": [
+        "pwd",
+        "otp"
+      ],
+      "delegatedVia": null,
+      "sessionRef": "ths-session-77"
+    },
+    "resource": {
+      "resourceType": "SOURCE_ONBOARDING_VERSION",
+      "resourceId": "ov-suo-12",
+      "ownerOrgRef": "ORG:SUO",
+      "domainRef": "SUO",
+      "dataAccessLabels": [
+        {
+          "labelId": "OPEN",
+          "version": "1"
+        }
+      ]
+    },
+    "capability": {
+      "capabilityId": "new.unknown.capability",
+      "version": "1",
+      "owner": "Onboarding",
+      "operationType": "approve",
+      "riskClass": "HIGH_IMPACT",
+      "humanRequired": true,
+      "toolEligibility": false,
+      "resourceTypes": [
+        "SOURCE_ONBOARDING_VERSION"
+      ]
+    },
+    "grant": {
+      "grantId": "g-001",
+      "effect": "ALLOW",
+      "subject": {
+        "externalRoleRef": "EVO:RESPONSABILE_SUO"
+      },
+      "capabilityId": "source.onboarding.approve",
+      "actorTypes": [
+        "HUMAN_USER"
+      ],
+      "organizationScope": {
+        "mode": "SUBJECT_ORG_TREE"
+      },
+      "assurance": {
+        "level": "NORMAL"
+      },
+      "status": "ACTIVE"
+    },
+    "bundle": {
+      "publicationId": "authz-pub-2026-09-001",
+      "policyVersion": "1.3.0",
+      "createdAt": "2026-09-07T10:00:00Z",
+      "contentHash": "sha256:authz-example",
+      "capabilitySchemaVersion": "1",
+      "grants": [
+        {
+          "grantId": "g-001",
+          "effect": "ALLOW",
+          "subject": {
+            "externalRoleRef": "EVO:RESPONSABILE_SUO"
+          },
+          "capabilityId": "source.onboarding.approve",
+          "actorTypes": [
+            "HUMAN_USER"
+          ],
+          "organizationScope": {
+            "mode": "SUBJECT_ORG_TREE"
+          },
+          "assurance": {
+            "level": "NORMAL"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "denyRules": []
+    },
+    "decision": {
+      "decision": "ALLOW",
+      "reasonCode": "GRANT_MATCH",
+      "policyVersion": "1.3.0",
+      "bundleContentHash": "sha256:authz-example",
+      "capabilityId": "source.onboarding.approve",
+      "correlationId": "corr-authz-01",
+      "resourceScope": {
+        "resourceId": "ov-suo-12"
+      }
+    },
+    "evidence": {
+      "evaluationId": "eval-01",
+      "timestamp": "2026-09-07T10:01:00Z",
+      "subject": "user-123",
+      "actorType": "HUMAN_USER",
+      "clientId": "ouf-ths",
+      "capabilityId": "source.onboarding.approve",
+      "resourceRef": "ov-suo-12",
+      "decision": "ALLOW",
+      "reasonCode": "GRANT_MATCH",
+      "policyVersion": "1.3.0",
+      "bundleContentHash": "sha256:authz-example",
+      "correlationId": "corr-authz-01"
+    }
+  },
+  "mixedBundleDecision": {
+    "principal": {
+      "subject": "user-123",
+      "actorType": "HUMAN_USER",
+      "issuer": "https://iam.example/realms/evo",
+      "audiences": [
+        "ouf-onboarding"
+      ],
+      "clientId": "ouf-ths",
+      "externalRoleRefs": [
+        "EVO:RESPONSABILE_SUO"
+      ],
+      "orgRefs": [
+        "ORG:SUO"
+      ],
+      "acr": "2",
+      "amr": [
+        "pwd",
+        "otp"
+      ],
+      "delegatedVia": null,
+      "sessionRef": "ths-session-77"
+    },
+    "resource": {
+      "resourceType": "SOURCE_ONBOARDING_VERSION",
+      "resourceId": "ov-suo-12",
+      "ownerOrgRef": "ORG:SUO",
+      "domainRef": "SUO",
+      "dataAccessLabels": [
+        {
+          "labelId": "OPEN",
+          "version": "1"
+        }
+      ]
+    },
+    "capability": {
+      "capabilityId": "source.onboarding.approve",
+      "version": "1",
+      "owner": "Onboarding",
+      "operationType": "approve",
+      "riskClass": "HIGH_IMPACT",
+      "humanRequired": true,
+      "toolEligibility": false,
+      "resourceTypes": [
+        "SOURCE_ONBOARDING_VERSION"
+      ]
+    },
+    "grant": {
+      "grantId": "g-001",
+      "effect": "ALLOW",
+      "subject": {
+        "externalRoleRef": "EVO:RESPONSABILE_SUO"
+      },
+      "capabilityId": "source.onboarding.approve",
+      "actorTypes": [
+        "HUMAN_USER"
+      ],
+      "organizationScope": {
+        "mode": "SUBJECT_ORG_TREE"
+      },
+      "assurance": {
+        "level": "NORMAL"
+      },
+      "status": "ACTIVE"
+    },
+    "bundle": {
+      "publicationId": "authz-pub-2026-09-001",
+      "policyVersion": "1.3.0",
+      "createdAt": "2026-09-07T10:00:00Z",
+      "contentHash": "sha256:authz-example",
+      "capabilitySchemaVersion": "1",
+      "grants": [
+        {
+          "grantId": "g-001",
+          "effect": "ALLOW",
+          "subject": {
+            "externalRoleRef": "EVO:RESPONSABILE_SUO"
+          },
+          "capabilityId": "source.onboarding.approve",
+          "actorTypes": [
+            "HUMAN_USER"
+          ],
+          "organizationScope": {
+            "mode": "SUBJECT_ORG_TREE"
+          },
+          "assurance": {
+            "level": "NORMAL"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "denyRules": []
+    },
+    "decision": {
+      "decision": "ALLOW",
+      "reasonCode": "GRANT_MATCH",
+      "policyVersion": "1.4.0",
+      "bundleContentHash": "sha256:authz-example",
+      "capabilityId": "source.onboarding.approve",
+      "correlationId": "corr-authz-01",
+      "resourceScope": {
+        "resourceId": "ov-suo-12"
+      }
+    },
+    "evidence": {
+      "evaluationId": "eval-01",
+      "timestamp": "2026-09-07T10:01:00Z",
+      "subject": "user-123",
+      "actorType": "HUMAN_USER",
+      "clientId": "ouf-ths",
+      "capabilityId": "source.onboarding.approve",
+      "resourceRef": "ov-suo-12",
+      "decision": "ALLOW",
+      "reasonCode": "GRANT_MATCH",
+      "policyVersion": "1.3.0",
+      "bundleContentHash": "sha256:authz-example",
+      "correlationId": "corr-authz-01"
+    }
+  },
+  "denyOverrides": {
+    "principal": {
+      "subject": "user-123",
+      "actorType": "HUMAN_USER",
+      "issuer": "https://iam.example/realms/evo",
+      "audiences": [
+        "ouf-onboarding"
+      ],
+      "clientId": "ouf-ths",
+      "externalRoleRefs": [
+        "EVO:RESPONSABILE_SUO"
+      ],
+      "orgRefs": [
+        "ORG:SUO"
+      ],
+      "acr": "2",
+      "amr": [
+        "pwd",
+        "otp"
+      ],
+      "delegatedVia": null,
+      "sessionRef": "ths-session-77"
+    },
+    "resource": {
+      "resourceType": "SOURCE_ONBOARDING_VERSION",
+      "resourceId": "ov-suo-12",
+      "ownerOrgRef": "ORG:SUO",
+      "domainRef": "SUO",
+      "dataAccessLabels": [
+        {
+          "labelId": "OPEN",
+          "version": "1"
+        }
+      ]
+    },
+    "capability": {
+      "capabilityId": "source.onboarding.approve",
+      "version": "1",
+      "owner": "Onboarding",
+      "operationType": "approve",
+      "riskClass": "HIGH_IMPACT",
+      "humanRequired": true,
+      "toolEligibility": false,
+      "resourceTypes": [
+        "SOURCE_ONBOARDING_VERSION"
+      ]
+    },
+    "grant": {
+      "grantId": "g-001",
+      "effect": "ALLOW",
+      "subject": {
+        "externalRoleRef": "EVO:RESPONSABILE_SUO"
+      },
+      "capabilityId": "source.onboarding.approve",
+      "actorTypes": [
+        "HUMAN_USER"
+      ],
+      "organizationScope": {
+        "mode": "SUBJECT_ORG_TREE"
+      },
+      "assurance": {
+        "level": "NORMAL"
+      },
+      "status": "ACTIVE"
+    },
+    "bundle": {
+      "publicationId": "authz-pub-2026-09-001",
+      "policyVersion": "1.3.0",
+      "createdAt": "2026-09-07T10:00:00Z",
+      "contentHash": "sha256:authz-example",
+      "capabilitySchemaVersion": "1",
+      "grants": [
+        {
+          "grantId": "g-001",
+          "effect": "ALLOW",
+          "subject": {
+            "externalRoleRef": "EVO:RESPONSABILE_SUO"
+          },
+          "capabilityId": "source.onboarding.approve",
+          "actorTypes": [
+            "HUMAN_USER"
+          ],
+          "organizationScope": {
+            "mode": "SUBJECT_ORG_TREE"
+          },
+          "assurance": {
+            "level": "NORMAL"
+          },
+          "status": "ACTIVE"
+        },
+        {
+          "grantId": "g-deny",
+          "effect": "DENY",
+          "subject": {
+            "externalRoleRef": "EVO:RESPONSABILE_SUO"
+          },
+          "capabilityId": "source.onboarding.approve",
+          "actorTypes": [
+            "HUMAN_USER"
+          ],
+          "organizationScope": {
+            "mode": "SUBJECT_ORG_TREE"
+          },
+          "assurance": {
+            "level": "NORMAL"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "denyRules": []
+    },
+    "decision": {
+      "decision": "ALLOW",
+      "reasonCode": "GRANT_MATCH",
+      "policyVersion": "1.3.0",
+      "bundleContentHash": "sha256:authz-example",
+      "capabilityId": "source.onboarding.approve",
+      "correlationId": "corr-authz-01",
+      "resourceScope": {
+        "resourceId": "ov-suo-12"
+      }
+    },
+    "evidence": {
+      "evaluationId": "eval-01",
+      "timestamp": "2026-09-07T10:01:00Z",
+      "subject": "user-123",
+      "actorType": "HUMAN_USER",
+      "clientId": "ouf-ths",
+      "capabilityId": "source.onboarding.approve",
+      "resourceRef": "ov-suo-12",
+      "decision": "ALLOW",
+      "reasonCode": "GRANT_MATCH",
+      "policyVersion": "1.3.0",
+      "bundleContentHash": "sha256:authz-example",
+      "correlationId": "corr-authz-01"
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "schema": "ouf.source-revision-postinstallation-target-evidence.v1",
+  "observedAtUserMessage": "2026-10-19T09:28:42+02:00",
+  "targetReadbackSource": "operator supplied output of qualified root readback, CI39215600588; assistant did not access VPS root directly",
+  "targetReadback": {
+    "allOriginalGatewayRoutesPreserved": true,
+    "allStagesApplied": true,
+    "applications": {
+      "ingestion": {
+        "containerId": "477ea664c97ebae2bf50a9fdb4d2ae92c20275cf28e5941f09c1133354908338",
+        "pid": 29444,
+        "startedAt": "2026-10-18T16:41:17.983431224Z",
+        "unchangedBindingVerified": true
+      },
+      "mcp": {
+        "containerId": "c6fc3a462f4e1faf1e8121fee13ca445f7a3f7f1f39df65d738ea9cc1d4185f4",
+        "pid": 223119,
+        "restartPolicyPreserved": true,
+        "runtimeBindingVerified": true,
+        "startedAt": "2026-10-19T06:57:35.217142367Z"
+      },
+      "onboarding": {
+        "containerId": "3197c8d5ae9acc00a2e99d54bc969db1d199623960b5efed09c891ba0a3138c8",
+        "pid": 222550,
+        "restartPolicyPreserved": true,
+        "runtimeBindingVerified": true,
+        "startedAt": "2026-10-19T06:57:23.460258771Z"
+      },
+      "udp": {
+        "containerId": "946fd69972ada2e310c32f72da27f19a04e7a2043dc330f116e8ba1c507e6e3b",
+        "pid": 66601,
+        "startedAt": "2026-10-18T19:16:12.55247113Z",
+        "unchangedBindingVerified": true
+      }
+    },
+    "authorityAcceptedForExecution": false,
+    "authorityExpiredByWallClock": true,
+    "authorizationEffectsApplied": true,
+    "automaticRetry": false,
+    "backup": {
+      "currentFullChecksumVerified": false,
+      "dumpCustodyAndSizeMatch": true,
+      "dumpOpened": false,
+      "priorPayloadParsed": true,
+      "receiptBound": true
+    },
+    "budgetReset": false,
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "contextPath": "/etc/ouf/deploy-snapshots/source-revision-execution-uow4n8lp",
+    "credentialJournalHashesPrinted": false,
+    "credentialValuesPrinted": false,
+    "database": {
+      "mcpMigrationsUnchanged": true,
+      "onboardingVersion": 34,
+      "readOnlySessions": 3,
+      "revisionTableOwnershipAndAppendOnlyProven": true,
+      "udpVersion": 36
+    },
+    "freshChatClientTokenScopesProven": false,
+    "frozenFilesVerified": 81,
+    "functionalMilestonesProven": 4,
+    "functionalStage5Proven": false,
+    "functionalStage6Proven": false,
+    "gatewayRouteCount": 80,
+    "humanJournalsRead": 0,
+    "jobsRetried": 0,
+    "journalVersion": 57,
+    "journalWrites": 0,
+    "nativeProfilePublished": false,
+    "preparationResultSha256": "3eb2fd4fff1048accdb954322faa58979bb490250c8535c1dd8512253e603587",
+    "preparedContextPath": "/etc/ouf/deploy-snapshots/source-revision-human-recovery-inmfuoj2",
+    "profilePublications": 0,
+    "readiness": {
+      "mcp": {
+        "ready": true,
+        "status": 204
+      },
+      "onboarding": {
+        "ready": true,
+        "status": 200
+      }
+    },
+    "retainedMcpMetadataCustodyAndHashesVerified": true,
+    "retainedOldContainers": {
+      "mcp": {
+        "restartDisabled": true,
+        "retained": true,
+        "stopped": true
+      },
+      "onboarding": {
+        "restartDisabled": true,
+        "retained": true,
+        "stopped": true
+      }
+    },
+    "revisionRoutesAdded": 2,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.source-revision-completed-readback.v1",
+    "sourceClosureSha256": "aa7b67154ef76626e48ccca3fbe9b9df0995bc095baeedb6b2dcacd3ac5b0a62",
+    "tokenFilesOpened": 0
+  },
+  "directMcpOnboardingOwnerRead": {
+    "sourceId": "teatri-csv-6609b245",
+    "onboardingVersionId": "9860853e-e8f3-4b93-b9d2-03521a039962",
+    "state": "ACTIVE",
+    "lockVersion": 4,
+    "configurationHash": "sha256:ae7f46b4214d09c55a9885530920026258f0dcd588462c353b06d82185e12c9b",
+    "humanApprovalRequired": false,
+    "challengeId": "ecf36c5c-10b2-4393-bf81-0ff7d28b8d5b",
+    "challengeStatus": "CONFIRMED",
+    "expiresAt": "2026-10-17T06:44:56.899+00:00",
+    "reviewUrl": "https://api.ouf-lab.it/trusted-human/onboarding/?challenge=ecf36c5c-10b2-4393-bf81-0ff7d28b8d5b",
+    "challengeExpired": true,
+    "publication": {
+      "publication_id": "996d58ca-43d6-42f5-a42a-311940e742f9",
+      "checksum": "sha256:c997e4ccdb1e97823e1a55f4e5a549ee6cecee80da865bb246bb297d8cbd7431",
+      "active": true
+    },
+    "ingestionCompatibilityObserved": true,
+    "activationProgress": {
+      "readiness_started_at": "2026-10-17T06:39:25.984+00:00",
+      "readiness_attempts": 3,
+      "readiness_generation": 5,
+      "readiness_phase": "ACTIVE",
+      "readiness_lease_until": null,
+      "readiness_next_at": null,
+      "readiness_last_code": null,
+      "profile": "managed-review-activation.v1",
+      "maximumAttempts": 128,
+      "maximumElapsedSeconds": 86400,
+      "requiresAuthenticatedHumanResume": true
+    }
+  },
+  "toolDiscovery": {
+    "requiredTools": [
+      "source.onboarding.revision.read",
+      "source.onboarding.revision.prepare"
+    ],
+    "availableInCurrentChat": false,
+    "installedSourceManifestActiveAndEligible": true,
+    "sourceCommit": "a79b139c7a26d64a584b0a432ebb8df8c32a52ed",
+    "manifestBlob": "4db11dc575fdae8a1e98a6ea3b4495f4d3a85ac7",
+    "kernelBlob": "315901bf5f1a8b23673328a0f9d28d32456b31d9",
+    "clientMetadataCachePossibleNotProven": true,
+    "refreshApiAvailableToAssistant": false,
+    "pluginDirectoryOufSearchResults": 0
+  },
+  "officialClientRefreshReference": "https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}

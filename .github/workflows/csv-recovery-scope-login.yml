@@ -1,0 +1,15 @@
+name: Generic CSV recovery HUMAN scope login qualification
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths: ['tools/csv_materialization_recovery/**', 'scripts/open-csv-materialization-recovery-login-20261017.py', 'releases/csv-materialization-recovery-login-selection-20261017.json', 'tests/test_csv_recovery_login*.py', '.github/workflows/csv-recovery-scope-login.yml']
+permissions: {contents: read}
+jobs:
+  closed-scope-login-native-oauth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Closed source graph and real loopback issuer scope acceptance and denial
+        run: sudo env OUF_TEST_ROOT=/root python3 -B -m unittest discover -s tests -p 'test_csv_recovery_login*.py' -v

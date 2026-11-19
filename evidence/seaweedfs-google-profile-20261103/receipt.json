@@ -1,0 +1,113 @@
+{
+  "schema": "ouf.storage.google-profile-prototype.v1",
+  "status": "LOCAL_PROFILE_BUILD_VERIFIED_WITH_BASELINE_ENVIRONMENT_FAILURES_NOT_ADMITTED",
+  "baseSource": "generation31",
+  "baseGitHubCommit": "5d0d456bec5073192b8a1a86e35bb0dcbd97a6b5",
+  "patchPath": "patches/seaweedfs/4.52-ouf-standard-google-profile.patch",
+  "patchSHA256": "2809f72e392571ef8fdd3f97a6ea229a39bf7b837b6d20c401531c22faa48990",
+  "patchBytes": 84459,
+  "changedFiles": 31,
+  "sourceTree": "65f0ae9fbbdd2bba6e54c84fe767f838bea2ae44",
+  "fullReplayFiles": 4563,
+  "fullReplayExact": true,
+  "binarySHA256": "aa1ff7497f7a770abe84cbd23b792f3af299846839c1c628ef75dd366def9da2",
+  "binaryBytes": 193141948,
+  "productionPackages": 1534,
+  "productionGraphSHA256": "ecec7165dbef5cfb75ba317dc45dd4776bb609a807af50257db9ea6099345063",
+  "dependencyModules": 219,
+  "removedBinaryModules": [
+    "cel.dev/expr",
+    "cloud.google.com/go/monitoring",
+    "cloud.google.com/go/pubsub",
+    "cloud.google.com/go/pubsub/v2",
+    "cloud.google.com/go/storage",
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric",
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping",
+    "github.com/cncf/xds/go",
+    "github.com/envoyproxy/go-control-plane/envoy",
+    "github.com/envoyproxy/protoc-gen-validate",
+    "go.opencensus.io",
+    "go.opentelemetry.io/contrib/detectors/gcp",
+    "go.opentelemetry.io/otel/sdk",
+    "go.opentelemetry.io/otel/sdk/metric"
+  ],
+  "retainedBinaryModuleVersionChanges": [],
+  "auditedLegacyModulesCompiled": {
+    "go.opencensus.io": false,
+    "github.com/envoyproxy/protoc-gen-validate": false,
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp": false
+  },
+  "rootGoModSHA256": "70099e7104439110e72829f82c70c842d54474168c5b549a0ea0821860f3ee71",
+  "rootGoSumSHA256": "ad797e5aaa53627064fd3223600ed9c5d46b7627198a4b8ec57a4a86e9e7be4e",
+  "rootModuleGraphHasLegacyTransitiveEdges": true,
+  "tests": {
+    "focused-final": {
+      "rawSHA256": "9f77e4bf25872c6a2a67194b9e1234dd40b0e1cfb7b3955a20cb696f34589c62",
+      "rawBytes": 64365,
+      "passTests": 52,
+      "skipTests": 0,
+      "failedTests": [],
+      "passPackages": 14,
+      "failedPackages": []
+    },
+    "broad": {
+      "rawSHA256": "e6e89c538fd90eda93a05a449b445a750199aa9536f5da13594f8ade0d201c89",
+      "rawBytes": 1935195,
+      "passTests": 1764,
+      "skipTests": 7,
+      "failedTests": [
+        "TestFsMvMovesIntoExistingDestinationDirectory",
+        "TestFsVerifyManifestResolutionFailure",
+        "TestFsVerifyManifestResolutionFailure/healthy_raw_needle_but_unresolvable_manifest_is_not_verified",
+        "TestFsVerifyManifestResolutionFailure/missing_manifest_needle_is_prunable",
+        "TestFsVerifyPruneEntryGuards",
+        "TestFsVerifyVerifyEntryPrunability",
+        "TestFsVerifyVerifyEntryPrunability/concurrent_path_matches_sequential",
+        "TestFsVerifyVerifyEntryPrunability/healthy_on_one_of_two_locations",
+        "TestFsVerifyVerifyEntryPrunability/missing_on_all_locations",
+        "TestS3BucketCreateRequestsExclusiveCreate"
+      ],
+      "passPackages": 20,
+      "failedPackages": [
+        "github.com/seaweedfs/seaweedfs/weed/shell"
+      ]
+    },
+    "baseline-shell": {
+      "rawSHA256": "38fc3086b92b7ed4663c5fa7303cf1a71c3546fd47df9c4cfeb2d3ae6d19e937",
+      "rawBytes": 14873,
+      "passTests": 0,
+      "skipTests": 0,
+      "failedTests": [
+        "TestFsMvMovesIntoExistingDestinationDirectory",
+        "TestFsVerifyManifestResolutionFailure",
+        "TestFsVerifyManifestResolutionFailure/healthy_raw_needle_but_unresolvable_manifest_is_not_verified",
+        "TestFsVerifyManifestResolutionFailure/missing_manifest_needle_is_prunable",
+        "TestFsVerifyPruneEntryGuards",
+        "TestFsVerifyVerifyEntryPrunability",
+        "TestFsVerifyVerifyEntryPrunability/concurrent_path_matches_sequential",
+        "TestFsVerifyVerifyEntryPrunability/healthy_on_one_of_two_locations",
+        "TestFsVerifyVerifyEntryPrunability/missing_on_all_locations",
+        "TestS3BucketCreateRequestsExclusiveCreate"
+      ],
+      "passPackages": 0,
+      "failedPackages": [
+        "github.com/seaweedfs/seaweedfs/weed/shell"
+      ]
+    }
+  },
+  "authority": {
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "targetFeatureBinding": "OPEN"
+  },
+  "limits": [
+    "New profile excludes native GCS remote/sink and Google PubSub notification/input; separately qualified candidate required if target needs those features",
+    "Whole module graph retains transitive legacy modules; zero compiled audited legacy is not repository eradication or all-maintained claim",
+    "Broad suite has same 10 failing test/subtest events as unmodified baseline31 under sandbox AF_UNIX denial; no broad PASS claim",
+    "No hosted image/scanner/cohort/licence/runtime proof for this new binary yet",
+    "Old Google SDK-backed tests replaced by exclusion contract tests; pure parser and shared-error tests retained",
+    "No previous generation runtime or vulnerability dispositions transferred"
+  ]
+}

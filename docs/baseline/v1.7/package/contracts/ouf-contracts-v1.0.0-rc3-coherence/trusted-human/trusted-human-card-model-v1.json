@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/trusted-human/trusted-human-card-model-v1.json",
+  "title": "OUF Trusted Human Card Model v1",
+  "type": "object",
+  "required": [
+    "challengeId",
+    "capabilityId",
+    "targetRef",
+    "targetVersion",
+    "targetHash",
+    "risk",
+    "allowedActions",
+    "expiresAt"
+  ],
+  "properties": {
+    "challengeId": {
+      "type": "string"
+    },
+    "capabilityId": {
+      "type": "string"
+    },
+    "targetRef": {
+      "type": "string"
+    },
+    "targetVersion": {
+      "type": "string"
+    },
+    "targetHash": {
+      "type": "string"
+    },
+    "risk": {
+      "type": "string"
+    },
+    "summary": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "allowedActions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "displaySections": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "x-ouf-status": "draft",
+  "x-ouf-blueprint": "OUF System Integration & Development Blueprint v0.1",
+  "x-ouf-note": "Core fields only. Field-level contract freeze required before promotion to v1.0."
+}

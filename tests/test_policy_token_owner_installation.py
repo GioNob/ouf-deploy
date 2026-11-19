@@ -70,6 +70,7 @@ class OwnerInstallationTest(unittest.TestCase):
             f.server.profile,f.transport,'a'*40,self.files,self.policy,'1'*64,'2'*64,60,f.clock)
     def grants(self):return sum(p.endswith('/token')for p,_ in self.f.server.calls)
     def test_same_action_creates_output_rotates_grants_and_admits_real_owner_with_history(self):
+        self.f.server.connection_close=True
         i=self.installation;worker=i.install()
         self.assertIs(type(worker),RenewalWorker)
         self.assertIs(type(i.observer),InstalledTokenOwner);self.assertIsInstance(i.observer,DomainOwner)
@@ -88,6 +89,20 @@ class OwnerInstallationTest(unittest.TestCase):
         restarted=RenewalWorker(worker.r)
         self.assertEqual(restarted.tick()['state'],'RECONCILE_REQUIRED')
         self.assertEqual(self.grants(),1);self.assertEqual(i.owner.store.read()['state'],'BLOCKED')
+    def test_discovery_io_failure_retains_completed_credential_and_unused_first_session(self):
+        i=self.installation
+        with patch.object(i.first.admission,'prepare',side_effect=OSError(9,'synthetic closed TLS socket')):
+            with self.assertRaises(OSError):i.install()
+        credential=json.loads((self.f.f.root/i.first.transaction.name).read_bytes())
+        session=json.loads((self.f.f.root/i.first.session.name).read_bytes())
+        self.assertEqual(credential['state'],'NEW_CREDENTIAL_CUSTODIED_NOT_RUNTIME_ACCEPTED')
+        self.assertTrue(credential['credentialPublished'])
+        self.assertEqual(session['state'],'NEW_FINITE_SESSION');self.assertEqual(session['attemptSlotsConsumed'],0)
+        self.assertEqual(self.f.calls.count(('create','/client-secret')),1);self.assertEqual(self.grants(),0)
+        self.assertFalse((self.f.f.root/i.first.name).exists())
+        self.assertFalse((self.f.f.root/(i.intent_name+'.completed')).exists())
+        self.assertFalse((i.journal.root/'recovery.json').exists())
+        self.assertEqual(list(i.output.path.iterdir()),[])
     def test_missing_new_worker_scope_denies_before_any_effect(self):
         f=self.f;raw=json.loads(f.f.authority);raw.pop('policyTokenFiniteWorkerSession')
         f.f.authority=fixture.binding.encoded(raw)
@@ -111,3 +126,4 @@ class OwnerInstallationTest(unittest.TestCase):
         self.assertEqual(worker.tick()['state'],'BLOCKED');self.assertEqual(self.grants(),1)
 
 if __name__=='__main__':unittest.main()
+

@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.source-revision-update-selection.v1",
+  "installationSpecific": true,
+  "privateParent": "/etc/ouf/deploy-snapshots",
+  "retainedBootstrap": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
+    "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
+  },
+  "humanReviewBinding": {
+    "path": "/etc/ouf/deploy-snapshots/csv-recovery-login-szpbk24_/review.json",
+    "sha256": "89e180c82984690add51942018d5569898e86044a5f8d3341d7475d4610e42d7"
+  },
+  "preparedPlanBinding": {
+    "path": "/etc/ouf/deploy-snapshots/source-revision-prepared-lssxnowq/prepared-plan.json",
+    "sha256": "c23ec15b43427c4558b5b06bf36c2c1b4fa73943efbc0e081ad2731b69c9bc89"
+  },
+  "candidateOwnerSourceCommit": "be388e1462778438a208c2e00e166370fee32189",
+  "postgresNativePort": 5432,
+  "onboardingApplicationConfigurationSha256": "a33298792a00d553424e53ea462696a143043d462e2895adeef633d2b4a91d0d"
+}

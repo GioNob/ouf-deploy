@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "mod",
+    "tidy"
+  ],
+  "cwd": "source32-integrated-stage/source",
+  "exitCode": 0,
+  "elapsedSeconds": 0.447,
+  "CGO_ENABLED": "0",
+  "GOOS": "linux",
+  "GOARCH": "amd64",
+  "GOPROXY": "off"
+}

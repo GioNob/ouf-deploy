@@ -1,0 +1,31 @@
+{"Time":"2026-11-03T20:20:22.542879463+01:00","Action":"start","Package":"github.com/rcrowley/go-metrics"}
+{"Time":"2026-11-03T20:20:22.546427236+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleSnapshot"}
+{"Time":"2026-11-03T20:20:22.546480446+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleSnapshot","Output":"=== RUN   TestExpDecaySampleSnapshot\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.546499195+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleSnapshot","Output":"--- PASS: TestExpDecaySampleSnapshot (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.546501929+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleSnapshot","Elapsed":0}
+{"Time":"2026-11-03T20:20:22.54650929+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleStatistics"}
+{"Time":"2026-11-03T20:20:22.546511393+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleStatistics","Output":"=== RUN   TestExpDecaySampleStatistics\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.546514287+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleStatistics","Output":"--- PASS: TestExpDecaySampleStatistics (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.546517723+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestExpDecaySampleStatistics","Elapsed":0}
+{"Time":"2026-11-03T20:20:22.546520467+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot"}
+{"Time":"2026-11-03T20:20:22.54652248+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"=== RUN   TestUniformSampleSnapshot\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.546673968+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"    sample_test.go:311: s.Min(): 37 != 105\n","OutputType":"error"}
+{"Time":"2026-11-03T20:20:22.546682591+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"    sample_test.go:314: s.Max(): 9989 != 9916\n","OutputType":"error"}
+{"Time":"2026-11-03T20:20:22.546684884+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"    sample_test.go:317: s.Mean(): 4748.14 != 5038.97\n","OutputType":"error"}
+{"Time":"2026-11-03T20:20:22.546688239+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"    sample_test.go:320: s.StdDev(): 2826.684117548333 != 2834.2552900365204\n","OutputType":"error"}
+{"Time":"2026-11-03T20:20:22.546692335+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"    sample_test.go:324: median: 4599 != 4884.5\n","OutputType":"error"}
+{"Time":"2026-11-03T20:20:22.546694448+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"    sample_test.go:327: 75th percentile: 7380.5 != 7347.25\n","OutputType":"error"}
+{"Time":"2026-11-03T20:20:22.546696672+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"    sample_test.go:330: 99th percentile: 9986.429999999998 != 9915.25\n","OutputType":"error"}
+{"Time":"2026-11-03T20:20:22.546699827+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Output":"--- FAIL: TestUniformSampleSnapshot (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.546702971+01:00","Action":"fail","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleSnapshot","Elapsed":0}
+{"Time":"2026-11-03T20:20:22.546705766+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleStatistics"}
+{"Time":"2026-11-03T20:20:22.546707789+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleStatistics","Output":"=== RUN   TestUniformSampleStatistics\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.546909041+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleStatistics","Output":"--- PASS: TestUniformSampleStatistics (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.546916402+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestUniformSampleStatistics","Elapsed":0}
+{"Time":"2026-11-03T20:20:22.546918786+01:00","Action":"run","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerFunc"}
+{"Time":"2026-11-03T20:20:22.546920559+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerFunc","Output":"=== RUN   TestTimerFunc\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.597373914+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerFunc","Output":"--- PASS: TestTimerFunc (0.05s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.597420214+01:00","Action":"pass","Package":"github.com/rcrowley/go-metrics","Test":"TestTimerFunc","Elapsed":0.05}
+{"Time":"2026-11-03T20:20:22.597433904+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Output":"FAIL\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.598180177+01:00","Action":"output","Package":"github.com/rcrowley/go-metrics","Output":"FAIL\tgithub.com/rcrowley/go-metrics\t0.055s\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:20:22.598204634+01:00","Action":"fail","Package":"github.com/rcrowley/go-metrics","Elapsed":0.055}

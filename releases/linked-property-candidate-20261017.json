@@ -1,0 +1,14 @@
+{
+  "schema": "ouf.ingestion-readiness-source-lock.v1",
+  "cohortId": "linked-property-20261017",
+  "modules": [
+    {"module": "udp", "repository": "ouf-udp-object-resolution", "commit": "4660b08fdf982f7f7ecc35a378fd8fcad30aa273", "kind": "DOCKER_SAVE"},
+    {"module": "onboarding", "repository": "ouf-source-onboarding", "commit": "cc7766e6348f9ed2e66ec04018ebb63a904d202d", "kind": "DOCKER_SAVE"}
+  ],
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "requiredUdpMigration": "V35__linked_property_reconciliation.sql",
+  "nativeProfilePublicationRequired": true,
+  "scope": "Generic canonical-property reconciliation for APIs, scheduled deltas, files, GeoPackage attributes and dynamic layers. Candidate packaging only; no target mutation or identity replay."
+}

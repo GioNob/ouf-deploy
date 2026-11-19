@@ -1,0 +1,22 @@
+[
+  "docs/OUF_SEAWEEDFS_BTREE_DEAD_ADAPTER_20261103.md",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/google-btree-v1.1.3-commit.json",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/google-btree-v1.1.3.info",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/google-btree-v1.1.3.mod",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/google-btree-v1.1.3.ziphash",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/needle-map-tests.jsonl",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/needle-map-tests.jsonl.stderr",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/production-deps.txt",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/qualification.json",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/retained-google-btree-audit-record.json",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/source-analysis.json",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/storage-focused-tests.jsonl",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/storage-focused-tests.jsonl.stderr",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/tidy-after.diff",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/tidy-after.stderr",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/tidy.diff",
+  "evidence/seaweedfs-452-btree-dead-adapter-20261103/tidy.stderr",
+  "evidence/seaweedfs-452-btree-dead-adapter-local-20261103.json",
+  "patches/seaweedfs/4.52-needle-value-btree-indirect-lockfile.patch",
+  "patches/seaweedfs/4.52-needle-value-remove-unused-btree.patch"
+]

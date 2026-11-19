@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.source-revision-native-authorization-qualification.v1",
+  "sourceCommit": "35ab9e1615fed13956981e7f180bca1390803fd9",
+  "workflowRunId": 39105270949,
+  "workflowJobId": 117609629509,
+  "conclusion": "success",
+  "tests": {
+    "legacyAuthorization": 22,
+    "legacyDurableObservation": 6,
+    "revisionProfile": 11,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "nativeOwner": "Existing signed AggregateAction, AuthorizationDelta journal and pinned Java GrantConstraints",
+  "targetPublications": 0,
+  "scope": "exact two revision capabilities; no implicit source activation or profile publication",
+  "installationReady": false
+}

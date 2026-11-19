@@ -1,0 +1,22 @@
+{
+  "adminRequests": 0,
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "gatewayOwnerChanged": false,
+  "observedAt": "2026-11-08T08:53:25.807833+00:00",
+  "providerEnableDispatched": false,
+  "providerRequests": 0,
+  "reason": "INSTALLED_MANAGED_SCHEMA_NOT_QUALIFIED_BASELINE",
+  "runtimeChanged": false,
+  "schema": "ouf.gateway-analysis-preparation.v1",
+  "semanticDatabaseError": {
+    "causeProven": false,
+    "empty": false,
+    "hints": [
+      "MISSING_COLUMN"
+    ],
+    "rawErrorEmitted": false,
+    "source": "RETAINED_STDERR_ONLY_NO_NEW_QUERY"
+  },
+  "status": "PREPARATION_INCOMPLETE"
+}

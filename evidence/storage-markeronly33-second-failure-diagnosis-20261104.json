@@ -1,0 +1,1344 @@
+{
+  "status": "FAILED_NATIVE_ARCHIVE_DIAGNOSED_NOT_QUALIFIED",
+  "nativeQualification": false,
+  "originalZipSha256": "eef93e9e5d413759c871d8ceac21b901fe29c0e8b712c1028d38d6b4f2172e3d",
+  "originalZipBytes": 16325348,
+  "members": 1684,
+  "checksumsVerified": 1683,
+  "nativeRun": 41882562646,
+  "nativeJob": 126758546819,
+  "producerCommit": "84706b4fa014df74fdbd3685a56d2aba16934c84",
+  "readbackRun": 41883215358,
+  "readbackJob": 126760754240,
+  "verifierCommit": "e5e59d027826d9727fdab51557215fee81986e12",
+  "underlyingFailure": "ValueError: BOTH_RENAMES_AND_SYNC_BEFORE_UNLINK",
+  "readbackFailure": "NATIVE_SCENARIO_PASS: markeronly-crash-lab",
+  "diagnosis": "Observer incorrectly requires marker unlink on the same OS thread as IDX rename. This is not a protocol invariant: the committing Go goroutine may migrate. Old compound assertion did not retain its operands, so this archive alone cannot distinguish thread mismatch from a missing sync. Preserve failure; require fresh native success with explicit ordered trace and exact fsync/path/process checks.",
+  "completeFailure": {
+    "status": "UNQUALIFIED",
+    "instrumentation": "external read-only ptrace scheduling",
+    "vacuumResubmissions": 0,
+    "processBefore": {
+      "pid": 35164,
+      "startTicks": 84621,
+      "networkNamespace": "net:[4026532640]",
+      "cgroup": "0::/system.slice/docker-80dc601d1475bf2d2ec68b42fd2b70c1a3c8f08bb5750731457bca44b3002b93.scope\n"
+    },
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "filesBefore": {
+      ".dat": {
+        "bytes": 5243072,
+        "sha256": "41e10b3d584d8844978f3a6641c3357c95014db554f7ca241e05724ca0bf75df",
+        "inode": 9700890,
+        "device": 2049,
+        "allocatedBytes": 5246976
+      },
+      ".idx": {
+        "bytes": 48,
+        "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483",
+        "inode": 9700897,
+        "device": 2049,
+        "allocatedBytes": 4096
+      }
+    },
+    "rawStorageBefore": {
+      "ouf-identity-fixture_1.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9700879,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9700882,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      },
+      "ouf-identity-fixture_2.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9700828,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9700885,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      },
+      "ouf-identity-fixture_3.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9700881,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9700888,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      },
+      "ouf-identity-fixture_4.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9700884,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9700891,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      },
+      "ouf-identity-fixture_5.dat": {
+        ".dat": {
+          "bytes": 8389016,
+          "sha256": "34b078a24cfd2a587d6ef1ddbce30098eb68af8757010ffae495c10fdc0b2fa8",
+          "inode": 9700887,
+          "device": 2049,
+          "allocatedBytes": 8392704
+        },
+        ".idx": {
+          "bytes": 48,
+          "sha256": "19b2764760e98e5959f33403758ec7d7f05fc171de8ab92c0b3c18101f9c2dda",
+          "inode": 9700894,
+          "device": 2049,
+          "allocatedBytes": 4096
+        }
+      },
+      "ouf-identity-fixture_6.dat": {
+        ".dat": {
+          "bytes": 5243072,
+          "sha256": "41e10b3d584d8844978f3a6641c3357c95014db554f7ca241e05724ca0bf75df",
+          "inode": 9700890,
+          "device": 2049,
+          "allocatedBytes": 5246976
+        },
+        ".idx": {
+          "bytes": 48,
+          "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483",
+          "inode": 9700897,
+          "device": 2049,
+          "allocatedBytes": 4096
+        }
+      },
+      "ouf-identity-fixture_7.dat": {
+        ".dat": {
+          "bytes": 8,
+          "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b",
+          "inode": 9700893,
+          "device": 2049,
+          "allocatedBytes": 4096
+        },
+        ".idx": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inode": 9700900,
+          "device": 2049,
+          "allocatedBytes": 0
+        }
+      }
+    },
+    "beforeDatRenamePhase": {
+      "tid": 35164,
+      "number": 264,
+      "operation": "entry",
+      "oldPath": "/data/ouf-identity-fixture_6.cpd",
+      "newPath": "/data/ouf-identity-fixture_6.dat",
+      "syscallNotResumed": true,
+      "threadStates": {
+        "35164": "t",
+        "35439": "t",
+        "35440": "t",
+        "35441": "t",
+        "35442": "t",
+        "35455": "t",
+        "35456": "t",
+        "35457": "t",
+        "35458": "t"
+      },
+      "successfulSyncs": [
+        {
+          "kind": "marker",
+          "tid": 35164,
+          "returnValue": 0
+        },
+        {
+          "kind": "directory",
+          "tid": 35164,
+          "returnValue": 0
+        }
+      ],
+      "cloneEvents": []
+    },
+    "filesBeforeDatRename": {
+      ".dat": {
+        "bytes": 5243072,
+        "sha256": "41e10b3d584d8844978f3a6641c3357c95014db554f7ca241e05724ca0bf75df",
+        "inode": 9700890,
+        "device": 2049,
+        "allocatedBytes": 5246976
+      },
+      ".idx": {
+        "bytes": 48,
+        "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483",
+        "inode": 9700897,
+        "device": 2049,
+        "allocatedBytes": 4096
+      },
+      ".cpd": {
+        "bytes": 1048688,
+        "sha256": "cf9e1040203b4981734b5ff0a232a9fe9fd51a43a00f920c06c5cf13c681da46",
+        "inode": 9701015,
+        "device": 2049,
+        "allocatedBytes": 1052672
+      },
+      ".cpx": {
+        "bytes": 16,
+        "sha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a",
+        "inode": 9701016,
+        "device": 2049,
+        "allocatedBytes": 4096
+      },
+      ".cpc": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "inode": 9701017,
+        "device": 2049,
+        "allocatedBytes": 0
+      }
+    },
+    "witnessBeforeDatRename": {
+      "cookieHex": "33aabbcc",
+      "datFile": "ouf-identity-fixture_6.dat",
+      "dataBytes": 1048593,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "6,0100000000002133aabbcc",
+      "needleId": 281474976710689,
+      "volumeId": "6",
+      "needleOffset": 4194392,
+      "needleSize": 1048651,
+      "dataOffset": 4194412,
+      "datBytes": 5243072,
+      "datSha256": "41e10b3d584d8844978f3a6641c3357c95014db554f7ca241e05724ca0bf75df",
+      "indexBytes": 48,
+      "indexSha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483",
+      "indexRecord": 2,
+      "indexPrefixSha256": "ad81ca1558ea8a8ddfe98cdadfa2d93d84186eec808caaa2de27234fa07c6a1e",
+      "prefixSha256": "0d55802ef84b631feda933277cbcaf598ad441c7f6a717ae074c47321b22162e",
+      "mutatingRequests": 0
+    },
+    "beforeIdxRenamePhase": {
+      "tid": 35164,
+      "number": 264,
+      "operation": "entry",
+      "oldPath": "/data/ouf-identity-fixture_6.cpx",
+      "newPath": "/data/ouf-identity-fixture_6.idx",
+      "syscallNotResumed": true,
+      "threadStates": {
+        "35164": "t",
+        "35439": "t",
+        "35440": "t",
+        "35441": "t",
+        "35442": "t",
+        "35455": "t",
+        "35456": "t",
+        "35457": "t",
+        "35458": "t"
+      },
+      "successfulSyncs": [
+        {
+          "kind": "marker",
+          "tid": 35164,
+          "returnValue": 0
+        },
+        {
+          "kind": "directory",
+          "tid": 35164,
+          "returnValue": 0
+        }
+      ],
+      "firstRenameResult": {
+        "tid": 35164,
+        "operation": "exit",
+        "returnValue": 0,
+        "isError": false,
+        "number": 264,
+        "oldPath": "/data/ouf-identity-fixture_6.cpd",
+        "newPath": "/data/ouf-identity-fixture_6.dat"
+      },
+      "cloneEvents": []
+    },
+    "filesBeforeIdxRename": {
+      ".dat": {
+        "bytes": 1048688,
+        "sha256": "cf9e1040203b4981734b5ff0a232a9fe9fd51a43a00f920c06c5cf13c681da46",
+        "inode": 9701015,
+        "device": 2049,
+        "allocatedBytes": 1052672
+      },
+      ".idx": {
+        "bytes": 48,
+        "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483",
+        "inode": 9700897,
+        "device": 2049,
+        "allocatedBytes": 4096
+      },
+      ".cpx": {
+        "bytes": 16,
+        "sha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a",
+        "inode": 9701016,
+        "device": 2049,
+        "allocatedBytes": 4096
+      },
+      ".cpc": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "inode": 9701017,
+        "device": 2049,
+        "allocatedBytes": 0
+      }
+    },
+    "mixedWitness": {
+      "cookieHex": "33aabbcc",
+      "datFile": "ouf-identity-fixture_6.dat",
+      "dataBytes": 1048593,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "6,0100000000002133aabbcc",
+      "needleId": 281474976710689,
+      "volumeId": "6",
+      "oldNeedleOffset": 4194392,
+      "pendingNeedleOffset": 8,
+      "needleSize": 1048651,
+      "newDatBytes": 1048688,
+      "oldIndexInvalidForNewDat": true,
+      "pendingIndexBodyVerified": true,
+      "mutatingRequests": 0
+    },
+    "failure": "ValueError: BOTH_RENAMES_AND_SYNC_BEFORE_UNLINK"
+  },
+  "scenarioReceipt": {
+    "cleanupFailure": "STOP_OR_CLEANUP_FAILED:CLEAN_STOP_REQUIRED:ouf-lateral33-34023-volume-recovered",
+    "failure": "ValueError: COMPACTION_OBSERVER_FAILED: ValueError: BOTH_RENAMES_AND_SYNC_BEFORE_UNLINK",
+    "status": "SYNTHETIC_LATERAL33_FAILED",
+    "targetOperations": 0
+  },
+  "interrenameReceipt": {
+    "acceptanceTestsPassed": 0,
+    "allCrashEvidence": {
+      "allRulesBeforeAnyRestartExec": true,
+      "allServicesStoppedBeforeReplacement": true,
+      "applicationProcessesReplaced": 4,
+      "bodyReadsBeforeCrash": 0,
+      "chunkVolumeLocationsPreserved": true,
+      "clientUnchanged": true,
+      "datPrefixesPreserved": true,
+      "directMetadataIdentical": true,
+      "exitCode": 137,
+      "filerAndS3Reregistered": true,
+      "filerResponseBytesAfter": 1953,
+      "filerResponseBytesBefore": 0,
+      "gatedStorageUnchanged": true,
+      "newContainerIds": {
+        "filer": "cb426853c5a294a3fdd39b4636d9c24f578d78dd625a8f26968bb5a18b2af239",
+        "master": "27f20cffddf6f5acd579f02b66ea0be4c15dd133306d72b9b49fb5f1b3d65906",
+        "s3": "ad3599a2218fb1d95ecab3a1efbf661cc99a7eeeb37694226505b17aafa89857",
+        "volume": "7f7a73bce4f9cd24cbeb13ffa8462d679c32c112851e0a66fe5613fe37d328cd"
+      },
+      "oldContainerIds": {
+        "filer": "663d54902743a448735ef9069a85974567b34338e945eba1663f812b8128c83b",
+        "master": "e9b08825f6a3b6ef9274b05dec288d3529811c34e7b7b6bc12d70e65337e4d52",
+        "s3": "1a07d4f8b43ee03ec69782bb24439477f67f5632ec811e01f8499b67c2f9f7da",
+        "volume": "b07c3b12fc2be74fe111647d870d7f7ff46d68bec6292830a754925b1ebf4bb6"
+      },
+      "oomKilled": false,
+      "recoveryPutRequests": 0,
+      "recoveryReadAttempts": 1,
+      "rulesBeforeRestartExec": true,
+      "sameFilerRoot": true,
+      "sameMasterRoot": true,
+      "sameStorageRoot": true,
+      "sameVolumeRoot": true,
+      "signal": "SIGKILL",
+      "stoppedDatBytes": 12583448,
+      "stoppedStorageBytes": {
+        "filer": 5270,
+        "master": 1335,
+        "volume": 12583448
+      },
+      "stoppedStorageFiles": {
+        "filer": 40,
+        "master": 4,
+        "volume": 7
+      },
+      "topologyIdPreserved": true,
+      "topologyReadAttempts": 1,
+      "volumeResponseBytesAfter": 8397902,
+      "volumeResponseBytesBefore": 0
+    },
+    "allCrashInjected": true,
+    "allDenialsHaveFirewallCounterEvidence": true,
+    "allowedPortMethodAuthorizationQualified": false,
+    "betweenRenamesCrashQualified": true,
+    "bucketCreates": 1,
+    "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+    "cleanContainerStops": 5,
+    "cohortReceiptSha256": "5b28de1dd43fca337064d41439d302d53dc7f470640fe3fc0d8d1292b1ec02dc",
+    "compactionCrashEvidence": {
+      "alreadyPromotedPairPreserved": false,
+      "baselineS3Parity": true,
+      "beforeDatRenamePhase": {
+        "cloneEvents": [],
+        "newPath": "/data/ouf-identity-fixture_2.dat",
+        "number": 264,
+        "oldPath": "/data/ouf-identity-fixture_2.cpd",
+        "operation": "entry",
+        "successfulSyncs": [
+          {
+            "kind": "marker",
+            "returnValue": 0,
+            "tid": 32148
+          },
+          {
+            "kind": "directory",
+            "returnValue": 0,
+            "tid": 32148
+          }
+        ],
+        "syscallNotResumed": true,
+        "threadStates": {
+          "31870": "t",
+          "32146": "t",
+          "32147": "t",
+          "32148": "t",
+          "32150": "t",
+          "32151": "t",
+          "32164": "t",
+          "32165": "t",
+          "32166": "t",
+          "32167": "t"
+        },
+        "tid": 32148
+      },
+      "betweenRenamesQualified": true,
+      "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+      "cloneEvents": [],
+      "coherentPairAtFirstReadinessBeforeFixtureReads": true,
+      "filesBefore": {
+        ".dat": {
+          "allocatedBytes": 9441280,
+          "bytes": 9437424,
+          "device": 2049,
+          "inode": 9700452,
+          "sha256": "640731d6bcda905596567ca18de18f33923b875ede5a48c02cbb71814a721806"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 64,
+          "device": 2049,
+          "inode": 9700509,
+          "sha256": "3982a3c2b260571218228d567a451d3df10f8c9f77c5ff85c8673a10bf811662"
+        }
+      },
+      "filesBeforeDatRename": {
+        ".cpc": {
+          "allocatedBytes": 0,
+          "bytes": 0,
+          "device": 2049,
+          "inode": 9700641,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        ".cpd": {
+          "allocatedBytes": 5246976,
+          "bytes": 5243040,
+          "device": 2049,
+          "inode": 9700639,
+          "sha256": "0d761a33c60161c8be9944afb457c1efe3663a5723acde334fa65ca70ba9714d"
+        },
+        ".cpx": {
+          "allocatedBytes": 4096,
+          "bytes": 32,
+          "device": 2049,
+          "inode": 9700640,
+          "sha256": "4679b0c27d43de9de4abe7d1c461d155004b15766ff968afe2db44c0e8cbff73"
+        },
+        ".dat": {
+          "allocatedBytes": 9441280,
+          "bytes": 9437424,
+          "device": 2049,
+          "inode": 9700452,
+          "sha256": "640731d6bcda905596567ca18de18f33923b875ede5a48c02cbb71814a721806"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 64,
+          "device": 2049,
+          "inode": 9700509,
+          "sha256": "3982a3c2b260571218228d567a451d3df10f8c9f77c5ff85c8673a10bf811662"
+        }
+      },
+      "filesFrozen": {
+        ".cpc": {
+          "allocatedBytes": 0,
+          "bytes": 0,
+          "device": 2049,
+          "inode": 9700641,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        ".cpx": {
+          "allocatedBytes": 4096,
+          "bytes": 32,
+          "device": 2049,
+          "inode": 9700640,
+          "sha256": "4679b0c27d43de9de4abe7d1c461d155004b15766ff968afe2db44c0e8cbff73"
+        },
+        ".dat": {
+          "allocatedBytes": 5246976,
+          "bytes": 5243040,
+          "device": 2049,
+          "inode": 9700639,
+          "sha256": "0d761a33c60161c8be9944afb457c1efe3663a5723acde334fa65ca70ba9714d"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 64,
+          "device": 2049,
+          "inode": 9700509,
+          "sha256": "3982a3c2b260571218228d567a451d3df10f8c9f77c5ff85c8673a10bf811662"
+        }
+      },
+      "firstRenameResult": {
+        "isError": false,
+        "newPath": "/data/ouf-identity-fixture_2.dat",
+        "number": 264,
+        "oldPath": "/data/ouf-identity-fixture_2.cpd",
+        "operation": "exit",
+        "returnValue": 0,
+        "tid": 32148
+      },
+      "instrumentation": "external read-only ptrace scheduling",
+      "markerOnlyQualified": false,
+      "mixedWitness": {
+        "cookieHex": "33aabbcc",
+        "datFile": "ouf-identity-fixture_2.dat",
+        "dataBytes": 1048593,
+        "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+        "fileId": "2,0100000000002133aabbcc",
+        "mutatingRequests": 0,
+        "needleId": 281474976710689,
+        "needleSize": 1048651,
+        "newDatBytes": 5243040,
+        "oldIndexInvalidForNewDat": true,
+        "oldNeedleOffset": 8388744,
+        "pendingIndexBodyVerified": true,
+        "pendingNeedleOffset": 4194360,
+        "volumeId": "2"
+      },
+      "mutatingRetries": 0,
+      "newDatPreservedAndPendingIndexPromoted": true,
+      "newPath": "/data/ouf-identity-fixture_2.idx",
+      "number": 264,
+      "oldPath": "/data/ouf-identity-fixture_2.cpx",
+      "operation": "entry",
+      "orphanPhysicallyAbsent": true,
+      "powerLossQualified": false,
+      "processBefore": {
+        "cgroup": "0::/system.slice/docker-7f7a73bce4f9cd24cbeb13ffa8462d679c32c112851e0a66fe5613fe37d328cd.scope\n",
+        "networkNamespace": "net:[4026532640]",
+        "pid": 31870,
+        "startTicks": 76959
+      },
+      "processFrozen": {
+        "cgroup": "0::/system.slice/docker-7f7a73bce4f9cd24cbeb13ffa8462d679c32c112851e0a66fe5613fe37d328cd.scope\n",
+        "networkNamespace": "net:[4026532640]",
+        "pid": 31870,
+        "startTicks": 76959
+      },
+      "rawStorageBefore": {
+        "ouf-identity-fixture_1.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 312,
+            "device": 2049,
+            "inode": 9700503,
+            "sha256": "1023acd864fc47300a89e20d54c864103fac3820560afd02df8159ecd973292f"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 16,
+            "device": 2049,
+            "inode": 9700506,
+            "sha256": "b7a48c7280defc512250c7bc35ba3d193bac2ff6907456d358bbd5c5ba5def32"
+          }
+        },
+        "ouf-identity-fixture_2.dat": {
+          ".dat": {
+            "allocatedBytes": 9441280,
+            "bytes": 9437424,
+            "device": 2049,
+            "inode": 9700452,
+            "sha256": "640731d6bcda905596567ca18de18f33923b875ede5a48c02cbb71814a721806"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 64,
+            "device": 2049,
+            "inode": 9700509,
+            "sha256": "3982a3c2b260571218228d567a451d3df10f8c9f77c5ff85c8673a10bf811662"
+          }
+        },
+        "ouf-identity-fixture_3.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 2049,
+            "inode": 9700505,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 2049,
+            "inode": 9700512,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_4.dat": {
+          ".dat": {
+            "allocatedBytes": 4198400,
+            "bytes": 4194360,
+            "device": 2049,
+            "inode": 9700508,
+            "sha256": "5ae663a0943cf6bc1268c4344c69b0c5230d6c16f967fc2f9fe91c6c5b0cebde"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 16,
+            "device": 2049,
+            "inode": 9700515,
+            "sha256": "8e332f3e4aff2a42774d5166c1e98b155b560b520393edc450df3f1c40fd70c8"
+          }
+        },
+        "ouf-identity-fixture_5.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 2049,
+            "inode": 9700511,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 2049,
+            "inode": 9700518,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_6.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 2049,
+            "inode": 9700514,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 2049,
+            "inode": 9700521,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_7.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 2049,
+            "inode": 9700517,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 2049,
+            "inode": 9700524,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "rawStorageFrozen": {
+        "ouf-identity-fixture_1.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 312,
+            "device": 2049,
+            "inode": 9700503,
+            "sha256": "1023acd864fc47300a89e20d54c864103fac3820560afd02df8159ecd973292f"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 16,
+            "device": 2049,
+            "inode": 9700506,
+            "sha256": "b7a48c7280defc512250c7bc35ba3d193bac2ff6907456d358bbd5c5ba5def32"
+          }
+        },
+        "ouf-identity-fixture_2.dat": {
+          ".cpc": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 2049,
+            "inode": 9700641,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          ".cpx": {
+            "allocatedBytes": 4096,
+            "bytes": 32,
+            "device": 2049,
+            "inode": 9700640,
+            "sha256": "4679b0c27d43de9de4abe7d1c461d155004b15766ff968afe2db44c0e8cbff73"
+          },
+          ".dat": {
+            "allocatedBytes": 5246976,
+            "bytes": 5243040,
+            "device": 2049,
+            "inode": 9700639,
+            "sha256": "0d761a33c60161c8be9944afb457c1efe3663a5723acde334fa65ca70ba9714d"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 64,
+            "device": 2049,
+            "inode": 9700509,
+            "sha256": "3982a3c2b260571218228d567a451d3df10f8c9f77c5ff85c8673a10bf811662"
+          }
+        },
+        "ouf-identity-fixture_3.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 2049,
+            "inode": 9700505,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 2049,
+            "inode": 9700512,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_4.dat": {
+          ".dat": {
+            "allocatedBytes": 4198400,
+            "bytes": 4194360,
+            "device": 2049,
+            "inode": 9700508,
+            "sha256": "5ae663a0943cf6bc1268c4344c69b0c5230d6c16f967fc2f9fe91c6c5b0cebde"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 16,
+            "device": 2049,
+            "inode": 9700515,
+            "sha256": "8e332f3e4aff2a42774d5166c1e98b155b560b520393edc450df3f1c40fd70c8"
+          }
+        },
+        "ouf-identity-fixture_5.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 2049,
+            "inode": 9700511,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 2049,
+            "inode": 9700518,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_6.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 2049,
+            "inode": 9700514,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 2049,
+            "inode": 9700521,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_7.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 2049,
+            "inode": 9700517,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 2049,
+            "inode": 9700524,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "status": "INTERRENAME_PROCESS_CRASH_RECOVERY_PASS",
+      "successfulSyncs": [
+        {
+          "kind": "marker",
+          "returnValue": 0,
+          "tid": 32148
+        },
+        {
+          "kind": "directory",
+          "returnValue": 0,
+          "tid": 32148
+        }
+      ],
+      "syscallNotResumed": true,
+      "temporaryFilesRemovedOnRecovery": true,
+      "threadStates": {
+        "31870": "t",
+        "32146": "t",
+        "32147": "t",
+        "32148": "t",
+        "32150": "t",
+        "32151": "t",
+        "32164": "t",
+        "32165": "t",
+        "32166": "t",
+        "32167": "t"
+      },
+      "tid": 32148,
+      "vacuumCommands": 1,
+      "vacuumResubmissions": 0,
+      "witnessBeforeDatRename": {
+        "cookieHex": "33aabbcc",
+        "datBytes": 9437424,
+        "datFile": "ouf-identity-fixture_2.dat",
+        "datSha256": "640731d6bcda905596567ca18de18f33923b875ede5a48c02cbb71814a721806",
+        "dataBytes": 1048593,
+        "dataOffset": 8388764,
+        "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+        "fileId": "2,0100000000002133aabbcc",
+        "indexBytes": 64,
+        "indexPrefixSha256": "5e5a2d36a408bf5418ac720fe10adbf970c8833098f0d0f2dcd07b57cc2c945b",
+        "indexRecord": 3,
+        "indexSha256": "3982a3c2b260571218228d567a451d3df10f8c9f77c5ff85c8673a10bf811662",
+        "mutatingRequests": 0,
+        "needleId": 281474976710689,
+        "needleOffset": 8388744,
+        "needleSize": 1048651,
+        "prefixSha256": "16a16bf422d132ff17d7ff8ee51f51defbffaff3e1b5238a62fe3a7b94eab014",
+        "volumeId": "2"
+      },
+      "witnessRelocatedWithBodyPreserved": true
+    },
+    "compactionCrashQualified": true,
+    "compactionEvidence": {
+      "allLiveNeedlesPreserved": true,
+      "allocatedDatBytesReclaimed": 4194304,
+      "compactionCrashQualified": false,
+      "datBytesReclaimed": 4194384,
+      "fileId": "2,0453bcd820",
+      "mutatingRetries": 0,
+      "noTemporaryOrOpenDeletedFiles": true,
+      "orphanIndexEntryRemoved": true,
+      "orphanPayloadAbsentFromDat": true,
+      "postCompactionRestartQualified": false,
+      "secureErasureQualified": false,
+      "unselectedVolumesUnchanged": true,
+      "vacuumCommands": 1,
+      "volumeId": "2"
+    },
+    "compactionQualified": false,
+    "deniedRoleLinks": 21,
+    "distinctNetworkNamespaces": 5,
+    "dnsAndHostDenials": 15,
+    "filerCrashEvidence": {},
+    "filerCrashInjected": false,
+    "forcedContainerDeaths": 8,
+    "gatesClosed": 0,
+    "hostCompromiseIsolationQualified": false,
+    "internalMtlsQualified": false,
+    "ipv6MatrixQualified": false,
+    "liveRelocationEvidence": {
+      "dataBytes": 1048593,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "2,0100000000002133aabbcc",
+      "filerMetadataLinked": false,
+      "mutatingRetries": 0,
+      "nativeWitnessWrites": 1,
+      "needleOffsetAfter": 4194360,
+      "needleOffsetBefore": 8388744,
+      "offsetReduction": 4194384,
+      "sameNeedleCookieAndBody": true
+    },
+    "liveRelocationQualified": false,
+    "markerOnlyCrashQualified": false,
+    "masterCrashEvidence": {},
+    "masterCrashInjected": false,
+    "mutatingRequestRetries": 0,
+    "nativeFixtureChunkWrites": 1,
+    "networkRemoved": true,
+    "object": {
+      "listedKeys": [
+        "staging/volume-crash.bin"
+      ],
+      "mutatingRequests": 0,
+      "objects": {
+        "staging/volume-crash.bin": {
+          "bytes": 8388865,
+          "mime": "application/octet-stream",
+          "sha256": "25809f4ef8ae5e9ab82c2688effb8da2ae66bb0b320befd55350dcb2cda9569d"
+        }
+      },
+      "peerSha256": "1cb3a9a99122d8e17861c0fb69e2678680cf5b249c5a123deacd42967007f086"
+    },
+    "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+    "orphanCleanupEvidence": {
+      "clientDeleteRequests": 0,
+      "clientMutatingRetries": 0,
+      "directChunk404AfterCleanup": true,
+      "directChunk404AfterRestart": true,
+      "directChunkReadBeforeAbort": true,
+      "exactTombstoneObserved": true,
+      "fileId": "2,0453bcd820",
+      "grpcBytesAfter": {
+        "s3": 729,
+        "volume": 631
+      },
+      "grpcBytesBefore": {
+        "s3": 0,
+        "volume": 0
+      },
+      "indexPollAttempts": 1,
+      "originalIndexEntryPreserved": true,
+      "physicalSpaceReclaimed": false,
+      "tombstoneSurvivesRestart": true
+    },
+    "orphanLogicalCleanupQualified": true,
+    "postCompactionRestartEvidence": {
+      "additionalVacuumCommands": 0,
+      "allRulesBeforeAnyRestartExec": true,
+      "allServicesStoppedBeforeReplacement": true,
+      "allocatedDatBlocksPreserved": false,
+      "applicationProcessesReplaced": 4,
+      "baselineS3Parity": true,
+      "betweenRenamesCrashQualified": true,
+      "clientUnchanged": true,
+      "coherentPairAtFirstReadinessBeforeFixtureReads": true,
+      "compactionCrashQualified": true,
+      "directChunk404": true,
+      "directMetadataIdentical": true,
+      "exactDatAndIndexSnapshotsPreserved": false,
+      "exitCode": 137,
+      "filerResponseBytesAfter": 1953,
+      "filerResponseBytesBefore": 0,
+      "markerOnlyCrashQualified": false,
+      "mutatingRetries": 0,
+      "newContainerIds": {
+        "filer": "1fc8c5efa6d26624a19a390cc5f244f3474a3e2beff5ccad7d45ce66ff1117c3",
+        "master": "938fc12cbec1ee5662cb94e8e3c56b67511075c430a2d019502af3dcf9303351",
+        "s3": "2f72e4b8474c24eeb4363431b346634097b9180a5b6d41a162620f5509d15964",
+        "volume": "bb6ac8063668352c1a666bef09bd475a04bf0b47ca0a06a99198d14a1b15ac5d"
+      },
+      "oldContainerIds": {
+        "filer": "cb426853c5a294a3fdd39b4636d9c24f578d78dd625a8f26968bb5a18b2af239",
+        "master": "27f20cffddf6f5acd579f02b66ea0be4c15dd133306d72b9b49fb5f1b3d65906",
+        "s3": "ad3599a2218fb1d95ecab3a1efbf661cc99a7eeeb37694226505b17aafa89857",
+        "volume": "7f7a73bce4f9cd24cbeb13ffa8462d679c32c112851e0a66fe5613fe37d328cd"
+      },
+      "oomKilled": false,
+      "orphanPayloadAndIndexRemainAbsent": true,
+      "postMarkerRollforwardQualified": true,
+      "powerLossQualified": false,
+      "recoveryPutRequests": 0,
+      "recoveryReadAttempts": 1,
+      "s3ObjectAbsent": true,
+      "signal": "SIGKILL",
+      "stoppedStorageUnchangedBeforeExec": true,
+      "topologyAndRegistrationRecovered": true,
+      "topologyReadAttempts": 1,
+      "volumeResponseBytesAfter": 8397954,
+      "volumeResponseBytesBefore": 0
+    },
+    "postCompactionRestartQualified": false,
+    "postMarkerCrashQualified": false,
+    "powerLossQualified": false,
+    "productionTopologyQualified": false,
+    "releaseAdmitted": false,
+    "requiredRoleLinks": 11,
+    "retainedNamespacePinsReleased": true,
+    "rpoMeasured": false,
+    "rtoMeasured": false,
+    "rulesInstalledBeforeServiceExec": true,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-generation33-lateral-isolation.v1",
+    "status": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS",
+    "streamInterruptionEvidence": {
+      "ackObserved": false,
+      "actualPersistedChunkBytes": 4194304,
+      "clientConnectionClosedBeforeCrash": true,
+      "declaredBodyBytes": 8388865,
+      "mutatingRetries": 0,
+      "prefixObservations": 1,
+      "putAttempts": 1,
+      "sentBodyBytes": 4259841
+    },
+    "streamInterruptionInjected": true,
+    "successfulObjectPuts": 1,
+    "targetOperations": 0,
+    "totalDistinctContainerCount": 13,
+    "unprivilegedServiceContainers": true,
+    "volumeCrashEvidence": {},
+    "volumeCrashInjected": false
+  },
+  "nativeRegressionTestsPassed": 186,
+  "priorScenariosPassed": 13,
+  "targetOperations": 0,
+  "nativeArtifacts": {
+    "artifacts": [
+      {
+        "id": 13350816644,
+        "name": "storage-generation33-lateral-isolation-41882562646",
+        "size_in_bytes": 16325348,
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13350816644",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13350816644/zip",
+        "expired": false,
+        "created_at": "2026-11-04T18:14:04Z",
+        "expires_at": "2027-02-02T17:59:53Z",
+        "updated_at": "2026-11-04T18:14:04Z",
+        "digest": "sha256:eef93e9e5d413759c871d8ceac21b901fe29c0e8b712c1028d38d6b4f2172e3d",
+        "workflow_run": {
+          "id": 41882562646,
+          "repository_id": 1409074354,
+          "head_repository_id": 1409074354,
+          "head_branch": "feat/m2-discovery-complete-profile-20261029",
+          "head_sha": "84706b4fa014df74fdbd3685a56d2aba16934c84"
+        }
+      }
+    ]
+  },
+  "readbackArtifacts": {
+    "artifacts": [
+      {
+        "id": 13350218739,
+        "name": "storage-generation33-markeronly-readback-41883215358",
+        "size_in_bytes": 15914026,
+        "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13350218739",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13350218739/zip",
+        "expired": false,
+        "created_at": "2026-11-04T18:14:18Z",
+        "expires_at": "2027-02-02T18:03:26Z",
+        "updated_at": "2026-11-04T18:14:18Z",
+        "digest": "sha256:ab54cef5090cdd7c6990630b010b7c7e98f36d1867e7164959775fe53a430a8d",
+        "workflow_run": {
+          "id": 41883215358,
+          "repository_id": 1409074354,
+          "head_repository_id": 1409074354,
+          "head_branch": "feat/m2-discovery-complete-profile-20261029",
+          "head_sha": "e5e59d027826d9727fdab51557215fee81986e12"
+        }
+      }
+    ]
+  },
+  "nativeJobs": {
+    "jobs": [
+      {
+        "id": 126758546819,
+        "name": "exact-cohort-lateral-isolation",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_id": 41882562646,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Install bounded fixture tooling and build the static launch barrier",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Test service recovery, compaction persistence, launch barriers and credential and TLS boundaries",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Test phase discrimination and rollback invariants",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Test post-marker phase rejection and native ptrace mechanics",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Test mixed generation rejection and actual first-rename execution",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Test completed pair marker-only phase and real unlink entry freeze",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Bind reviewed compaction source through all generation33 patches",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Fetch and bind the exact successful generation33 cohort and image",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Verify the successful cohort publisher with its exact source commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Exercise five distinct namespaces with rules installed before service execution",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "SIGKILL the acknowledged volume and recover through a fresh gated namespace",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "SIGKILL the filer and recover persistent metadata without reseeding",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "SIGKILL the master and verify fresh topology and peer registration",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "SIGKILL all services and recover from retained roots behind fresh gates",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Interrupt an incomplete PUT after its prefix reaches the volume and reconcile without replay",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Qualify automatic orphan tombstone and direct chunk absence with the single required gRPC link",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Compact only the orphan volume and verify allocated space and every live chunk",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          },
+          {
+            "name": "Restart all services after compaction and verify retained allocation and absence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 20
+          },
+          {
+            "name": "Relocate a live native chunk across a tombstoned record and verify restart persistence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 21
+          },
+          {
+            "name": "Crash the observed precommit compaction and recover without resubmission",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 22
+          },
+          {
+            "name": "Crash after durable commit marker before first rename and verify rollforward",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 23
+          },
+          {
+            "name": "Crash after DAT rename before IDX rename and verify coherent rollforward",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 24
+          },
+          {
+            "name": "Crash after both renames before marker removal and preserve the completed pair",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 25
+          },
+          {
+            "name": "Preserve bounded public evidence and reject private-key material",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 26
+          },
+          {
+            "name": "Attest successful native isolation and joint and individual crash evidence",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 27
+          },
+          {
+            "name": "Retain public diagnostics",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 28
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 56
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 57
+          }
+        ]
+      }
+    ]
+  },
+  "readbackJobs": {
+    "jobs": [
+      {
+        "id": 126760754240,
+        "name": "original-artifact-readback",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_id": 41883215358,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Acquire the exact original before waiting for delayed terminal metadata",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Verify every member source and the completed pair and held marker unlink evidence",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 5
+          },
+          {
+            "name": "Confirm successful native terminal run and job separately from archive contents",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 6
+          },
+          {
+            "name": "Preserve original bytes readback and control-plane observations even on failure",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          }
+        ]
+      }
+    ]
+  }
+}

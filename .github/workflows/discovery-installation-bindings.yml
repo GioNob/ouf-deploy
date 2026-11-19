@@ -1,9 +1,6 @@
 name: OUF discovery installation bindings
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [.github/workflows/discovery-installation-bindings.yml, scripts/read-discovery-installation-bindings.py]
 permissions:
   contents: read
 concurrency:

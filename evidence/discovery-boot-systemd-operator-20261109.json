@@ -1,0 +1,109 @@
+{
+  "activationAttempted": false,
+  "automaticReplayAllowed": false,
+  "credentialFileContentsRead": 0,
+  "daemonReloads": 0,
+  "observedAt": "2026-11-09T10:33:17.707011+00:00",
+  "schema": "ouf.discovery-boot-systemd-read.v1",
+  "serviceChanges": 0,
+  "snapshotAtomic": false,
+  "status": "SYSTEMD_BOOT_PREDICATES_READ",
+  "unitReads": [
+    {
+      "emptyProperties": [
+        "InaccessiblePaths",
+        "RootDirectory",
+        "RootImage"
+      ],
+      "failedPredicates": [
+        "completePropertySet"
+      ],
+      "missingProperties": [
+        "ExecStartPre"
+      ],
+      "state": {
+        "ActiveState": "active",
+        "ControlPID": "0",
+        "LoadState": "loaded",
+        "MainPID": "0",
+        "NeedDaemonReload": "no",
+        "SubState": "exited"
+      },
+      "unexpectedPropertyCount": 0,
+      "unit": "ouf-semantic-boot-guard.service",
+      "withAll": false
+    },
+    {
+      "emptyProperties": [
+        "InaccessiblePaths",
+        "RootDirectory",
+        "RootImage"
+      ],
+      "failedPredicates": [
+        "completePropertySet"
+      ],
+      "missingProperties": [
+        "ExecStartPre"
+      ],
+      "state": {
+        "ActiveState": "active",
+        "ControlPID": "0",
+        "LoadState": "loaded",
+        "MainPID": "0",
+        "NeedDaemonReload": "no",
+        "SubState": "exited"
+      },
+      "unexpectedPropertyCount": 0,
+      "unit": "ouf-semantic-boot-guard.service",
+      "withAll": true
+    },
+    {
+      "emptyProperties": [
+        "Group",
+        "InaccessiblePaths",
+        "ReadOnlyPaths",
+        "ReadWritePaths",
+        "RootDirectory",
+        "RootImage",
+        "User"
+      ],
+      "failedPredicates": [],
+      "missingProperties": [],
+      "state": {
+        "ActiveState": "active",
+        "ControlPID": "0",
+        "LoadState": "loaded",
+        "MainPID": "26930",
+        "NeedDaemonReload": "no",
+        "SubState": "running"
+      },
+      "unexpectedPropertyCount": 0,
+      "unit": "docker.service",
+      "withAll": false
+    },
+    {
+      "emptyProperties": [
+        "Group",
+        "InaccessiblePaths",
+        "ReadOnlyPaths",
+        "ReadWritePaths",
+        "RootDirectory",
+        "RootImage",
+        "User"
+      ],
+      "failedPredicates": [],
+      "missingProperties": [],
+      "state": {
+        "ActiveState": "active",
+        "ControlPID": "0",
+        "LoadState": "loaded",
+        "MainPID": "26930",
+        "NeedDaemonReload": "no",
+        "SubState": "running"
+      },
+      "unexpectedPropertyCount": 0,
+      "unit": "docker.service",
+      "withAll": true
+    }
+  ]
+}

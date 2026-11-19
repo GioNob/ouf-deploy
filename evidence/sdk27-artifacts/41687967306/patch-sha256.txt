@@ -1,0 +1,1 @@
+bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5  ../patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch

@@ -1,0 +1,37 @@
+# Backup freddo MinIO → SeaweedFS: pacchetto v3
+
+Il produttore v3 gestisce le cinque directory /run osservate sul VPS. Qualifica [run42282792808](https://github.com/GioNob/ouf-deploy/actions/runs/42282792808) SUCCESS al639f7a64; [ricevuta e digest](../evidence/storage-cold-backup-v3-qualified-20261106.json). Prepare v1 e v2 sono già eseguiti e HELD: conservarli, non rilanciarli o modificarne permessi/file. Preparazione v3 target RIUSCITA: pianoSHA1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f,14ruoli/34fonti/5runtime/103condividenti fermi. Non ripetere installer/prepare. Nessun fermo/capture/restore target implicito. Prossima azione in [Custodia e impatto](OUF_STORAGE_COLD_PLAN_DECISION_20261106.md):lettura del piano conservato e prova Windows prima di definire il fermo.
+
+## Evidenza e correzione
+
+[Metadati operatore](../evidence/storage-cold-runtime-directories-operator-20261106.json): tutti5path sono DIRECTORY uid0,mode0750,nlink2,ancestry protetta. GID10001 gateway-owner,10002 ingestion e reader,10003 due path onboarding,10004 UDP e reader. Programma v2 e BASE soddisfano i predicati controllati. Il valore60byte è size dell'inode directory, non la dimensione dei contenuti. Due link sono normali per directory; il vincolo nlink1 è per file regolari. Non servono chmod/chown o conversioni sul target. I contenuti interni non sono stati osservati dal reader; il punto esatto del passato errore e il binding ai processi non sono dimostrati dai metadati successivi.
+
+V1 respingeva /run interamente; v2 ammetteva solo file regolari sui7binding RO/5hash path osservati. V3 mantiene i binding esatti ruolo/path/destinazione identica/RO e accetta file e directory custoditi. Scansione tramite descriptor relativi senza seguire symlink: ogni nodo root/non scrivibile da gruppo/altri, nlink1 solo per file, file vuoti conservati. Vengono respinti symlink, hardlink di file, device/socket/FIFO, filesystem annidati e ancestry non protetta. Nessuna configurazione viene saltata per far passare il controllo.
+
+Per ogni fonte /run:256entry compresa radice,16MiB di corpi,1MiB per file,profondità16,15s. Il piano privato conserva albero,hash,frame metadati e xattr; membership/contenuto/metadati vengono ricontrollati prima e dopo la cattura. Gli errori di tipo/custodia/limite riportano codice, metadati e hash dei percorsi, senza nomi o segreti. Non tutti i possibili errori OS sono classificati, e la scansione non è un fence globale.
+
+## Consegna storica già eseguita: non ripetere preparazione v3
+
+Installer scripts/install-storage-cold-backup-v3-20261106.sh,1074byte,SHA2799bdeb20b8c6c2547b5813f8efc031c042bebe7952f3401a4df15671f0ac0c. Da scaricare tramite URL Git immutabile e verificare prima dell'esecuzione. Scarica il produttore al commit639f7a640dc2f0aa0ec00e3b31c2b43bebe97111,32524byte,SHA256b23a822d0fd7000ac8806d47ff66c0ab053f0fa60ce33998268af792b9db53ac; crea solo il nuovo /var/lib/ouf-storage-cold-backup-v3.py root0600 con O_EXCL/fsync e invoca prepare una volta.
+
+Nuova area /var/lib/ouf-storage-migration/cold-backup-20261106-v3. Programmi/aree v1/v2 e scope G0 consumati restano intatti. Il nuovo tentativo è motivato dalla correzione file/directory osservata; non adotta un parziale precedente né resetta un budget consumato. Se v3 esiste o fallisce, preservare tutto senza replay automatico. Restituire solo JSON stdout redatto.
+
+Prepare legge l'inventario Docker locale e le cinque fonti /run complete entro i limiti, vincola un piano privato. Non ferma servizi, non cambia restart policy, non concede autorità, non esporta immagini/rootfs né produce un backup. Questi contenuti possono includere credenziali: restano in memoria o nei file privati previsti, mai stdout/Git. Non consegnare i command private o il piano privato in chat.
+
+## Perimetro e gate operativi
+
+La proposta include14ruoli, MinIO, etcd, intero PostgreSQL condiviso, fonti montate, immagini esatte e filesystem container per conservare modifiche nel layer scrivibile. Impatto su altri DB del cluster e fermo più ampio vanno esplicitamente riesaminati sul piano concreto. I container fuori roster con sorgenti condivise vengono vincolati per ID/mount/generazione se fermi/PID0/non paused/restarting; alla cattura restart=no, membership/generazione invariate. L'utility non modifica alcuna policy. I31mount condivisi del readback non significano31container unici; il piano conta gli ID.
+
+Dopo il piano: review configurazioni e custodia effettiva, recipient pubblico compatibile e prova di decifratura PC; finestra, contenimento writer/amministratori/ricreatori e decisione operativa applicabile; fermo pulito documentato; cattura; trasferimento cifrato Windows; verifica SHA256/decifratura/manifest e restore isolato. Il riferimento decision-reference registra ma NON autentica HUMAN/THS. Delega di sviluppo e scelta PC non approvano automaticamente fermo/deploy/grant. Nessun comando di stop/start/update è presente nel produttore/installer.
+
+I byte effettivamente visibili nei mount applicativi non sono dimostrati dalla sola sorgente host. Il nuovo laboratorio prova la procedura su fixture, non tutta la coorte target. PostgreSQL/MinIO/etcd richiedono exit0; applicativi143 significano cessazione, non drain. Non inferire consistenza DB/oggetti o autorità di riapertura da copia integra o fermo fisico. Gli esiti ambigui si riconciliano senza replay. Restore isolato e originali conservati; nessun restart/traffico automatico. Questo backup puntuale non sostituisce il full+WAL/PITR del PET UDP §81.
+
+Cattura eventuale:1tentativo,3600s,256comandi,192container,64fonti,100000entry,64GiB prodotti incluse copie intermedie,1GiB libero minimo; prepare300s,piano24h senza rinnovo automatico. Budget tecnici, non finestra/RTO accettati. Tar numerico UID/GID con ACL/xattr/sparse, verifica tutti i corpi archiviati e fonti finali; eventi container incompatibili bloccano. Nessuna disponibilità di PostgreSQL usata come ammissione.
+
+Archivio futuro, NON esistente: /var/lib/ouf-storage-migration/cold-backup-20261106-v3/capture/backup.tar.age root0600. Plaintext custodito root0700/0600, nessun cleanup automatico. Trasferire solo dopo risultato positivo con dimensione/hash reali. Ricevitore Windows scripts/receive-storage-backup-windows.ps1 già predisposto, runtime PowerShell non qualificato; non chiedere di nuovo SSH/SCP/endpoint/OS. Chiave privata resta sul PC, dettagli personali non in Git.
+
+## Qualifica e limiti
+
+Qualifica run42282792808/job128115825394 SUCCESS al639f7a64. Artifact13535403878,623byte,SHA4f3738b135b29c8abac333345656088ca3c7cda19c7622f7a0be47df1365d43e verificato tramite download; singolo membro nativo conservato in Git, SHA f673fccf5bddcbd1d3dc5a2c80c969d0dd7d4f332b693bc245f922df69ec4739. Quattro sorgenti Git esatti confrontati; artifact scade4febbraio2027.20test locali e hosted sono gli stessi20casi. Fixture nuova: directory /run root:10003/0750, file0640,subdir,file vuoto,xattr; cattura cifrata e restore insieme a3DB/1oggetto MinIO, controlli custodia/rilettura/replay/condivisioni. Le prove v1/v2 rimangono conservate e non vengono presentate come qualifica del delta v3.
+
+La qualifica rimane su stesso Docker daemon con radici dati nuove, non secondo host vuoto o intera coorte14ruoli. Dimensione archivio CI non è stima VPS. PostgreSQL attende PID1 definitivo; pg_ctl exec137 riconciliato con server0 e pg_controldata shut down, senza replay. Nessun nuovo credito MiniPET dai test:18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120corpi verificati.

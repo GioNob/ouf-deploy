@@ -1,0 +1,60 @@
+{
+  "applicationClasses": {
+    "GatewayReadReceiptVerifier": "01349a6b93b3a38278c07c9534c4bd274ceac969947b08e40300d7b808956936",
+    "IngestionGatewayReadSecurityConfiguration": "bce3102ca21241334ba655aaa5b5a6ed61722a0c97c9ec5eebec7deb87cb4c27",
+    "IngestionIamDisabledConfiguration": "818f36a66bf5de0b1521683efab29010cd8763aaabfb590532cccd388fa44fc0",
+    "IngestionIamSecurityConfiguration": "68edae63eb5d011f380f7a5757c997897e56778732d2cc514caf1a8672ec6ebd",
+    "IngestionReadinessHealthIndicator": "7652454b03c753e0b3e47adf0b7d5790a097af685d970a1a6d1f53eb90d7f5f2",
+    "IngestionValidateOnlyStartup": "e9d9d9bb4a0d3702c0aa864a8757f13ecc796c942e8e4909a2455d41e0a886fb",
+    "OnboardingReadinessService": "1bb3c6af843df8faab3492a6ef1248a5106d0d0309b25d27f996b2a7b3b38cb9",
+    "PublicationGatewayClient": "bf48bfb3de64b5466558f2aa227d4a3266f5837a8806574e23ce3940c34f2690"
+  },
+  "applicationJarSha256": "54424047880b6c96c512efb55dbd1c241e98180f4d679c342760980385f771f1",
+  "architecture": "amd64",
+  "baselineSourceCommit": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+  "buildRecipeCommit": "6f1870b49fcfba0dcf3ec2b6df26cfa9c4a5ccf5",
+  "changedProductionSources": [
+    "java/it/comune/trieste/ouf/ingestion/OnboardingReadinessService.java",
+    "java/it/comune/trieste/ouf/ingestion/PublicationGatewayClient.java"
+  ],
+  "highCriticalVulnerabilityGatePassed": true,
+  "imageArchiveBytes": 136781501,
+  "imageArchiveSha256": "5f6893d1ac63d5c5ee96c961e5c91a3b1c058a6300af169663961f1d5fbf8be6",
+  "imageEntrypoint": [
+    "java",
+    "-jar",
+    "/app/app.jar"
+  ],
+  "imageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+  "imageInspectSha256": "aa49781cabd8301145e11be72d41910ed7581ad07a689670bded8ce452c0e5f3",
+  "imageStartedByCandidateExport": false,
+  "imageUser": "10002:10002",
+  "migrationChanges": 0,
+  "migrationInventory": {
+    "V10__quarantine_lifecycle.sql": "41f8c2362122caa3e9e4d82df0588452a87efdde0f2c518ee47e1bd3570a03dc",
+    "V11__classified_source_resilience.sql": "97243be62e65879aed425855895456ef0f9e1579cf0b271bcbfc2b0864069e17",
+    "V12__governed_lifecycle_and_historical_replay.sql": "9fa09325985424125528420db82bce2c52f7ae75dffc7759207c7eb1666b5b2c",
+    "V13__pressure_admission_retry_budget.sql": "30402c3c225297436b9bc4e65dceca2c3ba29a3caeffc79692ea7cccf50a000d",
+    "V14__published_activation_schedule.sql": "5d6acf3516504590fe84d833803db55b87b3858a35c31a88a56e3599ceba916d",
+    "V15__human_recovery_sessions.sql": "e9abf1e1c192be62a4624f8a7ba551be28013ab3a58698a4ad13231fba29abaa",
+    "V16__incident_observation_time.sql": "6fcf10b6bfbc8e71002fb9378e6a1ff45b70abb4a8f5cd863a1f207c42cb2eb9",
+    "V17__incident_publication_and_cursor.sql": "3695a5853afac3923a3428a54739d55d09cf31cc147bf46bfab8505f1c2d0716",
+    "V18__incident_publication_bookmarks.sql": "7519073ac4075c40ed743489a2aefc7f63d8dcd3b1078e6108e50104f2fa8220",
+    "V1__ingestion_runtime_core.sql": "8b439684da2cc31c62cfebf4ce4d939f9c8ac9b533a8c9490f5455384c064bb8",
+    "V2__durable_ack_and_replay.sql": "5e3b53341e396f7bf4ba937db2c61e96e9fdedac6420eb0de15350457ee6c528",
+    "V3__trusted_operations.sql": "a6e9eb043defdcd8590b94c690911955ec8957ba016b70967e9aef90943bedf4",
+    "V4__scheduler_and_source_health.sql": "b112711bd994cff5b0bdd3671937754f6e33fd85a705a102eed23fe9f207b44c",
+    "V5__replay_execution_lifecycle.sql": "4e24738272c8fae7233d2601736662eff80d5913fbef6c88ab6dc1f511f65763",
+    "V6__protected_operational_log.sql": "5bf72f99f9c861678d3e8469ed2f71cd9cd55fccb835dbcd685e9c0d9fe6d46f",
+    "V7__execution_worker_and_snapshot.sql": "48527993d3d8b50d98dc396e6d9b013410cd9db28d35fb76bff14cc23e46f9f2",
+    "V8__schema_surveillance.sql": "33853cbd55d09ad901d4af6589ad36c1d4d6da1116f10a14bdb3bb2f0bd8332c",
+    "V9__runtime_issue_governance.sql": "ed0236c8b6b6c66767813a0da7d3d92457ba0968c7e4376a35b0119f22a752d9"
+  },
+  "notReleaseAcceptance": true,
+  "os": "linux",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.ingestion-readiness-workload-candidate.v1",
+  "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+  "targetInstalled": false,
+  "trivyReportSha256": "f6f0c50ce5380fe4f3037673db977af4cb3e93bb75e637e738050e68d4cb8c3b"
+}

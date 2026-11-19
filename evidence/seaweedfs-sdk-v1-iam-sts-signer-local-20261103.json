@@ -1,0 +1,56 @@
+{
+  "candidatePatchCountBefore": 20,
+  "directAwsSdkV1ImportersAfter": 20,
+  "directAwsSdkV1ImportersBefore": 21,
+  "files": {
+    "test/s3/iam/go.mod": "72972b92599bc0bc4b244e80c8d58595fc3cfc48e576110f199141faf27f49a4",
+    "test/s3/iam/go.sum": "34e6165346502ab471cdd6af42f77c653e6bec9b2c786dfed64e99a5f4877df2",
+    "test/s3/iam/s3_sts_assume_role_test.go": "637ef3c6689eb1dbfc444152340762bbf764a5e9a32ea87306d5c78f6ae1a956",
+    "test/s3/iam/sigv4_v2.go": "6db4fde0c8698e21ea03fe91fb197b3a8d03d9b31561081698287da9cab1d686",
+    "test/s3/iam/sigv4_v2_test.go": "6b7a4400de8721d3bee161c3d182a8d14d24696a4934d345636aed90bd9722e9"
+  },
+  "generatedAt": "2026-11-03T15:05:04Z",
+  "hostedEvidence": {
+    "artifactDigest": "sha256:d375975e0bf9ec503b1ae48ce4cbfe055a51e22928f2eaa1b4977cf7be0c72e4",
+    "artifactExpiresAt": "2027-02-01T15:36:26Z",
+    "artifactId": 13245451582,
+    "artifactSizeBytes": 5038,
+    "attestedManifestSha256": "46d8cd312d71e2d08bc3fd42433e1ff4f4defb4a459ccbbedaeca56dfb082952",
+    "commit": "92afdcfd104e6aed85fce0a7b4eded524629794f",
+    "exactModuleCompile": "PASS",
+    "runId": 41665635452,
+    "status": "HOSTED_PASS"
+  },
+  "iamDirectAwsSdkV1ImportersAfter": 12,
+  "iamDirectAwsSdkV1ImportersBefore": 13,
+  "localCompile": {
+    "command": "go test -mod=mod -modfile=localcompile.mod -run ^$ ./...",
+    "dependencyLimitation": "Exact historical v1 dependency sources were absent from the local cache; API-compatible cached versions were used only for this local compile check.",
+    "result": "PASS"
+  },
+  "localTest": {
+    "command": "go test -mod=mod -modfile=localcompile.mod -run ^TestSignSigV4Request -count=1 ./...",
+    "pass": 2,
+    "result": "PASS"
+  },
+  "maintainedSdk": {
+    "core": "github.com/aws/aws-sdk-go-v2",
+    "signer": "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
+  },
+  "otherDirectAwsSdkV1ImportersAfter": 8,
+  "package": "./test/s3/iam",
+  "patch": {
+    "path": "patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch",
+    "sha256": "cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b"
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "scope": "PUBLIC_SOURCE_ONLY_LOCAL_AND_HOSTED",
+  "targetOperations": 0,
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "workflow": {
+    "path": ".github/workflows/storage-iam-sts-signer-sdk-v2.yml",
+    "runId": 41665635452,
+    "status": "HOSTED_PASS"
+  }
+}

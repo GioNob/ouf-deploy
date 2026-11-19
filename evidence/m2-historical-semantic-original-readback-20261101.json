@@ -1,0 +1,34 @@
+{
+  "allSevenOriginalPackageChecksumsVerified": true,
+  "applicationSourceCommit": "622614b0040cf11be2f6c7e3568733a488ca4ca8",
+  "archiveSha256": "206b498133de59a17bdc437651c36562e8a2e3d132c6815a06373a3326877b4c",
+  "configurationImageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
+  "everyConfigurationLayerAndExpandedDiffIdVerified": true,
+  "interpretation": "The original candidate bytes are verified, but neither its original OCI root nor its qualified schema2 envelope equals the retained native identity. A different envelope alone does not prove different application/source bytes. Do not attribute source622614 to the retained role without a config/manifest bridge.",
+  "layerCount": 10,
+  "nativeIdentity": {
+    "configurationImageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
+    "manifestBytes": 1845,
+    "nativeImageId": "sha256:2c8633eca1c922a398677e76749430d06675d7d274d46fd26b7c7d9b66360d6d",
+    "platform": "linux/amd64",
+    "profile": "ouf.config-and-native-manifest-identity.v1"
+  },
+  "nativeImportPerformed": false,
+  "originalArtifactId": 11676412613,
+  "originalOciRootDescriptors": [
+    "sha256:02b1af51b91eba798b0c5a6a47e662f350313fab09c340e371eaf453d9d1d755"
+  ],
+  "originalWorkflowRun": 38069730894,
+  "originalZipBytes": 212134782,
+  "originalZipSha256": "a0c30bbb7d44d3e6405bae28ad80b6c5dcfc28ed2f078d387cf4e26d179e28c3",
+  "qualifiedEnvelopeNativeIdEqualsRetainedNativeId": false,
+  "releaseAcceptance": false,
+  "retainedNativeDigestDocumentPresentInOriginalArchive": false,
+  "retainedNativeImageId": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+  "retainedSemanticSourceMembershipProven": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-historical-semantic-original-readback.v1",
+  "sourcePublisherAuthenticatedByThisReadback": false,
+  "targetApplyAuthorized": false,
+  "vpsOperations": 0
+}

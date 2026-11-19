@@ -1,0 +1,88 @@
+GENERATION33 LOCAL RUNTIME BOUNDARIES; NOT A NATIVE DOCKER OR TARGET EXECUTION
+
+test_authority_escalation_fails (test_storage_generation33_lab_binding.BindingTests.test_authority_escalation_fails) ... ok
+test_complete_synthetic_binding_parses_without_side_effect (test_storage_generation33_lab_binding.BindingTests.test_complete_synthetic_binding_parses_without_side_effect) ... ok
+test_failed_producer_or_raw_findings_fail (test_storage_generation33_lab_binding.BindingTests.test_failed_producer_or_raw_findings_fail) ... ok
+test_false_is_not_zero_target_operations (test_storage_generation33_lab_binding.BindingTests.test_false_is_not_zero_target_operations) ... ok
+test_generation31_cannot_supply_generation33_authority (test_storage_generation33_lab_binding.BindingTests.test_generation31_cannot_supply_generation33_authority) ... ok
+test_generation32_and_missing_vendor_patch_cannot_supply_generation33 (test_storage_generation33_lab_binding.BindingTests.test_generation32_and_missing_vendor_patch_cannot_supply_generation33) ... ok
+test_harness_hash_drift_fails_before_import (test_storage_generation33_lab_binding.BindingTests.test_harness_hash_drift_fails_before_import) ... ok
+test_lock_manifest_and_source_tree_substitution_fail (test_storage_generation33_lab_binding.BindingTests.test_lock_manifest_and_source_tree_substitution_fail) ... ok
+test_missing_runtime_lock_fails_before_harness_loading (test_storage_generation33_lab_binding.BindingTests.test_missing_runtime_lock_fails_before_harness_loading) ... ok
+test_octet_probe_requires_get_and_head_pass_without_findings (test_storage_generation33_lab_binding.BindingTests.test_octet_probe_requires_get_and_head_pass_without_findings) ... ok
+test_old_generation_and_old_binary_are_rejected (test_storage_generation33_lab_binding.BindingTests.test_old_generation_and_old_binary_are_rejected) ... ok
+test_unknown_artifact_facts_never_pass (test_storage_generation33_lab_binding.BindingTests.test_unknown_artifact_facts_never_pass) ... ok
+test_vendor_tree_profile_and_complete_build_cannot_drift (test_storage_generation33_lab_binding.BindingTests.test_vendor_tree_profile_and_complete_build_cannot_drift) ... ok
+test_bad_cohort_legal_hash_and_unexpected_path_fail_before_extraction (test_storage_generation33_labs.RuntimeAdapterTests.test_bad_cohort_legal_hash_and_unexpected_path_fail_before_extraction) ... ok
+test_cohort_copied_lock_cannot_substitute_committed_lock (test_storage_generation33_labs.RuntimeAdapterTests.test_cohort_copied_lock_cannot_substitute_committed_lock) ... ok
+test_cohort_requires_exact_hash_generation_binding_and_proof (test_storage_generation33_labs.RuntimeAdapterTests.test_cohort_requires_exact_hash_generation_binding_and_proof) ... ok
+test_cold_failure_prevents_identity_launch (test_storage_generation33_labs.RuntimeAdapterTests.test_cold_failure_prevents_identity_launch) ... ok
+test_cold_seed_and_verify_mime_failure_cannot_escape_child_boundary (test_storage_generation33_labs.RuntimeAdapterTests.test_cold_seed_and_verify_mime_failure_cannot_escape_child_boundary) ... ok
+test_each_generation_module_is_fresh_and_legacy_file_unchanged (test_storage_generation33_labs.RuntimeAdapterTests.test_each_generation_module_is_fresh_and_legacy_file_unchanged) ... ok
+test_image_profile_mismatch_fails_before_readback_or_docker (test_storage_generation33_labs.RuntimeAdapterTests.test_image_profile_mismatch_fails_before_readback_or_docker) ... ok
+test_image_reader_vendor_manifest_api_reaches_verified_readback (test_storage_generation33_labs.RuntimeAdapterTests.test_image_reader_vendor_manifest_api_reaches_verified_readback) ... ok
+test_logical_duplicate_checksum_and_changed_member_fail_before_extraction (test_storage_generation33_labs.RuntimeAdapterTests.test_logical_duplicate_checksum_and_changed_member_fail_before_extraction) ... ok
+test_missing_cohort_denies_after_binding_before_harness_import (test_storage_generation33_labs.RuntimeAdapterTests.test_missing_cohort_denies_after_binding_before_harness_import) ... ok
+test_missing_lock_does_not_import_harness (test_storage_generation33_labs.RuntimeAdapterTests.test_missing_lock_does_not_import_harness) ... ok
+test_modified_mpl_source_cannot_be_replaced_even_with_new_bundle_checksums (test_storage_generation33_labs.RuntimeAdapterTests.test_modified_mpl_source_cannot_be_replaced_even_with_new_bundle_checksums) ... ok
+test_modified_vendor_members_cannot_change_with_new_archive_checksums (test_storage_generation33_labs.RuntimeAdapterTests.test_modified_vendor_members_cannot_change_with_new_archive_checksums) ... ok
+test_non_ci_run_has_no_archive_or_harness_effect (test_storage_generation33_labs.RuntimeAdapterTests.test_non_ci_run_has_no_archive_or_harness_effect) ... ok
+test_original_checksums_and_raw_identity_cannot_claim_modified_source (test_storage_generation33_labs.RuntimeAdapterTests.test_original_checksums_and_raw_identity_cannot_claim_modified_source) ... ok
+test_predecessor_artifact_full_checksums_lock_copy_and_receipt_are_bound (test_storage_generation33_labs.RuntimeAdapterTests.test_predecessor_artifact_full_checksums_lock_copy_and_receipt_are_bound) ... ok
+test_predecessor_receipt_must_match_expected_digest (test_storage_generation33_labs.RuntimeAdapterTests.test_predecessor_receipt_must_match_expected_digest) ... ok
+test_root_relative_manifest_without_dot_prefix_also_passes (test_storage_generation33_labs.RuntimeAdapterTests.test_root_relative_manifest_without_dot_prefix_also_passes) ... ok
+test_subprocess_reenters_adapter_and_preserves_budgets (test_storage_generation33_labs.RuntimeAdapterTests.test_subprocess_reenters_adapter_and_preserves_budgets) ... ok
+test_success_requires_new_generation_results_and_exact_identity_counts (test_storage_generation33_labs.RuntimeAdapterTests.test_success_requires_new_generation_results_and_exact_identity_counts) ... ok
+test_success_runs_cold_then_identity_and_writes_separate_generation_receipt (test_storage_generation33_labs.RuntimeAdapterTests.test_success_runs_cold_then_identity_and_writes_separate_generation_receipt) ... ok
+test_wrong_archive_size_and_hash_fail_before_module_import (test_storage_generation33_labs.RuntimeAdapterTests.test_wrong_archive_size_and_hash_fail_before_module_import) ... ok
+test_wrong_predecessor_archive_hash_produces_no_output (test_storage_generation33_labs.RuntimeAdapterTests.test_wrong_predecessor_archive_hash_produces_no_output) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 0.125s
+
+OK
+
+WORKFLOW: YAML parsed; six bash snippets pass bash -n.
+
+ACTUAL IMAGE READER THROUGH NEW WRAPPER; DOCKER COMMANDS MOCKED:
+{
+  "status": "ACTUAL_IMAGE_RUNTIME_WRAPPER_READBACK_PASS_DOCKER_MOCKED",
+  "image": {
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "configDigest": "sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6",
+    "dockerArchiveSha256": "5683622c9924be6192babb5a49588c7cb1ec53e5bf9257ed48225aa61ed26b12",
+    "layerDigest": "sha256:2659751a1733834f69e0d77e15081775ec95d724b9e51cc16a9eaf401139c577",
+    "manifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+    "overallSwG1": "OPEN",
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-runtime-image.v1",
+    "scratchRootfs": true,
+    "sourceCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "status": "PACKAGED_NOT_ADMITTED",
+    "targetOperations": 0,
+    "thirdPartyLicencesAccepted": false,
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613",
+    "user": "10001:10001"
+  },
+  "dockerCallsMocked": [
+    {
+      "argv": [
+        "docker",
+        "load",
+        "--input"
+      ],
+      "timeout": 120
+    },
+    {
+      "argv": [
+        "docker",
+        "image",
+        "inspect"
+      ],
+      "timeout": null
+    }
+  ],
+  "publisherSignatureLocallyVerified": false,
+  "targetOperations": 0
+}

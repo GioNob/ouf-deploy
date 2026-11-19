@@ -1,0 +1,109 @@
+{
+  "schema": "ouf.storage-g0-operator-result-record.v1",
+  "date": "2026-11-06",
+  "operationId": "seaweedfs-g0-20261106-v2",
+  "decisionRef": "OUF-G0-COLLECT-20261106-02",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "entryCommit": "c4e3b4d2ca4be6b1860aee308ce62daedb662067",
+  "packageManifestSha256": "1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "childScopes": {
+      "ingestion": {
+        "claimed": true,
+        "summaryPresent": true
+      },
+      "onboarding": {
+        "claimed": true,
+        "summaryPresent": true
+      },
+      "s3": {
+        "claimed": true,
+        "summaryPresent": true
+      },
+      "udp": {
+        "claimed": true,
+        "summaryPresent": true
+      }
+    },
+    "cumulativeEngineGets": 345,
+    "databaseExportsAttempted": 3,
+    "engineBytes": 2334536,
+    "engineGets": 292,
+    "g0Complete": false,
+    "hostListObservation": {
+      "containerCount": 145,
+      "maximumContainers": 192,
+      "responseIsList": true
+    },
+    "operatorEvidenceAuthenticated": false,
+    "phase": "SEALED",
+    "pointInTimeCommonCutProven": false,
+    "priorControls": 17,
+    "priorEngineGets": 53,
+    "runtimeAuthorityIssued": false,
+    "s3Requests": 1370,
+    "schema": "ouf.storage-g0-package-result.v1",
+    "scopeConsumed": true,
+    "sections": {
+      "ACCESS": {
+        "classifications": 2,
+        "status": "MISSING_OPERATOR_EVIDENCE"
+      },
+      "CAPACITY": {
+        "status": "OBSERVED_REVIEW_REQUIRED"
+      },
+      "CUSTODY": {
+        "status": "MISSING_OPERATOR_EVIDENCE"
+      },
+      "DB": {
+        "findings": 18,
+        "status": "OBSERVED_REVIEW_REQUIRED"
+      },
+      "OBJECTS": {
+        "status": "OBSERVED_REVIEW_REQUIRED",
+        "verifiedBodies": 120
+      },
+      "RUNTIME": {
+        "status": "OBSERVED_REVIEW_REQUIRED"
+      },
+      "WINDOW": {
+        "status": "MISSING_OPERATOR_EVIDENCE"
+      },
+      "WRITERS": {
+        "intake": {
+          "evidenceAuthenticityVerified": false,
+          "intakeComplete": false,
+          "missingOrUnknownPaths": [
+            "onboarding-human-upload",
+            "onboarding-delegated-upload",
+            "onboarding-profile-worker",
+            "ingestion-execution-replay",
+            "ingestion-outbox-ack-watermark",
+            "udp-store",
+            "udp-shadow",
+            "udp-purge-compaction",
+            "udp-maintenance",
+            "administrative-tools",
+            "external-consumers"
+          ],
+          "operatorDeclaredPaths": 0,
+          "reportedPaths": 0,
+          "runtimeAuthorityIssued": false,
+          "technicalPaths": 0,
+          "writersQuiescentProven": false
+        },
+        "status": "MISSING_OPERATOR_EVIDENCE"
+      }
+    },
+    "status": "HELD_RECONCILIATION_FINDINGS",
+    "targetWrites": 0,
+    "technicalCaptureComplete": true,
+    "writerQuiescenceProven": false
+  },
+  "localReadbackReceived": false,
+  "findingsBreakdownKnown": false,
+  "collectionAuthorizationConsumed": true,
+  "replayAuthorized": false
+}

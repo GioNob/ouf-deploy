@@ -1,0 +1,56 @@
+{
+  "schema": "ouf.owned-managed-file-preview-permission-proposal.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "explicitUserAuthorization": "Autorizzo — refers to prior explicit question naming scope, account, duration and separate THS publication",
+  "intent": "evidence/owned-managed-file-preview-permission-authorized-intent-20261028.json",
+  "intentPersistedBeforeDispatch": "5aea3da27812e135ff29878bfb2e4978fb13fd75",
+  "account": "ouf-admin",
+  "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+  "basePolicyRef": "ouf-lab-authorization:58",
+  "basePolicyHash": "sha256:e8c3401e1d3209f60af55c36bae25d8a1089d822dc129afbef6ae3a13cce6bfe",
+  "createReceipt": {
+    "proposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-28T22:49:49.117724Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "finalPolicyRef": null
+  },
+  "independentCallerOwnedReadReceipt": {
+    "proposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-28T22:49:49.117724Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "finalPolicyRef": null
+  },
+  "delta": {
+    "rolesBefore": 8,
+    "rolesProposed": 9,
+    "assignmentsBefore": 12,
+    "assignmentsProposed": 13,
+    "allExistingEntriesPreservedExactly": true,
+    "roleId": "owned-managed-file-preview-v1",
+    "assignmentId": "owned-managed-file-preview-v1-ouf-admin",
+    "capabilityId": "ouf.managed-source.preview",
+    "resourceType": "capability",
+    "validFrom": "2026-10-28T22:34:26Z",
+    "validUntil": "2036-09-15T07:13:50.968730Z",
+    "ownerTenantSubjectChecksAndRedactionStillRequired": true
+  },
+  "permissionsPublished": false,
+  "agentApproved": false,
+  "proposalCreationAttemptsAfterExplicitAuthorization": 1,
+  "proposalReads": 1,
+  "automaticReplayAllowed": false,
+  "retainedProfiling": {
+    "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+    "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+    "lastObservedStatus": "SUCCEEDED",
+    "profileContentsStillUnread": true,
+    "newProfilingOrBudgetOrResume": false
+  },
+  "M2Accepted": false
+}

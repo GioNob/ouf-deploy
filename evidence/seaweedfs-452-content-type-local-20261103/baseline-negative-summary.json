@@ -1,0 +1,18 @@
+{
+  "expectedExitCode": 1,
+  "failedTests": [
+    "TestFilerStoreWrapperMimeNormalization/S3_ETag_preserves_explicit_octet-stream/insert",
+    "TestFilerStoreWrapperMimeNormalization/S3_ETag_preserves_explicit_octet-stream/insert_known_absent",
+    "TestFilerStoreWrapperMimeNormalization/S3_ETag_preserves_explicit_octet-stream/update",
+    "TestFilerStoreWrapperMimeNormalization/S3_owner_preserves_explicit_octet-stream/insert",
+    "TestFilerStoreWrapperMimeNormalization/S3_owner_preserves_explicit_octet-stream/insert_known_absent",
+    "TestFilerStoreWrapperMimeNormalization/S3_owner_preserves_explicit_octet-stream/update",
+    "TestFilerStoreWrapperMimeNormalization",
+    "TestS3ContentTypeSurvivesFilerPersistence/explicit_octet-stream_overrides_txt_extension",
+    "TestS3ContentTypeSurvivesFilerPersistence/explicit_octet-stream_overrides_json_extension",
+    "TestS3ContentTypeSurvivesFilerPersistence/empty_object_retains_explicit_type",
+    "TestS3ContentTypeSurvivesFilerPersistence/missing_type_empty_object_keeps_PUT_default",
+    "TestS3ContentTypeSurvivesFilerPersistence/missing_type_binary_body_keeps_detected_type",
+    "TestS3ContentTypeSurvivesFilerPersistence"
+  ]
+}

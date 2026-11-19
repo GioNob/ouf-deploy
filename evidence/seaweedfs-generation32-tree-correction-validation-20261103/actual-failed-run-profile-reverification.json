@@ -1,0 +1,74 @@
+{
+  "main": {
+    "profile": "main",
+    "counts": {
+      "pass_tests": 6656,
+      "pass_packages": 41,
+      "skip_packages": 9,
+      "skip_tests": 12
+    },
+    "logSha256": "52a67a4c2714507f469de95fe1d071c847f99cfcf5374a56dcf91edaec77126a",
+    "terminalTestsSha256": "31b8013f28af6703b64cb48cb2c7849578a54c9401bdca3732663cbb50e4d283",
+    "terminalPackagesSha256": "41ee96be03d54f90ffd27ed05e7430ea204f812241cf557fdceac2ae19c44fcf",
+    "environmentConditionalOutcomes": {},
+    "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+    "targetOperations": 0
+  },
+  "server": {
+    "profile": "server",
+    "counts": {
+      "pass_tests": 984,
+      "pass_packages": 1
+    },
+    "logSha256": "d4fe11290ca8ea3743be958e1060eceda27231513ab0e96d9c9c95fb827823a6",
+    "terminalTestsSha256": "b05d54925d930f4e3d550ebddd6f8182bb4a3fa90683d5a2ab8a0cc56763e148",
+    "terminalPackagesSha256": "4a9e99d596111f0d7e05a0bc625ee4067ef915dde2b577ed18497cca0e5a4201",
+    "environmentConditionalOutcomes": {
+      "TestGuardedPeerHTTPClientUploadsOverTLS": "pass",
+      "TestGuardedPeerHTTPClientRejectsHTTPSDowngrade": "pass"
+    },
+    "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+    "targetOperations": 0
+  },
+  "storage": {
+    "profile": "storage",
+    "counts": {
+      "pass_tests": 58,
+      "pass_packages": 1
+    },
+    "logSha256": "54a5aa0b01d1b622393c78f8d35ce90081ebdcad6e7de643bd45a25663314489",
+    "terminalTestsSha256": "6ad75c5b9bf23def24c0a1891393a5b4ee28d737782bcef9dba46cf5291b2ff3",
+    "terminalPackagesSha256": "211d61f322c3c35d86ec1413455e0d69533c0343227db95bef23f2037cd84c91",
+    "environmentConditionalOutcomes": {
+      "TestSortedFileNeedleMap_HoldsNoDescriptors": "pass",
+      "TestRebuildIdx_UnwritableIdxDirSkipsOnlyThisVolume": "pass"
+    },
+    "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+    "targetOperations": 0
+  },
+  "race": {
+    "profile": "race",
+    "counts": {
+      "pass_tests": 185,
+      "pass_packages": 3
+    },
+    "logSha256": "f4c2dcfdaa625cfeed8e4c3b76d27d321531c802bfb7e676327fc5ff5c89fd0b",
+    "terminalTestsSha256": "75b78befff533cc7d25da5b8ce7cc4e68ed580a25b348209ea51b1556f81022a",
+    "terminalPackagesSha256": "e61b223abd9c126c02a1c823464279533023377980e98566a40531cabd03dae0",
+    "environmentConditionalOutcomes": {},
+    "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+    "targetOperations": 0
+  },
+  "shell": {
+    "status": "HOSTED_REQUIRED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+    "profile": "shell",
+    "testsPassed": 306,
+    "packagesPassed": 1,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "terminalTestsSha256": "958c0c7ebfb9258c79e20a5f8602fb29c111771d8ef4fb33e21c37321e6873e7",
+    "logSha256": "04c5157a99cf20f555b28eb3fc5ce76e27db3d358a290177f3515f2f887e6987",
+    "localPassWasObserved": false,
+    "targetOperations": 0
+  }
+}

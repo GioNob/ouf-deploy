@@ -1,10 +1,6 @@
 name: Provider v2 network collision read
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/diagnose_provider_v2_network_collisions.py'
-      - '.github/workflows/provider-v2-network-collisions.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

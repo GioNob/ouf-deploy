@@ -1,0 +1,13 @@
+{
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "checkpoint": {
+    "phase": "EXPIRED_READY_PUBLIC_HISTORY"
+  },
+  "complete": false,
+  "readOnly": true,
+  "reasonCode": "EXACT_RETAINED_HUMAN_SELECTION_REQUIRED",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.human-expired-ready-successor-inspection.v1",
+  "status": "STOP_RECONCILE"
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "ouf.semantic-registry-postboot-byte-source-qualification.v1",
+  "sourceCommit": "7793835ddd05af28577b4ff299222194b6397b94",
+  "artifactCommit": "bccabde9a16d370d76e6cd2b941d6a09ea0b5d70",
+  "capsuleSha256": "f6ab800de6ca9452258cf967dd0e194b81b620a35dff0ef357f7fdf93f45f02c",
+  "sourceClosureHash": "4fb611d8ffcf4446aeb25df7777dfb66fefb964c63f375863471072b8d7d2f27",
+  "sourceWorkflowRuns": {
+    "39980550789": "COMPONENTS_LOADER_TLS_NATIVE_PREFIX_PASS_JVM_PENDING_AT_GENERATION",
+    "39980550856": "ALL_3_JOBS_PASS",
+    "39980550790": "BOTH_JOBS_PASS"
+  },
+  "exactGitMembershipModules": 137,
+  "isolatedPreloadWithoutEntry": true,
+  "localArtifactTestsPassed": 6,
+  "localWrapperTestsPassed": 54,
+  "wrapperBashSyntaxPassed": true,
+  "maximumFileBytesUnchanged": 167772160,
+  "targetSizedByteBudgetRegressionPassed": true,
+  "fullTargetCliQualified": false,
+  "continuousRenewalQualified": false,
+  "target502Resolved": false,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

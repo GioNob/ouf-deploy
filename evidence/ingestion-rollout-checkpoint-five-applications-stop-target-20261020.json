@@ -1,0 +1,34 @@
+{
+  "schema": "ouf.ingestion-rollout-checkpoint-five-applications-stop-target.v1",
+  "evidenceOrigin": "operator supplied exact diagnostic JSON",
+  "sourceCommit": "25df4bb489bb8be5171241080b5be182b9b212fb",
+  "targetReceipt": {
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": false,
+    "readOnly": true,
+    "reasonCode": "EXACT_THREE_APPLICATIONS_REQUIRED",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.ingestion-rollout-checkpoint-reconcile.v2",
+    "status": "STOP_RECONCILE"
+  },
+  "diagnosis": "Reader selected the three-container historical input-audit subset instead of the five-application currentApplications plan. Original common() explicitly requires onboarding, mcp, udp, ingestion and gateway.",
+  "sourceControlFlowImplicationsOnly": {
+    "successfulSessionProvenanceChecksReached": true,
+    "firstHumanSnapshotValidationReached": true,
+    "humanCounterBoundsValidated": [278, 288],
+    "exactHumanCounterReturned": false,
+    "humanSnapshotRechecked": false,
+    "engineGetRequestsStarted": 0
+  },
+  "originalPlanConstructorSha256": "768c65f0c67d33d976387927c488e3f2edb7b193d82c7e2b2caaaa82de78f8d3",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "newLoginPerformed": false,
+  "budgetReset": false,
+  "completedOwnerActionReplayed": false,
+  "completedPublicationReplayed": false,
+  "databaseAdmissionProven": false,
+  "runtimeRolloutExecutorQualified": false,
+  "notReleaseAcceptance": true
+}

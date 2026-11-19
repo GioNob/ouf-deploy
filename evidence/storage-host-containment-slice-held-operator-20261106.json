@@ -1,0 +1,27 @@
+{
+  "schema": "ouf.storage-host-containment-held-operator.v1",
+  "provenance": "Giovanni pasted VPS stdout",
+  "installation": {
+    "schema": "ouf.storage-host-containment-installation.v1",
+    "status": "PINNED_TOOLS_INSTALLED_NO_STOP_OR_CAPTURE",
+    "filesInstalled": 2,
+    "exactExistingFilesReused": 0,
+    "providerRequests": 0,
+    "legacyPlanModified": false,
+    "runtimeAuthorityIssued": false,
+    "targetStopPerformed": false,
+    "targetCapturePerformed": false,
+    "acceptanceCreditAdded": 0
+  },
+  "result": {
+    "status": "HELD",
+    "reason": "SLICE_NAME_REQUIRED",
+    "partialOperationPreserved": true,
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
+  },
+  "exactTargetSliceKnown": false,
+  "retainedJournalRead": false
+}

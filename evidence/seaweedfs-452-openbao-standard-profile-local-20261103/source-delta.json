@@ -1,0 +1,107 @@
+[
+  {
+    "path": "go.mod",
+    "beforeSha256": "df02037391ef73d7ea70a03f4c00f68368adc04c480a0fe0bc4f50d0ff4e22e2",
+    "afterSha256": "0c6d42d05d7973f977225800a676f58483905a34495a1c4f01f23cd79ca15697"
+  },
+  {
+    "path": "go.sum",
+    "beforeSha256": "ec9efdd474b2ba274f3f7732ebc78de5082f9010b0dbbf85ecda3ebd48484b91",
+    "afterSha256": "b848a39085bc9c40a97bb2ac301d597853dc0151d27113e24c68079df651d40f"
+  },
+  {
+    "path": "test/kms/openbao_integration_test.go",
+    "beforeSha256": "733e272392ad2b9e922c779377fde08d3717359dc89404c2ddb05bafeb085675",
+    "afterSha256": null
+  },
+  {
+    "path": "weed/command/filer_backup.go",
+    "beforeSha256": "87dd2c3a1ef5be4258f4206d8b740c626965797bc7ed7e8706a4d4a629a3de28",
+    "afterSha256": "0cce5fc195ad4fc5f2d4e2d23f85301979f5bd2c2babe304815e7d016bd8bb36"
+  },
+  {
+    "path": "weed/command/filer_replication.go",
+    "beforeSha256": "12426a3f67e1ddb9cf0b40b6d1a18caad3afe234483e47cf1592f0ca3732d9ca",
+    "afterSha256": "f6b6d40bc122476c191fb8d1c0e890d7fe3ebbc795ced1daed242239eef4fa71"
+  },
+  {
+    "path": "weed/command/ouf_standard_profile_test.go",
+    "beforeSha256": null,
+    "afterSha256": "c74c76aa0eb00dfed8c80d6c93ecd3c83e4de29f32dfd02027921cdae0718cd0"
+  },
+  {
+    "path": "weed/command/ouf_unsupported_openbao_tags.go",
+    "beforeSha256": null,
+    "afterSha256": "4ffd9a5c1b33e1ae24d9922678ec71be139dd8188066fe233f2e5220b914e9df"
+  },
+  {
+    "path": "weed/kms/config.go",
+    "beforeSha256": "bcd71758cec5408c1c00cd89d35694280c03c331ce578e30d85c3703b02966e1",
+    "afterSha256": "23435954096bc56efd7b402302722327006cd7ef3bc69601b7771e4171be2a23"
+  },
+  {
+    "path": "weed/kms/config_loader.go",
+    "beforeSha256": "2cf053f546699c90b19a264a6d63f14cc26f8879efb5c05607fd72d0ba66c446",
+    "afterSha256": "7f08978311e5185a771757d4aeea66709681f094b61bf418a849cebde668f4d4"
+  },
+  {
+    "path": "weed/kms/openbao/openbao_kms.go",
+    "beforeSha256": "9f6a8310f690ec65e2c0b613db18ebaaa627053d241e71f2c23c5780ab4aec72",
+    "afterSha256": null
+  },
+  {
+    "path": "weed/kms/ouf_standard_profile.go",
+    "beforeSha256": null,
+    "afterSha256": "f2289da3a88e68a69ef5c4f1040770fa322f297177c68ca8aa8cb8dc7938763f"
+  },
+  {
+    "path": "weed/kms/ouf_standard_profile_test.go",
+    "beforeSha256": null,
+    "afterSha256": "96a9d38475f5f586fe41c06fb1d300a37d6649a41b6153ee2f27abbf632f320e"
+  },
+  {
+    "path": "weed/kms/registry.go",
+    "beforeSha256": "ef3d66e2c8bdcdc4c3e15253f31cba68162785645c2b614dcf71e8a140546ae6",
+    "afterSha256": "92fd405c06f8d06803e81da43e8d6d5a93764473328d7491465cc4be34ed60eb"
+  },
+  {
+    "path": "weed/replication/ouf_standard_profile_test.go",
+    "beforeSha256": null,
+    "afterSha256": "59cdc3efb06506bd0cce9a030fd64dba257a132fc67547c04663d31ffc88fb5c"
+  },
+  {
+    "path": "weed/replication/repl_util/ouf_standard_profile_test.go",
+    "beforeSha256": null,
+    "afterSha256": "272ca636701baef966e96391d79a74bd230752c8df313397406ad7842f111535"
+  },
+  {
+    "path": "weed/replication/repl_util/sse_init.go",
+    "beforeSha256": "3b8862254f3c18608050bf335cabafdfaac3459ded55e1f4b89ba664e1f765f2",
+    "afterSha256": "02d73a4a8529f16242656a3d9595df0be1a20d3442624f33221b2098e02e946c"
+  },
+  {
+    "path": "weed/replication/replicator.go",
+    "beforeSha256": "e89bc6473e33c99afd58d80f91ed080d8ef0aab6b54dd043fd174cd55f7ba302",
+    "afterSha256": "fdd19d75cb46cf1d75356434b8ecad5881ebeb33dd444b7fdf7eacdb5e43b8b0"
+  },
+  {
+    "path": "weed/s3api/auth_credentials.go",
+    "beforeSha256": "a321190894cf4fdd09de641538ba38670086f553634b9b9e7372ea325fbf9282",
+    "afterSha256": "d6f2a358a436317aee43cdab4e96f901ae969c920f802eca1aaf0c57b0833758"
+  },
+  {
+    "path": "weed/s3api/ouf_standard_kms_config.go",
+    "beforeSha256": null,
+    "afterSha256": "2632c8a5d65f6d7a44478c8fc488c861168684dffb61d50c952cdb1b596d2d49"
+  },
+  {
+    "path": "weed/s3api/ouf_standard_kms_config_test.go",
+    "beforeSha256": null,
+    "afterSha256": "024c5d94b51802984e7a463608f26efe4b8301a7ad4d44d14d9f53a5508b3e5b"
+  },
+  {
+    "path": "weed/s3api/s3api_server.go",
+    "beforeSha256": "993820ab4db955f5f5d5a583ecfa659e85f5a6e9b7a1c13ac850540b2462f535",
+    "afterSha256": "a2a677f38bbf4a5804650900d978a8468c3bde62dd524b2c9bb46aa096965a54"
+  }
+]

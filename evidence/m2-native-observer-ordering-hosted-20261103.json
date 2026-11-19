@@ -1,0 +1,37 @@
+{
+  "schema": "ouf.m2-native-observer-ordering-hosted.v1",
+  "status": "PASS_SYNTHETIC_NATIVE_LAB_NOT_RUNTIME_ADMISSION",
+  "sourceCommit": "5d0d456bec5073192b8a1a86e35bb0dcbd97a6b5",
+  "workflowRuns": [
+    {
+      "id": 41712824449,
+      "conclusion": "success",
+      "jobId": 126185036786,
+      "rawLogRetained": true
+    },
+    {
+      "id": 41712811538,
+      "conclusion": "success",
+      "rawLogRetained": false
+    }
+  ],
+  "previousFailureRunPreserved": 41709457540,
+  "nativeTestSource": {
+    "path": "tests/qualify_m2_discovery_lease_worker_native.py",
+    "sha256": "829e61adc8028db79470dbcd618699a5d724dfd4fbaf0e845718e827af821b4c"
+  },
+  "unitTestsPassed": 13,
+  "nativeFacts": [
+    "Healthy/outage four virtual hours/recovery healthy in the same process with real systemd/DNS/nft",
+    "Shared locks remain free during waits/network activity",
+    "Exhausted worker remains alive; revocation causes no new queries",
+    "Concurrent invocation denied while first worker remains active",
+    "After synchronous stop, durable attempts unchanged and no new DNS queries",
+    "Old consumed claim and sealed sources unchanged"
+  ],
+  "logSha256": "9611aa78de425645a3934d83d9a4dc0dec5267e2959ccb7276abd9d6e6c7789c",
+  "noTargetScopeOrBudgetReset": true,
+  "targetOperations": 0,
+  "runtimeAuthorityIssued": false,
+  "releaseAdmitted": false
+}

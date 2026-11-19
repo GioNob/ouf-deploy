@@ -1,0 +1,27 @@
+{
+  "artifactId": 10624493069,
+  "executableImageIncluded": false,
+  "interpretation": "Original CI artifact contains JUnit reports only. Source-tag and test success do not bind retained executable image979de5eb to its source. Do not substitute catalogue materializers or reconstruct an image and assert equality.",
+  "junitErrors": 0,
+  "junitFailures": 0,
+  "junitSuites": 2,
+  "junitTests": 4,
+  "members": [
+    "surefire-reports/TEST-it.comune.trieste.ouf.gateway.GatewaySummaryTest.xml",
+    "surefire-reports/TEST-it.comune.trieste.ouf.receipt.SummaryReceiptFilterTest.xml",
+    "surefire-reports/it.comune.trieste.ouf.gateway.GatewaySummaryTest.txt",
+    "surefire-reports/it.comune.trieste.ouf.receipt.SummaryReceiptFilterTest.txt"
+  ],
+  "releaseAcceptance": false,
+  "retainedGatewayOwnerRuntimeImageMembershipProven": false,
+  "runId": 35568294429,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-gateway-original-ci-evidence-readback.v1",
+  "sourceCommit": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+  "sourcePublisherAuthenticatedByThisReadback": false,
+  "sourceRepository": "GioNob/ouf-api-gateway",
+  "targetApplyAuthorized": false,
+  "vpsOperations": 0,
+  "zipBytes": 7620,
+  "zipSha256": "ec257aa2fda5bc4790a2e83a918e02eec6b12cc4b12b4f446f2e65f02a2d1216"
+}

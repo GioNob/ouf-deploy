@@ -1,0 +1,34 @@
+{
+  "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+  "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+  "cohortContent": "VERIFIED",
+  "durableImageCustody": "OPEN",
+  "independentReadback": {
+    "assessmentReproduced": true,
+    "publisherSignatureVerified": true,
+    "sha256": "8fade01821e5cd6f8c76fd6828ec7fd8c522072fbee5280823697475cb43582b"
+  },
+  "licenceEvidence": {
+    "deltaSha256": "7cf2b9dc596ded071c9c75f1bfeb87245f443e25984b9cddf8bf4f411791eda2",
+    "historicalCorpusSha256": "851d65dc1ac3788178978b9effc04c257475492ad6d3e5dcc04346d033288c67",
+    "legalTextsFound": 353,
+    "rawUnknownClassifications": 3,
+    "redistributionAccepted": false,
+    "review": "OPEN",
+    "thirdPartyModulesVerified": 262,
+    "unknownClassifierContextVerified": true
+  },
+  "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+  "producerArtifact": {
+    "bytes": 194296104,
+    "contentAndChecksumsVerified": true,
+    "expiresAt": "2027-02-01T10:51:39Z",
+    "retention": "TEMPORARY_CI",
+    "sha256": "bca4d0a493717812d464f9dc6c7478d918c5dd7f56cd7b5d21f0d4fbcccaeed9"
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-452-cohort-readback.v1",
+  "status": "TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
+  "targetOperations": 0
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "ouf.installation-route-reconciliation-qualification.v1",
+  "sourceCommit": "8ff69df5a19cd161ac185b2b15729e821bba2383",
+  "deliveryCommit": "92c0c78c6b5dcb4dcfd7f923df1906988c235127",
+  "launcherPath": "scripts/launch-installation-route-reconcile-20261019.sh",
+  "launcherSha256": "80dd9d9f7e5e78805a298b15fe02c0ac35d73a2f3a8501981aa7e1d03c54839f",
+  "sourceModuleCount": 226,
+  "ci": [
+    {
+      "runId": 39296553970,
+      "jobId": 118210477015,
+      "tests": 17,
+      "passed": true,
+      "breakdown": {
+        "signedScopesAndReconciliation": 7,
+        "budgetAndFrozenPredecessorGuards": 8,
+        "isolatedPreparation": 2
+      }
+    },
+    {
+      "runId": 39296750272,
+      "jobId": 118211142285,
+      "tests": 3,
+      "passed": true,
+      "kind": "authenticatedElevenFileDelivery"
+    }
+  ],
+  "limits": {
+    "priorOAuthAttempts": 255,
+    "predecessorMaximumCumulativeOAuthAttempts": 256,
+    "proposedMaximumCumulativeOAuthAttempts": 264,
+    "maximumAdditionalRequestsFromCurrentCount": 9,
+    "humanWindowExpiresAt": 1792436155,
+    "newWindowAllowed": false,
+    "minimumRemainingWindowSeconds": 1200,
+    "maximumActionSeconds": 210,
+    "maximumGatewayPuts": 2,
+    "maximumPredecessorJournalTransitions": 2,
+    "maximumOwnerPosts": 0,
+    "maximumProjectionExports": 0,
+    "maximumActiveProjectionWrites": 0
+  },
+  "changes": {
+    "humanSourceChangedInNewCapsule": true,
+    "legacyFrozenGuardBodyPinned": true,
+    "legacy256OAuthDispatchDisabledInNewCapsule": true,
+    "oldHumanJournalValuesPreserved": true,
+    "newBudgetRequiresExplicitNativeConsent": true,
+    "effectsRequireSeparateNativeConsentAndTwoRoleSignature": true,
+    "oldAuthorityExpiresAtNeverExtended": true
+  },
+  "scope": {
+    "sourceActivationAllowed": false,
+    "containerOperationsAllowed": false,
+    "databaseChangesAllowed": false,
+    "iamGrantChangesAllowed": false,
+    "publicMcpMetadataChangesAllowed": false
+  },
+  "localLimitations": "Local boot ID is a fixture only where /proc/sys/kernel/random/boot_id is absent; CI uses actual boot. Provider/terminal are fixtures, not live OAuth proof. Preparation uses fixture-only retained paths/hashes and coherent journals; original main/reader/bootstrap are boobytrapped and never run. Native reconciliation uses real signatures/journals with fake Gateway responses; current target owner/routes must still be checked at execution.",
+  "targetExecutionProven": false,
+  "newBudgetAuthorized": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

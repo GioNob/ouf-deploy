@@ -1,0 +1,154 @@
+{
+  "artifact": {
+    "allRepositorySourceHashesMatchPublishedScaffold": true,
+    "bytes": 101408,
+    "expiresAt": "2027-02-01T20:48:45Z",
+    "id": 13269487925,
+    "members": 71,
+    "path": "evidence/artifacts/postgres-native-fixture-failed-41715990786.zip",
+    "sha256": "e2d210d4c1a90eee071a772f10d2c6ca079bc122cd7603308796a38f9626fadc",
+    "verifiedManifestEntries": 70
+  },
+  "attestationCreated": false,
+  "binaryBytesRehashedLocally": false,
+  "dumpRestoreOriginVerified": false,
+  "failureCode": "POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT",
+  "fixProposedSeparately": "private empty regular password file0600 in private directory0700; retain fail-closed stderr and no inherited credentials",
+  "jobId": 126195985783,
+  "livePostgresRecoveryQualified": false,
+  "nativeBinaries": {
+    "initdb": {
+      "sha256": "d919587b9eda07667af44fdc3610e6ff17eb759e569fbe31740a0b81e8eb75fd",
+      "version": "initdb (PostgreSQL) 17.11"
+    },
+    "pg_ctl": {
+      "sha256": "1699167eb3c18b0e91746760e2518a51506348afa08fb4fbf48712353a1441b1",
+      "version": "pg_ctl (PostgreSQL) 17.11"
+    },
+    "postgres": {
+      "sha256": "4b8e7290d77836faf28e6d52f23e2f00878bb5ee35dece25967b08a471ceab3d",
+      "version": "postgres (PostgreSQL) 17.11"
+    },
+    "psql": {
+      "sha256": "d63d8c5da9371da6a52e5f3cd80ef332219db752a83917f359649c8223df9e9f",
+      "version": "psql (PostgreSQL) 17.11"
+    }
+  },
+  "nativePostgresVersion": "17.11",
+  "nativeTestOutcome": {
+    "errors": 4,
+    "failures": 3,
+    "passed": 0,
+    "skipped": 0,
+    "testsRun": 7
+  },
+  "normalShutdownSucceeded": true,
+  "offlineHarnessTestsPassed": 9,
+  "pitrQualified": false,
+  "rawCauseExample": "lab-evidence/sql-001.stderr",
+  "releaseAdmitted": false,
+  "retainedRawEvidence": {
+    "evidence/postgres-native-fixture-failed-20261103/SHA256SUMS": {
+      "bytes": 6571,
+      "sha256": "78f57b09e9e9272f019678ce31e3c89751d546af76060e78e5e27a32def591cf"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/artifacts-final.json": {
+      "bytes": 777,
+      "sha256": "3d569e8d59279e4a3dc62b78f168f23a51acc7a75fda91502783326e0604bda9"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/build-evidence/binary-sha256.txt": {
+      "bytes": 476,
+      "sha256": "8089feedbefc820b9a6b6773c4061116964e8d729a90eb27ffcd96f9745400a4"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/build-evidence/offline-contract-tests.log": {
+      "bytes": 1712,
+      "sha256": "c06134bf42c0f35838b248430ad9985a51d5031a0a3ad8e8c445f7ef6111aacf"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/build-evidence/repository-commit.txt": {
+      "bytes": 41,
+      "sha256": "b9a642ec164ef9d4bd906a24cc3bcf8319f9a9f44aa23d8938e26247ab9487dc"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/build-evidence/repository-source-sha256.txt": {
+      "bytes": 978,
+      "sha256": "f3b988daf4af9de17eb68ab37fcdd23793473baf50c9d44438f25a20b7fb7c69"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/build-evidence/source.sha256": {
+      "bytes": 91,
+      "sha256": "f9208b5775f150824186dd2597fb14e7a44d2323253904e5903c6f1be8e09d8e"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/build-evidence/toolchain.txt": {
+      "bytes": 956,
+      "sha256": "35fbfc89b8cfa282a3c400128bbd35fa0e139788af5746ac35867f481d63ab22"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/job.log": {
+      "bytes": 30789,
+      "sha256": "dcedf4c158912fd03e63e309f4493ea2fe8f2a0e64232d3f8ef68ece2fdfbb68"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/jobs-final.json": {
+      "bytes": 1754,
+      "sha256": "a4fd748278d6e811f3508f483de6ab3f58370d61008bd85ae75ab4f5706378bc"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/binary-identities.json": {
+      "bytes": 501,
+      "sha256": "50c34c2523429471e0165cf31f15facc616c8748b13c7a0904d59dc90fb191bc"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/postgres.log": {
+      "bytes": 2525,
+      "sha256": "da5b7af12e0f045f943635f157bce9dc74864cf07794e044bb2803c76e84e817"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/receipt.json": {
+      "bytes": 653,
+      "sha256": "7236b13b580e5488b17aa47ef971747583bf73f698a596b1c514244402548174"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/sql-001.stderr": {
+      "bytes": 55,
+      "sha256": "88cb46494b3249cb7cc354338357ec6718eae891e2a2bbf86715ce129869ecff"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/sql-002.stderr": {
+      "bytes": 55,
+      "sha256": "88cb46494b3249cb7cc354338357ec6718eae891e2a2bbf86715ce129869ecff"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/sql-003.stderr": {
+      "bytes": 55,
+      "sha256": "88cb46494b3249cb7cc354338357ec6718eae891e2a2bbf86715ce129869ecff"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/stop.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/stop.stdout": {
+      "bytes": 56,
+      "sha256": "ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/tests.log": {
+      "bytes": 9362,
+      "sha256": "dae240ed46a8a49b2d36a7aa97ad120aa917dcff9d1bb024854396fde0ef7d89"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/lab-evidence/writer.stderr": {
+      "bytes": 55,
+      "sha256": "88cb46494b3249cb7cc354338357ec6718eae891e2a2bbf86715ce129869ecff"
+    },
+    "evidence/postgres-native-fixture-failed-20261103/run-final.json": {
+      "bytes": 12391,
+      "sha256": "0a005d1aabd7bf3adef21954e3a9314999faecf0bc6b92db590c80df93ed7da2"
+    }
+  },
+  "rpoMeasured": false,
+  "rtoMeasured": false,
+  "runAttempt": 1,
+  "runId": 41715990786,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41715990786",
+  "runtimeAuthorityIssued": false,
+  "runtimeHealthyClaimed": false,
+  "schema": "ouf.postgres-native-fixture-hosted-negative.v1",
+  "snapshotCount": 0,
+  "sourceArchiveSha256": "dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979",
+  "sourceBuildHosted": "PASS",
+  "sourceBuildReproducedLocally": false,
+  "sourceCommit": "9ead15c56717c2e301eeb1a2bc1af38b007bfdb8",
+  "status": "HOSTED_FAILURE_PRESERVED_NOT_RECOVERY",
+  "targetOperations": 0,
+  "verifiedCause": "PGPASSFILE=/dev/null causes libpq warning: password file is not a plain file; adapter correctly rejects any stderr. Same warning retained from every administrative psql attempt.",
+  "workflow": ".github/workflows/storage-postgres-native-fixture.yml",
+  "writerFenceEnforcedByAdapter": false
+}

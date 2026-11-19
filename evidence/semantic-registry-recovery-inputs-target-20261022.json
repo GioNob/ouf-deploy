@@ -1,0 +1,92 @@
+{
+  "schema": "ouf.semantic-registry-recovery-inputs-target-evidence.v1",
+  "provenance": "OWNER_PASTED_PUBLIC_RECEIPT_NOT_INDEPENDENT_LIVE_READBACK",
+  "sourceCommit": "d97db87360a1a501fbf49420daa8fc6ef4525538",
+  "operatorLog": "/home/oufadmin/ouf-registry-recovery-inputs.xmeDnp6X/operator.log",
+  "receipt": {
+    "activationResubmitted": false,
+    "addressesPrinted": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "credentialFilesOpened": 0,
+    "currentRegistryIdentityEstablished": false,
+    "databaseCalls": 0,
+    "engineGets": 6,
+    "functionalMilestonesProven": 4,
+    "gatewayWrites": 0,
+    "guardShows": 2,
+    "historicalRegistry": {
+      "exitCode": 143,
+      "hasProcess": false,
+      "imageFamilyCandidates": [
+        {
+          "containerId": "790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d",
+          "sameHistoricalImage": true,
+          "sameHistoricalSourceLabel": false,
+          "serviceIdentityProven": false,
+          "state": "exited"
+        }
+      ],
+      "oomKilled": false,
+      "otherRegistryImagesNotExcluded": true,
+      "restartCount": 0,
+      "retainedNodeMatchesConfiguredAddress": [
+        true
+      ],
+      "running": false,
+      "sourceLabelComparisonAvailable": false,
+      "startupAuthorityIssued": false,
+      "status": "exited"
+    },
+    "historicalRegistrySubstituted": false,
+    "inventoryContainerCount": 132,
+    "liveGatewayRouteMapRead": false,
+    "loadedGuard": {
+      "ActiveState": "active",
+      "Result": "success",
+      "SubState": "exited"
+    },
+    "maximumEngineGets": 6,
+    "maximumGuardShows": 2,
+    "oauthRequests": 0,
+    "rawInventoryPrinted": false,
+    "readOnly": true,
+    "releaseAcceptance": false,
+    "retainedSemanticNodeComparisons": [
+      {
+        "candidates": [],
+        "literalAddress": true,
+        "noCandidateDoesNotProveUnreachable": true,
+        "nodeOrdinal": 0
+      }
+    ],
+    "rootCauseEstablished": false,
+    "runtimeEffectsDispatched": 0,
+    "schema": "ouf.semantic-registry-recovery-inputs-result.v1",
+    "semanticBoot": {
+      "journalObservationIsRuntimeAuthority": false,
+      "journals": {
+        "bootGuard": {
+          "leaseAuthorizedObserved": null,
+          "startAuthorizedObserved": false,
+          "state": "RUNTIME_EMPTY"
+        },
+        "coordinatedOwner": {
+          "leaseAddressCounts": [
+            0,
+            0
+          ],
+          "leaseAuthorizedObserved": false,
+          "startAuthorizedObserved": false,
+          "state": "BLOCKED"
+        }
+      },
+      "providerRegistryAssociationEstablished": false
+    },
+    "serviceReadinessEstablished": false,
+    "status": "REGISTRY_RECOVERY_INPUTS_OBSERVED"
+  },
+  "interpretation": "Retained node matches historical Registry explicit IPAM declaration; no current endpoint candidate. Only same-image candidate is exact stopped historical container; absent OCI source label limits image-family coverage. Provider states remain observations,not a Registry causal association or authority."
+}

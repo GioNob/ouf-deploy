@@ -1,0 +1,53 @@
+{
+  "applicationBindingsChanged": false,
+  "applicationDatabaseTouched": false,
+  "bucket": "ouf-udp",
+  "clientNetwork": "ouf-seaweedfs-private",
+  "credentialValuesEmitted": false,
+  "diagnosticObjectKey": "diagnostics/seaweedfs-client/3d9691ec-db79-4567-8c25-ed1695dea208",
+  "diagnosticObjectMayExist": true,
+  "endpoint": "https://ouf-seaweedfs-stage:9002",
+  "finishedAt": "2026-11-07T17:39:37.058690+00:00",
+  "installedSdkVersion": "2.54.17",
+  "javaPreflight": {
+    "adapterClassSha256": "5a6bd871ce01e2235ab98f74e6307016ebec9996e62e42fccc11ca951eaa7bf8",
+    "configurationClassSha256": "5036160bbd46809ee87adb285e489547fc0a713e97a85327d6097be59b1530e6",
+    "exitCode": 0,
+    "javaVersion": "21.0.12.1",
+    "sdkVersion": "2.54.17",
+    "status": "JAVA_CLIENT_READY"
+  },
+  "javaTransfer": {
+    "bodyBytes": 33,
+    "bodyMatches": true,
+    "bodySha256": "ec54d13fec98713f96235e0fd7adbc5dfd3437270bc0d66a39a473074a01145a",
+    "exitCode": 0,
+    "metadataMatches": true,
+    "putAcknowledged": true,
+    "status": "PUT_HEAD_GET_MATCH"
+  },
+  "originalApplicationStillRunningUnchangedImage": true,
+  "payloadBytes": 33,
+  "payloadSha256": "ec54d13fec98713f96235e0fd7adbc5dfd3437270bc0d66a39a473074a01145a",
+  "phase": "COMPLETE",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/udp-client-probe-bbi8ny8f",
+  "sameInstalledFactoryAndAdapter": true,
+  "schema": "ouf.udp-installed-seaweedfs-client-probe.v1",
+  "sourceApplicationJsonStorage": {
+    "meaning": "DECLARED_JSON_PROPERTIES_NOT_COMPLETE_EFFECTIVE_SPRING_CONFIGURATION",
+    "present": true,
+    "storageDeclarations": []
+  },
+  "sourceNetwork": [
+    "ouf-backend"
+  ],
+  "sourceS3Requests": 0,
+  "springStarted": false,
+  "startedAt": "2026-11-07T17:39:29.495867+00:00",
+  "status": "UDP_INSTALLED_CLIENT_PUT_HEAD_GET_MATCH",
+  "temporaryContainerName": "ouf-udp-s3-probe-11ca4bf0cfaf",
+  "temporaryContainerRemoved": true,
+  "temporaryContainerStarted": true,
+  "temporaryCredentialCopyRemoved": true,
+  "udpImage": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52"
+}

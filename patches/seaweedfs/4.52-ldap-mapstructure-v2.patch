@@ -1,0 +1,160 @@
+diff --git a/weed/iam/ldap/ldap_provider.go b/weed/iam/ldap/ldap_provider.go
+--- a/weed/iam/ldap/ldap_provider.go
++++ b/weed/iam/ldap/ldap_provider.go
+@@ -11,7 +11,7 @@
+ 	"time"
+ 
+ 	"github.com/go-ldap/ldap/v3"
+-	"github.com/mitchellh/mapstructure"
++	"github.com/go-viper/mapstructure/v2"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/iam/providers"
+ )
+diff --git a/weed/iam/ldap/ldap_provider_config_test.go b/weed/iam/ldap/ldap_provider_config_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/iam/ldap/ldap_provider_config_test.go
+@@ -0,0 +1,143 @@
++package ldap
++
++import (
++	"encoding/json"
++	"reflect"
++	"strings"
++	"testing"
++	"time"
++)
++
++// These exercise the real Initialize boundary, including JSON tags, weak
++// conversions, the duration hook, validation, defaults, and pool construction.
++// Initialize must not connect to LDAP; no credentials or network are required.
++func TestLDAPConfigurationDecodeCompatibility(t *testing.T) {
++	defaults := LDAPConfig{
++		Server: "ldaps://ldap.example.invalid", BaseDN: "dc=example,dc=invalid",
++		UserFilter: "(cn=%s)", GroupBaseDN: "dc=example,dc=invalid",
++		Attributes:        LDAPAttributes{Email: "mail", DisplayName: "cn", Groups: "memberOf", UID: "uid"},
++		ConnectionTimeout: 10 * time.Second,
++	}
++	tests := []struct {
++		name string
++		json string
++		want func(*LDAPConfig)
++		pool int
++	}{
++		{name: "minimal_defaults", json: `{}`, pool: 10},
++		{name: "complete_json_fields", json: `{
++			"server":"ldap://other.example.invalid:1389", "bindDN":"cn=reader,dc=example,dc=invalid",
++			"bindPassword":"synthetic-fixture", "baseDN":"ou=people,dc=example,dc=invalid",
++			"userFilter":"(uid=%s)", "groupFilter":"(member=%s)",
++			"groupBaseDN":"ou=groups,dc=example,dc=invalid",
++			"attributes":{"email":"emailAddress","displayName":"fullName","groups":"roles","uid":"subject"},
++			"useTLS":true, "insecureSkipVerify":false, "connectionTimeout":"1250ms",
++			"poolSize":3, "audience":"ouf-fixture"}`, pool: 3,
++			want: func(c *LDAPConfig) {
++				c.Server = "ldap://other.example.invalid:1389"
++				c.BindDN, c.BindPassword = "cn=reader,dc=example,dc=invalid", "synthetic-fixture"
++				c.BaseDN, c.GroupBaseDN = "ou=people,dc=example,dc=invalid", "ou=groups,dc=example,dc=invalid"
++				c.UserFilter, c.GroupFilter = "(uid=%s)", "(member=%s)"
++				c.Attributes = LDAPAttributes{Email: "emailAddress", DisplayName: "fullName", Groups: "roles", UID: "subject"}
++				c.UseTLS, c.ConnectionTimeout, c.PoolSize, c.Audience = true, 1250*time.Millisecond, 3, "ouf-fixture"
++			}},
++		{name: "weak_strings", json: `{"useTLS":"TRUE","poolSize":"4","connectionTimeout":"1m30s","audience":42}`, pool: 4,
++			want: func(c *LDAPConfig) {
++				c.UseTLS, c.PoolSize, c.ConnectionTimeout, c.Audience = true, 4, 90*time.Second, "42"
++			}},
++		{name: "weak_numeric_bool_and_duration", json: `{"useTLS":1,"poolSize":2.9,"connectionTimeout":1250000000}`, pool: 2,
++			want: func(c *LDAPConfig) { c.UseTLS, c.PoolSize, c.ConnectionTimeout = true, 2, 1250*time.Millisecond }},
++		{name: "weak_bool_pool", json: `{"useTLS":"0","poolSize":true}`, pool: 1,
++			want: func(c *LDAPConfig) { c.PoolSize = 1 }},
++		{name: "partial_attributes_and_unknown_keys", json: `{"attributes":{"email":"emailAddress","unknownNested":[1,2]},"unknownRoot":{"x":true}}`, pool: 10,
++			want: func(c *LDAPConfig) { c.Attributes.Email = "emailAddress" }},
++		{name: "case_insensitive_json_tag", json: `{"CONNECTIONTIMEOUT":"2s","POOLSIZE":"2","ATTRIBUTES":{"DISPLAYNAME":"display"}}`, pool: 2,
++			want: func(c *LDAPConfig) {
++				c.ConnectionTimeout, c.PoolSize, c.Attributes.DisplayName = 2*time.Second, 2, "display"
++			}},
++		{name: "null_values_keep_defaults", json: `{"attributes":null,"connectionTimeout":null,"poolSize":null,"useTLS":null}`, pool: 10},
++		{name: "zero_duration_and_pool_default", json: `{"connectionTimeout":"0s","poolSize":0}`, pool: 10},
++		{name: "negative_pool_uses_default", json: `{"poolSize":-2}`, pool: 10,
++			want: func(c *LDAPConfig) { c.PoolSize = -2 }},
++	}
++	for _, tt := range tests {
++		t.Run(tt.name, func(t *testing.T) {
++			input := map[string]interface{}{"server": defaults.Server, "baseDN": defaults.BaseDN}
++			if err := json.Unmarshal([]byte(tt.json), &input); err != nil {
++				t.Fatal(err)
++			}
++			want := defaults
++			if tt.want != nil {
++				tt.want(&want)
++			}
++			p := NewLDAPProvider("config-fixture")
++			t.Cleanup(func() {
++				if err := p.Close(); err != nil {
++					t.Error(err)
++				}
++			})
++			if err := p.Initialize(input); err != nil {
++				t.Fatal(err)
++			}
++			if !p.IsInitialized() || !reflect.DeepEqual(*p.config, want) {
++				t.Fatalf("configuration mismatch: got %#v, want %#v", p.config, want)
++			}
++			if p.pool == nil || p.pool.size != tt.pool || cap(p.pool.conns) != tt.pool || len(p.pool.conns) != 0 {
++				t.Fatalf("unexpected pool: %#v", p.pool)
++			}
++		})
++	}
++}
++
++func TestLDAPConfigurationRejectsInvalidInputWithoutInitializing(t *testing.T) {
++	tests := []struct {
++		name      string
++		input     interface{}
++		errorPart string
++	}{
++		{"missing_server", map[string]interface{}{"baseDN": "dc=example"}, "LDAP server URL is required"},
++		{"missing_base_dn", map[string]interface{}{"server": "ldap://example.invalid"}, "LDAP base DN is required"},
++		{"invalid_duration", map[string]interface{}{"connectionTimeout": "later"}, "connectionTimeout"},
++		{"unitless_duration", map[string]interface{}{"connectionTimeout": "30"}, "connectionTimeout"},
++		{"invalid_boolean", map[string]interface{}{"useTLS": "perhaps"}, "useTLS"},
++		{"invalid_pool", map[string]interface{}{"poolSize": "many"}, "poolSize"},
++		{"invalid_attributes", map[string]interface{}{"attributes": "not-an-object"}, "attributes"},
++		{"invalid_root", 42, "failed to decode LDAP configuration:"},
++	}
++	for _, tt := range tests {
++		t.Run(tt.name, func(t *testing.T) {
++			p := NewLDAPProvider("invalid-config-fixture")
++			err := p.Initialize(tt.input)
++			if err == nil || !strings.Contains(err.Error(), tt.errorPart) {
++				t.Fatalf("expected error containing %q, got %v", tt.errorPart, err)
++			}
++			t.Logf("decoder diagnostic: %v", err)
++			if p.IsInitialized() || p.pool != nil || p.config != nil {
++				t.Fatal("invalid configuration initialized provider state")
++			}
++		})
++	}
++}
++
++func TestLDAPConfigurationStructFastPathAndRepeatedInitialization(t *testing.T) {
++	cfg := &LDAPConfig{Server: "ldaps://ldap.example.invalid", BaseDN: "dc=example,dc=invalid", ConnectionTimeout: 3 * time.Second, PoolSize: 2}
++	p := NewLDAPProvider("struct-config-fixture")
++	t.Cleanup(func() {
++		if err := p.Close(); err != nil {
++			t.Error(err)
++		}
++	})
++	if err := p.Initialize(cfg); err != nil {
++		t.Fatal(err)
++	}
++	if p.config != cfg || cfg.ConnectionTimeout != 3*time.Second || cfg.UserFilter != "(cn=%s)" || cfg.Attributes.Email != "mail" {
++		t.Fatal("typed configuration/default semantics changed")
++	}
++	prior := *p.config
++	if err := p.Initialize(map[string]interface{}{}); err == nil || err.Error() != "LDAP provider already initialized" {
++		t.Fatalf("unexpected repeated initialization: %v", err)
++	}
++	if !reflect.DeepEqual(*p.config, prior) || p.pool.size != 2 {
++		t.Fatal("repeated initialization changed provider state")
++	}
++}

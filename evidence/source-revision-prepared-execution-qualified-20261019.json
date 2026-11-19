@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.prepared-source-revision-execution-delivery-qualification.v1",
+  "deliverySourceCommit": "120fb243c81b9a5fc78691163194911da8093aec",
+  "deliverySha256": "47129694ccaf82bae744859eba4997e3493c5f8c15d54aa476670b63c8f96b5a",
+  "launcherSourceCommit": "3817461d96f0bc9b889e981685c7237b271e5f39",
+  "launcherSha256": "250262e977b56362e44716e1d74bf05d37b57313b1f638e25d955d0d70842989",
+  "runId": 39190694557,
+  "jobId": 117862601203,
+  "testsPassed": 7,
+  "nativeExecutorUnchanged": true,
+  "preparedContext": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-gezxi85l",
+  "expectedPrivatePreparationResultSha256": "a9ecda1c812236605a91415d776d4a69c5487087d2e47dda1642847845d6535e",
+  "privateResultHashIndependentlyRead": false,
+  "targetExecutorInvoked": false,
+  "runtimeAuthorityIssued": false,
+  "deploymentPerformed": false,
+  "technicalPhases": 8,
+  "functionalMilestones": 4
+}

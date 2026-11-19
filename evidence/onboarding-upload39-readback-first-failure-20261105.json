@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.upload39-readback-format-failure.v1",
+  "producer": "cc5838bb976e3f4c70f79f0525ab7078c418f17f",
+  "runId": 41990824330,
+  "jobId": 127122377282,
+  "conclusion": "failure",
+  "failedCheck": "cmp canonical JSON receipt",
+  "nativeArtifactChecksPassed": true,
+  "jsonValuesEqual": true,
+  "onlyCrLfDifference": true,
+  "localCrLfCount": 35,
+  "hostedCrLfCount": 0,
+  "originalLocalSha256": "c248cbd75611d1df555e80e49be595921f10a9d5cbbdb25e84d3af48fd708264",
+  "hostedSha256": "7ba81781bff89a82443ea157a991a654699f76df504ca93b6017c9bcebeb5c7b",
+  "artifactId": 13398660259,
+  "artifactBytes": 58058,
+  "artifactSha256": "a0cc5c589084e2196dfab875114cb03b9731382b3a880423ff243fcf787be7af",
+  "fix": "Explicit UTF-8 LF when generating receipt on every OS; checksum/source/scenario checks unchanged.",
+  "targetOperations": 0
+}

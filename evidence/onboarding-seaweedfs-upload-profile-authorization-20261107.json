@@ -1,0 +1,260 @@
+{
+  "schema": "ouf.onboarding-seaweedfs-upload-profile-authorization.v1",
+  "recordedAt": "2026-11-07T17:04:21Z",
+  "status": "UPLOAD_STAGED_PROFILE_DENIED_POLICY_PROPOSAL_PENDING",
+  "evidenceOrigins": {
+    "uploadStatus": "LIVE_MCP_RESPONSE",
+    "profileAttempt": "LIVE_MCP_RESPONSE",
+    "configuredPolicy": "LIVE_MCP_PAGINATED_READ",
+    "storageBinding": "OPERATOR_RECEIPT_ONBOARDING_SEAWEEDFS_READY",
+    "constraintDiagnosis": "PINNED_SOURCE_AND_ORIGINAL_JAVA_EVALUATOR"
+  },
+  "upload": {
+    "handoffId": "2de7b988-da47-4231-8443-0e5043214c42",
+    "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+    "status": "STAGED",
+    "filenameExposed": false,
+    "contentHashExposed": false
+  },
+  "profileAttempt": {
+    "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+    "code": "authorization denied",
+    "retryable": false,
+    "structuredErrorCode": "INVALID_ARGUMENT",
+    "jobReceiptReturned": false,
+    "preciseLiveDecisionCodeExposed": false,
+    "governedObjectReadProven": false
+  },
+  "configuredPolicy": {
+    "policyRef": "ouf-lab-authorization:60",
+    "policyHash": "sha256:5cbd3c982112179be3a0b4aaeaeeed9a27e1419be57bbaf9976e022f2b34e8dc",
+    "roles": 9,
+    "assignments": 13,
+    "permissions": 66,
+    "subjectGrants": 138,
+    "pages": 2,
+    "managedSourceGrants": 17,
+    "immediatelyRereadBeforeProposal": true,
+    "catalogueUnchangedAtReread": true
+  },
+  "diagnosis": {
+    "profileAndCreate": "The permanent admin grants require dataAccessLabel and detailLevel, absent from the generic capability request context. The temporary covering assignment has expired.",
+    "newJobPreview": "The MCP assetId/jobId read context is managed-profile-job with module ONBOARDING and detailLevel TENANT_OPERATIONAL, without dataAccessLabel. The permanent grant requires labels; other job grants are expired or scoped to a different historic job.",
+    "existingProfilePreview": "The active owned-managed-file-preview-v1 capability grant continues to cover assetId/profileId reads.",
+    "localCurrentDecision": "NO_APPLICABLE_GRANT",
+    "localDecisionIsNotLiveTelemetry": true,
+    "additionalRuntimeFailuresNotExcluded": true
+  },
+  "proposedChanges": [
+    {
+      "roleId": "admin",
+      "capabilityId": "ouf.managed-source.file.profile",
+      "before": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": null,
+        "resourceId": null,
+        "resourceAttributes": {},
+        "allowedDataLabels": [
+          "ANONYMOUS",
+          "OPEN",
+          "PERSONAL",
+          "RESTRICTED",
+          "SENSITIVE"
+        ],
+        "allowedDetailLevels": [
+          "PUBLIC_OPERATIONAL",
+          "RESTRICTED_OPERATIONAL",
+          "SECURITY_SENSITIVE",
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      },
+      "after": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": "capability",
+        "resourceId": null,
+        "resourceAttributes": {},
+        "allowedDataLabels": [],
+        "allowedDetailLevels": [],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    },
+    {
+      "roleId": "admin",
+      "capabilityId": "ouf.managed-source.onboarding.create",
+      "before": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": null,
+        "resourceId": null,
+        "resourceAttributes": {},
+        "allowedDataLabels": [
+          "ANONYMOUS",
+          "OPEN",
+          "PERSONAL",
+          "RESTRICTED",
+          "SENSITIVE"
+        ],
+        "allowedDetailLevels": [
+          "PUBLIC_OPERATIONAL",
+          "RESTRICTED_OPERATIONAL",
+          "SECURITY_SENSITIVE",
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      },
+      "after": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": "capability",
+        "resourceId": null,
+        "resourceAttributes": {},
+        "allowedDataLabels": [],
+        "allowedDetailLevels": [],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    },
+    {
+      "roleId": "admin",
+      "capabilityId": "ouf.managed-source.preview",
+      "before": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": null,
+        "resourceId": null,
+        "resourceAttributes": {},
+        "allowedDataLabels": [
+          "ANONYMOUS",
+          "OPEN",
+          "PERSONAL",
+          "RESTRICTED",
+          "SENSITIVE"
+        ],
+        "allowedDetailLevels": [
+          "PUBLIC_OPERATIONAL",
+          "RESTRICTED_OPERATIONAL",
+          "SECURITY_SENSITIVE",
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      },
+      "after": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": "managed-profile-job",
+        "resourceId": null,
+        "resourceAttributes": {
+          "module": "ONBOARDING"
+        },
+        "allowedDataLabels": [],
+        "allowedDetailLevels": [
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    }
+  ],
+  "unchangedPermissions": 63,
+  "unchangedAssignments": 13,
+  "unchangedRoles": 9,
+  "proposal": {
+    "proposalId": "66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-11-07T17:15:22.299924Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa",
+    "finalPolicyRef": null
+  },
+  "validation": {
+    "originalEvaluator": "GioNob/ouf-source-onboarding@73498c17596ae155a3ed9ab36acfd6bb69da9846 AuthorizationPolicy.java",
+    "fixture": "tests/ManagedProfilePolicyCheck.java",
+    "fixtureSha256": "64deb3d1b978b87f8ef2ed949de51d648118244d67a5e22179415fec23a93efa",
+    "checks": 16,
+    "result": "PASS",
+    "syntheticPrincipal": true,
+    "liveTokenTested": false,
+    "runtimeGoEvaluatorExecuted": false,
+    "cases": [
+      "current-profile denied",
+      "proposed-profile allowed",
+      "current-new-job-read denied",
+      "proposed-new-job-read allowed",
+      "existing-profile-preview preserved",
+      "published-upload preserved",
+      "current-create denied",
+      "proposed-create allowed",
+      "missing-scope denied",
+      "other-subject denied",
+      "other-tenant denied",
+      "service-actor denied",
+      "other-module denied",
+      "security-detail denied",
+      "explicit-deny preserved",
+      "sensitive-profile-resource denied"
+    ]
+  },
+  "ownerChecks": {
+    "source": "ManagedFileMcpApi and ManagedFileService at Onboarding 73498c17596ae155a3ed9ab36acfd6bb69da9846",
+    "profile": "requireOwner before profile request",
+    "jobPreview": "requireOwner and requireTenantOwner",
+    "create": "onboardIdempotent requires owner and tenant before insertion",
+    "changed": false,
+    "otherUserLiveIntegrationTested": false
+  },
+  "sourceReferences": [
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "basis": "Retained installed image source identification"
+    },
+    {
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+      "paths": [
+        "internal/kernel/kernel.go",
+        "internal/kernel/managed_profile_authorization.go",
+        "internal/authorization/cache.go",
+        "internal/authorization/constraints.go"
+      ],
+      "basis": "Retained source lock; current live binary membership not freshly proven"
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "commit": "bf179e96200deb84942ad32507edef52a4284cd0",
+      "basis": "Selected main tree; not asserted to equal installed runtime",
+      "paths": [
+        "tools/lua/execute_managed_file.lua",
+        "tools/authorization_boundary.py"
+      ]
+    }
+  ],
+  "limitations": [
+    "No successful profile, governed GET, UDP migration or E2E yet",
+    "No live request token scope audit or precise denial decision receipt",
+    "Historic second Teatri upload is not reconciled; ASSETS preview form was rejected by current MCP",
+    "The upload receipt does not expose filename or checksum",
+    "Policy proposal is pending, not published"
+  ],
+  "nextAction": "Human confirms the exact proposal in THS before expiry; read proposal outcome and resulting policy; resume profile for the same c51745c5-1fc0-4d36-bdcf-1e9a8a049c94 asset, then read job with assetId+jobId and profile with assetId+profileId. Do not upload again.",
+  "effects": {
+    "policyPublishedByAgent": false,
+    "applicationCodeChanged": false,
+    "applicationBindingsChanged": false,
+    "directDatabaseQueries": 0,
+    "additionalUploadRequested": false
+  }
+}

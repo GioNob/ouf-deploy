@@ -1,0 +1,9 @@
+{
+  "stage": "PRE_VENDOR_READ_ONLY_BUDGET",
+  "rootModuleCount": 781,
+  "cachedModuleDirectories": 500,
+  "cachedModuleDirectoryBytes": 1681172911,
+  "freeBytes": 2143805440,
+  "fullVendorBytes": null,
+  "note": "Sum of cached selected module trees is a conservative estimate, not go mod vendor output. No full vendor/build performed."
+}

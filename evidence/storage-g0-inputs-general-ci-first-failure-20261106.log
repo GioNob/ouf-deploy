@@ -1,0 +1,33 @@
+2026-11-06T09:28:32.3874124Z CI_JOINT_SEALED_FINAL_STATE={"attempts": 1, "publicationCount": 2, "reason": "RENEWED", "reentryCount": 1, "state": "ACTIVE"}
+2026-11-06T09:28:34.1594183Z Traceback (most recent call last):
+2026-11-06T09:28:34.1595362Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tests/qualify_m2_provider_docker_worker_native.py", line 317, in <module>
+2026-11-06T09:28:34.1596862Z     main(sealed_worker=bool(sys.argv[1:]),registry_node='--registry-worker' in sys.argv[1:],
+2026-11-06T09:28:34.1598110Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tests/qualify_m2_provider_docker_worker_native.py", line 284, in main
+2026-11-06T09:28:34.1602261Z     print(json.dumps(qualify(phase,auth,worker_setup,boundary,run,registry_node=node,
+2026-11-06T09:28:34.1603041Z                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-06T09:28:34.1604171Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tests/fixtures/m2_admitted_provider_sealed_worker_native.py", line 196, in qualify
+2026-11-06T09:28:34.1605303Z     result,proof=phase.observe(intent)
+2026-11-06T09:28:34.1605950Z                  ^^^^^^^^^^^^^^^^^^^^^
+2026-11-06T09:28:34.1607040Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tools/m2_discovery_installation_profile/lease_installation_phase.py", line 177, in observe
+2026-11-06T09:28:34.1608521Z     require(self.issuer.observe(intent)[0]=='APPLIED' and self.registration.observe(intent)[0]=='APPLIED',
+2026-11-06T09:28:34.1609302Z             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-06T09:28:34.1610358Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tools/m2_discovery_installation_profile/lease_attestation.py", line 162, in observe
+2026-11-06T09:28:34.1611722Z     provider=self.current(intent);c=self.installation.material['proposal']['configuration']
+2026-11-06T09:28:34.1612412Z              ^^^^^^^^^^^^^^^^^^^^
+2026-11-06T09:28:34.1613372Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tools/m2_discovery_installation_profile/lease_attestation.py", line 112, in current
+2026-11-06T09:28:34.1614461Z     provider=self.provider.current(copy.deepcopy(snapshot))
+2026-11-06T09:28:34.1614957Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-06T09:28:34.1616228Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tools/m2_discovery_installation_profile/provider_materialized_admission.py", line 54, in current
+2026-11-06T09:28:34.1617586Z     material=self.publication.material();root=Path(material['root']);cid=self.creation.owned_id()
+2026-11-06T09:28:34.1618245Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-06T09:28:34.1619284Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tools/m2_discovery_installation_profile/provider_profile_publication.py", line 27, in material
+2026-11-06T09:28:34.1621122Z     require(self.issuer.observe()[0]=='APPLIED','COMPLETE_THREE_PROVIDER_MANDATES_REQUIRED_BEFORE_PUBLICATION')
+2026-11-06T09:28:34.1621861Z             ^^^^^^^^^^^^^^^^^^^^^
+2026-11-06T09:28:34.1622754Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tools/m2_discovery_installation_profile/provider_profiles.py", line 342, in observe
+2026-11-06T09:28:34.1623785Z     window(material['payloads'][name],self.parent.clock())
+2026-11-06T09:28:34.1624978Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_protocol.py", line 51, in window
+2026-11-06T09:28:34.1626629Z     require(type(value['issuedAt']) is int and type(value['expiresAt']) is int
+2026-11-06T09:28:34.1628163Z   File "/var/lib/ouf-native-docker-provider-42194962745/repository/tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_protocol.py", line 20, in require
+2026-11-06T09:28:34.1629310Z     raise PreexecDenied(reason)
+2026-11-06T09:28:34.1629914Z tools.semantic_provider_preexec.PreexecDenied: PROTOCOL_AUTHORITY_EXPIRED_OR_NOT_YET_VALID
+2026-11-06T09:28:34.1932537Z ##[error]Process completed with exit code 1.

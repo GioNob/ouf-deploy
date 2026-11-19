@@ -1,0 +1,43 @@
+name: Operational ingestion receipt qualification
+on:
+  push:
+    branches: [sprint-01/task-09-ingestion-route-receipt]
+    paths:
+      - scripts/apply-operational-ingestion-receipt-20261112.py
+      - tests/test_operational_ingestion_receipt_20261112.py
+      - tests/qualify_operational_ingestion_receipt_native_20261112.py
+      - .github/workflows/operational-ingestion-receipt-20261112.yml
+      - docs/OUF_OPERATIONAL_INGESTION_RECEIPT_20261112.md
+  pull_request:
+    paths:
+      - scripts/apply-operational-ingestion-receipt-20261112.py
+      - tests/test_operational_ingestion_receipt_20261112.py
+      - tests/qualify_operational_ingestion_receipt_native_20261112.py
+      - .github/workflows/operational-ingestion-receipt-20261112.yml
+      - docs/OUF_OPERATIONAL_INGESTION_RECEIPT_20261112.md
+permissions: {contents: read}
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Checkout pinned gateway for actual materializer equivalence
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: 8383cfe7946199badc5fcbb1bb3ac25160567541
+          path: .gateway-reference
+          persist-credentials: false
+      - name: Root Linux unit tests, secure applied plan and gateway equivalence without skips
+        run: |
+          test "$(git -C .gateway-reference rev-parse HEAD)" = 8383cfe7946199badc5fcbb1bb3ac25160567541
+          sudo env OUF_OPERATIONAL_GATEWAY_SOURCE="$GITHUB_WORKSPACE/.gateway-reference" "$(command -v python3)" -I -B -c '
+          import unittest
+          suite = unittest.defaultTestLoader.discover("tests", pattern="test_operational_ingestion_receipt_20261112.py")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(0 if result.wasSuccessful() and not result.skipped else 1)
+          '
+      - name: Actual APISIX and etcd, CLI plan, two PUTs and complete readback
+        run: sudo "$(command -v python3)" -I -B tests/qualify_operational_ingestion_receipt_native_20261112.py -v

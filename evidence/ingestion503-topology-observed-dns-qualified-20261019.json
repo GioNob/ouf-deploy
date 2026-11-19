@@ -1,0 +1,56 @@
+{
+  "schema": "ouf.ingestion503-topology-observed-dns-qualified.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "observedTarget": {
+    "schema": "ouf.mcp-ingestion503-topology-read.v1",
+    "contextPath": "/etc/ouf/deploy-snapshots/mcp-ingestion-read-transport-execution-srz6__wf",
+    "packageHash": "d5e2be3a877c33c082d52fb0180a7a4a8cc10c9f4385c4064713417b366c4d38",
+    "complete": true,
+    "currentContainerGenerationsVerified": true,
+    "engineGetRequests": 6,
+    "ownerTcpTablesRead": 2,
+    "retainedRouteCount": 82,
+    "retainedRouteMapHash": "d5a4040e30e289c150f9d2862ff41e83e22809a9e2202ac19388e744f2c5e927",
+    "bothCapabilities": {
+      "upstreamPort": 8080,
+      "listenerAddressClasses": [
+        "WILDCARD"
+      ],
+      "sharedNetworkCount": 1,
+      "ownerAliasOnSharedNetwork": false,
+      "literalOwnerAddressOnSharedNetwork": false,
+      "extraHostMapsToRetainedOwner": false,
+      "gatewayDelegationKeyEnvPresent": true,
+      "gatewayDelegationKeyHasExpectedShape": true
+    },
+    "dnsResolutionProven": false,
+    "specific503CauseProven": false,
+    "lastReportedOAuthAttempts": 236,
+    "currentHumanStateRequeried": false
+  },
+  "nextDiagnostic": {
+    "sourceCommit": "51c0db6a41fb7c14031b3dc7eae6eebdf47a37fe",
+    "readerSha256": "2e45b0afecccf4015264b1a4ba40e4e781c1969969a580ffbed35639e0c9cdd1",
+    "runId": 39259932560,
+    "jobId": 118084620771,
+    "passed": 13,
+    "deliveryCommit": "ee6d3ed3fdfa6def0d26a33b0df4417b840ae6d4",
+    "deliveryRunId": 39260068487,
+    "deliveryJobId": 118085084565,
+    "deliveryPassed": 3,
+    "launcherSha256": "e4ae7c488a76575a16c783ad9171510788c6cda443cab72ec017d71df85fa031",
+    "maximumDnsQueries": 2,
+    "dnsRetries": 0,
+    "maximumEngineGetRequests": 6,
+    "namespaceRestorationRequired": true,
+    "backendProbes": 0,
+    "executedByCloud": false
+  },
+  "runtimeAuthorityIssuedByCloud": false,
+  "completedActionsReplayed": false,
+  "sourceActivated": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "notReleaseAcceptance": true
+}

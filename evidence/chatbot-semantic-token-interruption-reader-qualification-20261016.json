@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.semantic-token-interruption-readback-qualification.v1",
+  "sourceCommit": "89521f6d8a69ca3a62caab888ac74cce0b0f838b",
+  "deliveryCommit": "32605941a0295bb870878be1f4719273a8d08370",
+  "launcherSha256": "c6176140271e392052e81268138df416e0bb1b0532a8371f197f6e586560d924",
+  "nativeRunId": 38908406629,
+  "nativeJobId": 116997739972,
+  "nativeTests": 11,
+  "nativeResult": "PASS",
+  "realProcessScanRequiredAndPassed": true,
+  "credentialsOpenedByReader": false,
+  "humanStateOpenedByReader": false,
+  "serviceCallsByReader": 0,
+  "targetReadbackObserved": false,
+  "operatorOutputOnly": "BEGIN_AND_CTRL_C_NO_STOP",
+  "automaticRestartAllowed": false,
+  "reconciliationPerformed": false,
+  "budgetReset": false,
+  "acceptanceGranted": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0
+}

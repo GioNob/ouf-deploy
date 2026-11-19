@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.native-cohort-ci-timeout-followup.v1",
+  "sourceCommit": "70cd2671b41b0f775889826b2617811451a5e2ba",
+  "historicalReceipt": "evidence/native-cohort-ci-timeout-20261103.json",
+  "runId": 41687982881,
+  "jobId": 126098716043,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687982881",
+  "conclusion": "success",
+  "startedAt": "2026-11-03T17:49:47Z",
+  "completedAt": "2026-11-03T18:04:54Z",
+  "durationSeconds": 907,
+  "jobTimeoutMinutes": 30,
+  "successfulSteps": 28,
+  "nonSuccessfulSteps": [],
+  "interpretation": "The complete unchanged assertion set passed with the finite 30-minute ceiling. This run completed below 20 minutes; it does not prove that every run needs more than 20 minutes. The earlier cancellation remains preserved.",
+  "targetOperations": 0,
+  "runtimeAuthorityIssued": false,
+  "releaseAdmitted": false
+}

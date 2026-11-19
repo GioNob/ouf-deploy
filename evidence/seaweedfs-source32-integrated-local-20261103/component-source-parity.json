@@ -1,0 +1,182 @@
+[
+  {
+    "component": "color-yaml31-stage",
+    "path": "weed/replication/sink/filersink/chunk_progress.go",
+    "sha256": "ba52420e0d27fd7b025178c572894fa3da4a1f2585592f75886a6f4f778b96cd"
+  },
+  {
+    "component": "color-yaml31-stage",
+    "path": "weed/replication/sink/filersink/chunk_progress_test.go",
+    "sha256": "223b4b1e7f6e99fcbc1b90be6a24c70b61a07433b80fcd85d9cc345aa40c193c"
+  },
+  {
+    "component": "color-yaml31-stage",
+    "path": "weed/replication/sink/filersink/fetch_write.go",
+    "sha256": "8a6b3e00fd7c66233b701bc634bb25cbf066243a1bd39d36f7f7aef5c43359c6"
+  },
+  {
+    "component": "mongodb31-stage",
+    "path": "weed/filer/mongodb/mongodb_options_v2_test.go",
+    "sha256": "9896552a8d69800d897e6c7ced9a231e66727df238ec818a061ec894be0e7877"
+  },
+  {
+    "component": "mongodb31-stage",
+    "path": "weed/filer/mongodb/mongodb_store.go",
+    "sha256": "4d648e63f6d76302b1463da01d98f39f42806b90c4b9a43cb704ca9c250133f6"
+  },
+  {
+    "component": "mongodb31-stage",
+    "path": "weed/filer/mongodb/mongodb_store_kv.go",
+    "sha256": "468985996f7b61a8dbb9626aa2dca033c8ab3cf85e4073ffc1e60adf517c1558"
+  },
+  {
+    "component": "mongodb31-stage",
+    "path": "weed/filer/mongodb/mongodb_wire_test.go",
+    "sha256": "36ea9f30b9b73e6fdfe1e47b66e22801a11a610662e875493ed92c994dc1cf71"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/command/filer_backup.go",
+    "sha256": "bb720b88006e327bf8ecbb80e4c2b4f85b80ee1afd45dad9ad55118ad90bd0c3"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/command/filer_replication.go",
+    "sha256": "896275a2e96c42218ea2db3be2040cc3e3ff1b5cf2e8c8e1accaf9c71977ca0a"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/command/ouf_google_profile_test.go",
+    "sha256": "b668743b90f721fdc4c8172431ab44696de538e45d9cd13231aef63a1c487c1c"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/command/ouf_unsupported_google_tag.go",
+    "sha256": "5b2b9f2ec9c5ad6915b8985a74d6d65fb0f67aeed1d36f290dc36ff9d1aca7a3"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/filer/ouf_google_profile_test.go",
+    "sha256": "1d68a3b83fa00fa125f78c11cb600d4b9d6e585d0c2a14ada2e9273ae104b25e"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/filer/remote_storage.go",
+    "sha256": "3174cac68972f3f014bfc09ce2150738ce2288904bb86015e19182bba5777989"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/notification/configuration.go",
+    "sha256": "f8404b4c5e953d59ea85602824f48f2e36642d4b19711eb1a6e694bab8efceeb"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/notification/google_pub_sub/google_pub_sub.go",
+    "sha256": "304ffb0591ab05415f83b20f2572c8f7fd8cada068a62a8ca67e3b108666e8df"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/notification/google_pub_sub/ouf_profile_test.go",
+    "sha256": "157f748a33bcdd7a4a6de64699dc25e27a0a3d73e267197f9fddc60030b45166"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/remote_storage/client_cache.go",
+    "sha256": "93e82ad3c49a5f5aebb354702574c6333325370de4daa183e5071d09bb4cef5a"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/remote_storage/gcs/gcs_storage_client.go",
+    "sha256": "58de8e3819cbbbe31f73249f78e27d730b258a6d13140a27fcfcf0ce4e914824"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/remote_storage/gcs/gcs_storage_client_test.go",
+    "sha256": "4c2265e520ba6e69db9711598b69a87093c6b8c6c0979d6854c7303ed2376cf5"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/remote_storage/gcs/ouf_profile_test.go",
+    "sha256": "e2020731a48138915ab7d43872085fde96c1c1251586245af3e58b8ec2403e92"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/remote_storage/ouf_google_profile_test.go",
+    "sha256": "a7a03d761ff904ff883bc3cdd147bb07c6a5225cfb306e00a628d27964bfba05"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/remote_storage/remote_storage.go",
+    "sha256": "a907266d2d8f22773ed3b9efef6c5d3b63bf9a3f04dbda7ab0badd8815d55c34"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/replication/ouf_google_profile_test.go",
+    "sha256": "ffe7324356f35ff5b2d7060b8b3b60a56174327089718ef8ec720a9b7de7fef2"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/replication/replicator.go",
+    "sha256": "d6c1143b88edd4a816090e669069839130ba019156fbbb09b4ccd2de4dc26ff8"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/replication/sink/gcssink/gcs_sink.go",
+    "sha256": "dd142b991f9c9cc33cef3efab59ca4308ea606d9f40e4d42434a2f488dcaf1e7"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/replication/sink/gcssink/ouf_profile_test.go",
+    "sha256": "d53a5a8f4a0fb08402145ea9b6df02c98f15bcbe6f72605dce058112683b33d3"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/replication/sub/notification_google_pub_sub.go",
+    "sha256": "3107ac0793b5d883c1747febdd632dd409508888759e320a5c6593be4d6095d8"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/replication/sub/ouf_google_profile_test.go",
+    "sha256": "5010d5cd0ac730bc5af90e545192912c429234069c4cead77fe2b987a71481d0"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/server/filer_server.go",
+    "sha256": "105309cec08b3213c79f36a003722f3f8ba654a4dd451bd34389c12a77a2869f"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/server/filer_server_ouf_google_profile_test.go",
+    "sha256": "e8a9083f0365ff8b90fdfab6a1d8f3284ca7f2ffe5b51301aadad32c5af728dd"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/server/volume_grpc_remote.go",
+    "sha256": "3b676a2fb688e85a8de454b911e6e2a1d482a7a3569042c460ca2fde12ac743f"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/server/volume_grpc_remote_test.go",
+    "sha256": "665585f9e74969cd176ad94ef3c9aad4e6e8a2e5dfe5a5ae12157808c027c30e"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/shell/command_remote_configure.go",
+    "sha256": "153eaf2d53a75c1ef175a529b3bfa29001b3882fe0bf2088bed21e980159514e"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/shell/ouf_google_profile_test.go",
+    "sha256": "f1001494d65d63b3582c16bb21ededf381406d5039617508f88d0e03df86ee96"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/util/googleprofile/profile.go",
+    "sha256": "c98488650eaa17b7b87b9e3ceac8a55f041275187e9c49f87a693593f3056644"
+  },
+  {
+    "component": "google-profile32-stage",
+    "path": "weed/util/googleprofile/profile_test.go",
+    "sha256": "0f33fdfdb10a299319dcd99d715e9524b5232d671bbb1b63d55ecfda36b89839"
+  }
+]

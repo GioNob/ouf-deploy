@@ -1,0 +1,40 @@
+{
+  "acceptanceCreditAdded": 0,
+  "applicationContainersStarted": 1,
+  "cleanupIncomplete": false,
+  "containersRemoved": 3,
+  "containersStarted": 3,
+  "diagnosticHints": {
+    "onboarding": [
+      "migration"
+    ],
+    "postgres": [],
+    "seaweedfs": []
+  },
+  "flightRecorderParsed": false,
+  "flightRecordingRetained": true,
+  "flywayVersionsVerified": [
+    39,
+    40,
+    41
+  ],
+  "onboardingAssetCreated": false,
+  "onboardingErrorCode": "ONB_STAGING_WRITE_FAILED",
+  "onboardingReadinessUp": true,
+  "onboardingUploadHttpStatus": 502,
+  "postgresCopyPrepared": true,
+  "postgresReady": true,
+  "postgresUploadAckVerified": false,
+  "privateContainerLogsRetained": 3,
+  "reason": "ONBOARDING_UPLOAD_HTTP_502",
+  "s3GetRequests": 1,
+  "s3SdkExceptionEvents": 0,
+  "s3TlsHandshakesObserved": 0,
+  "schema": "ouf.storage-oci33-onboarding-upload-trace.v1",
+  "seaweedfsPreUploadBodyVerified": true,
+  "seaweedfsTlsReady": true,
+  "seaweedfsUploadBodyVerified": false,
+  "status": "HELD",
+  "storageCopyPrepared": true,
+  "uploadRequests": 1
+}

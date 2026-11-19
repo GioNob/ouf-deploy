@@ -1,0 +1,21 @@
+{
+  "schema": "ouf.chatbot-semantic-upstream-preparation-target-stop.v1",
+  "source": "operator pasted complete output in this conversation",
+  "preparationSourceCommit": "1ee13740cb666a33a55d9447c6046861b7c3e7b5",
+  "reason": "BOUNDED_NAMESPACE_DNS_READ_UNAVAILABLE",
+  "underlyingProbeCauseProven": false,
+  "privateRepairReviewPublished": false,
+  "databaseCalls": 0,
+  "gatewayWrites": 0,
+  "grantRequests": 0,
+  "serviceMutations": 0,
+  "runtimeAuthorityIssued": false,
+  "reconciliationPerformed": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "authorityExpiresAt": 1792148226,
+  "authorityExpiredAtRead": false,
+  "gatewayMapStable": true,
+  "gatewayFinalPlanMatches": true,
+  "registryRuntimeHash": "09376b5f06f4ce547eddf7801cb913005374cda1179ae78807292bf2fa48badb"
+}

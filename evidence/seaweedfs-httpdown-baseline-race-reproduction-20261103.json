@@ -1,0 +1,14 @@
+{
+  "schema": "ouf.httpdown-baseline-race-reproduction.v1",
+  "sourceGeneration": 29,
+  "sourceFileSha256": "b1d3b74ec4435359692de9a798814b818451d7f503df6e9dac289707f91d0c83",
+  "sourceFilePath": "weed/util/httpdown/http_down.go",
+  "comparisonModuleDependencies": {
+    "github.com/facebookgo/clock": "v0.0.0-20150410010913-600d898af40a",
+    "github.com/facebookgo/stats": "v0.0.0-20151006221625-1b76add642e4"
+  },
+  "reproduction": "Copy the exact generation29 source file and retained legacy_race_test.go into a separate module with these pinned dependencies; go test -mod=readonly -count=1 -timeout=10s -json ./...",
+  "actualResult": "FAIL_EXPECTED_SEND_ON_CLOSED_CHANNEL_PANIC",
+  "loopbackOnly": true,
+  "targetOperations": 0
+}

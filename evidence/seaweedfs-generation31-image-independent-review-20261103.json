@@ -1,0 +1,88 @@
+{
+  "schema": "ouf.generation31-image-independent-review.v1",
+  "status": "PASS_BOUNDED_PREPUBLICATION_REVIEW",
+  "filesVerified": {
+    ".github/workflows/storage-452-generation31-image.yml": {
+      "sha256": "bceccedc6bccc14a39863ba97dea67da95e71748a9632101106cec9f437e578b",
+      "bytes": 21057,
+      "encoding": "utf-8"
+    },
+    "docs/OUF_SEAWEEDFS_GENERATION31_IMAGE_PIPELINE_20261103.md": {
+      "sha256": "d296c88516e9e2c6d3b2546ee13f0f9012a455510d948c53b4a036e77a276217",
+      "bytes": 2790,
+      "encoding": "utf-8"
+    },
+    "evidence/seaweedfs-generation31-image-local-20261103.json": {
+      "sha256": "745dde68c793599ef92b0c6a2d5f30c1f79ebaffb60220d36541c20a53a410df",
+      "bytes": 4477,
+      "encoding": "utf-8"
+    },
+    "evidence/seaweedfs-generation31-image-local-20261103/actual-local-layout.json": {
+      "sha256": "600aa400623aa406f4a8c7a765a307735f06181b81e8ee9bfab8a94ace02f456",
+      "bytes": 1298,
+      "encoding": "utf-8"
+    },
+    "evidence/seaweedfs-generation31-image-local-20261103/runtime-tests.txt": {
+      "sha256": "59b0d47cbf03b25c72a817cb4f3ee48d58f5b00a349b05d4e2175242a1a495b8",
+      "bytes": 1845,
+      "encoding": "utf-8"
+    },
+    "evidence/seaweedfs-generation31-image-local-20261103/syntax.json": {
+      "sha256": "01c8aa082fcf2cd9f77dca11bb04bf6b5645aeaa38ee6fd66a1733e06b79a6c4",
+      "bytes": 124,
+      "encoding": "utf-8"
+    },
+    "evidence/seaweedfs-generation31-image-local-20261103/tests.txt": {
+      "sha256": "e9854460e79223b0ba8556367ca8bdfe5879d0e09ec2c7cf575e05fd3934d601",
+      "bytes": 6718,
+      "encoding": "utf-8"
+    },
+    "patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch": {
+      "sha256": "0120cc01549a960177294610ecd26b495b5f867af5ef8b1b9321dba17ddc16ad",
+      "bytes": 1408,
+      "encoding": "utf-8"
+    },
+    "releases/seaweedfs-452-generation31-build-manifest-20261103.json": {
+      "sha256": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719",
+      "bytes": 9193,
+      "encoding": "utf-8"
+    },
+    "scripts/qualify-seaweedfs-452-generation31-image.py": {
+      "sha256": "5e2904162446e9f806f0ed5c9953047551ea3efa1107d9622484e4dc7c91231a",
+      "bytes": 1369,
+      "encoding": "utf-8"
+    },
+    "scripts/readback-seaweedfs-452-generation31-image.py": {
+      "sha256": "a6a5b4b724f37bc27f45e12ebed5427461f8bba79111c93998a814ebe7a73be9",
+      "bytes": 675,
+      "encoding": "utf-8"
+    },
+    "tests/test_seaweedfs_452_generation31_image.py": {
+      "sha256": "85a2b076f1e3fe38cc273bec6529e35c500e90eb2baa607bb78f6c6966242b89",
+      "bytes": 29076,
+      "encoding": "utf-8"
+    },
+    "tools/storage_security/generation_image_v2.py": {
+      "sha256": "0435a7ce2507ddee1fdcd306ac856a18733c6d7fe1af53e5fe470c5ad373b719",
+      "bytes": 28157,
+      "encoding": "utf-8"
+    }
+  },
+  "sourceSealFiles": 45,
+  "pipelineTestsPassed": 38,
+  "syntax": {
+    "shellBlocks": 17,
+    "pinnedActions": 13
+  },
+  "frozen30FilesUnchanged": true,
+  "checks": [
+    "Exact thirty-patch prefix and previous manifest frozen",
+    "Thirty-first patch is only deletion of one Btree requirement and two hashes from native Kafka test module",
+    "Root lockfiles, production graph, binary and module inventory must equal generation30 while tree must differ",
+    "All four regression profiles executed fresh hosted and checked against unchanged terminal identities",
+    "New scan/SPDX/provenance/readback required, no acceptance transferred from failed generation30",
+    "Modified MPL source archive unaffected by nested-only repair; later cohort still required"
+  ],
+  "hostedQualificationPending": true,
+  "targetOperations": 0
+}

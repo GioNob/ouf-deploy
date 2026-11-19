@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.human-device-confirmation-repair-qualification.v1",
+  "sourceCommit": "5886cf722835cf2cd20505bcf626959fb4b2b11e",
+  "ciRunId": 39320511768,
+  "ciJobId": 118293029324,
+  "conclusion": "success",
+  "testsPassed": 64,
+  "suiteCounts": [
+    7,
+    9,
+    3,
+    9,
+    8,
+    2,
+    15,
+    11
+  ],
+  "readerSha256": "47452ec96e0ce1ef46af2d751b14ede6a62b2a6f89d9576575f1b7a4ef7e34b0",
+  "launcherSha256": "ebcb51ab357e5de9a67f750c0fa871edf6f4aec513cdac89fee39dda944414b2",
+  "remoteFileReadbackPassed": true,
+  "targetDiagnosticRun": false,
+  "targetCorrectionDeployed": false,
+  "newBudgetAuthorized": false,
+  "newHumanLoginPerformed": false,
+  "runtimeAuthorityIssued": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "notReleaseAcceptance": true
+}

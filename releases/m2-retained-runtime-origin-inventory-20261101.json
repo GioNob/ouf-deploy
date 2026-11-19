@@ -1,0 +1,252 @@
+{
+  "allRuntimeArtifactMembershipProven": false,
+  "completePrivateCustodyProven": false,
+  "currentApplicationConfigurationOrLivenessProven": false,
+  "date": "2026-11-01",
+  "declaredGatewaySourcesWithoutImageMembership": 1,
+  "directEngineGets": 0,
+  "historicalVendorReferences": 5,
+  "inputsSha256": {
+    "evidence/acquisition-redaction-apply-target-20261026.json": "4643fd6251d2fdf1df8e524497287cb907b6edb97dedcd21628fd731be047c15",
+    "evidence/acquisition-redaction-offline-plan-qualified-20261026.json": "4f46248c08daea7f34e9b0d286169122f643f4706097c66154c042f33a26aca6",
+    "evidence/docker-readiness-20261007.json": "90559d4743817635fb3e73a232f193fb0f1a0fcf7a58f96809c8af2a1186a451",
+    "evidence/m2-catalogue-gateway-source-readback-20261101.json": "e37c56dfacec557d58b220b65089a9b939814f1697e85da7cd35f8773d75ebba",
+    "evidence/m2-current-core-original-scan-result-20261101.json": "216c7d55f9163aa9d3f166a3785ab72a27f723e5d8a8889f0c5a2a9af23c956b",
+    "evidence/m2-discovery-current-bindings-target-20261029.json": "b66729528895759029fdfd07e834eb15d74501fc02a54ebef1cf7d986f39a756",
+    "evidence/m2-image-graph-target-20261101.json": "3d687e7ea153177c7ef76e672152664aaa1c842cddc95524de91bc4735f77786",
+    "evidence/m2-retained-mount-role-correction-target-20261101.json": "08548596f09993311c6ea95b31da5e3c6e41e2ad9f21331f8f01376e1898c126",
+    "evidence/m2-selected-runtime-target-20261101.json": "fc03d7a5132bf1152bb7942923c5ba01a36e0cd14f45e232fc8c3cb4cff80549",
+    "releases/m2-current-core-artifact-origins-20261101.json": "c5c80fbd2261137294c40e10d053da70a169858660e5ac95e99c807109393c31",
+    "releases/m2-current-core-source-lock-20261101.json": "281740b2261eeccaee43c4f3669a39e15cc7206473c35ee3a94a0de829cbbe12",
+    "releases/m2-scanned-runtime-repair-origins-20261101.json": "b1f3ec6fab3e8749e082de2464022f9b0f210e4d1faf9853cb9d02d1176f6c58"
+  },
+  "privateSelectedProofRoleJoinPerformed": false,
+  "publicRoleSnapshotReconciled": true,
+  "qualifiedAppliedReadReplicaNativeIdMatches": 2,
+  "qualifiedOriginalCoreNativeIdMatches": 4,
+  "releaseAcceptance": false,
+  "roleCount": 13,
+  "roles": {
+    "apisix": {
+      "currentSecurityScanProven": false,
+      "historicalTagReference": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+      "nativeImageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+      "originStatus": "HISTORICAL_VENDOR_REFERENCE_ONLY",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "registryDigestLookupRequired": true,
+      "registryRepository": "docker.io/apache/apisix"
+    },
+    "caddy": {
+      "currentSecurityScanProven": false,
+      "historicalTagReference": "caddy:2.11.4",
+      "nativeImageId": "sha256:13ba145cba2f3e28fa801994876e4c086d1b95d5aa2a520a734765ffb6b12017",
+      "originStatus": "HISTORICAL_VENDOR_REFERENCE_ONLY",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "registryDigestLookupRequired": true,
+      "registryRepository": "docker.io/library/caddy"
+    },
+    "gateway-owner": {
+      "currentSecurityScanProven": false,
+      "declaredSourceCommit": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+      "declaredSourceRepository": "ouf-api-gateway",
+      "nativeImageId": "sha256:979de5eb0a554e0adfe924969627eb62362c4165974357afcee5bf30450f8f21",
+      "originStatus": "DECLARED_SOURCE_NOT_EXECUTABLE_IMAGE_MEMBERSHIP",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false
+    },
+    "ingestion": {
+      "configurationImageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "expandedArchiveSha256": "311aeb78b8db83f7bc3c1f8799921d1078ad2bb9428189097de6d71a0eb93e63",
+      "nativeImageId": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+      "originArtifactId": 12370330790,
+      "originStatus": "QUALIFIED_ORIGINAL_ARCHIVE_NATIVE_ID_MATCH",
+      "originZipSha256": "f28562307f37e663e90944d45b9f0ca5d6f9011fca6f5154c199679a7b006c64",
+      "originalScanStatus": "HELD_HIGH_CRITICAL_UNKNOWN",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "sourceRepository": "GioNob/ouf-ingestion-runtime"
+    },
+    "ingestion-evidence-read": {
+      "configurationImageId": "sha256:5b4a0465a24c801d4703d54c89660f1528ad028ff83660067c41be7dbe23565a",
+      "currentSecurityScanProven": false,
+      "derivedArchiveSha256": "c0a94d767f3a666c93a465bbe4201fc6647a77be55f92b82b20ce19ae4b43280",
+      "nativeImageId": "sha256:01bb94a698d9632a27abc490d298db345111c04be04fc9d4d97a758edc080385",
+      "nativeQualificationRun": 40336259669,
+      "originStatus": "QUALIFIED_AND_APPLIED_READ_REPLICA_NATIVE_ID_MATCH",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "sourceCommit": "7d85bfe0d1423bcb13e115f06c92d8a0baa1ebf7"
+    },
+    "keycloak": {
+      "currentSecurityScanProven": false,
+      "historicalTagReference": "quay.io/keycloak/keycloak:26.7.4",
+      "nativeImageId": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+      "originStatus": "HISTORICAL_VENDOR_REFERENCE_ONLY",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "registryDigestLookupRequired": true,
+      "registryRepository": "quay.io/keycloak/keycloak"
+    },
+    "mcp": {
+      "configurationImageId": "sha256:47e42435404d4d4cb5ca24473ac22192b375c0bf602b4e35f5864d0894a69903",
+      "expandedArchiveSha256": "b0fe7783bec0b2c9b0e2f46fcc40d4cd4bcc58ce9d21e3fb0f685be3de00e358",
+      "nativeImageId": "sha256:a52180123104ac97e4979ad1b9b291654b076692da51708bb2a377301fef1220",
+      "originArtifactId": 12761775539,
+      "originStatus": "QUALIFIED_ORIGINAL_ARCHIVE_NATIVE_ID_MATCH",
+      "originZipSha256": "dbc4c918f71d0b3bf089c1b4a868ebf11ff9d3c9b1de44530cb6cd3df0cb71d7",
+      "originalScanStatus": "PASS_RECORDED_ORIGINAL_SCAN",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "sourceCommit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+      "sourceRepository": "GioNob/ouf-mcp-server"
+    },
+    "minio": {
+      "currentSecurityScanProven": false,
+      "historicalTagReference": "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z",
+      "nativeImageId": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+      "originStatus": "HISTORICAL_VENDOR_REFERENCE_ONLY",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "registryDigestLookupRequired": true,
+      "registryRepository": "quay.io/minio/minio"
+    },
+    "onboarding": {
+      "configurationImageId": "sha256:5140811b44623c7035843c955509a387336bc11ffb24b72ffe26a73434fb5ebd",
+      "expandedArchiveSha256": "63a4f72604557447827880061e14021eb512775048e6002034163ef1aecad97c",
+      "nativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+      "originArtifactId": 12836316286,
+      "originStatus": "QUALIFIED_ORIGINAL_ARCHIVE_NATIVE_ID_MATCH",
+      "originZipSha256": "7719c1045753fe38bbdc498adb8f540c61bad411c25969badf71ec4d3ec5d91b",
+      "originalScanStatus": "PASS_RECORDED_ORIGINAL_SCAN",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "sourceCommit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "sourceRepository": "GioNob/ouf-source-onboarding"
+    },
+    "postgres": {
+      "currentSecurityScanProven": false,
+      "historicalTagReference": "postgis/postgis:17-3.5-alpine",
+      "nativeImageId": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+      "originStatus": "HISTORICAL_VENDOR_REFERENCE_ONLY",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "registryDigestLookupRequired": true,
+      "registryRepository": "docker.io/postgis/postgis"
+    },
+    "semantic": {
+      "nativeImageId": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+      "originStatus": "UNRESOLVED",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false
+    },
+    "udp": {
+      "configurationImageId": "sha256:e283630ab0e141092a87ca4aa590bf02ef4535804e7cf5427adff636d7cb4f8b",
+      "expandedArchiveSha256": "3b6b92a35d5c4a5ba5eef15b8beedb9be06f98ca29dd374873694d911107162a",
+      "nativeImageId": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+      "originArtifactId": 12119360632,
+      "originStatus": "QUALIFIED_ORIGINAL_ARCHIVE_NATIVE_ID_MATCH",
+      "originZipSha256": "bfedb02531bb0d80a2b940049e20da7c4216e68eeab0857ced8ef479d602feac",
+      "originalScanStatus": "HELD_HIGH_CRITICAL_UNKNOWN",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "sourceCommit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "sourceRepository": "GioNob/ouf-udp-object-resolution"
+    },
+    "udp-evidence-read": {
+      "configurationImageId": "sha256:7d3686b795e8086fe24e6f3749eaf1ee0d6fb9976adb57c4abbcfd3ee0e6a82f",
+      "currentSecurityScanProven": false,
+      "derivedArchiveSha256": "a26d65e46da9f27eef9bd8fa076742ef1e28dde2a97fa90af2a13b0d80fc72c3",
+      "nativeImageId": "sha256:8e54e2d33bab7209bb5718bb565662600816066170a763f849d560764226df9d",
+      "nativeQualificationRun": 40336259669,
+      "originStatus": "QUALIFIED_AND_APPLIED_READ_REPLICA_NATIVE_ID_MATCH",
+      "privateSelectedProofRoleJoinPerformed": false,
+      "publisherAuthenticatedByThisInventory": false,
+      "sourceCommit": "125510cf9d970aff7db66a0a8f27eb98b50bb6de"
+    }
+  },
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-runtime-public-origin-inventory.v1",
+  "selectedRuntimePrivateEvidenceHash": "c52a0e2a0ebcdb9c8a826426386a9172c0507231199815c09ab32eb144fd713e",
+  "selectedRuntimePublicResultHash": "039f03a7593c0b826e6597f755c838f85efa197d17d7df3339512f5ee7c52bcc",
+  "sourcePublisherAuthenticated": false,
+  "targetApplyAuthorized": false,
+  "targetControlAttemptsAdded": 0,
+  "unresolvedRetainedSemanticOrigins": 1,
+  "unselectedCandidates": {
+    "gatewayCatalogueMaterializers": {
+      "artifactId": 12930098785,
+      "retainedGatewayOwnerRuntimeImageMembershipProven": false,
+      "sourceCommit": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+      "zipSha256": "22cd26a29460de69d9aae9392cebad2a3eca28b3b6bc0153bbaab7b68aa24441"
+    },
+    "runtimeOsRepairs": {
+      "ingestion": {
+        "applicationJarSha256": "54424047880b6c96c512efb55dbd1c241e98180f4d679c342760980385f771f1",
+        "applicationSourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+        "artifactId": 13088374953,
+        "candidateArchiveSha256": "95cefdd95347a0cfadce39e172e798f3935b2b7052dd6ebed27cd9db0d90dce6",
+        "changedPackageNames": [
+          "brotli-libs",
+          "musl",
+          "musl-utils"
+        ],
+        "configurationImageId": "sha256:29c6d44ce546cd55cc65db6d881e2f8496891b20708c63ff05f8daf0ddfbf4c8",
+        "nativeImageId": "sha256:e3d397d1fe394b49bb639618c7ba41c64ee4492f805c43634fff46f1d2e13f89",
+        "provenanceSha256": "81b1802caa45fc8fa19a2e15db3f1db819a2c959cc391460fecaba4e7547f23f",
+        "repairProofSha256": "a3d6e5356f709cf9f26dbd78387fb34c36d1c1cd359436039fca467e57345e85",
+        "repository": "GioNob/ouf-deploy",
+        "runId": 41319954409,
+        "runtimeAuthorityIssued": false,
+        "scanInputArchiveSha256": "c5e5d631a733cc94a69864aa1867b23691aa68fff773594a374325673e13289f",
+        "scanSha256": "a9b0ca26e9de1a3a8dc204b60bf296a78ca2f8b5f980c39074a40c7aba6cc5d0",
+        "selectedForInstallation": false,
+        "targetApplyAuthorized": false,
+        "zipBytes": 279117140,
+        "zipSha256": "93a55649ab8ce4ce08ab854e5a47f26f9ee8a34533b539769c0fd82939c6d057"
+      },
+      "udp": {
+        "applicationJarSha256": "15818fe09317c909271d05198cc6bc5e55558268427dac3e43e14259b308ed84",
+        "applicationSourceCommit": "0d40da05408a14db31d4d41af2372d6a71480291",
+        "artifactId": 13089430534,
+        "candidateArchiveSha256": "58afae66abce2ac5495e9d71f5b14d516789d1ef85a244d56ff772a410972e01",
+        "changedPackageNames": [
+          "brotli-libs",
+          "musl",
+          "musl-utils"
+        ],
+        "configurationImageId": "sha256:e227e9cf58019b6b04be5dfbb3500a8b94d78eba634b57b306acf6c1631888c2",
+        "nativeImageId": "sha256:9beae4c9829dbce0bef59856a142a5abb1283dec188dbb56dceaf18751993831",
+        "provenanceSha256": "ff5e15ff565583653c342fa9f63fb630e1c5b99b4a8e182d3d948d8a5e933f5e",
+        "repairProofSha256": "d70f3369b9e2f5b48819598fd6ed4a8330b838c7136cf35abf994ea6f08d7e55",
+        "repository": "GioNob/ouf-deploy",
+        "runId": 41319954409,
+        "runtimeAuthorityIssued": false,
+        "scanInputArchiveSha256": "c919c669cdcec8ba64ddb23e6294acfd946270b6f61b6f96473a36e48d81382f",
+        "scanSha256": "a2d976200ce70b2bb58145e2358f5f8d6807468c98884916db287bb94925ae36",
+        "selectedForInstallation": false,
+        "targetApplyAuthorized": false,
+        "zipBytes": 241933081,
+        "zipSha256": "1d703c8b76470488821586b8fccb30cfd3bf4222c7815aba525d99a66d6f2f43"
+      }
+    },
+    "semantic": {
+      "artifactId": 13066396654,
+      "configurationImageId": "sha256:a6f00cda30f1c570082c94cb49d5564f40d512758441f6b6eac75e21f423d14f",
+      "currentRoleFromOperatorPublicReceipt": false,
+      "expandedArchiveSha256": "7f6482b79589fd1063eaf96508ea948d6411a7b4f0dbe76d663746a08953a223",
+      "imageMember": "image.docker.tar",
+      "metadataMember": "package-record.json",
+      "nativeImageId": "sha256:d06aeb529724ca198b1cb87a1f868143cfbe7ad6eb05dc4ccdf2b6400cc39d64",
+      "originalFormat": "UNSIGNED_OFFLINE_IMAGE",
+      "qualifiedReplacementCandidateNotYetSelected": true,
+      "repository": "GioNob/ouf-semantic-registry",
+      "sourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+      "sourceRepository": "GioNob/ouf-semantic-registry",
+      "zipBytes": 203419418,
+      "zipSha256": "1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba"
+    }
+  }
+}

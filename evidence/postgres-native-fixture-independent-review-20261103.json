@@ -1,0 +1,24 @@
+{
+  "status": "BOUNDED_REVIEW_ACCEPTED_PENDING_NATIVE_HOSTED_EXECUTION",
+  "offlineTestsPass": 9,
+  "nativeTestsRunByReviewer": 0,
+  "workflowRunBlocksSyntaxPass": 3,
+  "sourceInputs": {
+    "tests/run_storage_postgres_fixture_native.py": "822a65896d58e100830103602a8e3b5251f4c9e410d87a6b9cdb28472f34c8d5",
+    "tests/test_storage_recovery_native_lab_contract.py": "a90c2cf4b71b226cbcecaf17d2c5f00156dd4c4a0888f9cedbdc8914d6d2d0b6",
+    ".github/workflows/storage-postgres-native-fixture.yml": "65df181f52164aeb3e44708d0f8b027edb63f549c8a5daf9d4031cd535ed9ff0",
+    "docs/OUF_POSTGRES_NATIVE_FIXTURE_LAB_20261103.md": "c9cf50bd15d3d5ff83697214b50a187875eadd1704e58e1f15fa154518eaaea1"
+  },
+  "findingsResolved": [
+    "Normal stop timeout attempts bounded forced stop and preserves failure",
+    "Zero or skipped tests cannot count as seven native cases",
+    "Source hash is explicitly expected, not independently verified by harness"
+  ],
+  "limits": [
+    "Native server build/runtime not executed locally",
+    "Failure of both stop attempts remains BLOCKED and does not claim stopped",
+    "No PITR/dump-restore/fence/SeaweedFS/RPO/RTO qualification",
+    "No target operations or authority"
+  ],
+  "publishedRuntimeAdapterChanged": false
+}

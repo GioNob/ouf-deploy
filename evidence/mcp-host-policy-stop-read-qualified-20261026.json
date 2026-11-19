@@ -1,0 +1,47 @@
+{
+  "schema": "ouf.mcp-host-policy-retained-stop-read-qualified.v1",
+  "codeCommit": "736a8d26bea92cef1af707f686da536970273529",
+  "deliveryCommit": "5fa01d3fd0fa8ad1bb2970a2e0fb280d2f8c1079",
+  "scriptSha256": "e558c0c2ff2b80b1db91d24323e2c57af8126ab8fc1193fd245b6f2cf46d37ad",
+  "wrapperSha256": "1b0301ac64da8108688c9342fc7d900d7b938ef5df9dda761ddebdbafa960f9a",
+  "runs": [
+    {
+      "event": "push",
+      "id": 40311327583,
+      "jobId": 121532950988,
+      "conclusion": "success"
+    },
+    {
+      "event": "pull_request",
+      "id": 40311337476,
+      "jobId": 121532986178,
+      "conclusion": "success"
+    }
+  ],
+  "directLogsRead": true,
+  "testsPerRun": 12,
+  "skips": 0,
+  "rootFilesystemFixtures": true,
+  "syntheticRetainedRecords": true,
+  "coverage": [
+    "zero/missing/bool/positive Memory and AutoRemove exact-conjunct differentiation",
+    "no writes to original retained files or leaked Binds",
+    "one-use read scope, duplicate-key/symlink/mode/source-hash/native-hash/journal-marker rejection",
+    "actual public HTTP pinned source, real sudo/root0400 checksum and protected main, missing retained directory negative STOP before retained reads"
+  ],
+  "developmentHistory": [
+    {
+      "codeCommit": "736a8d26bea92cef1af707f686da536970273529",
+      "runs": [
+        40311161891,
+        40311168325
+      ],
+      "failure": "CI synthetic fixture was under runner-owned checkout ancestry; root guard correctly rejected it. Moved test fixture to root-owned /var/lib; production reader and custody guards unchanged."
+    }
+  ],
+  "targetReadExecuted": false,
+  "currentRuntimeStateObserved": false,
+  "runtimeAuthorityIssued": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

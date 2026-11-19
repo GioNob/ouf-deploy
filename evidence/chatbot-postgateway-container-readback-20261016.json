@@ -1,0 +1,41 @@
+{
+  "automaticRetry": false,
+  "budgetReset": false,
+  "ci": {
+    "conclusion": "success",
+    "jobId": 116885500996,
+    "newFullFlowTransport": "SIMULATED_WITH_REAL_PRIVATE_FILES",
+    "newTests": 6,
+    "regressionNativeGetAndSelect": true,
+    "runId": 38874295581,
+    "skips": 0,
+    "tests": 26
+  },
+  "launcherSha256": "ad9ac7854ca025f0b097a6164d22e3fe3539951f2af7b6001a438d39c4326b24",
+  "maximumSeconds": 180,
+  "readOnly": true,
+  "readerRuntimeAuthorityIssued": false,
+  "readerSha256": "3c057b348857d99784af932f11cb86d458bd7c225aef70f180845ced68219405",
+  "schema": "ouf.chatbot-postgateway-container-readback-qualification.v1",
+  "sourceCommit": "c48305c1f960cb7642589a5b973ac0520193b200",
+  "targetAccessByCodex": false,
+  "targetExecution": {
+    "authorityHash": "50ce40e69082a813ba92b7dd9defacc1e6ccb904a3be8ef20226f80fca468893",
+    "completedTechnicalPhases": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "currentGrantCountPendingReadback": true,
+    "exactStoppedModulePendingReadback": true,
+    "functionalMilestonesProven": 0,
+    "minimumTechnicalPhaseReached": 6,
+    "persistedFinalGatewayReadbackPending": true,
+    "predecessorGrantAttempts": 8,
+    "reason": "COHORT_REPLACEMENT_PROCESS_CONFIG_DRIFT",
+    "reviewHash": "50b5e2348c950ab9832cf890c7d0129f6ba92c8b05eb5d853fcd94ad1574b8cb",
+    "runtimeSource": "e2252339dcc127e9237b8120727bf27439f506f0",
+    "technicalPhase5PassedInControlFlow": true
+  }
+}

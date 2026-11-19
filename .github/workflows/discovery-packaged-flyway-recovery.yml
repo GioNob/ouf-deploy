@@ -1,13 +1,6 @@
 name: OUF packaged Semantic Flyway recovery CI
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/discovery-packaged-flyway-recovery.yml
-      - tests/fixtures/FlywayFixture.java
-      - tests/test_discovery_migration_recovery.py
-      - scripts/capture-installed-flyway.py
 permissions:
   contents: read
   actions: read

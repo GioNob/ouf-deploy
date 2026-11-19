@@ -1,0 +1,62 @@
+{
+  "schema": "ouf.storage-recovery-coordinated-hosted.v1",
+  "status": "OFFLINE_FOUNDATION_AND_RECONCILER_HOSTED_PASS_NOT_RUNTIME_ACCEPTANCE",
+  "sourceCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+  "runId": 41696541354,
+  "jobId": 126128466385,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41696541354",
+  "artifact": {
+    "id": 13261761122,
+    "bytes": 2772,
+    "sha256": "ecdd8055e4005cd5e0f6aeb396434a049c20933ea63cacb9bb92d22c2dea2dba",
+    "members": 5,
+    "internalHashesVerified": 4,
+    "sourceHashesVerifiedAgainstLocalPublishedInputs": 12,
+    "expiresAt": "2027-02-01T18:43:38Z"
+  },
+  "unitTestsPassed": 25,
+  "coordinatedTestsPassed": 13,
+  "attestation": {
+    "id": 63247420,
+    "independentSignatureVerificationPerformed": false
+  },
+  "retainedFiles": [
+    {
+      "path": "evidence/storage-recovery-coordinated-hosted-20261103/SHA256SUMS",
+      "sha256": "dfe05e99b5d43838326bae8a4a7a74ef748023ec9c42806b2e80cde5a9a84649",
+      "bytes": 339
+    },
+    {
+      "path": "evidence/storage-recovery-coordinated-hosted-20261103/boundaries.txt",
+      "sha256": "9f5758bf04f4b63a86cfed0eb07b4ef23e307e1d2a2263d231db13f181995dcb",
+      "bytes": 158
+    },
+    {
+      "path": "evidence/storage-recovery-coordinated-hosted-20261103/profile-validation.json",
+      "sha256": "2bc32cb04b9994917731073cc98815a04d14fe6017a050bdf6be6af203077ae1",
+      "bytes": 220
+    },
+    {
+      "path": "evidence/storage-recovery-coordinated-hosted-20261103/source-sha256.txt",
+      "sha256": "4fb03d7f41f296f35f9dc4fa0d153274e89539fd3c4a9bf6709dd54b77b87c3e",
+      "bytes": 1301
+    },
+    {
+      "path": "evidence/storage-recovery-coordinated-hosted-20261103/tests.log",
+      "sha256": "450c810aeb1104cbefc48f7fb0cfca9681b0a7b045fea54d59e618d1cac5a076",
+      "bytes": 4707
+    }
+  ],
+  "limitations": [
+    "No PostgreSQL execution or dump/restore",
+    "No WAL/PITR",
+    "No real writer fencing",
+    "No target RPO/RTO or runtime healthy claim",
+    "Complete snapshot and closed fence are input assertions in this qualification"
+  ],
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0
+}

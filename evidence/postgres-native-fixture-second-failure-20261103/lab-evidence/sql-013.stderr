@@ -1,0 +1,2 @@
+ERROR:  25006: cannot execute UPDATE in a read-only transaction
+LOCATION:  PreventCommandIfReadOnly, utility.c:407

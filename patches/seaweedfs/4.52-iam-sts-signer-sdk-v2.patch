@@ -1,0 +1,192 @@
+diff --git a/test/s3/iam/go.mod b/test/s3/iam/go.mod
+index f8a940108..74eade865 100644
+--- a/test/s3/iam/go.mod
++++ b/test/s3/iam/go.mod
+@@ -3,12 +3,14 @@ module github.com/seaweedfs/seaweedfs/test/s3/iam
+ go 1.24
+ 
+ require (
++	github.com/aws/aws-sdk-go-v2 v1.47.5
+ 	github.com/aws/aws-sdk-go v1.44.0
+ 	github.com/golang-jwt/jwt/v5 v5.3.0
+ 	github.com/stretchr/testify v1.8.4
+ )
+ 
+ require (
++	github.com/aws/smithy-go v1.28.7 // indirect
+ 	github.com/davecgh/go-spew v1.1.1 // indirect
+ 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+ 	github.com/pmezard/go-difflib v1.0.0 // indirect
+diff --git a/test/s3/iam/go.sum b/test/s3/iam/go.sum
+index b1bd7cfcf..ef4739f34 100644
+--- a/test/s3/iam/go.sum
++++ b/test/s3/iam/go.sum
+@@ -1,5 +1,9 @@
+ github.com/aws/aws-sdk-go v1.44.0 h1:jwtHuNqfnJxL4DKHBUVUmQlfueQqBW7oXP6yebZR/R0=
+ github.com/aws/aws-sdk-go v1.44.0/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
++github.com/aws/aws-sdk-go-v2 v1.47.5 h1:5yA+A+BiXbDq1ZLbYwPViwhEGDMdR0MEhL8Jh2LnLS4=
++github.com/aws/aws-sdk-go-v2 v1.47.5/go.mod h1:iNIkogrRvFwm+1OQIUOP2lPBtlXZboOIUWiCa+pHEMw=
++github.com/aws/smithy-go v1.28.7 h1:h/n1SHrwVtaDYLz8mR1/Kq4Xh4RaFbFW7bOYckg9mfE=
++github.com/aws/smithy-go v1.28.7/go.mod h1:YE2RhdIuDbA5E5bTdciG9KrW3+TiEONeUWCqxX9i1Fc=
+ github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
+ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+diff --git a/test/s3/iam/s3_sts_assume_role_test.go b/test/s3/iam/s3_sts_assume_role_test.go
+index ee55ce219..46725207d 100644
+--- a/test/s3/iam/s3_sts_assume_role_test.go
++++ b/test/s3/iam/s3_sts_assume_role_test.go
+@@ -2,7 +2,6 @@ package iam
+ 
+ import (
+ 	"encoding/xml"
+-	"fmt"
+ 	"io"
+ 	"net/http"
+ 	"net/url"
+@@ -11,8 +10,6 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	v4 "github.com/aws/aws-sdk-go/aws/signer/v4"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -335,29 +332,23 @@ func callSTSAPIWithSigV4(t *testing.T, params url.Values, accessKey, secretKey s
+ 	body := params.Encode()
+ 
+ 	// Create request
+-	req, err := http.NewRequest(http.MethodPost, TestSTSEndpoint+"/",
++	req, err := http.NewRequestWithContext(t.Context(), http.MethodPost, TestSTSEndpoint+"/",
+ 		strings.NewReader(body))
+ 	if err != nil {
+ 		return nil, err
+ 	}
+ 
+ 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+-	// Do NOT set req.Header["Host"] — aws-sdk-go v1 v4.Signer reads the host
+-	// from req.URL.Host/req.Host, and a manual Host header makes the signer
++	// Do NOT set req.Header["Host"] — the SigV4 signer reads the host from
++	// req.URL.Host/req.Host, and a manual Host header can make a signer
+ 	// emit `host;host` in SignedHeaders, producing a different signature than
+ 	// the server calculates from canonical headers.
+ 
+-	// Sign request with AWS Signature V4 using official SDK
+-	creds := credentials.NewStaticCredentials(accessKey, secretKey, "")
+-	signer := v4.NewSigner(creds)
+-
+-	// Read body for signing
+-	// Note: We need a ReadSeeker for the signer, or we can pass the body string/bytes to ComputeBodyHash if needed,
+-	// but standard Sign method takes an io.ReadSeeker for the body.
+-	bodyReader := strings.NewReader(body)
+-	_, err = signer.Sign(req, bodyReader, "sts", "us-east-1", time.Now())
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to sign request: %w", err)
++	if err = signSigV4Request(t.Context(), req, []byte(body), sigV4Credentials{
++		AccessKeyID: accessKey,
++		SecretKey:   secretKey,
++	}, "sts", "us-east-1", time.Now()); err != nil {
++		return nil, err
+ 	}
+ 
+ 	client := &http.Client{Timeout: 30 * time.Second}
+diff --git a/test/s3/iam/sigv4_v2.go b/test/s3/iam/sigv4_v2.go
+new file mode 100644
+index 000000000..795431268
+--- /dev/null
++++ b/test/s3/iam/sigv4_v2.go
+@@ -0,0 +1,33 @@
++package iam
++
++import (
++	"context"
++	"crypto/sha256"
++	"encoding/hex"
++	"fmt"
++	"net/http"
++	"time"
++
++	awsv2 "github.com/aws/aws-sdk-go-v2/aws"
++	v4v2 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
++)
++
++type sigV4Credentials struct {
++	AccessKeyID  string
++	SecretKey    string
++	SessionToken string
++}
++
++func signSigV4Request(ctx context.Context, req *http.Request, body []byte, credentials sigV4Credentials, service, region string, signingTime time.Time) error {
++	payloadHash := sha256.Sum256(body)
++	signer := v4v2.NewSigner()
++	err := signer.SignHTTP(ctx, awsv2.Credentials{
++		AccessKeyID:     credentials.AccessKeyID,
++		SecretAccessKey: credentials.SecretKey,
++		SessionToken:    credentials.SessionToken,
++	}, req, hex.EncodeToString(payloadHash[:]), service, region, signingTime)
++	if err != nil {
++		return fmt.Errorf("failed to sign request: %w", err)
++	}
++	return nil
++}
+diff --git a/test/s3/iam/sigv4_v2_test.go b/test/s3/iam/sigv4_v2_test.go
+new file mode 100644
+index 000000000..4d44f860c
+--- /dev/null
++++ b/test/s3/iam/sigv4_v2_test.go
+@@ -0,0 +1,55 @@
++package iam
++
++import (
++	"context"
++	"io"
++	"net/http"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/stretchr/testify/assert"
++	"github.com/stretchr/testify/require"
++)
++
++func TestSignSigV4RequestUsesStableSTSScopeAndBody(t *testing.T) {
++	body := []byte("Action=AssumeRole&Note=spaces+%2B+%26+%E2%98%83&Version=2011-06-15")
++	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "http://127.0.0.1:8333/", strings.NewReader(string(body)))
++	require.NoError(t, err)
++	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
++
++	err = signSigV4Request(context.Background(), req, body, sigV4Credentials{
++		AccessKeyID: "AKIDEXAMPLE",
++		SecretKey:   "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
++	}, "sts", "us-east-1", time.Date(2026, time.November, 3, 12, 34, 56, 0, time.UTC))
++	require.NoError(t, err)
++
++	authorization := req.Header.Get("Authorization")
++	assert.Equal(t, "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20261103/us-east-1/sts/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date, Signature=14896a341b0f6ce3591985759f3d39f0287392981db135162bf5f06e94b6fd6e", authorization)
++	assert.Equal(t, 1, strings.Count(authorization, "host"), authorization)
++	assert.Equal(t, "20261103T123456Z", req.Header.Get("X-Amz-Date"))
++	assert.Empty(t, req.Header.Get("X-Amz-Security-Token"))
++
++	actualBody, err := io.ReadAll(req.Body)
++	require.NoError(t, err)
++	assert.Equal(t, body, actualBody)
++}
++
++func TestSignSigV4RequestIncludesTemporaryCredentialToken(t *testing.T) {
++	body := []byte("Action=AssumeRole&Version=2011-06-15")
++	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "http://localhost:8333/", strings.NewReader(string(body)))
++	require.NoError(t, err)
++	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
++
++	err = signSigV4Request(context.Background(), req, body, sigV4Credentials{
++		AccessKeyID:  "ASIAEXAMPLE",
++		SecretKey:    "temporary-secret",
++		SessionToken: "temporary-token",
++	}, "iam", "us-west-2", time.Date(2026, time.November, 3, 12, 34, 56, 0, time.UTC))
++	require.NoError(t, err)
++
++	authorization := req.Header.Get("Authorization")
++	assert.Contains(t, authorization, "Credential=ASIAEXAMPLE/20261103/us-west-2/iam/aws4_request")
++	assert.Contains(t, authorization, "x-amz-security-token")
++	assert.Equal(t, "temporary-token", req.Header.Get("X-Amz-Security-Token"))
++}

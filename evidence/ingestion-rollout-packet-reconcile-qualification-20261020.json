@@ -1,0 +1,52 @@
+{
+  "schema": "ouf.ingestion-rollout-private-packet-reconcile-qualification.v1",
+  "sourceCommit": "bfd2a657ded5abfa0593eb16e09f7a0c03ffd772",
+  "workflowRunId": 39385921215,
+  "workflowJobId": 118505615231,
+  "conclusion": "success",
+  "testsPassed": 9,
+  "testsSkipped": 0,
+  "boundaryAndRootCustodyTests": 6,
+  "actualRetainedArchiveAndFullEntryTests": 3,
+  "realUnixHttpGetRequestsInFullEntryTest": 5,
+  "retainedContextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-packet-kkj_njiz",
+  "predecessorReasonCode": "QUALIFIED_GATEWAY_CONFIG_READER_IDENTITY_REQUIRED",
+  "selectedReaderMetadataPreservationQualified": [
+    [
+      0,
+      0,
+      384
+    ],
+    [
+      0,
+      0,
+      420
+    ],
+    [
+      636,
+      636,
+      256
+    ]
+  ],
+  "targetSelectedUidGidModeObserved": false,
+  "retainedArchiveReconciledOnTarget": false,
+  "targetPredecessorClaimRetainedByDesign": true,
+  "targetArchiveDownloadAllowed": false,
+  "targetArchiveRecreationAllowed": false,
+  "maximumEngineGetRequests": 5,
+  "maximumRootSeconds": 180,
+  "candidateNativeArchiveSha256": "a3e26164c58dc40a6a0cd8b13e7ab91b7ea2a2e6094b49623a7d537ec7e8af95",
+  "candidateNativeImageId": "sha256:ea64511009e8fa29d1df0bab1edf0ab4656dd7336c3fae967728f0d288119a77",
+  "nativeCreationRoundTripQualified": false,
+  "runtimeExecutorQualified": false,
+  "runtimeAuthorityIssued": false,
+  "databaseAdmissionProven": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "newLoginPerformed": false,
+  "refreshPerformed": false,
+  "windowExtended": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "notReleaseAcceptance": true
+}

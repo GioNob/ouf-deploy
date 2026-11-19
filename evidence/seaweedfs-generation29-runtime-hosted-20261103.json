@@ -1,0 +1,759 @@
+{
+  "schema": "ouf.seaweedfs-generation29-runtime-hosted-readback.v1",
+  "status": "HOSTED_SYNTHETIC_GENERATION29_RUNTIME_PASS_NOT_ACCEPTANCE",
+  "runId": 41701381292,
+  "sourceCommit": "7a71218586bcdbc50e1c983a1a12158dc9660de9",
+  "artifact": {
+    "id": 13264096077,
+    "node_id": "MDg6QXJ0aWZhY3QxMzI2NDA5NjA3Nw==",
+    "name": "storage-generation29-runtime-41701381292",
+    "size_in_bytes": 171103,
+    "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13264096077",
+    "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13264096077/zip",
+    "expired": false,
+    "digest": "sha256:6027b062e35772a315101d4719aabae78f7702cd519a2fabef02edaa312ed61b",
+    "created_at": "2026-11-03T19:21:04Z",
+    "updated_at": "2026-11-03T19:21:04Z",
+    "expires_at": "2027-02-01T19:14:20Z",
+    "workflow_run": {
+      "id": 41701381292,
+      "repository_id": 1409074354,
+      "head_repository_id": 1409074354,
+      "head_branch": "feat/m2-discovery-complete-profile-20261029",
+      "head_sha": "7a71218586bcdbc50e1c983a1a12158dc9660de9"
+    }
+  },
+  "archiveSha256": "6027b062e35772a315101d4719aabae78f7702cd519a2fabef02edaa312ed61b",
+  "manifestSha256": "026946459da87e665bfa1e655f8b52869f8a20e06550132eaeb9a6dc4a5ed937",
+  "members": 60,
+  "allInternalHashesVerified": true,
+  "sourceHashesVerified": {
+    "scripts/run-seaweedfs-452-generation29-labs.py": "50137d011238799b306286bf948738fb7dfaa00752ec90613b8f6d616cb29e0d",
+    "scripts/storage-generation29-lab-binding.py": "1c9bc6f500251c616d45ac0de62011c271e1ecfb77192708e07c568b28d97186",
+    "scripts/run-seaweedfs-452-cold-recovery.py": "a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089",
+    "scripts/run-seaweedfs-452-identity-tls.py": "50f75e99b0f3f012b2651e6856fecfc3f1742d20676c70c36499f30e84e75185",
+    "scripts/readback-seaweedfs-452-generation29-image.py": "e2207977aa1df85ca8aacf69da441f9729d2ce58ac6caf111cdc1e6f27ce2784",
+    "tests/test_storage_generation29_lab_binding.py": "e2ce453dcc7fe255ebf51f21f1ec7c8a2aad83435cf14836855b9881765103d5",
+    "tests/test_storage_generation29_labs.py": "809507215b6b08542047b3686e0a969e76546e8b9b27c4d36fc98d4ae6fef06a",
+    "releases/seaweedfs-452-generation29-build-manifest-20261103.json": "cddbcd4f40c13cb8e86d49d9bf30dc85109aeb3fa50334d92c4690e622d952c9",
+    "releases/seaweedfs-452-generation29-candidate-lock-20261103.json": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
+    ".github/workflows/storage-452-generation29-runtime-labs.yml": "35e688dec33397ec221bea36e2ded97b3d156b88a771bc901dc24151d587886f"
+  },
+  "candidateLockSha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
+  "cohortReceiptSha256": "9fc580014adb20ab50d321a1e7be84f9aa788dfbbbf1b832eaa87f7d25f02eca",
+  "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+  "ociManifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+  "coldRecovery": {
+    "objects": 5,
+    "bytes": 8388702,
+    "independentContainerIds": 8,
+    "rootsIndependent": true,
+    "cleanStopBeforeRestore": true,
+    "beforeAfterObjects": [
+      {
+        "key": "empty",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "getContentType": "application/x-ouf-recovery-fixture",
+        "headContentType": "application/x-ouf-recovery-fixture"
+      },
+      {
+        "key": "large.bin",
+        "bytes": 8388608,
+        "sha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f",
+        "getContentType": "application/x-ouf-recovery-fixture",
+        "headContentType": "application/x-ouf-recovery-fixture"
+      },
+      {
+        "key": "overwritten.bin",
+        "bytes": 25,
+        "sha256": "8e5586e2cde19738aca41a6a774d81ba4f06512b932995165486dd5092fa764d",
+        "getContentType": "application/x-ouf-recovery-fixture",
+        "headContentType": "application/x-ouf-recovery-fixture"
+      },
+      {
+        "key": "unicode/citt\u00e0 + %.txt",
+        "bytes": 22,
+        "sha256": "a2f1f304e2fb73de2e515aba2e6be77b0f07f06272801c1ecd7d5e0425414132",
+        "getContentType": "application/x-ouf-recovery-fixture",
+        "headContentType": "application/x-ouf-recovery-fixture"
+      }
+    ],
+    "octetStreamCompatibility": {
+      "bucket": "ouf-recovery-mime-fixture",
+      "bytes": 47,
+      "findings": [],
+      "g2Closed": false,
+      "getContentType": "application/octet-stream",
+      "headContentType": "application/octet-stream",
+      "key": "octet-stream.txt",
+      "mutatingRequestRetries": 0,
+      "requestedContentType": "application/octet-stream",
+      "sha256": "14f9c6ae9e1875a1b804984fe42b01c4e7f7edf4e0ccb7021325e4ba34214370",
+      "status": "PASS"
+    },
+    "backupFiles": 110,
+    "backupBytes": 8417467
+  },
+  "identity": {
+    "s3Cases": [
+      {
+        "attempts": 1,
+        "case": "bootstrap-create-ouf-identity-fixture",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-fixture",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "bootstrap-protected-ouf-identity-fixture",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-fixture/protected.txt",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "bootstrap-create-ouf-identity-other",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-other",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "bootstrap-protected-ouf-identity-other",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-other/protected.txt",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "prefix-put",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "prefix-get",
+        "errorCode": null,
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "prefix-list",
+        "errorCode": null,
+        "method": "GET",
+        "path": "/ouf-identity-fixture",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "outside-prefix-get",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/protected.txt",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "outside-prefix-put",
+        "errorCode": "AccessDenied",
+        "method": "PUT",
+        "path": "/ouf-identity-fixture/outside.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "other-bucket-get",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-other/protected.txt",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "other-bucket-put",
+        "errorCode": "AccessDenied",
+        "method": "PUT",
+        "path": "/ouf-identity-other/staging/no.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "prefix-delete-not-granted",
+        "errorCode": "AccessDenied",
+        "method": "DELETE",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "unscoped-list",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "outside-list",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "bucket-versioning-prefix-escalation",
+        "errorCode": "AccessDenied",
+        "method": "PUT",
+        "path": "/ouf-identity-fixture",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "bucket-policy-admin",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "anonymous",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "unknown-access-key",
+        "errorCode": "InvalidAccessKeyId",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "wrong-signature",
+        "errorCode": "SignatureDoesNotMatch",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "denied-delete-preserved-object",
+        "errorCode": null,
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "protected-object-preserved",
+        "errorCode": null,
+        "method": "GET",
+        "path": "/ouf-identity-fixture/protected.txt",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "denied-outside-put-created-no-object",
+        "errorCode": "NoSuchKey",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/outside.bin",
+        "status": 404
+      },
+      {
+        "attempts": 1,
+        "case": "denied-other-bucket-put-created-no-object",
+        "errorCode": "NoSuchKey",
+        "method": "GET",
+        "path": "/ouf-identity-other/staging/no.bin",
+        "status": 404
+      }
+    ],
+    "tlsNegatives": [
+      {
+        "ca": "ca.pem",
+        "host": "127.0.0.1",
+        "verificationRejected": true,
+        "verifyCode": 64,
+        "verifyMessage": "IP address mismatch, certificate is not valid for '127.0.0.1'."
+      },
+      {
+        "ca": "wrong-ca.pem",
+        "host": "localhost",
+        "verificationRejected": true,
+        "verifyCode": 20,
+        "verifyMessage": "unable to get local issuer certificate"
+      }
+    ],
+    "egress": [
+      {
+        "attempts": 1,
+        "destination": "192.0.2.1",
+        "errno": 101,
+        "errnoName": "ENETUNREACH",
+        "port": 443,
+        "transport": "TCP"
+      },
+      {
+        "attempts": 1,
+        "destination": "192.0.2.1",
+        "errno": 101,
+        "errnoName": "ENETUNREACH",
+        "port": 53,
+        "transport": "UDP"
+      }
+    ],
+    "policy": "GetObject/PutObject staging/* and prefix-conditioned ListBucket"
+  },
+  "all12ContainersDistinct": true,
+  "coldAndIdentitySequential": true,
+  "containerDetails": {
+    "original": [
+      {
+        "role": "master",
+        "id": "55bfa276dbd60b351c8738f7c0c7bd8bb2825edfd92b6e317a2fb6f59b7cb458",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/cold/original/master",
+        "startedAt": "2026-11-03T19:20:07.408313665Z",
+        "finishedAt": "2026-11-03T19:20:25.871657799Z"
+      },
+      {
+        "role": "volume",
+        "id": "0163fa211d0802176d9cd72c4a3eac63d5167467dc73b39f110bfca34ecbd628",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/cold/original/volume",
+        "startedAt": "2026-11-03T19:20:07.562527059Z",
+        "finishedAt": "2026-11-03T19:20:25.756766209Z"
+      },
+      {
+        "role": "filer",
+        "id": "10497d6217aa69bea0e23e5a1525bfe346086e53dab765256cf8f46931a03d6d",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/cold/original/filer",
+        "startedAt": "2026-11-03T19:20:07.696311186Z",
+        "finishedAt": "2026-11-03T19:20:24.624644838Z"
+      },
+      {
+        "role": "s3",
+        "id": "959dfc27a7026b3e331db0da7fd73c8e9b953571622cf411809dcee3983341f4",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/cold/original/s3",
+        "startedAt": "2026-11-03T19:20:07.820369019Z",
+        "finishedAt": "2026-11-03T19:20:24.217440737Z"
+      }
+    ],
+    "restored": [
+      {
+        "role": "master",
+        "id": "862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/cold/restored/master",
+        "startedAt": "2026-11-03T19:20:26.17151987Z",
+        "finishedAt": "2026-11-03T19:20:32.799134844Z"
+      },
+      {
+        "role": "volume",
+        "id": "62297b52e6713969552187de0af869f10814b88a0060ae729a20eee3d4d919b9",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/cold/restored/volume",
+        "startedAt": "2026-11-03T19:20:26.295775005Z",
+        "finishedAt": "2026-11-03T19:20:32.683261748Z"
+      },
+      {
+        "role": "filer",
+        "id": "e42379064eb30b3ea4b08847aada0bdf9894c49a30b90e2a123fc9694d0e2fe6",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/cold/restored/filer",
+        "startedAt": "2026-11-03T19:20:26.425422642Z",
+        "finishedAt": "2026-11-03T19:20:31.567271014Z"
+      },
+      {
+        "role": "s3",
+        "id": "4d005f570b5c83d75064511891d25b070b8464612ecf26ab7eeec6bc72c2d816",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/cold/restored/s3",
+        "startedAt": "2026-11-03T19:20:26.551476286Z",
+        "finishedAt": "2026-11-03T19:20:31.0240667Z"
+      }
+    ],
+    "identity": [
+      {
+        "role": "master",
+        "id": "a3b8904c2446ee024afac2c929cb63d9a4f3181da4da3c92c7f56034b92c397c",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/identity/fixture/master",
+        "startedAt": "2026-11-03T19:20:42.708179191Z",
+        "finishedAt": "2026-11-03T19:21:01.076581059Z"
+      },
+      {
+        "role": "volume",
+        "id": "06fb7f32b87fdcaf79ec4b85c6e9d527274b9da1840817a20533f39303cb755b",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/identity/fixture/volume",
+        "startedAt": "2026-11-03T19:20:42.825363001Z",
+        "finishedAt": "2026-11-03T19:21:00.95821266Z"
+      },
+      {
+        "role": "filer",
+        "id": "b6cf4ee8360a30a723fcd4ab2b15ba987c4c7d6dab87a3e856cfd30ef4239e95",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/identity/fixture/filer",
+        "startedAt": "2026-11-03T19:20:42.952189473Z",
+        "finishedAt": "2026-11-03T19:20:59.831889703Z"
+      },
+      {
+        "role": "s3",
+        "id": "36c709ec4c0348cb5b50b180407d6465d0ce79f3bf6fea5c9203a8cfa8b893be",
+        "dataMount": "/home/runner/work/_temp/generation29-runtime/identity/fixture/s3",
+        "startedAt": "2026-11-03T19:20:43.086345741Z",
+        "finishedAt": "2026-11-03T19:20:59.49093441Z"
+      }
+    ]
+  },
+  "maximumConcurrentContainers": 4,
+  "rawEvidence": {
+    "allOriginalBytesPreserved": true,
+    "allUtf8": true,
+    "zipIncluded": false,
+    "files": [
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/SHA256SUMS",
+        "bytes": 6026,
+        "sha256": "026946459da87e665bfa1e655f8b52869f8a20e06550132eaeb9a6dc4a5ed937"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cohort/SHA256SUMS",
+        "bytes": 743,
+        "sha256": "3d717969f23be59dd305e026cfa38cbe62f0ba2e10c962f16db6a236b9252a75"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cohort/cohort-receipt.json",
+        "bytes": 1009,
+        "sha256": "9fc580014adb20ab50d321a1e7be84f9aa788dfbbbf1b832eaa87f7d25f02eca"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cohort/licence-rebinding.json",
+        "bytes": 205502,
+        "sha256": "61b8bf30e025d6e361e47e519b156529386a50923d3ab993947b87cd02d8d196"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cohort/module-downloads.jsonl",
+        "bytes": 183041,
+        "sha256": "7f568b02bacd80a1eaf7d666877895da6566d4c4823a711f13a21b9f8b92e5c1"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cohort/ordered-patches.txt",
+        "bytes": 1519,
+        "sha256": "c01407908caadde67949c6772138fe3fb472402933bd54d7f1b27aef0bb68e46"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cohort/producer/SHA256SUMS",
+        "bytes": 1876,
+        "sha256": "15a0030b12a1138bba2cda4f4dd99dc0c9e67a3a3d187c42c14ee5ae86edb058"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cohort/producer/provenance.json",
+        "bytes": 12176,
+        "sha256": "f1559542390b2a93340933be45d74fef5917aa8973cd413ce8cce30f275aaead"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cohort/publisher-verification.json",
+        "bytes": 15448,
+        "sha256": "e50958c30856de8308ef6a3d9dcd2d44e2fb87077ad1d1737d5ff2f3c161def9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cohort/seaweedfs-452-generation29-candidate-lock-20261103.json",
+        "bytes": 3960,
+        "sha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/cold-backup-manifest.json",
+        "bytes": 15221,
+        "sha256": "64927ce71a2ede6e6f426f0133e3b8cfa4bb554545c892aa76868394077f5c21"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/exact-image.json",
+        "bytes": 902,
+        "sha256": "eb7d2874440387efd9cda8187ac9d8e31c221f63257c5a6f7c56417c87384c43"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-containers.json",
+        "bytes": 30423,
+        "sha256": "0ef8f9eebd689c20dd2a3f515d75f55b882a6cd8656ba3f83cd60ae7698f19c5"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-filer-stopped.json",
+        "bytes": 269,
+        "sha256": "d50e4a216fecc0c36423378e07a104fe100b6fa4025a06aff5657bcb6f031812"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-filer.log",
+        "bytes": 5605,
+        "sha256": "ad04129b8fa165ff1c8c9cc680860540e6b3574a90d51f577d41686cb414b41a"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-lock-ring-ready.json",
+        "bytes": 133,
+        "sha256": "92031239240df960b8481aab08a6c607a5125289207f8aad922f9c9f502bb593"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-master-stopped.json",
+        "bytes": 269,
+        "sha256": "5c33e4f0574a3bbd7cf51541910d1674f86a87d9fabb770826824cb547e0143e"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-master.log",
+        "bytes": 18755,
+        "sha256": "5e4c71d28e2a51581e869b8d70724f00ba2f89a368c6d4b4642b6292fbf817dd"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-ready.json",
+        "bytes": 29,
+        "sha256": "787cf41be328745ebb351d4da2866aaab8b16fa9e2f9ac948e37da6a12bb358b"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-routes.json",
+        "bytes": 735,
+        "sha256": "c98867bed49710425e06db702912151cabe4bd36878477c70f150006c5c546d9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-s3-stopped.json",
+        "bytes": 269,
+        "sha256": "9b3d4ee59bba1191020eaa909040ca25f50738b270193a5e806b65e8a7687d91"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-s3.log",
+        "bytes": 2033,
+        "sha256": "f29f2fd44bb0f248077bd93483671d282aa21ee290b2c6eb9a568e929fbd4052"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-seed.json",
+        "bytes": 1673,
+        "sha256": "1dd08412e49f2b0268a968db166d72373a7945c8db43108bf691208033ab0b79"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-volume-stopped.json",
+        "bytes": 269,
+        "sha256": "bc60e41c534b6a422d99b1901f40da2051e373e76fa9d32b5786925e45572078"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-original-volume.log",
+        "bytes": 7006,
+        "sha256": "7dc482b776ed4a28946b1ad60e1a39f47a6cd0b724d45c7f464979e622898c4d"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-containers.json",
+        "bytes": 30423,
+        "sha256": "7786902ee5dd8993e397bf02d835d4a32bc9229e21a7c7a4f7a18ce6daed29cb"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-filer-stopped.json",
+        "bytes": 269,
+        "sha256": "e40112f747d2f52d98c94e349626387f903812ae29935d27e69c45d30a3718dd"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-filer.log",
+        "bytes": 4674,
+        "sha256": "fff8d6330472eb386a91f42c460d6b937899685f1cbaf6765e687a992397f0cc"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-lock-ring-ready.json",
+        "bytes": 132,
+        "sha256": "ecef33ba94837996823cc3489ff7d7ecf40aa7477c2a451335e1ae48017248cf"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-master-stopped.json",
+        "bytes": 268,
+        "sha256": "55291370457de6ed1dbeec7963d79b3b626ffcf11496a16947caba95eb2b95e1"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-master.log",
+        "bytes": 13421,
+        "sha256": "0fe6a47ca3010b89c1c28c44caf78c4416496342aea824369f21d3ea0f270720"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-ready.json",
+        "bytes": 29,
+        "sha256": "787cf41be328745ebb351d4da2866aaab8b16fa9e2f9ac948e37da6a12bb358b"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-routes.json",
+        "bytes": 735,
+        "sha256": "c98867bed49710425e06db702912151cabe4bd36878477c70f150006c5c546d9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-s3-stopped.json",
+        "bytes": 267,
+        "sha256": "2d5f92f1a3bc0c43a771fd1a2aa3915ccb6e7600ee06293c1d96ba2e725f2ce1"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-s3.log",
+        "bytes": 1957,
+        "sha256": "ac84b6dc4dbfba1d8f7acecbe80eb0817039a5d0de4af228257b024c51aa3c6f"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-verify.json",
+        "bytes": 1675,
+        "sha256": "e8c8f90c4b0ef9b1a1827485a139e9a7ffec563014f7bf7d5802253375131ad9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-volume-stopped.json",
+        "bytes": 269,
+        "sha256": "1a836b54b05ee1a8303b4c77b095a512845faf5c22059abdb39a861e03af11c3"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/ouf-cold-2405-restored-volume.log",
+        "bytes": 880,
+        "sha256": "a7facd13b07c6c15071e87182d98fee543aee412cb5dfe31a26d933d10c3a30a"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/cold/recovery-result.json",
+        "bytes": 1906,
+        "sha256": "d0598acc634636fde81b8e1a846cb6a901a6278e77464aa91616b809a56261c8"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ca.pem",
+        "bytes": 1131,
+        "sha256": "90b5dd5f4468e27df9b8de8263962a775b9f9a76bb49fbb885665130b56b1ebc"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/containers.json",
+        "bytes": 30673,
+        "sha256": "9bc40240f4ea6269d38f2c7abd018c8286e79ad6038af23432f2a5eacbf0beaa"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/exact-image.json",
+        "bytes": 902,
+        "sha256": "eb7d2874440387efd9cda8187ac9d8e31c221f63257c5a6f7c56417c87384c43"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/fixture-policy.json",
+        "bytes": 1067,
+        "sha256": "eefee2f7451869fc168f9bf6eb23c7391b5bc222bcd7e4e803481e41d7187123"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/identity-result.json",
+        "bytes": 916,
+        "sha256": "309a00152ea22a1ddd16280a3a54830d354d37b43f889d8311433f316c0054f6"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/lock-ring-ready.json",
+        "bytes": 80,
+        "sha256": "4e671844eab816d974b0e3e382666b1b1e4fea01de3dbc792f0a37637c7723ec"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/network.json",
+        "bytes": 1245,
+        "sha256": "be0e5f8d65bed53bde2dd14f74eaba9b7b07d81669667e9afa46dc480b720e48"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-filer-stopped.json",
+        "bytes": 269,
+        "sha256": "233041f86e76bb0ee849b015a008bd9ced0ace1fbba19022a3705033f89876f4"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-filer.log",
+        "bytes": 5601,
+        "sha256": "ddaf02ea156e419122d53fcfb7549b7830132eedb3c5bfcf0e97b5035919ac9c"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-master-stopped.json",
+        "bytes": 269,
+        "sha256": "76afc1fe8ff1bc1122d08f9d61b9ed5e0bf55a26591753bc63fad9518c069dd2"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-master.log",
+        "bytes": 18603,
+        "sha256": "1c6f16b0ef9353d84f0adbb9356f025fb5467b34675be56b4104daf480354f65"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-ready.json",
+        "bytes": 50,
+        "sha256": "8f3b0680983866440b0144d433beacace4a31379a6cbefcb4d8e82621fcca4ea"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-s3-stopped.json",
+        "bytes": 268,
+        "sha256": "13089141784ae0e4936ea9ff5b9cef11d260b5b352f9fa54bb793967ca2642a8"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-s3.log",
+        "bytes": 2279,
+        "sha256": "4e8320f2c600627bd168970920888f1e64c001190552b211127e76ba0af87c67"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-verify.json",
+        "bytes": 5608,
+        "sha256": "a292eb2c1554e64c542cfe675d70d5ec59652c4d001d724828c7e7dffa5ff984"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-volume-stopped.json",
+        "bytes": 268,
+        "sha256": "205a3bf69596d20608c2055e9ebf1a12148f2aaed2447277275c03245e6ebec5"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/ouf-identity-2405-volume.log",
+        "bytes": 6957,
+        "sha256": "1e55381f95273a3b04d17a54ee4d5d48918fe89f4df0daa4cb1baf1e963c5bb1"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/server.pem",
+        "bytes": 1176,
+        "sha256": "d8892a12a23db6d419efb6881d1cd9b414283dae8cda2e51ba0b8ba0ee5111c0"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/identity/wrong-ca.pem",
+        "bytes": 1147,
+        "sha256": "20b8dd5f8e8a6294b022c221af77475ac9c9167751a7db6708df93fa3fe37014"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/runtime-result.json",
+        "bytes": 1198,
+        "sha256": "79072179666d5be1e6a708c6102f5a8116f838b51be23761b5f9fed81ba12ab9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation29-runtime-hosted-41701381292/source-sha256.json",
+        "bytes": 1239,
+        "sha256": "4ee0ee68ff10389b2617f1734984effec3cc08ad5d8550079129d49197fbaa68"
+      }
+    ]
+  },
+  "limits": [
+    "Synthetic storage cold restore only; PostgreSQL coordinated recovery not exercised.",
+    "No production migration, target credentials, mTLS, lateral isolation or certificate rotation qualified.",
+    "MIME29 regression passes; historical15 failure is preserved, not overwritten.",
+    "Licence review, redistribution acceptance and durable image custody remain separate OPEN authorities."
+  ],
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "allThreeWorkflowJobsPassed": true,
+  "runtimeJobId": 126147936979,
+  "workflowJobsEvidence": {
+    "path": "evidence/seaweedfs-generation29-runtime-jobs-41701381292.json",
+    "sha256": "e4cd4b19df2f0ef4da08c412fa35ccf765fc7de1ca99e78671757457d198e6a0",
+    "bytes": 9569
+  },
+  "runtimeJobStartedAt": "2026-11-03T19:19:19Z",
+  "runtimeJobCompletedAt": "2026-11-03T19:21:07Z",
+  "predecessorCohortArtifact": {
+    "id": 13264050910,
+    "archiveSha256": "b7c964366bfa20ff2f4af571fcc68a57dcc24c25c5db463e2b495a09f05ec56c",
+    "all9MemberBytesEqual": true
+  },
+  "localReadbackVerifierSha256": "2241ca7b9db8507da0e1354d151ce4664e373a4bb3f1dacfd30579ce786155de",
+  "sensitivePatternReview": {
+    "findings": 0,
+    "privateKeysPresent": false,
+    "credentialRecords": "Only intentionally public synthetic fixture-policy.json credentials; no target credentials."
+  },
+  "attestation": {
+    "hostedStepPassed": true,
+    "signatureReverifiedLocally": false,
+    "note": "Hosted attest-build-provenance step passed; this readback verifies exact bytes and metadata and does not claim a separate signature verification."
+  }
+}

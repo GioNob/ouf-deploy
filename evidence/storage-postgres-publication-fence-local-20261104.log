@@ -1,0 +1,12 @@
+test_correct_body_is_fully_read_and_bound (test_storage_postgres_writer_fence.FixtureBoundaryTest.test_correct_body_is_fully_read_and_bound) ... ok
+test_corrupt_equal_length_body_cannot_resolve_pending (test_storage_postgres_writer_fence.FixtureBoundaryTest.test_corrupt_equal_length_body_cannot_resolve_pending) ... ok
+test_duplicate_local_effect_cannot_overwrite (test_storage_postgres_writer_fence.FixtureBoundaryTest.test_duplicate_local_effect_cannot_overwrite) ... ok
+test_empty_body_is_not_confused_with_missing (test_storage_postgres_writer_fence.FixtureBoundaryTest.test_empty_body_is_not_confused_with_missing) ... ok
+test_numeric_and_function_bounds (test_storage_postgres_writer_fence.FixtureBoundaryTest.test_numeric_and_function_bounds) ... ok
+test_sql_literal_escaping_is_not_a_supported_input_path (test_storage_postgres_writer_fence.FixtureBoundaryTest.test_sql_literal_escaping_is_not_a_supported_input_path) ... ok
+test_symlink_and_absent_body_are_rejected (test_storage_postgres_writer_fence.FixtureBoundaryTest.test_symlink_and_absent_body_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.005s
+
+OK

@@ -1,0 +1,114 @@
+{
+  "status": "LAB_QUALIFIED_NOT_RUNTIME_ADMITTED",
+  "upstream": "seaweedfs/seaweedfs@984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "previous_ouf_checkpoint": "e4a0cd6830c975c79925232aa08a49859d55c32d",
+  "patches": 9,
+  "patch": "patches/seaweedfs/4.52-s3backend-sdk-v2.patch",
+  "patch_bytes": 25176,
+  "patch_sha256": "3b99b23c7855339635ae08b25fd9db22caacc9ea420ee544c86adf24e8944ed9",
+  "go": "1.27.3",
+  "full_suite": {
+    "CGO_ENABLED": 0,
+    "module_mode": "readonly",
+    "test_pass_events": 5548,
+    "test_skip_events": 5,
+    "package_pass": 19,
+    "package_fail": 0
+  },
+  "focused_race_test": "go test -count=1 -race ./weed/storage/backend/s3_backend: PASS",
+  "exact_reapply": "patch applies after the exact previous eight patches; diff check and focused package test PASS",
+  "build": {
+    "path": "github.com/seaweedfs/seaweedfs/weed",
+    "bytes": 233194314,
+    "sha256": "178a2ff1d3d99acd5b3226874df95cb2fb691b07e296f73cfb75f09261567194"
+  },
+  "graph": {
+    "scope": "go list -mod=readonly -deps ./weed",
+    "total_packages": 1865,
+    "correction": "exact base-eight and base-nine closures both contain 1865 packages; the prior local checkpoint reported 1864",
+    "sdk_v1_packages": 52,
+    "sdk_v1_direct_importer_packages": 2,
+    "sdk_v1_direct_import_edges": 11,
+    "delta_from_eight_patches": {
+      "added": [],
+      "removed": []
+    },
+    "remaining_importers": [
+      "weed/remote_storage/s3",
+      "weed/s3api"
+    ],
+    "deprecated_v2_feature_s3_manager_packages": 0
+  },
+  "ci": {
+    "seven_patches": {
+      "run": 41582635594,
+      "status": "success",
+      "both_jobs_success": true
+    },
+    "eight_patches": {
+      "run": 41583531119,
+      "source": "adee567bae520e2d93fcc8cdcad282ed79b820cb",
+      "status": "success",
+      "both_jobs_success": true
+    },
+    "nine_patches": {
+      "run": 41585394627,
+      "source": "5083a7f177cb3f983028efdb815d66a023beb495",
+      "status": "success",
+      "both_jobs_success": true
+    }
+  },
+  "verified_contracts": [
+    "maintained transfermanager v0.4.3 and service/s3 v1.114.1 replace SDK v1 in the tier backend",
+    "explicit region, complete static credential tuple and explicit validated HTTP(S) endpoint binding",
+    "session cache isolates credentials, path-style mode, endpoint and HTTP transport options without readable credential map keys",
+    "one SDK attempt; CopyFile no longer replays an ambiguous upload through util.Retry",
+    "flexible upload checksums remain enabled; synthetic HTTP observed SigV4, SeaweedFS user-agent and checksum",
+    "synthetic 503 upload produced exactly one request",
+    "download body retry loop is limited to one attempt and fsync-before-return remains",
+    "range ReadAt short/full/invalid behavior and stall timeouts remain covered",
+    "no package entered or left the compiled ./weed dependency closure"
+  ],
+  "intentional_configuration_changes": [
+    "region is now mandatory",
+    "partial static credentials, malformed or credential-bearing endpoints and implicit endpoint overrides are rejected",
+    "client reuse is scoped to the complete identity, addressing and transport binding"
+  ],
+  "limitations": [
+    "synthetic HTTP is not a real S3, TLS, egress or target qualification",
+    "ambiguous multipart create or complete and crash recovery still require durable owner reconciliation",
+    "default credential chain identities and refresh behavior require binding qualification",
+    "SDK v1 remains through remote_storage/s3 and s3api XML helpers; fresh image, SBOM, security, licence, custody and cohort qualification remains open",
+    "no target operation, copy, replay, reset, grant, merge, deploy or acceptance was performed"
+  ],
+  "preserved_state": {
+    "scope_consumed": 17,
+    "engine_gets": 52,
+    "teatri_m1_technical": "8/8",
+    "teatri_m1_functional": "6/6",
+    "farmacie": "61 rows / 10 OPEN / ministerial code STRING",
+    "real_objects_copied": "0/120"
+  },
+  "minipet": {
+    "estimated_engineering_progress_percent": 33,
+    "uncertainty_percentage_points": 10,
+    "gates_closed": "0/8",
+    "AT_accepted": "0/21"
+  },
+  "normative_sources": [
+    "docs/baseline/v1.7 UDP PET 1.3 sections 109.4-109.5",
+    "docs/baseline/v1.7 Matrix 1.7 sections 1, 4 and 5",
+    "docs/OUF_RESILIENCE_POLICY.md v3"
+  ],
+  "post_publication_readback": {
+    "source": "5083a7f177cb3f983028efdb815d66a023beb495",
+    "patch_bytes_equal_to_qualified_local_source": true,
+    "workflow_contains_exact_ninth_patch_and_backend_regression": true,
+    "evidence_readback_status": "LAB_QUALIFIED_NOT_RUNTIME_ADMITTED",
+    "nine_patch_ci": {
+      "run": 41585394627,
+      "status": "success",
+      "both_jobs_success": true
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "receipt": {
+    "schema": "ouf.ingestion-native-profile-preparation-result.v1",
+    "automaticReplayAllowed": false,
+    "bearerFilesOpened": 0,
+    "budgetReset": false,
+    "complete": true,
+    "completedArchiveAuditReplayed": false,
+    "completedCaptureReplayed": false,
+    "completedDbPreflightReplayed": false,
+    "completedGatewayConfigStagingReplayed": false,
+    "completedOwnerActionReplayed": false,
+    "completedPublicationReplayed": false,
+    "completedTechnicalPhases": 8,
+    "containerLifecycleOperations": 0,
+    "contextPath": "/etc/ouf/deploy-snapshots/ingestion-native-profiles-5xl2drfi",
+    "credentialHashesPrinted": false,
+    "credentialValuesPrinted": false,
+    "databaseAdmissionProven": false,
+    "databaseCalls": 0,
+    "dedicatedCredentialFilesRead": 0,
+    "elapsedSeconds": 0.2543109509861097,
+    "engineRequests": 0,
+    "finishedAtUnix": 1792518651.7248719,
+    "functionalMilestonesProven": 4,
+    "gatewayRequests": 0,
+    "humanCredentialJournalsRead": 0,
+    "nativeClientProfilePublished": false,
+    "newLoginPerformed": false,
+    "notReleaseAcceptance": true,
+    "oauthRequests": 0,
+    "ownerRequests": 0,
+    "privateNativeControlProfilesCompiled": true,
+    "retainedCaptureContext": "/etc/ouf/deploy-snapshots/ingestion-native-inputs-qs8zybi4",
+    "runtimeAuthorityIssued": false,
+    "selectedEndpoints": {
+      "gateway": {
+        "host": "127.0.0.1",
+        "port": 9180
+      },
+      "ingestion": {
+        "host": "::1",
+        "port": 8080
+      },
+      "owner": {
+        "host": "::1",
+        "port": 8080
+      }
+    },
+    "serviceReachabilityProven": false,
+    "startedAtUnix": 1792518651.4705625,
+    "status": "PRIVATE_NATIVE_PROFILES_COMPILED_NO_AUTHORITY",
+    "windowExtended": false
+  },
+  "receiptReceivedAt": "2026-10-20T18:00:11Z",
+  "launcherPath": "/home/oufadmin/ouf-native-profiles-launcher.5NB2Yroz",
+  "logPath": "/home/oufadmin/ouf-native-profiles.dro96os9/profiles.log"
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "ouf.postgres-native-scaffold-validation.v1",
+  "pythonCompile": "PASS",
+  "yamlParse": "PASS",
+  "workflowShellSyntax": "PASS",
+  "nativeCaseCountPlanned": 7,
+  "localOfflinePass": 9,
+  "nativePostgresExecuted": false,
+  "immutableDependencies": {
+    "postgres_fixture.py": "5f38344d93b9e2144688897ad2d2a82702f7aaeed447e994b080b33d2fc6b6f6",
+    "coordinated.py": "5e691c0e51d4e7b986b97cd1f51992d74893bf90f50396ea0033585168c20499",
+    "manifest.py": "ca368243e5dfbe5cffde6b9f6130ec17a59ae95a4fcc3c76105ccf41797716d6",
+    "profile.py": "bbe1b3015374d1b6ead80bf86d4718c249979dc82cc1add356d96c1f430c187e"
+  }
+}

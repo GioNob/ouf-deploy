@@ -1,0 +1,16 @@
+{
+	"Path": "go.mongodb.org/mongo-driver/v2",
+	"Version": "v2.9.2",
+	"Info": "/workspace/scratch/98dabd1608e5/gopath/pkg/mod/cache/download/go.mongodb.org/mongo-driver/v2/@v/v2.9.2.info",
+	"GoMod": "/workspace/scratch/98dabd1608e5/gopath/pkg/mod/cache/download/go.mongodb.org/mongo-driver/v2/@v/v2.9.2.mod",
+	"Zip": "/workspace/scratch/98dabd1608e5/gopath/pkg/mod/cache/download/go.mongodb.org/mongo-driver/v2/@v/v2.9.2.zip",
+	"Dir": "/workspace/scratch/98dabd1608e5/gopath/pkg/mod/go.mongodb.org/mongo-driver/v2@v2.9.2",
+	"Sum": "h1:OCAdjI37pC/SVxucz/9CM8zD4jCdegtsY5QcKzYFCgE=",
+	"GoModSum": "h1:SHKN0IWkKmEVGHLjXnni6s4wPKX4v86FTgOeJJFuXcA=",
+	"Origin": {
+		"VCS": "git",
+		"URL": "https://github.com/mongodb/mongo-go-driver.git",
+		"Hash": "df261dcb3f58dcedb9464bd8e7cd79f4e6657579",
+		"Ref": "refs/tags/v2.9.2"
+	}
+}

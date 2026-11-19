@@ -1,0 +1,207 @@
+{
+  "allDependenciesMaintained": false,
+  "build": {
+    "arch": "amd64",
+    "binaryBytes": 192665834,
+    "binaryDependencyModules": 214,
+    "binaryModuleRowsSha256": "429fc32a9079f3469effd90f90783b121e30cbb41e7eddadb494178f6a571370",
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "cgo": false,
+    "compiledPackages": 1532,
+    "compiledPackagesSha256": "6e4c3e404f0843e391944dbbdb6bfc46256360ec846d61eda5edcf39e82d4e11",
+    "go": "1.27.3",
+    "moduleMode": "vendor",
+    "os": "linux",
+    "tags": [],
+    "trimpath": true
+  },
+  "dependencyPatchCount": 1,
+  "generation": 33,
+  "maintenance": {
+    "reviewCadence": "EACH_CANDIDATE_AND_WEEKLY_WHILE_PATCH_ACTIVE",
+    "status": "OPEN",
+    "technicalOwner": null
+  },
+  "materialsSha256": {
+    "baseline-vendor-file-origins.json": "da2fcade7cc01fd2758835e897568e4239bae9f1639b33a12202318f85524a64",
+    "baseline-vendor-module-enumeration.txt": "87a1da47e5ad2f5f8d1d15b3cc0ca6e946743b212e4a76970639bae8dfc11dcb",
+    "baseline-vendor-origins.json": "1d43409e7944b14005a8ace01e2116bcbe5fb1248db3c20652aa1a3cbfee150c",
+    "compiled-module-origins.json": "b4c1ad0679a5f9dd646aa4f0960bf721d73558688846cbb2df6c838b470135c7",
+    "vendor-after-files.json": "2ba1809e17d2b2cc436d17e10ed704ba5f3a0bf8c26654d1b0535675562e1407",
+    "vendor-before-files.json": "540bb8193778aab7ca5ea8cfeacc1beda374b1056de0af265a15c20540313e83",
+    "vendor-execution.json": "c89c1d77cbbdba0fc7f4009d0caf15faf22da8cf418cea0a3307efa69a21302f",
+    "vendor-materializer.json": "409d6315b7f09d5f53245d340e849813c2268664343d61aeae00c7ae19d88a5e",
+    "vendor-modules.txt": "0e6e07da9b88a1ef9f0bb6281e4b404f5bdf5c69673b5a555b7ed3d72759ea17",
+    "vendor-source-profile.json": "2331b929c579e778a76072d279f8aa47e31cc054c0c8165936de8a7d7a6a5464"
+  },
+  "observation": {
+    "archive": {
+      "bytes": 2427480,
+      "checksumsVerified": 234,
+      "id": 13296914160,
+      "members": 235,
+      "path": "evidence/artifacts/seaweedfs-yaml33-source-observation-41776440912.zip",
+      "sha256": "ed8a3388310844df236ac1b219d4c111f156b5054d990906aaad3fb7554d1430"
+    },
+    "receiptPath": "evidence/seaweedfs-yaml33-source-observation-hosted-20261104.json",
+    "receiptSha256": "1ad94acaeabfbe41da96714b632291d0d9e23e45306cd69efac7c7910bd5b843",
+    "reportSha256": "2daf2f117b76ca18f362951502053f35f95b4872b6a1cc8b96e0cbbf2da79025",
+    "repositoryCommit": "4bd8c2645766ffbe407ca744c7bd72691a46ef9c",
+    "workflowRun": 41776440912
+  },
+  "orderedDependencyPatches": [
+    {
+      "path": "patches/iceberg-go/0.7.0-maintained-yaml-vendor.patch",
+      "sha256": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef"
+    }
+  ],
+  "orderedSourcePatches": [
+    {
+      "path": "patches/seaweedfs/4.52-listing-remove-sdk-v1.patch",
+      "sha256": "5163410b0c1e4f524a3a19a3ba487a8a01307a5de737036d2cd5bf63d9c59cd1"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch",
+      "sha256": "777210894faf79a581172df8d7b44ce2ef90e217b3d5f0997d4e61c2f6738f24"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch",
+      "sha256": "25d35f2154c815ccbd49415b4624cf0f9de821d5019709764b43a154e7f2edc8"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch",
+      "sha256": "1fe2238d34096cf0c7d948e08f6a148d16d23cb96827a36daeebd9da1f1954d3"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch",
+      "sha256": "64daedd2a53ad737b894306a8ee0bf3db952c9442092ca2dfc3224ba51d7764d"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-sqs-sdk-v2.patch",
+      "sha256": "53d01c3c9fd604365874f7aa8f12e88231267fa3ba46895e029fbefebbf919c3"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-kms-sdk-v2.patch",
+      "sha256": "6df667c5408dc97c7dbd447620c2ea6b688fc0b37bb2d43f2d471e9326c3f31a"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3sink-sdk-v2.patch",
+      "sha256": "fdb8cfc105b2cf5a8254085c8518ff35ad2d2dd00b3b4b13e05f33cc31d75cd4"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3backend-sdk-v2.patch",
+      "sha256": "3b99b23c7855339635ae08b25fd9db22caacc9ea420ee544c86adf24e8944ed9"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch",
+      "sha256": "63a8b9dc591f6d1b48d491b140b5a7611da92e0903cc26e3a346b1f17a8ce530"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch",
+      "sha256": "fe9d28e137b0f37a00fc134ce01c20275d5c01b8e4cc83e014aceb32e554e95f"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch",
+      "sha256": "89d017e69418aa93671b4fd4c219d5cbcf571367b50426303697ba939c4b0a30"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch",
+      "sha256": "59b72ea7a8d57bfd63a67d267f2fe4f95bb9d8c701a499c80f8698af2348f714"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch",
+      "sha256": "1dc0dd0514dd0af43d928eff8bc8a9ed4739c66b8ebb4a6f62d9a449110344d6"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-go-network-security-fixes.patch",
+      "sha256": "a32f169988281c2702b24af0fb8f9868930b50226f0bdda7f9276f7f24dde53e"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-basic-tests-sdk-v2.patch",
+      "sha256": "ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch",
+      "sha256": "3477b4233312670e5e6174e9e734d1590b9f38445fe0991f0bf2f63c89ea7cf8"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch",
+      "sha256": "743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch",
+      "sha256": "aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-sse-tests-sdk-v2.patch",
+      "sha256": "53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch",
+      "sha256": "cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch",
+      "sha256": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-normal-tests-sdk-v2.patch",
+      "sha256": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch",
+      "sha256": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch",
+      "sha256": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch",
+      "sha256": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-iam-module-sdk-v2.patch",
+      "sha256": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
+      "sha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3-content-type-persistence.patch",
+      "sha256": "54982d752afc77e680cfa75b5ada1febc6680709bdb46f8d284f2090448849bc"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-maintained-dependency-closure.patch",
+      "sha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch",
+      "sha256": "0120cc01549a960177294610ecd26b495b5f867af5ef8b1b9321dba17ddc16ad"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch",
+      "sha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9"
+    }
+  ],
+  "parentManifestSha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+  "releaseAdmitted": false,
+  "rootLockfilesSha256": {
+    "go.mod": "eb6b1c7d7871c857fae8da9e9cb6f282c2812bb988a29b76a6fbab5b9441bdc8",
+    "go.sum": "5bf04778982209263172e76833a9800eb7b2470d8613b4ad50934570544297a4"
+  },
+  "rootSourceGitTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-generation-vendor-build-manifest.v1",
+  "sourcePatchCount": 32,
+  "status": "VENDOR_SOURCE_REVIEWED_BUILD_PINNED_NOT_ADMITTED",
+  "targetOperations": 0,
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "vendor": {
+    "afterTreeSha256": "a1db34fc4e07e0403c544bbc1398a18e4e8cdb17856da2fadefa1da86f56b547",
+    "beforeTreeSha256": "1e39ce238b15e68f5494e0588b23c26a2adfa6fbdce6f665a046bdc653fc2646",
+    "fileCount": 13918,
+    "modulesTxtSha256": "0e6e07da9b88a1ef9f0bb6281e4b404f5bdf5c69673b5a555b7ed3d72759ea17"
+  }
+}

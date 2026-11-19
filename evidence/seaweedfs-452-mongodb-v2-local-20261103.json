@@ -1,0 +1,854 @@
+{
+  "schema": "ouf.seaweedfs-mongodb-v2-local.v1",
+  "status": "LOCAL_PASS_NOT_ADMITTED",
+  "futureLot": 32,
+  "generationSealed": false,
+  "baseGeneration": 30,
+  "historicalStageName": "mongodb31-stage",
+  "patch": {
+    "path": "patches/seaweedfs/4.52-mongodb-driver-v2.patch",
+    "sha256": "6459dc10651a0c7cd09c8c27300652ae1069b6046c9ac32a092cef8ec2c86a0e",
+    "files": 6
+  },
+  "upstream": {
+    "module": "go.mongodb.org/mongo-driver/v2",
+    "version": "v2.9.2",
+    "tagCommit": "df261dcb3f58dcedb9464bd8e7cd79f4e6657579",
+    "moduleSum": "h1:OCAdjI37pC/SVxucz/9CM8zD4jCdegtsY5QcKzYFCgE=",
+    "goModSum": "h1:SHKN0IWkKmEVGHLjXnni6s4wPKX4v86FTgOeJJFuXcA=",
+    "zipSha256": "fa7378829ce45e2d2ec8b92f0dfa1b65f52cd4aa308d17e92cf222ace6069783",
+    "zipBytes": 2347350,
+    "minimumGo": "1.25",
+    "minimumMongoDB": "4.4",
+    "lifecycle": "v1 deprecated; later v1 security fixes exist, so not described as totally unmaintained"
+  },
+  "qualification": {
+    "final-adaptive-contracts-16500": {
+      "pass": {
+        "events": 31,
+        "topLevel": 13,
+        "subtests": 18,
+        "packages": 1
+      },
+      "skip": {
+        "events": 0,
+        "topLevel": 0,
+        "subtests": 0,
+        "packages": 0
+      },
+      "fail": {
+        "events": 0,
+        "topLevel": 0,
+        "subtests": 0,
+        "packages": 0
+      },
+      "skips": []
+    },
+    "server-regression": {
+      "pass": {
+        "events": 4846,
+        "topLevel": 1629,
+        "subtests": 3217,
+        "packages": 2
+      },
+      "skip": {
+        "events": 5,
+        "topLevel": 5,
+        "subtests": 0,
+        "packages": 0
+      },
+      "fail": {
+        "events": 0,
+        "topLevel": 0,
+        "subtests": 0,
+        "packages": 0
+      },
+      "skips": [
+        "TestCheckGovernanceBypassPermissionIntegrationBehavior",
+        "TestGovernanceBypassWithIAMPermission",
+        "TestGovernancePermissionIntegration",
+        "TestGovernancePermissionEndToEnd",
+        "TestImplicitDirectoryIntegration"
+      ]
+    },
+    "baseline-v1-final": {
+      "pass": {
+        "events": 5,
+        "topLevel": 5,
+        "subtests": 0,
+        "packages": 0
+      },
+      "skip": {
+        "events": 0,
+        "topLevel": 0,
+        "subtests": 0,
+        "packages": 0
+      },
+      "fail": {
+        "events": 6,
+        "topLevel": 1,
+        "subtests": 5,
+        "packages": 1
+      },
+      "skips": []
+    },
+    "naive-v2-ack-final": {
+      "pass": {
+        "events": 0,
+        "topLevel": 0,
+        "subtests": 0,
+        "packages": 0
+      },
+      "skip": {
+        "events": 0,
+        "topLevel": 0,
+        "subtests": 0,
+        "packages": 0
+      },
+      "fail": {
+        "events": 6,
+        "topLevel": 1,
+        "subtests": 5,
+        "packages": 1
+      },
+      "skips": []
+    },
+    "adaptive-v2-control-16500": {
+      "pass": {
+        "events": 0,
+        "topLevel": 0,
+        "subtests": 0,
+        "packages": 0
+      },
+      "skip": {
+        "events": 0,
+        "topLevel": 0,
+        "subtests": 0,
+        "packages": 0
+      },
+      "fail": {
+        "events": 1,
+        "topLevel": 1,
+        "subtests": 0,
+        "packages": 1
+      },
+      "skips": []
+    }
+  },
+  "fullFinalLink": {
+    "command": [
+      "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+      "build",
+      "-mod=readonly",
+      "-trimpath",
+      "-o",
+      "/dev/null",
+      "./weed"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 17.090779304504395
+  },
+  "binaryIdentity": null,
+  "productionGraph": {
+    "beforePackages": 1740,
+    "afterPackages": 1742,
+    "removedPackages": 47,
+    "addedPackages": 49,
+    "oldMongoPackages": 0,
+    "v2MongoPackages": 49,
+    "externalImporters": [
+      "github.com/seaweedfs/seaweedfs/weed/filer/mongodb"
+    ],
+    "packageNamesSha256": "1004c95821ac60dca4f4c87e5740255a2c6f283159e895e20feef0462ae1c83b"
+  },
+  "moduleDelta": {
+    "removed": {
+      "github.com/montanaflynn/stats": "v0.7.1",
+      "go.mongodb.org/mongo-driver": "v1.17.9"
+    },
+    "added": {
+      "go.mongodb.org/mongo-driver/v2": "v2.9.2"
+    },
+    "changed": {}
+  },
+  "retryProfile": {
+    "retryWritesAndReads": "Existing default/URI behavior retained; no blanket disable",
+    "adaptiveRetries": 0,
+    "positiveAdaptiveOrRetargetingOptIn": "Rejected before Connect",
+    "wireProof": "Bounded standalone TCP fixture and negative control; no server dedup/replica-set/PITR claim"
+  },
+  "targetOperations": false,
+  "githubWrites": false,
+  "authoritiesScopesTeatriFarmacie": "UNCHANGED",
+  "limitations": [
+    "synthetic TCP peer is not MongoDB",
+    "no successful live authentication or actual query/index/durability verification",
+    "no replica-set/sharded retry/dedup/failover or long-outage recovery proof",
+    "no atomic arbitrary live store reconfiguration qualification",
+    "older MongoDB servers and legacy nonzero socketTimeoutMS/wTimeoutMS need explicit migration",
+    "no combined generation32 source/binary/image/security/SBOM/license/provenance seal",
+    "no runtime laboratory/target admission or miniPET gate/AT closure"
+  ],
+  "evidence": [
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-control-16500.command.json",
+      "sha256": "2f9d1e9739a7996ec2d05e5536fdc6e3d7f081bea32a7d2eb9ac8c276c6406ce",
+      "bytes": 296
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-control-16500.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-control-16500.stdout",
+      "sha256": "01e51c9c322056b1ebb9b0ad25c0b7c241edede96052b6606d373dc6d3804430",
+      "bytes": 1788
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-control-final/go.mod",
+      "sha256": "8d6e99df5bebe3d2f9aaf85d6c9d59fab64e2b6e1e5ff1b1835c88c220d08e86",
+      "bytes": 3577
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-control-final/go.sum",
+      "sha256": "8d1b7a69a21a2ee13b63e801bb47bf1886dcb6de88543ea1ab4b07d408662e0e",
+      "bytes": 23171
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-control-final/mongodb_options_v2_test.go",
+      "sha256": "9896552a8d69800d897e6c7ced9a231e66727df238ec818a061ec894be0e7877",
+      "bytes": 10154
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-control-final/mongodb_store.go",
+      "sha256": "dbbfe32e7135dfa97622bb817a901ecc0d316aeeeb7900ed38b97df8df0f706e",
+      "bytes": 12946
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-control-final/mongodb_store_kv.go",
+      "sha256": "468985996f7b61a8dbb9626aa2dca033c8ab3cf85e4073ffc1e60adf517c1558",
+      "bytes": 2023
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-control-final/mongodb_wire_test.go",
+      "sha256": "36ea9f30b9b73e6fdfe1e47b66e22801a11a610662e875493ed92c994dc1cf71",
+      "bytes": 14439
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-red.command.json",
+      "sha256": "7a20c6496ea4eab4c84f7b52c636c66d6e394710c103e593a98fbeb0e075ab86",
+      "bytes": 296
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-red.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-red.stdout",
+      "sha256": "50ae5b783d1b74f66c5b5b18e855553e7f7c4357e35dabf021cf9013a10076ea",
+      "bytes": 1477
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-tidy.command.json",
+      "sha256": "1e686e8512b8856acc0517e960c145246b9f845fd7dbe74b6947ccb9ac5f5bea",
+      "bytes": 153
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-tidy.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/adaptive-v2-tidy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/auth-mechanism-partial-uri-v1.log",
+      "sha256": "103cc28829642a9f658d7de0ce17f65d8ccec5fb6fede9f42620096ac1dde9fd",
+      "bytes": 197
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/auth-mechanism-partial-uri-v2.log",
+      "sha256": "61cb4c5cfbf845cad69b863c40e8e347f050f6cf9730ebed0e68103ec14aaec8",
+      "bytes": 96
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-tidy.command.json",
+      "sha256": "038c2b48fd81ee0c9d85e6c6b4a32c2d3843d789c79a21bc8415fc4839f3ab9d",
+      "bytes": 145
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-tidy.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-tidy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1/go.mod",
+      "sha256": "cf74fa1c5cb073a2958d54bed5df3be34cd9b5bcc61608ca2baebe9da4a7c087",
+      "bytes": 3616
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1/go.sum",
+      "sha256": "428973da0307132ba04692ffa1f734937860b9e8760efbf4c99b187ea1c9d6e3",
+      "bytes": 23344
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1/mongodb_store.go",
+      "sha256": "c2e8aae92e8c191e325ba68ed7ff062e0d57662054bd4c916772a05162a6dfa4",
+      "bytes": 11062
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1/mongodb_store_kv.go",
+      "sha256": "3c304d74944d25fc1a573dbedc65c662491795b03e9eed581ecc533e30fe0789",
+      "bytes": 1832
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1/mongodb_wire_test.go",
+      "sha256": "d4fdb58e7bf667250d62f5968ce73b7ed98cf0bef7acfda275995826a6dc8c68",
+      "bytes": 14275
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-contracts.command.json",
+      "sha256": "628b5126cb672f54eb5b61bab70883d939779796afbd16c33b8991c9ce5293af",
+      "bytes": 217
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-contracts.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-contracts.stdout",
+      "sha256": "32c553846aa80f99a64d95ffa38d87d1f68201ebf7cf12a5f8c7fba34f4f9db2",
+      "bytes": 12248
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-final/go.mod",
+      "sha256": "cf74fa1c5cb073a2958d54bed5df3be34cd9b5bcc61608ca2baebe9da4a7c087",
+      "bytes": 3616
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-final/go.sum",
+      "sha256": "428973da0307132ba04692ffa1f734937860b9e8760efbf4c99b187ea1c9d6e3",
+      "bytes": 23344
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-final/mongodb_store.go",
+      "sha256": "c2e8aae92e8c191e325ba68ed7ff062e0d57662054bd4c916772a05162a6dfa4",
+      "bytes": 11062
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-final/mongodb_store_kv.go",
+      "sha256": "3c304d74944d25fc1a573dbedc65c662491795b03e9eed581ecc533e30fe0789",
+      "bytes": 1832
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-final/mongodb_wire_test.go",
+      "sha256": "baa2902f07d98fab45e4368160be9349b598f8416b95e454ec1eeca2f14c4074",
+      "bytes": 14484
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-final.command.json",
+      "sha256": "628b5126cb672f54eb5b61bab70883d939779796afbd16c33b8991c9ce5293af",
+      "bytes": 217
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-final.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/baseline-v1-final.stdout",
+      "sha256": "3259f085ab52b233085eec892a1b3fadc075cf74df5305104057c86f6dfc5ef9",
+      "bytes": 12250
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/check-auth-v1.go",
+      "sha256": "609694d2a2ffa4217347d6e227b6281af631a6d464b3974d936287f5f746425c",
+      "bytes": 447
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/check-auth-v2.go",
+      "sha256": "70a6eabae97bf8943a2ef264b41b84feeb82ac8424859afae3862a16e86dc551",
+      "bytes": 450
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/download-driver.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/download-driver.stdout",
+      "sha256": "2573b6bfa58db3d3b772c2b4c3073fe1516c38285d6609d68b3ac1f8d0638fe5",
+      "bytes": 819
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-adaptive-contracts-16500.command.json",
+      "sha256": "b9c1ab6a97961c0beaf462c93b3b46228525b746c3e2ab4cbf6c4bd40f574816",
+      "bytes": 247
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-adaptive-contracts-16500.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-adaptive-contracts-16500.stdout",
+      "sha256": "ecd0000b41cbd0f0b2b4a77a7ec9722f88618a248c9f2bc975d3ea9de4a0d9c6",
+      "bytes": 31383
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-adaptive-contracts.command.json",
+      "sha256": "94d1abd911a7b87520cd97b141bca0d3bb468a4aa9e6af9d04843a330ebfeb31",
+      "bytes": 247
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-adaptive-contracts.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-adaptive-contracts.stdout",
+      "sha256": "9fe8a1ce39c27cc084e66bad5aedd379a6d4b06dfe272176289df6586f58510d",
+      "bytes": 31394
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-contracts-auth-fixed.command.json",
+      "sha256": "8b3d5546cd0f053e296dcdbebddf38b9a2c069ce535d886f0faf666f3cc5fa30",
+      "bytes": 248
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-contracts-auth-fixed.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-contracts-auth-fixed.stdout",
+      "sha256": "6132a3023c49d48b2c0ed8090215e90e933323c40ee721ae7a7c33852a6604d0",
+      "bytes": 27234
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-contracts-minimum.command.json",
+      "sha256": "db2dedd00258674e07453164c685e7a6e9f7609f80c570ddcc6b9f8b26b495c3",
+      "bytes": 248
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-contracts-minimum.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-contracts-minimum.stdout",
+      "sha256": "6cd657049527ad4d4a54635ed77003706d85d69b0fa105c5d176fecfd68f7615",
+      "bytes": 28186
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-contracts.command.json",
+      "sha256": "0da1608328dcbfc61ef7a9a5492b763a6a2f1b4309097608aa293c082632374b",
+      "bytes": 247
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-contracts.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-contracts.stdout",
+      "sha256": "fc95046b073083d1009b3e6ada43900e82f8c99131a1d1932358adf5124e877c",
+      "bytes": 27610
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-full-link.command.json",
+      "sha256": "0d171707f4a75ebd7661390ed17d20f6c4670926689f52e0625f32e3b035055a",
+      "bytes": 230
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-full-link.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-full-link.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-production-graph.command.json",
+      "sha256": "a13e7266f98f990a76a4f7e749c7d6206f0ecbc7d3e10d3b72af70dc75ce433d",
+      "bytes": 211
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-production-graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-production-graph.stdout.gz",
+      "sha256": "db4bcbb7eae30ff3ef98fff067a81ff0200e58d2d112b57f2f49fd58ff1f9aa6",
+      "bytes": 736353
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-tidy.command.json",
+      "sha256": "ac136eb7a7587ebbafbc75e9e01173c5e99a4f9a3c909516457b77f9539aab1b",
+      "bytes": 162
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-tidy.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/final-tidy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/full-link.command.json",
+      "sha256": "2d1f2cfc38ec41a93025657eb39fe0ad66c3f70b017405180fe2fd15b2d72b68",
+      "bytes": 230
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/full-link.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/full-link.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/initial-compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/initial-compile.stdout",
+      "sha256": "7cd9d1785417243ce4528806fd204253aaadd68c833d0fa276f9c52a5ae4b59a",
+      "bytes": 71
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/module-delta.json",
+      "sha256": "70030f1b61fddcb48f87185a49a361254c2d5c6fe3ad4df625683ee792128091",
+      "bytes": 197
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/mongo-contracts-final.command.json",
+      "sha256": "9bcdc83238336472de8e4d815b86b8f92faef0e9cc30357c05683f7a9141d642",
+      "bytes": 248
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/mongo-contracts-final.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/mongo-contracts-final.stdout",
+      "sha256": "fe447f14ac3e174fab84dec6dfbeae93dd66f1c792247030cfb8edece2277016",
+      "bytes": 24026
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/mongo-contracts.command.json",
+      "sha256": "aa04b1c364e45074256cec35a2484ec6312706fb93791502de276daf7c94d98f",
+      "bytes": 246
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/mongo-contracts.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/mongo-contracts.stdout",
+      "sha256": "b9f9938f0d0b83cd37a6e5ff91d28e2e6a4e651b6329d25bd9c00730ae65ade1",
+      "bytes": 24391
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-ack-final.command.json",
+      "sha256": "90a3421742c8ed807bfb1e2dc713b24f89c3cbd7aaf068129efc4fbc2ae3f3c9",
+      "bytes": 288
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-ack-final.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-ack-final.stdout",
+      "sha256": "36a3faee61a7bc39f6fb7f863db8d5970ac9a690b52f35c4568228ff1a7fbc64",
+      "bytes": 7509
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-ack.command.json",
+      "sha256": "791c90997eb9030d658d4e012f1433f0e353979cc446355c36a379d6aa23245d",
+      "bytes": 288
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-ack.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-ack.stdout",
+      "sha256": "7cf10b23c763bc07d429c8d64895295ef1947bfa8257196db8c5cb2f0b7477ab",
+      "bytes": 7422
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control/ack_test.go",
+      "sha256": "122c2c499779eb8182cc89050f8cf63e4c3b7235aea612006466f21c41656f9a",
+      "bytes": 1477
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control/go.mod",
+      "sha256": "eddc96a9d4516a26f0ca125e696e5f5add9d9ffe16ff633aa783d13f39ff78db",
+      "bytes": 3574
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control/go.sum",
+      "sha256": "8d1b7a69a21a2ee13b63e801bb47bf1886dcb6de88543ea1ab4b07d408662e0e",
+      "bytes": 23171
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control/mongodb_store.go",
+      "sha256": "976d4ade21ff8a14e0e53725e736157574ef8db892407228381f52578e6ceacc",
+      "bytes": 12233
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control/mongodb_store_kv.go",
+      "sha256": "65f4ad9980f54a776a0fbb80597951001ef045869dcd9342e0f215dbd09c4026",
+      "bytes": 1844
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control/mongodb_wire_test.go",
+      "sha256": "a2c1b7d41b854ee30e627a30f94caf9dba375d9013c772a10d052e2ea0329184",
+      "bytes": 14230
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control-final/go.mod",
+      "sha256": "eddc96a9d4516a26f0ca125e696e5f5add9d9ffe16ff633aa783d13f39ff78db",
+      "bytes": 3574
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control-final/go.sum",
+      "sha256": "8d1b7a69a21a2ee13b63e801bb47bf1886dcb6de88543ea1ab4b07d408662e0e",
+      "bytes": 23171
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control-final/mongodb_options_v2_test.go",
+      "sha256": "9896552a8d69800d897e6c7ced9a231e66727df238ec818a061ec894be0e7877",
+      "bytes": 10154
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control-final/mongodb_store.go",
+      "sha256": "218acf47de57b9352b52783b36fd6a38f6879cddd97dcecca9253a75d7f0844a",
+      "bytes": 12665
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control-final/mongodb_store_kv.go",
+      "sha256": "65f4ad9980f54a776a0fbb80597951001ef045869dcd9342e0f215dbd09c4026",
+      "bytes": 1844
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-control-final/mongodb_wire_test.go",
+      "sha256": "36ea9f30b9b73e6fdfe1e47b66e22801a11a610662e875493ed92c994dc1cf71",
+      "bytes": 14439
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-tidy.command.json",
+      "sha256": "f33ae73a8c7f2e8dc327c4dad0c5e81294c0b70c4dcc1f4914b6dbcc69c0bc3c",
+      "bytes": 150
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-tidy.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/naive-v2-tidy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/normative-inputs.json",
+      "sha256": "2e1a11b2e91156ca243f9c5b97bd1602130b90f792006b47e7d647aef3ed10ad",
+      "bytes": 1000
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/patch-replay.json",
+      "sha256": "32d689b95db60d8121702d932817a448eee5a071934dd71a44443b34cb630b09",
+      "bytes": 416
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/production-compile.command.json",
+      "sha256": "bcf8722bbbf056539c00263f76723f8888b38df5a3b4e0fbbbf7f16dcb164afc",
+      "bytes": 207
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/production-compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/production-compile.stdout",
+      "sha256": "a4a3125d4767fab19a8bdc86fa6b9a886049ea606a78d8c1ab808a530bdafa1b",
+      "bytes": 57
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/production-graph-summary.json",
+      "sha256": "b4156593657616968883ece18604d499d951e85ac804f4322315f5124c50631c",
+      "bytes": 17820
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/production-graph.command.json",
+      "sha256": "7c26c3a8ae5f9d128bc51aa4fa1af40ecafbc8b78508d4d60859df24eaf7242d",
+      "bytes": 211
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/production-graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/production-graph.stdout.gz",
+      "sha256": "154987b73ac2b05518c1cd613c5fe269c95588922c3ff3cb1b6b8934e665fc61",
+      "bytes": 736998
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/production-packages.txt",
+      "sha256": "1004c95821ac60dca4f4c87e5740255a2c6f283159e895e20feef0462ae1c83b",
+      "bytes": 72681
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/server-regression.command.json",
+      "sha256": "5f2e744a3de6d02d0fc51bc47621689e3d4180e5169aa88af41ed7e3404aa8e4",
+      "bytes": 261
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/server-regression.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/server-regression.stdout.gz",
+      "sha256": "d479327a1974e5ff73b22a6b23999b561d6cadfa2e82946479470d5cb402d0a6",
+      "bytes": 382597
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/source-delta.json",
+      "sha256": "923a939b5c9b9b3d73d11f1b2d64ab12754f9b7a652eedfa2d9646fec53a44c6",
+      "bytes": 1242
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/test-summary.json",
+      "sha256": "3901940e5ebef3a8b757f9dfcfeb1d8143d592f6a1550776317842ff2af404fa",
+      "bytes": 2041
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/tidy-final.command.json",
+      "sha256": "4344d1918fd6413b887265dabc3bc7ad7b9d98fd12d2254f1affcd3ad071e8dc",
+      "bytes": 161
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/tidy-final.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/tidy-final.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/tidy.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/tidy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream/README.md",
+      "sha256": "41565d5b58c8934e7dfc617a36fe03bb9738e5a03c77949db2680a920d9d31eb",
+      "bytes": 7149
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream/client.go",
+      "sha256": "7d6572f15f04405d9ea9741d292c68b8317bed9c029fbbf6051c582e9bd6f735",
+      "bytes": 38665
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream/clientoptions.go",
+      "sha256": "04cd78847b318c35955582c55db1db3e48094986eecc96786d8b476ff1bdced5",
+      "bytes": 56490
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream/docs-migration-2.0.md",
+      "sha256": "7a2d8ac52edffa771ec21cea0ae272b47a4f8097e3d7ad8c9d59e29ecb04f8cd",
+      "bytes": 35842
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream/go.mod",
+      "sha256": "b40a09d42472068006511b4f3e940dd1d1f61703c4909827b0b5b7dd03e1a93e",
+      "bytes": 742
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream/operation.go",
+      "sha256": "56413802db1df8b7365b7c91429802b1827e111a5d58ca5d8e29f6e8ab98baf2",
+      "bytes": 81942
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream/sumdb-v2.9.2.txt",
+      "sha256": "0359d77709ed8d10682812272ff2dd2082d544f4c2fae6af7e25a61e380d268c",
+      "bytes": 377
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream/v2.9.2.info",
+      "sha256": "118b2791f98d4a76609d4030a2c2cbdee9f79050bd96164ec635a125819b4d88",
+      "bytes": 203
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/upstream-review.json",
+      "sha256": "8eb924cca367a473b2c984d7d05ec89617e7a85d26a24ca17e8a3ef3d64c3494",
+      "bytes": 1807
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/wire-first.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/wire-first.stdout",
+      "sha256": "17bf6ed4cc6c3258872ba64c4d27fbb017ee3afa9b63254ecd3f8bc826fa9817",
+      "bytes": 2387
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/wire-second.command.json",
+      "sha256": "41c1801ea6f4074139c8498ab4637fb67a94b7e32b51dd3a2e281b7a0fe1547a",
+      "bytes": 248
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/wire-second.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-mongodb-v2-local-20261103/wire-second.stdout",
+      "sha256": "b6a8cbcbfae27d48775b5d6b833e85e9f8cfd1e0dfd0e93406eec193501faf00",
+      "bytes": 11486
+    }
+  ]
+}

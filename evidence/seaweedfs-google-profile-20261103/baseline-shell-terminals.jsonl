@@ -1,0 +1,11 @@
+{"Time":"2026-11-03T21:36:59.855023784+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestFsMvMovesIntoExistingDestinationDirectory","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.855080039+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestFsVerifyVerifyEntryPrunability/missing_on_all_locations","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.855303024+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestFsVerifyVerifyEntryPrunability/healthy_on_one_of_two_locations","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.855317175+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestFsVerifyVerifyEntryPrunability/concurrent_path_matches_sequential","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.855323595+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestFsVerifyVerifyEntryPrunability","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.855337526+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestFsVerifyPruneEntryGuards","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.855387551+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestFsVerifyManifestResolutionFailure/healthy_raw_needle_but_unresolvable_manifest_is_not_verified","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.855401032+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestFsVerifyManifestResolutionFailure/missing_manifest_needle_is_prunable","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.855405458+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestFsVerifyManifestResolutionFailure","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.855537547+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Test":"TestS3BucketCreateRequestsExclusiveCreate","Elapsed":0}
+{"Time":"2026-11-03T21:36:59.859951485+01:00","Action":"fail","Package":"github.com/seaweedfs/seaweedfs/weed/shell","Elapsed":0.136}

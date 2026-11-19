@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-07): solo manuale, D-055
 name: OUF dependency repair details
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [.github/workflows/dependency-repair-details.yml]
 permissions:
   contents: read
   actions: read

@@ -1,0 +1,19 @@
+{
+  "exactBaseGeneration": 29,
+  "baseTree": "574ad42543851ffe58cc025e14b1011609ff83de",
+  "goFilesInspected": 3434,
+  "googleBtreeImportFiles": [
+    "weed/storage/needle_map/needle_value.go"
+  ],
+  "needlePathLessReferences": [
+    {
+      "path": "weed/storage/needle_map/needle_value.go",
+      "line": 15,
+      "text": "func (this NeedleValue) Less(than btree.Item) bool {"
+    }
+  ],
+  "compiledImporterInventory": "lifecycle262-stage/proposal/evidence/lifecycle262/flagged-compiled-importers.json",
+  "sourceChange": "Delete unused NeedleValue.Less(btree.Item) and its sole import; no index algorithm replacement",
+  "publicGoApiDelta": "Removed exported method NeedleValue.Less; downstream Go package users outside this repository are not qualified. Server API and file encoding unaffected by this deletion.",
+  "rootClosureCaveat": "Generation29 root graph also declares google/btree via github.com/tikv/client-go/v2@v2.0.7; full root absence cannot be claimed from this edit."
+}

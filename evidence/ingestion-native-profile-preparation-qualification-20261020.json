@@ -1,0 +1,115 @@
+{
+  "schema": "ouf.ingestion-native-profile-preparation-qualification.v1",
+  "observedAt": "2026-10-20T17:24:31.158Z",
+  "sourceCommit": "af94b95b90226fe84d89e28ec966720e3fcbc3c0",
+  "pullRequest": 45,
+  "runId": 39465549162,
+  "jobs": [
+    {
+      "python": "3.12",
+      "jobId": 118775866368,
+      "tests": 12,
+      "skips": 0,
+      "conclusion": "success"
+    },
+    {
+      "python": "3.13.5",
+      "jobId": 118775865802,
+      "tests": 12,
+      "skips": 0,
+      "conclusion": "success"
+    }
+  ],
+  "initialFailedRun": {
+    "id": 39465386988,
+    "sourceCommit": "eca000cd277dd27596d83bee0bda74b3d168bbd1",
+    "jobs": [
+      118775313793,
+      118775313449
+    ],
+    "reason": "Fixture incorrectly selected runner-writable hostedtoolcache interpreter as root-custodied transport metadata. Exact executable ancestry check correctly blocked. Fixture now binds /usr/bin/python3; production guards unchanged.",
+    "additionalPreDeliveryFix": "Sealed entry now admits exact inspect CONTEXT as well as prepare; read-only reconciliation was already implemented, and is exercised by successful complete isolated CI."
+  },
+  "regressionRuns": {
+    "capture": 39465549328,
+    "human": 39465549365
+  },
+  "captureRegressionJobs": [
+    118775867856,
+    118775867292
+  ],
+  "humanRegressionJobs": [
+    118775867941,
+    118775867806
+  ],
+  "artifact": {
+    "path": "scripts/prepare-ingestion-native-profiles-20261020.py",
+    "bytes": 604639,
+    "sourceClosureModules": 113,
+    "sha256": "ddb03c262ff06f53591708ddf8ac9204244ef15e7edd6e82010bf998c1781602",
+    "blob": "1e8d5306fb6c294628aeccb4b3fcbd3f966e2cf0"
+  },
+  "launcher": {
+    "path": "scripts/launch-ingestion-native-profiles-20261020.sh",
+    "sha256": "39e68be8cb85fe6a9222f3e1e4c29c508b2ea372f6bd5b4033c7695eac9211ec",
+    "maximumExecutableDeliveryBytes": 1048576
+  },
+  "checks": [
+    "pure exact composition with all qualified native validators",
+    "second Ente independent explicit endpoint/namespace inputs",
+    "full original selection and completed captured generations",
+    "IPv6 wildcard uses IPv6 loopback without assuming dual stack",
+    "bounded PID-owned Unix socket path/port",
+    "confined process-root absolute symlink resolution preserving invocation argv0",
+    "completed archive/config metadata seal with no byte reads",
+    "one private claim and partial-context retention",
+    "actual sealed preparation and inspection with retained files, actual chroot process root and real owned Unix socket",
+    "reproducible delivery and rejection of authentication entry modes"
+  ],
+  "fixtureIsActualPostgresServer": false,
+  "fixtureSqlCalls": 0,
+  "localTestSummary": {
+    "tests": 12,
+    "passed": 10,
+    "skipped": 2,
+    "reason": "No local proc; both mandatory root Linux cases passed in CI"
+  },
+  "nativeG2SourcesChanged": false,
+  "targetProfilePreparationExecuted": false,
+  "databaseAdmissionProven": false,
+  "nativeClientProfilePublished": false,
+  "runtimeAuthorityIssued": false,
+  "notReleaseAcceptance": true,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "humanWindowOpened": false,
+  "completedCaptureReplayAllowed": false,
+  "completedOwnerActionReplayAllowed": false,
+  "completedPublicationReplayAllowed": false,
+  "baselineConsulted": [
+    {
+      "document": "Matrix",
+      "version": "1.7",
+      "sections": [
+        "1"
+      ]
+    },
+    {
+      "document": "Blueprint",
+      "version": "0.3",
+      "sections": [
+        "9",
+        "10"
+      ]
+    },
+    {
+      "document": "Ingestion PET",
+      "version": "1.3",
+      "sections": [
+        "146",
+        "146.1"
+      ]
+    }
+  ],
+  "portabilityLimit": "Production native control adapters remain the explicitly selected local Engine/namespace profile. Independent multi-host acceptance is still G7 work; observations from this installation are not reusable defaults."
+}

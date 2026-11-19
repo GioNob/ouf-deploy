@@ -1,0 +1,21 @@
+{
+  "schema": "ouf.storage-g0-datasource-review-validation.v1",
+  "date": "2026-11-06",
+  "localTestsPassed": 10,
+  "localTestsFailed": 0,
+  "localTestsSkipped": 0,
+  "processReadersInjected": true,
+  "vpsDiagnosticExecuted": false,
+  "providerQualificationPerformed": false,
+  "dedicatedCiStatus": "PENDING_NEW_COMMIT",
+  "sourceSha256": {
+    "scripts/review-storage-g0-datasource-20261106.py": "9f9b45099577c267ceef2a2fc28440fb9aa0b5e809068eb26102457ec1c967fa",
+    "tests/test_storage_g0_datasource_review.py": "545914e50cdcd6bda3124b8870119b67be29911d19de49083af14d1b394e7f42",
+    ".github/workflows/storage-g0-datasource-review.yml": "aee2a663626fb1e521438333e94bccbe3fa1f5a0c0bec448430ca6baa2821274"
+  },
+  "originalPreparerSha256": "ded6eed9b0da0b67f7434f588b384b43ffd3986a75fe91d406ff1abf18699320",
+  "providerRequests": 0,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0,
+  "prePublicationCorrection": "Source identity excludes access time, which a legitimate read may update; regression covers an older atime. Ten local cases rerun after this code change."
+}

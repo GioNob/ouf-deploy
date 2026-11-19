@@ -1,0 +1,127 @@
+{
+  "businessRequestsIssued": 0,
+  "credentialFilesRead": 0,
+  "credentialValuesEmitted": false,
+  "currentReplacementMarkerPresent": false,
+  "databaseComparison": {
+    "activityAfterStop": {
+      "handoffStates": {
+        "ACKED": 34
+      },
+      "runStates": {
+        "SUCCEEDED": 3
+      },
+      "unexpiredPartitionLeases": 0
+    },
+    "activityBefore": {
+      "handoffStates": {
+        "ACKED": 34
+      },
+      "runStates": {
+        "SUCCEEDED": 3
+      },
+      "unexpiredPartitionLeases": 0
+    },
+    "causeOfChangesProven": false,
+    "changedSections": [
+      "retainedRows"
+    ],
+    "changedTables": [
+      "ing_schedule"
+    ],
+    "migrationChanges": [],
+    "migrationHistoryUnchanged": true,
+    "rowFingerprintsEmitted": false,
+    "rowIdentifiersPayloadsAndCheckpointsRead": false,
+    "scope": "RETAINED_SUMMARIES_ONLY_NOT_NEW_DATABASE_QUERY",
+    "tableComparisons": {
+      "handoff_outbox": {
+        "fingerprintChanged": false,
+        "rowCountChanged": false,
+        "rowsAfter": 34,
+        "rowsBefore": 34
+      },
+      "ing_lineage": {
+        "fingerprintChanged": false,
+        "rowCountChanged": false,
+        "rowsAfter": 34,
+        "rowsBefore": 34
+      },
+      "ing_partition": {
+        "fingerprintChanged": false,
+        "rowCountChanged": false,
+        "rowsAfter": 3,
+        "rowsBefore": 3
+      },
+      "ing_run": {
+        "fingerprintChanged": false,
+        "rowCountChanged": false,
+        "rowsAfter": 3,
+        "rowsBefore": 3
+      },
+      "ing_schedule": {
+        "fingerprintChanged": true,
+        "rowCountChanged": false,
+        "rowsAfter": 2,
+        "rowsBefore": 2
+      },
+      "processing_attempt": {
+        "fingerprintChanged": false,
+        "rowCountChanged": false,
+        "rowsAfter": 36,
+        "rowsBefore": 36
+      },
+      "runtime_configuration_snapshot": {
+        "fingerprintChanged": false,
+        "rowCountChanged": false,
+        "rowsAfter": 3,
+        "rowsBefore": 3
+      }
+    }
+  },
+  "databaseRequests": 0,
+  "dockerInspectAttempts": 1,
+  "evidenceFilesModified": false,
+  "imageImports": 0,
+  "journalFilesPresent": {
+    "application-start-intent.json": false,
+    "attempt.json": true,
+    "complete.json": false,
+    "create-intent.json": false,
+    "created.json": false,
+    "detach-intent.json": false,
+    "detached.private.json": false,
+    "gate-start-intent.json": false,
+    "image-load-intent.json": true,
+    "rename-intent.json": false,
+    "stop-intent.json": true,
+    "stopped.private.json": true
+  },
+  "observedAt": "2026-11-08T21:20:55.347536+00:00",
+  "oldContainer": {
+    "configMatchesBeforeStop": false,
+    "configMatchesStoppedRecord": false,
+    "exitCode": 143,
+    "hostConfigMatchesStoppedRecord": true,
+    "launchMatchesStoppedRecord": true,
+    "mountsMatchStoppedRecord": true,
+    "networkCount": 1,
+    "networksMatchStoppedRecord": false,
+    "oomKilled": false,
+    "pidZero": true,
+    "read": true,
+    "retainedStoppedRecordConfirmsStop": true,
+    "running": false,
+    "sameGenerationAsStoppedRecord": true,
+    "sameNameAsStoppedRecord": true
+  },
+  "rawLogsEmitted": false,
+  "retainedFilesRead": 4,
+  "retainedFilesUnchangedDuringRead": true,
+  "s3Requests": 0,
+  "schema": "ouf.ingestion-wide-held-state-read.v1",
+  "serviceConfigurationChanged": false,
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "status": "INGESTION_HELD_STATE_READ_COMPLETE"
+}

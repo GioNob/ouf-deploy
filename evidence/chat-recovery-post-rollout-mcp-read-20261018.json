@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.chat-recovery-post-rollout-mcp-read.v1",
+  "mcp": {
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false
+  },
+  "source": {
+    "sourceId": "teatri-csv-6609b245",
+    "onboardingVersionId": "9860853e-e8f3-4b93-b9d2-03521a039962",
+    "state": "ACTIVE",
+    "lockVersion": 4,
+    "configurationHash": "sha256:ae7f46b4214d09c55a9885530920026258f0dcd588462c353b06d82185e12c9b",
+    "publicationId": "996d58ca-43d6-42f5-a42a-311940e742f9",
+    "publicationActive": true
+  },
+  "search": {
+    "type": "https://schema.org/PerformingArtsTheater",
+    "result": "orchestration budget exhausted",
+    "retryable": false,
+    "retried": false,
+    "functionalStage4Proven": false
+  },
+  "invalidAcceptanceProbe": {
+    "type": "FILE",
+    "items": 0,
+    "note": "Acquisition type is not the canonical urban class; this result proves neither absence nor loss of source objects."
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 3
+}

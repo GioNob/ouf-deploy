@@ -1,0 +1,33 @@
+{
+  "schema": "ouf.readiness-reconciled-review-qualification.v1",
+  "sourceCommit": "b115721ab091c14b4073a21d82688b9745a543a5",
+  "ciRun": 39658470844,
+  "jobs": [
+    {
+      "id": 119424921145,
+      "name": "offline-template (3.13.5)",
+      "status": "completed",
+      "conclusion": "success",
+      "tests": 13,
+      "skipped": 0
+    },
+    {
+      "id": 119424921762,
+      "name": "offline-template (3.12)",
+      "status": "completed",
+      "conclusion": "success",
+      "tests": 13,
+      "skipped": 0
+    }
+  ],
+  "compilerSha256": "7d81a5dd8f23c1f3cb927c6a5195daf1b1f55340b8abb0aedf2cafad3322e5ae",
+  "caseFileSha256": "4985cbd6d038d51e050a336a711a85a5342128858a55b7c9240f9c9d44a43b5f",
+  "caseHash": "51a014429f1663e4760de93e7e6ae8200fd4ad813a5153c77d21ef5066562bac",
+  "targetCompilationObserved": false,
+  "nativeRuntimeExecutorQualified": false,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "technicalPhasesCompleted": 8,
+  "functionalMilestonesProven": 4,
+  "releaseAcceptance": false
+}

@@ -1,0 +1,56 @@
+{
+  "repositoryVersion": "0.7",
+  "scope": "Authorization contracts + immediate consistency check",
+  "result": "PASS",
+  "schemaFixtureValidation": {
+    "principal": {
+      "pass": true,
+      "errors": []
+    },
+    "resource": {
+      "pass": true,
+      "errors": []
+    },
+    "capability": {
+      "pass": true,
+      "errors": []
+    },
+    "grant": {
+      "pass": true,
+      "errors": []
+    },
+    "bundle": {
+      "pass": true,
+      "errors": []
+    },
+    "decision": {
+      "pass": true,
+      "errors": []
+    },
+    "evidence": {
+      "pass": true,
+      "errors": []
+    }
+  },
+  "validCrossContractErrors": [],
+  "defaultDenyPositiveErrors": [],
+  "negativeChecks": {
+    "serviceIdentityHumanRequired": [
+      "AUTH-X02 humanRequired capability with non-human actor",
+      "AUTH-X05 no applicable actor grant must DENY"
+    ],
+    "unknownCapabilityAllow": [
+      "AUTH-X04 unknown/ungranted capability must DENY"
+    ],
+    "mixedPolicyVersion": [
+      "AUTH-X10 decision policyVersion mismatch"
+    ],
+    "denyOverrides": [
+      "AUTH-X05 explicit DENY must override ALLOW"
+    ]
+  },
+  "contractCount": 9,
+  "invariantCount": 18,
+  "externalGateCount": 4,
+  "scopeCreepAssessment": "No new IAM, policy engine, central authorization microservice, Gateway plugin, Query Governor or MCP responsibility introduced."
+}

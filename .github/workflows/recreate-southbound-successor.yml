@@ -1,0 +1,26 @@
+name: Recreate southbound successor (simulated Engine)
+on:
+  pull_request:
+    paths:
+      - scripts/recreate-southbound-successor-20261113.py
+      - scripts/deliver-recreate-southbound-successor-20261113.sh
+      - tests/test_recreate_southbound_successor.py
+      - .github/workflows/recreate-southbound-successor.yml
+      - docs/OUF_SOUTHBOUND_SUCCESSOR_RECREATE_20261113.md
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Simulated Docker tests (standard library only)
+        run: python3 -I -B -m unittest discover -s tests -p test_recreate_southbound_successor.py -v
+      - name: Launcher syntax
+        run: bash -n scripts/deliver-recreate-southbound-successor-20261113.sh

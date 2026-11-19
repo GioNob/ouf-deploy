@@ -1,0 +1,166 @@
+{
+  "buildManifest": {
+    "patchedSourceTree": "c2b7d4bd32316af277a76fb21c09894004c24b4b",
+    "path": "releases/seaweedfs-452-generation31-build-manifest-20261103.json",
+    "sha256": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719"
+  },
+  "buildProfile": {
+    "arch": "amd64",
+    "binaryModuleInventorySha256": "60f0a111f7b228b9855b9d8e1f54d2117ccdbe08f660288f95c7096410e883fa",
+    "binaryModuleRows": 234,
+    "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "cgo": false,
+    "compiledPackages": 1740,
+    "compiledPackagesSha256": "b5463bc0795b319fa6195640a419bd369fd5c9638ab99b153ba3aae7eb336a08",
+    "go": "1.27.3",
+    "os": "linux",
+    "patchedSourceTree": "c2b7d4bd32316af277a76fb21c09894004c24b4b",
+    "rootLockfilesSha256": {
+      "go.mod": "2e7ef58f17dc8606f18c2c6851b79958b5240d6a1bc50ec637893437854bd070",
+      "go.sum": "c9b923fd2b52b3780a41e785c95c20364dc63d4910ab30f907f0e31e8fe6e395"
+    },
+    "tags": []
+  },
+  "date": "2026-11-03",
+  "dependencyMaintenance": {
+    "allDependenciesMaintained": false,
+    "status": "OPEN"
+  },
+  "generation": 31,
+  "image": {
+    "configDigest": "sha256:31b99e914181a85a3e0ca3ca6b66621827df298235b215ccf1d0042fd4653771",
+    "dockerArchiveSha256": "c8fa06343aec3950e070c2f83790d5f8ac57f4e955eed06e7507fd802a5f3ad7",
+    "layerDigest": "sha256:0c19dd2e3da79b470fe9cf3fb3f0573bcd1e5a836c4040ca4f9561c2b439ea34",
+    "manifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484",
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613"
+  },
+  "independentReadback": {
+    "assessmentReproduced": true,
+    "bytes": 30441,
+    "digest": "sha256:c266081e2ffc7371cf71ee9b1f5aeab00c5795d9b573b27e74a6dd9604c86ce8",
+    "expiresAt": "2027-02-01T20:28:00Z",
+    "id": 13268882990,
+    "locallyByteReverified": true,
+    "ociReconstructed": true,
+    "path": "evidence/artifacts/seaweedfs-452-generation31-image-readback-41712811559.zip",
+    "publisherSignatureVerifiedByHostedJob": true,
+    "verifiedInternalChecksums": 20,
+    "verifiedSourceFiles": 45
+  },
+  "licenceRebinding": {
+    "mplSourceArchives": 7,
+    "path": "evidence/seaweedfs-452-generation31-licence-rebinding-local-20261103.json",
+    "sha256": "afbd138bd0bf5db48dd6b4c223695a2a20d03c6ac66f8805c010076f3aac26b9",
+    "sourceArchivesRehashedBytes": 387899941,
+    "status": "REVIEW_OPEN",
+    "thirdPartyLegalTexts": 324,
+    "thirdPartyModules": 234
+  },
+  "modifiedMplSource": {
+    "archiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+    "manifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+  },
+  "orderedPatchCount": 31,
+  "producerArtifact": {
+    "bytes": 190496220,
+    "digest": "sha256:ab13f8b17a2c7405f32f1cb6c858b3780cffd554823e069f98bcef5938aaab43",
+    "expiresAt": "2027-02-01T20:28:00Z",
+    "id": 13269461421,
+    "retention": "TEMPORARY_CI"
+  },
+  "producerCommit": "5d0d456bec5073192b8a1a86e35bb0dcbd97a6b5",
+  "product": "SeaweedFS",
+  "qualification": {
+    "additionalTestCounts": {
+      "compat-tests.jsonl": {
+        "pass_packages": 1,
+        "pass_tests": 3
+      },
+      "kafka-compile.jsonl": {
+        "pass_packages": 4,
+        "skip_packages": 2
+      },
+      "nested-iam-regressions.jsonl": {
+        "pass_packages": 1,
+        "pass_tests": 18
+      },
+      "root-iam-regressions.jsonl": {
+        "pass_packages": 2,
+        "pass_tests": 24
+      }
+    },
+    "allJobsPassed": true,
+    "awsSdkV1": "ABSENT",
+    "deprecatedS3Manager": "ABSENT",
+    "imageBoundaryTestsPassed": 50,
+    "nestedKafkaTidyEmpty": true,
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "regressionProfiles": {
+      "main": {
+        "pass_packages": 30,
+        "pass_tests": 6371,
+        "skip_packages": 4,
+        "skip_tests": 5
+      },
+      "race": {
+        "pass_packages": 2,
+        "pass_tests": 25
+      },
+      "server": {
+        "pass_packages": 1,
+        "pass_tests": 7
+      },
+      "storage": {
+        "pass_packages": 1,
+        "pass_tests": 58
+      }
+    },
+    "runAttempt": 1,
+    "runId": 41712811559,
+    "sbomSha256": "f4ed5d86baaca81bb7d0c37c58dca4348d2ac2f1b79873600d3a233a528b0b36",
+    "scanSha256": "12cc59d4fbf7c555b3cb89288f86e02f1b328c62a786313ba833ae678ddcaccb",
+    "scannedComponents": 236,
+    "scanner": "Trivy 0.70.0",
+    "spdxRecords": 238,
+    "versionSmoke": "NONROOT_READ_ONLY_NO_NETWORK",
+    "vulnerabilitySubgate": "PASS_RAW",
+    "workflow": ".github/workflows/storage-452-generation31-image.yml"
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.storage-candidate-lock.v2",
+  "sourceRevision": {
+    "freshHostedQualificationRequired": true,
+    "kind": "NESTED_KAFKA_MODULE_CLOSURE_ONLY",
+    "nestedKafkaLockfilesSha256": {
+      "test/kafka/go.mod": "9ae31c5d9b060a414f112fcc08a22aacb8a0cb1eee82c9656f28b6ea63969339",
+      "test/kafka/go.sum": "fe5130eb14950ad4d23087d8dd258aa02c8f909261728e97faa4e90e808e2b73"
+    },
+    "previousGeneration": 30,
+    "previousManifestSha256": "6e68ba7288bb0e7011003be34646fc01775a17aedff063d5c277e0c2841d0c8c",
+    "regressionReferenceGeneration": 30
+  },
+  "status": "EVIDENCE_PREPARED_NOT_ADMITTED",
+  "statusOfGates": {
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestsTotal": 21,
+    "cohortQualification": "HOSTED_PENDING",
+    "durableReleaseCustody": "OPEN",
+    "gatesClosed": 0,
+    "gatesTotal": 8,
+    "licenceReview": "OPEN",
+    "overallSwG1": "OPEN",
+    "realObjectsCopied": 0,
+    "realObjectsTotal": 120,
+    "runtimeLabs31": "PENDING"
+  },
+  "targetOperations": 0,
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "version": "4.52"
+}

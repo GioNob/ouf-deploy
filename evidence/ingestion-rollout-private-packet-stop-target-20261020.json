@@ -1,0 +1,15 @@
+{
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "checkpoint": {
+    "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-packet-kkj_njiz",
+    "phase": "GATEWAY_CONFIG_AND_KEY_METADATA"
+  },
+  "complete": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "reasonCode": "QUALIFIED_GATEWAY_CONFIG_READER_IDENTITY_REQUIRED",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.ingestion-rollout-private-packet-result.v1",
+  "status": "STOP_RECONCILE"
+}

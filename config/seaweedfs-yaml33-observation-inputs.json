@@ -1,0 +1,32 @@
+{
+  "schema": "ouf.yaml-vendor-observation-inputs.v1",
+  "intendedGeneration": 33,
+  "baseGeneration": 32,
+  "baseManifestPath": "releases/seaweedfs-452-generation32-build-manifest-20261103.json",
+  "baseManifestSha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+  "rootSourceTree32": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "sourcePatchCount": 32,
+  "dependencyPatchCount": 1,
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "dependencyPatchPath": "patches/iceberg-go/0.7.0-maintained-yaml-vendor.patch",
+  "vendorDigests": "OBSERVE_ONLY_DO_NOT_PRETEND_PINNED",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "inputFilesSha256": {
+    ".github/workflows/storage-452-yaml33-source-observation.yml": "c9763b3f5b28e718b0104c7074c752e872b8bdc93f60d2472b08fc524d822bf8",
+    "patches/iceberg-go/0.7.0-maintained-yaml-vendor.patch": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef",
+    "scripts/collect_vendor_module_origins.py": "f8df3630a01ea537f3cfc8f5e571d7d239f838a64e41fa3813e9b88507589b3b",
+    "scripts/observe-seaweedfs-yaml33.py": "1dd7bc1310c0cddf4c56e5cf705ecbaec4a050eb3ecf6f9aae8ab874ac22cc19",
+    "scripts/prepare_iceberg_vendor_patch.py": "a8f919469002c42995aa94d96d3adeb28f93b6e9fe3df3c3d366c55077b9e4d2",
+    "scripts/replay-seaweedfs-source-tree.py": "b2dabb6dfdb64fecd1f27d9fe896ad96c98707b6bc25b4e19c8edd1feaa8511b",
+    "scripts/verify_iceberg_vendor_source_profile.py": "87d61fad048b47a61a1a0fdd1aececd45efb2293b3f07ec6d3ab2578c6736dfb",
+    "tests/fixtures/compare_iceberg_yaml.go": "b542a9814900fdc3b324abf92a8fd46e9cf33eb90a1f4fb7b3d23ef360105394",
+    "tests/test_prepare_iceberg_vendor_patch.py": "ef253f68ccd3fe8a4a4b0566919b9d97e4e96bf42501c981f549cfe36804a003",
+    "tests/test_seaweedfs_yaml33_observation.py": "590c74f990347939a47bb46ce9b44d1092f07aeec5c2ad346c28d46b9aa8306a",
+    "tests/test_vendor_module_origins.py": "0bd9949b33c763eb43bed5a4c3bef6340bb571d9124162ac0f363f5496104e46",
+    "tests/test_vendor_yaml_source_profile.py": "a1ba151a02126a37fbe2c5979b2b6e89371b7483d721133c894abb5b8f37814a",
+    "tools/storage_security/vendor_module_origins.py": "afa80ed1e00f56151e33f252e9c37eff40a4d46e011599df571a181f6a5529a9",
+    "tools/storage_security/vendor_yaml_source.py": "26e50694e65ef86c3ddc942a9c2d34ccbdeaeb8d276f64cd6c20487f2815cf09"
+  }
+}

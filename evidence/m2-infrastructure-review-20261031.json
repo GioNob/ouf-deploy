@@ -1,0 +1,304 @@
+{
+  "schema": "ouf.m2-infrastructure-review-qualification.v1",
+  "date": "2026-10-31",
+  "timezone": "Europe/Rome",
+  "repository": "GioNob/ouf-deploy",
+  "pullRequest": 54,
+  "sourceCommit": "41f935ecdec2716926d4b6947a6dd763e8124ec4",
+  "status": "QUALIFIED_SEALED_INFRASTRUCTURE_REVIEW_FRAGMENT_COMPLETE_PARENT_AND_TARGET_OPEN",
+  "local": {
+    "tests": 15,
+    "suites": 1,
+    "seconds": 8.145,
+    "failures": 0,
+    "skips": 0
+  },
+  "ci": {
+    "event": "pull_request",
+    "run": 41183119468,
+    "job": 124484438883,
+    "tests": 15,
+    "suites": 1,
+    "seconds": 7.214,
+    "failures": 0,
+    "skips": 0,
+    "conclusion": "success",
+    "finalLogRead": true
+  },
+  "artifact": {
+    "allEmbeddedSourcesVerified": true,
+    "archiveBytes": 607139,
+    "archiveSha256": "9b4c842d990453045c08540681cdec931207d1d58ca8d396298a4a01a1fd07ea",
+    "artifactId": 13035554097,
+    "baselineAndLoaderVerified": true,
+    "baselineSha256": "ea86df348ace963d41d3a24ab3b9bea693c3b3ba36e181a1aaec5f7e97333b63",
+    "capsuleBytes": 2027433,
+    "capsuleSha256": "577ec0d4394b35acb9fba4482ba72064f67fdded1877c881ba9aa428d58d8ac7",
+    "exactLocalRebuildVerified": true,
+    "exactZipMembershipVerified": true,
+    "jobId": 124484438883,
+    "loaderTemplateSha256": "6c12561e3cedc6e5faacd87a8c0acbfbe7408b3da9841e5907012fc02fd67c8f",
+    "payloadSha256": "630bc4ddd47de733ec3bbd3f03c1563590ab146c74d5d81850f3946c1d6ebe26",
+    "publicMetadataVerified": true,
+    "publisherTrustAccepted": false,
+    "runId": 41183119468,
+    "sourceMapFileSha256": "215781561ee46ac2682079941b63c190bf7124596671957c484d3402e598d14e",
+    "sourceModules": 127,
+    "sourceRevisionClaim": "d47035b38474b06e8326e588c5435238933379b3",
+    "sourceRevisionClaimAuthenticated": false
+  },
+  "existingPrivateCompilerRegression": {
+    "local": {
+      "tests": 15,
+      "seconds": 2.091,
+      "failures": 0,
+      "skips": 0
+    },
+    "ci": {
+      "run": 41183119343,
+      "job": 124484438713,
+      "tests": 15,
+      "seconds": 2.61,
+      "failures": 0,
+      "skips": 0,
+      "conclusion": "success",
+      "finalLogRead": true
+    },
+    "sourceClosureModules": 108,
+    "sourceAndPinsUnchanged": true
+  },
+  "components": [
+    "registryGatePeerWindow",
+    "providerInstallation",
+    "operationalLeaseInstallation"
+  ],
+  "proven": {
+    "existingScopeCompilersReused": true,
+    "existingDualRoleParentGuardsAcceptExactPartsInFixture": true,
+    "fragmentRejectedByCompleteParentReviewParser": true,
+    "sameIndependentRegistryRecipeSourceFrameAndProfileRequired": true,
+    "sameInstallationInputsDesiredProfileAndPublicVerificationRequired": true,
+    "sameProviderWorkerKernelDnsCoordinationAndNineFieldNativeLockRequired": true,
+    "providerKeysMustAllBeHiddenFromWorker": true,
+    "sameProviderWorkerAttestorBindingRequired": true,
+    "cidFreeRegistryAndWorkerGenerationLogicalLockHolesRetained": true,
+    "initialV2MaximumWithinGateAndOriginalProtocolCeiling300": true,
+    "allOwnerRootsDistinctAndProtectedInputsNotShadowed": true,
+    "protectedAncestorMetadataChecksRetained": true,
+    "noPrivateContentReadsCommandsSignaturesEngineRequestsOrPublicationDuringAssembly": true,
+    "rootPrivateNoFollowInputOutputRequired": true,
+    "exclusiveFsyncedClaimBeforePrivatePayload": true,
+    "publicReceiptLast": true,
+    "partialOutputNeverCompletedOrOverwritten": true,
+    "inspectionReadOnly": true,
+    "differentCompilerCannotAdoptPreviousAssembly": true,
+    "publicOutputHashesCountsAndClosedFlagsOnly": true,
+    "isolatedSealedCliPassed": true,
+    "independentSourceMapAnchorAndLoaderHashRequired": true,
+    "changedSourceAndMatchingMapDenied": true
+  },
+  "preserved": {
+    "providerV1MaximumSeconds": 90,
+    "providerV2InitialMaximumSeconds": 300,
+    "operationalWorkerSourcePins": 37,
+    "operationalWorkerSourcePinsChanged": false,
+    "existingRuntimeOwnerSourcesChanged": false,
+    "hostReadQualifiedSource": "27717b20a26d12a4191c65fe67539c4ec9d1abae",
+    "hostReadEvidence": "evidence/m2-publication-read-reconciliation-20261031.json",
+    "previousProtocolTests": 463,
+    "previousProtocolSuites": 54,
+    "previousIamTests": 251,
+    "previousIamSuites": 33,
+    "previousChatbotTests": 505,
+    "previousChatbotSuites": 69,
+    "teatri": "M1/G4 technical8/8 functional6/6 acquired.",
+    "farmacie": "Same SUCCEEDED61rows/10columns, ministerial STRING/all10OPEN; no upload/profile/acquisition replay.",
+    "historicalUnknownMcpWorkerCauses": "OPEN"
+  },
+  "unproven": {
+    "completeParentReview": false,
+    "signedRegistryChildAndCurrentHumanBindings": false,
+    "inputAuthenticityAndExecutableCustody": false,
+    "currentFullCohortTlsIamDbTrustFencing": false,
+    "capabilityPublication": false,
+    "nativeExecutorIntegrated": false,
+    "applicationE2E": false,
+    "bootRotationAndTwoRealClients": false,
+    "interpreterStdlibPublisherTrust": false
+  },
+  "remainingRequirements": [
+    "Trace source41f revoked QUIESCED publication versus ACTIVE worker checkpoint without relaxing denial or replaying starts",
+    "Separately authenticated Registry child/current HUMAN and governed capability-publication component in exact full parent review",
+    "Current private file/archive/Gateway/executable custody and full cohort/TLS/IAM/DB/trust/fencing",
+    "Real Farmacie to Ingestion to UDP/all61 outcomes; reimport/fault/recovery/chat/boot/rotation/two-client acceptance"
+  ],
+  "fullGeneralCiAtThisSnapshot": {
+    "status": "NATIVE_REGISTRY_FAILED_PROTOCOL_PASS_CHATBOT_CANCELLED_NOT_ALL_GREEN",
+    "protocol": {
+      "run": 41183119606,
+      "job": 124484439255,
+      "sourceCommit": "41f935ecdec2716926d4b6947a6dd763e8124ec4",
+      "conclusion": "success",
+      "tests": 463,
+      "suites": 54,
+      "seconds": 746.315,
+      "failures": 0,
+      "skips": 0,
+      "finalLogRead": true,
+      "notClaimedQualified": false
+    },
+    "chatbot": {
+      "run": 41183119318,
+      "conclusion": "cancelled",
+      "notClaimedQualified": true
+    },
+    "notInferredFromDedicatedCompilerPass": true
+  },
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "signaturesIssued": 0,
+  "budgetReset": false,
+  "automaticReplayAllowed": false,
+  "releaseAcceptance": false,
+  "source41fGeneralNative": {
+    "run": 41183119362,
+    "conclusion": "failure",
+    "allThreeModesQualified": false,
+    "finite": {
+      "job": 124484438519,
+      "conclusion": "success",
+      "finalLogAndReportRead": true
+    },
+    "sealed": {
+      "job": 124484438360,
+      "conclusion": "success",
+      "finalLogAndReportRead": true
+    },
+    "registryWorker": {
+      "run": 41183119362,
+      "job": 124484438539,
+      "sourceCommit": "41f935ecdec2716926d4b6947a6dd763e8124ec4",
+      "mode": "registry-worker",
+      "conclusion": "failure",
+      "finalLogRead": true,
+      "phase": "Worker sequence START observation after the lost manager-start reply",
+      "reasonCode": "CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED",
+      "readKind": "READ_DENIED",
+      "snapshotTimeUtc": "2026-10-31T08:08:44.1749100Z",
+      "publicationSnapshot": {
+        "coordination": {
+          "state": "QUIESCED",
+          "leaseAuthorized": false
+        },
+        "sets": {
+          "exactExpectedKeys": true,
+          "expectedKeyCount": 2,
+          "allFamiliesPositive": false
+        }
+      },
+      "workerFinalRead": {
+        "state": "ACTIVE",
+        "reason": "RENEWED",
+        "attempts": 1,
+        "publicationCount": 16,
+        "reentryCount": 1
+      },
+      "snapshotAndWorkerFinalReadAreNotAtomic": true,
+      "failureLogSha256": "660c963675bee1a91d70fc55e067548c509278c4b5a5cdfb82c16e93eb573ee5",
+      "failureLogBytes": 24979,
+      "interpretation": "Observed revoked/nonpositive publication cannot satisfy positive lease proof. QUIESCED is denied, not retryable UPDATING. Why the worker/coordinator records diverged is not proven by this snapshot.",
+      "causalResolution": "OPEN",
+      "observerRulesRelaxed": false,
+      "workerPinsChanged": false,
+      "automaticObservationRetryAdded": false,
+      "manualCiRerunRequested": false,
+      "authorityExtended": false,
+      "operationalAttemptReplayed": false
+    }
+  },
+  "source41fIam": {
+    "run": 41183119340,
+    "job": 124484438551,
+    "conclusion": "success",
+    "tests": 251,
+    "suites": 33,
+    "skips": 0,
+    "finalLogAndRealDisposableKeycloakReportRead": true,
+    "productionCalls": 0,
+    "targetInstallerReady": false
+  },
+  "diagnosticFollowup": {
+    "scope": "CI_ONLY_BOUNDED_POST_FAILURE_STATUS_LOG_READ",
+    "localTests": 7,
+    "localSeconds": 0.246,
+    "failures": 0,
+    "skips": 0,
+    "nativeCiStatus": "PASS_THREE_FRESH_MODES_ORIGINAL_FAILURE_NOT_REPRODUCED_CAUSE_OPEN",
+    "onlyAfterFailedObservation": true,
+    "maximumJournalLines": 64,
+    "maximumRawBytesAccepted": 65536,
+    "maximumEmittedRecords": 32,
+    "commandTimeoutSeconds": 2,
+    "privateAndMalformedMessagesFiltered": true,
+    "originalDenialPreserved": true,
+    "noObservationReplay": true,
+    "noWorkerOrProductionObserverChange": true,
+    "notCausalResolution": true,
+    "sourceCommit": "11f80398c256b9c77da97ebc101164cfa6ae124a",
+    "ci": {
+      "run": 41183954779,
+      "finite": {
+        "job": 124486929621,
+        "conclusion": "success",
+        "diagnosticTests": 7,
+        "diagnosticSeconds": 0.26,
+        "finalLogAndReportRead": true
+      },
+      "sealed": {
+        "job": 124486929432,
+        "conclusion": "success",
+        "diagnosticTests": 7,
+        "diagnosticSeconds": 0.215,
+        "finalLogAndReportRead": true
+      },
+      "registry": {
+        "job": 124486929518,
+        "conclusion": "success",
+        "diagnosticTests": 7,
+        "diagnosticSeconds": 0.317,
+        "finalLogAndReportRead": true
+      },
+      "actualRegistryTokenTransportAndSealedWorkerPassed": true,
+      "originalQuiescedFailureReproduced": false,
+      "postFailureStatusCommandInvokedInNativeRun": false,
+      "failureStatusBranchProvenByControlledTestsOnly": true
+    },
+    "sameOriginalFailedScopeReplayed": false
+  },
+  "source41fGeneralProtocol": {
+    "run": 41183119606,
+    "job": 124484439255,
+    "sourceCommit": "41f935ecdec2716926d4b6947a6dd763e8124ec4",
+    "conclusion": "success",
+    "tests": 463,
+    "suites": 54,
+    "seconds": 746.315,
+    "failures": 0,
+    "skips": 0,
+    "finalLogRead": true
+  },
+  "followupCompilerRegression": {
+    "sourceCommit": "11f80398c256b9c77da97ebc101164cfa6ae124a",
+    "run": 41183954966,
+    "job": 124486930033,
+    "conclusion": "success",
+    "tests": 15,
+    "suites": 1,
+    "seconds": 10.17,
+    "failures": 0,
+    "skips": 0,
+    "finalLogRead": true,
+    "qualifiedCapsuleStillByteExactAfterCiOnlyChanges": true,
+    "newArtifactNotClaimedIndependentlyVerified": true
+  }
+}

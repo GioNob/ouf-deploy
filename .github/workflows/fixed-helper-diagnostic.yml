@@ -1,0 +1,66 @@
+name: Qualify fixed helper diagnostic redaction
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/diagnose-installed-fixed-helper-20261018.py', '.github/workflows/fixed-helper-diagnostic.yml']
+permissions: {contents: read}
+jobs:
+  redaction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Real root custody, safe success and failure reporting
+        run: |
+          sudo install -d -m700 /root/ouf-helper-diagnostic-test
+          sudo install -m600 scripts/diagnose-installed-fixed-helper-20261018.py /root/ouf-helper-diagnostic-test/reader.py
+          sudo /usr/bin/python3 -I -S -B - <<'PY'
+          import contextlib,hashlib,io,json,os,runpy,sys
+          from pathlib import Path
+          root=Path('/root/ouf-helper-diagnostic-test')
+          ns=runpy.run_path(str(root/'reader.py'),run_name='diagnostic_test')
+          helper=root/'fixture.py'
+          ns['inspect'].__globals__['HELPER']=helper
+          sys.argv=['diagnostic_test']
+          def run(source):
+              helper.write_text(source);helper.chmod(0o755)
+              ns['inspect'].__globals__['EXPECTED_HELPER_SHA256']=hashlib.sha256(helper.read_bytes()).hexdigest()
+              output=io.StringIO()
+              with contextlib.redirect_stdout(output),contextlib.redirect_stderr(output):
+                  result=ns['inspect']()
+              assert not output.getvalue()
+              encoded=json.dumps(result)
+              assert 'PROTECTED_TEST_VALUE' not in encoded
+              assert result['payloadPrinted'] is False
+              return result
+          assert run("def collect():\n print('PROTECTED_TEST_VALUE')\n return {'value':'PROTECTED_TEST_VALUE'}\n")['readSucceeded'] is True
+          failed=run("def collect():\n print('PROTECTED_TEST_VALUE')\n raise RuntimeError('PROTECTED_TEST_VALUE')\n")
+          assert failed['readSucceeded'] is False and failed['errorClass']=='RuntimeError'
+          assert failed['frames'][-1]['file']=='fixture.py' and failed['frames'][-1]['line']==3
+          observer={}
+          exec(compile("def fail():\n raise ValueError('PROTECTED_TEST_VALUE')\ndef observe():\n fail()\n", 'transition-source.py', 'exec'), observer)
+          result={}
+          def swallowed():
+              try: observer['observe']()
+              except Exception: pass
+              raise RuntimeError('PROTECTED_TEST_VALUE')
+          previous=sys.gettrace()
+          try: ns['observe_call'](swallowed,result)
+          except RuntimeError: pass
+          assert sys.gettrace() is previous
+          assert result['observerFailure']['errorClass']=='ValueError'
+          assert result['observerFailure']['frames'][-1]['function']=='fail'
+          assert 'PROTECTED_TEST_VALUE' not in json.dumps(result)
+          clean={}
+          assert ns['observe_call'](lambda: 42,clean)==42 and not clean
+          ns['inspect'].__globals__['EXPECTED_HELPER_SHA256']='0'*64
+          try: ns['inspect']()
+          except ValueError: pass
+          else: raise AssertionError('foreign helper accepted')
+          helper.chmod(0o777)
+          try: ns['inspect']()
+          except ValueError: pass
+          else: raise AssertionError('unsafe helper accepted')
+          print('PASS: success/failure redaction, source locations, and root custody rejection')
+          PY

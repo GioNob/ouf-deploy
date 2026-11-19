@@ -1,0 +1,24 @@
+{
+  "schema": "ouf.ci.bounded-timeout-adjustment.v1",
+  "date": "2026-11-03",
+  "sourceCommit": "d2e927d02d9184b1ce2b352b282aa6a4579756e0",
+  "runId": 41684453873,
+  "jobId": 126086385691,
+  "status": "CANCELLED_AT_TWENTY_MINUTE_JOB_LIMIT",
+  "observedStartedAt": "2026-11-03T17:27:43Z",
+  "observedCancellationAt": "2026-11-03T17:47:58.6782801Z",
+  "otherWorkflowRunsSuccess": 51,
+  "totalWorkflowRuns": 52,
+  "lastCompletedTest": "test_actual_two_networks_same_image_private_config_namespace_and_no_second_replacement",
+  "assertionFailureBeforeCancellationObserved": false,
+  "change": {
+    "path": ".github/workflows/chatbot-cohort-delivery.yml",
+    "oldTimeoutMinutes": 20,
+    "newTimeoutMinutes": 30,
+    "testsRemoved": 0,
+    "retryLoopAdded": false
+  },
+  "targetOperations": 0,
+  "preservedConsumedScopes": 17,
+  "preservedCumulativeEngineGets": 52
+}

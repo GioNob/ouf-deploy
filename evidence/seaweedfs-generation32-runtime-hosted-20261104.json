@@ -1,0 +1,82 @@
+{
+  "generation": 32,
+  "runId": 41778371999,
+  "sourceCommit": "5dfb1995d1eadd33caeb923594866c1e380d25db",
+  "wholeWorkflowConclusion": "success",
+  "jobs": [
+    {
+      "id": 126403922831,
+      "name": "verify-boundaries",
+      "conclusion": "success",
+      "headSha": "5dfb1995d1eadd33caeb923594866c1e380d25db"
+    },
+    {
+      "id": 126403970928,
+      "name": "qualify-cohort",
+      "conclusion": "success",
+      "headSha": "5dfb1995d1eadd33caeb923594866c1e380d25db"
+    },
+    {
+      "id": 126404723521,
+      "name": "runtime-labs / verified-cohort-then-sequential-labs",
+      "conclusion": "success",
+      "headSha": "5dfb1995d1eadd33caeb923594866c1e380d25db"
+    }
+  ],
+  "candidateLockSha256": "91a7c874deb5b11f1a18dc483e99f6031644b62abb769a9e11ff1ad29250fb7d",
+  "cohortReceiptSha256": "cf3a01b6426bdb64725b155d252089026a3cf08bc94859da7619ac17a88af19c",
+  "binarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+  "ociManifestDigest": "sha256:5531868a8acc4ac8b1581339e5cae79c7a6211402c936eb74f2bcfcd070831f6",
+  "targetOperations": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "schema": "ouf.seaweedfs-generation32-hosted-runtime-readback.v1",
+  "status": "SYNTHETIC_COLD_MIME_IDENTITY_TLS_EGRESS_PASS_NOT_ACCEPTANCE",
+  "artifact": {
+    "id": 13298177522,
+    "name": "storage-generation32-runtime-41778371999",
+    "digest": "sha256:fb76046dabfd6d58ff0236b72b795d981f57b7aeaba3d179108ee6ecef82ff1b",
+    "bytes": 170026,
+    "head": "5dfb1995d1eadd33caeb923594866c1e380d25db",
+    "expiresAt": "2027-02-02T05:17:45Z",
+    "path": "evidence/artifacts/seaweedfs-generation32-runtime-41778371999.zip"
+  },
+  "members": 62,
+  "checksumMembersVerified": 61,
+  "sourceHashesVerified": {
+    "scripts/run-seaweedfs-452-generation32-labs.py": "7406a9f8ede0a77d25ebf44ae82edd9fa4c0071897565661099b0a25087a9dfd",
+    "scripts/storage-generation32-lab-binding.py": "8f890a38474fc87a3326dbbdc1906d77a0928a31d1aa91db82dfaa5801bdb9e8",
+    "scripts/run-seaweedfs-452-cold-recovery.py": "a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089",
+    "scripts/run-seaweedfs-452-identity-tls.py": "50f75e99b0f3f012b2651e6856fecfc3f1742d20676c70c36499f30e84e75185",
+    "scripts/readback-seaweedfs-452-generation32-image.py": "fb088e2180b37652cb4a8bca7e3b5882c4b9f6ace661f787c044a5ff7e5cc57f",
+    "scripts/qualify-seaweedfs-452-generation32-image.py": "199d032563807ab031825da01017564cab9fef7814b5eff1e4f467feba37b2e5",
+    "scripts/verify-seaweedfs-452-generation32-cohort.py": "bd780a3e6be80ccd85f742671aff9793f6bea6ddaf130d4695822acd5991fbdd",
+    "tools/storage_security/generation_image_v3.py": "0ab2e7cc7faa7491bb766cf9365b8ed6987539b9ffdeb2e88c004ad61e832d31",
+    "tools/storage_security/generation_readback_v1.py": "d90a633307be766e3a7266226b3da2e8fadbdcff57fd9f11fb16b41e1909b59f",
+    "tools/storage_licenses/evidence.py": "1a85d04ee6c821f42f00b412ea57d3ca21ca401af1c9bd823a9d7b032aa3ee73",
+    "tests/test_storage_generation32_lab_binding.py": "fd00f61c0f81d10ed852234d82159bb0ea7b5dfcaacef1050953a49d835d4c52",
+    "tests/test_storage_generation32_labs.py": "752660e91792b2362d422a7e6de8903d9858531e739c1d02f9da96b3a5755326",
+    "releases/seaweedfs-452-generation32-build-manifest-20261103.json": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+    "releases/seaweedfs-452-generation32-candidate-lock-20261103.json": "91a7c874deb5b11f1a18dc483e99f6031644b62abb769a9e11ff1ad29250fb7d",
+    "evidence/seaweedfs-452-generation32-mongodb-v2-legal-delta-20261104.json": "3ddcd24b110f078518d3473d6522ee9dd126974813714f33dc61cdcdf3300018",
+    ".github/workflows/storage-452-generation32-runtime-labs.yml": "40083f552492a772713d1574d146353a9fad1c9dc6a921fd4adf790ddfac0035"
+  },
+  "backupFiles": 110,
+  "backupBytes": 8417555,
+  "objects": 5,
+  "bytes": 8388702,
+  "distinctCleanContainers": 12,
+  "labsSequential": true,
+  "maximumConcurrentContainers": 4,
+  "octetStreamGetAndHeadBeforeAndAfterRestore": "PASS",
+  "identityS3Cases": 23,
+  "tlsNegatives": 2,
+  "egressProbes": 2,
+  "postgresRecovery": "NOT_TESTED",
+  "certificateRotation": "NOT_TESTED",
+  "pitrQualified": false,
+  "rpoAcceptance": false,
+  "rtoAcceptance": false
+}

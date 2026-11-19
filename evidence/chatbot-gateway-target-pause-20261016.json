@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.chatbot-gateway-target-pause.v1",
+  "executedSource": "70af66b26d9a8dfdd7151c55f44eb5795fcc84a8",
+  "reviewHash": "bd2cbc1e969bf3eb4c5b1b54240cf1d67d3283685bc1ca563f893d17e3430144",
+  "authorityHash": "0e3a1a76b5528704c3295eff50c92b269a4f69c7d5eeff3304b193e991b54cb8",
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-35d5c6c756feb9c4811ac6d24610698a10c82d22b831d2cc85cd5c22c94d40d5",
+  "phase": "PAUSED_REQUIRES_RECONCILIATION",
+  "reason": "GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY",
+  "technicalPhase": 5,
+  "technicalPhase1PreviouslyVerified": true,
+  "phasesPassedByExecutionFlow": [
+    2,
+    3,
+    4
+  ],
+  "freshReadbackPending": true,
+  "gatewayWriteOutcomeProven": false,
+  "priorControlledGrantAttempts": 6,
+  "newControlledCumulativeGrantAttempts": null,
+  "functionalMilestonesProven": 0,
+  "authorityExpiresAt": 1792121285,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false
+}

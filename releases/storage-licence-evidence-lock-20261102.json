@@ -1,0 +1,45 @@
+{
+  "schema": "ouf.storage-licence-evidence-lock.v1",
+  "status": "PASS",
+  "producerSource": "81a0e32784a2c96f685773edfb65f0cc7849e7eb",
+  "runId": 41541625141,
+  "jobId": 125606961643,
+  "artifactId": 13186217395,
+  "archiveBytes": 2702322,
+  "archiveSha256": "851d65dc1ac3788178978b9effc04c257475492ad6d3e5dcc04346d033288c67",
+  "originalCollection": {
+    "source": "2f19765fe66caa4d85097100c0ca912b37649db2",
+    "runId": 41539914970,
+    "artifactId": 13185626900,
+    "archiveBytes": 976318,
+    "archiveSha256": "1e9db76c6aa549b263554518ab2cc6d3a28bdd635ff74a56ba2f71fdd3844de3",
+    "assessment": "NATIVE_COLLECTION_PASS_NOT_FULL_ARCHIVE_ADMISSION"
+  },
+  "intermediateRateLimitStop": {
+    "source": "1384e626104e679cd2fb265a968c215dc78d83ad",
+    "runId": 41540742440,
+    "artifactId": 13185726999,
+    "archiveBytes": 439294,
+    "archiveSha256": "d84e815a5fd47ccf204118b3d4221974d7b852d078cf1dc427675d52cf0321b3",
+    "stage": "COLLECTING_PARENT_LICENCE_METADATA",
+    "reason": "UNAUTHENTICATED_GITHUB_API_RATE_LIMIT_403",
+    "promotedToSuccess": false
+  },
+  "sourceCodeExecuted": false,
+  "imageModified": false,
+  "licenceReview": "OPEN",
+  "releaseAdmitted": false,
+  "overallSwG1": "OPEN",
+  "targetOperations": 0,
+  "intermediateArchiveClosureStop": {
+    "source": "69c71dcdc803c32675a50e53320b79e24ab66b74",
+    "runId": 41541085942,
+    "artifactId": 13186837840,
+    "archiveBytes": 2699245,
+    "archiveSha256": "3026294c581060e86c4e593e0b47cc7ac2355b1252431e35b18fc34b3a948a8a",
+    "nativeJob": "PASS",
+    "independentArchiveAdmission": "HELD",
+    "reason": "FOUR_MANIFEST_MEMBERS_OMITTED_BY_UPLOAD_DEFAULT",
+    "oldRawReportsPreserved": true
+  }
+}

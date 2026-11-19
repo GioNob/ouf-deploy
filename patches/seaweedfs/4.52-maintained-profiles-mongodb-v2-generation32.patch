@@ -1,0 +1,3286 @@
+diff --git a/go.mod b/go.mod
+--- a/go.mod
++++ b/go.mod
+@@ -4,8 +4,7 @@
+ 
+ require (
+ 	cloud.google.com/go v0.123.0 // indirect
+-	cloud.google.com/go/pubsub v1.51.1
+-	cloud.google.com/go/storage v1.67.0
++	cloud.google.com/go/pubsub v1.51.1 // indirect
+ 	github.com/beorn7/perks v1.0.1 // indirect
+ 	github.com/bwmarrin/snowflake v0.3.0
+ 	github.com/cenkalti/backoff/v4 v4.3.0
+@@ -64,8 +63,7 @@
+ 	github.com/xdg-go/stringprep v1.0.4 // indirect
+ 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
+ 	go.etcd.io/etcd/client/v3 v3.7.1
+-	go.mongodb.org/mongo-driver v1.17.9
+-	go.opencensus.io v0.24.0 // indirect
++	go.mongodb.org/mongo-driver/v2 v2.9.2
+ 	gocloud.dev v0.47.0
+ 	gocloud.dev/pubsub/natspubsub v0.46.0
+ 	gocloud.dev/pubsub/rabbitpubsub v0.47.0
+@@ -73,7 +71,7 @@
+ 	golang.org/x/exp v0.0.0-20260813180055-c1d0aacb2297
+ 	golang.org/x/image v0.46.0
+ 	golang.org/x/net v0.62.0
+-	golang.org/x/oauth2 v0.37.0
++	golang.org/x/oauth2 v0.37.0 // indirect
+ 	golang.org/x/sys v0.49.0
+ 	golang.org/x/text v0.43.0 // indirect
+ 	golang.org/x/tools v0.51.0 // indirect
+@@ -126,7 +124,6 @@
+ 	github.com/rabbitmq/amqp091-go v1.15.0
+ 	github.com/rdleal/intervalst v1.5.0
+ 	github.com/redis/go-redis/v9 v9.23.0
+-	github.com/schollz/progressbar/v3 v3.19.1
+ 	github.com/seaweedfs/go-fuse/v2 v2.9.4
+ 	github.com/shirou/gopsutil/v4 v4.26.7
+ 	github.com/tarantool/go-option v1.1.0
+@@ -234,12 +231,10 @@
+ )
+ 
+ require (
+-	cel.dev/expr v0.25.3 // indirect
+ 	cloud.google.com/go/auth v0.23.2 // indirect
+ 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
+ 	cloud.google.com/go/compute/metadata v0.10.0 // indirect
+ 	cloud.google.com/go/iam v1.13.0 // indirect
+-	cloud.google.com/go/monitoring v1.30.0 // indirect
+ 	filippo.io/edwards25519 v1.2.0 // indirect
+ 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.23.3
+ 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.14.1
+@@ -247,9 +242,6 @@
+ 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.8.2
+ 	github.com/Azure/go-ntlmssp v0.1.1 // indirect
+ 	github.com/AzureAD/microsoft-authentication-library-for-go v1.9.0 // indirect
+-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.38.0 // indirect
+-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.61.0 // indirect
+-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.61.0 // indirect
+ 	github.com/Microsoft/go-winio v0.6.3-0.20251027160822-ad3df93bed29 // indirect
+ 	github.com/andybalholm/brotli v1.2.7 // indirect
+ 	github.com/arangodb/go-velocypack v0.0.0-20200318135517-5af53c29c67e // indirect
+@@ -268,15 +260,12 @@
+ 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.43.1 // indirect
+ 	github.com/aws/aws-sdk-go-v2/service/sts v1.51.1
+ 	github.com/aws/smithy-go v1.28.7
+-	github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 // indirect
+ 	github.com/creasty/defaults v1.8.0 // indirect
+ 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
+ 	github.com/d4l3k/messagediff v1.2.1 // indirect
+ 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
+ 	github.com/ebitengine/purego v0.10.2 // indirect
+ 	github.com/elastic/gosigar v0.14.3 // indirect
+-	github.com/envoyproxy/go-control-plane/envoy v1.40.1-0.20261014170222-9c4befd3c419 // indirect
+-	github.com/envoyproxy/protoc-gen-validate v1.3.3 // indirect
+ 	github.com/fatih/color v1.19.0 // indirect
+ 	github.com/felixge/httpsnoop v1.1.0 // indirect
+ 	github.com/go-jose/go-jose/v4 v4.1.6 // indirect
+@@ -306,8 +295,6 @@
+ 	github.com/lufia/plan9stats v0.0.0-20260627054121-477a66015f15 // indirect
+ 	github.com/mattn/go-colorable v0.1.15 // indirect
+ 	github.com/mattn/go-runewidth v0.0.24 // indirect
+-	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
+-	github.com/montanaflynn/stats v0.7.1 // indirect
+ 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+ 	github.com/nats-io/nats.go v1.49.0 // indirect
+ 	github.com/nats-io/nkeys v0.4.15 // indirect
+@@ -326,7 +313,6 @@
+ 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
+ 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10
+ 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
+-	github.com/rivo/uniseg v0.4.7 // indirect
+ 	github.com/sagikazarmark/locafero v0.11.0 // indirect
+ 	github.com/seaweedfs/cockroachdb-parser v0.0.0-20260225204133-2f342c5ea564
+ 	github.com/sony/gobreaker v1.0.0 // indirect
+@@ -352,7 +338,6 @@
+ 	go.etcd.io/bbolt v1.5.0
+ 	go.etcd.io/etcd/api/v3 v3.7.1 // indirect
+ 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
+-	go.opentelemetry.io/contrib/detectors/gcp v1.46.0 // indirect
+ 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.71.0 // indirect
+ 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.71.0 // indirect
+ 	go.opentelemetry.io/otel v1.46.0 // indirect
+diff --git a/go.sum b/go.sum
+--- a/go.sum
++++ b/go.sum
+@@ -14,8 +14,6 @@
+ cloud.google.com/go/iam v1.13.0/go.mod h1:gHXdDEiPDvqd1q1KwBDGQlgZY/BwY760zU2LhOZS5w0=
+ cloud.google.com/go/kms v1.35.0 h1:nJ/ktaqspx1nPM9vIcO0SHbhqCAm8nvAxL1siuVgKm0=
+ cloud.google.com/go/kms v1.35.0/go.mod h1:0++71pIHvJL+GmMa8K4jOWFq7gNOX3jm2PRMSJwTKJw=
+-cloud.google.com/go/logging v1.19.1 h1:7SsLhyTDBDrJw+Ll6Ns3I2mByqHXvJUc3rGjSlwiWgU=
+-cloud.google.com/go/logging v1.19.1/go.mod h1:2IkQ/d8jVJqV2qW8ZUGUiMjdZG1gkLD2JReGbZ8isqg=
+ cloud.google.com/go/longrunning v1.2.0 h1:WjYH3YHBGCxGJP9M4dWGHBfXr/cFIjMkNgWcJj7/iMM=
+ cloud.google.com/go/longrunning v1.2.0/go.mod h1:5KMQALFGOCtFoi2xSOA1u3H7WKlhmckgiyFw7+LGQp0=
+ cloud.google.com/go/monitoring v1.30.0 h1:r/d+JUbyKmJ8b07iznuKfzVzrIXTWxHQ3lBRm3x2LlY=
+@@ -26,8 +24,6 @@
+ cloud.google.com/go/pubsub/v2 v2.7.0/go.mod h1:JaFvWNVRk3Knoil/4M1ECeLOaI9D8drbmJWypQlK5aM=
+ cloud.google.com/go/storage v1.67.0 h1:8xD3NvKuHE4c+b/kmSIVBdTc0BiOjplx+KecKGR9fr8=
+ cloud.google.com/go/storage v1.67.0/go.mod h1:UsS9OgFg/XHOSYakQ8ZtLWWeyGkk1WnmD/GsGfN0BHM=
+-cloud.google.com/go/trace v1.16.0 h1:GmQovzFc5F0CNfl0VLgL64aoTtu7xsM0YajW2GlG9+E=
+-cloud.google.com/go/trace v1.16.0/go.mod h1:r+bdAn16dKLSV1G2D5v3e58IlQlizfxWrUfjx7kM7X0=
+ dario.cat/mergo v1.0.2 h1:85+piFYR1tMbRrLcDwR18y4UKJ3aH1Tbzi24VRW1TK8=
+ dario.cat/mergo v1.0.2/go.mod h1:E/hbnu0NxMFBjpMIE34DRGLWqDy0g5FuKDhCb31ngxA=
+ filippo.io/edwards25519 v1.2.0 h1:crnVqOiS4jqYleHd9vaKZ+HKtHfllngJIiOpNpoJsjo=
+@@ -73,8 +69,6 @@
+ github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.38.0/go.mod h1:iIyrdhveU5Ow84ipRlxtjCOQnIM0DiqSMxuxm50xwZY=
+ github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.61.0 h1:BeC1Bub7Ttk33TF8v3ZeQ2L8acvz4ZLqtQuLyJAZquc=
+ github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.61.0/go.mod h1:UgG/Xn9+NXb1/ueSczIFxyuya3hs3srFDiZG2JrpJwY=
+-github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/cloudmock v0.61.0 h1:eSgSuKdcpY7RTN1oXSzC6S39rPBImn03ubLMsWK4RRg=
+-github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/cloudmock v0.61.0/go.mod h1:ifhe5teRNcbxg9p353DhOkOgczzL/IBLYFqT1cm1zpM=
+ github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.61.0 h1:KhpL26/GviYITHMCEGGqT/l50siFaBCBBKrjv6Z0G/k=
+ github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.61.0/go.mod h1:sg6Wqbl0BKKZ5zKnQj2q0qic/3ziF894SCx1LpbX37Y=
+ github.com/Jille/raft-grpc-transport v1.6.1 h1:gN3sjapb+fVbiebS7AfQQgbV2ecTOI7ur7NPPC7Mhoc=
+@@ -205,8 +199,6 @@
+ github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
+ github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
+ github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
+-github.com/chengxilo/virtualterm v1.0.4 h1:Z6IpERbRVlfB8WkOmtbHiDbBANU7cimRIof7mk9/PwM=
+-github.com/chengxilo/virtualterm v1.0.4/go.mod h1:DyxxBZz/x1iqJjFxTFcr6/x+jSpqN0iwWCOK1q10rlY=
+ github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
+ github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
+ github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
+@@ -316,11 +308,8 @@
+ github.com/envoyproxy/go-control-plane v0.9.9-0.20210512163311-63b5d3c536b0/go.mod h1:hliV/p42l8fGbc6Y9bQ70uLwIvmJyVE5k4iMKlh8wCQ=
+ github.com/envoyproxy/go-control-plane v0.10.2-0.20220325020618-49ff273808a1/go.mod h1:KJwIaB5Mv44NWtYuAOFCVOjcI94vtpEz2JU/D2v6IjE=
+ github.com/envoyproxy/go-control-plane v0.14.0 h1:hbG2kr4RuFj222B6+7T83thSPqLjwBIfQawTkC++2HA=
+-github.com/envoyproxy/go-control-plane v0.14.0/go.mod h1:NcS5X47pLl/hfqxU70yPwL9ZMkUlwlKxtAohpi2wBEU=
+ github.com/envoyproxy/go-control-plane/envoy v1.40.1-0.20261014170222-9c4befd3c419 h1:DybMDTfb3z9UZasQ2vRKnt7VmhjR7HDaOdflhJt7SDI=
+ github.com/envoyproxy/go-control-plane/envoy v1.40.1-0.20261014170222-9c4befd3c419/go.mod h1:UZVGjwWu2QV8PkGSlXmqWiSgqCGZe16TgIu4jDl3T5w=
+-github.com/envoyproxy/go-control-plane/ratelimit v0.1.0 h1:/G9QYbddjL25KvtKTv3an9lx6VBE2cnb8wp1vEGNYGI=
+-github.com/envoyproxy/go-control-plane/ratelimit v0.1.0/go.mod h1:Wk+tMFAFbCXaJPzVVHnPgRKdUdwW/KdbRt94AzgRee4=
+ github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
+ github.com/envoyproxy/protoc-gen-validate v1.3.3 h1:MVQghNeW+LZcmXe7SY1V36Z+WFMDjpqGAGacLe2T0ds=
+ github.com/envoyproxy/protoc-gen-validate v1.3.3/go.mod h1:TsndJ/ngyIdQRhMcVVGDDHINPLWB7C82oDArY51KfB0=
+@@ -402,9 +391,6 @@
+ github.com/golang/geo v0.0.0-20210211234256-740aa86cb551 h1:gtexQ/VGyN+VVFRXSFiguSNcXmS6rkKT+X7FdIrTtfo=
+ github.com/golang/geo v0.0.0-20210211234256-740aa86cb551/go.mod h1:QZ0nwyI2jOfgRAoBvP+ab5aRr7c9x7lhGEJrKvBwjWI=
+ github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
+-github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
+-github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da h1:oI5xCqsCo564l8iNU+DwB5epxmsaqB+rhGL0m5jtYqE=
+-github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
+ github.com/golang/mock v1.1.1/go.mod h1:oTYuIxOrZwtPieC+H1uAHpcLFnEyAGVDL/k47Jfbm0A=
+ github.com/golang/mock v1.4.3/go.mod h1:UOMv5ysSaYNkG+OFQykRIcU/QvvxJf3p21QfJ2Bt3cw=
+ github.com/golang/mock v1.7.0-rc.1 h1:YojYx61/OLFsiv6Rw1Z96LpldJIy31o+UHmwAUMJ6/U=
+@@ -440,7 +426,6 @@
+ github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
+ github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+ github.com/google/go-cmp v0.5.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+-github.com/google/go-cmp v0.5.3/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+ github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+ github.com/google/go-cmp v0.5.6/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+ github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+@@ -637,8 +622,6 @@
+ github.com/minio/crc64nvme v1.1.1/go.mod h1:eVfm2fAzLlxMdUGc0EEBGSMmPwmXD5XiNRpnu9J3bvg=
+ github.com/minio/highwayhash v1.0.4-0.20251030100505-070ab1a87a76 h1:KGuD/pM2JpL9FAYvBrnBBeENKZNh6eNtjqytV6TYjnk=
+ github.com/minio/highwayhash v1.0.4-0.20251030100505-070ab1a87a76/go.mod h1:GGYsuwP/fPD6Y9hMiXuapVvlIUEhFhMTh0rxU3ik1LQ=
+-github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db h1:62I3jR2EmQ4l5rM/4FEfDWcRD+abF5XlKShorW5LRoQ=
+-github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db/go.mod h1:l0dey0ia/Uv7NcFFVbCLtqEBQbrT4OCwCSKTEv6enCw=
+ github.com/mitchellh/hashstructure/v2 v2.0.2 h1:vGKWl0YJqUNxE8d+h8f6NJLcCJrgbhC4NcD46KavDd4=
+ github.com/mitchellh/hashstructure/v2 v2.0.2/go.mod h1:MG3aRVU/N29oo/V/IhBX8GR/zz4kQkprJgF2EVszyDE=
+ github.com/mmcloughlin/geohash v0.9.0 h1:FihR004p/aE1Sju6gcVq5OLDqGcMnpBY+8moBqIsVOs=
+@@ -680,8 +663,6 @@
+ github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
+ github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
+ github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
+-github.com/montanaflynn/stats v0.7.1 h1:etflOAAHORrCC44V+aR6Ftzort912ZU+YLiSTuV8eaE=
+-github.com/montanaflynn/stats v0.7.1/go.mod h1:etXPPgVO6n31NxCd9KQUMvCM+ve0ruNzt6R8Bnaayow=
+ github.com/morikuni/aec v1.1.0 h1:vBBl0pUnvi/Je71dsRrhMBtreIqNMYErSAbEeb8jrXQ=
+ github.com/morikuni/aec v1.1.0/go.mod h1:xDRgiq/iw5l+zkao76YTKzKttOp2cwPEne25HDkJnBw=
+ github.com/mschoch/smat v0.2.0 h1:8imxQsjDm8yFEAVBe7azKmKSgzSkZXDuKkSq9374khM=
+@@ -816,8 +797,6 @@
+ github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
+ github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=
+ github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
+-github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
+-github.com/rivo/uniseg v0.4.7/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
+ github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
+ github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=
+ github.com/rogpeppe/go-internal v1.15.0 h1:D0RCU5rMAp+SpgkiNdrjfJ+LX4J1M32V2NeCY7EJ6hc=
+@@ -830,8 +809,6 @@
+ github.com/santhosh-tekuri/jsonschema/v6 v6.0.2/go.mod h1:JXeL+ps8p7/KNMjDQk3TCwPpBy0wYklyWTfbkIzdIFU=
+ github.com/sasha-s/go-deadlock v0.3.1 h1:sqv7fDNShgjcaxkO0JNcOAlr8B9+cV5Ey/OB71efZx0=
+ github.com/sasha-s/go-deadlock v0.3.1/go.mod h1:F73l+cr82YSh10GxyRI6qZiCgK64VaZjwesgfQ1/iLM=
+-github.com/schollz/progressbar/v3 v3.19.1 h1:iv8BgwOvdML/S3p84uBpy/IMigv4U9594vPZYa2EdrU=
+-github.com/schollz/progressbar/v3 v3.19.1/go.mod h1:LFL7jqimKxfhero4K1eCkUr/6R39AgQeiPCJtlTWIW8=
+ github.com/seaweedfs/cockroachdb-parser v0.0.0-20260225204133-2f342c5ea564 h1:TgxPraf1NmF6XTcUG53ULpLQrKvhtUJxQ3hyekxSDNQ=
+ github.com/seaweedfs/cockroachdb-parser v0.0.0-20260225204133-2f342c5ea564/go.mod h1:JSKCh6uCHBz91lQYFYHCyTrSVIPge4SUFVn28iwMNB0=
+ github.com/seaweedfs/go-fuse/v2 v2.9.4 h1:ACyloiuopdhRSjdLLeSWbsVaemMPskORaRF01TY6GyM=
+@@ -893,7 +870,6 @@
+ github.com/stretchr/testify v1.7.2/go.mod h1:R6va5+xMeoiuVRoj+gSkQ7d3FALtqAAGI1FQKckRals=
+ github.com/stretchr/testify v1.7.5/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
+ github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
+-github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
+ github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
+ github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+ github.com/stretchr/testify v1.12.1 h1:EuwCh5fleGS7H32xRwO3wRGT7DxrDhLAT6FF8MpWDWE=
+@@ -1041,8 +1017,6 @@
+ github.com/zeebo/assert v1.3.1/go.mod h1:Pq9JiuJQpG8JLJdtkwrJESF0Foym2/D9XMU5ciN/wJ0=
+ github.com/zeebo/xxh3 v1.1.0 h1:s7DLGDK45Dyfg7++yxI0khrfwq9661w9EN78eP/UZVs=
+ github.com/zeebo/xxh3 v1.1.0/go.mod h1:IisAie1LELR4xhVinxWS5+zf1lA4p0MW4T+w+W07F5s=
+-go.einride.tech/aip v0.83.0 h1:TI21IdeOnLTwZEJ3BxtImIZk6bsN2Q+sd0x99SLiQ+M=
+-go.einride.tech/aip v0.83.0/go.mod h1:E8+wdTApA70odnpFzJgsGogHozC2JCIhFJBKPr8bVig=
+ go.etcd.io/bbolt v1.5.0 h1:S7GAl7Fxv12yohbwFfIbQCGDWbQbtDGPET4P/bD4lxU=
+ go.etcd.io/bbolt v1.5.0/go.mod h1:mkltfYE5aUHQxUct9N9V+Kp7aSjFqjgrhcXIS70Lrdk=
+ go.etcd.io/etcd/api/v3 v3.7.1 h1:KJG0/DcWGfe3Y1otDf/fsBf0TSSgpxZ5RO/L8SFt73E=
+@@ -1051,10 +1025,8 @@
+ go.etcd.io/etcd/client/pkg/v3 v3.7.1/go.mod h1:cnzZGIUzSfjEwLC6UBVsSXlEK1eepS/JUD7wE6PLRT0=
+ go.etcd.io/etcd/client/v3 v3.7.1 h1:0PEMMC0KuZmVIN+RAbdqfkZ45pYTgKVtmBEbRCvZFUg=
+ go.etcd.io/etcd/client/v3 v3.7.1/go.mod h1:ffNqALa8tRCYhYo1F9oR489y23K39Gz+BSR3ApAGYq0=
+-go.mongodb.org/mongo-driver v1.17.9 h1:IexDdCuuNJ3BHrELgBlyaH9p60JXAvdzWR128q+U5tU=
+-go.mongodb.org/mongo-driver v1.17.9/go.mod h1:LlOhpH5NUEfhxcAwG0UEkMqwYcc4JU18gtCdGudk/tQ=
+-go.opencensus.io v0.24.0 h1:y73uSU6J157QMP2kn2r30vwW1A2W2WFwSCGnAVxeaD0=
+-go.opencensus.io v0.24.0/go.mod h1:vNK8G9p7aAivkbmorf4v+7Hgx+Zs0yY+0fOtgBfjQKo=
++go.mongodb.org/mongo-driver/v2 v2.9.2 h1:OCAdjI37pC/SVxucz/9CM8zD4jCdegtsY5QcKzYFCgE=
++go.mongodb.org/mongo-driver/v2 v2.9.2/go.mod h1:SHKN0IWkKmEVGHLjXnni6s4wPKX4v86FTgOeJJFuXcA=
+ go.opentelemetry.io/auto/sdk v1.2.1 h1:jXsnJ4Lmnqd11kwkBV2LgLoFMZKizbCi5fNZ/ipaZ64=
+ go.opentelemetry.io/auto/sdk v1.2.1/go.mod h1:KRTj+aOaElaLi+wW1kO/DZRXwkF4C5xPbEe3ZiIhN7Y=
+ go.opentelemetry.io/contrib/detectors/gcp v1.46.0 h1:PI8dGkqDaQkwJ8kOopqMhDTbrnK3UIeG/RCHH4HErbo=
+@@ -1077,8 +1049,6 @@
+ go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.46.0/go.mod h1:BOmGMCbAtvcJiSJ+hLuhgPLdDbimnraSl8irz3iY8sY=
+ go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.45.0 h1:QBajQ2SrwQijzHyZbQlPsuIzpl/ll8DY6wPWsajeGcI=
+ go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.45.0/go.mod h1:08ZQLjrPLQ6R4kAXvuOvODEer5Yh4CoFvll5qB2BCI8=
+-go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.46.0 h1:PR9eAf7o0dQs3hshZNZpE9aW2dXWX/KdDf6pJilVD3U=
+-go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.46.0/go.mod h1:2Z4KyNdH1uuzivdinyfGsxzNNT/Rl45pwtVwfYVI0xk=
+ go.opentelemetry.io/otel/exporters/zipkin v1.45.0 h1:KN3btaILMTxR4QDHVGAO87lq5ButzK7l+kIfLuxQ1oA=
+ go.opentelemetry.io/otel/exporters/zipkin v1.45.0/go.mod h1:yNcodmUclM4InyWoOwX/YW4Jri0Gj5FWAlM+NqCrtqY=
+ go.opentelemetry.io/otel/metric v1.46.0 h1:yBnkXvgV7AXFILZc5K6IZe/CBFF3OS7BJ8ov6/lj0K8=
+@@ -1169,7 +1139,6 @@
+ golang.org/x/net v0.0.0-20200226121028-0de0cce0169b/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
+ golang.org/x/net v0.0.0-20200822124328-c89045814202/go.mod h1:/O7V0waA8r7cgGh81Ro3o1hOxt32SMVPicZroKQ2sZA=
+ golang.org/x/net v0.0.0-20201021035429-f5854403a974/go.mod h1:sp8m0HH+o8qH0wwXwYZr8TS3Oi6o0r6Gce1SSxlDquU=
+-golang.org/x/net v0.0.0-20201110031124-69a78807bb2b/go.mod h1:sp8m0HH+o8qH0wwXwYZr8TS3Oi6o0r6Gce1SSxlDquU=
+ golang.org/x/net v0.0.0-20210226172049-e18ecbb05110/go.mod h1:m0MpNAwzfU5UDzcl9v0D8zg8gWTRqZa9RBIspLL5mdg=
+ golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4/go.mod h1:p54w0d4576C0XHj96bSt6lcn1PtDYWL6XObtHCRCNQM=
+ golang.org/x/net v0.0.0-20220722155237-a158d28d115b/go.mod h1:XRhObCWvk6IyKnWLug+ECip1KBveYUHfp+8e9klMJ9c=
+@@ -1311,7 +1280,6 @@
+ google.golang.org/grpc v1.27.0/go.mod h1:qbnxyOmOxrQa7FizSgH+ReBfzJrCY1pSN7KXBS8abTk=
+ google.golang.org/grpc v1.29.1/go.mod h1:itym6AZVZYACWQqET3MqgPpjcuV5QH3BxFS3IjizoKk=
+ google.golang.org/grpc v1.33.1/go.mod h1:fr5YgcSWrqhRRxogOsw7RzIpsmvOZ6IcH4kBYTpR3n0=
+-google.golang.org/grpc v1.33.2/go.mod h1:JMHMWHQWaTccqQQlmk3MJZS+GWXOdAesneDmEnv2fbc=
+ google.golang.org/grpc v1.36.0/go.mod h1:qjiiYl8FncCW8feJPdyg3v6XW24KsRHe+dy9BAGRRjU=
+ google.golang.org/grpc v1.40.0/go.mod h1:ogyxbiOoUXAkP+4+xa6PZSE9DZgIHtSpzjDTB9KAK34=
+ google.golang.org/grpc v1.47.0/go.mod h1:vN9eftEi1UMyUsIF80+uQXhHjbXYbm0uXoFCACuMGWk=
+diff --git a/weed/command/filer_backup.go b/weed/command/filer_backup.go
+--- a/weed/command/filer_backup.go
++++ b/weed/command/filer_backup.go
+@@ -21,6 +21,7 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/replication/source"
+ 	"github.com/seaweedfs/seaweedfs/weed/security"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ 	"github.com/seaweedfs/seaweedfs/weed/util/http"
+ 	"github.com/seaweedfs/seaweedfs/weed/util/wildcard"
+ 	"google.golang.org/grpc"
+@@ -95,6 +96,10 @@
+ 
+ 	util.LoadSecurityConfiguration()
+ 	util.LoadConfiguration("replication", true)
++	if err := googleprofile.ValidateReplication(util.GetViper()); err != nil {
++		glog.Errorf("backup configuration rejected: %v", err)
++		return false
++	}
+ 	if err := repl_util.ValidateSSEProfileConfiguration(); err != nil {
+ 		glog.Errorf("backup configuration rejected: %v", err)
+ 		return false
+@@ -131,6 +136,9 @@
+ )
+ 
+ func doFilerBackup(grpcDialOption grpc.DialOption, backupOption *FilerBackupOptions, reExcludeFileName *regexp.Regexp, excludeFileNames []*wildcard.WildcardMatcher, excludePathPatterns []*wildcard.WildcardMatcher, clientId int32, clientEpoch int32, resumeTsNs int64) (int64, error) {
++	if err := googleprofile.ValidateReplication(util.GetViper()); err != nil {
++		return resumeTsNs, err
++	}
+ 	if err := repl_util.ValidateSSEProfileConfiguration(); err != nil {
+ 		return resumeTsNs, err
+ 	}
+diff --git a/weed/command/filer_replication.go b/weed/command/filer_replication.go
+--- a/weed/command/filer_replication.go
++++ b/weed/command/filer_replication.go
+@@ -10,6 +10,7 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/replication/sink"
+ 	"github.com/seaweedfs/seaweedfs/weed/replication/sub"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ )
+ 
+ func init() {
+@@ -35,6 +36,10 @@
+ 	util.LoadConfiguration("replication", true)
+ 	util.LoadConfiguration("notification", true)
+ 	config := util.GetViper()
++	if err := googleprofile.ValidateReplication(util.GetViper()); err != nil {
++		glog.Errorf("replication configuration rejected: %v", err)
++		return false
++	}
+ 	if err := repl_util.ValidateSSEProfileConfiguration(); err != nil {
+ 		glog.Errorf("replication configuration rejected: %v", err)
+ 		return false
+@@ -128,6 +133,10 @@
+ }
+ 
+ func findSink(config *util.ViperProxy) sink.ReplicationSink {
++	if err := googleprofile.ValidateReplication(config); err != nil {
++		glog.Fatalf("replication configuration rejected: %v", err)
++		return nil
++	}
+ 	var dataSink sink.ReplicationSink
+ 	for _, sk := range sink.Sinks {
+ 		if config.GetBool("sink." + sk.GetName() + ".enabled") {
+diff --git a/weed/command/ouf_google_profile_test.go b/weed/command/ouf_google_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/command/ouf_google_profile_test.go
+@@ -0,0 +1,22 @@
++package command
++
++import (
++	"errors"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++	"github.com/spf13/viper"
++	"testing"
++)
++
++func TestOUFGoogleProfileBackupBeforeSinkCheckpoint(t *testing.T) {
++	for _, key := range []string{"notification.google_pub_sub.enabled", "sink.google_cloud_storage.enabled"} {
++		t.Run(key, func(t *testing.T) {
++			old := viper.Get(key)
++			defer viper.Set(key, old)
++			viper.Set(key, true)
++			offset, err := doFilerBackup(nil, nil, nil, nil, nil, 0, 0, 17)
++			if offset != 17 || !errors.Is(err, googleprofile.ErrUnsupported) {
++				t.Fatalf("offset=%d err=%v", offset, err)
++			}
++		})
++	}
++}
+diff --git a/weed/command/ouf_unsupported_google_tag.go b/weed/command/ouf_unsupported_google_tag.go
+new file mode 100644
+--- /dev/null
++++ b/weed/command/ouf_unsupported_google_tag.go
+@@ -0,0 +1,6 @@
++//go:build gcs || google_pub_sub || googlecloud
++
++package command
++
++// These tags cannot restore features excluded from this qualified profile.
++var _ = OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE
+diff --git a/weed/filer/mongodb/mongodb_options_v2_test.go b/weed/filer/mongodb/mongodb_options_v2_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/filer/mongodb/mongodb_options_v2_test.go
+@@ -0,0 +1,248 @@
++package mongodb
++
++import (
++	"context"
++	"crypto/ecdsa"
++	"crypto/elliptic"
++	"crypto/rand"
++	"crypto/x509"
++	"crypto/x509/pkix"
++	"encoding/pem"
++	"errors"
++	"go.mongodb.org/mongo-driver/v2/bson"
++	"math/big"
++	"os"
++	"path/filepath"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/seaweedfs/seaweedfs/weed/filer"
++	"go.mongodb.org/mongo-driver/v2/mongo"
++	"go.mongodb.org/mongo-driver/v2/mongo/options"
++	"go.mongodb.org/mongo-driver/v2/mongo/writeconcern"
++)
++
++func TestMongoV2OptionsPreserveAuthTopologyAndExplicitOverrides(t *testing.T) {
++	uri := "mongodb://uriuser:uripass@127.0.0.1:27017/db?authSource=authdb&authMechanism=SCRAM-SHA-256&replicaSet=rs-fixture&maxPoolSize=9&readPreference=secondaryPreferred&retryWrites=true&retryReads=false&timeoutMS=1200&w=majority&compressors=zstd"
++	opts, err := mongodbClientOptions(uri, 3, false, "", "", "", "override-user", "override-pass", false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if opts.Auth == nil || opts.Auth.Username != "override-user" || opts.Auth.Password != "override-pass" || !opts.Auth.PasswordSet || opts.Auth.AuthSource != "authdb" || opts.Auth.AuthMechanism != "SCRAM-SHA-256" {
++		t.Fatal("URI authentication fields or explicit credentials changed")
++	}
++	if opts.MaxPoolSize == nil || *opts.MaxPoolSize != 3 || opts.ReplicaSet == nil || *opts.ReplicaSet != "rs-fixture" || opts.Timeout == nil || *opts.Timeout != 1200*time.Millisecond || opts.WriteConcern.W != "majority" || opts.ReadPreference.Mode().String() != "secondaryPreferred" || len(opts.Compressors) != 1 || opts.Compressors[0] != "zstd" {
++		t.Fatal("URI topology/timeout/write/read/compression settings changed")
++	}
++	if opts.RetryWrites == nil || !*opts.RetryWrites || opts.RetryReads == nil || *opts.RetryReads {
++		t.Fatal("explicit retry configuration changed")
++	}
++	inherited, err := mongodbClientOptions(uri, 0, false, "", "", "", "", "", false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if inherited.Auth.Username != "uriuser" || inherited.Auth.Password != "uripass" || *inherited.MaxPoolSize != 9 {
++		t.Fatal("URI settings lost without override")
++	}
++	defaults, err := mongodbClientOptions("mongodb://127.0.0.1:27017", 0, false, "", "", "", "", "", false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if defaults.MaxAdaptiveRetries == nil || *defaults.MaxAdaptiveRetries != 0 {
++		t.Fatal("new adaptive retry default not explicitly disabled")
++	}
++	if defaults.RetryWrites != nil || defaults.RetryReads != nil {
++		t.Fatal("driver retry defaults silently changed")
++	}
++}
++func TestMongoV2RejectsUnsafeOrLostSettingsBeforeConnection(t *testing.T) {
++	for _, query := range []string{"w=0", "socketTimeoutMS=10", "wTimeoutMS=20", "SOCKETTIMEOUTMS=10", "maxAdaptiveRetries=1", "enableOverloadRetargeting=true"} {
++		t.Run(query, func(t *testing.T) {
++			f := newMongoWireFixture(t)
++			uri := f.uri() + "&" + query
++			store := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++			err := store.connection(uri, 0, false, "", "", "", "", "", false)
++			if err == nil {
++				store.Shutdown()
++				t.Fatal("unsafe/removed option accepted")
++			}
++			if store.connect != nil {
++				t.Fatal("failed options published client")
++			}
++			f.mu.Lock()
++			defer f.mu.Unlock()
++			if len(f.connections) != 0 || len(f.commands) != 0 {
++				t.Fatal("invalid configuration reached server")
++			}
++		})
++	}
++	for _, uri := range []string{"not-a-mongodb-uri", "mongodb://127.0.0.1/?maxPoolSize=garbage"} {
++		if _, err := mongodbClientOptions(uri, 0, false, "", "", "", "", "", false); err == nil {
++			t.Fatal("invalid URI accepted")
++		}
++	}
++}
++func mongoTLSFixture(t *testing.T) (string, string, string) {
++	t.Helper()
++	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
++	if err != nil {
++		t.Fatal(err)
++	}
++	now := time.Now()
++	template := &x509.Certificate{SerialNumber: big.NewInt(1), Subject: pkix.Name{CommonName: "fixture"}, NotBefore: now.Add(-time.Hour), NotAfter: now.Add(time.Hour), IsCA: true, BasicConstraintsValid: true, KeyUsage: x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature, ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth}}
++	der, err := x509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)
++	if err != nil {
++		t.Fatal(err)
++	}
++	keyDER, err := x509.MarshalPKCS8PrivateKey(key)
++	if err != nil {
++		t.Fatal(err)
++	}
++	dir := t.TempDir()
++	cert := filepath.Join(dir, "cert.pem")
++	keyFile := filepath.Join(dir, "key.pem")
++	if err := os.WriteFile(cert, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der}), 0600); err != nil {
++		t.Fatal(err)
++	}
++	if err := os.WriteFile(keyFile, pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: keyDER}), 0600); err != nil {
++		t.Fatal(err)
++	}
++	return cert, cert, keyFile
++}
++func TestMongoV2TLSConfigurationAndFailures(t *testing.T) {
++	ca, cert, key := mongoTLSFixture(t)
++	opts, err := mongodbClientOptions("mongodb://127.0.0.1", 0, true, ca, cert, key, "", "", false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if opts.TLSConfig == nil || opts.TLSConfig.InsecureSkipVerify || len(opts.TLSConfig.Certificates) != 1 || opts.TLSConfig.RootCAs == nil {
++		t.Fatal("TLS client configuration not preserved")
++	}
++	insecure, err := mongodbClientOptions("mongodb://127.0.0.1", 0, true, ca, cert, key, "", "", true)
++	if err != nil || !insecure.TLSConfig.InsecureSkipVerify {
++		t.Fatal("explicit historical insecure option changed")
++	}
++	if _, err := mongodbClientOptions("mongodb://127.0.0.1", 0, true, ca, cert, "missing-key", "", "", false); err == nil {
++		t.Fatal("missing client key accepted")
++	}
++	invalidCA := filepath.Join(t.TempDir(), "bad-ca")
++	if err := os.WriteFile(invalidCA, []byte("not a certificate"), 0600); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := mongodbClientOptions("mongodb://127.0.0.1", 0, true, invalidCA, cert, key, "", "", false); err == nil {
++		t.Fatal("invalid CA accepted")
++	}
++}
++func TestMongoV2UnacknowledgedResultsNeverSucceed(t *testing.T) {
++	operations := map[string]func(*MongodbStore) error{"entry": func(s *MongodbStore) error { return s.UpdateEntry(context.Background(), &filer.Entry{FullPath: "/a"}) }, "kv-put": func(s *MongodbStore) error {
++		return s.KvPut(context.Background(), []byte("fixture-key"), []byte("value"))
++	}, "entry-delete": func(s *MongodbStore) error { return s.DeleteEntry(context.Background(), "/a") }, "folder-delete": func(s *MongodbStore) error { return s.DeleteFolderChildren(context.Background(), "/a") }, "kv-delete": func(s *MongodbStore) error { return s.KvDelete(context.Background(), []byte("fixture-key")) }}
++	for name, operation := range operations {
++		t.Run(name, func(t *testing.T) {
++			f := newMongoWireFixture(t, mongoOK())
++			opts := options.Client().ApplyURI(f.uri()).SetWriteConcern(writeconcern.Unacknowledged())
++			client, err := mongo.Connect(opts)
++			if err != nil {
++				t.Fatal(err)
++			}
++			s := &MongodbStore{connect: client, database: "fixture", collectionName: "filemeta"}
++			t.Cleanup(s.Shutdown)
++			if err := operation(s); err == nil || !strings.Contains(err.Error(), "unacknowledged") {
++				t.Fatalf("unacknowledged operation returned %v", err)
++			}
++		})
++	}
++}
++
++func TestMongoV2AuthenticationAndTLSFailuresDoNotPublishClient(t *testing.T) {
++	t.Run("SCRAM-denial", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoError(18))
++		s := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++		err := s.connection(strings.Replace(f.uri(), "mongodb://", "mongodb://fixture-user:fixture-password@", 1)+"&authMechanism=SCRAM-SHA-256", 0, false, "", "", "", "fixture-user", "fixture-password", false)
++		if err == nil || s.connect != nil {
++			if s.connect != nil {
++				s.Shutdown()
++			}
++			t.Fatal("authentication failure accepted")
++		}
++		f.mu.Lock()
++		defer f.mu.Unlock()
++		sawAuth := false
++		for _, command := range f.commands {
++			if len(command) > 0 && strings.EqualFold(command[0].Key, "saslStart") {
++				sawAuth = true
++			}
++			if len(command) > 0 && strings.EqualFold(command[0].Key, "createIndexes") {
++				t.Fatal("authentication denial reached DDL")
++			}
++		}
++		if !sawAuth {
++			t.Fatal("fixture did not observe real driver SCRAM request")
++		}
++	})
++	t.Run("TLS-no-plaintext-fallback", func(t *testing.T) {
++		f := newMongoWireFixture(t)
++		ca, cert, key := mongoTLSFixture(t)
++		s := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++		err := s.connection(f.uri(), 0, true, ca, cert, key, "", "", false)
++		if err == nil || s.connect != nil {
++			if s.connect != nil {
++				s.Shutdown()
++			}
++			t.Fatal("TLS failure accepted")
++		}
++		f.mu.Lock()
++		defer f.mu.Unlock()
++		if len(f.commands) != 0 {
++			t.Fatal("TLS failure fell back to plaintext commands")
++		}
++	})
++}
++
++func TestMongoV2RejectsServerBelowMinimumBeforeIndex(t *testing.T) {
++	f := newMongoWireFixtureVersion(t, 8)
++	store := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++	err := store.connection(f.uri(), 0, false, "", "", "", "", "", false)
++	if err == nil || store.connect != nil {
++		if store.connect != nil {
++			store.Shutdown()
++		}
++		t.Fatal("pre-4.4 wire version accepted")
++	}
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	if len(f.commands) != 0 {
++		t.Fatal("unsupported server received DDL")
++	}
++}
++
++func TestMongoV2AdaptiveRetriesRemainDisabledInProfile(t *testing.T) {
++	overload := mongoError(16500)
++	overload = append(overload, bson.E{Key: "errorLabels", Value: bson.A{"RetryableError", "SystemOverloadedError"}})
++	f := newMongoWireFixture(t, mongoOK(), overload, mongoOK())
++	uri := strings.Replace(f.uri(), "&retryReads=false&retryWrites=false", "", 1)
++	s := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++	if err := s.connection(uri, 0, false, "", "", "", "", "", false); err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(s.Shutdown)
++	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
++	defer cancel()
++	err := s.KvPut(ctx, []byte("fixture-key"), []byte("value"))
++	var commandError mongo.CommandError
++	if !errors.As(err, &commandError) || !commandError.HasErrorLabel("SystemOverloadedError") {
++		t.Fatalf("overload was hidden or retried: %v", err)
++	}
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	writes := 0
++	for _, command := range f.commands {
++		if len(command) > 0 && command[0].Key == "update" {
++			writes++
++		}
++	}
++	if writes != 1 {
++		t.Fatalf("new adaptive retries changed the v1 profile: writes=%d", writes)
++	}
++}
+diff --git a/weed/filer/mongodb/mongodb_store.go b/weed/filer/mongodb/mongodb_store.go
+--- a/weed/filer/mongodb/mongodb_store.go
++++ b/weed/filer/mongodb/mongodb_store.go
+@@ -4,7 +4,9 @@
+ 	"context"
+ 	"crypto/tls"
+ 	"crypto/x509"
++	"errors"
+ 	"fmt"
++	"net/url"
+ 	"os"
+ 	"regexp"
+ 	"strings"
+@@ -14,9 +16,9 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+-	"go.mongodb.org/mongo-driver/bson"
+-	"go.mongodb.org/mongo-driver/mongo"
+-	"go.mongodb.org/mongo-driver/mongo/options"
++	"go.mongodb.org/mongo-driver/v2/bson"
++	"go.mongodb.org/mongo-driver/v2/mongo"
++	"go.mongodb.org/mongo-driver/v2/mongo/options"
+ )
+ 
+ func init() {
+@@ -56,10 +58,49 @@
+ }
+ 
+ func (store *MongodbStore) connection(uri string, poolSize uint64, ssl bool, sslCAFile, sslCertFile, sslKeyFile string, username, password string, insecure bool) (err error) {
+-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+-	defer cancel()
+-
++	opts, err := mongodbClientOptions(uri, poolSize, ssl, sslCAFile, sslCertFile, sslKeyFile, username, password, insecure)
++	if err != nil {
++		return err
++	}
++	client, err := mongo.Connect(opts)
++	if err != nil {
++		return err
++	}
++	c := client.Database(store.database).Collection(store.collectionName)
++	if err := store.indexUnique(c); err != nil {
++		cleanup, cancel := context.WithTimeout(context.Background(), 10*time.Second)
++		defer cancel()
++		_ = client.Disconnect(cleanup)
++		return err
++	}
++	store.connect = client
++	return nil
++}
++
++// Keep URI topology/auth/read/write settings and explicit overrides intact.
++// Legacy timeout options cannot silently disappear during the v2 migration.
++func mongodbClientOptions(uri string, poolSize uint64, ssl bool, sslCAFile, sslCertFile, sslKeyFile, username, password string, insecure bool) (*options.ClientOptions, error) {
+ 	opts := options.Client().ApplyURI(uri)
++	if !opts.WriteConcern.Acknowledged() {
++		return nil, fmt.Errorf("mongodb requires acknowledged writes; w=0 is unsupported")
++	}
++	// Preserve the v1 profile: v2 adaptive overload retries are a new feature,
++	// distinct from existing retryWrites/session/txnNumber behavior.
++	if (opts.MaxAdaptiveRetries != nil && *opts.MaxAdaptiveRetries > 0) || (opts.EnableOverloadRetargeting != nil && *opts.EnableOverloadRetargeting) {
++		return nil, fmt.Errorf("mongodb adaptive overload retry/retargeting is not qualified in this profile")
++	}
++	opts.SetMaxAdaptiveRetries(0)
++	if parsed, err := url.Parse(uri); err == nil {
++		for key, values := range parsed.Query() {
++			if strings.EqualFold(key, "socketTimeoutMS") || strings.EqualFold(key, "wTimeoutMS") {
++				for _, value := range values {
++					if value != "0" {
++						return nil, fmt.Errorf("mongodb driver v2 requires an explicit timeoutMS/context migration for legacy %s", key)
++					}
++				}
++			}
++		}
++	}
+ 
+ 	if poolSize > 0 {
+ 		opts.SetMaxPoolSize(poolSize)
+@@ -68,7 +109,7 @@
+ 	if ssl {
+ 		tlsConfig, err := configureTLS(sslCAFile, sslCertFile, sslKeyFile, insecure)
+ 		if err != nil {
+-			return err
++			return nil, err
+ 		}
+ 		opts.SetTLSConfig(tlsConfig)
+ 	}
+@@ -86,16 +127,10 @@
+ 		opts.SetAuth(creds)
+ 	}
+ 
+-	client, err := mongo.Connect(ctx, opts)
+-	if err != nil {
+-		return err
+-	}
+-
+-	c := client.Database(store.database).Collection(store.collectionName)
+-	err = store.indexUnique(c)
+-
+-	store.connect = client
+-	return err
++	if err := opts.Validate(); err != nil {
++		return nil, err
++	}
++	return opts, nil
+ }
+ 
+ func configureTLS(caFile, certFile, keyFile string, insecure bool) (*tls.Config, error) {
+@@ -123,25 +158,17 @@
+ 	return tlsConfig, nil
+ }
+ 
+-func (store *MongodbStore) createIndex(c *mongo.Collection, index mongo.IndexModel, opts *options.CreateIndexesOptions) error {
+-	_, err := c.Indexes().CreateOne(context.Background(), index, opts)
++func (store *MongodbStore) indexUnique(c *mongo.Collection) error {
++	// v2 removed CreateIndexes.SetMaxTime. Bound selection, network and server
++	// work through one operation context instead of losing the old limit.
++	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
++	defer cancel()
++	index := mongo.IndexModel{
++		Keys:    bson.D{{Key: "directory", Value: int32(1)}, {Key: "name", Value: int32(1)}},
++		Options: options.Index().SetUnique(true),
++	}
++	_, err := c.Indexes().CreateOne(ctx, index)
+ 	return err
+-}
+-
+-func (store *MongodbStore) indexUnique(c *mongo.Collection) error {
+-	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
+-
+-	unique := new(bool)
+-	*unique = true
+-
+-	index := mongo.IndexModel{
+-		Keys: bson.D{{Key: "directory", Value: int32(1)}, {Key: "name", Value: int32(1)}},
+-		Options: &options.IndexOptions{
+-			Unique: unique,
+-		},
+-	}
+-
+-	return store.createIndex(c, index, opts)
+ }
+ 
+ func (store *MongodbStore) BeginTransaction(ctx context.Context) (context.Context, error) {
+@@ -180,19 +207,22 @@
+ 
+ 	c := store.connect.Database(store.database).Collection(store.collectionName)
+ 
+-	opts := options.Update().SetUpsert(true)
++	opts := options.UpdateOne().SetUpsert(true)
+ 	// Use BSON builders for type-safe query construction (prevents injection)
+ 	// lgtm[go/sql-injection]
+ 	// Safe: Using BSON type-safe builders (bson.D) + validated inputs (null byte check above)
+ 	filter := bson.D{{Key: "directory", Value: dir}, {Key: "name", Value: name}}
+ 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "meta", Value: meta}}}}
+ 
+-	_, err = c.UpdateOne(ctx, filter, update, opts)
+-
+-	if err != nil {
+-		return fmt.Errorf("UpdateEntry %s: %v", entry.FullPath, err)
+-	}
+-
++	result, err := c.UpdateOne(ctx, filter, update, opts)
++
++	if err != nil {
++		return fmt.Errorf("UpdateEntry %s: %w", entry.FullPath, err)
++	}
++
++	if !result.Acknowledged {
++		return fmt.Errorf("UpdateEntry %s: unacknowledged write", entry.FullPath)
++	}
+ 	return nil
+ }
+ 
+@@ -212,9 +242,11 @@
+ 	// Safe: Using BSON type-safe builders (bson.M) + validated inputs (null byte check above)
+ 	var where = bson.M{"directory": dir, "name": name}
+ 	err = store.connect.Database(store.database).Collection(store.collectionName).FindOne(ctx, where).Decode(&data)
+-	if err != mongo.ErrNoDocuments && err != nil {
+-		glog.ErrorfCtx(ctx, "find %s: %v", fullpath, err)
++	if errors.Is(err, mongo.ErrNoDocuments) {
+ 		return nil, filer_pb.ErrNotFound
++	}
++	if err != nil {
++		return nil, fmt.Errorf("find %s: %w", fullpath, err)
+ 	}
+ 
+ 	if len(data.Meta) == 0 {
+@@ -244,11 +276,14 @@
+ 	// lgtm[go/sql-injection]
+ 	// Safe: Using BSON type-safe builders (bson.M) + validated inputs (null byte check above)
+ 	where := bson.M{"directory": dir, "name": name}
+-	_, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteMany(ctx, where)
+-	if err != nil {
+-		return fmt.Errorf("delete %s : %v", fullpath, err)
+-	}
+-
++	result, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteMany(ctx, where)
++	if err != nil {
++		return fmt.Errorf("delete %s : %w", fullpath, err)
++	}
++
++	if !result.Acknowledged {
++		return fmt.Errorf("delete %s: unacknowledged write", fullpath)
++	}
+ 	return nil
+ }
+ 
+@@ -261,11 +296,14 @@
+ 	// lgtm[go/sql-injection]
+ 	// Safe: Using BSON type-safe builders (bson.M) + validated inputs (null byte check above)
+ 	where := bson.M{"directory": fullpath}
+-	_, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteMany(ctx, where)
+-	if err != nil {
+-		return fmt.Errorf("delete %s : %v", fullpath, err)
+-	}
+-
++	result, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteMany(ctx, where)
++	if err != nil {
++		return fmt.Errorf("delete %s : %w", fullpath, err)
++	}
++
++	if !result.Acknowledged {
++		return fmt.Errorf("delete %s: unacknowledged write", fullpath)
++	}
+ 	return nil
+ }
+ 
+@@ -300,8 +338,7 @@
+ 		where["name"] = nameQuery
+ 	}
+ 
+-	optLimit := int64(limit)
+-	opts := &options.FindOptions{Limit: &optLimit, Sort: bson.M{"name": 1}}
++	opts := options.Find().SetLimit(limit).SetSort(bson.M{"name": 1})
+ 	cur, err := store.connect.Database(store.database).Collection(store.collectionName).Find(ctx, where, opts)
+ 	if err != nil {
+ 		return lastFileName, fmt.Errorf("failed to list directory entries: find error: %w", err)
+@@ -335,6 +372,9 @@
+ 		}
+ 	}
+ 
++	if err == nil {
++		err = cur.Err()
++	}
+ 	if errClose := cur.Close(ctx); errClose != nil {
+ 		glog.V(0).InfofCtx(ctx, "list iterator close: %v", errClose)
+ 		if err == nil {
+@@ -352,5 +392,7 @@
+ func (store *MongodbStore) Shutdown() {
+ 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+ 	defer cancel()
+-	store.connect.Disconnect(ctx)
+-}
++	if store.connect != nil {
++		_ = store.connect.Disconnect(ctx)
++	}
++}
+diff --git a/weed/filer/mongodb/mongodb_store_kv.go b/weed/filer/mongodb/mongodb_store_kv.go
+--- a/weed/filer/mongodb/mongodb_store_kv.go
++++ b/weed/filer/mongodb/mongodb_store_kv.go
+@@ -6,9 +6,9 @@
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/filer"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+-	"go.mongodb.org/mongo-driver/bson"
+-	"go.mongodb.org/mongo-driver/mongo"
+-	"go.mongodb.org/mongo-driver/mongo/options"
++	"go.mongodb.org/mongo-driver/v2/bson"
++	"go.mongodb.org/mongo-driver/v2/mongo"
++	"go.mongodb.org/mongo-driver/v2/mongo/options"
+ )
+ 
+ func (store *MongodbStore) KvPut(ctx context.Context, key []byte, value []byte) (err error) {
+@@ -17,7 +17,7 @@
+ 
+ 	c := store.connect.Database(store.database).Collection(store.collectionName)
+ 
+-	opts := options.Update().SetUpsert(true)
++	opts := options.UpdateOne().SetUpsert(true)
+ 	filter := bson.D{
+ 		{Key: "directory", Value: dir},
+ 		{Key: "name", Value: name},
+@@ -28,12 +28,15 @@
+ 		}},
+ 	}
+ 
+-	_, err = c.UpdateOne(ctx, filter, update, opts)
++	result, err := c.UpdateOne(ctx, filter, update, opts)
+ 
+ 	if err != nil {
+ 		return fmt.Errorf("kv put: %w", err)
+ 	}
+ 
++	if !result.Acknowledged {
++		return fmt.Errorf("kv put: unacknowledged write")
++	}
+ 	return nil
+ }
+ 
+@@ -61,11 +64,14 @@
+ 	dir, name := genDirAndName(key)
+ 
+ 	where := bson.M{"directory": dir, "name": name}
+-	_, err = store.connect.Database(store.database).Collection(store.collectionName).DeleteOne(ctx, where)
++	result, err := store.connect.Database(store.database).Collection(store.collectionName).DeleteOne(ctx, where)
+ 	if err != nil {
+ 		return fmt.Errorf("kv delete: %w", err)
+ 	}
+ 
++	if !result.Acknowledged {
++		return fmt.Errorf("kv delete: unacknowledged write")
++	}
+ 	return nil
+ }
+ 
+diff --git a/weed/filer/mongodb/mongodb_wire_test.go b/weed/filer/mongodb/mongodb_wire_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/filer/mongodb/mongodb_wire_test.go
+@@ -0,0 +1,423 @@
++package mongodb
++
++import (
++	"context"
++	"encoding/binary"
++	"encoding/hex"
++	"errors"
++	"fmt"
++	"io"
++	"net"
++	"reflect"
++	"strings"
++	"sync"
++	"testing"
++	"time"
++
++	"github.com/seaweedfs/seaweedfs/weed/filer"
++	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"go.mongodb.org/mongo-driver/v2/bson"
++	"go.mongodb.org/mongo-driver/v2/mongo"
++	"go.mongodb.org/mongo-driver/v2/mongo/options"
++)
++
++// This deliberately limited TCP fixture uses the real driver serializer,
++// connection pool, command encoding and response decoding. It is not MongoDB
++// and does not prove database durability, query execution, auth, or failover.
++type mongoWireFixture struct {
++	listener    net.Listener
++	wireVersion int32
++	mu          sync.Mutex
++	connections []net.Conn
++	replies     []bson.D
++	commands    []bson.D
++	wg          sync.WaitGroup
++}
++
++func newMongoWireFixture(t *testing.T, replies ...bson.D) *mongoWireFixture {
++	return newMongoWireFixtureVersion(t, 25, replies...)
++}
++
++func newMongoWireFixtureVersion(t *testing.T, version int32, replies ...bson.D) *mongoWireFixture {
++	t.Helper()
++	listener, err := net.Listen("tcp", "127.0.0.1:0")
++	if err != nil {
++		t.Fatal(err)
++	}
++	f := &mongoWireFixture{listener: listener, replies: replies, wireVersion: version}
++	f.wg.Add(1)
++	go func() {
++		defer f.wg.Done()
++		for {
++			c, err := listener.Accept()
++			if err != nil {
++				return
++			}
++			f.mu.Lock()
++			f.connections = append(f.connections, c)
++			f.mu.Unlock()
++			f.wg.Add(1)
++			go func() { defer f.wg.Done(); defer c.Close(); f.serve(c) }()
++		}
++	}()
++	t.Cleanup(func() {
++		listener.Close()
++		f.mu.Lock()
++		for _, c := range f.connections {
++			c.Close()
++		}
++		f.mu.Unlock()
++		f.wg.Wait()
++	})
++	return f
++}
++func (f *mongoWireFixture) uri() string {
++	return "mongodb://" + f.listener.Addr().String() + "/?directConnection=true&serverSelectionTimeoutMS=500&connectTimeoutMS=500&retryReads=false&retryWrites=false"
++}
++func (f *mongoWireFixture) serve(c net.Conn) {
++	for {
++		var header [16]byte
++		if _, err := io.ReadFull(c, header[:]); err != nil {
++			return
++		}
++		length := int(binary.LittleEndian.Uint32(header[:4]))
++		if length < 16 || length > 2<<20 {
++			return
++		}
++		body := make([]byte, length-16)
++		if _, err := io.ReadFull(c, body); err != nil {
++			return
++		}
++		opcode := binary.LittleEndian.Uint32(header[12:])
++		command, err := decodeMongoTestCommand(opcode, body)
++		if err != nil || len(command) == 0 {
++			return
++		}
++		name := strings.ToLower(command[0].Key)
++		var response bson.D
++		if name == "ismaster" || name == "hello" {
++			response = bson.D{{Key: "ok", Value: 1}, {Key: "ismaster", Value: true}, {Key: "isWritablePrimary", Value: true}, {Key: "helloOk", Value: true}, {Key: "minWireVersion", Value: 0}, {Key: "maxWireVersion", Value: f.wireVersion}, {Key: "maxBsonObjectSize", Value: 16777216}, {Key: "maxMessageSizeBytes", Value: 48000000}, {Key: "maxWriteBatchSize", Value: 100000}, {Key: "logicalSessionTimeoutMinutes", Value: 30}}
++		} else if name == "endsessions" {
++			response = bson.D{{Key: "ok", Value: 1}}
++		} else {
++			f.mu.Lock()
++			f.commands = append(f.commands, command)
++			if len(f.replies) > 0 {
++				response = f.replies[0]
++				f.replies = f.replies[1:]
++			} else {
++				response = bson.D{{Key: "ok", Value: 0}, {Key: "code", Value: 59}, {Key: "errmsg", Value: "unexpected test command"}}
++			}
++			f.mu.Unlock()
++		}
++		doc, err := bson.Marshal(response)
++		if err != nil {
++			return
++		}
++		var out []byte
++		if opcode == 2004 {
++			out = make([]byte, 36)
++			binary.LittleEndian.PutUint32(out[12:], 1)
++			binary.LittleEndian.PutUint32(out[32:], 1)
++		} else {
++			out = make([]byte, 21)
++			binary.LittleEndian.PutUint32(out[12:], 2013)
++		}
++		out = append(out, doc...)
++		binary.LittleEndian.PutUint32(out[:4], uint32(len(out)))
++		binary.LittleEndian.PutUint32(out[4:], 1)
++		copy(out[8:12], header[4:8])
++		if _, err := c.Write(out); err != nil {
++			return
++		}
++	}
++}
++func decodeMongoTestCommand(opcode uint32, body []byte) (bson.D, error) {
++	var command bson.D
++	if opcode == 2004 {
++		if len(body) < 5 {
++			return nil, io.ErrUnexpectedEOF
++		}
++		i := 4
++		for i < len(body) && body[i] != 0 {
++			i++
++		}
++		i += 9
++		if i >= len(body) {
++			return nil, io.ErrUnexpectedEOF
++		}
++		err := bson.Unmarshal(body[i:], &command)
++		return command, err
++	}
++	if opcode != 2013 || len(body) < 5 {
++		return nil, fmt.Errorf("unsupported opcode %d", opcode)
++	}
++	for i := 4; i < len(body); {
++		kind := body[i]
++		i++
++		if i+4 > len(body) {
++			return nil, io.ErrUnexpectedEOF
++		}
++		size := int(binary.LittleEndian.Uint32(body[i:]))
++		if size < 4 || i+size > len(body) {
++			return nil, io.ErrUnexpectedEOF
++		}
++		if kind == 0 {
++			if err := bson.Unmarshal(body[i:i+size], &command); err != nil {
++				return nil, err
++			}
++			i += size
++			continue
++		}
++		if kind != 1 {
++			return nil, fmt.Errorf("unsupported section %d", kind)
++		}
++		end := i + size
++		i += 4
++		start := i
++		for i < end && body[i] != 0 {
++			i++
++		}
++		identifier := string(body[start:i])
++		i++
++		var documents bson.A
++		for i < end {
++			if i+4 > end {
++				return nil, io.ErrUnexpectedEOF
++			}
++			n := int(binary.LittleEndian.Uint32(body[i:]))
++			if n < 5 || i+n > end {
++				return nil, io.ErrUnexpectedEOF
++			}
++			var document bson.D
++			if err := bson.Unmarshal(body[i:i+n], &document); err != nil {
++				return nil, err
++			}
++			documents = append(documents, document)
++			i += n
++		}
++		command = append(command, bson.E{Key: identifier, Value: documents})
++	}
++	return command, nil
++}
++func (f *mongoWireFixture) command(t *testing.T, n int) bson.Raw {
++	t.Helper()
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	if n >= len(f.commands) {
++		t.Fatalf("wanted command %d, got %d", n, len(f.commands))
++	}
++	data, err := bson.Marshal(f.commands[n])
++	if err != nil {
++		t.Fatal(err)
++	}
++	return bson.Raw(data)
++}
++func mongoOK() bson.D {
++	return bson.D{{Key: "ok", Value: 1}, {Key: "n", Value: 1}, {Key: "nModified", Value: 1}}
++}
++func mongoCursor(batch string, id int64, docs ...bson.D) bson.D {
++	values := bson.A{}
++	for _, d := range docs {
++		values = append(values, d)
++	}
++	return bson.D{{Key: "ok", Value: 1}, {Key: "cursor", Value: bson.D{{Key: "id", Value: id}, {Key: "ns", Value: "fixture.filemeta"}, {Key: batch, Value: values}}}}
++}
++func mongoError(code int32) bson.D {
++	return bson.D{{Key: "ok", Value: 0}, {Key: "code", Value: code}, {Key: "errmsg", Value: "synthetic server error"}}
++}
++func mongoTestClient(t *testing.T, f *mongoWireFixture) *mongo.Client {
++	t.Helper()
++	opts := options.Client().ApplyURI(f.uri())
++	client, err := mongo.Connect(opts)
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() {
++		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
++		defer cancel()
++		_ = client.Disconnect(ctx)
++	})
++	return client
++}
++func mongoTestStore(t *testing.T, f *mongoWireFixture) *MongodbStore {
++	return &MongodbStore{connect: mongoTestClient(t, f), database: "fixture", collectionName: "filemeta"}
++}
++
++func TestMongoModelBSONFixture(t *testing.T) {
++	data, err := bson.Marshal(Model{Directory: "/é", Name: "x.$", Meta: []byte{0, 255}})
++	if err != nil {
++		t.Fatal(err)
++	}
++	const want = "33000000026469726563746f727900040000002fc3a900026e616d650004000000782e2400056d65746100020000000000ff00"
++	if hex.EncodeToString(data) != want {
++		t.Fatalf("BSON changed: %x", data)
++	}
++	var decoded Model
++	if err := bson.Unmarshal(data, &decoded); err != nil {
++		t.Fatal(err)
++	}
++	if decoded.Directory != "/é" || decoded.Name != "x.$" || !reflect.DeepEqual(decoded.Meta, []byte{0, 255}) {
++		t.Fatalf("bad model: %#v", decoded)
++	}
++}
++func TestMongoWireIndexAndEntryRoundTrip(t *testing.T) {
++	entry := &filer.Entry{FullPath: util.FullPath("/café/a.$[x]"), Attr: filer.Attr{Mtime: time.Unix(123, 0), Crtime: time.Unix(100, 0), Mode: 0644, Uid: 42, Mime: "application/octet-stream"}, Content: []byte{0, 255, 1}}
++	meta, err := entry.EncodeAttributesAndChunks()
++	if err != nil {
++		t.Fatal(err)
++	}
++	f := newMongoWireFixture(t, mongoOK(), mongoOK(), mongoCursor("firstBatch", 0, bson.D{{Key: "directory", Value: "/café"}, {Key: "name", Value: "a.$[x]"}, {Key: "meta", Value: meta}}), mongoOK())
++	store := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++	if err := store.connection(f.uri(), 3, false, "", "", "", "", "", false); err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(store.Shutdown)
++	index := f.command(t, 0)
++	if index.Lookup("createIndexes").StringValue() != "filemeta" {
++		t.Fatal(index)
++	}
++	indexes := index.Lookup("indexes").Array()
++	idx := indexes.Index(0).Document()
++	if !idx.Lookup("unique").Boolean() || idx.Lookup("key", "directory").Int32() != 1 || idx.Lookup("key", "name").Int32() != 1 {
++		t.Fatal(idx)
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
++	defer cancel()
++	if err := store.UpdateEntry(ctx, entry); err != nil {
++		t.Fatal(err)
++	}
++	update := f.command(t, 1).Lookup("updates").Array().Index(0).Document()
++	if !update.Lookup("upsert").Boolean() || update.Lookup("q", "directory").StringValue() != "/café" || update.Lookup("q", "name").StringValue() != "a.$[x]" {
++		t.Fatal(update)
++	}
++	_, actual := update.Lookup("u", "$set", "meta").Binary()
++	if !reflect.DeepEqual(actual, meta) {
++		t.Fatal("metadata encoding changed")
++	}
++	got, err := store.FindEntry(ctx, entry.FullPath)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if got.FullPath != entry.FullPath || got.Mime != entry.Mime || got.Uid != 42 || !reflect.DeepEqual(got.Content, entry.Content) {
++		t.Fatalf("roundtrip mismatch %#v", got)
++	}
++	if err := store.DeleteEntry(ctx, entry.FullPath); err != nil {
++		t.Fatal(err)
++	}
++	del := f.command(t, 3).Lookup("deletes").Array().Index(0).Document()
++	if del.Lookup("limit").Int32() != 0 {
++		t.Fatal("DeleteEntry no longer deletes matching metadata rows")
++	}
++}
++func TestMongoWireKVAndMissingBehavior(t *testing.T) {
++	f := newMongoWireFixture(t, mongoOK(), mongoCursor("firstBatch", 0, bson.D{{Key: "meta", Value: []byte{0, 1, 255}}}), mongoOK(), mongoCursor("firstBatch", 0), mongoCursor("firstBatch", 0))
++	store := mongoTestStore(t, f)
++	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
++	defer cancel()
++	key := []byte("abcdefghsuffix")
++	if err := store.KvPut(ctx, key, []byte{0, 1, 255}); err != nil {
++		t.Fatal(err)
++	}
++	q := f.command(t, 0).Lookup("updates").Array().Index(0).Document().Lookup("q").Document()
++	if q.Lookup("directory").StringValue() != "abcdefgh" || q.Lookup("name").StringValue() != "suffix" {
++		t.Fatal(q)
++	}
++	got, err := store.KvGet(ctx, key)
++	if err != nil || !reflect.DeepEqual(got, []byte{0, 1, 255}) {
++		t.Fatalf("kv %v %v", got, err)
++	}
++	if err := store.KvDelete(ctx, key); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := store.KvGet(ctx, key); !errors.Is(err, filer.ErrKvNotFound) {
++		t.Fatalf("missing kv %v", err)
++	}
++	if _, err := store.FindEntry(ctx, "/absent"); !errors.Is(err, filer_pb.ErrNotFound) {
++		t.Fatalf("missing entry %v", err)
++	}
++}
++func TestMongoWireFailuresRemainFailures(t *testing.T) {
++	t.Run("index-does-not-publish-client", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoError(11000))
++		store := &MongodbStore{database: "fixture", collectionName: "filemeta"}
++		err := store.connection(f.uri(), 0, false, "", "", "", "", "", false)
++		if err == nil {
++			t.Fatal("index error accepted")
++		}
++		if store.connect != nil {
++			store.Shutdown()
++			t.Fatal("failed index published unusable client")
++		}
++	})
++	t.Run("find-server-error-is-not-missing", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoError(13))
++		store := mongoTestStore(t, f)
++		_, err := store.FindEntry(context.Background(), "/a")
++		var commandError mongo.CommandError
++		if errors.Is(err, filer_pb.ErrNotFound) || !errors.As(err, &commandError) || commandError.Code != 13 {
++			t.Fatalf("server failure lost: %v", err)
++		}
++	})
++	t.Run("cursor-failure-is-not-complete", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoCursor("firstBatch", 12), mongoError(43), mongoOK())
++		store := mongoTestStore(t, f)
++		_, err := store.ListDirectoryEntries(context.Background(), "/", "", false, 4, func(*filer.Entry) (bool, error) { t.Fatal("unexpected entry"); return false, nil })
++		var commandError mongo.CommandError
++		if !errors.As(err, &commandError) || commandError.Code != 43 {
++			t.Fatalf("cursor failure lost: %v", err)
++		}
++	})
++	t.Run("cancelled-find-is-not-missing", func(t *testing.T) {
++		f := newMongoWireFixture(t)
++		store := mongoTestStore(t, f)
++		ctx, cancel := context.WithCancel(context.Background())
++		cancel()
++		_, err := store.FindEntry(ctx, "/a")
++		if !errors.Is(err, context.Canceled) {
++			t.Fatalf("cancellation lost: %v", err)
++		}
++	})
++	t.Run("write-server-error-preserves-code", func(t *testing.T) {
++		f := newMongoWireFixture(t, mongoError(13))
++		store := mongoTestStore(t, f)
++		err := store.UpdateEntry(context.Background(), &filer.Entry{FullPath: "/a"})
++		var commandError mongo.CommandError
++		if !errors.As(err, &commandError) || commandError.Code != 13 {
++			t.Fatalf("write failure lost: %v", err)
++		}
++	})
++}
++func TestMongoWireListingFiltersAndCallbackFailure(t *testing.T) {
++	entry := &filer.Entry{FullPath: "/dir/a.[x]"}
++	meta, err := entry.EncodeAttributesAndChunks()
++	if err != nil {
++		t.Fatal(err)
++	}
++	f := newMongoWireFixture(t, mongoCursor("firstBatch", 0, bson.D{{Key: "name", Value: "a.[x]"}, {Key: "meta", Value: meta}}))
++	store := mongoTestStore(t, f)
++	sentinel := errors.New("callback stopped")
++	last, err := store.ListDirectoryPrefixedEntries(context.Background(), "/dir", "a", true, 7, "a.[", func(got *filer.Entry) (bool, error) {
++		if got.FullPath != "/dir/a.[x]" {
++			t.Fatal(got.FullPath)
++		}
++		return false, sentinel
++	})
++	if last != "a.[x]" || !errors.Is(err, sentinel) {
++		t.Fatalf("last=%q err=%v", last, err)
++	}
++	cmd := f.command(t, 0)
++	if cmd.Lookup("filter", "name", "$regex").StringValue() != `^a\.\[` || cmd.Lookup("filter", "name", "$gte").StringValue() != "a" || cmd.Lookup("sort", "name").Int32() != 1 || cmd.Lookup("limit").Int64() != 7 {
++		t.Fatal(cmd)
++	}
++}
++func TestMongoInvalidPathsAreRejectedWithoutClient(t *testing.T) {
++	store := &MongodbStore{}
++	ctx := context.Background()
++	for _, op := range []func() error{func() error { return store.UpdateEntry(ctx, &filer.Entry{FullPath: "/bad\x00"}) }, func() error { _, err := store.FindEntry(ctx, "/bad\x00"); return err }, func() error { return store.DeleteEntry(ctx, "/bad\x00") }, func() error { return store.DeleteFolderChildren(ctx, "/bad\x00") }, func() error { _, err := store.ListDirectoryEntries(ctx, "/bad\x00", "", false, 1, nil); return err }} {
++		if err := op(); err == nil {
++			t.Fatal("invalid path accepted")
++		}
++	}
++}
+diff --git a/weed/filer/ouf_google_profile_test.go b/weed/filer/ouf_google_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/filer/ouf_google_profile_test.go
+@@ -0,0 +1,38 @@
++package filer
++
++import (
++	"context"
++	"errors"
++	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++	"google.golang.org/protobuf/proto"
++	"reflect"
++	"testing"
++)
++
++func TestOUFGoogleProfileReloadPreservesPreviousMap(t *testing.T) {
++	rs := NewFilerRemoteStorage()
++	old := &remote_pb.RemoteConf{Name: "old", Type: "s3"}
++	rs.storageNameToConf["old"] = old
++	rs.mapDirectoryToRemoteStorage("/original", &remote_pb.RemoteStorageLocation{Name: "old", Bucket: "unchanged"})
++	before := rs.MountedDirectories()
++	store := newStubFilerStore()
++	payload, _ := proto.Marshal(&remote_pb.RemoteConf{Name: "bad", Type: "gcs", GcsGoogleApplicationCredentials: "/must-not-read"})
++	key := string(DirectoryEtcRemote) + "/bad.conf"
++	store.entries[key] = &Entry{FullPath: util.FullPath(key), Attr: Attr{Mode: 0644}, Content: payload}
++	rs.SetConfValidator(func(context.Context, *remote_pb.RemoteConf) error {
++		t.Fatal("validator called before profile denial")
++		return nil
++	})
++	f := newTestFiler(t, store, rs)
++	if e := rs.LoadRemoteStorageConfigurationsAndMapping(f); !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(e)
++	}
++	if len(rs.storageNameToConf) != 1 || rs.storageNameToConf["old"] != old || !reflect.DeepEqual(before, rs.MountedDirectories()) {
++		t.Fatal("previous map changed")
++	}
++	if string(store.entries[key].Content) != string(payload) {
++		t.Fatal("persisted configuration changed")
++	}
++}
+diff --git a/weed/filer/remote_storage.go b/weed/filer/remote_storage.go
+--- a/weed/filer/remote_storage.go
++++ b/weed/filer/remote_storage.go
+@@ -11,6 +11,7 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ 	"google.golang.org/grpc"
+ 	"google.golang.org/protobuf/proto"
+ 
+@@ -114,6 +115,10 @@
+ 		if err := proto.Unmarshal(entry.Content, conf); err != nil {
+ 			return fmt.Errorf("unmarshal %s/%s: %v", DirectoryEtcRemote, entry.Name(), err)
+ 		}
++		// Profile rejection aborts publication and preserves the previous map/cache.
++		if err := googleprofile.ValidateRemoteType(conf.GetType()); err != nil {
++			return fmt.Errorf("remote configuration %s rejected: %w", entry.Name(), err)
++		}
+ 		if rs.confValidator != nil {
+ 			if vErr := rs.confValidator(context.Background(), conf); vErr != nil {
+ 				// Drop the conf rather than fail the whole load: a single bad conf
+@@ -212,6 +217,9 @@
+ 		return
+ 	}
+ 
++	if googleprofile.ValidateRemoteType(remoteConf.GetType()) != nil {
++		return nil, remoteConf, false
++	}
+ 	var err error
+ 	if client, err = remote_storage.GetRemoteStorage(remoteConf); err == nil {
+ 		found = true
+diff --git a/weed/notification/configuration.go b/weed/notification/configuration.go
+--- a/weed/notification/configuration.go
++++ b/weed/notification/configuration.go
+@@ -3,6 +3,7 @@
+ import (
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ 	"google.golang.org/protobuf/proto"
+ )
+ 
+@@ -26,6 +27,10 @@
+ 		return
+ 	}
+ 
++	if err := googleprofile.ValidateNotification(config, prefix); err != nil {
++		glog.Fatalf("notification configuration rejected: %v", err)
++		return
++	}
+ 	validateOneEnabledQueue(config, prefix)
+ 
+ 	for _, queue := range MessageQueues {
+diff --git a/weed/notification/google_pub_sub/google_pub_sub.go b/weed/notification/google_pub_sub/google_pub_sub.go
+--- a/weed/notification/google_pub_sub/google_pub_sub.go
++++ b/weed/notification/google_pub_sub/google_pub_sub.go
+@@ -1,89 +1,17 @@
+ package google_pub_sub
+ 
+ import (
+-	"context"
+-	"fmt"
+-	"os"
+-
+-	"cloud.google.com/go/pubsub"
+-	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/notification"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+-	"google.golang.org/api/option"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ 	"google.golang.org/protobuf/proto"
+ )
+ 
+-func init() {
+-	notification.MessageQueues = append(notification.MessageQueues, &GooglePubSub{})
++type GooglePubSub struct{}
++
++func init()                           { notification.MessageQueues = append(notification.MessageQueues, &GooglePubSub{}) }
++func (*GooglePubSub) GetName() string { return "google_pub_sub" }
++func (*GooglePubSub) Initialize(util.Configuration, string) error {
++	return googleprofile.ErrUnsupported
+ }
+-
+-type GooglePubSub struct {
+-	topic *pubsub.Topic
+-}
+-
+-func (k *GooglePubSub) GetName() string {
+-	return "google_pub_sub"
+-}
+-
+-func (k *GooglePubSub) Initialize(configuration util.Configuration, prefix string) (err error) {
+-	glog.V(0).Infof("notification.google_pub_sub.project_id: %v", configuration.GetString(prefix+"project_id"))
+-	glog.V(0).Infof("notification.google_pub_sub.topic: %v", configuration.GetString(prefix+"topic"))
+-	return k.initialize(
+-		configuration.GetString(prefix+"google_application_credentials"),
+-		configuration.GetString(prefix+"project_id"),
+-		configuration.GetString(prefix+"topic"),
+-	)
+-}
+-
+-func (k *GooglePubSub) initialize(google_application_credentials, projectId, topicName string) (err error) {
+-
+-	ctx := context.Background()
+-	// Creates a client.
+-	if google_application_credentials == "" {
+-		var found bool
+-		google_application_credentials, found = os.LookupEnv("GOOGLE_APPLICATION_CREDENTIALS")
+-		if !found {
+-			glog.Fatalf("need to specific GOOGLE_APPLICATION_CREDENTIALS env variable or google_application_credentials in filer.toml")
+-		}
+-	}
+-
+-	client, err := pubsub.NewClient(ctx, projectId, option.WithCredentialsFile(google_application_credentials))
+-	if err != nil {
+-		glog.Fatalf("Failed to create client: %v", err)
+-	}
+-
+-	k.topic = client.Topic(topicName)
+-	if exists, err := k.topic.Exists(ctx); err == nil {
+-		if !exists {
+-			k.topic, err = client.CreateTopic(ctx, topicName)
+-			if err != nil {
+-				glog.Fatalf("Failed to create topic %s: %v", topicName, err)
+-			}
+-		}
+-	} else {
+-		glog.Fatalf("Failed to check topic %s: %v", topicName, err)
+-	}
+-
+-	return nil
+-}
+-
+-func (k *GooglePubSub) SendMessage(key string, message proto.Message) (err error) {
+-
+-	bytes, err := proto.Marshal(message)
+-	if err != nil {
+-		return
+-	}
+-
+-	ctx := context.Background()
+-	result := k.topic.Publish(ctx, &pubsub.Message{
+-		Data:       bytes,
+-		Attributes: map[string]string{"key": key},
+-	})
+-
+-	_, err = result.Get(ctx)
+-	if err != nil {
+-		return fmt.Errorf("send message to google pub sub %s: %v", k.topic.String(), err)
+-	}
+-
+-	return nil
+-}
++func (*GooglePubSub) SendMessage(string, proto.Message) error { return googleprofile.ErrUnsupported }
+diff --git a/weed/notification/google_pub_sub/ouf_profile_test.go b/weed/notification/google_pub_sub/ouf_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/notification/google_pub_sub/ouf_profile_test.go
+@@ -0,0 +1,17 @@
++package google_pub_sub
++
++import (
++	"errors"
++	"testing"
++
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++)
++
++func TestOUFGoogleProfileNotificationNeverAcknowledges(t *testing.T) {
++	q := &GooglePubSub{}
++	for _, err := range []error{q.Initialize(nil, ""), q.SendMessage("", nil)} {
++		if !errors.Is(err, googleprofile.ErrUnsupported) {
++			t.Fatal(err)
++		}
++	}
++}
+diff --git a/weed/remote_storage/client_cache.go b/weed/remote_storage/client_cache.go
+--- a/weed/remote_storage/client_cache.go
++++ b/weed/remote_storage/client_cache.go
+@@ -20,6 +20,7 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ )
+ 
+ // Remote storage clients are cached, one per (kind, configuration,
+@@ -213,6 +214,9 @@
+ 
+ // GetRemoteStorage returns the plain client of a configuration (one per configuration).
+ func GetRemoteStorage(remoteConf *remote_pb.RemoteConf) (RemoteStorageClient, error) {
++	if err := googleprofile.ValidateRemoteType(remoteConf.GetType()); err != nil {
++		return nil, err
++	}
+ 	return GetRemoteStorageWith("", remoteConf, CredentialsVersion(remoteConf), func(conf *remote_pb.RemoteConf) (RemoteStorageClient, func(), error) {
+ 		client, err := makeRemoteStorageClient(conf)
+ 		if err != nil {
+@@ -226,6 +230,9 @@
+ // build (given a copy of the configuration) when there is none. version names whatever the client reads at build time
+ // that the configuration does not hold (a credentials file's content hash); "" when nothing.
+ func GetRemoteStorageWith(kind string, remoteConf *remote_pb.RemoteConf, version string, build ClientBuild) (RemoteStorageClient, error) {
++	if err := googleprofile.ValidateRemoteType(remoteConf.GetType()); err != nil {
++		return nil, err
++	}
+ 	return remoteClients.get(kind, remoteConf, version, build)
+ }
+ 
+diff --git a/weed/remote_storage/gcs/gcs_storage_client.go b/weed/remote_storage/gcs/gcs_storage_client.go
+--- a/weed/remote_storage/gcs/gcs_storage_client.go
++++ b/weed/remote_storage/gcs/gcs_storage_client.go
+@@ -1,36 +1,16 @@
++// Package gcs recognizes and explicitly rejects Google Cloud Storage in the OUF standard candidate.
+ package gcs
+ 
+ import (
+-	"context"
+ 	"encoding/json"
+-	"errors"
+ 	"fmt"
+-	"io"
+-	"net/http"
+-	"os"
+-	"reflect"
+-	"slices"
+-	"strings"
+-	"time"
+-
+-	"cloud.google.com/go/storage"
+-	"github.com/seaweedfs/seaweedfs/weed/filer"
+-	"github.com/seaweedfs/seaweedfs/weed/glog"
+-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
+-	"github.com/seaweedfs/seaweedfs/weed/util"
+-	"golang.org/x/oauth2"
+-	"golang.org/x/oauth2/google"
+-	"google.golang.org/api/googleapi"
+-	"google.golang.org/api/iterator"
+-	"google.golang.org/api/option"
+-	"google.golang.org/protobuf/proto"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++	"net/http"
+ )
+ 
+-func init() {
+-	remote_storage.RemoteStorageClientMakers["gcs"] = new(gcsRemoteStorageMaker)
+-}
++func init() { remote_storage.RemoteStorageClientMakers["gcs"] = new(gcsRemoteStorageMaker) }
+ 
+ // defaultTokenURL is where the SDK sends the token request when the credentials
+ // leave token_uri unset.
+@@ -40,8 +20,8 @@
+ // material. Every other type tells the SDK to fetch the token from a url, file
+ // or executable named inside the credentials.
+ var StaticKeyCredentialTypes = []string{
+-	string(google.ServiceAccount),
+-	string(google.AuthorizedUser),
++	"service_account",
++	"authorized_user",
+ }
+ 
+ // ParseInlineCredentials reports the credential type of an inline credentials
+@@ -62,433 +42,10 @@
+ 
+ type gcsRemoteStorageMaker struct{}
+ 
+-func (s gcsRemoteStorageMaker) HasBucket() bool {
+-	return true
++func (gcsRemoteStorageMaker) HasBucket() bool { return true }
++func (gcsRemoteStorageMaker) Make(*remote_pb.RemoteConf) (remote_storage.RemoteStorageClient, error) {
++	return nil, googleprofile.ErrUnsupported
+ }
+-
+-func (s gcsRemoteStorageMaker) Make(conf *remote_pb.RemoteConf) (remote_storage.RemoteStorageClient, error) {
+-	return MakeWithHTTPClient(conf, nil)
++func MakeWithHTTPClient(*remote_pb.RemoteConf, *http.Client, ...string) (remote_storage.RemoteStorageClient, error) {
++	return nil, googleprofile.ErrUnsupported
+ }
+-
+-// MakeWithHTTPClient builds a gcs client whose token exchange and object reads
+-// both go through the supplied *http.Client (or the SDK default when nil).
+-// Callers that need to pin the dial path against DNS rebinding pass a client
+-// whose transport has a guarded DialContext, mirroring the S3 backend. Callers
+-// handling credentials they do not control pass the types they accept.
+-func MakeWithHTTPClient(conf *remote_pb.RemoteConf, httpClient *http.Client, allowedTypes ...string) (remote_storage.RemoteStorageClient, error) {
+-	client := &gcsRemoteStorageClient{
+-		conf: conf,
+-	}
+-
+-	ctx := context.Background()
+-	if httpClient != nil {
+-		ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
+-	}
+-
+-	googleApplicationCredentials := conf.GcsGoogleApplicationCredentials
+-
+-	if googleApplicationCredentials == "" {
+-		if creds, found := os.LookupEnv("GOOGLE_APPLICATION_CREDENTIALS"); found {
+-			googleApplicationCredentials = creds
+-		} else {
+-			glog.Warningf("no GOOGLE_APPLICATION_CREDENTIALS env variable found, falling back to Application Default Credentials")
+-		}
+-	}
+-
+-	projectID := conf.GcsProjectId
+-	if projectID == "" {
+-		if pid, found := os.LookupEnv("GOOGLE_CLOUD_PROJECT"); found {
+-			projectID = pid
+-		} else {
+-			glog.Warningf("need to specify GOOGLE_CLOUD_PROJECT env variable")
+-		}
+-	}
+-
+-	var clientOpts []option.ClientOption
+-
+-	if googleApplicationCredentials != "" {
+-		googleApplicationCredentials = util.ResolvePath(googleApplicationCredentials)
+-		var data []byte
+-		var err error
+-		if strings.HasPrefix(googleApplicationCredentials, "{") {
+-			data = []byte(googleApplicationCredentials)
+-		} else {
+-			data, err = os.ReadFile(googleApplicationCredentials)
+-			if err != nil {
+-				return nil, fmt.Errorf("failed to read credentials file %s: %w", googleApplicationCredentials, err)
+-			}
+-		}
+-		credType, _, parseErr := ParseInlineCredentials(string(data))
+-		if parseErr != nil {
+-			return nil, parseErr
+-		}
+-		if len(allowedTypes) > 0 && !slices.Contains(allowedTypes, credType) {
+-			return nil, fmt.Errorf("gcs credential type %q is not accepted here", credType)
+-		}
+-		// Declaring the type keeps the SDK from reading the document as anything
+-		// else; the untyped loader is deprecated for exactly that reason.
+-		creds, err := google.CredentialsFromJSONWithType(ctx, data, google.CredentialsType(credType), storage.ScopeFullControl)
+-		if err != nil {
+-			return nil, fmt.Errorf("failed to parse credentials: %w", err)
+-		}
+-		clientOpts = append(clientOpts, option.WithHTTPClient(oauth2.NewClient(ctx, creds.TokenSource)), option.WithoutAuthentication())
+-	}
+-
+-	c, err := storage.NewClient(ctx, clientOpts...)
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to create client: %w", err)
+-	}
+-
+-	client.client = c
+-	client.projectID = projectID
+-	return client, nil
+-}
+-
+-type gcsRemoteStorageClient struct {
+-	conf      *remote_pb.RemoteConf
+-	client    *storage.Client
+-	projectID string
+-}
+-
+-var _ = remote_storage.RemoteStorageClient(&gcsRemoteStorageClient{})
+-
+-func (gcs *gcsRemoteStorageClient) toRemoteEntry(attr *storage.ObjectAttrs) *filer_pb.RemoteEntry {
+-	return &filer_pb.RemoteEntry{
+-		StorageName:           gcs.conf.Name,
+-		RemoteMtime:           attr.Updated.Unix(),
+-		RemoteSize:            attr.Size,
+-		RemoteETag:            attr.Etag,
+-		RemoteContentEncoding: proto.String(attr.ContentEncoding),
+-	}
+-}
+-
+-func (gcs *gcsRemoteStorageClient) Traverse(loc *remote_pb.RemoteStorageLocation, visitFn remote_storage.VisitFunc) (err error) {
+-
+-	pathKey := loc.Path[1:]
+-
+-	objectIterator := gcs.client.Bucket(loc.Bucket).Objects(context.Background(), &storage.Query{
+-		Delimiter: "",
+-		Prefix:    pathKey,
+-		Versions:  false,
+-	})
+-
+-	var objectAttr *storage.ObjectAttrs
+-	for err == nil {
+-		objectAttr, err = objectIterator.Next()
+-		if err != nil {
+-			if err == iterator.Done {
+-				return nil
+-			}
+-			return err
+-		}
+-
+-		key := objectAttr.Name
+-		key = "/" + key
+-		dir, name := util.FullPath(key).DirAndName()
+-		err = visitFn(dir, name, false, gcs.toRemoteEntry(objectAttr))
+-	}
+-	return
+-}
+-
+-const defaultGCSOpTimeout = 30 * time.Second
+-
+-func (gcs *gcsRemoteStorageClient) ListDirectory(ctx context.Context, loc *remote_pb.RemoteStorageLocation, visitFn remote_storage.VisitFunc) (err error) {
+-	pathKey := loc.Path[1:]
+-	if pathKey != "" && !strings.HasSuffix(pathKey, "/") {
+-		pathKey += "/"
+-	}
+-
+-	objectIterator := gcs.client.Bucket(loc.Bucket).Objects(ctx, &storage.Query{
+-		Delimiter: "/",
+-		Prefix:    pathKey,
+-		Versions:  false,
+-	})
+-
+-	for {
+-		objectAttr, iterErr := objectIterator.Next()
+-		if iterErr != nil {
+-			if iterErr == iterator.Done {
+-				return nil
+-			}
+-			return fmt.Errorf("list directory %s%s: %w", loc.Bucket, loc.Path, iterErr)
+-		}
+-
+-		if objectAttr.Prefix != "" {
+-			// Common prefix → subdirectory
+-			dirKey := "/" + strings.TrimSuffix(objectAttr.Prefix, "/")
+-			dir, name := util.FullPath(dirKey).DirAndName()
+-			if err = visitFn(dir, name, true, nil); err != nil {
+-				return err
+-			}
+-		} else {
+-			key := "/" + objectAttr.Name
+-			if strings.HasSuffix(key, "/") {
+-				continue // skip directory markers
+-			}
+-			dir, name := util.FullPath(key).DirAndName()
+-			if err = visitFn(dir, name, false, gcs.toRemoteEntry(objectAttr)); err != nil {
+-				return err
+-			}
+-		}
+-	}
+-}
+-
+-func (gcs *gcsRemoteStorageClient) StatFile(loc *remote_pb.RemoteStorageLocation) (remoteEntry *filer_pb.RemoteEntry, err error) {
+-	key := loc.Path[1:]
+-	ctx, cancel := context.WithTimeout(context.Background(), defaultGCSOpTimeout)
+-	defer cancel()
+-	attr, err := gcs.client.Bucket(loc.Bucket).Object(key).Attrs(ctx)
+-	if err != nil {
+-		if errors.Is(err, storage.ErrObjectNotExist) {
+-			return nil, remote_storage.ErrRemoteObjectNotFound
+-		}
+-		return nil, fmt.Errorf("stat gcs %s%s: %w", loc.Bucket, loc.Path, err)
+-	}
+-	return gcs.toRemoteEntry(attr), nil
+-}
+-
+-func (gcs *gcsRemoteStorageClient) ReadFile(loc *remote_pb.RemoteStorageLocation, offset int64, size int64) (data []byte, err error) {
+-
+-	key := loc.Path[1:]
+-	// read the stored bytes: decompressive transcoding of gzip-encoded objects
+-	// breaks range reads and returns sizes that disagree with RemoteSize
+-	rangeReader, readErr := gcs.client.Bucket(loc.Bucket).Object(key).ReadCompressed(true).NewRangeReader(context.Background(), offset, size)
+-	if readErr != nil {
+-		if errors.Is(readErr, storage.ErrObjectNotExist) {
+-			return nil, gcs.missingObjectError(context.Background(), loc)
+-		}
+-		return nil, readErr
+-	}
+-	data, err = io.ReadAll(rangeReader)
+-
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to download file %s%s: %v", loc.Bucket, loc.Path, err)
+-	}
+-
+-	return
+-}
+-
+-func (gcs *gcsRemoteStorageClient) ReadFileAsStream(ctx context.Context, loc *remote_pb.RemoteStorageLocation, offset int64, size int64) (reader io.ReadCloser, err error) {
+-	key := loc.Path[1:]
+-	reader, err = gcs.client.Bucket(loc.Bucket).Object(key).ReadCompressed(true).NewRangeReader(ctx, offset, size)
+-	if err != nil {
+-		if errors.Is(err, storage.ErrObjectNotExist) {
+-			return nil, gcs.missingObjectError(ctx, loc)
+-		}
+-		return nil, fmt.Errorf("failed to open stream for %s%s: %w", loc.Bucket, loc.Path, err)
+-	}
+-	return reader, nil
+-}
+-
+-// missingObjectError confirms a read's ErrObjectNotExist before reporting the
+-// object gone: GCS answers a read from a missing bucket the same way, and that
+-// must not read as every object under the mount being deleted.
+-func (gcs *gcsRemoteStorageClient) missingObjectError(ctx context.Context, loc *remote_pb.RemoteStorageLocation) error {
+-	ctx, cancel := context.WithTimeout(ctx, defaultGCSOpTimeout)
+-	defer cancel()
+-	key := loc.Path[1:]
+-	query := &storage.Query{Prefix: key}
+-	if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+-		return fmt.Errorf("read gcs %s%s: %w", loc.Bucket, loc.Path, err)
+-	}
+-	attrs, err := gcs.client.Bucket(loc.Bucket).Objects(ctx, query).Next()
+-	switch {
+-	case errors.Is(err, iterator.Done):
+-		return remote_storage.ErrRemoteObjectNotFound
+-	case err != nil:
+-		return fmt.Errorf("read gcs %s%s: object not found and bucket unconfirmed: %w", loc.Bucket, loc.Path, err)
+-	case attrs.Name == key:
+-		return fmt.Errorf("read gcs %s%s: object not found but listed", loc.Bucket, loc.Path)
+-	}
+-	return remote_storage.ErrRemoteObjectNotFound
+-}
+-
+-func (gcs *gcsRemoteStorageClient) WriteDirectory(loc *remote_pb.RemoteStorageLocation, entry *filer_pb.Entry) (err error) {
+-	return nil
+-}
+-
+-func (gcs *gcsRemoteStorageClient) RemoveDirectory(loc *remote_pb.RemoteStorageLocation) (err error) {
+-	// the trailing slash keeps sibling prefixes that share the name intact
+-	prefix := loc.Path[1:]
+-	if prefix != "" && !strings.HasSuffix(prefix, "/") {
+-		prefix += "/"
+-	}
+-	if prefix == "" {
+-		// the mount root maps to the whole bucket; wiping every object from a
+-		// single namespace event is too destructive, so keep them
+-		glog.Warningf("gcs %s: skip removing directory mapped to the bucket root", loc.Bucket)
+-		return nil
+-	}
+-
+-	bucket := gcs.client.Bucket(loc.Bucket)
+-	objectIterator := bucket.Objects(context.Background(), &storage.Query{
+-		Prefix: prefix,
+-	})
+-	for {
+-		objectAttr, iterErr := objectIterator.Next()
+-		if iterErr == iterator.Done {
+-			return nil
+-		}
+-		if iterErr != nil {
+-			return fmt.Errorf("gcs list %s/%s: %w", loc.Bucket, prefix, iterErr)
+-		}
+-		if delErr := bucket.Object(objectAttr.Name).Delete(context.Background()); delErr != nil && !errors.Is(delErr, storage.ErrObjectNotExist) {
+-			return fmt.Errorf("gcs delete %s/%s: %w", loc.Bucket, objectAttr.Name, delErr)
+-		}
+-	}
+-}
+-
+-func (gcs *gcsRemoteStorageClient) WriteFile(loc *remote_pb.RemoteStorageLocation, entry *filer_pb.Entry, reader io.Reader) (remoteEntry *filer_pb.RemoteEntry, err error) {
+-
+-	key := loc.Path[1:]
+-
+-	metadata := toMetadata(entry.Extended)
+-	wc := gcs.client.Bucket(loc.Bucket).Object(key).NewWriter(context.Background())
+-	wc.Metadata = metadata
+-	if entry.Attributes != nil && entry.Attributes.Mime != "" {
+-		wc.ContentType = entry.Attributes.Mime
+-	}
+-	wc.ContentEncoding = remote_storage.EntryContentEncoding(entry)
+-	// A Writer reserves a buffer of ChunkSize bytes (16 MiB by default) so a
+-	// failed request can be retried. An object below that size takes a buffer
+-	// of its own size plus one 256 KiB unit, the SDK's granularity: a burst of
+-	// small uploads in flight does not hold 16 MiB each, every upload keeps
+-	// its retry buffer, and the object stays below ChunkSize so it goes in one
+-	// request rather than a resumable session. The size counts the chunks,
+-	// not only the attribute, which some write paths leave at zero.
+-	if size := filer.FileSize(entry); size < uint64(googleapi.DefaultUploadChunkSize) {
+-		wc.ChunkSize = int((size/googleapi.MinUploadChunkSize + 1) * googleapi.MinUploadChunkSize)
+-	}
+-	if _, err = io.Copy(wc, reader); err != nil {
+-		return nil, fmt.Errorf("upload to gcs %s/%s%s: %v", loc.Name, loc.Bucket, loc.Path, err)
+-	}
+-	if err = wc.Close(); err != nil {
+-		return nil, fmt.Errorf("close gcs %s/%s%s: %v", loc.Name, loc.Bucket, loc.Path, err)
+-	}
+-
+-	// read back the remote entry
+-	return gcs.readFileRemoteEntry(loc)
+-
+-}
+-
+-func (gcs *gcsRemoteStorageClient) readFileRemoteEntry(loc *remote_pb.RemoteStorageLocation) (*filer_pb.RemoteEntry, error) {
+-	return gcs.StatFile(loc)
+-}
+-
+-func toMetadata(attributes map[string][]byte) map[string]string {
+-	metadata := make(map[string]string)
+-	for k, v := range attributes {
+-		if strings.HasPrefix(k, "X-") {
+-			continue
+-		}
+-		metadata[k] = string(v)
+-	}
+-	return metadata
+-}
+-
+-func (gcs *gcsRemoteStorageClient) UpdateFileMetadata(loc *remote_pb.RemoteStorageLocation, oldEntry *filer_pb.Entry, newEntry *filer_pb.Entry) (remoteEntry *filer_pb.RemoteEntry, err error) {
+-	if reflect.DeepEqual(oldEntry.Extended, newEntry.Extended) {
+-		return nil, nil
+-	}
+-	attrsToUpdate := storage.ObjectAttrsToUpdate{}
+-	if metadata := toMetadata(newEntry.Extended); len(metadata) > 0 {
+-		attrsToUpdate.Metadata = metadata
+-	} else {
+-		// no way to delete the metadata yet
+-	}
+-	if encoding := remote_storage.EntryContentEncoding(newEntry); encoding != remote_storage.EntryContentEncoding(oldEntry) {
+-		attrsToUpdate.ContentEncoding = encoding // empty clears the header
+-	}
+-
+-	if attrsToUpdate.Metadata == nil && attrsToUpdate.ContentEncoding == nil {
+-		return nil, nil
+-	}
+-	key := loc.Path[1:]
+-	attr, err := gcs.client.Bucket(loc.Bucket).Object(key).Update(context.Background(), attrsToUpdate)
+-	if err != nil {
+-		return nil, err
+-	}
+-	return gcs.toRemoteEntry(attr), nil
+-}
+-func (gcs *gcsRemoteStorageClient) DeleteFile(loc *remote_pb.RemoteStorageLocation) (err error) {
+-	key := loc.Path[1:]
+-	if err = gcs.client.Bucket(loc.Bucket).Object(key).Delete(context.Background()); err != nil {
+-		if errors.Is(err, storage.ErrObjectNotExist) {
+-			return remote_storage.ErrRemoteObjectNotFound
+-		}
+-		return fmt.Errorf("gcs delete %s%s: %v", loc.Bucket, key, err)
+-	}
+-	return
+-}
+-
+-// DeleteFileIfUnchanged deletes the object only while it is still the one the
+-// stat describes, enforced with a generation precondition. A replacement that
+-// lands between the stat and the delete gets a new generation and fails the
+-// precondition instead of being deleted.
+-func (gcs *gcsRemoteStorageClient) DeleteFileIfUnchanged(loc *remote_pb.RemoteStorageLocation, stamp *filer_pb.RemoteEntry) (bool, error) {
+-	key := loc.Path[1:]
+-	object := gcs.client.Bucket(loc.Bucket).Object(key)
+-	ctx, cancel := context.WithTimeout(context.Background(), defaultGCSOpTimeout)
+-	defer cancel()
+-	attr, err := object.Attrs(ctx)
+-	if err != nil {
+-		if errors.Is(err, storage.ErrObjectNotExist) {
+-			return true, nil
+-		}
+-		return false, fmt.Errorf("stat gcs %s%s: %w", loc.Bucket, loc.Path, err)
+-	}
+-	if !remote_storage.StillCurrent(stamp, gcs.toRemoteEntry(attr)) {
+-		return false, nil
+-	}
+-	if err := object.If(storage.Conditions{GenerationMatch: attr.Generation}).Delete(ctx); err != nil {
+-		if errors.Is(err, storage.ErrObjectNotExist) {
+-			return true, nil
+-		}
+-		var gerr *googleapi.Error
+-		if errors.As(err, &gerr) && gerr.Code == http.StatusPreconditionFailed {
+-			return false, nil
+-		}
+-		return false, fmt.Errorf("gcs delete %s%s: %w", loc.Bucket, key, err)
+-	}
+-	return true, nil
+-}
+-
+-func (gcs *gcsRemoteStorageClient) ListBuckets() (buckets []*remote_storage.Bucket, err error) {
+-	if gcs.projectID == "" {
+-		return nil, fmt.Errorf("gcs project id or GOOGLE_CLOUD_PROJECT env variable not set")
+-	}
+-	iter := gcs.client.Buckets(context.Background(), gcs.projectID)
+-	for {
+-		b, err := iter.Next()
+-		if err == iterator.Done {
+-			break
+-		}
+-		if err != nil {
+-			return buckets, err
+-		}
+-		buckets = append(buckets, &remote_storage.Bucket{
+-			Name:      b.Name,
+-			CreatedAt: b.Created,
+-		})
+-	}
+-	return
+-}
+-
+-func (gcs *gcsRemoteStorageClient) CreateBucket(name string) (err error) {
+-	if gcs.projectID == "" {
+-		return fmt.Errorf("gcs project id or GOOGLE_CLOUD_PROJECT env variable not set")
+-	}
+-	err = gcs.client.Bucket(name).Create(context.Background(), gcs.projectID, &storage.BucketAttrs{})
+-	if err != nil {
+-		return fmt.Errorf("create bucket %s: %v", name, err)
+-	}
+-	return
+-}
+-
+-func (gcs *gcsRemoteStorageClient) DeleteBucket(name string) (err error) {
+-	err = gcs.client.Bucket(name).Delete(context.Background())
+-	if err != nil {
+-		return fmt.Errorf("delete bucket %s: %v", name, err)
+-	}
+-	return
+-}
+diff --git a/weed/remote_storage/gcs/gcs_storage_client_test.go b/weed/remote_storage/gcs/gcs_storage_client_test.go
+--- a/weed/remote_storage/gcs/gcs_storage_client_test.go
++++ b/weed/remote_storage/gcs/gcs_storage_client_test.go
+@@ -1,42 +1,14 @@
+ package gcs
+ 
+ import (
+-	"context"
+-	"io"
+-	"net/http"
+-	"net/http/httptest"
+-	"strings"
+-	"sync/atomic"
+-	"testing"
+-
+-	"cloud.google.com/go/storage"
+-	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
+ 	"github.com/stretchr/testify/require"
+-	"google.golang.org/api/option"
++	"testing"
+ )
+-
+-func TestGCSRemoteStorageClientImplementsInterface(t *testing.T) {
+-	var _ remote_storage.RemoteStorageClient = (*gcsRemoteStorageClient)(nil)
+-}
+ 
+ func TestGCSErrRemoteObjectNotFoundIsAccessible(t *testing.T) {
+ 	require.Error(t, remote_storage.ErrRemoteObjectNotFound)
+ 	require.Equal(t, "remote object not found", remote_storage.ErrRemoteObjectNotFound.Error())
+-}
+-
+-// TestMakeWithHTTPClientAllowedTypes covers the restriction a caller applies to
+-// credentials it does not control: a federated document never reaches the SDK,
+-// while an unrestricted caller keeps loading whatever the operator configured.
+-func TestMakeWithHTTPClientAllowedTypes(t *testing.T) {
+-	federated := `{"type":"external_account","audience":"a","subject_token_type":"t","token_url":"http://127.0.0.1:9/v1/token","credential_source":{"url":"http://169.254.169.254/"}}`
+-	conf := &remote_pb.RemoteConf{Type: "gcs", GcsGoogleApplicationCredentials: federated}
+-
+-	_, err := MakeWithHTTPClient(conf, nil, StaticKeyCredentialTypes...)
+-	require.ErrorContains(t, err, `"external_account" is not accepted`)
+-
+-	_, err = MakeWithHTTPClient(conf, nil)
+-	require.NoError(t, err)
+ }
+ 
+ func TestParseInlineCredentials(t *testing.T) {
+@@ -52,58 +24,3 @@
+ 	_, _, err = ParseInlineCredentials(`not json`)
+ 	require.Error(t, err)
+ }
+-
+-// fakeGCS answers object reads with readStatus and the JSON object listing
+-// with listStatus/listBody, counting listings.
+-type fakeGCS struct {
+-	readStatus int
+-	listStatus int
+-	listBody   string
+-	listCalls  atomic.Int32
+-}
+-
+-func (f *fakeGCS) client(t *testing.T) *gcsRemoteStorageClient {
+-	t.Helper()
+-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+-		if strings.HasPrefix(r.URL.Path, "/storage/v1/b/") && strings.HasSuffix(r.URL.Path, "/o") {
+-			f.listCalls.Add(1)
+-			w.Header().Set("Content-Type", "application/json")
+-			w.WriteHeader(f.listStatus)
+-			_, _ = io.WriteString(w, f.listBody)
+-			return
+-		}
+-		w.WriteHeader(f.readStatus)
+-	}))
+-	t.Cleanup(srv.Close)
+-	client, err := storage.NewClient(context.Background(), option.WithEndpoint(srv.URL+"/storage/v1/"), option.WithoutAuthentication())
+-	require.NoError(t, err)
+-	t.Cleanup(func() { client.Close() })
+-	return &gcsRemoteStorageClient{conf: &remote_pb.RemoteConf{Name: "test"}, client: client}
+-}
+-
+-func TestGCSReadNotFoundClassification(t *testing.T) {
+-	loc := &remote_pb.RemoteStorageLocation{Name: "test", Bucket: "bucket", Path: "/dir/obj.bin"}
+-	tests := []struct {
+-		name      string
+-		gcs       *fakeGCS
+-		notFound  bool
+-		wantLists int32
+-	}{
+-		{"missing object", &fakeGCS{readStatus: http.StatusNotFound, listStatus: http.StatusOK, listBody: `{"items":[{"name":"dir/obj.bin.bak"}]}`}, true, 2},
+-		{"missing bucket", &fakeGCS{readStatus: http.StatusNotFound, listStatus: http.StatusNotFound, listBody: `{"error":{"code":404}}`}, false, 2},
+-		{"bucket listing denied", &fakeGCS{readStatus: http.StatusNotFound, listStatus: http.StatusForbidden, listBody: `{"error":{"code":403}}`}, false, 2},
+-		{"object listed after the read missed it", &fakeGCS{readStatus: http.StatusNotFound, listStatus: http.StatusOK, listBody: `{"items":[{"name":"dir/obj.bin"}]}`}, false, 2},
+-		{"read denied", &fakeGCS{readStatus: http.StatusForbidden}, false, 0},
+-	}
+-	for _, tt := range tests {
+-		t.Run(tt.name, func(t *testing.T) {
+-			client := tt.gcs.client(t)
+-
+-			_, err := client.ReadFile(loc, 0, 10)
+-			require.Equal(t, tt.notFound, err == remote_storage.ErrRemoteObjectNotFound, "ReadFile: %v", err)
+-			_, err = client.ReadFileAsStream(context.Background(), loc, 0, 10)
+-			require.Equal(t, tt.notFound, err == remote_storage.ErrRemoteObjectNotFound, "ReadFileAsStream: %v", err)
+-			require.Equal(t, tt.wantLists, tt.gcs.listCalls.Load())
+-		})
+-	}
+-}
+diff --git a/weed/remote_storage/gcs/ouf_profile_test.go b/weed/remote_storage/gcs/ouf_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/remote_storage/gcs/ouf_profile_test.go
+@@ -0,0 +1,19 @@
++package gcs
++
++import (
++	"errors"
++	"testing"
++
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++)
++
++func TestOUFGoogleProfileDirectFactoryRejectsBeforeConfig(t *testing.T) {
++	c, e := (gcsRemoteStorageMaker{}).Make(nil)
++	if c != nil || !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(c, e)
++	}
++	c, e = MakeWithHTTPClient(nil, nil)
++	if c != nil || !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(c, e)
++	}
++}
+diff --git a/weed/remote_storage/ouf_google_profile_test.go b/weed/remote_storage/ouf_google_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/remote_storage/ouf_google_profile_test.go
+@@ -0,0 +1,26 @@
++package remote_storage
++
++import (
++	"errors"
++	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++	"testing"
++)
++
++func TestOUFGoogleProfileCacheNeverBuilds(t *testing.T) {
++	conf := &remote_pb.RemoteConf{Type: "gcs", Name: "excluded", GcsGoogleApplicationCredentials: "/must-not-read"}
++	c, e := GetRemoteStorage(conf)
++	if c != nil || !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(c, e)
++	}
++	c, e = GetRemoteStorageWith("any", conf, "", func(*remote_pb.RemoteConf) (RemoteStorageClient, func(), error) {
++		t.Fatal("builder called")
++		return nil, nil, nil
++	})
++	if c != nil || !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(c, e)
++	}
++	if _, e := ParseRemoteLocation("gcs", "cloud/bucket/key"); !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(e)
++	}
++}
+diff --git a/weed/remote_storage/remote_storage.go b/weed/remote_storage/remote_storage.go
+--- a/weed/remote_storage/remote_storage.go
++++ b/weed/remote_storage/remote_storage.go
+@@ -11,6 +11,7 @@
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ )
+ 
+ const slash = "/"
+@@ -179,6 +180,9 @@
+ func GetAllRemoteStorageNames() string {
+ 	var storageNames []string
+ 	for k := range RemoteStorageClientMakers {
++		if googleprofile.ValidateRemoteType(k) != nil {
++			continue
++		}
+ 		storageNames = append(storageNames, k)
+ 	}
+ 	sort.Strings(storageNames)
+@@ -186,6 +190,9 @@
+ }
+ 
+ func ParseRemoteLocation(remoteConfType string, remote string) (remoteStorageLocation *remote_pb.RemoteStorageLocation, err error) {
++	if err := googleprofile.ValidateRemoteType(remoteConfType); err != nil {
++		return nil, err
++	}
+ 	maker, found := RemoteStorageClientMakers[remoteConfType]
+ 	if !found {
+ 		return nil, fmt.Errorf("remote storage type %s not found", remoteConfType)
+diff --git a/weed/replication/ouf_google_profile_test.go b/weed/replication/ouf_google_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/replication/ouf_google_profile_test.go
+@@ -0,0 +1,15 @@
++package replication
++
++import (
++	"errors"
++	"github.com/seaweedfs/seaweedfs/weed/replication/sink/gcssink"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++	"testing"
++)
++
++func TestOUFGoogleProfileReplicatorBeforeSource(t *testing.T) {
++	r, e := NewReplicator(nil, "", &gcssink.GcsSink{})
++	if r != nil || !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(r, e)
++	}
++}
+diff --git a/weed/replication/replicator.go b/weed/replication/replicator.go
+--- a/weed/replication/replicator.go
++++ b/weed/replication/replicator.go
+@@ -15,6 +15,7 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/replication/sink"
+ 	"github.com/seaweedfs/seaweedfs/weed/replication/source"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ 	"google.golang.org/grpc"
+ )
+ 
+@@ -25,6 +26,12 @@
+ }
+ 
+ func NewReplicator(sourceConfig util.Configuration, configPrefix string, dataSink sink.ReplicationSink) (*Replicator, error) {
++	if err := googleprofile.ValidateReplication(sourceConfig); err != nil {
++		return nil, err
++	}
++	if dataSink != nil && dataSink.GetName() == "google_cloud_storage" {
++		return nil, googleprofile.ErrUnsupported
++	}
+ 	if err := repl_util.ValidateSSEProfileConfiguration(); err != nil {
+ 		return nil, err
+ 	}
+diff --git a/weed/replication/sink/filersink/chunk_progress.go b/weed/replication/sink/filersink/chunk_progress.go
+new file mode 100644
+--- /dev/null
++++ b/weed/replication/sink/filersink/chunk_progress.go
+@@ -0,0 +1,52 @@
++package filersink
++
++import (
++	"fmt"
++	"io"
++	"os"
++	"sync"
++)
++
++// chunkProgress is a deliberately small plain-text progress reporter for this
++// sink. It owns no goroutines and never treats a display failure as a copy
++// failure. Concurrent successful chunk completions share a single counter.
++type chunkProgress struct {
++	mu        sync.Mutex
++	writer    io.Writer
++	name      string
++	total     int64
++	completed int64
++}
++
++// Preserve the original progress bar's stdout stream. The final newline now
++// follows the counter on stdout instead of the old separate stderr callback.
++func newFilerChunkProgress(total int64, name string) *chunkProgress {
++	return newChunkProgress(total, name, os.Stdout)
++}
++
++func newChunkProgress(total int64, name string, writer io.Writer) *chunkProgress {
++	return &chunkProgress{writer: writer, name: name, total: total}
++}
++
++func (p *chunkProgress) Add(n int) {
++	p.mu.Lock()
++	defer p.mu.Unlock()
++	if n <= 0 || p.total <= 0 || p.completed >= p.total {
++		return
++	}
++	// Saturate before addition so an unusually large increment cannot wrap.
++	remaining := p.total - p.completed
++	if int64(n) >= remaining {
++		p.completed = p.total
++	} else {
++		p.completed += int64(n)
++	}
++	if p.writer == nil {
++		return
++	}
++	suffix := ""
++	if p.completed == p.total {
++		suffix = "\n"
++	}
++	_, _ = fmt.Fprintf(p.writer, "\r%s: %d/%d chunks%s", p.name, p.completed, p.total, suffix)
++}
+diff --git a/weed/replication/sink/filersink/chunk_progress_test.go b/weed/replication/sink/filersink/chunk_progress_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/replication/sink/filersink/chunk_progress_test.go
+@@ -0,0 +1,113 @@
++package filersink
++
++import (
++	"bytes"
++	"errors"
++	"fmt"
++	"io"
++	"math"
++	"os"
++	"path/filepath"
++	"strings"
++	"sync"
++	"testing"
++)
++
++func TestChunkProgressReportsOnlySuccessfulCompletions(t *testing.T) {
++	var out bytes.Buffer
++	p := newChunkProgress(3, "sample [red].bin", &out)
++	if out.Len() != 0 {
++		t.Fatal("construction should not report progress")
++	}
++	p.Add(1)
++	p.Add(0)
++	p.Add(-1)
++	if got, want := out.String(), "\rsample [red].bin: 1/3 chunks"; got != want {
++		t.Fatalf("got %q, want %q", got, want)
++	}
++	// A failed copy does not call Add, and therefore cannot render completion.
++	if strings.Contains(out.String(), "3/3") || strings.Contains(out.String(), "\n") {
++		t.Fatal("unfinished copy reported complete")
++	}
++	p.Add(2)
++	p.Add(1)
++	if got, want := out.String(), "\rsample [red].bin: 1/3 chunks\rsample [red].bin: 3/3 chunks\n"; got != want {
++		t.Fatalf("got %q, want %q", got, want)
++	}
++}
++
++func TestChunkProgressConcurrentCompletionsAreSerialized(t *testing.T) {
++	var out bytes.Buffer
++	const total = 128
++	p := newChunkProgress(total, "large.bin", &out)
++	var wg sync.WaitGroup
++	for i := 0; i < total; i++ {
++		wg.Add(1)
++		go func() { defer wg.Done(); p.Add(1) }()
++	}
++	wg.Wait()
++	frames := strings.Split(out.String(), "\r")
++	if len(frames) != total+1 {
++		t.Fatalf("got %d progress frames", len(frames)-1)
++	}
++	for i := 1; i <= total; i++ {
++		want := fmt.Sprintf("large.bin: %d/%d chunks", i, total)
++		if i == total {
++			want += "\n"
++		}
++		if frames[i] != want {
++			t.Fatalf("frame %d=%q want %q", i, frames[i], want)
++		}
++	}
++}
++
++type progressFailWriter struct{ calls int }
++
++func (w *progressFailWriter) Write([]byte) (int, error) {
++	w.calls++
++	return 0, errors.New("display unavailable")
++}
++
++func TestChunkProgressWriterFailureDoesNotRetryOrPanic(t *testing.T) {
++	writer := &progressFailWriter{}
++	p := newChunkProgress(2, "sample", writer)
++	p.Add(1)
++	p.Add(1)
++	p.Add(1)
++	if writer.calls != 2 {
++		t.Fatalf("display failure retried or completed more than once: %d", writer.calls)
++	}
++	newChunkProgress(2, "sample", nil).Add(1)
++	newChunkProgress(0, "sample", io.Discard).Add(1)
++}
++
++func TestChunkProgressLargeIncrementCannotOverflow(t *testing.T) {
++	var out bytes.Buffer
++	p := newChunkProgress(int64(math.MaxInt), "large", &out)
++	p.Add(1)
++	p.Add(math.MaxInt)
++	if !strings.HasSuffix(out.String(), fmt.Sprintf("%d/%d chunks\n", math.MaxInt, math.MaxInt)) {
++		t.Fatalf("overflowed progress: %q", out.String())
++	}
++}
++
++func TestChunkProgressPreservesStdoutStream(t *testing.T) {
++	outputPath := filepath.Join(t.TempDir(), "stdout")
++	output, err := os.Create(outputPath)
++	if err != nil {
++		t.Fatal(err)
++	}
++	original := os.Stdout
++	os.Stdout = output
++	defer func() { os.Stdout = original; output.Close() }()
++	p := newFilerChunkProgress(2, "sample.bin")
++	p.Add(1)
++	p.Add(1)
++	bytes, err := os.ReadFile(outputPath)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if got, want := string(bytes), "\rsample.bin: 1/2 chunks\rsample.bin: 2/2 chunks\n"; got != want {
++		t.Fatalf("progress stream changed: got %q want %q", got, want)
++	}
++}
+diff --git a/weed/replication/sink/filersink/fetch_write.go b/weed/replication/sink/filersink/fetch_write.go
+--- a/weed/replication/sink/filersink/fetch_write.go
++++ b/weed/replication/sink/filersink/fetch_write.go
+@@ -7,13 +7,11 @@
+ 	"fmt"
+ 	"io"
+ 	"net/http"
+-	"os"
+ 	"path/filepath"
+ 	"strings"
+ 	"sync"
+ 	"time"
+ 
+-	"github.com/schollz/progressbar/v3"
+ 	"google.golang.org/protobuf/proto"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/filer"
+@@ -112,18 +110,11 @@
+ 		ctx = context.Background()
+ 	}
+ 
+-	// a simple progress bar. Not ideal. Fix me.
+-	var bar *progressbar.ProgressBar
++	// Report copied chunks without a terminal-color dependency. Progress is
++	// cosmetic: writer failures must not alter replication or retry decisions.
++	var bar *chunkProgress
+ 	if len(sourceChunks) > 1 {
+-		name := filepath.Base(path)
+-		bar = progressbar.NewOptions64(int64(len(sourceChunks)),
+-			progressbar.OptionClearOnFinish(),
+-			progressbar.OptionOnCompletion(func() {
+-				fmt.Fprint(os.Stderr, "\n")
+-			}),
+-			progressbar.OptionFullWidth(),
+-			progressbar.OptionSetDescription(name),
+-		)
++		bar = newFilerChunkProgress(int64(len(sourceChunks)), filepath.Base(path))
+ 	}
+ 
+ 	replicatedChunks = make([]*filer_pb.FileChunk, len(sourceChunks))
+diff --git a/weed/replication/sink/gcssink/gcs_sink.go b/weed/replication/sink/gcssink/gcs_sink.go
+--- a/weed/replication/sink/gcssink/gcs_sink.go
++++ b/weed/replication/sink/gcssink/gcs_sink.go
+@@ -1,161 +1,27 @@
+ package gcssink
+ 
+ import (
+-	"context"
+-	"fmt"
+-	"os"
+-	"strings"
+-
+-	"cloud.google.com/go/storage"
+-	"github.com/seaweedfs/seaweedfs/weed/replication/repl_util"
+-	"golang.org/x/oauth2"
+-	"golang.org/x/oauth2/google"
+-	"google.golang.org/api/option"
+-
+-	"github.com/seaweedfs/seaweedfs/weed/filer"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/replication/sink"
+ 	"github.com/seaweedfs/seaweedfs/weed/replication/source"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ )
+ 
+-type GcsSink struct {
+-	client        *storage.Client
+-	bucket        string
+-	dir           string
+-	filerSource   *source.FilerSource
+-	isIncremental bool
++// GcsSink keeps the configuration name recognizable, but cannot perform work.
++type GcsSink struct{}
++
++func init()                                                    { sink.Sinks = append(sink.Sinks, &GcsSink{}) }
++func (*GcsSink) GetName() string                               { return "google_cloud_storage" }
++func (*GcsSink) Initialize(util.Configuration, string) error   { return googleprofile.ErrUnsupported }
++func (*GcsSink) GetSinkToDirectory() string                    { return "" }
++func (*GcsSink) GetDestinationIdentity() string                { return "OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED" }
++func (*GcsSink) IsIncremental() bool                           { return false }
++func (*GcsSink) SetSourceFiler(*source.FilerSource)            {}
++func (*GcsSink) DeleteEntry(string, bool, bool, []int32) error { return googleprofile.ErrUnsupported }
++func (*GcsSink) CreateEntry(string, *filer_pb.Entry, []int32) error {
++	return googleprofile.ErrUnsupported
+ }
+-
+-func init() {
+-	sink.Sinks = append(sink.Sinks, &GcsSink{})
++func (*GcsSink) UpdateEntry(string, *filer_pb.Entry, string, *filer_pb.Entry, bool, []int32) (bool, error) {
++	return false, googleprofile.ErrUnsupported
+ }
+-
+-func (g *GcsSink) GetName() string {
+-	return "google_cloud_storage"
+-}
+-
+-func (g *GcsSink) GetSinkToDirectory() string {
+-	return g.dir
+-}
+-
+-func (g *GcsSink) GetDestinationIdentity() string {
+-	return g.bucket + "\x00" + g.dir
+-}
+-
+-func (g *GcsSink) IsIncremental() bool {
+-	return g.isIncremental
+-}
+-
+-func (g *GcsSink) Initialize(configuration util.Configuration, prefix string) error {
+-	g.isIncremental = configuration.GetBool(prefix + "is_incremental")
+-	return g.initialize(
+-		configuration.GetString(prefix+"google_application_credentials"),
+-		configuration.GetString(prefix+"bucket"),
+-		configuration.GetString(prefix+"directory"),
+-	)
+-}
+-
+-func (g *GcsSink) SetSourceFiler(s *source.FilerSource) {
+-	g.filerSource = s
+-}
+-
+-func (g *GcsSink) initialize(google_application_credentials, bucketName, dir string) error {
+-	g.bucket = bucketName
+-	g.dir = dir
+-
+-	// Creates a client.
+-	var clientOpts []option.ClientOption
+-	if google_application_credentials != "" {
+-		var data []byte
+-		var err error
+-		if strings.HasPrefix(google_application_credentials, "{") {
+-			data = []byte(google_application_credentials)
+-		} else {
+-			googleCredentialsPath := util.ResolvePath(google_application_credentials)
+-			data, err = os.ReadFile(googleCredentialsPath)
+-			if err != nil {
+-				return fmt.Errorf("failed to read credentials file %s: %v", googleCredentialsPath, err)
+-			}
+-		}
+-		creds, err := google.CredentialsFromJSON(context.Background(), data, storage.ScopeFullControl)
+-		if err != nil {
+-			return fmt.Errorf("failed to parse credentials: %v", err)
+-		}
+-		httpClient := oauth2.NewClient(context.Background(), creds.TokenSource)
+-		clientOpts = append(clientOpts, option.WithHTTPClient(httpClient), option.WithoutAuthentication())
+-	}
+-	client, err := storage.NewClient(context.Background(), clientOpts...)
+-	if err != nil {
+-		return fmt.Errorf("failed to create client with credentials \"%s\" env \"%s\": %v",
+-			google_application_credentials, os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"), err)
+-	}
+-
+-	g.client = client
+-
+-	return nil
+-}
+-
+-func (g *GcsSink) DeleteEntry(key string, isDirectory, deleteIncludeChunks bool, signatures []int32) error {
+-
+-	if isDirectory {
+-		key = key + "/"
+-	}
+-
+-	if err := g.client.Bucket(g.bucket).Object(key).Delete(context.Background()); err != nil {
+-		return fmt.Errorf("gcs delete %s/%s: %v", g.bucket, key, err)
+-	}
+-
+-	return nil
+-
+-}
+-
+-func (g *GcsSink) CreateEntry(key string, entry *filer_pb.Entry, signatures []int32) error {
+-
+-	if entry.IsDirectory {
+-		return nil
+-	}
+-
+-	totalSize := filer.FileSize(entry)
+-	chunkViews, err := filer.ViewFromChunks(context.Background(), g.filerSource.LookupFileId, entry.GetChunks(), 0, int64(totalSize))
+-	if err != nil {
+-		return fmt.Errorf("resolve chunks of %s: %w", key, err)
+-	}
+-
+-	ctx, cancel := context.WithCancel(context.Background())
+-	defer cancel()
+-
+-	wc := g.client.Bucket(g.bucket).Object(key).NewWriter(ctx)
+-
+-	writeFunc := func(data []byte) error {
+-		_, writeErr := wc.Write(data)
+-		return writeErr
+-	}
+-
+-	var writeErr error
+-	if len(entry.Content) > 0 {
+-		content, decErr := repl_util.MaybeDecryptContent(entry.Content, entry)
+-		if decErr != nil {
+-			writeErr = fmt.Errorf("decrypt inline SSE content: %w", decErr)
+-		} else {
+-			writeErr = writeFunc(content)
+-		}
+-	} else {
+-		writeErr = repl_util.CopyFromChunkViews(chunkViews, g.filerSource, writeFunc, entry)
+-	}
+-
+-	if writeErr != nil {
+-		// Cancel the context to abort the GCS upload without touching
+-		// any existing object at this key.
+-		cancel()
+-		wc.Close()
+-		return writeErr
+-	}
+-
+-	return wc.Close()
+-
+-}
+-
+-func (g *GcsSink) UpdateEntry(key string, oldEntry *filer_pb.Entry, newParentPath string, newEntry *filer_pb.Entry, deleteIncludeChunks bool, signatures []int32) (foundExistingEntry bool, err error) {
+-	return true, g.CreateEntry(key, newEntry, signatures)
+-}
+diff --git a/weed/replication/sink/gcssink/ouf_profile_test.go b/weed/replication/sink/gcssink/ouf_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/replication/sink/gcssink/ouf_profile_test.go
+@@ -0,0 +1,21 @@
++package gcssink
++
++import (
++	"errors"
++	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++	"testing"
++)
++
++func TestOUFGoogleProfileSinkNeverSucceeds(t *testing.T) {
++	g := &GcsSink{}
++	for _, e := range []error{g.Initialize(nil, ""), g.CreateEntry("", nil, nil), g.CreateEntry("", &filer_pb.Entry{IsDirectory: true}, nil), g.DeleteEntry("", false, false, nil), g.DeleteEntry("", true, false, nil)} {
++		if !errors.Is(e, googleprofile.ErrUnsupported) {
++			t.Fatal(e)
++		}
++	}
++	found, e := g.UpdateEntry("", nil, "", nil, false, nil)
++	if found || !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(found, e)
++	}
++}
+diff --git a/weed/replication/sub/notification_google_pub_sub.go b/weed/replication/sub/notification_google_pub_sub.go
+--- a/weed/replication/sub/notification_google_pub_sub.go
++++ b/weed/replication/sub/notification_google_pub_sub.go
+@@ -1,115 +1,18 @@
+ package sub
+ 
+ import (
+-	"context"
+-	"fmt"
+-	"os"
+-
+-	"cloud.google.com/go/pubsub"
+-	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+-	"google.golang.org/api/option"
+-	"google.golang.org/protobuf/proto"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ )
+ 
+-func init() {
+-	NotificationInputs = append(NotificationInputs, &GooglePubSubInput{})
++type GooglePubSubInput struct{}
++
++func init()                                { NotificationInputs = append(NotificationInputs, &GooglePubSubInput{}) }
++func (*GooglePubSubInput) GetName() string { return "google_pub_sub" }
++func (*GooglePubSubInput) Initialize(util.Configuration, string) error {
++	return googleprofile.ErrUnsupported
+ }
+-
+-type GooglePubSubInput struct {
+-	sub         *pubsub.Subscription
+-	topicName   string
+-	messageChan chan *pubsub.Message
++func (*GooglePubSubInput) ReceiveMessage() (string, *filer_pb.EventNotification, func(), func(), error) {
++	return "", nil, nil, nil, googleprofile.ErrUnsupported
+ }
+-
+-func (k *GooglePubSubInput) GetName() string {
+-	return "google_pub_sub"
+-}
+-
+-func (k *GooglePubSubInput) Initialize(configuration util.Configuration, prefix string) error {
+-	glog.V(0).Infof("notification.google_pub_sub.project_id: %v", configuration.GetString(prefix+"project_id"))
+-	glog.V(0).Infof("notification.google_pub_sub.topic: %v", configuration.GetString(prefix+"topic"))
+-	return k.initialize(
+-		configuration.GetString(prefix+"google_application_credentials"),
+-		configuration.GetString(prefix+"project_id"),
+-		configuration.GetString(prefix+"topic"),
+-	)
+-}
+-
+-func (k *GooglePubSubInput) initialize(google_application_credentials, projectId, topicName string) (err error) {
+-
+-	ctx := context.Background()
+-	// Creates a client.
+-	if google_application_credentials == "" {
+-		var found bool
+-		google_application_credentials, found = os.LookupEnv("GOOGLE_APPLICATION_CREDENTIALS")
+-		if !found {
+-			glog.Fatalf("need to specific GOOGLE_APPLICATION_CREDENTIALS env variable or google_application_credentials in filer.toml")
+-		}
+-	}
+-
+-	client, err := pubsub.NewClient(ctx, projectId, option.WithCredentialsFile(google_application_credentials))
+-	if err != nil {
+-		glog.Fatalf("Failed to create client: %v", err)
+-	}
+-
+-	k.topicName = topicName
+-	topic := client.Topic(topicName)
+-	if exists, err := topic.Exists(ctx); err == nil {
+-		if !exists {
+-			topic, err = client.CreateTopic(ctx, topicName)
+-			if err != nil {
+-				glog.Fatalf("Failed to create topic %s: %v", topicName, err)
+-			}
+-		}
+-	} else {
+-		glog.Fatalf("Failed to check topic %s: %v", topicName, err)
+-	}
+-
+-	subscriptionName := "seaweedfs_sub"
+-
+-	k.sub = client.Subscription(subscriptionName)
+-	if exists, err := k.sub.Exists(ctx); err == nil {
+-		if !exists {
+-			k.sub, err = client.CreateSubscription(ctx, subscriptionName, pubsub.SubscriptionConfig{Topic: topic})
+-			if err != nil {
+-				glog.Fatalf("Failed to create subscription %s: %v", subscriptionName, err)
+-			}
+-		}
+-	} else {
+-		glog.Fatalf("Failed to check subscription %s: %v", topicName, err)
+-	}
+-
+-	k.messageChan = make(chan *pubsub.Message, 1)
+-
+-	go k.sub.Receive(ctx, func(ctx context.Context, m *pubsub.Message) {
+-		k.messageChan <- m
+-	})
+-
+-	return err
+-}
+-
+-func (k *GooglePubSubInput) ReceiveMessage() (key string, message *filer_pb.EventNotification, onSuccessFn func(), onFailureFn func(), err error) {
+-
+-	m := <-k.messageChan
+-
+-	onSuccessFn = func() {
+-		m.Ack()
+-	}
+-	onFailureFn = func() {
+-		m.Nack()
+-	}
+-
+-	// process the message
+-	key = m.Attributes["key"]
+-	message = &filer_pb.EventNotification{}
+-	err = proto.Unmarshal(m.Data, message)
+-
+-	if err != nil {
+-		err = fmt.Errorf("unmarshal message from google pubsub %s: %v", k.topicName, err)
+-		return
+-	}
+-
+-	return
+-}
+diff --git a/weed/replication/sub/ouf_google_profile_test.go b/weed/replication/sub/ouf_google_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/replication/sub/ouf_google_profile_test.go
+@@ -0,0 +1,19 @@
++package sub
++
++import (
++	"errors"
++	"testing"
++
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++)
++
++func TestOUFGoogleProfileInputNeverAcknowledges(t *testing.T) {
++	q := &GooglePubSubInput{}
++	if e := q.Initialize(nil, ""); !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(e)
++	}
++	key, m, ack, nack, e := q.ReceiveMessage()
++	if key != "" || m != nil || ack != nil || nack != nil || !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal("unexpected input result", e)
++	}
++}
+diff --git a/weed/server/filer_server.go b/weed/server/filer_server.go
+--- a/weed/server/filer_server.go
++++ b/weed/server/filer_server.go
+@@ -14,6 +14,7 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/cluster"
+ 	"github.com/seaweedfs/seaweedfs/weed/credential"
+ 	"github.com/seaweedfs/seaweedfs/weed/stats"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ 	"golang.org/x/sync/singleflight"
+ 
+ 	"google.golang.org/grpc"
+@@ -268,6 +269,9 @@
+ 	if v.GetBool("notification.kafka.enabled") {
+ 		return nil, kafkanotification.ErrUnsupportedInOUFStandardProfile
+ 	}
++	if err := googleprofile.ValidateNotification(v, "notification."); err != nil {
++		return nil, err
++	}
+ 	option.AllowedOrigins = domains
+ 	option.ExposeDirectoryData = option.ExposeDirectoryData && exposeDirectoryMetadata
+ 
+diff --git a/weed/server/filer_server_ouf_google_profile_test.go b/weed/server/filer_server_ouf_google_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/server/filer_server_ouf_google_profile_test.go
+@@ -0,0 +1,80 @@
++package weed_server
++
++import (
++	"context"
++	"errors"
++	"os"
++	"os/exec"
++	"path/filepath"
++	"reflect"
++
++	"testing"
++	"time"
++
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++)
++
++// A fresh process isolates the shared Viper singleton and environment. Passing
++// nil masters (and, in one case, nil options) proves the denial precedes option
++// writes, TLS setup, sweepers, DNS refresh, store setup and master connections.
++func TestOUFStandardGoogleFilerPreflightBeforeEffects(t *testing.T) {
++	if mode := os.Getenv("OUF_GOOGLE_FILER_CHILD"); mode != "" {
++		directory := t.TempDir()
++		util.ConfigurationFileDirectory = util.DirectoryValueType(directory)
++		filerConfig := "[leveldb2]\nenabled = true\ndir = '" + filepath.Join(directory, "store") + "'\n"
++		notificationConfig := "[notification.google_pub_sub]\nenabled = true\n"
++		switch mode {
++		case "filer-file":
++			filerConfig += "[notification.google_pub_sub]\nenabled = true\n"
++			notificationConfig = ""
++		case "merge-and-mixed":
++			filerConfig += "[notification.google_pub_sub]\nenabled = false\n"
++			notificationConfig += "[notification.webhook]\nenabled = true\nendpoint = 'http://127.0.0.1:1/never'\n"
++		case "environment":
++			notificationConfig = "[notification.google_pub_sub]\nenabled = false\n"
++			t.Setenv("WEED_NOTIFICATION_GOOGLE_PUB_SUB_ENABLED", "true")
++		}
++		if err := os.WriteFile(filepath.Join(directory, "filer.toml"), []byte(filerConfig), 0600); err != nil {
++			t.Fatal(err)
++		}
++		if err := os.WriteFile(filepath.Join(directory, "notification.toml"), []byte(notificationConfig), 0600); err != nil {
++			t.Fatal(err)
++		}
++		var options *FilerOption
++		if mode != "notification-file" {
++			options = &FilerOption{DefaultLevelDbDir: filepath.Join(directory, "default-store"), AllowedOrigins: []string{"unchanged"}, ExposeDirectoryData: true}
++		}
++		// Invalid TLS files would abort startup if TLS construction happened
++		// before the Google guard. They must never be read on this path.
++		v := util.GetViper()
++		v.Set("grpc.filer.client_cert", filepath.Join(directory, "never-read.crt"))
++		v.Set("grpc.filer.client_key", filepath.Join(directory, "never-read.key"))
++		v.Set("grpc.ca", filepath.Join(directory, "never-read-ca.crt"))
++		fs, err := NewFilerServer(nil, nil, options)
++		if fs != nil || !errors.Is(err, googleprofile.ErrUnsupported) {
++			t.Fatalf("expected rejection before construction, got filer=%v error=%v", fs, err)
++		}
++		if options != nil && (!reflect.DeepEqual(options.AllowedOrigins, []string{"unchanged"}) || !options.ExposeDirectoryData) {
++			t.Fatal("preflight mutated caller options")
++		}
++		for _, name := range []string{"store", "default-store"} {
++			if _, err := os.Stat(filepath.Join(directory, name)); !os.IsNotExist(err) {
++				t.Fatalf("store touched: %s (%v)", name, err)
++			}
++		}
++		return
++	}
++	for _, mode := range []string{"notification-file", "filer-file", "merge-and-mixed", "environment"} {
++		t.Run(mode, func(t *testing.T) {
++			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
++			defer cancel()
++			cmd := exec.CommandContext(ctx, os.Args[0], "-test.run=^TestOUFStandardGoogleFilerPreflightBeforeEffects$")
++			cmd.Env = append(os.Environ(), "OUF_GOOGLE_FILER_CHILD="+mode)
++			output, err := cmd.CombinedOutput()
++			if err != nil || ctx.Err() != nil {
++				t.Fatalf("early denial failed: %v %s", err, output)
++			}
++		})
++	}
++}
+diff --git a/weed/server/volume_grpc_remote.go b/weed/server/volume_grpc_remote.go
+--- a/weed/server/volume_grpc_remote.go
++++ b/weed/server/volume_grpc_remote.go
+@@ -33,6 +33,7 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+ 	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ 	util_http "github.com/seaweedfs/seaweedfs/weed/util/http"
+ )
+ 
+@@ -537,6 +538,9 @@
+ // FetchAndWriteNeedle write path and the filer and S3 gateway remote-mount read
+ // paths, which otherwise reach the same s3manager sink unguarded.
+ func BuildGuardedRemoteStorageClient(ctx context.Context, remoteConf *remote_pb.RemoteConf, allowUntrusted bool) (remote_storage.RemoteStorageClient, error) {
++	if err := googleprofile.ValidateRemoteType(remoteConf.GetType()); err != nil {
++		return nil, err
++	}
+ 	if !allowUntrusted {
+ 		if remoteConf.GetType() == "gcs" {
+ 			if credsErr := checkGcsCredentials(remoteConf.GetGcsGoogleApplicationCredentials()); credsErr != nil {
+@@ -595,6 +599,9 @@
+ // provider host) passes; allowUntrusted skips the check to mirror the volume
+ // server opt-out.
+ func ValidateRemoteConfForLoad(ctx context.Context, remoteConf *remote_pb.RemoteConf, allowUntrusted bool) error {
++	if err := googleprofile.ValidateRemoteType(remoteConf.GetType()); err != nil {
++		return err
++	}
+ 	if remoteConf == nil {
+ 		return nil
+ 	}
+diff --git a/weed/server/volume_grpc_remote_test.go b/weed/server/volume_grpc_remote_test.go
+--- a/weed/server/volume_grpc_remote_test.go
++++ b/weed/server/volume_grpc_remote_test.go
+@@ -27,6 +27,7 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
+ 	s3remote "github.com/seaweedfs/seaweedfs/weed/remote_storage/s3"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ 	util_http "github.com/seaweedfs/seaweedfs/weed/util/http"
+ )
+ 
+@@ -657,13 +658,13 @@
+ 	}
+ 	if _, err := BuildGuardedRemoteStorageClient(context.Background(), gcsPathCreds, false); err == nil {
+ 		t.Error("expected a non-credentials file path to be rejected")
+-	} else if !strings.Contains(err.Error(), "reject remote credentials") {
++	} else if !strings.Contains(err.Error(), "OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED") {
+ 		t.Errorf("error = %v, want reject remote credentials", err)
+ 	} else if strings.Contains(err.Error(), "/etc/hostname") {
+ 		t.Errorf("error must not leak the file path: %v", err)
+ 	}
+ 
+-	// A file path that points to valid GCS credentials should be accepted.
++	// Pure credential parsing remains valid, but this profile cannot build a GCS client.
+ 	credsFile := filepath.Join(t.TempDir(), "service-account.json")
+ 	validCreds := `{"type":"service_account","token_uri":"https://oauth2.googleapis.com/token","client_email":"sa@example.iam.gserviceaccount.com","private_key":"-----BEGIN PRIVATE KEY-----\nMIIBVwIBADANBgkqhkiG9w0BAQEFAASCAUEwggE9AgEAAkEAxY\n-----END PRIVATE KEY-----\n","private_key_id":"key1"}`
+ 	if err := os.WriteFile(credsFile, []byte(validCreds), 0600); err != nil {
+@@ -677,8 +678,8 @@
+ 	if err := checkGcsCredentials(credsFile); err != nil {
+ 		t.Errorf("valid gcs credentials file should pass: %v", err)
+ 	}
+-	if _, err := BuildGuardedRemoteStorageClient(context.Background(), gcsFileCreds, false); err != nil {
+-		t.Errorf("valid gcs credentials file should build: %v", err)
++	if _, err := BuildGuardedRemoteStorageClient(context.Background(), gcsFileCreds, false); !errors.Is(err, googleprofile.ErrUnsupported) {
++		t.Errorf("GCS must be denied regardless of valid credentials: %v", err)
+ 	}
+ 
+ 	// A nonexistent path must be rejected without leaking the path in the error.
+@@ -716,7 +717,7 @@
+ 	}
+ 	// A non-S3-compatible type with no caller-supplied endpoint dials a fixed
+ 	// provider host, so there is nothing caller-influenced to deny.
+-	fixedHost := &remote_pb.RemoteConf{Name: "fixed", Type: "gcs"}
++	fixedHost := &remote_pb.RemoteConf{Name: "fixed", Type: "azure"}
+ 	if err := ValidateRemoteConfForLoad(context.Background(), fixedHost, false); err != nil {
+ 		t.Errorf("fixed-host provider should pass: %v", err)
+ 	}
+@@ -1029,29 +1030,19 @@
+ 	}
+ }
+ 
+-// A gcs credentials file is part of the key by its content: the same file shares one client, a changed file builds anew.
+-func TestBuildGuardedRemoteStorageClientGcsFileCredentialsByContent(t *testing.T) {
+-	guardedCacheTest(t, map[string][]net.IP{"oauth2.googleapis.com": {net.ParseIP("142.250.0.95")}})
+-	credsFile := filepath.Join(t.TempDir(), "service-account.json")
+-	write := func(email string) {
+-		creds := `{"type":"service_account","token_uri":"https://oauth2.googleapis.com/token","client_email":"` + email + `","private_key":"-----BEGIN PRIVATE KEY-----\nMIIBVwIBADANBgkqhkiG9w0BAQEFAASCAUEwggE9AgEAAkEAxY\n-----END PRIVATE KEY-----\n","private_key_id":"key1"}`
+-		if err := os.WriteFile(credsFile, []byte(creds), 0600); err != nil {
+-			t.Fatal(err)
+-		}
+-	}
+-	write("sa@example.iam.gserviceaccount.com")
+-	conf := &remote_pb.RemoteConf{Name: "gcsfile", Type: "gcs", GcsGoogleApplicationCredentials: credsFile}
+-	first, err := BuildGuardedRemoteStorageClient(context.Background(), conf, false)
+-	if err != nil {
+-		t.Fatalf("build: %v", err)
+-	}
+-	again, _ := BuildGuardedRemoteStorageClient(context.Background(), conf, false)
+-	if again != first {
+-		t.Fatal("the same credentials file must share one client")
+-	}
+-	write("other@example.iam.gserviceaccount.com")
+-	if next, err := BuildGuardedRemoteStorageClient(context.Background(), conf, false); err != nil || next == first {
+-		t.Fatalf("a changed credentials file must build a new client (err %v)", err)
++// GCS credentials cannot enable an excluded provider, including after rotation.
++func TestOUFGoogleProfileGuardedClientBeforeCredentials(t *testing.T) {
++	for _, allow := range []bool{false, true} {
++		for _, creds := range []string{"", "/path/that/must/not/be/read", "{broken", `{"type":"service_account","token_uri":"http://127.0.0.1:1/token"}`} {
++			conf := &remote_pb.RemoteConf{Type: "gcs", GcsGoogleApplicationCredentials: creds}
++			c, err := BuildGuardedRemoteStorageClient(nil, conf, allow)
++			if c != nil || !errors.Is(err, googleprofile.ErrUnsupported) {
++				t.Fatalf("allow=%v creds=%q client=%v err=%v", allow, creds, c, err)
++			}
++			if err := ValidateRemoteConfForLoad(nil, conf, allow); !errors.Is(err, googleprofile.ErrUnsupported) {
++				t.Fatal(err)
++			}
++		}
+ 	}
+ }
+ 
+diff --git a/weed/shell/command_remote_configure.go b/weed/shell/command_remote_configure.go
+--- a/weed/shell/command_remote_configure.go
++++ b/weed/shell/command_remote_configure.go
+@@ -14,6 +14,7 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
+ 	"google.golang.org/protobuf/proto"
+ )
+ 
+@@ -37,7 +38,7 @@
+ 	# set or update a configuration
+ 	remote.configure -name=cloud1 -type=s3 -s3.access_key=xxx -s3.secret_key=yyy -s3.region=us-east-2
+ 	remote.configure -name=cloud1_deep -type=s3 -s3.access_key=xxx -s3.secret_key=yyy -s3.region=us-east-2 -s3.storage_class=DEEP_ARCHIVE
+-	remote.configure -name=cloud2 -type=gcs -gcs.appCredentialsFile=~/service-account-file.json -gcs.projectId=yyy
++	# GCS is excluded from the OUF standard profile; use a separately qualified candidate.
+ 	remote.configure -name=cloud3 -type=azure -azure.account_name=xxx -azure.account_key=yyy
+ 	remote.configure -name=cloud3 -type=azure -azure.account_name=xxx -azure.client_id=zzz
+ 	remote.configure -name=cloud4 -type=aliyun -aliyun.access_key=xxx -aliyun.secret_key=yyy -aliyun.endpoint=oss-cn-shenzhen.aliyuncs.com -aliyun.region=cn-sehnzhen
+@@ -95,6 +96,9 @@
+ 		}
+ 	})
+ 	requestedType := conf.Type
++	if err := googleprofile.ValidateRemoteType(requestedType); err != nil {
++		return err
++	}
+ 	existing, loadErr := c.loadRemoteStorageConf(commandEnv, conf.Name)
+ 	if loadErr != nil && !errors.Is(loadErr, filer_pb.ErrNotFound) {
+ 		return fmt.Errorf("load existing configuration %s: %v", conf.Name, loadErr)
+@@ -114,6 +118,9 @@
+ 		}
+ 	}
+ 
++	if err := googleprofile.ValidateRemoteType(conf.GetType()); err != nil {
++		return err
++	}
+ 	if err = applyConcurrency(conf, *uploadConcurrency, *downloadConcurrency); err != nil {
+ 		return err
+ 	}
+@@ -310,6 +317,9 @@
+ }
+ 
+ func (c *commandRemoteConfigure) saveRemoteStorage(commandEnv *CommandEnv, writer io.Writer, conf *remote_pb.RemoteConf) error {
++	if err := googleprofile.ValidateRemoteType(conf.GetType()); err != nil {
++		return err
++	}
+ 
+ 	data, err := proto.Marshal(conf)
+ 	if err != nil {
+diff --git a/weed/shell/ouf_google_profile_test.go b/weed/shell/ouf_google_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/shell/ouf_google_profile_test.go
+@@ -0,0 +1,19 @@
++package shell
++
++import (
++	"errors"
++	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
++	"github.com/seaweedfs/seaweedfs/weed/util/googleprofile"
++	"io"
++	"testing"
++)
++
++func TestOUFGoogleProfileConfigureBeforeFiler(t *testing.T) {
++	c := &commandRemoteConfigure{}
++	if e := c.Do([]string{"-name=excluded", "-type=gcs"}, nil, io.Discard); !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(e)
++	}
++	if e := c.saveRemoteStorage(nil, io.Discard, &remote_pb.RemoteConf{Type: "gcs"}); !errors.Is(e, googleprofile.ErrUnsupported) {
++		t.Fatal(e)
++	}
++}
+diff --git a/weed/util/googleprofile/profile.go b/weed/util/googleprofile/profile.go
+new file mode 100644
+--- /dev/null
++++ b/weed/util/googleprofile/profile.go
+@@ -0,0 +1,31 @@
++// Package googleprofile defines the explicit Google integration boundary of the
++// OUF standard storage candidate. It has no credential, network or state effects.
++package googleprofile
++
++import "errors"
++
++var ErrUnsupported = errors.New("OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED: GCS remote storage and replication, and Google PubSub notification and replication require a separately qualified candidate")
++
++type Configuration interface{ GetBool(string) bool }
++
++func ValidateRemoteType(kind string) error {
++	if kind == "gcs" {
++		return ErrUnsupported
++	}
++	return nil
++}
++func ValidateNotification(c Configuration, prefix string) error {
++	if c != nil && c.GetBool(prefix+"google_pub_sub.enabled") {
++		return ErrUnsupported
++	}
++	return nil
++}
++func ValidateReplication(c Configuration) error {
++	if err := ValidateNotification(c, "notification."); err != nil {
++		return err
++	}
++	if c != nil && c.GetBool("sink.google_cloud_storage.enabled") {
++		return ErrUnsupported
++	}
++	return nil
++}
+diff --git a/weed/util/googleprofile/profile_test.go b/weed/util/googleprofile/profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/util/googleprofile/profile_test.go
+@@ -0,0 +1,24 @@
++package googleprofile
++
++import (
++	"errors"
++	"testing"
++)
++
++type flags map[string]bool
++
++func (f flags) GetBool(k string) bool { return f[k] }
++func TestOUFGoogleProfileKeysAndMixedConfigurations(t *testing.T) {
++	for _, key := range []string{"notification.google_pub_sub.enabled", "sink.google_cloud_storage.enabled"} {
++		for _, other := range []string{"notification.kafka.enabled", "notification.webhook.enabled", "sink.s3.enabled", "kms.openbao.enabled"} {
++			t.Run(key+"/"+other, func(t *testing.T) {
++				if e := ValidateReplication(flags{key: true, other: true}); !errors.Is(e, ErrUnsupported) {
++					t.Fatal(e)
++				}
++			})
++		}
++	}
++	if e := ValidateReplication(flags{"notification.google_pub_sub.enabled": false, "sink.s3.enabled": true}); e != nil {
++		t.Fatal(e)
++	}
++}

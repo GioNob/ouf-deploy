@@ -1,0 +1,21 @@
+name: Acquisition descriptor HUMAN publication protocol
+on:
+  push:
+    paths:
+      - scripts/publish-acquisition-read-descriptors-20261025.py
+      - tests/test_acquisition_descriptor_publication.py
+      - .github/workflows/acquisition-descriptor-publication.yml
+  pull_request:
+    paths:
+      - scripts/publish-acquisition-read-descriptors-20261025.py
+      - tests/test_acquisition_descriptor_publication.py
+      - .github/workflows/acquisition-descriptor-publication.yml
+permissions: {contents: read}
+jobs:
+  synthetic-owner-real-tty:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: python3 -m unittest discover -s tests -p test_acquisition_descriptor_publication.py -v
+      - run: python3 -m py_compile scripts/publish-acquisition-read-descriptors-20261025.py

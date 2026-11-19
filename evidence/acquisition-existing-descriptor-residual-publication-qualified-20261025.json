@@ -1,0 +1,122 @@
+{
+  "schema": "ouf.existing-descriptor-residual-publication-qualification.v1",
+  "runtime": {
+    "commit": "d70cf9cbe816f41f76d08858084bd393ece45c69",
+    "path": "scripts/publish-existing-descriptor-draft-20261025.py",
+    "sha256": "14477872585ad75bf96da5bb13ed6ee4381911d81ccb0ec76d7166f3ec744932"
+  },
+  "delivery": {
+    "commit": "24f2abbd08c5987cd47fce1d952e0549c493a584",
+    "path": "releases/publish-existing-descriptor-draft-20261025.sh",
+    "sha256": "6842bbe509f105021bd4be6a24553230d41054db7e83e372c0c91a753b2f73ef"
+  },
+  "targetDraftId": "cb75ddb0-bd19-48fb-847f-1c47aff3207a",
+  "targetRevision": 0,
+  "candidatePolicyHash": "027f626dce41cac0dc2d1dd9338bd2aeb20bc474a438e6e26a68d4214271b46b",
+  "lookupReceiptDigest": "8f69ddc401c1da775bfb1d3a76c4ff275b1918aaa353910171e1adf99e10843a",
+  "inheritedCounts": {
+    "administrativeWrites": 6,
+    "ownerGets": 9,
+    "previewPosts": 0,
+    "bytes": 537123
+  },
+  "ci": [
+    {
+      "event": "push",
+      "runId": 40240974039,
+      "protocolJob": 121312457757,
+      "ownerJob": 121312457646,
+      "protocolTests": 16,
+      "rootCustodyTests": 5,
+      "ownerJavaTests": 3,
+      "failures": 0,
+      "skips": 0,
+      "directLogsRead": true
+    },
+    {
+      "event": "pull_request",
+      "runId": 40240978367,
+      "protocolJob": 121312470986,
+      "ownerJob": 121312470979,
+      "protocolTests": 16,
+      "rootCustodyTests": 5,
+      "ownerJavaTests": 3,
+      "failures": 0,
+      "skips": 0,
+      "directLogsRead": true
+    }
+  ],
+  "realComponents": [
+    "actual PTY exact review parser; excess text/nonTTY/expired review denied",
+    "actual SIGALRM interrupts blocked deadline; no sleeps/transactions held by residual controller",
+    "actual root077 protected copy0400/dir0700/checksum/root isolated execution and actual nonroot read denied",
+    "actual immutable operator600/root600 evidence, inherited counts/histories, symlink/mode/digest negative cases",
+    "unchanged deployed Onboarding source1b1222ceaa5af85a25c20857e7c8c1b548b12dc1 built with Java21 and its SDK",
+    "PostgreSQL17 and full deployed owner migrations",
+    "actual owner Admin/Review API controllers, owner transactions/security guards/canonical hash/serialization/ETags through MockMvc plus HTTP bridge and actual Python residual client",
+    "successful publication preserves106grants including existing foreign-tenant grant,0registrations/creates in residual,2previews,revision0->1,ACTIVE48->49",
+    "declined synthetic exact review yields0publish/1preview; committed-but-lost response leavesCLAIMED and no retry"
+  ],
+  "syntheticComponents": [
+    "CI TrustedPrincipal/authentication adapter and bearer marker; no real IAM/JWT/Gateway validation in CI",
+    "CI bootstrap and seeded already-existing multi-tenant48 policy history, grants and draft UUID",
+    "CI-only synthetic review hash/TTY decision; no production approval simulated"
+  ],
+  "mockedComponent": "AuthorizationRuntimeSynchronizer external consumer refresh mocked in native owner test; production refresh not inferred",
+  "closedOperations": {
+    "gets": [
+      "ACTIVE",
+      "capability registration catalogue",
+      "exact confirmed draft only"
+    ],
+    "previews": 2,
+    "publications": 1,
+    "registrations": 0,
+    "draftCreations": 0,
+    "engineRequests": 0,
+    "sqlSessions": 0,
+    "serviceCredentialFileReads": 0,
+    "installationSigningKeyReads": 0,
+    "roleCatalogueMutations": 0,
+    "iamConfigurationMutations": 0,
+    "newGrants": 0
+  },
+  "cumulativeLimits": {
+    "administrativeWrites": 7,
+    "ownerGets": 160,
+    "previewPosts": 2,
+    "totalOwnerResponseBytes": 33554432,
+    "reviewExecutionSeconds": 900,
+    "totalSeconds": 1800,
+    "iamSeconds": 600,
+    "iamMetadataGets": 1,
+    "iamPosts": 121
+  },
+  "evidenceBeforeGuards": true,
+  "ambiguousMutationClaimRetained": true,
+  "automaticMutationReplay": false,
+  "targetScope": "/etc/ouf/deploy-snapshots/acquisition-existing-draft-publish-cb75ddb0-v1",
+  "targetPublicationResultReceived": false,
+  "normativeBaselineConsulted": {
+    "archiveSha256": "e63df67e8817eec38a9d4b3eb736b020f693b932f3360dc02f4555330f2201ce",
+    "matrix": "1.7 sections1,4,7",
+    "authorizationPet": "1.5 sections16-18,36.6-36.7",
+    "onboardingThsPet": "1.6 sections27.1-27.3",
+    "fullComplianceClaimed": false,
+    "thsApprovalChallengeAcceptanceClosed": false
+  },
+  "retainedFailedQualification": {
+    "commit": "68ab7424c19b038c3d398bdc231c498a6e9d9b31",
+    "pushRun": 40240468797,
+    "ownerJob": 121310981807,
+    "reason": "CI seed attempted a new foreign-tenant grant during bootstrap; owner correctly rejected AUTH_OTHER_TENANT_GRANTS_PROTECTED. Fixed fixture to seed already-existing multi-tenant48 after bootstrap47. Owner code/security unchanged."
+  },
+  "runtimeAuthorityIssued": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "registryWorkerTouched": false,
+  "sourceActivations": 0,
+  "acquisitionsExecuted": 0,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

@@ -1,0 +1,18 @@
+{
+  "cliEqualsDirectCollector": true,
+  "comparison": "parsed JSON equality; output key order differs",
+  "checks": [
+    {
+      "outputKind": "root-source",
+      "exitCode": 1,
+      "bytesUnchanged": true,
+      "rejection": "ValueError: SEPARATE_ORIGIN_OUTPUT_REQUIRED"
+    },
+    {
+      "outputKind": "module-cache",
+      "exitCode": 1,
+      "bytesUnchanged": true,
+      "rejection": "ValueError: CACHE_AND_SOURCE_OUTPUT_DENIED"
+    }
+  ]
+}

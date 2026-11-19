@@ -1,0 +1,1635 @@
+{
+  "schema": "ouf.semantic-recovery-functional-read.v1",
+  "date": "2026-11-07",
+  "source": "LIVE_GOVERNED_OUF_MCP_RESPONSES_AFTER_OPERATOR_RESUME",
+  "linkName": "ouf-admin",
+  "operatorReceipt": "evidence/semantic-operational-owner-active-operator-20261107.json",
+  "calls": [
+    {
+      "tool": "semantic.search",
+      "arguments": {
+        "q": "teatro",
+        "limit": 20
+      },
+      "result": []
+    },
+    {
+      "tool": "semantic.search",
+      "arguments": {
+        "q": "Theatre",
+        "limit": 20
+      },
+      "result": []
+    },
+    {
+      "tool": "semantic.search",
+      "arguments": {
+        "q": "Teatri",
+        "limit": 20
+      },
+      "result": [
+        {
+          "semantic_id": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+          "artifact_id": "e34887ee-e101-4a2c-9ecc-7927a15f795c",
+          "artifact_type": "ONTOLOGY",
+          "namespace": "https://api.ouf-lab.it/semantic/teatri#",
+          "local_name": "TeatriOntology",
+          "owner_ref": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+          "authority_ref": "ouf-lab-netcup-01",
+          "origin_kind": "IMPORTED",
+          "revision_id": "a1db3912-2b72-42eb-af88-a775fcd0e2ab",
+          "semantic_version": "1.0.0",
+          "status": "ACTIVE",
+          "content_hash": "c96bb4c80f2c5b32616b2c8632438213dd7e269728e005612acb46970830da1f",
+          "label": {
+            "it": "Profilo semantico dei luoghi teatrali"
+          },
+          "description": {},
+          "definition": {
+            "importedSnapshot": {
+              "mediaType": "text/turtle",
+              "contentHash": "6e4668ea42cf1c75b822e17a8ca9cb71fb2c4d8f500eed628282fa6039a6dbaa",
+              "statementCount": 105
+            }
+          },
+          "publication_set_id": "9fe7d1ee-9e13-40bc-ad50-53e36ea0076b",
+          "publication_checksum": "632fe084bdb359afe419bbf5651fc4711930c31e5cf1503c8da19cace803af28",
+          "score": 0.375
+        }
+      ]
+    },
+    {
+      "tool": "semantic.get",
+      "arguments": {
+        "semanticId": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+        "revisionId": "a1db3912-2b72-42eb-af88-a775fcd0e2ab",
+        "publicationSetId": "9fe7d1ee-9e13-40bc-ad50-53e36ea0076b"
+      },
+      "result": {
+        "semantic_id": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+        "artifact_id": "e34887ee-e101-4a2c-9ecc-7927a15f795c",
+        "artifact_type": "ONTOLOGY",
+        "namespace": "https://api.ouf-lab.it/semantic/teatri#",
+        "local_name": "TeatriOntology",
+        "owner_ref": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "authority_ref": "ouf-lab-netcup-01",
+        "origin_kind": "IMPORTED",
+        "revision_id": "a1db3912-2b72-42eb-af88-a775fcd0e2ab",
+        "semantic_version": "1.0.0",
+        "status": "ACTIVE",
+        "content_hash": "c96bb4c80f2c5b32616b2c8632438213dd7e269728e005612acb46970830da1f",
+        "label": {
+          "it": "Profilo semantico dei luoghi teatrali"
+        },
+        "description": {},
+        "definition": {
+          "importedSnapshot": {
+            "mediaType": "text/turtle",
+            "contentHash": "6e4668ea42cf1c75b822e17a8ca9cb71fb2c4d8f500eed628282fa6039a6dbaa",
+            "statementCount": 105
+          }
+        },
+        "canonical_uri": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+        "publication_set_id": "9fe7d1ee-9e13-40bc-ad50-53e36ea0076b",
+        "publication_checksum": "632fe084bdb359afe419bbf5651fc4711930c31e5cf1503c8da19cace803af28",
+        "dependencies": [],
+        "dependencies_partial": false,
+        "rdf_snapshot": {
+          "interpretation": "ASSERTED_RDF_NO_INFERENCE",
+          "statements": [
+            {
+              "predicate": "http://purl.org/dc/terms/source",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://purl.org/dc/terms/source",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/additionalType",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://purl.org/dc/terms/source",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/name",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#Ontology",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Proposta da approvare: riuso di termini standard e proprieta qualificate della fonte. Nessuna equivalenza con Cinema, approvazione o classificazione dei dati e implicita.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Profilo semantico dei luoghi teatrali",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#cap",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#cap",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Codice postale lessicale del luogo riportato dalla fonte. Conservare gli zeri iniziali dai byte CSV; il tipo LONG del profiler non autorizza conversioni numeriche.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#cap",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#cap",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "cap",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#cap",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Posti riportati dalla fonte. Il valore puo riferirsi a una singola sala secondo note; non asserisce la capienza totale del luogo.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "capienza posti",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#citta",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#citta",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Localita dell indirizzo riportata dalla fonte; questa proprieta piatta non asserisce una risorsa PostalAddress.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#citta",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#citta",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "citta",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#citta",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#civico",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#civico",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Numero civico lessicale riportato dalla fonte, compresi eventuali suffissi; nessuna risoluzione di indirizzi discordanti.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#civico",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#civico",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "civico",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#civico",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Data di verifica dichiarata dalla fonte per il record; non data di modifica dell oggetto urbano o prova indipendente della verifica.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "data verifica",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Riferimento di provenienza riportato per altri dati; non una equivalenza di identita e non un ordine di accesso alla URL.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "fonte altri dati",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Riferimento di provenienza riportato per le coordinate; non una verifica geografica e non un ordine di accesso alla URL.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "fonte coordinate",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Riferimento di provenienza riportato per i dati di indirizzo; non il sito ufficiale del teatro e non un ordine di accesso alla URL.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "fonte indirizzo",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Valore di latitudine riportato dalla fonte, da interpretare insieme a sistema_riferimento e precisione_coordinate; non equivale a una trasformazione WGS84 verificata.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "latitudine",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Valore di longitudine riportato dalla fonte, da interpretare insieme a sistema_riferimento e precisione_coordinate; non equivale a una trasformazione WGS84 verificata.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "longitudine",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Componente nominale dell indirizzo riportata dalla fonte; non include implicitamente toponimo e civico.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "nome indirizzo",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#note",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#note",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Annotazioni della fonte che qualificano i valori riportati, compresi ambito della capienza e discrepanze dell indirizzo.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#note",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#note",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "note",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#note",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Descrizione della precisione e del riferimento geometrico riportata dalla fonte; non convertita in una tolleranza numerica.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "precisione coordinate",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#provincia",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#provincia",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Provincia dell indirizzo riportata dalla fonte; il testo non e risolto in una entita amministrativa.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#provincia",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#provincia",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "provincia",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#provincia",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Sistema di riferimento dichiarato dalla fonte per le coordinate; nessuna trasformazione o completamento implicito.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "sistema riferimento",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Numero di spettacoli riportato dalla fonte per stagione_riferimento; non un totale senza periodo e non un elenco di eventi.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "spettacoli stagione",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Etichetta della stagione cui si riferisce la misura spettacoli_stagione; nessuna data di inizio o fine inferita.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "stagione riferimento",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Tipo di elemento stradale riportato dalla fonte, distinto dal nome e dal numero civico; non e un indirizzo completo.",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "toponimo",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+              "subject": {
+                "value": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2001/XMLSchema#string",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/2002/07/owl#Class",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
+              "subject": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://schema.org/PerformingArtsTheater",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Luogo per le arti performative",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://schema.org/additionalType",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
+              "subject": {
+                "value": "https://schema.org/additionalType",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/additionalType",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://schema.org/additionalType",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Tipologia aggiuntiva dichiarata",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+              "subject": {
+                "value": "https://schema.org/name",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
+              "subject": {
+                "value": "https://schema.org/name",
+                "kind": "IRI"
+              },
+              "object": {
+                "value": "https://schema.org/name",
+                "kind": "IRI"
+              }
+            },
+            {
+              "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+              "subject": {
+                "value": "https://schema.org/name",
+                "kind": "IRI"
+              },
+              "object": {
+                "kind": "LITERAL",
+                "value": "Nome",
+                "language": "it",
+                "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+              }
+            }
+          ],
+          "media_type": "text/turtle",
+          "content_hash": "6e4668ea42cf1c75b822e17a8ca9cb71fb2c4d8f500eed628282fa6039a6dbaa",
+          "blank_node_scope": "THIS_SNAPSHOT_RESPONSE",
+          "partial": false,
+          "statement_count": 105,
+          "term_reference_scope": "CONTAINING_REVISION_AND_PUBLICATION_SET"
+        }
+      }
+    },
+    {
+      "tool": "source.file.preview",
+      "arguments": {
+        "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+        "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342"
+      },
+      "result": {
+        "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+        "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+        "profileVersion": 1,
+        "format": "CSV",
+        "metadata": {
+          "rows": 13,
+          "columns": 20,
+          "encoding": "UTF-8",
+          "delimiter": ";",
+          "headerRow": 1
+        },
+        "columns": [
+          {
+            "name": "nome_teatro",
+            "dataType": "STRING",
+            "nullable": false,
+            "distinctValues": 13
+          },
+          {
+            "name": "tipologia",
+            "dataType": "STRING",
+            "nullable": false,
+            "distinctValues": 9
+          },
+          {
+            "name": "toponimo",
+            "dataType": "STRING",
+            "nullable": false,
+            "distinctValues": 4
+          },
+          {
+            "name": "nome_indirizzo",
+            "dataType": "STRING",
+            "nullable": false,
+            "distinctValues": 13
+          },
+          {
+            "name": "civico",
+            "dataType": "STRING",
+            "nullable": true,
+            "distinctValues": 12
+          },
+          {
+            "name": "cap",
+            "dataType": "LONG",
+            "nullable": false,
+            "distinctValues": 10
+          },
+          {
+            "name": "citta",
+            "dataType": "STRING",
+            "nullable": false,
+            "distinctValues": 1
+          },
+          {
+            "name": "provincia",
+            "dataType": "STRING",
+            "nullable": false,
+            "distinctValues": 1
+          },
+          {
+            "name": "latitudine",
+            "dataType": "STRING",
+            "nullable": true,
+            "distinctValues": 10
+          },
+          {
+            "name": "longitudine",
+            "dataType": "STRING",
+            "nullable": true,
+            "distinctValues": 10
+          },
+          {
+            "name": "sistema_riferimento",
+            "dataType": "STRING",
+            "nullable": true,
+            "distinctValues": 1
+          },
+          {
+            "name": "precisione_coordinate",
+            "dataType": "STRING",
+            "nullable": true,
+            "distinctValues": 3
+          },
+          {
+            "name": "capienza_posti",
+            "dataType": "LONG",
+            "nullable": true,
+            "distinctValues": 4
+          },
+          {
+            "name": "spettacoli_stagione",
+            "dataType": "LONG",
+            "nullable": true,
+            "distinctValues": 1
+          },
+          {
+            "name": "stagione_riferimento",
+            "dataType": "STRING",
+            "nullable": true,
+            "distinctValues": 1
+          },
+          {
+            "name": "note",
+            "dataType": "STRING",
+            "nullable": true,
+            "distinctValues": 8
+          },
+          {
+            "name": "fonte_indirizzo",
+            "dataType": "STRING",
+            "nullable": false,
+            "distinctValues": 13
+          },
+          {
+            "name": "fonte_coordinate",
+            "dataType": "STRING",
+            "nullable": true,
+            "distinctValues": 10
+          },
+          {
+            "name": "fonte_altri_dati",
+            "dataType": "STRING",
+            "nullable": true,
+            "distinctValues": 5
+          },
+          {
+            "name": "data_verifica",
+            "dataType": "STRING",
+            "nullable": false,
+            "distinctValues": 1
+          }
+        ],
+        "candidateKeys": [
+          "nome_teatro",
+          "nome_indirizzo",
+          "fonte_indirizzo"
+        ],
+        "redactedSample": [
+          {
+            "cap": "34121",
+            "note": "",
+            "citta": "Trieste",
+            "civico": "1",
+            "toponimo": "Riva",
+            "provincia": "TS",
+            "tipologia": "teatro lirico",
+            "latitudine": "4.565.094",
+            "longitudine": "1.376.850",
+            "nome_teatro": "[REDACTED]",
+            "data_verifica": "28/09/2026",
+            "capienza_posti": "1300",
+            "nome_indirizzo": "[REDACTED]",
+            "fonte_indirizzo": "[REDACTED]",
+            "fonte_altri_dati": "https://www.teatro.it/teatri/trieste",
+            "fonte_coordinate": "https://mapcarta.com/27388578",
+            "sistema_riferimento": "EPSG:4326 (WGS 84)",
+            "spettacoli_stagione": "",
+            "stagione_riferimento": "",
+            "precisione_coordinate": "edificio; circa 10 m"
+          },
+          {
+            "cap": "34126",
+            "note": "Capienza riferita alla sala Assicurazioni Generali; altre sale nello stesso edificio.",
+            "citta": "Trieste",
+            "civico": "45",
+            "toponimo": "Viale",
+            "provincia": "TS",
+            "tipologia": "teatro stabile",
+            "latitudine": "4.565.237",
+            "longitudine": "1.378.451",
+            "nome_teatro": "[REDACTED]",
+            "data_verifica": "28/09/2026",
+            "capienza_posti": "1531",
+            "nome_indirizzo": "[REDACTED]",
+            "fonte_indirizzo": "[REDACTED]",
+            "fonte_altri_dati": "https://www.teatro.it/teatri/trieste",
+            "fonte_coordinate": "https://mapcarta.com/W36433901",
+            "sistema_riferimento": "EPSG:4326 (WGS 84)",
+            "spettacoli_stagione": "",
+            "stagione_riferimento": "",
+            "precisione_coordinate": "edificio; circa 10 m"
+          },
+          {
+            "cap": "34138",
+            "note": "Alcune mappe indicano 12/A; il gestore indica civico 12.",
+            "citta": "Trieste",
+            "civico": "12",
+            "toponimo": "Via",
+            "provincia": "TS",
+            "tipologia": "teatro di prosa",
+            "latitudine": "4.564.204",
+            "longitudine": "1.378.702",
+            "nome_teatro": "[REDACTED]",
+            "data_verifica": "28/09/2026",
+            "capienza_posti": "743",
+            "nome_indirizzo": "[REDACTED]",
+            "fonte_indirizzo": "[REDACTED]",
+            "fonte_altri_dati": "https://www.teatro.it/teatri/trieste",
+            "fonte_coordinate": "https://mapcarta.com/N1268713838",
+            "sistema_riferimento": "EPSG:4326 (WGS 84)",
+            "spettacoli_stagione": "",
+            "stagione_riferimento": "",
+            "precisione_coordinate": "punto OSM; circa 10 m"
+          },
+          {
+            "cap": "34132",
+            "note": "",
+            "citta": "Trieste",
+            "civico": "3",
+            "toponimo": "Piazza",
+            "provincia": "TS",
+            "tipologia": "teatro multidisciplinare",
+            "latitudine": "4.565.407",
+            "longitudine": "1.376.995",
+            "nome_teatro": "[REDACTED]",
+            "data_verifica": "28/09/2026",
+            "capienza_posti": "",
+            "nome_indirizzo": "[REDACTED]",
+            "fonte_indirizzo": "[REDACTED]",
+            "fonte_altri_dati": "",
+            "fonte_coordinate": "https://mapcarta.com/N602205030",
+            "sistema_riferimento": "EPSG:4326 (WGS 84)",
+            "spettacoli_stagione": "",
+            "stagione_riferimento": "",
+            "precisione_coordinate": "punto OSM; circa 10 m"
+          },
+          {
+            "cap": "34141",
+            "note": "",
+            "citta": "Trieste",
+            "civico": "4",
+            "toponimo": "Via",
+            "provincia": "TS",
+            "tipologia": "teatro stabile",
+            "latitudine": "4.564.398",
+            "longitudine": "1.378.539",
+            "nome_teatro": "[REDACTED]",
+            "data_verifica": "28/09/2026",
+            "capienza_posti": "",
+            "nome_indirizzo": "[REDACTED]",
+            "fonte_indirizzo": "[REDACTED]",
+            "fonte_altri_dati": "",
+            "fonte_coordinate": "https://mapcarta.com/N7162793032",
+            "sistema_riferimento": "EPSG:4326 (WGS 84)",
+            "spettacoli_stagione": "",
+            "stagione_riferimento": "",
+            "precisione_coordinate": "punto OSM; circa 10 m"
+          }
+        ],
+        "recordModel": "ONE_ROW_ONE_SOURCE_OBJECT",
+        "identityProposal": {
+          "stabilityLimit": "Identity remains stable while the proposed key remains stable",
+          "sourceFields": [
+            "nome_teatro"
+          ],
+          "strategy": "NATIVE_KEY",
+          "normalizationRuleRef": "normalization://managed-file/native-key-v1"
+        },
+        "proposalStatus": "PENDING_HUMAN_REVIEW"
+      }
+    }
+  ],
+  "contractCorrection": {
+    "initialPreviewAssetIdOnlyRejectedBeforeDispatch": true,
+    "correctPreviewRequiresAssetIdAndProfileId": true,
+    "reference": "GioNob/ouf-mcp-server@f7ecaeb210d8fcead478b90c62645db13a7d8226:docs/R4A_MANAGED_FILE_MCP_CONTRACT.md"
+  },
+  "conclusions": {
+    "searchSucceeded": true,
+    "exactPublishedSemanticReadSucceeded": true,
+    "previousSearch403NotObservedOnTheseCalls": true,
+    "currentProfileReadSucceeded": true,
+    "allTwentyPropertyTermsAsserted": true,
+    "rdfSnapshotComplete": true,
+    "loadedPolicyVersionReadFromApplication": false,
+    "automaticRenewalCycleProven": false,
+    "completeE2eProven": false,
+    "applicationUdpLakeOperationProven": false,
+    "permissionsChanged": false
+  }
+}

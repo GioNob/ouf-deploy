@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "test",
+    "-mod=readonly",
+    "-race",
+    "-count=1",
+    "-p",
+    "1",
+    "-timeout=90s",
+    "-json",
+    "./weed/util/httpdown",
+    "./weed/util/raftstore",
+    "./weed/replication/sink/filersink",
+    "-run",
+    "Test"
+  ],
+  "cwd": "source32-integrated-stage/source",
+  "exitCode": 0,
+  "elapsedSeconds": 33.086,
+  "CGO_ENABLED": "1",
+  "GOOS": "linux",
+  "GOARCH": "amd64",
+  "GOPROXY": "off",
+  "GOTMPDIR": "/workspace/scratch/98dabd1608e5/source32-integrated-stage/go-work",
+  "TMPDIR": "/workspace/scratch/98dabd1608e5/tmp"
+}

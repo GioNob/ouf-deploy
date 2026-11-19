@@ -1,0 +1,77 @@
+{
+  "schema": "ouf.seaweedfs-452-cold-recovery-failure.v1",
+  "status": "HOSTED_SYNTHETIC_SEED_MIME_FAILED_NO_RESTORE_ACCEPTANCE",
+  "sourceCommit": "24e96bb5e875a4c0b5c17aed2653e0bd14bd05be",
+  "workflow": ".github/workflows/storage-452-cold-recovery.yml",
+  "runId": 41691296882,
+  "jobId": 126110264653,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41691296882",
+  "artifact": {
+    "id": 13256923272,
+    "bytes": 12999,
+    "sha256": "97222fcca21cc519c7170a63ed944ebd7a9b7397248760f0d173681176777c02",
+    "members": 15,
+    "independentlyDownloadedAndHashVerified": true,
+    "membersRead": true,
+    "expiresAt": "2027-02-01T18:10:50Z",
+    "retention": "TEMPORARY_CI",
+    "successManifestAttested": false
+  },
+  "observed": {
+    "unitTestsPassed": 11,
+    "exactProducerArchiveVerified": true,
+    "exactOciReconstructionVerified": true,
+    "nonrootReadOnlyIsolationChecksPassed": true,
+    "networkRouteDevices": [
+      "lo"
+    ],
+    "s3ReadinessAttempts": 5,
+    "lockRingReadOnlyPolls": 12,
+    "childExitCode": 1,
+    "childStderrRetained": true,
+    "childException": "RuntimeError: CONTENT_TYPE_MISMATCH",
+    "childSourceLine": 158,
+    "failedOperation": "GET_CONTENT_TYPE_COMPARISON",
+    "seedComplete": false,
+    "backupExecuted": false,
+    "restoreExecuted": false,
+    "allFourServiceExitCodes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "oomKilled": false
+  },
+  "diagnosis": {
+    "classification": "S3_CONTENT_TYPE_COMPATIBILITY_FAILURE_OPEN",
+    "controlFlowEvidence": "The retained traceback reached content-type comparison after acknowledged seed PUT/DELETE requests, exact LIST object-set verification and successful body/hash-metadata comparison for the failing GET. This is control-flow evidence; raw per-request HTTP transcripts are not retained.",
+    "sourceInference": "Pinned filer doPutAutoChunk and normalizeEntryMimeForStore discard explicit application/octet-stream; GET response construction may infer MIME from filename extension. This supports the MIME normalization explanation, but does not establish the unrecorded key or returned header.",
+    "unproven": [
+      "failing object key",
+      "actual response Content-Type",
+      "full seed GET/HEAD completion"
+    ],
+    "mutationReplayAttempted": false,
+    "compatibilityResolved": false,
+    "correction": "Use an explicit non-normalized MIME for strict recovery GET/HEAD checks, and retain a distinct finite octet-stream probe with all key/method/expected/observed values. A mismatch remains FAIL and G2 OPEN, but does not prevent measuring storage-only restore. Probe bytes/hash and complete before/after probe parity remain mandatory. No candidate code or OCI changed."
+  },
+  "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+  "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+  "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+  "s3MetadataCompatibilityQualified": false,
+  "g2Closed": false,
+  "fullFoundationBackupContractSatisfied": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "realObjectsCopied": 0,
+  "minioRemainsActive": true,
+  "preserved": [
+    "Scope17/52 Engine GET",
+    "Teatri/M1 8/8 technical and 6/6 functional",
+    "Farmacie 61/10 OPEN/STRING"
+  ]
+}

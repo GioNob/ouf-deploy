@@ -1,0 +1,41 @@
+{
+  "schema": "ouf.storage-backup-linux-cipher-qualified.v1",
+  "status": "QUALIFIED_SYNTHETIC_ONLY",
+  "commit": "2fd593888a9773a238e4c297abe5c3c72933ec9c",
+  "runId": 42289795526,
+  "jobId": 128139910920,
+  "conclusion": "success",
+  "exactGitSourcesCompared": 3,
+  "sourceSha256": "146c14ca41b928e62a5791ce7b7ffec458052fd4e6ab7959f7908c79d79b1c5e",
+  "archive": {
+    "id": 13539481255,
+    "bytes": 559,
+    "sha256": "bdc8fb73f76f5a5ff1b978aa09dc5657e85be47737981942f034f1f99eeb7251",
+    "downloadedAndVerified": true,
+    "member": "cipher-native-result.json",
+    "memberSha256": "0a786cc1e9e1061f2d63e826b83f2b012e54cddebc82a7e782b6eb1b29c727d7",
+    "expiresAt": "2027-02-04T20:36:33Z"
+  },
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "ageArchiveSha256": "cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10",
+    "ageBinarySha256": "eb7dd1b518f0a307c99cd97782623c5321da049154b04acd2d98d21aa7bc9b2c",
+    "crossPlatformDecryptProven": false,
+    "linuxLocalDecryptVerified": true,
+    "privateKeyUnchanged": true,
+    "replayAndExistingBinaryDenied": true,
+    "rootPrivateRecipientVerified": true,
+    "schema": "ouf.storage-backup-linux-cipher-native.v1",
+    "sourceSha256": "146c14ca41b928e62a5791ce7b7ffec458052fd4e6ab7959f7908c79d79b1c5e",
+    "status": "PASS",
+    "targetOperations": 0,
+    "wrongArchiveDenied": true,
+    "wrongRecipientDeniedBeforeWrites": true
+  },
+  "limitations": [
+    "Synthetic Ed25519 and independent root-owned fixture paths; not target installation",
+    "No VPS application/provider accesses or cold backup rerun",
+    "No Linux-to-Windows target decryption or backup/restore yet"
+  ],
+  "acceptanceCreditAdded": 0
+}

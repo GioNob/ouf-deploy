@@ -1,0 +1,1 @@
+11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7  ../patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch

@@ -1,0 +1,2 @@
+# github.com/seaweedfs/seaweedfs/weed/command
+weed/command/ouf_unsupported_optional_tags.go:8:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE

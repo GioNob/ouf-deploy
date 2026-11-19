@@ -1,0 +1,29 @@
+{
+  "schema": "ouf.csv-functional-stage3-final-reader-qualification.v1",
+  "observedLocalDate": "2026-10-17",
+  "sourceCommit": "db274e626e22fe3cf8148af3cf759bed2316e019",
+  "runId": 39073074291,
+  "jobId": 117514536828,
+  "tests": 12,
+  "skipped": 0,
+  "conclusion": "success",
+  "actualPostgresMajor": 17,
+  "reader": {
+    "schema": "ouf.teatri-post-resolution-materialization-read.v3",
+    "sha256": "ff9f1f593e8c831e2192bc8483431de2b226f7408da28744ad7f5b9490fdcc6e"
+  },
+  "launcher": {
+    "sha256": "89fdeeed327774e8f743aeb68426ce361e6ae55a19a55ec42e37debe11bc5771",
+    "readerSourceCommit": "db274e626e22fe3cf8148af3cf759bed2316e019"
+  },
+  "newCasesQualified": [
+    "No OPEN identity review does not prove the last row committed",
+    "13 committed rows may target 12 existing objects",
+    "Latest HUMAN action and safe job failure code are exposed as metadata",
+    "Functional progress is computed only after all commits and upstream lineage proof"
+  ],
+  "nativeReadAfterLatestHumanDecisionPerformed": false,
+  "runnerTargetReadRetried": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2
+}

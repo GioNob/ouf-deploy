@@ -1,0 +1,49 @@
+{
+  "schema": "ouf.storage-generation29-local-integration.v1",
+  "baseCommit": "24e96bb5e875a4c0b5c17aed2653e0bd14bd05be",
+  "status": "LOCAL_PASS_HOSTED_PENDING_NOT_ADMITTED",
+  "suites": [
+    {
+      "testFile": "tests/test_seaweedfs_452_generation29_image.py",
+      "testsPassed": 19,
+      "sha256": "8deac74e8d777bc14686fcd6d17ea1d06b34d3181b46fcb4a230b47a35f9def1"
+    },
+    {
+      "testFile": "tests/test_storage_runtime_image.py",
+      "testsPassed": 12,
+      "sha256": "2bbeff328791ca4244daa832accb0a8a1b11cf028c59c6cd2a6641a8d64c8949"
+    },
+    {
+      "testFile": "tests/test_minio_seaweedfs_plan_current.py",
+      "testsPassed": 23,
+      "sha256": "54dc1b0ec509f8eb001e84c18aa1580ef9e03d9c3d057405536df9c4e5dd8075"
+    },
+    {
+      "testFile": "tests/test_seaweedfs_452_cold_recovery.py",
+      "testsPassed": 15,
+      "sha256": "34b5da5f3e623f64634ebee8d5fcb92d38af61f92b0db537758ed99fd022d01a"
+    },
+    {
+      "testFile": "tests/test_seaweedfs_452_identity_tls.py",
+      "testsPassed": 13,
+      "sha256": "a37658050bb3e349865bb6662c3cab4a091faff84e0a071449d6170d2fdac54d"
+    },
+    {
+      "testPattern": "test_storage_recovery_*.py",
+      "testsPassed": 25,
+      "filesSha256": {
+        "tests/test_storage_recovery_coordinated.py": "a39c067c086d6cba0874448716d02a1f172891296d734811ba3d6685ad7fb501",
+        "tests/test_storage_recovery_manifest.py": "a4f5cf09b60bd5ceb6f876bacce9d1bf6971cc42bb2c56479b80c92757ba11b0",
+        "tests/test_storage_recovery_profile.py": "7614f0fd0d2586d48b184b8d3fb26e2a281f6f3dfce1f7815ce8fe30fa04b000"
+      }
+    }
+  ],
+  "totalTestsPassed": 107,
+  "workflowShellBlocksParsed": 17,
+  "goSourceQualification": "evidence/seaweedfs-452-content-type-local-20261103.json",
+  "imagePipelineQualification": "evidence/seaweedfs-generation29-image-local-20261103.json",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "minioStillActive": true
+}

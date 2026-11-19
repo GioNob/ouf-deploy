@@ -1,0 +1,18 @@
+{
+  "observedAt": "2026-11-03T20:53:05.624845+00:00",
+  "psExit": 47,
+  "psStderr": "Error, do this: mount -t proc proc /proc\n",
+  "matchingGoCommands": [],
+  "workDirs": [
+    {
+      "path": "tmp/go-build2971040034",
+      "exists": true,
+      "mtime": "2026-11-03T06:57:47.426293+00:00"
+    },
+    {
+      "path": "go-tmp/go-build111892734",
+      "exists": true,
+      "mtime": "2026-11-03T20:52:34.522891+00:00"
+    }
+  ]
+}

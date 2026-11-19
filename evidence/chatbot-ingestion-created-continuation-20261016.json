@@ -1,0 +1,84 @@
+{
+  "schema": "ouf.chatbot-ingestion-created-continuation-qualification.v1",
+  "runtimeSource": "a2132d7ee330f9f0ce7d4fc9316dd880acad4f3f",
+  "fixtureSource": "f09e6838ae27efbd2e525ad7348d1ed5a64af1c5",
+  "fixtureOnlyDifferences": [
+    ".github/workflows/chatbot-gateway-phase5-continuation.yml",
+    "tests/test_ingestion_phase6_native.py"
+  ],
+  "runtimeCapsuleEquivalent": true,
+  "capsuleMembers": 130,
+  "capsuleSha256": "b27731fb30b545d1c42751f0c6f92384501a46937b9cbf071d2db1ed780c3d04",
+  "qualification": {
+    "general": {
+      "run": 38876888992,
+      "job": 116894441077,
+      "conclusion": "success",
+      "tests": 494,
+      "suites": 67
+    },
+    "specific": {
+      "run": 38877206131,
+      "nativeJob": 116895011078,
+      "nativeTests": 2,
+      "finiteHistoryJob": 116895011470,
+      "finiteHistoryTests": 20,
+      "finiteHistorySuites": 6,
+      "conclusion": "success",
+      "followingGatewayWrites": 0,
+      "additionalGatewayLifecycleOperations": 0,
+      "dockerEnvCounts": {
+        "requested": 8,
+        "imageDefaults": 6,
+        "observed": 11
+      },
+      "sameCreatedContainer": true,
+      "ingestionReadbackLifecycleOperations": 0,
+      "ingestionStarts": 1
+    },
+    "backup": {
+      "run": 38876889037,
+      "job": 116893970691,
+      "conclusion": "success"
+    }
+  },
+  "target": {
+    "technicalPhase": 6,
+    "completedTechnicalPhases": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "functionalMilestonesProven": 0,
+    "controlledCumulativeGrantAttempts": 9,
+    "nextNewCumulativeGrantAttempt": 10,
+    "gatewayRoutes": 74,
+    "gatewayMapHash": "a6504c3d830019e84ca73e76fd62cb3a47ea6d07efe00d106a0e475fe770d574",
+    "ingestionContainerId": "cbf3067d946cf21a8f4abbb03ed47a217f2f39624ed1a5fb23a642325129ee35",
+    "ingestionNeverStarted": true,
+    "runtimeBindingHash": "d14d56632ea3e442ad249b83ce5719f1102238a31aeb1513290084ecaba36f5b"
+  },
+  "limits": {
+    "newSessionMaximumAttempts": 128,
+    "newSessionMaximumSeconds": 3600,
+    "automaticRenewal": false,
+    "historicalBudgetReset": false,
+    "newDump": false,
+    "restore": false,
+    "newIngestionCreate": false,
+    "newGatewayWrites": false
+  },
+  "newRuntimeExecutedOnTarget": false,
+  "targetAccessByQualification": false,
+  "runtimeAuthorityIssuedByQualification": false,
+  "chatbotEndToEndProven": false,
+  "qualificationLimits": [
+    "Docker native fixture uses static pause binary; target application readiness is not proven.",
+    "Native APISIX fixture has 37 routes; target inventory is independently verified as 74 routes.",
+    "This installation-specific recovery does not qualify multi-host/multi-network deployment."
+  ],
+  "deliverySha256": "48c5e2d3ca39b73b8d528e5f44cb1f5bd2713b82af784ea7d284a887868c49dd",
+  "launcherSha256": "86cda068263765704834ec6cb442fddb8c6164f78976f1da74d7d515da604dd9"
+}

@@ -1,0 +1,36 @@
+name: Storage G0 datasource override review
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - scripts/review-storage-g0-datasource-20261106.py
+      - tests/test_storage_g0_datasource_review.py
+      - .github/workflows/storage-g0-datasource-review.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: storage-g0-datasource-review-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Test redaction, installed source integrity and bounded local review
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/datasource-review"
+          sudo -n env GITHUB_ACTIONS=true python3 -B -m unittest discover -s tests -p test_storage_g0_datasource_review.py -v 2>&1 | tee "$RUNNER_TEMP/datasource-review/tests.log"
+          sha256sum scripts/review-storage-g0-datasource-20261106.py tests/test_storage_g0_datasource_review.py > "$RUNNER_TEMP/datasource-review/sources.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-g0-datasource-review-${{ github.run_id }}
+          path: ${{ runner.temp }}/datasource-review/
+          retention-days: 90
+          if-no-files-found: error

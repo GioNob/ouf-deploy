@@ -1,0 +1,90 @@
+{
+  "schema": "ouf.ingestion-native-input-capture-qualification.v1",
+  "observedAt": "2026-10-20T16:29:44.449Z",
+  "sourceCommit": "10a9552ec7c1608f1de4d102a9644d11fc7f17d6",
+  "pullRequest": 45,
+  "run": 39457653516,
+  "jobs": [
+    {
+      "id": 118748614621,
+      "python": "3.12",
+      "tests": 10,
+      "skips": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 118748614090,
+      "python": "3.13.5",
+      "tests": 10,
+      "skips": 0,
+      "conclusion": "success"
+    }
+  ],
+  "humanRegressionRun": 39457653444,
+  "humanRegressionJobs": [
+    118748614711,
+    118748614357
+  ],
+  "humanRegressionTestsEachPython": 49,
+  "checks": [
+    "actual Unix socket HTTP GETs",
+    "six retained container IDs, five apps plus PostgreSQL",
+    "full original selection and root custody",
+    "twelve reserved reads, no reinitialization after failed read",
+    "private Env snapshots never in public output",
+    "second-pass restart/generation and namespace checks",
+    "source-closed isolated subprocess, tamper rejection, reproducible bytes",
+    "actual PID-owned TCP listener metadata"
+  ],
+  "artifact": {
+    "path": "scripts/capture-ingestion-native-inputs-20261020.py",
+    "bytes": 34954,
+    "sha256": "4692fb34714872a83d3095eb40882c4c7ce399ce3859def46c423927a038ff2c",
+    "blob": "c1c1aeda9c3535b1460fd7e8819ba32232e25089"
+  },
+  "launcher": {
+    "path": "scripts/launch-ingestion-native-inputs-20261020.sh",
+    "sha256": "e56b254da0104d38695ef6896b2404f71b39007da8ef687a937749da54e13cb1"
+  },
+  "targetExecuted": false,
+  "targetAuthorityIssued": false,
+  "databaseAdmissionProven": false,
+  "nativeProfilesCompiled": false,
+  "notReleaseAcceptance": true,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "targetPriorAttemptsByLastReceipt": 278,
+  "maximumCumulativeOAuthAttempts": 288,
+  "newHumanWindowOpened": false,
+  "completedCustodyReadReplayed": false,
+  "completedOwnerActionReplayed": false,
+  "completedPublicationReplayed": false,
+  "completedDbPreflightReplayed": false,
+  "localQualificationLimit": "Sandbox denies socket creation: ten local cases skipped, not a local PASS claim; root Linux CI ran all ten each version.",
+  "baselineConsulted": [
+    {
+      "document": "Cross-Module Alignment Matrix",
+      "version": "1.7",
+      "sections": [
+        "1"
+      ]
+    },
+    {
+      "document": "System Integration Development Blueprint",
+      "version": "0.3",
+      "sections": [
+        "9",
+        "10"
+      ]
+    },
+    {
+      "document": "EF Ingestion Runtime PET",
+      "version": "1.3",
+      "sections": [
+        "146",
+        "146.1"
+      ]
+    }
+  ],
+  "toolsNote": "Available connector registry does not expose a qualified ouf-admin VPS execution channel. No inferred runtime-tool verification or credential/login probe."
+}

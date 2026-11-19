@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -30,7 +31,27 @@ from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.plan import digest, encoded, require
 
 PROFILE = 'ouf.chatbot-file-authorization.v1'
+REVISION_PROFILE = 'ouf.source-property-revision-authorization.v1'
+INGESTION_READ_PROFILE = 'ouf.ingestion-operational-read-authorization.v1'
+DISCOVERY_PROFILE = 'ouf.semantic-discovery-authorization.v1'
+DISCOVERY_SCOPE = 'ouf.semantic.discovery'
+DISCOVERY = {
+    'ouf.semantic.discovery': ('semantic', 'COMMAND', None),
+    'ouf.semantic.discovery.status': ('semantic', 'READ', None),
+    'ouf.semantic.discovery.candidates': ('semantic', 'READ', None),
+}
+DISCOVERY_CATALOGUE = 'catalogue/m2-semantic-discovery-capabilities.json'
+
+
+def catalogue_path(profile):
+    return DISCOVERY_CATALOGUE if profile == DISCOVERY_PROFILE else 'catalogue/chatbot-source-review-capabilities.json'
+
+INGESTION_READ = {'ingestion.operations.read': ('ingestion', 'READ', 'operational')}
 RETRY = {'maximumAttempts':128,'maximumElapsedSeconds':86400,'backoffSeconds':[5,15,60,300,900],'maximumJitterPercent':20}
+OBSERVATION_POLICY={'profile':'ouf.authorization-finite-observation.v1','maximumAttempts':128,
+    'maximumElapsedSeconds':3600,'backoffSeconds':[5,15,60,300,900],'maximumJitterPercent':20,
+    'respectRetryAfter':True,'readOnlyOnly':True,'crashRequiresReconciliation':True,
+    'automaticBudgetRenewalAllowed':False,'reason':'WITHIN_ONE_REVIEWED_FINITE_HUMAN_ACTION'}
 ADMIN = '/api/trusted-human/v1/authorization'
 NEW = {
     'ouf.managed-source.onboarding.review.prepare': ('onboarding', 'COMMAND', 'source'),
@@ -45,6 +66,28 @@ BROWSER = ['ouf.managed-source.file.upload','ouf.onboarding.configuration.write'
            'resolution.issue.read','resolution.match.approve']
 
 
+REVISION = {
+    'ouf.onboarding.revision.read': ('onboarding', 'READ', 'source'),
+    'ouf.onboarding.revision.prepare': ('onboarding', 'COMMAND', 'source'),
+}
+
+
+def profile_definition(profile):
+    """Fixed owner contracts, never caller-selected capability semantics."""
+    if profile == DISCOVERY_PROFILE:
+        return {'new':copy.deepcopy(DISCOVERY),'catalogue':copy.deepcopy(DISCOVERY),
+                'chat':[DISCOVERY_SCOPE],'browser':[]}
+    if profile == INGESTION_READ_PROFILE:
+        return {'new':copy.deepcopy(INGESTION_READ),'catalogue':copy.deepcopy(INGESTION_READ),
+                'chat':list(INGESTION_READ),'browser':[]}
+    if profile == PROFILE:
+        return {'new':copy.deepcopy(NEW),'catalogue':copy.deepcopy(NEW),
+                'chat':list(CHAT),'browser':list(BROWSER)}
+    require(profile == REVISION_PROFILE, 'EXACT_AUTHORIZATION_PROFILE_REQUIRED')
+    return {'new':copy.deepcopy(REVISION),'catalogue':{**NEW,**REVISION},
+            'chat':list(REVISION),'browser':['ouf.onboarding.configuration.write']}
+
+
 class AuthorizationPaused(RuntimeError):
     def __init__(self, reason, **detail):
         self.reason, self.detail = reason, detail
@@ -53,10 +96,12 @@ class AuthorizationPaused(RuntimeError):
 
 class OwnerPrimitives:
     """Reuse the qualified Onboarding helpers; source bindings join the plan."""
-    def __init__(self, directory, bindings):
+    def __init__(self, directory, bindings, *, profile=PROFILE):
+        self.profile = profile
+        profile_definition(profile)
         self.root, self.bindings = Path(directory), copy.deepcopy(bindings)
         required = {'scripts/r4a_authorization_lifecycle.py', 'scripts/r4a_keycloak_client_scope_catalogue.py',
-                    'catalogue/chatbot-source-review-capabilities.json'}
+                    catalogue_path(profile)}
         require(set(bindings) == required, 'EXACT_EXISTING_OWNER_HELPER_BINDINGS_REQUIRED')
         self.modules = {}
         for name in sorted(bindings):
@@ -70,36 +115,43 @@ class OwnerPrimitives:
                 exec(compile(raw, name, 'exec'), module.__dict__)
                 self.modules[Path(name).stem] = module
             else:
-                self.descriptors = json.loads(raw)
+                self.catalogue = json.loads(raw)
         self.lifecycle = self.modules['r4a_authorization_lifecycle']
         self.scopes = self.modules['r4a_keycloak_client_scope_catalogue']
         self.validate_descriptors()
 
     @classmethod
-    def from_qualified_modules(cls, lifecycle, scopes, catalogue, bindings):
+    def from_qualified_modules(cls, lifecycle, scopes, catalogue, bindings, *, profile=PROFILE):
         expected = {'scripts/r4a_authorization_lifecycle.py','scripts/r4a_keycloak_client_scope_catalogue.py',
-                    'catalogue/chatbot-source-review-capabilities.json'}
+                    catalogue_path(profile)}
         require(set(bindings) == expected and type(catalogue) is bytes
-                and hashlib.sha256(catalogue).hexdigest() == bindings['catalogue/chatbot-source-review-capabilities.json'],
+                and hashlib.sha256(catalogue).hexdigest() == bindings[catalogue_path(profile)],
                 'EXACT_MEMORY_LOADED_OWNER_BINDINGS_REQUIRED')
         for module, name, path in ((lifecycle,'qualified_owner_authorization_lifecycle','scripts/r4a_authorization_lifecycle.py'),
                                    (scopes,'qualified_owner_scope_catalogue','scripts/r4a_keycloak_client_scope_catalogue.py')):
             require(type(module) is types.ModuleType and module.__name__ == name
                     and getattr(module,'__qualified_source_sha256__',None) == bindings[path],
                     'QUALIFIED_OWNER_MODULE_CLOSURE_MISMATCH')
+        profile_definition(profile)
         result = cls.__new__(cls)
+        result.profile = profile
         result.bindings = copy.deepcopy(bindings)
-        result.lifecycle,result.scopes,result.descriptors = lifecycle,scopes,json.loads(catalogue)
+        result.lifecycle,result.scopes,result.catalogue = lifecycle,scopes,json.loads(catalogue)
         result.validate_descriptors()
         return result
 
     def validate_descriptors(self):
-        require(len(self.descriptors) == len(NEW) and {r['descriptor']['capabilityId'] for r in self.descriptors} == set(NEW),
-                'EXACT_THREE_CHATBOT_DESCRIPTORS_REQUIRED')
-        for row in self.descriptors:
-            cap = row['descriptor']['capabilityId']; owner, operation, _ = NEW[cap]
+        definition = profile_definition(self.profile)
+        catalogue = definition['catalogue']
+        require(type(self.catalogue) is list and len(self.catalogue) == len(catalogue)
+                and {r['descriptor']['capabilityId'] for r in self.catalogue} == set(catalogue),
+                'EXACT_PROFILE_CAPABILITY_CATALOGUE_REQUIRED')
+        for row in self.catalogue:
+            cap = row['descriptor']['capabilityId']; owner, operation, _ = catalogue[cap]
             require(row == {'ownerRef': owner, 'descriptor': {'capabilityId':cap,'operation':operation,
-                    'requiredScope':cap,'allowedActors':['HUMAN']}}, 'OWNER_DESCRIPTOR_SEMANTICS_CHANGED')
+                    'requiredScope':DISCOVERY_SCOPE if self.profile == DISCOVERY_PROFILE else cap,'allowedActors':['HUMAN']}}, 'OWNER_DESCRIPTOR_SEMANTICS_CHANGED')
+        self.descriptors = [copy.deepcopy(r) for r in self.catalogue
+                            if r['descriptor']['capabilityId'] in definition['new']]
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -139,6 +191,7 @@ class OwnerTransport:
         require(wait is None or callable(wait), 'AUTHORIZATION_WAIT_FUNCTION_REQUIRED')
         self.wait = time.sleep if wait is None else wait
         self._last_mcp_at, self._role_cache = None, None
+        self._retained_roles_boundary = False
 
     def token(self, kind):
         if self.human_session is not None:
@@ -214,7 +267,8 @@ class OwnerTransport:
             try:
                 delay = float(retry) if retry.isdigit() else max(0,parsedate_to_datetime(retry).timestamp()-time.time())
             except (ValueError,TypeError,OverflowError): pass
-            raise AuthorizationPaused('AUTHORIZATION_HTTP_'+str(e.code),retryAfterSeconds=delay) from None
+            raise AuthorizationPaused('AUTHORIZATION_HTTP_'+str(e.code),retryAfterSeconds=delay,
+                retryAfterInvalid=bool(retry and delay is None)) from None
         except (urllib.error.URLError, TimeoutError, OSError):
             raise AuthorizationPaused('AUTHORIZATION_TRANSPORT_OUTCOME_UNPROVEN') from None
 
@@ -277,6 +331,7 @@ class OwnerTransport:
         current = self.active() if active is None else active
         if self._role_cache is not None and self._role_cache[0] == current:
             return copy.deepcopy(self._role_cache[1])
+        require(not self._retained_roles_boundary,'RETAINED_ROLE_POLICY_CHANGED_REQUIRE_RECONCILIATION')
         roles = self.tool('authorization.permissions.read',{'view':'ROLES'},'cohort:roles:read')
         require(self.active() == current, 'ROLE_POLICY_CHANGED_DURING_READ')
         self._role_cache = (copy.deepcopy(current),copy.deepcopy(roles))
@@ -330,8 +385,33 @@ class OwnerTransport:
         return {'active':active,'roles':roles,'registrations':registrations,'oauth':oauth}
 
 
-def compile_plan(observed, primitives, selection, *, role_id='admin', include_ingestion_status=True, now=None, session_binding=None):
+def owner_permission_constraints(resource, attributes, detail_levels=None):
+    """Exact GrantConstraints JSON emitted by the qualified Java owner.
+
+    Complete newly proposed permissions before signing. Historical catalogue
+    entries and strict catalogue equality remain unchanged.
+    """
+    return {'effect':'ALLOW','externalRoleRef':None,'resourceType':resource,'resourceId':None,
+        'resourceAttributes':copy.deepcopy(attributes),'allowedDataLabels':[],
+        'allowedDetailLevels':list(detail_levels or []),'requiredAcr':None,
+        'requiredAmr':[],'maxAuthenticationAgeSeconds':None}
+
+
+def compile_plan(observed, primitives, selection, *, role_id='admin', include_ingestion_status=True, now=None, session_binding=None, source_id=None):
     require(type(primitives) is OwnerPrimitives, 'QUALIFIED_EXISTING_OWNER_PRIMITIVES_REQUIRED')
+    primitives.validate_descriptors()
+    definition = profile_definition(primitives.profile)
+    new = definition['new']
+    require(primitives.profile != REVISION_PROFILE or include_ingestion_status is False,
+            'REVISION_PROFILE_EXCLUDES_UNRELATED_STATUS_DELTA')
+    require(primitives.profile != DISCOVERY_PROFILE or include_ingestion_status is False,
+            'DISCOVERY_PROFILE_EXCLUDES_UNRELATED_STATUS_DELTA')
+    if primitives.profile == INGESTION_READ_PROFILE:
+        require(include_ingestion_status is False and type(source_id) is str
+                and re.fullmatch('[A-Za-z0-9_.:-]{1,160}', source_id),
+                'EXPLICIT_INGESTION_SOURCE_SCOPE_REQUIRED')
+    else:
+        require(source_id is None, 'UNREVIEWED_SOURCE_SCOPE_PARAMETER')
     active, roles = observed['active'], observed['roles']
     require(set(roles) == {'issuer','roles','assignments'} and roles['issuer'] == selection['issuer'],
             'COMPLETE_CURRENT_ROLE_CATALOGUE_REQUIRED')
@@ -348,16 +428,20 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
         else: require(retained == row, 'EXISTING_DESCRIPTOR_REGISTRATION_CONFLICT')
     caps = {c['capabilityId']:c for c in active['policy']['capabilities']}
     additions = []
-    for cap, (_, _, resource) in NEW.items():
-        additions.append({'capabilityId':cap,'constraints':{'effect':'ALLOW','resourceType':resource,
-            'resourceAttributes':{'module':'SEMANTIC'} if resource == 'semantic.proposalcommand' else {}}})
+    for cap, (_, _, resource) in new.items():
+        if primitives.profile == INGESTION_READ_PROFILE:
+            continue  # Registration/scope only. A finite human grant is a later THS proposal.
+        attributes = ({'module':'INGESTION','sourceRef':source_id} if primitives.profile == INGESTION_READ_PROFILE
+                      else {'module':'SEMANTIC'} if resource == 'semantic.proposalcommand' else {})
+        additions.append({'capabilityId':cap,'constraints':owner_permission_constraints(resource,
+            attributes, ['TENANT_OPERATIONAL'] if primitives.profile == INGESTION_READ_PROFILE else [])})
     if include_ingestion_status:
         cap = 'ingestion.operations.read'; registered = observed['registrations'].get(cap)
         require(registered is not None and registered['descriptor'] == caps.get(cap)
                 and caps[cap]['operation'] == 'READ' and caps[cap]['requiredScope'] == cap
                 and 'HUMAN' in caps[cap]['allowedActors'], 'EXISTING_INGESTION_STATUS_DESCRIPTOR_UNPROVEN')
-        additions.append({'capabilityId':cap,'constraints':{'effect':'ALLOW','resourceType':'operational',
-            'resourceAttributes':{'module':'INGESTION'},'allowedDetailLevels':['TENANT_OPERATIONAL']}})
+        additions.append({'capabilityId':cap,'constraints':owner_permission_constraints('operational',
+            {'module':'INGESTION'},['TENANT_OPERATIONAL'])})
     target_roles = copy.deepcopy(roles)
     target = next(r for r in target_roles['roles'] if r['roleId'] == role_id)
     existing = {p['capabilityId']:p for p in target['permissions']}
@@ -373,7 +457,8 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
     require(len(encoded(target_roles)) <= 45000, 'OWNER_ROLE_PROPOSAL_SIZE_LIMIT')
     candidate, missing = primitives.lifecycle.build_candidate(active,desired,now=now)
     scope_creations = {}; scope_bindings = []
-    required = {'chatgpt':CHAT+(['ingestion.operations.read'] if include_ingestion_status else []),'ths':BROWSER}
+    required = {'chatgpt':definition['chat']+(['ingestion.operations.read'] if include_ingestion_status else []),
+                'ths':definition['browser']}
     for purpose, names in required.items():
         client = observed['oauth']['clients'][purpose]
         require(client['clientId'] == selection['clients'][purpose]['clientId'], 'OAUTH_CLIENT_SELECTION_DRIFT')
@@ -381,13 +466,13 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
         for name in names:
             scope = observed['oauth']['scopes'].get(name)
             if scope is None:
-                require(name in NEW or name == 'ingestion.operations.read', 'PREEXISTING_REQUIRED_OAUTH_SCOPE_MISSING:'+name)
+                require(name in new or name == 'ingestion.operations.read', 'PREEXISTING_REQUIRED_OAUTH_SCOPE_MISSING:'+name)
                 scope_creations[name] = primitives.scopes.desired(name)
             else:
                 require(scope.get('protocol') == 'openid-connect'
                         and str((scope.get('attributes') or {}).get('include.in.token.scope')).lower() == 'true',
                         'EXISTING_OAUTH_SCOPE_CONTRACT_DRIFT:'+name)
-                if name in NEW:
+                if name in new:
                     require(not scope.get('protocolMappers'), 'NEW_AUTHORIZATION_SCOPE_MAPPER_REQUIRES_REVIEW')
             if name in defaults: continue
             if name in optional and name in client['requestedScopes']:
@@ -395,15 +480,26 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
             binding={'purpose':purpose,'clientId':client['id'],'scopeName':name,'kind':'default'}
             if name in optional: binding['previousKind']='optional'
             scope_bindings.append(binding)
-    plan = {'schema':'ouf.chatbot-file-authorization-plan.v1','profile':PROFILE,'selection':copy.deepcopy(selection),
+    plan = {'schema':'ouf.chatbot-file-authorization-plan.v1','profile':primitives.profile,'selection':copy.deepcopy(selection),
             'helperBindings':copy.deepcopy(primitives.bindings),'baseline':copy.deepcopy(observed),
             'registrationAdditions':missing_registration,'candidatePolicy':candidate,'addedDescriptors':missing,
             'targetRoles':target_roles,'addedPermissions':new_permissions,'roleId':role_id,
             'scopeCreations':scope_creations,'scopeBindings':scope_bindings,'requiredScopes':required,
-            'roleProposal':{'operation':'REPLACE_ROLES','reason':'Complete the reviewed CSV chatbot workflow and its bounded status reads.',
+            'roleProposal':{'operation':'REPLACE_ROLES','reason':('Enable only caller-owned semantic discovery request/status/candidates with one discovery OAuth scope; adoption, approval and publication remain separate owner/HUMAN operations.'
+                                      if primitives.profile == DISCOVERY_PROFILE else
+                                      'Enable generic same-source property revision preparation/read; activation remains a separate native HUMAN review.'
+                                      if primitives.profile == REVISION_PROFILE else
+                                      'Enable only source-scoped ingestion operational READ; no run, replay, activation or protected logs.'
+                                      if primitives.profile == INGESTION_READ_PROFILE else
+                                      'Complete the reviewed CSV chatbot workflow and its bounded status reads.'),
                             'roleCatalogue':target_roles} if new_permissions else None,
             'preserveExistingGrants':True,'preserveRoleAssignments':True,'revokeSessions':False,
             'issueTokens':False,'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
+    if primitives.profile == INGESTION_READ_PROFILE:
+        plan['readScope'] = {'capabilityId':'ingestion.operations.read',
+            'constraints':owner_permission_constraints('operational',
+                {'module':'INGESTION','sourceRef':source_id},['TENANT_OPERATIONAL']),
+            'grantPublicationAllowed':False,'separateFiniteGrantReviewRequired':True}
     if session_binding is not None:
         validate_session_binding(session_binding, selection)
         plan['sessionBinding'] = copy.deepcopy(session_binding)
@@ -433,7 +529,8 @@ def validate_session_binding(binding, selection):
 
 
 def authorization_scope(plan):
-    scope = {'profile':PROFILE,'planHash':digest(plan),'basePolicyRef':plan['baseline']['active']['policyRef'],
+    profile_definition(plan.get('profile'))
+    scope = {'profile':plan['profile'],'planHash':digest(plan),'basePolicyRef':plan['baseline']['active']['policyRef'],
             'basePolicyHash':plan['baseline']['active']['contentHash'],
             'descriptorDeltaHash':digest({'registrations':plan['registrationAdditions'],'descriptors':plan['addedDescriptors']}),
             'roleDeltaHash':digest(plan['roleProposal']),
@@ -443,6 +540,22 @@ def authorization_scope(plan):
     if plan.get('sessionBinding') is not None:
         validate_session_binding(plan['sessionBinding'], plan['selection'])
         scope['sessionBinding'] = copy.deepcopy(plan['sessionBinding'])
+    if 'observationPolicy' in plan:
+        require(plan['observationPolicy']==OBSERVATION_POLICY,'EXACT_AUTHORIZATION_OBSERVATION_POLICY_REQUIRED')
+        scope['readObservationPolicy']=copy.deepcopy(OBSERVATION_POLICY)
+    if 'retainedRoleObservation' in plan:
+        binding=plan['retainedRoleObservation']
+        require(type(binding)is dict and set(binding)=={'profile','ownerReceiptHash','policyRef','policyHash',
+            'roleCatalogueHash','allowedStage','forceFreshMcpBeforeRelease','ownerPublicationContract'}
+            and binding['profile']=='ouf.authorization-retained-role-observation.v1'
+            and binding['allowedStage']=='AFTER_GATEWAY' and binding['forceFreshMcpBeforeRelease']is True
+            and binding['ownerPublicationContract']=='LOCKED_ATOMIC_ROLE_AND_POLICY_PUBLICATION'
+            and all(type(binding[k])is str and re.fullmatch('[0-9a-f]{64}',binding[k])for k in
+                ('ownerReceiptHash','policyHash','roleCatalogueHash'))
+            and type(binding['policyRef'])is str and 0<len(binding['policyRef'])<=256
+            and binding['roleCatalogueHash']==digest(plan['targetRoles']),
+            'EXACT_RETAINED_OWNER_ROLE_OBSERVATION_REQUIRED')
+        scope['retainedRoleObservation']=copy.deepcopy(binding)
     return scope
 
 
@@ -452,12 +565,40 @@ class AuthorizationDelta:
                 and type(primitives) is OwnerPrimitives, 'REAL_AGGREGATE_AUTHORIZATION_COMPONENTS_REQUIRED')
         self.action,self.plan,self.journal,self.transport,self.primitives = action,copy.deepcopy(plan),journal,transport,primitives
         require(plan.get('schema') == 'ouf.chatbot-file-authorization-plan.v1' and plan['selection'] == transport.selection
-                and plan['helperBindings'] == primitives.bindings, 'EXACT_AUTHORIZATION_PLAN_SELECTION_REQUIRED')
+                and plan['helperBindings'] == primitives.bindings and plan.get('profile') == primitives.profile, 'EXACT_AUTHORIZATION_PLAN_SELECTION_REQUIRED')
         self.hash,self.scope = digest(plan),authorization_scope(plan)
 
     def guard(self):
         require(digest(self.plan) == self.hash and authorization_scope(self.plan) == self.scope, 'AUTHORIZATION_PLAN_DRIFT')
         self.action.guard('chatbotFileAuthorization',self.scope)
+        if 'retainedRoleObservation' in self.plan:
+            scope=json.loads(self.action.raw).get('applicationRegistryCutover',{})
+            proof=scope.get('postGrantRecovery',{})
+            require(proof.get('profile')=='ouf.chatbot-gateway-schema-continuation.v1'
+                and proof.get('retainedNumericGateway',{}).get('authorizationReceiptHash')
+                    ==self.plan['retainedRoleObservation']['ownerReceiptHash'],
+                'RETAINED_ROLE_OBSERVATION_REQUIRES_PINNED_RECOVERY_RECEIPT')
+            self.action.guard('applicationRegistryCutover',scope)
+
+    def verify_read_observation(self,stage):
+        """Persisted equivalent of the in-process role cache during quiescence.
+
+        The owner changes roles and ACTIVE policy atomically. The previously
+        observed role hash is reusable only while fresh owner policy identity
+        remains exact. Final release always forces the real MCP read again.
+        """
+        self.guard()
+        binding=self.plan.get('retainedRoleObservation') if stage=='AFTER_GATEWAY' else None
+        if binding is None:
+            if stage=='FINAL_COHORT':self.transport._role_cache=None
+            return self.verify()
+        active=self.transport.active()
+        require(active.get('policyRef')==binding['policyRef'] and active.get('contentHash')==binding['policyHash'],
+            'RETAINED_ROLE_OWNER_POLICY_CHANGED')
+        self.transport._role_cache=(copy.deepcopy(active),copy.deepcopy(self.plan['targetRoles']))
+        self.transport._retained_roles_boundary=True
+        try:return self.verify()
+        finally:self.transport._retained_roles_boundary=False
 
     def initialize(self):
         self.guard()
@@ -480,6 +621,96 @@ class AuthorizationDelta:
         before = self.record(); following = copy.deepcopy(before)
         following['effects'][name] = value; following['version'] += 1
         self.journal.compare_and_save(before,following)
+
+    def verify_resilient(self, stage, *, clock=time.time,monotonic=time.monotonic,boot=None):
+        """Only verify() reads; reserve a durable attempt before each observation.
+
+        This method never invokes apply/effect, refreshes a grant, or replays a
+        mutation. An interrupted in-flight read needs explicit reconciliation.
+        """
+        self.guard()
+        require(self.plan.get('observationPolicy')==OBSERVATION_POLICY
+            and stage in ('AFTER_GATEWAY','FINAL_COHORT'),'SIGNED_AUTHORIZATION_READ_OBSERVATION_REQUIRED')
+        boot=boot or Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        now,mono=clock(),monotonic()
+        mode='RETAINED_ROLES_CURRENT_OWNER_POLICY' if stage=='AFTER_GATEWAY' and 'retainedRoleObservation' in self.plan else 'FRESH_MCP_ROLE_READ'
+        with self.journal.invocation():
+            row=self.record();budget=copy.deepcopy(row.get('observations',{}).get(stage))
+            if budget is None:
+                expires=min(now+3600,json.loads(self.action.raw)['expiresAt'])
+                require(expires>now,'AUTHORIZATION_OBSERVATION_AUTHORITY_EXPIRED')
+                budget={'policy':copy.deepcopy(OBSERVATION_POLICY),'planHash':self.hash,'stage':stage,
+                    'bootId':boot,'startedAt':now,'lastObservedAt':now,'lastMonotonic':mono,
+                    'expiresAt':expires,'expiresMonotonic':mono+expires-now,'attempts':0,
+                    'nextAttemptAt':now,'nextAttemptMonotonic':mono,'state':'READY',
+                    'historicalObservationAttempts':None,'incidentState':'OPEN','budgetReset':False,'roleObservationMode':mode}
+            require(budget['policy']==OBSERVATION_POLICY and budget['planHash']==self.hash
+                and budget['stage']==stage and budget['bootId']==boot and budget['budgetReset']is False
+                and budget.get('roleObservationMode')==mode
+                and type(budget['attempts'])is int and 0<=budget['attempts']<=128
+                and now+2>=budget['lastObservedAt'] and mono>=budget['lastMonotonic'],
+                'AUTHORIZATION_OBSERVATION_HISTORY_OR_CLOCK_DRIFT')
+            def save(state,**updates):
+                self.guard();before=self.record();following=copy.deepcopy(before)
+                require(clock()+2>=budget['lastObservedAt'] and monotonic()>=budget['lastMonotonic'],
+                    'AUTHORIZATION_OBSERVATION_CLOCK_DRIFT')
+                budget.update(updates,state=state,lastObservedAt=clock(),lastMonotonic=monotonic())
+                following.setdefault('observations',{})[stage]=copy.deepcopy(budget)
+                following['version']+=1;self.journal.compare_and_save(before,following)
+            def exhausted():
+                return clock()>=budget['expiresAt'] or monotonic()>=budget['expiresMonotonic']
+            require(budget['state']!='ATTEMPTING','AUTHORIZATION_OBSERVATION_IN_FLIGHT_RECONCILIATION_REQUIRED')
+            require(budget['state'] in ('READY','RETRY_WAIT','COMPLETE'),'AUTHORIZATION_OBSERVATION_TERMINAL_NO_REPLAY')
+            if exhausted() or budget['attempts']>=128:
+                save('PAUSED_EXHAUSTED');raise AuthorizationPaused('AUTHORIZATION_OBSERVATION_BUDGET_EXHAUSTED')
+            if now<budget['nextAttemptAt'] or mono<budget['nextAttemptMonotonic']:
+                raise AuthorizationPaused('AUTHORIZATION_READ_RETRY_NOT_DUE',observation=stage,
+                    nextAttemptAt=budget['nextAttemptAt'])
+            save('ATTEMPTING',attempts=budget['attempts']+1)
+            try:result=self.verify_read_observation(stage)
+            except AuthorizationPaused as error:
+                self.guard()
+                transient=error.reason in ('AUTHORIZATION_HTTP_408','AUTHORIZATION_HTTP_429',
+                    'AUTHORIZATION_HTTP_502','AUTHORIZATION_HTTP_503','AUTHORIZATION_HTTP_504',
+                    'AUTHORIZATION_TRANSPORT_OUTCOME_UNPROVEN')
+                if not transient:
+                    save('BLOCKED',failureReason=error.reason);raise
+                minimum=error.detail.get('retryAfterSeconds')
+                if minimum is None:minimum=0
+                if error.detail.get('retryAfterInvalid') or type(minimum)not in(int,float) or not math.isfinite(minimum) or minimum<0:
+                    save('BLOCKED',failureReason='INVALID_RETRY_AFTER')
+                    raise AuthorizationPaused('AUTHORIZATION_READ_INVALID_RETRY_AFTER') from None
+                base=OBSERVATION_POLICY['backoffSeconds'][min(budget['attempts']-1,4)]
+                jitter=int(digest({'planHash':self.hash,'stage':stage,'attempt':budget['attempts']})[:8],16)/0xffffffff
+                delay=max(minimum,base*(1+.2*jitter));now,mono=clock(),monotonic()
+                if exhausted() or budget['attempts']>=128 or delay>=min(budget['expiresAt']-now,budget['expiresMonotonic']-mono):
+                    save('PAUSED_EXHAUSTED',failureReason=error.reason)
+                    raise AuthorizationPaused('AUTHORIZATION_OBSERVATION_BUDGET_EXHAUSTED') from None
+                save('RETRY_WAIT',failureReason=error.reason,nextAttemptAt=now+delay,nextAttemptMonotonic=mono+delay)
+                raise AuthorizationPaused(error.reason,observation=stage,nextAttemptAt=budget['nextAttemptAt']) from None
+            except BaseException:
+                # Preserve ATTEMPTING: unknown outcomes never gain automatic retry.
+                raise
+            self.guard()
+            if exhausted():
+                save('PAUSED_EXHAUSTED');raise AuthorizationPaused('AUTHORIZATION_OBSERVATION_BUDGET_EXHAUSTED')
+            save('COMPLETE',evidenceHash=digest(result),incidentState='RESOLVED',
+                nextAttemptAt=clock(),nextAttemptMonotonic=monotonic())
+            return result
+
+    def observation_retry_status(self,error):
+        self.guard()
+        if type(error)is not AuthorizationPaused:return None
+        stage=error.detail.get('observation')
+        if stage not in ('AFTER_GATEWAY','FINAL_COHORT'):return None
+        budget=self.record().get('observations',{}).get(stage)
+        if (type(budget)is not dict or budget.get('state')!='RETRY_WAIT'
+            or budget.get('policy')!=OBSERVATION_POLICY or budget.get('planHash')!=self.hash
+            or error.detail.get('nextAttemptAt')!=budget.get('nextAttemptAt')):return None
+        return {'observation':stage,'failureReason':budget['failureReason'],
+            'roleObservationMode':budget['roleObservationMode'],
+            'nextAttemptAt':budget['nextAttemptAt'],'attempts':budget['attempts'],
+            'remainingAttempts':128-budget['attempts'],'deadline':budget['expiresAt'],'budgetReset':False}
 
     def retry_status(self, error):
         """Read the exact retained retry claim; never grant retry from error text alone."""
@@ -664,6 +895,9 @@ class AuthorizationDelta:
                     return self.transport.tool('authorization.permissions.propose',self.plan['roleProposal'],key)
                 receipt = self.effect('role-proposal',propose_roles,
                                       read_proposal,retry_idempotent=True)
+                if receipt['state'] in ('EXPIRED','REJECTED'):
+                    raise AuthorizationPaused('HUMAN_OWNER_ROLE_PROPOSAL_'+receipt['state'],
+                        proposalId=receipt['proposalId'],expiresAt=receipt['expiresAt'],state=receipt['state'])
                 if receipt['state'] != 'PUBLISHED':
                     raise AuthorizationPaused('HUMAN_OWNER_ROLE_CONFIRMATION_REQUIRED',proposalId=receipt['proposalId'],
                         approvalPath=receipt['approvalPath'],expiresAt=receipt['expiresAt'],state=receipt['state'])
@@ -686,7 +920,7 @@ class AuthorizationDelta:
         version = baseline['active']['policy']['version'] + bool(self.plan['addedDescriptors']) + bool(self.plan['roleProposal'])
         require(current['active']['policy']['version'] == version and current['active']['policy']['bundleId'] == baseline['active']['policy']['bundleId'],
                 'EXACT_AUTHORIZATION_PUBLICATION_LINEAGE_REQUIRED')
-        for cap in NEW:
+        for cap in profile_definition(self.plan['profile'])['new']:
             require(current['registrations'].get(cap) == next(r for r in self.primitives.descriptors if r['descriptor']['capabilityId'] == cap),
                     'REGISTERED_DESCRIPTOR_DRIFT')
         for purpose,names in self.plan['requiredScopes'].items():

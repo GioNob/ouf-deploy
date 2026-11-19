@@ -1,0 +1,53 @@
+{
+  "schema": "ouf.csv-stage3-post-ths-evidence.v1",
+  "evidenceSource": "User-pasted output of qualified read-only reader v3",
+  "logPath": "/home/oufadmin/ouf-csv-stage3-read.KsMUTYp4/read.log",
+  "recordedDate": "2026-10-18",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "functionalStage3Proven": false,
+  "upstreamHandoffsAndLineageMatch": true,
+  "committedRows": 12,
+  "distinctCommittedObjects": 12,
+  "expectedRows": 13,
+  "confirmedElevenMaterialized": true,
+  "sourceJobs": [
+    {
+      "state": "SUCCEEDED",
+      "count": 12
+    },
+    {
+      "state": "QUARANTINED",
+      "count": 1,
+      "safeFailureCode": "UDP_REFERENCE_INTEGRITY_MISSING"
+    }
+  ],
+  "remainingRow": {
+    "handoffId": "9fde61f1-8d3c-4de7-b3fe-b534b32e45e3",
+    "lineageId": "419ec184-7116-4ce8-b57c-6106938c65fb",
+    "issueId": "e16fec6e-311d-49f3-b1de-f274cb5a92d1",
+    "action": "CREATE_NEW",
+    "issueState": "RESOLVED",
+    "intakeState": "DURABLE",
+    "jobState": "QUARANTINED",
+    "safeFailureCode": "UDP_REFERENCE_INTEGRITY_MISSING",
+    "bindingCount": 0,
+    "contributionCount": 0,
+    "verifiedObservations": 0,
+    "urbanObjectId": null
+  },
+  "rollout": {
+    "contextPath": "/etc/ouf/deploy-snapshots/linked-property-execution-cjecd1en",
+    "journalVersion": 55,
+    "udpMigrationVersion": 35,
+    "checksum": -376865285
+  },
+  "classificationNote": "Reader v3 counts only the historical intentional identity-review quarantine as quarantinedRows. This technical quarantine is reported as unprovenRows=1; it is not a missing source row.",
+  "readOnly": true,
+  "jobsRetried": 0,
+  "profilePublications": 0,
+  "databaseMutations": 0,
+  "identityDecisionsPerformed": false,
+  "rootCauseProven": false,
+  "nextStep": "Identify failed historical reference and qualify existing governed recovery for this one job; do not repeat HUMAN identity decision."
+}

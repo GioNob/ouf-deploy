@@ -33,7 +33,7 @@ MAX_NAMESPACE_INPUT = 655360
 # Literal source is included in the sealed runtime module. No target path or
 # downloaded Python module is executed by this child. Only the selected network
 # namespace FD is inherited; the private credential crosses stdin, never argv.
-NAMESPACE_CHILD_SOURCE = r'''import http.client,json,os,re,signal,sys
+NAMESPACE_CHILD_SOURCE = r'''import hashlib,http.client,json,os,re,signal,sys
 signal.alarm(12)
 try:
     raw=sys.stdin.buffer.read(655361)
@@ -53,7 +53,13 @@ try:
     client.request(method,path,body=payload,headers={'X-API-KEY':key,'Content-Type':'application/json','Accept':'application/json','Connection':'close'})
     response=client.getresponse();payload=response.read(8388609)
     if len(payload)>8388608:raise ValueError()
-    result=json.dumps({'status':response.status,'body':json.loads(payload) if payload else {}},sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+    retry=response.getheader('Retry-After','')
+    if len(retry)>128 or any(ord(c)<32 or ord(c)>126 for c in retry):raise ValueError()
+    try:parsed=json.loads(payload) if payload else {}
+    except ValueError:
+        if method!='GET' or response.status not in (429,502,503,504):raise
+        parsed={'unparsedBodySha256':hashlib.sha256(payload).hexdigest(),'bodyBytes':len(payload)}
+    result=json.dumps({'status':response.status,'body':parsed,'retryAfter':retry},sort_keys=True,separators=(',',':'),allow_nan=False).encode()
     if len(result)>8454144:raise ValueError()
     sys.stdout.buffer.write(result);sys.stdout.buffer.flush();client.close()
 except BaseException:
@@ -234,6 +240,25 @@ def selected_admin_key(raw, external_key=None):
     return key
 
 
+MOUNT_SET_BINDING='ouf.apisix-runtime-binding.mount-set.v1'
+
+
+def apisix_runtime_binding(actual,profile=None):
+    """Versioned mount ordering only; preserve every native field and cardinality.
+
+    Historical bindings remain byte-for-byte unchanged. Docker's Mounts array
+    order is unstable across inspect calls; only newly reviewed plans opt in.
+    """
+    require(profile in (None,MOUNT_SET_BINDING),'UNKNOWN_APISIX_RUNTIME_BINDING_PROFILE')
+    result=Engine.runtime_binding(actual)
+    if profile is not None:
+        mounts=actual['Mounts']
+        require(type(mounts)is list and all(type(m)is dict and type(m.get('Destination'))is str for m in mounts)
+            and len({m['Destination']for m in mounts})==len(mounts),'APISIX_DUPLICATE_OR_INVALID_MOUNT')
+        result['mountsHash']=digest(sorted(mounts,key=lambda m:m['Destination']))
+    return result
+
+
 class NamespaceAdmin:
     """Bounded loopback HTTP in a child; no image, exec, proxy or redirect.
 
@@ -252,12 +277,13 @@ class NamespaceAdmin:
             from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime, proposed_transport
             require(type(runtime_owner) is GatewayRuntime and runtime_owner.engine is engine,
                     'CONCRETE_SAME_ENGINE_APISIX_RUNTIME_OWNER_REQUIRED')
-            require(Engine.runtime_binding(runtime_owner.generation())==binding['runtimeBinding'],
+            require(binding.get('runtimeBindingProfile')==runtime_owner.plan.get('runtimeBindingProfile')
+                    and apisix_runtime_binding(runtime_owner.generation(),binding.get('runtimeBindingProfile'))==binding['runtimeBinding'],
                     'NEW_APISIX_GENERATION_NOT_PROVEN_BY_OWNER')
             self.reviewed_binding=proposed_transport(runtime_owner.plan)
 
     @staticmethod
-    def observe(engine, selected_config):
+    def observe(engine, selected_config, binding_profile=None):
         require(type(engine) is Engine, 'CUSTODIED_ENGINE_REQUIRED')
         status, actual = engine.request('GET', '/v1.44/containers/ouf-apisix/json')
         require(status == 200 and actual.get('Name') == '/ouf-apisix'
@@ -273,21 +299,23 @@ class NamespaceAdmin:
             admin_raw,admin_binding=private_config(EXTERNAL_ADMIN_KEY)
             selected_admin_key(raw,admin_raw.decode('ascii').strip())
         s = os.stat('/proc/'+str(actual['State']['Pid'])+'/ns/net')
-        return {'runtimeBinding': Engine.runtime_binding(actual), 'configBinding': config,
+        result={'runtimeBinding': apisix_runtime_binding(actual,binding_profile), 'configBinding': config,
                 'adminKeyBinding':admin_binding,
                 'networkNamespace': {'device': s.st_dev, 'inode': s.st_ino},
                 'transport': 'EXACT_APISIX_NETNS_LOOPBACK_HTTP', 'port': 9180,
                 'maximumResponseBytes': MAX_RESPONSE, 'timeoutSeconds': 10,
                 'pythonExecutable': namespace_program()}
+        if binding_profile is not None:result['runtimeBindingProfile']=binding_profile
+        return result
 
     def check(self):
         require(digest(self.binding) == self.binding_hash, 'APISIX_TRANSPORT_BINDING_CHANGED')
         if self.runtime_owner is not None:
             from tools.chatbot_file_cohort.gateway_runtime import proposed_transport
             require(self.reviewed_binding==proposed_transport(self.runtime_owner.plan)
-                    and Engine.runtime_binding(self.runtime_owner.generation())==self.binding['runtimeBinding'],
+                    and apisix_runtime_binding(self.runtime_owner.generation(),self.binding.get('runtimeBindingProfile'))==self.binding['runtimeBinding'],
                     'APISIX_RUNTIME_OWNER_OR_REVIEW_CHANGED')
-        current = self.observe(self.engine, self.binding['configBinding']['path'])
+        current = self.observe(self.engine, self.binding['configBinding']['path'],self.binding.get('runtimeBindingProfile'))
         require(current == self.binding, 'APISIX_GENERATION_OR_NAMESPACE_CHANGED')
 
     def request(self, method, path, body=None):
@@ -295,6 +323,7 @@ class NamespaceAdmin:
                 or re.fullmatch(r'/apisix/admin/routes/[A-Za-z0-9._-]{1,128}', path))
                 and ((method == 'PUT' and type(body) is dict) or (method == 'GET' and body is None)),
                 'CLOSED_GATEWAY_ADMIN_OPERATION_REQUIRED')
+        self.retry_after=''
         raw = None if body is None else encoded(body)
         require(raw is None or len(raw) <= 262144, 'BOUNDED_GATEWAY_ADMIN_BODY_REQUIRED')
         self.check()
@@ -327,8 +356,11 @@ class NamespaceAdmin:
                     'APISIX_OUTCOME_REQUIRES_RECONCILIATION')
             self.check()
             result=json.loads(output)
-            require(type(result)is dict and set(result)=={'status','body'} and type(result['status'])is int
+            require(type(result)is dict and set(result)=={'status','body','retryAfter'} and type(result['status'])is int
                     and 100<=result['status']<=599,'APISIX_TYPED_RESPONSE_REQUIRED')
+            require(type(result['retryAfter'])is str and len(result['retryAfter'])<=128
+                and all(32<=ord(c)<=126 for c in result['retryAfter']),'APISIX_RETRY_AFTER_HEADER_INVALID')
+            self.retry_after=result['retryAfter']
             return result['status'],result['body']
         finally:
             if child is not None:
@@ -347,6 +379,11 @@ class NamespaceAdmin:
 
 class GatewayRoutes:
     def __init__(self, action, cohort_plan, plan, journal, transport):
+        if 'governedReprocessing' in plan:
+            require(plan['governedReprocessing'].get('executionProfile')=='ouf.chatbot-gateway-schema-continuation.v1',
+                'GATEWAY_REPROCESSING_EXECUTOR_NOT_YET_QUALIFIED')
+            from tools.chatbot_file_cohort.gateway_recovery import validate_publication
+            validate_publication(action,plan,transport)
         require(type(action) is AggregateAction and type(journal) is Journal
                 and type(transport) is NamespaceAdmin, 'CONCRETE_SIGNED_GATEWAY_COMPONENTS_REQUIRED')
         require(plan.get('schema') == PROFILE and cohort_plan['gatewayPlanHash'] == digest(plan)
@@ -374,6 +411,13 @@ class GatewayRoutes:
 
     def initialize(self):
         self.guard()
+        proof=json.loads(self.action.raw).get('applicationRegistryCutover',{}).get('postGrantRecovery',{})
+        if 'retainedFailedIngestion' in proof:
+            from tools.chatbot_file_cohort.ingestion_path_recovery import adopt_gateway
+            return adopt_gateway(self,proof)
+        if 'retainedCreatedIngestion' in proof:
+            from tools.chatbot_file_cohort.ingestion_recovery import adopt_gateway
+            return adopt_gateway(self,proof)
         require(self.transport.routes() == self.plan['previousRoutes'], 'GATEWAY_BASELINE_DRIFT')
         self.journal.initialize({'schema':PROFILE, 'planHash':self.plan_hash,
             'authorityHash':self.action.authority_hash, 'version':1, 'nextStep':0,
@@ -416,7 +460,20 @@ class GatewayRoutes:
                     record = self.save(record,following)
                     self.guard()
                     # Exactly one PUT. Its acknowledgement alone is never accepted.
-                    self.transport.request('PUT','/apisix/admin/routes/'+quote(change['id'],safe=''),change['after'])
+                    status,body=self.transport.request('PUT','/apisix/admin/routes/'+quote(change['id'],safe=''),change['after'])
+                    # Retain bounded diagnostic evidence before reconciliation.
+                    # Never persist a possibly secret-bearing response body and
+                    # never turn an HTTP acknowledgement into effect acceptance.
+                    require(type(status) is int and 100<=status<=599,
+                            'GATEWAY_WRITE_ACK_STATUS_INVALID')
+                    raw=encoded(body)
+                    require(len(raw)<=MAX_RESPONSE,'GATEWAY_WRITE_ACK_BOUND_EXCEEDED')
+                    following=copy.deepcopy(record)
+                    following['effects'][-1]['writeAcknowledgement']={
+                        'schema':'ouf.gateway-write-acknowledgement.v1',
+                        'status':status,'bodySha256':hashlib.sha256(raw).hexdigest(),
+                        'bodyBytes':len(raw),'effectAccepted':False}
+                    record=self.save(record,following)
                 # Resuming a CLAIMED row performs GET only, even if the row is absent.
                 require(self.transport.routes() == self.expected(n+1), 'GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY')
                 self.guard()

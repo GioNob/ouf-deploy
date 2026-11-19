@@ -1,0 +1,39 @@
+{
+  "schema": "ouf.chatbot-semantic-consultation-readback-qualification.v1",
+  "sourceCommit": "7819b872769b096d266bd2eec12994563649ce12",
+  "readerSha256": "8061740bad6cd54d9ea11d420a6ae1d6783ff4a2b03622f70a3af0568096c5fb",
+  "launcherSha256": "0d9dc8f546e12681eea9d574a4f614b01d5fa09af440ae3359de9fe192bfd115",
+  "qualification": {
+    "run": 38886152124,
+    "job": 116924263413,
+    "tests": 50,
+    "skipped": 0,
+    "newTests": 7,
+    "conclusion": "success",
+    "newMainObservations": "simulated",
+    "transportAndCustodyAstIdenticalToNativeQualifiedReader": true
+  },
+  "limits": {
+    "readOnly": true,
+    "maximumSeconds": 180,
+    "maximumGatewayReads": 2,
+    "maximumLogReads": 2,
+    "maximumTailLinesPerService": 200,
+    "databaseCalls": 0,
+    "dumpProbes": 0,
+    "grantRequests": 0,
+    "iamCalls": 0,
+    "mcpCalls": 0,
+    "gatewayWrites": 0,
+    "serviceMutations": 0,
+    "automaticRetry": false,
+    "budgetReset": false,
+    "runtimeAuthorityIssued": false,
+    "existingFiniteProcessMustRemainActive": true
+  },
+  "runtimeAuthorityExpiresAt": 1792148226,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "chatbotEndToEndProven": false,
+  "targetAccessByQualification": false
+}

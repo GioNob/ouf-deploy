@@ -1,0 +1,57 @@
+{
+  "schema": "ouf.chatbot-semantic-denial-retained-target.v1",
+  "source": "OPERATOR_SUPPLIED_OUTPUT",
+  "readerCommit": "c7645f4d63056e16dedaaf847810693cc3a3ba45",
+  "complete": true,
+  "readOnly": true,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "acceptanceGranted": false,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "authorityExpiredAtRead": true,
+  "delivery": {
+    "activeState": "inactive",
+    "subState": "dead",
+    "mainPID": 0,
+    "result": "success",
+    "terminalReasonIndependentlyProven": false,
+    "recordHash": "271f453a7f774d8da6128b87b8332196c123454332a1a1e17916d5c6d9b17167"
+  },
+  "worker": {
+    "state": "CANCELLED",
+    "reason": "CANCELLED_BY_OWNER",
+    "attempts": 59,
+    "controlledCumulativeGrantAttempts": 69,
+    "cumulativeCountProven": true,
+    "liveStateProven": false,
+    "recordHash": "eb4b80f386d97621802355fb280728a8623fcd60fb2e4c62284f53bdd20c96d1"
+  },
+  "admission": {
+    "state": "BLOCKED",
+    "cumulativeCountProven": false
+  },
+  "logSample": {
+    "exitCode": 0,
+    "stdoutBytes": 596,
+    "stderrBytes": 0,
+    "allSearchedMarkerCountsZero": true,
+    "ownerEffectivePolicyProven": false,
+    "diagnosisFromMarkerAlone": false
+  },
+  "receiptRead": {
+    "account": "ouf-admin",
+    "commandKey": "teatri-semantic-draft-be74308e098aa3a6-20261016",
+    "status": 403,
+    "code": "SEM_CAPABILITY_REQUIRED:ouf.semantic.proposal.read",
+    "automaticRetry": false,
+    "reconciliationPerformed": false
+  },
+  "serviceMutations": 0,
+  "gatewayWrites": 0,
+  "grantRequests": 0,
+  "iamCalls": 0,
+  "databaseCalls": 0,
+  "recordAtomicityProven": false,
+  "runtimeAuthorityIssued": false
+}

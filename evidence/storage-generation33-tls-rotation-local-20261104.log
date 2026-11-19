@@ -1,0 +1,15 @@
+test_after_client_cannot_repeat_seed (test_storage_tls_rotation_generation33.RotationTests.test_after_client_cannot_repeat_seed) ... ok
+test_after_stage_reads_only_and_proves_both_trust_modes (test_storage_tls_rotation_generation33.RotationTests.test_after_stage_reads_only_and_proves_both_trust_modes) ... ok
+test_equal_length_corruption_fails (test_storage_tls_rotation_generation33.RotationTests.test_equal_length_corruption_fails) ... ok
+test_gateway_arguments_pin_only_second_certificate_and_existing_roots (test_storage_tls_rotation_generation33.RotationTests.test_gateway_arguments_pin_only_second_certificate_and_existing_roots) ... ok
+test_incomplete_list_fails_even_with_expected_object (test_storage_tls_rotation_generation33.RotationTests.test_incomplete_list_fails_even_with_expected_object) ... ok
+test_private_keys_are_restricted_and_never_overlap_input (test_storage_tls_rotation_generation33.RotationTests.test_private_keys_are_restricted_and_never_overlap_input) ... ok
+test_real_tls_opposite_trust_and_hostname_fail_closed (test_storage_tls_rotation_generation33.RotationTests.test_real_tls_opposite_trust_and_hostname_fail_closed) ... ok
+test_real_tls_overlap_accepts_both_generations_and_fingerprints (test_storage_tls_rotation_generation33.RotationTests.test_real_tls_overlap_accepts_both_generations_and_fingerprints) ... ok
+test_replacement_requires_new_gateway_same_storage_no_restart (test_storage_tls_rotation_generation33.RotationTests.test_replacement_requires_new_gateway_same_storage_no_restart) ... ok
+test_wrong_certificate_rejected_before_http_request (test_storage_tls_rotation_generation33.RotationTests.test_wrong_certificate_rejected_before_http_request) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.858s
+
+OK

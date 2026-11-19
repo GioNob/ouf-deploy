@@ -1,0 +1,105 @@
+{
+  "schema": "ouf.storage-g0-capacity-discovery.v1",
+  "date": "2026-11-06",
+  "status": "LOCAL_METADATA_REPORTED_CAPACITY_AND_CUSTODY_NOT_ACCEPTED",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "operatorReport": {
+    "directoryCandidates": [
+      "/opt/ouf/backup",
+      "/opt/ouf/runtime-backup",
+      "/var/backups"
+    ],
+    "rootsChecked": [
+      {
+        "path": "/var/lib/ouf",
+        "status": "SCANNED"
+      },
+      {
+        "path": "/var/lib/seaweedfs",
+        "status": "ABSENT"
+      },
+      {
+        "path": "/var/backups",
+        "status": "SCANNED"
+      },
+      {
+        "path": "/srv",
+        "status": "SCANNED"
+      },
+      {
+        "path": "/opt",
+        "status": "SCANNED"
+      },
+      {
+        "path": "/mnt",
+        "status": "SCANNED"
+      },
+      {
+        "path": "/media",
+        "status": "SCANNED"
+      },
+      {
+        "path": "/var/lib/docker/volumes",
+        "status": "SCANNED"
+      }
+    ],
+    "filesystems": [
+      {
+        "mount": "/",
+        "filesystem": "ext4",
+        "device": "254:4",
+        "totalGiB": 502.72,
+        "availableGiB": 272.95
+      },
+      {
+        "mount": "/boot",
+        "filesystem": "ext4",
+        "device": "254:3",
+        "totalGiB": 0.92,
+        "availableGiB": 0.79
+      }
+    ],
+    "scanIncomplete": false,
+    "filesModified": 0,
+    "providerRequests": 0
+  },
+  "interpretation": {
+    "localDataFilesystemAvailableGiB": 272.95,
+    "availableSpaceSufficientProven": false,
+    "seaweedfsInstallationAbsentProven": false,
+    "independentBackupDestinationProven": false,
+    "existingBackupsVerified": false,
+    "remoteFilesystemsAndUnmountedDevicesExhaustivelyInventoried": false
+  },
+  "scanLimits": {
+    "directoryDepth": 3,
+    "maximumEntries": 6000,
+    "cooperativeSeconds": 20,
+    "symlinksFollowed": false,
+    "dockerVolumeDataDirectoriesTraversed": false,
+    "filesystemsFilter": [
+      "ext2",
+      "ext3",
+      "ext4",
+      "xfs",
+      "btrfs",
+      "zfs",
+      "f2fs"
+    ],
+    "existingFilesRead": false
+  },
+  "proposal": {
+    "status": "PATHS_SELECTED_FOR_PLAN_ONLY",
+    "dataRoot": "/var/lib/ouf/seaweedfs",
+    "localBackupStaging": "/opt/ouf/backup/seaweedfs",
+    "independentBackupDestination": null,
+    "sourceDataPath": null,
+    "directoriesCreated": false,
+    "currentPathDeviceAndCustodyVerified": false,
+    "existingRuntimeBackupAreaReused": false
+  },
+  "nextRequiredInput": "Whether an existing off-VPS backup/storage destination is available; its existence, retention and recovery remain to be evidenced.",
+  "targetOperations": 0,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0
+}

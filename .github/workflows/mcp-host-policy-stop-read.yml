@@ -1,0 +1,38 @@
+name: MCP host policy retained stop read
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths: ['scripts/read-mcp-host-policy-stop-20261026.py','releases/read-mcp-host-policy-stop-20261026.sh','tests/test_mcp_host_policy_stop_read.py','.github/workflows/mcp-host-policy-stop-read.yml']
+  pull_request:
+    paths: ['scripts/read-mcp-host-policy-stop-20261026.py','releases/read-mcp-host-policy-stop-20261026.sh','tests/test_mcp_host_policy_stop_read.py','.github/workflows/mcp-host-policy-stop-read.yml']
+permissions: {contents: read}
+jobs:
+  root-retained-read:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: |
+          sudo install -d -m 700 /var/lib/ouf-mcp-host-read-ci
+          sudo env OUF_MCP_HOST_READ_TEST_ROOT=/var/lib/ouf-mcp-host-read-ci python3 -B -m unittest discover -s tests -p test_mcp_host_policy_stop_read.py -v
+      - name: Actual public HTTP wrapper and root protected main, absent retained fixture STOP
+        run: |
+          bash -n releases/read-mcp-host-policy-stop-20261026.sh
+          sudo install -d -m 700 /etc/ouf /etc/ouf/deploy-snapshots
+          set +e
+          bash releases/read-mcp-host-policy-stop-20261026.sh
+          delivery_rc=$?
+          set -e
+          test "$delivery_rc" = 2
+          sudo python3 -I -S -B - <<'PY'
+          import hashlib,json,os,stat
+          from pathlib import Path
+          code=Path('/usr/local/lib/ouf-mcp-host-policy-stop-read-e558c0c2ff2b80b1/read.py')
+          assert stat.S_IMODE(code.stat().st_mode)==0o400 and code.stat().st_uid==code.stat().st_gid==0
+          assert hashlib.sha256(code.read_bytes()).hexdigest()=='e558c0c2ff2b80b1db91d24323e2c57af8126ab8fc1193fd245b6f2cf46d37ad'
+          root=Path('/etc/ouf/deploy-snapshots/mcp-host-policy-stop-read-ff06ec1a-v1')
+          assert {p.name for p in root.iterdir()}=={'claim.json'}
+          assert json.loads((root/'claim.json').read_bytes())['networkRequests']==0
+          print('ACTUAL_RETAINED_READ_DELIVERY_ROOT400_PUBLIC_HTTP_MAIN_STOP_BEFORE_RETAINED_READS=PASS')
+          PY

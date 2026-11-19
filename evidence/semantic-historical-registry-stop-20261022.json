@@ -1,0 +1,91 @@
+{
+  "schema": "ouf.semantic-historical-registry-stop-evidence.v1",
+  "recordedAt": "2026-10-22T18:43:58Z",
+  "targetExecutionTimeKnown": false,
+  "targetReceiptSource": "USER_PASTED_JSON_AND_OPERATOR_LOG_PATH",
+  "priorReaderCommit": "4a6a7befd33345a92798abacb9f43db7b15c62f1",
+  "priorReaderPath": "tools/semantic_transport_correlation/reader.py",
+  "priorReaderSha256": "5c7423c03e2f89135ed322de7f36af174175388926eeea9e1b411f162d949f32",
+  "priorCaseSha256": "d1afc7b6274df1375a94580ee6598695263d141ffed1d0ec7f6f63962dd2cac6",
+  "operatorDirectory": "/home/oufadmin/ouf-semantic-transport.UIPPICGG",
+  "operatorLog": "/home/oufadmin/ouf-semantic-transport.UIPPICGG/operator.log",
+  "receipt": {
+    "schema": "ouf.semantic-transport-correlation-result.v1",
+    "status": "STOP_RECONCILE",
+    "reasonCode": "HISTORICAL_REGISTRY_NOT_RUNNING",
+    "readOnly": true,
+    "runtimeEffectsDispatched": 0,
+    "activationResubmitted": false,
+    "automaticReplayAllowed": false
+  },
+  "interpretation": {
+    "combinedHistoricalRegistryPredicateFailed": true,
+    "preciseRegistryLifecycleStateProven": false,
+    "logReadReachedInPinnedSource": false,
+    "sourceDerivedInspectCallsBeforeStop": 2,
+    "independentTargetCallCounterSupplied": false,
+    "currentRegistryIdentityEstablished": false,
+    "sameLineCorrelationEstablished": false,
+    "rootCauseEstablished": false,
+    "registrySubstitutionAllowed": false
+  },
+  "nextDiagnostic": {
+    "path": "tools/semantic_stopped_registry_observation",
+    "readerSha256": "5ae364a0c9a746651953d9c05742fa5c2fb50d7063bc1bc8eda56a3b3971620f",
+    "caseSha256": "41ce1acb5937079448f3fb0d1dfff1051200203f14a595a8ce76fee944f665b9",
+    "maximumEngineGets": 5,
+    "maximumSeconds": 35,
+    "maximumReplyBytes": 2097152,
+    "maximumLogTail": 4000,
+    "follow": false,
+    "oauthRequests": 0,
+    "credentialsRead": 0,
+    "gatewayAdminCalls": 0,
+    "probes": 0,
+    "mutations": 0,
+    "targetExecuted": false,
+    "stoppedRegistryIsObservationNotLiveBinding": true,
+    "currentAddressComparisonAlwaysNull": true
+  },
+  "qualification": {
+    "python": "3.12.14",
+    "newFixtureTestsPassed": 13,
+    "predecessorRegressionTestsPassed": 5,
+    "testsSkipped": 0,
+    "nativeUnixSocketAvailable": false,
+    "nativeUnixSocketLimitation": "DEVELOPMENT_SANDBOX_PERMISSION_ERROR",
+    "httpClientParser": "REAL_STDLIB_WITH_SIMULATED_BYTE_STREAM_SOCKET",
+    "dockerOrTargetQualification": false,
+    "ciClaimed": false,
+    "predecessorReaderAndCaseUnchanged": true
+  },
+  "normativeSourcesReread": [
+    "Matrix1.7 sections1,4,6",
+    "Gateway PET1.5 T33.7/section34",
+    "MiniPET1.1 sections12-14",
+    "OUF resilience policyv3"
+  ],
+  "agentEffectsThisDevelopment": {
+    "newTargetOperations": 0,
+    "newOAuthRequests": 0,
+    "newLogin": false,
+    "newRuntimeAuthority": false,
+    "activationResubmitted": false,
+    "gatewayWrites": 0
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "patchStagesComplete": 12,
+  "gate": "G3_OPEN",
+  "oauthAttemptsAtLastRetainedReceipt": 304,
+  "oauthCeilingAtLastRetainedReceipt": 304,
+  "budgetReset": false,
+  "nativeProfilePublished": false,
+  "releaseAcceptance": false,
+  "effortThisUpdate": {
+    "classification": "NOT_SEGMENTED",
+    "countedAsActive": false,
+    "humanEffortKnown": false,
+    "baselineForecastUnchanged": true
+  }
+}

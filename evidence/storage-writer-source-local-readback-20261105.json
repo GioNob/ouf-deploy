@@ -1,0 +1,20 @@
+{
+  "allWritersInventoried": false,
+  "currentRuntimeBindingsVerified": false,
+  "gatesClosed": 0,
+  "indexSha256": "66220c92a21800758f105d64145e4486a810c11fd6f6274a39de8806663b23be",
+  "lexicalMutationCallsitesVerified": 8,
+  "mainJavaFiles": {
+    "ingestion": 60,
+    "onboarding": 100,
+    "udp": 88
+  },
+  "releaseAdmitted": false,
+  "retainedOnboardingSourceComparisons": 6,
+  "schema": "ouf.storage-writer-source-readback.v1",
+  "sourceBytesVerified": 1519734,
+  "sourceFilesVerified": 256,
+  "sourceInspectionOnly": true,
+  "status": "PINNED_SOURCE_MAP_VERIFIED_RUNTIME_OPEN",
+  "targetOperations": 0
+}

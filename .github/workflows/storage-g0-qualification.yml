@@ -1,0 +1,63 @@
+name: Storage G0 current body collector
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - tools/storage_inventory/**
+      - scripts/run-storage-g0-qualification.py
+      - .github/workflows/storage-g0-qualification.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+concurrency:
+  group: storage-g0-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  bounded-collector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Compile and qualify bounded transport and failure cases
+        run: python3 -I -B -S scripts/run-storage-g0-qualification.py stage "$RUNNER_TEMP/storage-g0"
+      - name: Prepare explicit empty suppression file
+        run: touch empty.trivyignore-g0
+      - name: Scan resolved tool manifests and compiled collector
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: rootfs
+          scan-ref: ${{ runner.temp }}/storage-g0/scan
+          format: json
+          output: ${{ runner.temp }}/storage-g0/evidence/trivy.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore-g0
+          exit-code: 0
+      - name: Qualify real MinIO bodies in an isolated namespace
+        run: python3 -I -B -S scripts/run-storage-g0-qualification.py run "$RUNNER_TEMP/storage-g0"
+      - name: Seal public evidence including failures
+        if: always()
+        run: python3 -I -B -S scripts/run-storage-g0-qualification.py seal "$RUNNER_TEMP/storage-g0"
+      - name: Attest successful evidence
+        if: success()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-g0/evidence/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-g0-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-g0/evidence/
+          retention-days: 90
+          if-no-files-found: error

@@ -1,0 +1,10 @@
+{
+  "schema": "ouf.historical-cohort-source-snapshot.v1",
+  "repository": "GioNob/ouf-deploy",
+  "sourceCommit": "ccfbd3eb48c2141ce855fb8f9098546f44af56b9",
+  "sourcePath": "tools/chatbot_file_cohort/authorization.py",
+  "sha256": "8987585e7cf471f4906830cc1f7ffa0c2a25331bea9ddd982dcd4ddc3bbb346b",
+  "fixtureOnly": true,
+  "executable": false,
+  "productionCapsuleUnchanged": true
+}

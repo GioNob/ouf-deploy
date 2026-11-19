@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.storage-historical-minio-restored-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_VPS_RESULT",
+  "programCommit": "fc15882c6f4a8786a49efd88e09c9f3bd8e2f7c5",
+  "decisionReference": "GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-03",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "bucketsRead": 2,
+    "bytesRead": 203743,
+    "deleteMarkersObserved": 0,
+    "g3Complete": false,
+    "historicalRestoreOnly": true,
+    "httpClient": "python-stdlib-sigv4",
+    "httpReadinessRequests": 2,
+    "httpReadinessVerified": true,
+    "matchesPrior120Bodies": true,
+    "networkMode": "none",
+    "privateManifestSha256": "58484aea53aefeb1fff390578ba6562efabffd914caf64944eee7c9d9a2e0d79",
+    "reusedExtractedVolume": true,
+    "s3BodyManifestSha256": "c54d67b9ec8448e884a296c37e588845e3d128283af14e92c29b9bb3e3a8281f",
+    "s3GetRequests": 123,
+    "schema": "ouf.storage-retained-minio-restore.v1",
+    "sourceArchiveSha256": "ac03ed2361bfb7c9cbd0ad636fdb7f7ba3354d6be1a9871878c1dff22c1c36f7",
+    "status": "ISOLATED_HISTORICAL_MINIO_RESTORED",
+    "versionsRead": 120
+  },
+  "acceptanceCreditAdded": 0
+}

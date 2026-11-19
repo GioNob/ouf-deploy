@@ -1,0 +1,53 @@
+{
+  "schema": "ouf.seaweedfs.combined-test-patches.v1",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "orderedPatchCount": 25,
+  "qualifiedImagePatchCount": 15,
+  "composition": "prior21+policy22+normal23+iam24+kafka25",
+  "localReapplication": "PASS",
+  "directAwsSdkV1ImportersBefore": 20,
+  "directAwsSdkV1ImportersAfter": 11,
+  "remainingIamImporters": 9,
+  "remainingOtherImporters": 2,
+  "remainingDirectImporters": [
+    "test/s3/iam/s3_iam_admin_test.go",
+    "test/s3/iam/s3_iam_distributed_test.go",
+    "test/s3/iam/s3_iam_framework.go",
+    "test/s3/iam/s3_iam_group_test.go",
+    "test/s3/iam/s3_iam_inline_policy_condition_test.go",
+    "test/s3/iam/s3_iam_integration_test.go",
+    "test/s3/iam/s3_keycloak_integration_test.go",
+    "test/s3/iam/s3_policy_variables_test.go",
+    "test/s3/iam/s3_sts_web_identity_api_test.go",
+    "test/s3/normal/iam_test.go",
+    "test/s3/policy/policy_test.go"
+  ],
+  "rootModuleLockfilesUnchanged": true,
+  "newPatchSha256": {
+    "4.52-bucket-policy-tests-sdk-v2.patch": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19",
+    "4.52-normal-tests-sdk-v2.patch": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b",
+    "4.52-iam-service-account-sdk-v2.patch": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5",
+    "4.52-kafka-test-module-remove-sdk-v1.patch": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7"
+  },
+  "hostedStatus": "PENDING",
+  "targetOperations": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "combinedRootRegression": {
+    "result": "PASS",
+    "packages": [
+      "test/s3/policy",
+      "test/s3/normal"
+    ],
+    "namedTests": 8,
+    "exactPins": true,
+    "modReadonly": true
+  },
+  "combinedIamRegression": {
+    "result": "PASS",
+    "namedTests": 8,
+    "subcases": 2,
+    "exactPins": true,
+    "modReadonly": true
+  }
+}

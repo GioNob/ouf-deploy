@@ -1,0 +1,7 @@
+{
+  "schema": "ouf.ingestion-readiness-unissued-target-evidence.v1",
+  "source": "OWNER_PASTED_READER_RECEIPT",
+  "completedOperationMustNotBeReplayed": true,
+  "operatorLog": "/home/oufadmin/ouf-unissued-reconcile.xCVck1X6/reader.log",
+  "result": {"authorityArtifactsPresent":false,"automaticReplayAllowed":false,"budgetReset":false,"complete":true,"completedTechnicalPhases":8,"contextPath":"/etc/ouf/deploy-snapshots/ingestion-readiness-execution-9f3d63c728295180a431a9d84aa701e3265172d49340f75787f70b9f8edae6ac","credentialValuesPrinted":false,"databaseCalls":0,"engineRequests":0,"functionalMilestonesProven":4,"humanCredentialJournalsRead":0,"issuanceClaimPresent":false,"legacyReaderMaximumBytes":524288,"legacyReviewSizeExceeded":true,"nativeInitializationClaimPresent":false,"nativeJournalPresent":false,"notReleaseAcceptance":true,"oauthRequests":0,"originalReviewClaimRetained":true,"packetBytes":1320265,"readOnly":true,"retainedControlJournalHash":"af07734945f3b4ea93282f43808634501d4633261617d767b1bfa2f68942c910","retainedDecisionHash":"69a4a42c3776397d9d3e951843cca31092afd0b996941c2a2e9247aa5a10696c","retainedState":"ISSUING","reviewBytes":545058,"reviewHash":"0421b9cab0efa811c362aefd4af21c769a4b2b19bc35528e9ecf8081d5aa0343","roleSignatureArtifactsPresent":false,"runtimeAuthorityIssued":false,"runtimeCaseHash":"9f3d63c728295180a431a9d84aa701e3265172d49340f75787f70b9f8edae6ac","runtimeEffectsDispatched":0,"schema":"ouf.ingestion-readiness-unissued-reconcile-result.v1","status":"STOPPED_UNISSUED_PATCH_REVIEW_RECONCILED_NO_AUTHORITY"}
+}

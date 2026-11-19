@@ -1,0 +1,49 @@
+{
+  "schema": "ouf.ingestion-readiness-scoped-execution-selection.v1",
+  "privateReviewBinding": {
+    "path": "/etc/ouf/deploy-snapshots/ingestion-readiness-update-review-bovju9mj/review.json",
+    "sha256": "13decb74cba1e54382a4493d80ff4a99c030f98d6afebd91beba61687f8a2898"
+  },
+  "candidateNativeImageIds": {
+    "ingestion": "sha256:63ed7299f85f57be676bd9633c08cc1dd87144fb84d3b13122e32f23f1e9370a",
+    "onboarding": "sha256:d8adb455b34feb65daf31792a72ff71fbada14fafac14089da96c39556f95bf4"
+  },
+  "retainedBootstrap": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
+    "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
+  },
+  "baseWorkerReview": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-functional-session-review-e8ced3ui/review.json",
+    "sha256": "beefc7f2ee79fa70c5b416d6d3efe68d3b08d15f9bb07c96c3e837995b627803"
+  },
+  "worker": {
+    "contextPath": "/etc/ouf/deploy-snapshots/semantic-mcp-update-execution-9xl_yy2c",
+    "reviewSha256": "9e2d9aa969abe97feacd2f91b374d1c3fc6d7120b51c1f3c71ce04f68a6b23a6",
+    "authoritySha256": "5a0ed5855aecfa9ed509839c7fa37398918c08ff6dd094fb4070f77e78f4e5c8",
+    "journalPath": "/etc/ouf/deploy-snapshots/chatbot-file-intake-9f754dbcf7caf450d1d1eef50c0288f2102cfac191a65cfc60a5c1fcbf60ba5e/attempt-f8d38137fc4cca9d36910c19/semantic-functional-worker-f9d572dde0b549b11f7a704e765e9568dbfef9525b58d085efcf0459ee158d84",
+    "recordHashes": {
+      "owner-admission.json": "db769117c4d8ccdbd70de76e9b59101cecfedb61dc10d407590465d81486b134",
+      "owner-session.json": "c617154684ce6cf126200fdce7c700f364bc6bffb97f44b7689f0a6eaa42252c",
+      "owner-status.json": "0fa3d63b03642cc9d7241df3a2b0254743490ed69c2eed695d30a69f5b044694",
+      "recovery.json": "0958271f8656808cffefda2778739c8aa0d868b53ed00f2cd9b8014edc8a6d7b"
+    },
+    "controlledAttempts": 188,
+    "historicalCeiling": 197
+  },
+  "previousHumanDirectory": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-7b455d53da43346725b4b12c2be1f27bdd788ac76b5ee89d611ef7573a4600e3",
+  "previousHumanExpiry": 1792223149,
+  "gatewayConfigMountTarget": "/usr/local/apisix/conf/config.yaml",
+  "applications": {
+    "onboarding": {
+      "readinessPort": 8080,
+      "readinessPath": "/actuator/health/readiness"
+    },
+    "ingestion": {
+      "readinessPort": 8080,
+      "readinessPath": "/actuator/health/readiness"
+    }
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 1,
+  "scope": "RETAINED_SINGLE_HOST_CONFIGURATION_AND_VALIDATION"
+}

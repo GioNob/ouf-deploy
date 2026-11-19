@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.chat-recovery-obsolete-launch-receipt.v1",
+  "evidenceSource": "Operator pasted transcript",
+  "logPath": "/home/oufadmin/ouf-chat-recovery-update.6i2cE5LP/run.log",
+  "executorCodeContext": "/etc/ouf/deploy-snapshots/chat-recovery-executor-code-w_fxx1vx",
+  "contextPath": "/etc/ouf/deploy-snapshots/chat-recovery-execution-14co9v43",
+  "executedPackageRun": "39082232187",
+  "executedSourceCommit": "be0fbb12eb23d36a73d8fd7027788a17e32349d8",
+  "executedPackageSha256": "7d6755397e709ce810f1de0127f1ba06a1981b7b250238342b8e9671c54da296",
+  "reason": "RETAINED_HOST_CONFIGURATION_CHANGED",
+  "runtimeAuthorityIssued": false,
+  "correctedPackageExecuted": false,
+  "correctedPackageRun": "39082554565",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 3,
+  "targetUpdateProven": false,
+  "privateContextDisposition": "Retain; no cleanup or runtime resume issued"
+}

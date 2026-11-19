@@ -1,0 +1,81 @@
+{
+  "schema": "ouf.storage-cold-backup-v3-qualification.v1",
+  "status": "PASS_SYNTHETIC_NOT_TARGET_ACCEPTANCE",
+  "sourceCommit": "639f7a640dc2f0aa0ec00e3b31c2b43bebe97111",
+  "runId": 42282792808,
+  "jobId": 128115825394,
+  "localTestsPassed": 20,
+  "hostedTestsPassed": 20,
+  "sameCasesNot40Distinct": true,
+  "rerunReason": "Five target sources are directories; v2 file-only assumption incompatible. Production now binds bounded directory trees; native fixture tests restored0750/group10003,child0640,subdirectory,empty file,xattr.",
+  "artifact": {
+    "id": 13535403878,
+    "bytes": 623,
+    "sha256": "4f3738b135b29c8abac333345656088ca3c7cda19c7622f7a0be47df1365d43e",
+    "expiresAt": "2027-02-04T19:47:59Z",
+    "members": [
+      "native-result.json"
+    ],
+    "memberSha256": "f673fccf5bddcbd1d3dc5a2c80c969d0dd7d4f332b693bc245f922df69ec4739",
+    "downloadedAndVerified": true
+  },
+  "nativeResult": "evidence/storage-cold-backup-v3-native-result-20261106.json",
+  "sources": {
+    "scripts/storage-cold-backup.py": {
+      "bytes": 32524,
+      "sha256": "b23a822d0fd7000ac8806d47ff66c0ab053f0fa60ce33998268af792b9db53ac"
+    },
+    "tests/test_storage_cold_backup.py": {
+      "bytes": 13321,
+      "sha256": "99a24732d4fc2329f9d30da2789ac29b680dde9c9a3bbd7ad55f8004142212ea"
+    },
+    "tests/qualify_storage_cold_backup_native.py": {
+      "bytes": 15419,
+      "sha256": "e03260394d5669c3a99d5a62eebf4db0b948d77db3e4f54b44d5f3582f59223e"
+    },
+    ".github/workflows/storage-cold-backup.yml": {
+      "bytes": 1468,
+      "sha256": "91cf58ef07a018438b285aa438dfb9549291170c44476d2f9f16546bd4007c44"
+    }
+  },
+  "exactGitSourcesCompared": 4,
+  "nativeScenarios": {
+    "reviewedRunDirectoryRestored": true,
+    "directoryMode750AndGroup10003Preserved": true,
+    "childMode640Preserved": true,
+    "nestedEmptyFileAndXattrPreserved": true,
+    "unsafeWritableRunFileRejected": true,
+    "stoppedSharingContainerBound": true,
+    "databasesRestored": 3,
+    "objectsRestored": 1,
+    "objectBytes": 118784,
+    "encryptedArchiveBytesSyntheticOnly": 1538608068,
+    "sameDaemonSeparateDataRoots": true,
+    "replayRejected": true
+  },
+  "operatorMetadataReceipt": "evidence/storage-cold-runtime-directories-operator-20261106.json",
+  "targetV3Prepared": false,
+  "targetStopped": false,
+  "targetCaptured": false,
+  "independentTargetRestore": false,
+  "effectiveRuntimeMountContentsProven": false,
+  "wholeTargetCohortQualified": false,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0,
+  "v1AndV2AttemptsMustBePreserved": true,
+  "oldInstalledProgramsMustRemainUnchanged": true,
+  "installer": "scripts/install-storage-cold-backup-v3-20261106.sh",
+  "installerBytes": 1074,
+  "installerSha256": "2799bdeb20b8c6c2547b5813f8efc031c042bebe7952f3401a4df15671f0ac0c",
+  "installerChecks": [
+    "bash-and-python-syntax",
+    "exact-bytes-and-mode",
+    "existing-target-not-overwritten",
+    "bad-download-rejected"
+  ],
+  "installerTargetExecuted": false,
+  "previousQualificationHistory": [
+    "evidence/storage-cold-backup-qualified-20261106.json",
+    "evidence/storage-cold-backup-v2-qualified-20261106.json"
+  ]
+}

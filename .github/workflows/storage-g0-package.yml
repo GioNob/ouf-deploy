@@ -1,0 +1,102 @@
+name: Storage single G0 operator package
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - tools/storage_planning/g0_package.py
+      - tools/storage_planning/g0_host.py
+      - tools/storage_planning/g0_network.py
+      - scripts/qualify-storage-g0-network-20261106.py
+      - tests/test_storage_g0_network.py
+      - tests/fixtures/storage-g0-network/**
+      - docs/OUF_STORAGE_G0_NETWORK_20261106.md
+      - scripts/package-storage-g0.py
+      - tests/test_storage_g0_package.py
+      - tests/test_storage_g0_host_profile.py
+      - releases/storage-g0-package-profile-20261105.json
+      - docs/OUF_STORAGE_G0_OPERATOR_PACKAGE_20261105.md
+      - .github/workflows/storage-g0-package.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+concurrency:
+  group: storage-g0-package-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: d5155899b09dda298494b68cefa7e1f281167652
+          path: onboarding-source
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: 0d40da05408a14db31d4d41af2372d6a71480291
+          path: udp-source
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 4165b9e149be467d5d7c6bed35e4e1af4e249db1
+          path: ingestion-source
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Build exact component package and qualify the new composition
+        run: python3 -I -B -S scripts/package-storage-g0.py build "$RUNNER_TEMP/g0-package"
+      - name: Prepare empty suppression file
+        run: touch empty.trivyignore-g0-package
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: rootfs
+          scan-ref: ${{ runner.temp }}/g0-package/scan/collector
+          format: json
+          output: ${{ runner.temp }}/g0-package/evidence/trivy.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore-g0-package
+          exit-code: 0
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: rootfs
+          scan-ref: ${{ runner.temp }}/g0-package/scan/fixture
+          format: json
+          output: ${{ runner.temp }}/g0-package/evidence/trivy-fixture.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore-g0-package
+          exit-code: 0
+      - name: Qualify full package across distinct pinned MinIO and PostgreSQL namespaces
+        run: sudo -n env GITHUB_ACTIONS=true GITHUB_RUN_ID="$GITHUB_RUN_ID" /usr/bin/python3 -I -B -S scripts/qualify-storage-g0-network-20261106.py "$RUNNER_TEMP/g0-package"
+      - name: Seal exact operator package and evidence
+        if: always()
+        run: python3 -I -B -S scripts/package-storage-g0.py seal "$RUNNER_TEMP/g0-package"
+      - uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        if: success()
+        with:
+          subject-path: ${{ runner.temp }}/g0-package/evidence/operator-package.tar.gz
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-g0-package-${{ github.run_id }}
+          path: ${{ runner.temp }}/g0-package/evidence/
+          retention-days: 90
+          if-no-files-found: error

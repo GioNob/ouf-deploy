@@ -1,0 +1,181 @@
+{
+  "schema": "ouf.storage-public-source-audit.v1",
+  "date": "2026-11-02",
+  "scope": "Six exact public module generations; path discovery, plus source-body review of cited storage adapters/provisioning and gateway capability",
+  "targetInventoryComplete": false,
+  "modules": [
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "tree": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "inventoryScope": "path-based discovery only; not whole-body exhaustive analysis",
+      "files": [
+        {
+          "path": "scripts/ci_r4a_staging_container_smoke.sh",
+          "gitBlob": "b65c65dd801648a2607c5bc1a8ca76e330f9bbe0",
+          "size": 3161
+        },
+        {
+          "path": "scripts/r4a_minio_staging_bootstrap.py",
+          "gitBlob": "34cad2173d34966a813378944ed2bc0060fd77fd",
+          "size": 11541
+        },
+        {
+          "path": "scripts/r4a_minio_staging_plan.py",
+          "gitBlob": "43ab630e961733948784808d88b785a65e9611fe",
+          "size": 4021
+        },
+        {
+          "path": "scripts/r4a_minio_staging_preflight.py",
+          "gitBlob": "e3df175049f3fb05db36c20bf7a89befe42a307e",
+          "size": 2353
+        },
+        {
+          "path": "scripts/r4a_onboarding_staging_candidate.py",
+          "gitBlob": "4034c956b02a83a7b25d876788e1d24c646aef0b",
+          "size": 8987
+        },
+        {
+          "path": "scripts/r4a_onboarding_staging_preflight.py",
+          "gitBlob": "16d36d8b82e81d0643b1e63683f9889eb7e0f44f",
+          "size": 4089
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileStagingApi.java",
+          "gitBlob": "b82c736374526459af92c27b9b4dd9c9fd892872",
+          "size": 3903
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileStagingStore.java",
+          "gitBlob": "91d5c96c6073ef32e3aab58934bf605666cd8bd8",
+          "size": 266
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java",
+          "gitBlob": "b7867a7e4cf17ec85de9b71e7c9a0d157347bcad",
+          "size": 3560
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileStagingApiTest.java",
+          "gitBlob": "b00fe73b5632a6ce4ca56e16c43f45cad8ff686a",
+          "size": 4470
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStoreTest.java",
+          "gitBlob": "3f52554c1f9fb6360121340da21b1a160a7b05d3",
+          "size": 2448
+        },
+        {
+          "path": "tests/test_r4a_minio_staging_bootstrap.py",
+          "gitBlob": "f3727048f8fb694f1a8430201ab95eaea26b315b",
+          "size": 4252
+        }
+      ],
+      "installedGenerationProven": false
+    },
+    {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "tree": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "inventoryScope": "path-based discovery only; not whole-body exhaustive analysis",
+      "files": [
+        {
+          "path": "scripts/ci/build-pinned-minio-image.sh",
+          "gitBlob": "d9c62fa2a5cf11ad2e339b8281c2ecd67acd136d",
+          "size": 910
+        },
+        {
+          "path": "scripts/ci/pitr-minio-restore-drill.sh",
+          "gitBlob": "6fe014e6ebcd0c37ccc6fbcbff153e7813e5fdc7",
+          "size": 10000
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/udp/LakeObjectStoragePort.java",
+          "gitBlob": "bb5f3b4b59078ce7ea82963f53cdb29c5f854025",
+          "size": 437
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/udp/S3LakeConfiguration.java",
+          "gitBlob": "5c6a7fbb5d46b7f2b7540623e2e138dcf6bd5178",
+          "size": 1083
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapter.java",
+          "gitBlob": "0c6045a8736a4bcf8c84da0ba524d3cb739d11be",
+          "size": 2225
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/udp/MinioLakeAcceptanceTest.java",
+          "gitBlob": "0db373e91e9c8a2ad0c86d96253a9133fd6cd66e",
+          "size": 5480
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapterTest.java",
+          "gitBlob": "145546ce9fb23d456e3a091347d1aafc024027f6",
+          "size": 1657
+        }
+      ],
+      "installedGenerationProven": false
+    },
+    {
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "tree": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "inventoryScope": "path-based discovery only; not whole-body exhaustive analysis",
+      "files": [
+        {
+          "path": "scripts/ci/build-pinned-minio-image.sh",
+          "gitBlob": "e5b4c59ecf5f8c18c9b91ce5360018bd6d2a495e",
+          "size": 922
+        }
+      ],
+      "installedGenerationProven": false
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "commit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+      "tree": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+      "inventoryScope": "path-based discovery only; not whole-body exhaustive analysis",
+      "files": [],
+      "installedGenerationProven": false
+    },
+    {
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+      "tree": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+      "inventoryScope": "path-based discovery only; not whole-body exhaustive analysis",
+      "files": [],
+      "installedGenerationProven": false
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "commit": "17439fed7a45d455baa6945ee72a65fa19c14029",
+      "tree": "17439fed7a45d455baa6945ee72a65fa19c14029",
+      "inventoryScope": "path-based discovery only; not whole-body exhaustive analysis",
+      "files": [
+        {
+          "path": "ouf-config/capabilities/ouf.object-storage.content.read.yaml",
+          "gitBlob": "5d818e28da61aa815320b0bc67d7539f8b14577c",
+          "size": 282
+        }
+      ],
+      "installedGenerationProven": false
+    }
+  ],
+  "additionalFindings": [
+    {
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "path": "scripts/ci/build-pinned-minio-image.sh",
+      "finding": "CI still builds a MinIO 2025 executable; replace acceptance backend after compatibility qualification."
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "path": "ouf-config/capabilities/ouf.object-storage.content.read.yaml",
+      "finding": "Owner onboarding, internal read scope, MCP toolEligible false; preserve mediation rather than exposing S3 credentials."
+    }
+  ],
+  "knownGaps": [
+    "Full source-body consumer search remains incomplete outside the two adapter modules",
+    "Current installed bindings and all private bucket/object/version inventories remain unobserved"
+  ]
+}

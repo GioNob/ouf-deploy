@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.chat-recovery-private-preparation-target-evidence.v1",
+  "provenance": "OPERATOR_SUPPLIED_RECEIPT",
+  "contextPath": "/etc/ouf/deploy-snapshots/chat-recovery-prepared-fi3s6kbv",
+  "preparedInputsSha256": "67e36adf226b618d2d2a0749700a1d6b5118b7a8ea1849d011c95ee2f8f7e351",
+  "privatePreparationComplete": true,
+  "udpFromVersion": 35,
+  "udpToVersion": 36,
+  "mcpMigrationsUnchanged": true,
+  "backupPerformed": false,
+  "packageRootCustodyProven": false,
+  "readyForExecution": false,
+  "runtimeAuthorityIssued": false,
+  "serviceMutations": 0,
+  "databaseMutations": 0,
+  "jobsRetried": 0,
+  "profilePublications": 0,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 3
+}

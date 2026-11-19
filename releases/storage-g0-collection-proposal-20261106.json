@@ -1,0 +1,64 @@
+{
+  "schema": "ouf.storage-g0-collection-proposal.v1",
+  "proposalId": "OUF-G0-COLLECT-20261106-01",
+  "status": "OPERATOR_AUTHORIZED_EXECUTION_PENDING",
+  "operator": "Giovanni on VPS as oufadmin with sudo",
+  "operationId": "seaweedfs-g0-20261106-v1",
+  "installationRef": "ouf-retained-14e42ac9",
+  "installationRefIsIamIdentity": false,
+  "baseInput": "/var/lib/ouf-g0-network-preparation-20261106/inputs/capacity-directory-preparation-20261106/package-input.review.json",
+  "baseInputSha256": "6b5a2ba087cd5bfbc956f3bb240cf103b0bbf8d0aeaebb14d6a10f9aaaa22af1",
+  "packageSourceCommit": "9053aa382e8058b4bc30123750e719614a5ef564",
+  "packageManifestSha256": "1e542f786ac1606cf72f273bc079eaa5b06b6bd22a210d615c10d13a9d9f8adf",
+  "executionInput": "/var/lib/ouf-g0-network-preparation-20261106/inputs/capacity-directory-preparation-20261106/package-input.collection.json",
+  "allowedInputDelta": {
+    "collectionDecisionRef": "OUF-G0-COLLECT-20261106-01"
+  },
+  "decisionReferenceIsReservedNotApproval": false,
+  "collectionDecisionRecorded": true,
+  "scope": "/var/lib/ouf-g0-network-preparation-20261106/evidence/seaweedfs-g0-20261106-v1",
+  "limits": {
+    "attempts": 1,
+    "seconds": 900,
+    "engineGets": 130,
+    "engineBytes": 33554432,
+    "s3Requests": 3000,
+    "s3WireBytes": 134217728,
+    "s3Bodies": 256,
+    "s3BodyBytes": 67108864,
+    "databaseExports": 3,
+    "databaseBytesEach": 33554432,
+    "databaseRowsPerSection": 10000,
+    "priorControls": 17,
+    "priorEngineGets": 52,
+    "automaticReplayAllowed": false
+  },
+  "missingOperatorEvidence": [
+    "OPERATOR_ACCESS",
+    "OPERATOR_CUSTODY",
+    "OPERATOR_WINDOW",
+    "OPERATOR_WRITERS"
+  ],
+  "permittedEffects": [
+    "local private input copy with only collectionDecisionRef changed after explicit decision",
+    "Docker Engine GET and host/capacity observations",
+    "conditional authenticated MinIO inventory and body reads",
+    "three fixed PostgreSQL READ ONLY REPEATABLE READ exports",
+    "local protected evidence and reconciliation"
+  ],
+  "excludedEffects": [
+    "provider mutations",
+    "start/stop/exec containers",
+    "grant",
+    "migration",
+    "deploy",
+    "writer drain or traffic reopening",
+    "budget reset or retry"
+  ],
+  "runtimeAuthorityIssued": false,
+  "authenticatedHumanApproval": false,
+  "g0Complete": false,
+  "acceptanceCreditAdded": 0,
+  "decisionReferenceAuthenticatesAuthority": false,
+  "decisionReceipt": "evidence/storage-g0-collection-decision-20261106.json"
+}

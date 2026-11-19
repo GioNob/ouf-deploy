@@ -1,0 +1,17 @@
+{
+  "profile": "storage",
+  "counts": {
+    "pass_tests": 54,
+    "skip_tests": 2,
+    "pass_packages": 1
+  },
+  "logSha256": "8cc7cd6dc55d1185485b3ebc802a1a58c18f70dad8e37bf5d984a42b5e2b2936",
+  "terminalTestsSha256": "6ad75c5b9bf23def24c0a1891393a5b4ee28d737782bcef9dba46cf5291b2ff3",
+  "terminalPackagesSha256": "211d61f322c3c35d86ec1413455e0d69533c0343227db95bef23f2037cd84c91",
+  "environmentConditionalOutcomes": {
+    "TestSortedFileNeedleMap_HoldsNoDescriptors": "skip",
+    "TestRebuildIdx_UnwritableIdxDirSkipsOnlyThisVolume": "skip"
+  },
+  "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+  "targetOperations": 0
+}

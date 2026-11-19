@@ -1,0 +1,30 @@
+{
+  "artifactInventory": {
+    "authority.json": true,
+    "compatibility-decision.json": false,
+    "compatibility-review.json": false,
+    "execution-plan.json": true,
+    "issuance.claim.json": true,
+    "login-window-receipt.json": false,
+    "recovery.json": true,
+    "review.json": true,
+    "update-result.json": false
+  },
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "contextPath": "/etc/ouf/deploy-snapshots/installation-binding-apply-execution-7x21g1fg",
+  "currentSuccessorStateRequeried": false,
+  "exceptionClass": "ValueError",
+  "human": {
+    "attempts": 255,
+    "maximumCumulativeOAuthAttempts": 256,
+    "state": "READY",
+    "windowExpiresAt": 1792436155
+  },
+  "humanSnapshotRole": "EXPLICITLY_SELECTED_BINDING_HUMAN",
+  "lastPhase": "NATIVE_PROJECTION_AND_TWO_ROUTES_APPROVO_REQUIRED",
+  "reasonCode": "PRIVATE_ROOT_ANCESTRY_REQUIRED",
+  "runtimeCompletionProven": false,
+  "schema": "ouf.installation-binding-apply-stop.v1",
+  "status": "STOP_RECONCILE"
+}

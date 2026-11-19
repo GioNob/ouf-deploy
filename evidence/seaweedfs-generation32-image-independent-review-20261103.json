@@ -1,0 +1,101 @@
+{
+  "schema": "ouf.generation32-pipeline-independent-review.v1",
+  "status": "PASS_FOR_FRESH_HOSTED_QUALIFICATION_NO_ADMISSION",
+  "deliveryFilesVerified": 13,
+  "deliveryBytes": 270667,
+  "manifestSha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+  "patchSha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+  "binarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+  "pipelineTestsPassed": 43,
+  "immutableRuntimeTestsPassed": 12,
+  "preliminaryBoundaryTestsPassed": 5,
+  "syntax": {
+    "shellBlocks": 18,
+    "pinnedActions": 13,
+    "embeddedPython": 2,
+    "pythonSources": 4,
+    "yaml": true
+  },
+  "sourceAndGraphFactsRecomputed": true,
+  "mainPackageSelectorsVerified": 50,
+  "compiledPackages": 1533,
+  "binaryDependencyModules": 215,
+  "shellRequiredIdentities": 306,
+  "actualLocalShellFailureRejected": true,
+  "serverTLSHostedPassMandatory": true,
+  "nestedIAMKafkaTidyExitZeroEmptyObserved": true,
+  "nestedIAMKafkaCompileExitZeroObserved": true,
+  "generation30And31DeliveryHashesUnchanged": true,
+  "immutablePrefix31Verified": true,
+  "workflowTagParityFixedAndTested": true,
+  "generatedPythonCacheRemovedFromDelivery": true,
+  "actualQualifiedOCIOrScanLocallyClaimed": false,
+  "freshHostedImageScanSPDXProvenanceReadbackRequired": true,
+  "lifecycleStatus": "OPEN",
+  "allDependenciesMaintained": false,
+  "targetFeatureBinding": "OPEN",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "limitations": [
+    "Shell296PASS/10FAIL locally is not an observed PASS; all306 identities must pass hosted.",
+    "Two serverTLS local skips must pass hosted.",
+    "Root optional/test graph legacy edges and YAML lifecycle remain OPEN.",
+    "No heavy build or candidate image download was performed by this reviewer."
+  ],
+  "deliveryHashes": {
+    ".github/workflows/storage-452-generation32-image.yml": {
+      "sha256": "e5792061b95168ed66658b61437f5b5aa58827ec779f286c66723453542e55f3",
+      "bytes": 22893
+    },
+    "docs/OUF_SEAWEEDFS_GENERATION32_IMAGE_PIPELINE_20261103.md": {
+      "sha256": "167b04e0b53fcdbe16f88e1d5978fbcd3f825c877e3a08de2f0bdbcfceb6f747",
+      "bytes": 4527
+    },
+    "evidence/seaweedfs-generation32-image-local-20261103.json": {
+      "sha256": "e8463bb27c3b80be17283f93c1768ad0a34a7166c95c17166b374bdbd484c87b",
+      "bytes": 2408
+    },
+    "evidence/seaweedfs-generation32-image-local-20261103/observed-profile-verification.json": {
+      "sha256": "4955d55d89fd0b9df86255978bc64be4043439a6833dbfda7b60496f098754d6",
+      "bytes": 4389
+    },
+    "evidence/seaweedfs-generation32-image-local-20261103/preliminary-boundary-tests.txt": {
+      "sha256": "0d1e0375854f6d2b7af2ac6f2877b8c4af48880926f597fc3bd2a936c856d6d9",
+      "bytes": 785
+    },
+    "evidence/seaweedfs-generation32-image-local-20261103/runtime-tests.txt": {
+      "sha256": "dffdd4016874e9592309b152de117cce3cbec9731e70c08be21999dd9b5c9534",
+      "bytes": 1845
+    },
+    "evidence/seaweedfs-generation32-image-local-20261103/tests.txt": {
+      "sha256": "d28eef45e88b067a8032c843cf461a9a3d2a62bfcfbf32c8cacd01dee26a52f0",
+      "bytes": 7506
+    },
+    "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch": {
+      "sha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+      "bytes": 128791
+    },
+    "releases/seaweedfs-452-generation32-build-manifest-20261103.json": {
+      "sha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+      "bytes": 30214
+    },
+    "scripts/qualify-seaweedfs-452-generation32-image.py": {
+      "sha256": "f0be047a84f7478ad981b864e381281eae8bae75cd2480867f4b1b37d0969e22",
+      "bytes": 1369
+    },
+    "scripts/readback-seaweedfs-452-generation32-image.py": {
+      "sha256": "fb088e2180b37652cb4a8bca7e3b5882c4b9f6ace661f787c044a5ff7e5cc57f",
+      "bytes": 675
+    },
+    "tests/test_seaweedfs_452_generation32_image.py": {
+      "sha256": "d3a6d608f02106dae3176667789e831d298f6e20e662c4df7eaedf75d90a6678",
+      "bytes": 32939
+    },
+    "tools/storage_security/generation_image_v3.py": {
+      "sha256": "0ab2e7cc7faa7491bb766cf9365b8ed6987539b9ffdeb2e88c004ad61e832d31",
+      "bytes": 32326
+    }
+  },
+  "newCohortAndRuntimeRequired": true
+}

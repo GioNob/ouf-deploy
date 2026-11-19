@@ -1,0 +1,82 @@
+{
+  "schema": "ouf.managed-csv-control-image-plan-target-evidence.v1",
+  "date": "2026-10-27",
+  "timezone": "Europe/Rome",
+  "origin": "OPERATOR_SUPPLIED_COMPLETE_OUTPUT_READ_IN_FULL",
+  "result": {
+    "acquisitionsExecuted": 0,
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "candidateNativeImageIds": {
+      "mcp": "sha256:a52180123104ac97e4979ad1b9b291654b076692da51708bb2a377301fef1220",
+      "onboarding": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3"
+    },
+    "capturedInputsHash": "14a96f782827c8948fabd857d9e3958cbe588a38dc9bd0968c342467f09ca9c1",
+    "cohortSize": 13,
+    "complete": true,
+    "conditionalLifecyclePlanCompiled": true,
+    "conditionalNativePlanHash": "73d5733b86f2f8c8430a6a978540607557a8cd925911321ab58ae7b011bc1f7e",
+    "contextPath": "/etc/ouf/deploy-snapshots/managed-csv-control-image-plan-14a96f782827c894-v1",
+    "counts": {
+      "ciZipReads": 2,
+      "containerWrites": 0,
+      "engineGets": 0,
+      "imageImports": 0,
+      "nativeArchivesPrepared": 2,
+      "privateMetadataBytes": 580635,
+      "privateMetadataReads": 3
+    },
+    "credentialFileReads": 0,
+    "currentRuntimeRevalidated": false,
+    "databaseAdmissionProven": false,
+    "executionEntryQualified": false,
+    "executionInputsHash": "900b09c6d29a20fda5dfff1f1333df167363c96e865cc2c13a7b58791f4e0c51",
+    "gatewayRequests": 0,
+    "historicalAuthorityReused": false,
+    "humanBudgetsGranted": 0,
+    "installationSigningKeysRead": false,
+    "newDatabaseMigrations": 0,
+    "newGrantsGranted": 0,
+    "oauthRequests": 0,
+    "ownerConfigurationContentReads": 0,
+    "registryWorkerTouched": false,
+    "releaseAcceptance": false,
+    "resumes": 0,
+    "retainedCaptureAccounting": {
+      "cumulativeCounts": {
+        "bytes": 1153763,
+        "engineGets": 27,
+        "privateMetadataReads": 8
+      },
+      "currentScopeCounts": {
+        "bytes": 670087,
+        "engineGets": 27,
+        "privateMetadataReads": 5
+      },
+      "retainedConsumedScopeCounts": {
+        "bytes": 483676,
+        "engineGets": 0,
+        "privateMetadataReads": 3
+      }
+    },
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.managed-csv-control-image-plan-result.v1",
+    "sourceActivations": 0,
+    "sqlSessions": 0,
+    "status": "MANAGED_CSV_CONTROL_IMAGES_AND_CONDITIONAL_PLAN_PREPARED_NOT_AUTHORIZED",
+    "targetUpdateAuthorized": false,
+    "unchangedPeers": 11
+  },
+  "exit": 0,
+  "deliveryExit": 0,
+  "exactOriginalCiZipsDownloadedAndRoot400Verified": true,
+  "deliveryDirectory": "/home/oufadmin/ouf-managed-csv-control-image-plan-delivery.MSi93jCM",
+  "deliveryLog": "/home/oufadmin/ouf-managed-csv-control-image-plan-delivery.MSi93jCM/bootstrap.log",
+  "scopeConsumed": true,
+  "historicalScopesReplayed": false,
+  "currentApplicationJobOrPolicyOrReadinessObserved": false,
+  "applicationCandidatesInstalled": false,
+  "retainedV36ApplySuccessfulConsumed": true,
+  "next": "Qualify a NEW minimal two-owner controller on executionInputsHash900b09... and conditionalNativePlanHash73d573..., reusing Teatri/V36 authority/TTY/lifecycle/fencing/backup. Fresh concrete runtime review and human terminal approval before effects. No prepared scope/publisher/capture/APPLY replay."
+}

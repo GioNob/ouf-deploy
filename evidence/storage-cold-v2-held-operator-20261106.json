@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.storage-cold-v2-held-operator-receipt.v1",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "downloadAndSha256ReportedSuccessful": true,
+  "v2InstalledReported": true,
+  "reportedResult": {
+    "status": "HELD",
+    "reason": "PROTECTED_REGULAR_INPUT_REQUIRED",
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
+  },
+  "exactFailingInputKnown": false,
+  "exactFailedPredicateKnown": false,
+  "targetCaptureExecuted": false,
+  "producerChanged": false,
+  "nextAction": "METADATA_ONLY_OF_SEVEN_INPUTS_USING_PINNED_RETAINED_INVENTORY",
+  "metadataReader": "scripts/read-storage-cold-v2-metadata-20261106.py",
+  "readerTargetExecuted": false,
+  "localTestsPassed": 6,
+  "localInitialTestFailure": "Redaction assertion matched the fixed key privateModeSatisfied; corrected to exact fixture name/content. Reader unchanged.",
+  "providerTestsRepeated": false,
+  "v1AndV2MustBePreserved": true
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.storage-retained-custody-sealed-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_VPS_RESULT",
+  "decisionReference": "GIOVANNI-NONPROD-HISTORICAL-CUSTODY-20261107-01",
+  "programCommit": "45d18601a8b0993c5a843477809197c3d02574fa",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "archive": "/var/lib/ouf-storage-migration/capture-historical-custody-20261107-v1/retained-historical.tar.age",
+    "archiveBytes": 6544578724,
+    "archiveSha256": "c3b0de7ab9fceb9c566431a4ed5ebf8f7720dae5eee52c1a0a5c76a5eb99a886",
+    "captureEventCoverageProven": false,
+    "liveSourceContinuityProven": false,
+    "privateManifestSha256": "58484aea53aefeb1fff390578ba6562efabffd914caf64944eee7c9d9a2e0d79",
+    "providerRequests": 0,
+    "restorePerformed": false,
+    "retainedPayloadMembersHashed": 53,
+    "schema": "ouf.storage-retained-capture-custody.v1",
+    "sourceArchivesVerified": 34,
+    "status": "HISTORICAL_CUSTODY_ARCHIVE_SEALED"
+  },
+  "windowsTransferVerified": false,
+  "acceptanceCreditAdded": 0
+}

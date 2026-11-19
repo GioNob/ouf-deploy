@@ -1,0 +1,39 @@
+{
+  "schema": "ouf.source-revision-active-parent-read.v1",
+  "observedDate": "2026-10-18",
+  "ownerReceipt": {
+    "sourceId": "teatri-csv-6609b245",
+    "onboardingVersionId": "9860853e-e8f3-4b93-b9d2-03521a039962",
+    "state": "ACTIVE",
+    "lockVersion": 4,
+    "configurationHash": "sha256:ae7f46b4214d09c55a9885530920026258f0dcd588462c353b06d82185e12c9b",
+    "humanApprovalRequired": false,
+    "challengeId": "ecf36c5c-10b2-4393-bf81-0ff7d28b8d5b",
+    "challengeStatus": "CONFIRMED",
+    "expiresAt": "2026-10-17T06:44:56.899+00:00",
+    "reviewUrl": "https://api.ouf-lab.it/trusted-human/onboarding/?challenge=ecf36c5c-10b2-4393-bf81-0ff7d28b8d5b",
+    "challengeExpired": true,
+    "publication": {
+      "publication_id": "996d58ca-43d6-42f5-a42a-311940e742f9",
+      "checksum": "sha256:c997e4ccdb1e97823e1a55f4e5a549ee6cecee80da865bb246bb297d8cbd7431",
+      "active": true
+    },
+    "ingestionCompatibilityObserved": true,
+    "activationProgress": {
+      "readiness_started_at": "2026-10-17T06:39:25.984+00:00",
+      "readiness_attempts": 3,
+      "readiness_generation": 5,
+      "readiness_phase": "ACTIVE",
+      "readiness_lease_until": null,
+      "readiness_next_at": null,
+      "readiness_last_code": null,
+      "profile": "managed-review-activation.v1",
+      "maximumAttempts": 128,
+      "maximumElapsedSeconds": 86400,
+      "requiresAuthenticatedHumanResume": true
+    }
+  },
+  "runtimeMutations": 0,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}

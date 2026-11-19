@@ -1,0 +1,85 @@
+{
+  "schema": "ouf.chatbot-ingestion-image-path-reprocessing-qualification.v1",
+  "sourceCommit": "d7bbb768970aad1a001ca4d085bcc87c58a29cec",
+  "capsuleMembers": 131,
+  "capsuleSha256": "9f754dbcf7caf450d1d1eef50c0288f2102cfac191a65cfc60a5c1fcbf60ba5e",
+  "deliverySha256": "5cf2c1b37e8f28249d92060006d8176a9d001c26be30c6807cb6cc08a6d61d9a",
+  "launcherSha256": "3bd2f8c8a883a59c805b3de7a1135fdc09afdcdc53f04ab966b16152f2e1e03d",
+  "qualification": {
+    "run": 38882690699,
+    "native": {
+      "job": 116912944138,
+      "tests": 3,
+      "conclusion": "success",
+      "failedStartReproduced": true,
+      "failedContainerPreserved": true,
+      "sameImage": true,
+      "changedEnvironmentKeys": [
+        "PATH"
+      ],
+      "newCreates": 1,
+      "newStarts": 1,
+      "newGatewayWrites": 0,
+      "newGatewayLifecycleOperations": 0,
+      "staticJavaNamedFixtureNotApplicationReadiness": true
+    },
+    "finiteHistory": {
+      "job": 116912944512,
+      "tests": 29,
+      "suites": 8,
+      "skipped": 0,
+      "conclusion": "success",
+      "actualTlsGrantAttempt": 11,
+      "tenPredecessorGrantsPreserved": true
+    },
+    "backup": {
+      "run": 38882690674,
+      "job": 116912943811,
+      "conclusion": "success"
+    },
+    "additionalGeneral": {
+      "run": 38882690718,
+      "job": 116912944574,
+      "statusAtRelease": "in_progress",
+      "claimedPassed": false
+    }
+  },
+  "target": {
+    "completedTechnicalPhases": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "technicalPhase": 6,
+    "functionalMilestonesProven": 0,
+    "controlledCumulativeGrantAttempts": 10,
+    "nextNewGrantAttempt": 11,
+    "failedContainerId": "cbf3067d946cf21a8f4abbb03ed47a217f2f39624ed1a5fb23a642325129ee35",
+    "status": "created",
+    "neverStarted": true,
+    "pid": 0,
+    "exitCode": 127,
+    "startClaim": "CLAIMED",
+    "cause": "LEGACY_PATH_HIDES_IMAGE_JAVA_LAUNCHER",
+    "javaHomeMatchesImage": true,
+    "gatewayRoutes": 74
+  },
+  "limits": {
+    "newHumanReviewRequired": true,
+    "maximumNewWorkerAttempts": 128,
+    "maximumSeconds": 3600,
+    "budgetReset": false,
+    "automaticRenewal": false,
+    "failedStartReplayAllowed": false,
+    "gatewayWritesAllowed": false,
+    "newDumpAllowed": false,
+    "restoreAllowed": false,
+    "sameImageRequired": true
+  },
+  "runtimeAuthorityIssuedByQualification": false,
+  "targetAccessByQualification": false,
+  "newSourceExecutedOnTarget": false,
+  "chatbotEndToEndProven": false
+}

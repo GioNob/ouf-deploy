@@ -1,0 +1,488 @@
+--- a/test/s3/basic/basic_test.go
++++ b/test/s3/basic/basic_test.go
+@@ -1,36 +1,47 @@
+ package basic
+ 
+ import (
++	"context"
++	"errors"
+ 	"fmt"
+ 	"io"
+ 	"os"
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/config"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+ )
+ 
+ var (
+-	svc *s3.S3
++	svc *s3.Client
+ )
+ 
+ func init() {
+-	// Initialize a session in us-west-2 that the SDK will use to load
++	// Initialize configuration in us-west-2 that the SDK will use to load
+ 	// credentials from the shared credentials file ~/.aws/credentials.
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:     aws.String("us-west-2"),
+-		Endpoint:   aws.String("localhost:8333"),
+-		DisableSSL: aws.Bool(true),
+-	})
++	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion("us-west-2"))
+ 	if err != nil {
+-		exitErrorf("create session, %v", err)
++		exitErrorf("load AWS configuration, %v", err)
+ 	}
+ 
+ 	// Create S3 service client
+-	svc = s3.New(sess)
++	svc = s3.NewFromConfig(cfg, func(options *s3.Options) {
++		options.BaseEndpoint = aws.String("http://localhost:8333")
++		options.UsePathStyle = true
++	})
++}
++
++func TestClientUsesLocalPathStyle(t *testing.T) {
++	options := svc.Options()
++	if got := aws.ToString(options.BaseEndpoint); got != "http://localhost:8333" {
++		t.Fatalf("BaseEndpoint = %q, want %q", got, "http://localhost:8333")
++	}
++	if !options.UsePathStyle {
++		t.Fatal("UsePathStyle = false, want true for the local S3 fixture")
++	}
+ }
+ 
+ func TestCreateBucket(t *testing.T) {
+@@ -39,21 +50,17 @@
+ 		Bucket: aws.String("theBucket"),
+ 	}
+ 
+-	result, err := svc.CreateBucket(input)
++	result, err := svc.CreateBucket(context.Background(), input)
+ 	if err != nil {
+-		if aerr, ok := err.(awserr.Error); ok {
+-			switch aerr.Code() {
+-			case s3.ErrCodeBucketAlreadyExists:
+-				fmt.Println(s3.ErrCodeBucketAlreadyExists, aerr.Error())
+-			case s3.ErrCodeBucketAlreadyOwnedByYou:
+-				fmt.Println(s3.ErrCodeBucketAlreadyOwnedByYou, aerr.Error())
+-			default:
+-				fmt.Println(aerr.Error())
+-			}
+-		} else {
+-			// Print the error, cast err to awserr.Error to get the Code and
+-			// Message from an error.
+-			fmt.Println(err.Error())
++		var alreadyExists *types.BucketAlreadyExists
++		var alreadyOwned *types.BucketAlreadyOwnedByYou
++		switch {
++		case errors.As(err, &alreadyExists):
++			fmt.Println("BucketAlreadyExists", err)
++		case errors.As(err, &alreadyOwned):
++			fmt.Println("BucketAlreadyOwnedByYou", err)
++		default:
++			fmt.Println(err)
+ 		}
+ 		return
+ 	}
+@@ -65,24 +72,15 @@
+ func TestPutObject(t *testing.T) {
+ 
+ 	input := &s3.PutObjectInput{
+-		ACL:    aws.String("authenticated-read"),
+-		Body:   aws.ReadSeekCloser(strings.NewReader("filetoupload")),
++		ACL:    types.ObjectCannedACLAuthenticatedRead,
++		Body:   strings.NewReader("filetoupload"),
+ 		Bucket: aws.String("theBucket"),
+ 		Key:    aws.String("exampleobject"),
+ 	}
+ 
+-	result, err := svc.PutObject(input)
++	result, err := svc.PutObject(context.Background(), input)
+ 	if err != nil {
+-		if aerr, ok := err.(awserr.Error); ok {
+-			switch aerr.Code() {
+-			default:
+-				fmt.Println(aerr.Error())
+-			}
+-		} else {
+-			// Print the error, cast err to awserr.Error to get the Code and
+-			// Message from an error.
+-			fmt.Println(err.Error())
+-		}
++		fmt.Println(err)
+ 		return
+ 	}
+ 
+@@ -92,7 +90,7 @@
+ 
+ func TestListBucket(t *testing.T) {
+ 
+-	result, err := svc.ListBuckets(nil)
++	result, err := svc.ListBuckets(context.Background(), &s3.ListBucketsInput{})
+ 	if err != nil {
+ 		exitErrorf("Unable to list buckets, %v", err)
+ 	}
+@@ -101,14 +99,14 @@
+ 
+ 	for _, b := range result.Buckets {
+ 		fmt.Printf("* %s created on %s\n",
+-			aws.StringValue(b.Name), aws.TimeValue(b.CreationDate))
++			aws.ToString(b.Name), aws.ToTime(b.CreationDate))
+ 	}
+ 
+ }
+ 
+ func TestListObjectV2(t *testing.T) {
+ 
+-	listObj, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
++	listObj, err := svc.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
+ 		Bucket:    aws.String(Bucket),
+ 		Prefix:    aws.String("foo"),
+ 		Delimiter: aws.String("/"),
+@@ -117,9 +115,9 @@
+ 		exitErrorf("Unable to list objects, %v", err)
+ 	}
+ 	for _, content := range listObj.Contents {
+-		fmt.Println(aws.StringValue(content.Key))
++		fmt.Println(aws.ToString(content.Key))
+ 	}
+-	fmt.Printf("list: %s\n", listObj)
++	fmt.Printf("list: %v\n", listObj)
+ 
+ }
+ 
+@@ -135,14 +133,14 @@
+ )
+ 
+ func TestObjectOp(t *testing.T) {
+-	_, err := svc.CreateBucket(&s3.CreateBucketInput{
++	_, err := svc.CreateBucket(context.Background(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(Bucket),
+ 	})
+ 	if err != nil {
+ 		exitErrorf("Unable to create bucket, %v", err)
+ 	}
+ 
+-	_, err = svc.PutObject(&s3.PutObjectInput{
++	_, err = svc.PutObject(context.Background(), &s3.PutObjectInput{
+ 		Bucket: aws.String(Bucket),
+ 		Key:    aws.String(object),
+ 		Body:   strings.NewReader(Data),
+@@ -152,7 +150,7 @@
+ 	}
+ 
+ 	dest := fmt.Sprintf("%s_bak", object)
+-	copyObj, err := svc.CopyObject(&s3.CopyObjectInput{
++	copyObj, err := svc.CopyObject(context.Background(), &s3.CopyObjectInput{
+ 		Bucket:     aws.String(Bucket),
+ 		CopySource: aws.String(fmt.Sprintf("%s/%s", Bucket, object)),
+ 		Key:        aws.String(dest),
+@@ -162,7 +160,7 @@
+ 	}
+ 	t.Log("copy object result -> ", copyObj.CopyObjectResult)
+ 
+-	getObj, err := svc.GetObject(&s3.GetObjectInput{
++	getObj, err := svc.GetObject(context.Background(), &s3.GetObjectInput{
+ 		Bucket: aws.String(Bucket),
+ 		Key:    aws.String(dest),
+ 	})
+@@ -178,7 +176,7 @@
+ 		t.Error("object data -> ", string(data))
+ 	}
+ 
+-	listObj, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
++	listObj, err := svc.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
+ 		Bucket: aws.String(Bucket),
+ 		Prefix: aws.String("foo/"),
+ 	})
+@@ -187,7 +185,7 @@
+ 	}
+ 	count := 0
+ 	for _, content := range listObj.Contents {
+-		key := aws.StringValue(content.Key)
++		key := aws.ToString(content.Key)
+ 		if key == dest {
+ 			count++
+ 		} else if key == object {
+@@ -201,7 +199,7 @@
+ 		exitErrorf("Unable to find two objects, %v", listObj.Contents)
+ 	}
+ 
+-	_, err = svc.DeleteObject(&s3.DeleteObjectInput{
++	_, err = svc.DeleteObject(context.Background(), &s3.DeleteObjectInput{
+ 		Bucket: aws.String(Bucket),
+ 		Key:    aws.String(object),
+ 	})
+@@ -209,7 +207,7 @@
+ 		exitErrorf("Unable to delete source object, %v", err)
+ 	}
+ 
+-	_, err = svc.DeleteObject(&s3.DeleteObjectInput{
++	_, err = svc.DeleteObject(context.Background(), &s3.DeleteObjectInput{
+ 		Bucket: aws.String(Bucket),
+ 		Key:    aws.String(dest),
+ 	})
+@@ -217,7 +215,7 @@
+ 		exitErrorf("Unable to delete object, %v", err)
+ 	}
+ 
+-	_, err = svc.DeleteBucket(&s3.DeleteBucketInput{
++	_, err = svc.DeleteBucket(context.Background(), &s3.DeleteBucketInput{
+ 		Bucket: aws.String(Bucket),
+ 	})
+ 
+--- a/test/s3/basic/delimiter_test.go
++++ b/test/s3/basic/delimiter_test.go
+@@ -1,14 +1,15 @@
+ package basic
+ 
+ import (
++	"context"
+ 	"fmt"
+ 	"math/rand"
+ 	"strings"
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -20,7 +21,7 @@
+ 	bucketName := fmt.Sprintf("test-delimiter-dir-key-%d", rand.Int31())
+ 
+ 	// Create bucket
+-	_, err := svc.CreateBucket(&s3.CreateBucketInput{
++	_, err := svc.CreateBucket(context.Background(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -41,7 +42,7 @@
+ 
+ 	// Create all objects
+ 	for _, key := range objects {
+-		_, err := svc.PutObject(&s3.PutObjectInput{
++		_, err := svc.PutObject(context.Background(), &s3.PutObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String(key),
+ 			Body:   strings.NewReader(fmt.Sprintf("content for %s", key)),
+@@ -50,7 +51,7 @@
+ 	}
+ 
+ 	// Test with delimiter='/'
+-	resp, err := svc.ListObjects(&s3.ListObjectsInput{
++	resp, err := svc.ListObjects(context.Background(), &s3.ListObjectsInput{
+ 		Bucket:    aws.String(bucketName),
+ 		Delimiter: aws.String("/"),
+ 	})
+@@ -96,7 +97,7 @@
+ 	bucketName := fmt.Sprintf("test-no-delimiter-%d", rand.Int31())
+ 
+ 	// Create bucket
+-	_, err := svc.CreateBucket(&s3.CreateBucketInput{
++	_, err := svc.CreateBucket(context.Background(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -106,7 +107,7 @@
+ 	objects := []string{"0/", "0/1000", "1999"}
+ 
+ 	for _, key := range objects {
+-		_, err := svc.PutObject(&s3.PutObjectInput{
++		_, err := svc.PutObject(context.Background(), &s3.PutObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String(key),
+ 			Body:   strings.NewReader(fmt.Sprintf("content for %s", key)),
+@@ -115,7 +116,7 @@
+ 	}
+ 
+ 	// Test without delimiter
+-	resp, err := svc.ListObjects(&s3.ListObjectsInput{
++	resp, err := svc.ListObjects(context.Background(), &s3.ListObjectsInput{
+ 		Bucket: aws.String(bucketName),
+ 		// No delimiter specified
+ 	})
+@@ -138,7 +139,7 @@
+ 
+ func cleanupBucket(t *testing.T, bucketName string) {
+ 	// Delete all objects
+-	resp, err := svc.ListObjects(&s3.ListObjectsInput{
++	resp, err := svc.ListObjects(context.Background(), &s3.ListObjectsInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	if err != nil {
+@@ -147,7 +148,7 @@
+ 	}
+ 
+ 	for _, obj := range resp.Contents {
+-		_, err := svc.DeleteObject(&s3.DeleteObjectInput{
++		_, err := svc.DeleteObject(context.Background(), &s3.DeleteObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    obj.Key,
+ 		})
+@@ -160,7 +161,7 @@
+ 	time.Sleep(100 * time.Millisecond)
+ 
+ 	// Delete bucket
+-	_, err = svc.DeleteBucket(&s3.DeleteBucketInput{
++	_, err = svc.DeleteBucket(context.Background(), &s3.DeleteBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	if err != nil {
+--- a/test/s3/basic/object_tagging_test.go
++++ b/test/s3/basic/object_tagging_test.go
+@@ -1,12 +1,14 @@
+ package basic
+ 
+ import (
++	"context"
+ 	"fmt"
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+ )
+ 
+ func TestObjectTagging(t *testing.T) {
+@@ -16,7 +18,7 @@
+ 		Key:    aws.String("testDir/testObject"),
+ 	}
+ 
+-	svc.PutObject(input)
++	svc.PutObject(context.Background(), input)
+ 
+ 	printTags()
+ 
+@@ -31,7 +33,7 @@
+ }
+ 
+ func printTags() {
+-	response, err := svc.GetObjectTagging(
++	response, err := svc.GetObjectTagging(context.Background(),
+ 		&s3.GetObjectTaggingInput{
+ 			Bucket: aws.String("theBucket"),
+ 			Key:    aws.String("testDir/testObject"),
+@@ -47,11 +49,11 @@
+ 
+ func setTags() {
+ 
+-	response, err := svc.PutObjectTagging(&s3.PutObjectTaggingInput{
++	response, err := svc.PutObjectTagging(context.Background(), &s3.PutObjectTaggingInput{
+ 		Bucket: aws.String("theBucket"),
+ 		Key:    aws.String("testDir/testObject"),
+-		Tagging: &s3.Tagging{
+-			TagSet: []*s3.Tag{
++		Tagging: &types.Tagging{
++			TagSet: []types.Tag{
+ 				{
+ 					Key:   aws.String("kye2"),
+ 					Value: aws.String("value2"),
+@@ -65,12 +67,12 @@
+ 		fmt.Println(err.Error())
+ 	}
+ 
+-	fmt.Println(response.String())
++	fmt.Println(response)
+ }
+ 
+ func clearTags() {
+ 
+-	response, err := svc.DeleteObjectTagging(&s3.DeleteObjectTaggingInput{
++	response, err := svc.DeleteObjectTagging(context.Background(), &s3.DeleteObjectTaggingInput{
+ 		Bucket: aws.String("theBucket"),
+ 		Key:    aws.String("testDir/testObject"),
+ 	})
+@@ -80,7 +82,7 @@
+ 		fmt.Println(err.Error())
+ 	}
+ 
+-	fmt.Println(response.String())
++	fmt.Println(response)
+ }
+ 
+ func TestObjectTaggingWithEncodedValues(t *testing.T) {
+@@ -90,14 +92,14 @@
+ 		Key:    aws.String("testDir/testObjectWithEncodedTags"),
+ 	}
+ 
+-	svc.PutObject(input)
++	svc.PutObject(context.Background(), input)
+ 
+ 	// Set tags with encoded values (simulating what would happen with timestamps containing spaces and colons)
+-	_, err := svc.PutObjectTagging(&s3.PutObjectTaggingInput{
++	_, err := svc.PutObjectTagging(context.Background(), &s3.PutObjectTaggingInput{
+ 		Bucket: aws.String("theBucket"),
+ 		Key:    aws.String("testDir/testObjectWithEncodedTags"),
+-		Tagging: &s3.Tagging{
+-			TagSet: []*s3.Tag{
++		Tagging: &types.Tagging{
++			TagSet: []types.Tag{
+ 				{
+ 					Key:   aws.String("Timestamp"),
+ 					Value: aws.String("2025-07-16 14:40:39"), // This would be URL encoded as "2025-07-16%2014%3A40%3A39" in the header
+@@ -115,7 +117,7 @@
+ 	}
+ 
+ 	// Get tags back and verify they are properly decoded
+-	response, err := svc.GetObjectTagging(&s3.GetObjectTaggingInput{
++	response, err := svc.GetObjectTagging(context.Background(), &s3.GetObjectTaggingInput{
+ 		Bucket: aws.String("theBucket"),
+ 		Key:    aws.String("testDir/testObjectWithEncodedTags"),
+ 	})
+@@ -143,7 +145,7 @@
+ 	fmt.Printf("✓ URL encoded tags test passed - Timestamp: %s, Path: %s\n", tagMap["Timestamp"], tagMap["Path"])
+ 
+ 	// Clean up
+-	svc.DeleteObjectTagging(&s3.DeleteObjectTaggingInput{
++	svc.DeleteObjectTagging(context.Background(), &s3.DeleteObjectTaggingInput{
+ 		Bucket: aws.String("theBucket"),
+ 		Key:    aws.String("testDir/testObjectWithEncodedTags"),
+ 	})
+@@ -164,10 +166,10 @@
+ 	// - Values containing "=" characters
+ 	// - Empty values
+ 	// - Complex special characters
+-	_, err := svc.PutObject(&s3.PutObjectInput{
++	_, err := svc.PutObject(context.Background(), &s3.PutObjectInput{
+ 		Bucket:  aws.String("theBucket"),
+ 		Key:     aws.String(objectKey),
+-		Body:    aws.ReadSeekCloser(strings.NewReader("test content")),
++		Body:    strings.NewReader("test content"),
+ 		Tagging: aws.String("Timestamp=2025-07-16 14:40:39&Path=/tmp/file.txt&Description=A test file with spaces&Equation=x=y+1&EmptyValue=&Complex=A%20tag%20with%20%26%20%3D%20chars"),
+ 	})
+ 
+@@ -176,7 +178,7 @@
+ 	}
+ 
+ 	// Get the tags back to verify they were properly URL decoded during upload
+-	response, err := svc.GetObjectTagging(&s3.GetObjectTaggingInput{
++	response, err := svc.GetObjectTagging(context.Background(), &s3.GetObjectTaggingInput{
+ 		Bucket: aws.String("theBucket"),
+ 		Key:    aws.String(objectKey),
+ 	})
+@@ -218,7 +220,7 @@
+ 	}
+ 
+ 	// Clean up
+-	_, err = svc.DeleteObject(&s3.DeleteObjectInput{
++	_, err = svc.DeleteObject(context.Background(), &s3.DeleteObjectInput{
+ 		Bucket: aws.String("theBucket"),
+ 		Key:    aws.String(objectKey),
+ 	})
+

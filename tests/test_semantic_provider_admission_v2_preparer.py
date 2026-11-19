@@ -1,0 +1,801 @@
+"""v7 contracts plus gated root-native broker/preparer/hook integration."""
+import ast
+import copy
+from contextlib import contextmanager, nullcontext
+import importlib.util
+import io
+import json
+import os
+from pathlib import Path
+import shutil
+import socket
+import stat
+import subprocess
+import sys
+import tempfile
+import time
+import types
+import unittest
+from unittest.mock import Mock, patch
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from tools.semantic_provider_operation import authorization as a
+from tools.semantic_provider_admission_v2 import broker_v2 as b, driver_v7 as d, preparer_v2 as p
+
+spec = importlib.util.spec_from_file_location("admission_part_a_fixture", ROOT / "tests/test_semantic_provider_admission_v2.py")
+part_a = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(part_a)
+
+
+def grant():
+    binding, _, _, _, _ = part_a.fixture()
+    root = "/registry/" + binding["containerId"] + "/epochs/1"
+    bound = {"path": "/private/file", "sha256": "a" * 64}
+    return {"schema": d.SCHEMA, "sourceRoot": "/source", "sourceHashes": {k: "a" * 64 for k in b.SOURCES},
+        "operationBinding": {k: binding[k] for k in ("authorizationSha256", "epoch", "containerId", "configurationHash")},
+        "operation": {**part_a.configuration()["operation"], "installationRef": binding["installationRef"],
+                      "entityRef": binding["entityRef"], "issuerRef": "installer"},
+        "evidenceBinding": {**bound, "path": root + "/evidence.json"}, "consumptionJournal": root + "/deployment.json",
+        "creationFrameObserverBinding": {k: bound for k in ("python", "source", "configuration")},
+        "profile": {"schema": "ouf.semantic-preexec-profile.v2", "transactionId": d.correlation(binding),
+            "containerId": binding["containerId"], "bundlePath": root + "/bundle", "bundleHash": "a" * 64,
+            "namespacePath": root + "/netns", "namespaceInode": 123, "namespaceOrigin": "OCI_CREATED",
+            "namespaceLinks": [], "policy": {}, "expectedFootprint": "b" * 64,
+            "applicationStartAuthorized": True, "infrastructureAuthorityComplete": True},
+        "kernel": {}, "dns": {}, "coordinationBinding": {k: "c" * 64 for k in
+            ("transactionId", "configurationHash", "leaseStructureHash")}, "coordinationJournal": "/private/lease.json",
+        "preexecJournal": root + "/preexec.json", "lockFile": "/private/common.lock",
+        "commands": {k: "/bin/" + k for k in ("nft", "ip", "nsenter")}, "budgetSeconds": 5,
+        "runtimeBinding": {**bound, "root": "/run/runtime"}}
+
+
+class ContractTests(unittest.TestCase):
+    def test_template_worker_canonical_line_protocol(self):
+        worker = p.Worker.__new__(p.Worker)
+        worker.budget = Mock()
+        worker.budget.remaining.return_value = 5
+        # Exercise the actual pipe/print boundary, including its final LF.
+        argv = [sys.executable, "-I", "-B", "-c",
+                r"import json,sys; sys.stdout.reconfigure(newline='\n'); print(json.dumps(json.load(sys.stdin),sort_keys=True,separators=(',',':')))"]
+        packet = {"footprint": "a" * 64, "isolated": True}
+        self.assertEqual(worker.invoke_result(argv, a.canonical(packet)), packet)
+        for raw in (a.canonical(packet), a.canonical(packet) + b"\n\n",
+                    a.canonical(packet) + b"\r\n", b"{}\n{}\n", b'{"extra": true}\n'):
+            with self.subTest(raw=raw), patch.object(worker, "invoke", return_value=raw), \
+                    self.assertRaises(a.OperationDenied):
+                worker.invoke_result(argv, b"{}")
+
+    def test_driver_consumes_under_common_lock_and_rollback_skips_authority(self):
+        value = grant()
+        binding, head, _, _, evidence = part_a.fixture()
+        value["evidenceBinding"]["sha256"] = a.sha(a.canonical(evidence))
+        raw = a.canonical(value)
+        journal = part_a.MemoryJournal()
+        locked = False
+        @contextmanager
+        def lock():
+            nonlocal locked
+            self.assertFalse(locked)
+            locked = True
+            try:
+                yield
+            finally:
+                locked = False
+        receipt = part_a.EpochConsumption(binding, journal, lock)
+        journal.value = receipt.initial()
+        receipt.authorize_create(head)
+        receipt.created(evidence["bundleHash"], part_a.GEN)
+        with lock():
+            receipt.ready_locked(evidence)
+            receipt.seal_driver_locked(a.sha(raw))
+        backend = Mock(deadline=time.monotonic() + 4)
+        state = {"status": "created"}
+        backend.runtime.side_effect = lambda binding, mode: state if mode == "state" else self.assertTrue(locked)
+        gate = Mock()
+        gate.coord.hold_lock = lock
+        def before(state, starter=None, authorizer=None, consume=None):
+            with lock():
+                authorizer()
+                if starter is not None:
+                    consume(part_a.GEN, starter)
+            return {"protectedBeforeProcess": True}
+        gate.before_process.side_effect = before
+        operation = Mock(binding=binding)
+        operation.authorizer.return_value = Mock(side_effect=lambda: self.assertTrue(locked))
+        with part_a.libraries():
+            from tools import semantic_provider_lease_coordination as coordination, semantic_provider_deployment_producer as producer
+            from tools import semantic_provider_deployment_admission as admission
+            with patch.object(d, "components", return_value=(gate, backend)), patch.object(d, "Operation", return_value=operation) as constructor, \
+                    patch.object(b, "verify_sources"), \
+                    patch.object(b, "private", return_value=raw), patch.object(coordination, "PrivateJournal", return_value=journal), \
+                    patch.object(producer, "LocalEvidenceProducer", side_effect=AssertionError("issuance forbidden")), \
+                    patch.object(admission, "authority", side_effect=AssertionError("legacy authority forbidden")):
+                d.operate(value, raw, "/grant", "hook", state)
+                self.assertEqual(receipt.record()["state"], "READY")
+                d.operate(value, raw, "/grant", "start")
+                self.assertEqual(receipt.record()["state"], "STARTED")
+                with self.assertRaisesRegex(a.OperationDenied, "DO_NOT_REPLAY_DEPLOYMENT_START"):
+                    d.operate(value, raw, "/grant", "start")
+                constructor.reset_mock()
+                d.operate(value, raw, "/grant", "rollback")
+                constructor.assert_not_called()
+                gate.operate.assert_called_once_with("rollback")
+
+    def test_peer_recollection_rejects_transport_and_generation_drift(self):
+        value = grant()
+        peer_id = "b" * 64
+        nic = {"interface": "eth0", "bridge": "br_test", "mac": "02:00:00:00:00:02", "ipv4": "10.10.0.3",
+               "workloadRef": "peer", "bindingRef": "peer_nic"}
+        declaration = {"containerId": peer_id, "applicationHash": "2" * 64, "networkBindings": [nic]}
+        policy = {"tableName": "ouf_test", "networkBindings": [], "transport": [{"purpose": "DNS", "authorityRef": "dns",
+            "source": "10.10.0.2", "destination": "10.10.0.3", "protocol": "udp", "port": 53,
+            "peerIngress": {"kind": "CREATED_CANDIDATE", "declaration": declaration, "bindingRef": "peer_nic"}}]}
+        snapshot = {"containerId": peer_id, "applicationHash": "2" * 64, "generation": part_a.GEN,
+                    "bindings": [{**nic, "hostIfindex": 20}]}
+        value["peerBinding"] = {"declaredPolicy": policy, "observations": {peer_id: snapshot},
+            "commandBindings": {k: {"path": value["commands"][k], "sha256": "a" * 64} for k in ("ip", "nsenter")}}
+        with part_a.libraries():
+            from tools import semantic_provider_peer_bindings as peer
+            value["profile"]["policy"] = {"tableName": "ouf_test", "flows": peer.resolve(policy["transport"],
+                [declaration], {peer_id: snapshot}, part_a.CID)}
+            d.validate(a.canonical(value))
+            with patch.object(peer, "collect", return_value=snapshot) as collect:
+                d.verify_peers(value, peer.digest(policy), Mock(), Mock())
+                self.assertEqual(collect.call_count, 1)
+                with self.assertRaisesRegex(a.OperationDenied, "PEER_DRIVER_TRANSPORT_SCOPE_DRIFT"):
+                    d.verify_peers(value, "0" * 64, Mock(), Mock())
+                collect.return_value = {**snapshot, "generation": {**part_a.GEN, "startTicks": 999}}
+                with self.assertRaisesRegex(a.OperationDenied, "PEER_GENERATION_OR_LINK_CHANGED"):
+                    d.verify_peers(value, peer.digest(policy), Mock(), Mock())
+
+    def test_closed_grant_and_each_binding(self):
+        value = grant()
+        self.assertEqual(d.validate(a.canonical(value)), value)
+        for key in value:
+            bad = copy.deepcopy(value)
+            del bad[key]
+            with self.subTest(missing=key), self.assertRaises(Exception):
+                d.validate(a.canonical(bad))
+        for key in ("extra", "authorityBinding", "authorityScope", "consumptionBinding", "authenticationBinding"):
+            with self.subTest(extra=key), self.assertRaises(a.OperationDenied):
+                d.validate(a.canonical({**value, key: {}}))
+        cases = [("operationBinding", "epoch", True), ("operationBinding", "configurationHash", "bad"),
+                 ("operationBinding", "containerId", "b" * 64), ("operationBinding", "epoch", 2),
+                 ("profile", "transactionId", "0" * 64), ("profile", "schema", "ouf.semantic-preexec-profile.v1"),
+                 ("runtimeBinding", "root", "/bad/../root"), ("evidenceBinding", "path", "/other/evidence.json")]
+        for section, key, datum in cases:
+            bad = copy.deepcopy(value)
+            bad[section][key] = datum
+            with self.subTest(section=section, key=key), self.assertRaises(a.OperationDenied):
+                d.validate(a.canonical(bad))
+        for section in ("operationBinding", "operation", "evidenceBinding", "runtimeBinding", "profile", "creationFrameObserverBinding"):
+            bad = copy.deepcopy(value)
+            bad[section]["extra"] = True
+            with self.subTest(nested=section), self.assertRaises(a.OperationDenied):
+                d.validate(a.canonical(bad))
+        with self.assertRaises(a.OperationDenied):
+            d.validate(a.canonical(value) + b"\n")
+
+    def test_subprocess_exact_request_state_and_result(self):
+        request = {"epochRoot": "/epoch", "binding": {"epoch": 1}, "evidenceBinding": {"sha256": "e" * 64},
+                   "template": {"pythonPath": "/bin/python", "pythonHash": "f" * 64},
+                   "configurationBinding": {"path": "/configuration", "sha256": "c" * 64}}
+        cfg = part_a.configuration()
+        cfg["sourceRoot"] = "/explicit-pinned-package"
+        state = {"id": "a" * 64, "status": "created"}
+        good = {"binding": request["binding"], "evidenceHash": "e" * 64, "driverHash": "d" * 64}
+        responses = [good, {**good, "extra": True}, {**good, "binding": {}}, {**good, "evidenceHash": "0" * 64},
+                     {**good, "driverHash": "invalid"}, {"state": "WRONG"}]
+        with part_a.libraries():
+            from tools import semantic_provider_deployment_producer as producer
+            self.enterContext(patch.object(b, "read_binding", return_value=a.canonical(cfg)))
+            checked = self.enterContext(patch.object(b, "verify_sources"))
+            for response in responses:
+                def run(argv, **kwargs):
+                    self.assertEqual(argv[0:3], ["/bin/python", "-I", "-B"])
+                    self.assertEqual(Path(argv[3]), Path(cfg["sourceRoot"]) / b.ENTRYPOINTS[1])
+                    self.assertEqual(argv[-4:], ["--configuration", "/epoch/preparer.json", "--mode", "prepare"])
+                    self.assertEqual(kwargs["input"], a.canonical(state))
+                    self.assertTrue(kwargs["stderr"].writable())
+                    self.assertEqual(kwargs["env"], {"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"})
+                    self.assertEqual(b.private("/epoch/preparer.json"), a.canonical(request))
+                    kwargs["stdout"].write(a.canonical(response) + b"\n")
+                    return types.SimpleNamespace(returncode=0)
+                with patch.object(b, "private", return_value=a.canonical(request)), \
+                        patch.object(producer, "program", return_value="/bin/python"), patch.object(b.subprocess, "run", side_effect=run):
+                    if response == good:
+                        self.assertEqual(b.SubprocessPreparer().prepare(request, state), good)
+                    else:
+                        with self.assertRaises(a.OperationDenied):
+                            b.SubprocessPreparer().prepare(request, state)
+            for raw, status in ((b"not-json\n", 0), (a.canonical(good), 0), (b"", 1), (b"x" * 131073, 0)):
+                def run(argv, **kwargs):
+                    kwargs["stdout"].write(raw)
+                    return types.SimpleNamespace(returncode=status)
+                with patch.object(b, "private", return_value=a.canonical(request)), \
+                        patch.object(producer, "program", return_value="/bin/python"), patch.object(b.subprocess, "run", side_effect=run), \
+                        self.assertRaises(Exception):
+                    b.SubprocessPreparer().prepare(request, state)
+            def cleanup(argv, **kwargs):
+                self.assertEqual(argv[-1], "cleanup")
+                self.assertIsNone(kwargs["input"])
+                self.assertEqual(kwargs["stdin"], subprocess.DEVNULL)
+                kwargs["stdout"].write(b'{"state":"CLEANED"}\n')
+                return types.SimpleNamespace(returncode=0)
+            with patch.object(b, "private", return_value=a.canonical(request)), \
+                    patch.object(producer, "program", return_value="/bin/python"), patch.object(b.subprocess, "run", side_effect=cleanup):
+                self.assertEqual(b.SubprocessPreparer().cleanup(request), {"state": "CLEANED"})
+            self.assertTrue(checked.called)
+            checked.side_effect = a.OperationDenied("BROKER_SOURCE_PACKAGE_DRIFT")
+            with patch.object(b, "private", return_value=a.canonical(request)), \
+                    patch.object(producer, "program", return_value="/bin/python"), \
+                    patch.object(b.subprocess, "run") as denied, \
+                    self.assertRaisesRegex(a.OperationDenied, "BROKER_SOURCE_PACKAGE_DRIFT"):
+                b.SubprocessPreparer().prepare(request, state)
+            denied.assert_not_called()
+
+    def test_bounded_worker_denial_protocol_and_real_stderr_pipe(self):
+        worker = p.Worker.__new__(p.Worker)
+        worker.budget = Mock()
+        worker.budget.remaining.return_value = 5
+        cases = [(b"SECRET/path\nWORKER=DENIED INDEPENDENT_TEMPLATE_BINDING_DRIFT\n", "INDEPENDENT_TEMPLATE_BINDING_DRIFT"),
+                 (b"WORKER=DENIED " + b"A" * 80 + b"\n", "A" * 80),
+                 (b"SECRET/path", None), (b"WORKER=DENIED bad-code\n", None),
+                 (b"WORKER=DENIED CODE SECRET\n", None), (b"WORKER=DENIED " + b"A" * 81 + b"\n", None),
+                 (b"WORKER=DENIED CODE\xff\n", None), (b"WORKER=DENIED GOOD\r\n", "GOOD"),
+                 (b"WORKER=DENIED GOOD\nWORKER=DENIED OTHER\n", None),
+                 (b"x" * 4096 + b"\nWORKER=DENIED TOO_LATE\n", None),
+                 (b"x\n" * 2040 + b"W=DENIED TOO_LONG_FOR_WINDOW\n", None),
+                 (b"W=DENIED EARLY\n" + b"x" * 1000000, "EARLY")]
+        for stderr, code in cases:
+            for prefix in ("TEMPLATE_DENIED_", "HOOK_APPLY_DENIED_"):
+                # Keep argv bounded for the large-output case on Windows.
+                argv = [sys.executable, "-I", "-B", "-c",
+                        "import sys; sys.stderr.buffer.write(sys.stdin.buffer.read()); sys.exit(1)"]
+                expected = (prefix + code)[:80] if code else "SEALED_WORKER_OR_DRIVER_DENIED"
+                with self.subTest(code=code, length=len(stderr), prefix=prefix), \
+                        self.assertRaisesRegex(a.OperationDenied, "^" + expected + "$"):
+                    worker.invoke(argv, stderr, denial_prefix=prefix)
+
+    def test_prepare_failure_unmounts_owned_inode_and_preserves_original_code(self):
+        from tools.semantic_provider_admission_v2 import locking
+        with part_a.libraries():
+            from tools import semantic_provider_deployment_producer as producer
+            for owned, outcome in ((True, "UNMOUNTED"), (False, "NOT_OWNED"),
+                                    (True, "OWNED_NAMESPACE_DRIFT"), (True, "OWNED_NAMESPACE_UNMOUNT_UNPROVEN")):
+                worker = p.Worker.__new__(p.Worker)
+                worker.root, worker.path, worker.raw = Path("/epoch"), Path("/epoch/preparer.json"), b"{}"
+                worker.cfg = {}
+                worker.budget = Mock()
+                worker.budget.remaining.side_effect = a.OperationDenied("AUTHENTICATION_DEADLINE_MISSED")
+                worker.request = {"binding": part_a.fixture()[0]}
+                worker.template = {"lockFile": "/common.lock", "commands": {"umount": "/bin/umount"},
+                                   "commandHashes": {"umount": "a" * 64}}
+                worker.journal = part_a.MemoryJournal()
+                worker.journal.value = {**worker.initial(), "state": "PREPARING", "namespaceOwned": owned,
+                                        "namespaceInode": 456, "containerGeneration": part_a.GEN}
+                error = a.OperationDenied("TEMPLATE_DENIED_INDEPENDENT_TEMPLATE_BINDING_DRIFT")
+                proof = {"namespaceInode": 456, "namespaceDevice": 4, "mountId": 90}
+                probe = [proof, proof, None] if outcome == "UNMOUNTED" else \
+                    a.OperationDenied(outcome) if outcome == "OWNED_NAMESPACE_DRIFT" else [proof, proof]
+                with self.subTest(owned=owned, outcome=outcome), \
+                        patch.object(worker, "_prepare", side_effect=error), \
+                        patch.object(locking, "wait_common_lock", return_value=nullcontext()), \
+                        patch.object(b, "private", return_value=worker.raw), patch.object(b, "verify_sources"), \
+                        patch.object(b, "owned_namespace_mount", side_effect=probe) as mounted, \
+                        patch.object(producer, "program", return_value="/bin/umount") as program, \
+                        patch.object(p.subprocess, "run", return_value=types.SimpleNamespace(
+                            returncode=1 if outcome == "OWNED_NAMESPACE_UNMOUNT_UNPROVEN" else 0)) as run, \
+                        self.assertRaises(a.OperationDenied) as denied:
+                    worker.prepare({})
+                self.assertIs(denied.exception, error)
+                self.assertEqual(worker.record()["state"], "FAILED")
+                self.assertEqual(worker.record()["failure"], str(error))
+                self.assertEqual(worker.record()["namespaceCleanup"], outcome)
+                if outcome in ("UNMOUNTED", "OWNED_NAMESPACE_UNMOUNT_UNPROVEN"):
+                    self.assertEqual(run.call_args.args[0], ["/bin/umount", str(worker.root / "netns")])
+                    self.assertEqual(program.call_count, 2)
+                else:
+                    run.assert_not_called()
+                if not owned:
+                    mounted.assert_not_called()
+
+    def test_failed_cleanup_journal_or_lock_error_never_masks_original(self):
+        worker = p.Worker.__new__(p.Worker)
+        worker.template = {}  # Even a failure before the journal exists is safe.
+        error = a.OperationDenied("ORIGINAL_DENIAL")
+        with patch.object(worker, "_prepare", side_effect=error), self.assertRaises(a.OperationDenied) as caught:
+            worker.prepare({})
+        self.assertIs(caught.exception, error)
+
+    def test_owned_mount_proof_requires_nsfs_device_inode_and_exact_target(self):
+        namespace = Path("/epoch/net ns")
+        escaped = os.fsencode(namespace).replace(b"\\", b"\\134").replace(b" ", b"\\040")
+        line = b"90 40 0:4 net:[456] " + escaped + b" rw - nsfs nsfs rw\n"
+        info = types.SimpleNamespace(st_mode=stat.S_IFREG | 0o444, st_dev=4, st_ino=456)
+        proof = {"namespaceInode": 456, "namespaceDevice": 4, "mountId": 90}
+        with patch.object(b.os, "major", return_value=0, create=True), \
+                patch.object(b.os, "minor", return_value=4, create=True), \
+                patch.object(Path, "lstat", return_value=info):
+            with patch("builtins.open", return_value=io.BytesIO(line)):
+                self.assertEqual(b.owned_namespace_mount(namespace, 456), proof)
+            for raw in (line.replace(b"nsfs nsfs", b"tmpfs tmpfs"), line.replace(b"0:4", b"0:5"),
+                        line.replace(b"net:[456]", b"net:[457]"), line + line):
+                with self.subTest(raw=raw), patch("builtins.open", return_value=io.BytesIO(raw)), \
+                        self.assertRaises(a.OperationDenied):
+                    b.owned_namespace_mount(namespace, 456)
+            for inode in (457, True, None):
+                with patch("builtins.open", return_value=io.BytesIO(line)), self.assertRaises(a.OperationDenied):
+                    b.owned_namespace_mount(namespace, inode)
+            info.st_mode = stat.S_IFLNK | 0o777
+            with patch("builtins.open", return_value=io.BytesIO(line)), self.assertRaises(a.OperationDenied):
+                b.owned_namespace_mount(namespace, 456)
+            with patch("builtins.open", return_value=io.BytesIO(line.replace(escaped, b"/foreign/netns"))):
+                self.assertIsNone(b.owned_namespace_mount(namespace, 456))
+
+    def test_no_issuance_and_public_cli_errors(self):
+        forbidden = {"LocalEvidenceProducer", "ExistingEd25519Signer", "InstallerApproval", "NodeAttestor"}
+        for path in [*(ROOT / "tools/semantic_provider_admission_v2").glob("*.py"),
+                     *(ROOT / entry for entry in b.ENTRYPOINTS)]:
+            raw = path.read_text(encoding="utf-8")
+            self.assertFalse(any(name in raw for name in forbidden), path.name)
+            for node in ast.walk(ast.parse(raw)):
+                if isinstance(node, (ast.Import, ast.ImportFrom)):
+                    self.assertNotIn("semantic_provider_deployment_signing", ast.unparse(node))
+                if isinstance(node, ast.Call):
+                    self.assertNotIn(getattr(node.func, "attr", None), {"emit", "sign"})
+                if path.parent.name == "scripts" and isinstance(node, ast.Attribute):
+                    self.assertFalse(isinstance(node.value, ast.Name) and node.value.id == "sys" and node.attr == "path")
+        for module in (p, d):
+            output = io.StringIO()
+            with patch("sys.stderr", output), patch.object(module.os, "geteuid", return_value=1, create=True):
+                self.assertEqual(module.main(["--configuration", "/SECRET", "--mode", "prepare" if module is p else "start"]), 1)
+            prefix = "SEMANTIC_ADMISSION_PREPARER" if module is p else "SEMANTIC_PREEXEC_HOOK"
+            self.assertEqual(output.getvalue(), prefix + "=DENIED ROOT_ISOLATED_NO_BYTECODE_REQUIRED\n")
+            self.assertNotIn("SECRET", output.getvalue())
+
+    def test_application_and_bootstrap_errors_only_expose_public_codes(self):
+        entries = SourceClosureTests()
+        for module, mode, loader, prefix in (
+                (p, "prepare", "Worker", "SEMANTIC_ADMISSION_PREPARER"),
+                (d, "start", "load", "SEMANTIC_PREEXEC_HOOK"),
+                (entries.entry(b.ENTRYPOINTS[1]), "prepare", "bootstrap", "SEMANTIC_ADMISSION_PREPARER"),
+                (entries.entry(b.ENTRYPOINTS[2]), "start", "bootstrap", "SEMANTIC_PREEXEC_HOOK")):
+            for message, expected in (("BROKER_SOURCE_PACKAGE_DRIFT", "BROKER_SOURCE_PACKAGE_DRIFT"),
+                                      ("/SECRET/path", "INTERNAL_ERROR"), ("SECRET\nSECOND_LINE", "INTERNAL_ERROR"),
+                                      ("A" * 81, "INTERNAL_ERROR"), ("", "INTERNAL_ERROR")):
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with self.subTest(module=module.__name__, message=message), \
+                        patch("sys.stdout", stdout), patch("sys.stderr", stderr), \
+                        patch.object(module.os, "geteuid", return_value=0, create=True), \
+                        patch.object(module.os, "getegid", return_value=0, create=True), \
+                        patch.object(sys, "flags", types.SimpleNamespace(isolated=1)), \
+                        patch.object(sys, "dont_write_bytecode", True), \
+                        patch.object(module, loader, side_effect=RuntimeError(message)):
+                    self.assertEqual(module.main(["--configuration", "/SECRET", "--mode", mode]), 1)
+                self.assertEqual(stdout.getvalue(), "")
+                self.assertEqual(stderr.getvalue(), prefix + "=DENIED " + expected + "\n")
+
+
+class SourceClosureTests(unittest.TestCase):
+    def entry(self, relative):
+        spec = importlib.util.spec_from_file_location("bootstrap_fixture", ROOT / relative)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def source_bytes(self):
+        legacy = {"tools/" + name + ".py" for name in b.MODULES}
+        return {relative: ((part_a.SOURCE if relative in legacy else ROOT) / relative).read_bytes()
+                for relative in b.SOURCES}
+
+    def test_exact_manifest_in_all_entrypoints_and_schemas(self):
+        expected = (set(b.ENTRYPOINTS) | {"tools/" + name + ".py" for name in b.MODULES}
+                    | {str(path.relative_to(ROOT).as_posix())
+                       for path in (ROOT / "tools/semantic_provider_admission_v2").glob("*.py")}
+                    | {"tools/semantic_provider_operation/authorization.py", "tools/semantic_provider_operation/epochs.py"})
+        self.assertEqual(b.SOURCES, expected)
+        bootstraps = []
+        for relative in b.ENTRYPOINTS:
+            entry = self.entry(relative)
+            self.assertEqual(entry.SOURCES, expected)
+            self.assertEqual(entry.MODULES, b.MODULES)
+            self.assertEqual(entry.V2_MODULES, b.V2_MODULES)
+            tree = ast.parse((ROOT / relative).read_bytes())
+            # Task-44 changes only the broker's public denial suffix. The
+            # preparer/hook already include it; their historical bytes stay pinned.
+            if relative == b.ENTRYPOINTS[0]:
+                class OriginalSuffix(ast.NodeTransformer):
+                    def visit_Assign(self, node):
+                        if any(isinstance(t, ast.Name) and t.id == "suffix" for t in node.targets):
+                            node.value = ast.parse('"" if SELF == ENTRYPOINTS[0] else " " + code', mode="eval").body
+                        return node
+                tree = OriginalSuffix().visit(tree)
+            tree.body = [node for node in tree.body if not (isinstance(node, ast.Assign)
+                         and any(isinstance(target, ast.Name) and target.id in {"SELF", "TARGET"}
+                                 for target in node.targets))]
+            bootstraps.append(ast.dump(tree, include_attributes=False))
+        self.assertEqual(len(set(bootstraps)), 1)
+        for make, validate in ((part_a.configuration, b.validate), (grant, d.validate)):
+            for change in ("extra", "missing", "invalid"):
+                value = make()
+                if change == "extra":
+                    value["sourceHashes"]["tools/extra.py"] = "a" * 64
+                elif change == "missing":
+                    del value["sourceHashes"][b.ENTRYPOINTS[0]]
+                else:
+                    value["sourceHashes"][b.ENTRYPOINTS[0]] = "INVALID"
+                with self.subTest(schema=value["schema"], change=change), self.assertRaises(a.OperationDenied):
+                    validate(a.canonical(value))
+
+    def test_entrypoints_verify_every_byte_before_any_application_exec(self):
+        sources = self.source_bytes()
+        with tempfile.TemporaryDirectory(dir=ROOT) as temporary:
+            root = Path(temporary)
+            for relative in b.ENTRYPOINTS:
+                entry = self.entry(relative)
+                cfg = grant() if entry.TARGET == "driver_v7" else part_a.configuration()
+                cfg.update(sourceRoot=str(root), sourceHashes={p: a.sha(raw) for p, raw in sources.items()})
+                config = root / "configuration.json"
+                request = root / "preparer.json"
+                files = {str(root / p): raw for p, raw in sources.items()}
+                files[str(config)] = a.canonical(cfg)
+                if entry.TARGET == "preparer_v2":
+                    files[str(request)] = a.canonical({"configurationBinding":
+                        {"path": str(config), "sha256": a.sha(files[str(config)])}})
+                input_path = request if entry.TARGET == "preparer_v2" else config
+                with patch.object(entry, "__file__", str(root / relative)), \
+                        patch.object(entry, "private_root"), \
+                        patch.object(entry, "private", side_effect=lambda path: files[str(Path(path))]), \
+                        patch.object(entry, "execute") as execute:
+                    entry.bootstrap(input_path)
+                    self.assertEqual(execute.call_args.args, (root, sources))
+                    execute.reset_mock()
+                    # Mutation happens after the canonical configuration was decoded.
+                    for changed in sorted(b.SOURCES):
+                        original_decode = entry.decode
+                        def decode_then_mutate(raw):
+                            value = original_decode(raw)
+                            if "sourceHashes" in value:
+                                files[str(root / changed)] = sources[changed] + b"\nraise AssertionError('UNVERIFIED')\n"
+                            return value
+                        with self.subTest(entry=relative, changed=changed), \
+                                patch.object(entry, "decode", side_effect=decode_then_mutate), \
+                                self.assertRaisesRegex(RuntimeError, "BROKER_SOURCE_PACKAGE_DRIFT"):
+                            entry.bootstrap(input_path)
+                        execute.assert_not_called()
+                        files[str(root / changed)] = sources[changed]
+                    for change in ("extra", "missing"):
+                        bad = copy.deepcopy(cfg)
+                        if change == "extra":
+                            bad["sourceHashes"]["tools/extra.py"] = "a" * 64
+                        else:
+                            del bad["sourceHashes"][b.ENTRYPOINTS[0]]
+                        files[str(config)] = a.canonical(bad)
+                        if entry.TARGET == "preparer_v2":
+                            files[str(request)] = a.canonical({"configurationBinding":
+                                {"path": str(config), "sha256": a.sha(files[str(config)])}})
+                        with self.subTest(entry=relative, change=change), \
+                                self.assertRaisesRegex(RuntimeError, "EXACT_BROKER_SOURCE_SET_REQUIRED"):
+                            entry.bootstrap(input_path)
+                        execute.assert_not_called()
+                    files[str(config)] = a.canonical(cfg)
+                    if entry.TARGET == "preparer_v2":
+                        files[str(request)] = a.canonical({"configurationBinding":
+                            {"path": str(config), "sha256": a.sha(files[str(config)])}})
+                    with patch.object(entry, "__file__", str(root / "wrong-entry.py")), \
+                            self.assertRaisesRegex(RuntimeError, "BROKER_ENTRYPOINT_PATH_DRIFT"):
+                        entry.bootstrap(input_path)
+                    execute.assert_not_called()
+
+    def test_compiles_snapshot_with_empty_package_search_locations(self):
+        sources = self.source_bytes()
+        for relative in b.ENTRYPOINTS:
+            entry = self.entry(relative)
+            # No filesystem imports are available through these package paths.
+            with self.subTest(entry=relative), patch.dict(sys.modules):
+                if sys.platform != "linux":
+                    sys.modules["fcntl"] = types.ModuleType("fcntl")
+                module = entry.execute(Path("/verified-snapshot"), sources)
+                self.assertEqual(module.__name__, "tools.semantic_provider_admission_v2." + entry.TARGET)
+                for package in ("tools", "tools.semantic_provider_operation", "tools.semantic_provider_admission_v2"):
+                    self.assertEqual(sys.modules[package].__path__, [])
+                self.assertIs(sys.modules["authorization"], sys.modules["tools.semantic_provider_operation.authorization"])
+                self.assertEqual(sys.modules["tools.semantic_provider_operation.epochs"].sha,
+                                 sys.modules["authorization"].sha)
+
+    def test_rechecks_after_loading_for_broker_preparer_and_hook(self):
+        cfg = part_a.configuration()
+        sources = self.source_bytes()
+        cfg["sourceHashes"] = {p: a.sha(raw) for p, raw in sources.items()}
+        root = Path(cfg["sourceRoot"])
+        files = {str(root / p): raw for p, raw in sources.items()}
+        info = types.SimpleNamespace(st_mode=0o40700, st_uid=0, st_gid=0)
+        with patch.object(Path, "lstat", return_value=info), \
+                patch.object(b, "private", side_effect=lambda path: files[str(Path(path))]):
+            self.assertEqual(b.verify_sources(cfg), sources)
+            files[str(root / "tools/semantic_provider_operation/authorization.py")] += b"\n"
+            worker = p.Worker.__new__(p.Worker)
+            worker.cfg, worker.budget = cfg, Mock()
+            broker = b.Broker.__new__(b.Broker)
+            broker.cfg, broker.budget = cfg, Mock()
+            broker.path, broker.raw = "/configuration", a.canonical(cfg)
+            broker.template_raw = b"template"
+            broker.bound = {}
+            files[str(Path(broker.path))] = broker.raw
+            files[str(Path(cfg["preparerTemplate"]["path"]))] = broker.template_raw
+            # The template binding is irrelevant to source drift; keep it valid.
+            cfg["preparerTemplate"]["sha256"] = a.sha(broker.template_raw)
+            for check in (broker.stable, worker.stable, lambda: d.operate(cfg, b"grant", "/grant", "rollback")):
+                with self.assertRaisesRegex(a.OperationDenied, "BROKER_SOURCE_PACKAGE_DRIFT"):
+                    check()
+
+
+# No reusable fake nft executable exists in semantic_transaction_profiles or the
+# vendored preexec native tests. This CLI models tables/empty timeout sets, with
+# independent per-network-namespace storage. It NEVER executes nft or ip.
+FAKE_NFT = r'''import json,os,pathlib,re,sys
+base=pathlib.Path(BASE)
+path=base/('nft-'+str(os.stat('/proc/self/ns/net').st_ino)+'.json')
+tables=json.loads(path.read_text()) if path.exists() else json.loads(SEED)
+args=sys.argv[1:]
+if args[-2:]==['list','tables']:
+    print(json.dumps({'nftables':[{'table':{'family':k.split(':')[0],'name':k.split(':')[1]}} for k in sorted(tables)]}))
+elif 'list' in args and 'table' in args:
+    print(json.dumps(tables[args[-2]+':'+args[-1]]))
+elif args==['-f','-']:
+    raw=sys.stdin.read()
+    for family,name in re.findall(r'delete table (inet|bridge) (\w+)',raw):
+        del tables[family+':'+name]
+    for match in re.finditer(r'(?m)^table (inet|bridge) (\w+) \{',raw):
+        end=match.end(); depth=1
+        while depth:
+            depth+=(raw[end]=='{')-(raw[end]=='}'); end+=1
+        family,name=match.groups()
+        tables[family+':'+name]={'nftables':[{'table':{'family':family,'name':name}},
+            {'rule':{'family':family,'table':name,'fixtureText':raw[match.end():end-1]}}]}
+    path.write_text(json.dumps(tables))
+else:
+    raise SystemExit(2)
+'''
+
+
+class NativeTests(part_a.NativeTests):
+    __unittest_skip__ = not part_a.NATIVE
+    __unittest_skip_why__ = "set OUF_ADMISSION_V2_NATIVE=1 under Linux root"
+
+    # Only the tests below belong to part B; inherited part A methods are already
+    # executed by their own CI step and require their synthetic port.
+    def setUp(self):
+        super().setUp()
+        from tools.semantic_provider_lease_nft import structure_hash
+        self.process = subprocess.Popen(["/usr/bin/python3", "-c", "import time; time.sleep(120)"],
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        self.addCleanup(self.stop_generation)
+        self.started = self.root / "started"
+        self.runc = self.script("runc", "import json,pathlib,sys\n"
+            "p=pathlib.Path(" + repr(str(self.root / "runc-state.json")) + ")\n"
+            "if 'start' in sys.argv: pathlib.Path(" + repr(str(self.started)) + ").write_text('started')\n"
+            "else:\n d=json.loads(p.read_text()); print(json.dumps(list(d.values()) if 'list' in sys.argv else d[sys.argv[-1]]))\n")
+        self.host_index, self.host_name = next((i, n) for i, n in socket.if_nameindex() if i > 1)
+        host = {"ifname": self.host_name, "ifindex": self.host_index, "link_index": 12, "master": "br_test"}
+        child = {"ifname": "eth0", "ifindex": 12, "link_index": self.host_index,
+                 "address": "02:00:00:00:00:01", "addr_info": [{"family": "inet", "local": "10.10.0.2"}]}
+        ip = self.script("ip", "print(" + repr(json.dumps([host])) + ")\n")
+        ns = self.script("nsenter", "print(" + repr(json.dumps([child])) + ")\n")
+        kernel = {"tableName": "ouf_fixture_lease", "guardedInterfaces": ["br_lease"], "existingInterfaces": [], "staticFlows": [],
+            "providerFlows": [{"endpointRef": "fixture", "endpoint": "https://provider.example", "source": "10.20.0.2",
+                               "addresses": [], "leaseSeconds": 60, "resolutionEvidenceRef": "fixture_dns", "allowedPrivateAddresses": []}]}
+        lease_tables = {f: {"nftables": [{"table": {"family": f, "name": kernel["tableName"]}},
+            {"set": {"family": f, "table": kernel["tableName"], "name": "provider_0", "type": "ipv4_addr", "flags": ["timeout"]}}]}
+            for f in ("inet", "bridge")}
+        seed = {f + ":" + kernel["tableName"]: table for f, table in lease_tables.items()}
+        nft = self.script("nft", FAKE_NFT.replace("BASE", repr(str(self.root))).replace("SEED", repr(json.dumps(seed))))
+        template = a.decode(Path(self.cfg["preparerTemplate"]["path"]).read_bytes())
+        commands = {"nft": nft, "ip": ip, "nsenter": ns}
+        for key in ("mount", "umount", "unshare"):
+            executable = Path(shutil.which(key)).resolve(strict=True)
+            commands[key] = {"path": str(executable), "sha256": a.sha(executable.read_bytes())}
+        template.update(commands={k: v["path"] for k, v in commands.items()},
+            commandHashes={k: v["sha256"] for k, v in commands.items()}, kernel=kernel,
+            pythonHash=a.sha(Path(template["pythonPath"]).read_bytes()), budgetSeconds=5,
+            hostNetworkNamespace=os.stat("/proc/self/ns/net").st_ino,
+            dns={"resolvers": ["10.20.0.53"], "resolverPort": 53, "timeoutSeconds": 1, "maxLeaseSeconds": 60, "applyBudgetSeconds": 1},
+            coordinationBinding={"transactionId": "c" * 64, "configurationHash": a.sha(a.canonical(kernel)),
+                                 "leaseStructureHash": structure_hash(lease_tables)},
+            coordinationJournal=str(self.root / "coordination.json"))
+        template["candidate"]["runtimeBinding"] = self.runc
+        self.write(self.root / "coordination.json", a.canonical({"schema": "ouf.semantic-lease-coordination.v1",
+            **template["coordinationBinding"], "state": "QUIESCED", "leaseAuthorized": False,
+            "startAuthorized": False, "leaseAddresses": [[]]}))
+        self.cfg["preparerTemplate"] = self.document("template.json", a.canonical(template))
+        # Sentinels live in the disposable, hash-bound copy, including subprocesses.
+        # The repository's pinned cohort-draft is never modified.
+        for relative, suffix in {
+            "tools/semantic_provider_deployment_producer.py": b"\ndef forbidden(*a, **k): raise AssertionError('issuance forbidden')\nLocalEvidenceProducer.__init__ = forbidden\n",
+            "tools/semantic_provider_deployment_admission.py": b"\ndef authority(*a, **k): raise AssertionError('legacy authority forbidden')\n",
+        }.items():
+            source = self.source / relative
+            self.write(source, source.read_bytes() + suffix)
+            self.cfg["sourceHashes"][relative] = a.sha(source.read_bytes())
+        self.raw = a.canonical(self.cfg)
+        self.write(self.configuration_path, self.raw)
+        payload = json.loads(self.payload())
+        payload["roles"]["adapter"].update(admissionConfigurationSha256=a.sha(self.raw),
+            framePolicySha256=self.cfg["framePolicyBinding"]["sha256"], rootfsSealSha256=self.cfg["rootfsSealBinding"]["sha256"],
+            transportSha256=self.cfg["transportBinding"]["sha256"])
+        self.operation_raw = self.put(1, a.canonical(payload))
+        self.preparer = b.SubprocessPreparer()
+        self.publish_epoch("OPENING")
+        self.addCleanup(self.unmount_retained)
+        # Include every run-2 source addition in the native custody assertions.
+        self.assertEqual(self.source.stat().st_mode & 0o777, 0o700)
+        for relative in b.SOURCES:
+            path = self.source / relative
+            info = path.lstat()
+            self.assertEqual((info.st_uid, info.st_gid, info.st_nlink, info.st_mode & 0o777), (0, 0, 1, 0o600))
+            self.assertEqual(a.sha(path.read_bytes()), self.cfg["sourceHashes"][relative])
+            for directory in path.parents:
+                if directory == self.source.parent:
+                    break
+                self.assertEqual((directory.stat().st_uid, directory.stat().st_gid,
+                                  directory.stat().st_mode & 0o777), (0, 0, 0o700))
+        for relative in b.ENTRYPOINTS:
+            entry = SourceClosureTests().entry(relative)
+            self.assertEqual(self.source / entry.SELF, self.source / relative)
+        self.assertEqual(template["pythonPath"], str(Path("/usr/bin/python3").resolve(strict=True)))
+        self.assertEqual(template["pythonHash"], a.sha(Path(template["pythonPath"]).read_bytes()))
+
+    def through_prepare(self):
+        # Observe the original subprocess denial on the FIRST attempt. Retrying
+        # after a partial prepare would obscure its cause with a replay denial.
+        run = subprocess.run
+        def diagnostic_run(argv, **kwargs):
+            if len(argv) > 3 and argv[3] == str(self.source / b.ENTRYPOINTS[1]) \
+                    and kwargs.get("stderr") == subprocess.DEVNULL:
+                kwargs["stderr"] = subprocess.PIPE  # test-only; production still discards it
+                result = run(argv, **kwargs)
+                if result.returncode:
+                    self.fail(result.stderr.decode())
+                self.assertEqual(result.stderr, b"")
+                return result
+            return run(argv, **kwargs)
+        with patch.object(b.subprocess, "run", side_effect=diagnostic_run):
+            return super().through_prepare()
+
+    def direct_prepare(self, request, state):
+        # Independent direct CLI invocation with the SAME request, interpreter,
+        # stdin, environment and timeout as SubprocessPreparer, without replay.
+        self.assertEqual((self.epoch_root / "preparer.json").read_bytes(), a.canonical(request))
+        self.assertEqual(request["configurationBinding"],
+                         {"path": str(self.configuration_path), "sha256": a.sha(self.raw)})
+        result = subprocess.run([request["template"]["pythonPath"], "-I", "-B",
+            str(self.source / b.ENTRYPOINTS[1]), "--configuration", str(self.epoch_root / "preparer.json"),
+            "--mode", "prepare"], input=a.canonical(state), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            timeout=18, env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"})
+        if result.returncode:
+            self.fail(result.stderr.decode())
+        self.assertEqual(result.stderr, b"")
+        self.assertTrue(result.stdout.endswith(b"\n"))
+        return a.decode(result.stdout[:-1])
+
+    def publish_epoch(self, state, **changes):
+        super().publish_epoch(state, **changes)
+        if hasattr(self, "process"):
+            self.state["pid"] = self.process.pid
+            self.write(self.root / "runc-state.json", a.canonical({part_a.CID: self.state}))
+
+    def stop_generation(self):
+        if self.process.poll() is None:
+            self.process.terminate()
+            self.process.wait(timeout=3)
+
+    def unmount_retained(self):
+        path = self.epoch_root / "netns"
+        if path.exists() and os.path.ismount(path):
+            subprocess.run([str(Path(shutil.which("umount")).resolve()), str(path)], check=True, timeout=3,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    def hook(self, mode, good=True, denied_code=None):
+        result = subprocess.run([str(Path("/usr/bin/python3").resolve()), "-I", "-B",
+            str(self.source / b.ENTRYPOINTS[2]), "--configuration", str(self.epoch_root / "driver.json"),
+            "--mode", mode], input=a.canonical(self.state) if mode == "hook" else None,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=8)
+        self.assertEqual(result.returncode, 0 if good else 1, result.stderr.decode())
+        if denied_code is not None:
+            self.assertEqual(result.stderr, ("SEMANTIC_PREEXEC_HOOK=DENIED " + denied_code + "\n").encode())
+            self.assertEqual(result.stdout, b"")
+        return result
+
+    def test_real_preparation_start_replay_rollback_cleanup(self):
+        gate = self.through_prepare()
+        value = d.validate((self.epoch_root / "driver.json").read_bytes())
+        self.assertEqual(value["schema"], d.SCHEMA)
+        self.assertEqual((self.epoch_root / "driver.json").stat().st_mode & 0o777, 0o600)
+        self.assertEqual(json.loads((self.epoch_root / "preexec.json").read_bytes())["state"], "PROTECTED")
+        self.hook("hook")
+        self.hook("start")
+        self.assertEqual(gate.gate.record()["state"], "STARTED")
+        self.assertTrue(self.started.exists())
+        self.hook("start", good=False, denied_code="DO_NOT_REPLAY_DEPLOYMENT_START")
+        self.stop_generation()
+        self.hook("rollback")
+        self.publish_epoch("DELETING")
+        self.broker("cleanup").operate({})
+        self.assertEqual(json.loads((self.epoch_root / "admission.json").read_bytes())["state"], "CLEANED")
+        self.assertFalse((self.epoch_root / "netns").exists())
+
+    def test_direct_preparer_same_request_and_environment(self):
+        self.preparer = types.SimpleNamespace(prepare=self.direct_prepare)
+        gate = self.through_prepare()
+        self.assertEqual(gate.record()["state"], "PROTECTED")
+        self.hook("start")
+        self.assertEqual(gate.gate.record()["state"], "STARTED")
+
+    def test_revocation_between_prepare_and_start(self):
+        gate = self.through_prepare()
+        self.append([{"keyRef": "key-a", "notBefore": 1900, "expiresAt": 1900 + 60 * part_a.operation_tests.DAY, "state": "REVOKED"}])
+        self.hook("start", good=False, denied_code="OPERATION_KEY_REVOKED")
+        self.assertFalse(self.started.exists())
+        self.assertEqual(gate.gate.record()["state"], "READY")
+        self.stop_generation()
+        self.hook("rollback")  # no authorization even after revocation
+
+    def test_frame_changed_before_start(self):
+        gate = self.through_prepare()
+        self.write(self.frame_marker, b"changed")
+        self.hook("start", good=False, denied_code="LATE_CREATED_FRAME_DRIFT")
+        self.assertFalse(self.started.exists())
+        self.assertEqual(gate.gate.record()["state"], "READY")
+
+    def test_all_three_pinned_entrypoints_end_to_end(self):
+        def broker_cli(mode, state):
+            result = subprocess.run([str(Path("/usr/bin/python3").resolve()), "-I", "-B",
+                str(self.source / b.ENTRYPOINTS[0]), "--configuration", str(self.configuration_path),
+                "--container-id", part_a.CID, "--epoch", str(self.epoch),
+                "--bundle", str(self.epoch_root / "bundle"), "--runtime-root", str(self.runtime_root), "--mode", mode],
+                input=a.canonical(state), stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=22)
+            self.assertEqual(result.returncode, 0, result.stderr.decode())
+        broker_cli("authorize-create", {"id": part_a.CID, "bundleHash": a.sha(a.canonical(self.oci))})
+        for mode, phase in (("record-created", "CREATING"), ("cohort-ready", "CREATED"), ("prepare", "PREPARING")):
+            self.publish_epoch(phase)
+            broker_cli(mode, self.state)
+        self.hook("start")
+        self.assertEqual(a.decode((self.epoch_root / "deployment.json").read_bytes())["state"], "STARTED")
+        self.stop_generation()
+        self.hook("rollback")
+        self.publish_epoch("DELETING")
+        broker_cli("cleanup", {})
+        self.assertEqual(a.decode((self.epoch_root / "admission.json").read_bytes())["state"], "CLEANED")
+
+    def test_cli_source_drift_denied_before_any_changed_module_runs(self):
+        request = self.document("request.json", a.canonical({"configurationBinding":
+            {"path": str(self.configuration_path), "sha256": a.sha(self.raw)}}))
+        value = {"schema": d.SCHEMA, "sourceRoot": self.cfg["sourceRoot"], "sourceHashes": self.cfg["sourceHashes"]}
+        driver = self.document("unexecuted-grant.json", a.canonical(value))
+        marker = self.root / "unverified-module-ran"
+        changed = self.source / "tools/semantic_provider_operation/authorization.py"
+        self.write(changed, changed.read_bytes() + ("\nfrom pathlib import Path\nPath(" + repr(str(marker))
+                                                   + ").write_text('UNVERIFIED')\n").encode())
+        for relative, configuration, mode, code in (
+                (b.ENTRYPOINTS[0], str(self.configuration_path), "authorize-create", "SEMANTIC_DEPLOYMENT_BROKER"),
+                (b.ENTRYPOINTS[1], request["path"], "prepare", "SEMANTIC_ADMISSION_PREPARER"),
+                (b.ENTRYPOINTS[2], driver["path"], "start", "SEMANTIC_PREEXEC_HOOK")):
+            result = subprocess.run([str(Path("/usr/bin/python3").resolve()), "-I", "-B",
+                str(self.source / relative), "--configuration", configuration, "--mode", mode],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5)
+            self.assertEqual(result.returncode, 1)
+            suffix = " BROKER_SOURCE_PACKAGE_DRIFT"  # task-44: the broker prints its code too
+            self.assertEqual(result.stderr, (code + "=DENIED" + suffix + "\n").encode())
+            self.assertEqual(result.stdout, b"")
+            self.assertFalse(marker.exists())
+
+
+# Avoid inheriting task-38a test methods into this separate native suite.
+for _name in list(part_a.NativeTests.__dict__):
+    if _name.startswith("test_"):
+        setattr(NativeTests, _name, None)
+
+if __name__ == "__main__":
+    unittest.main()

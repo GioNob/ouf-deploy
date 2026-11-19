@@ -1,0 +1,324 @@
+[
+  {
+    "module": "cloud.google.com/go/pubsub",
+    "version": "v1.51.1",
+    "findings": [
+      {
+        "file": "go.mod",
+        "line": 1,
+        "text": "// Deprecated: use cloud.google.com/go/pubsub/v2 instead."
+      }
+    ]
+  },
+  {
+    "module": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+    "version": "v1.38.0",
+    "findings": [
+      {
+        "file": "go.mod",
+        "line": 1,
+        "text": "// Deprecated: Use go.opentelemetry.io/contrib/detectors/gcp instead."
+      },
+      {
+        "file": "README.md",
+        "line": 1,
+        "text": "# GCP Resource detection library (DEPRECATED)"
+      },
+      {
+        "file": "README.md",
+        "line": 4,
+        "text": "> This package is deprecated and will no longer be maintained. Please use upstream [`go.opentelemetry.io/contrib/detectors/gcp`](https://pkg.go.dev/go.opentelemetry.io/contrib/detectors/gcp) instead."
+      }
+    ]
+  },
+  {
+    "module": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric",
+    "version": "v0.61.0",
+    "findings": [
+      {
+        "file": "go.mod",
+        "line": 1,
+        "text": "// Deprecated: Use the standard OpenTelemetry OTLP metric exporter (go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc) instead."
+      },
+      {
+        "file": "README.md",
+        "line": 4,
+        "text": "> The OpenTelemetry Google Cloud Monitoring exporter for Go is deprecated and will be archived after January 1st, 2027."
+      }
+    ]
+  },
+  {
+    "module": "github.com/arangodb/go-driver",
+    "version": "v1.6.9",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 14,
+        "text": "- \u26a0\ufe0f This version is deprecated and will not receive any new features."
+      }
+    ]
+  },
+  {
+    "module": "github.com/aws/aws-sdk-go-v2",
+    "version": "v1.47.5",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 29,
+        "text": "with an additional six months of support for the most recently deprecated"
+      }
+    ]
+  },
+  {
+    "module": "github.com/envoyproxy/protoc-gen-validate",
+    "version": "v1.3.3",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 8,
+        "text": "> protoc-gen-validate (PGV) has reached a stable state and is in maintenance mode."
+      }
+    ]
+  },
+  {
+    "module": "github.com/go-viper/mapstructure/v2",
+    "version": "v2.5.0",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 25,
+        "text": "[@mitchehllh](https://github.com/mitchellh) announced his intent to archive some of his unmaintained projects (see [here](https://gist.github.com/mitchellh/90029601268e59a29e64e55bab1c5bdc) and [here](https://github.com/mitchellh/mapstructure/issues/349)). This is a repository achieved the \"blessed fork\" status."
+      }
+    ]
+  },
+  {
+    "module": "github.com/golang/protobuf",
+    "version": "v1.5.4",
+    "findings": [
+      {
+        "file": "go.mod",
+        "line": 1,
+        "text": "// Deprecated: Use the \"google.golang.org/protobuf\" module instead."
+      }
+    ]
+  },
+  {
+    "module": "github.com/hashicorp/raft",
+    "version": "v1.8.0",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 134,
+        "text": "  Emitting metrics to `armon/go-metrics` is officially deprecated, but usage of `armon/go-metrics` is still the default. Please continue to use the `hashicorpmetrics` build tag if you want to opt into `hashicorp/go-metrics`. [hashicorp/raft#676](https://github.com/hashicorp/raft/issues/676) will have status updates on the migration."
+      }
+    ]
+  },
+  {
+    "module": "github.com/hashicorp/raft-boltdb/v2",
+    "version": "v2.4.2",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 20,
+        "text": "Emitting metrics to `armon/go-metrics` is officially deprecated. Usage of `armon/go-metrics` will remain the default until mid-2025 with opt-in support continuing to the end of 2025."
+      }
+    ]
+  },
+  {
+    "module": "github.com/klauspost/compress",
+    "version": "v1.20.3",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 376,
+        "text": "\t* zip: Update deprecated CreateHeaderRaw to correctly call CreateRaw by @saracen in [#502](https://github.com/klauspost/compress/pull/502)"
+      }
+    ]
+  },
+  {
+    "module": "github.com/pkg/errors",
+    "version": "v0.9.1",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 46,
+        "text": "With the upcoming [Go2 error proposals](https://go.googlesource.com/proposal/+/master/design/go2draft.md) this package is moving into maintenance mode. The roadmap for a 1.0 release is as follows:"
+      }
+    ]
+  },
+  {
+    "module": "github.com/rcrowley/go-metrics",
+    "version": "v0.0.0-20201227073835-cf1acfcdf475",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 106,
+        "text": "has been deprecated and moved to the repository linked above."
+      }
+    ]
+  },
+  {
+    "module": "github.com/redis/go-redis/v9",
+    "version": "v9.23.0",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 522,
+        "text": "Initially there was a typo and the option was named `DisableIndentity` instead of `DisableIdentity`. The misspelled option is marked as Deprecated and will be removed in V10 of this library."
+      },
+      {
+        "file": "README.md",
+        "line": 523,
+        "text": "Although both options will work at the moment, the correct option is `DisableIdentity`. The deprecated option will be removed in V10 of this library, so please use the correct option name to avoid any issues."
+      },
+      {
+        "file": "README.md",
+        "line": 536,
+        "text": "#### RESP3 for RediSearch Commands (`UnstableResp3` is deprecated)"
+      }
+    ]
+  },
+  {
+    "module": "github.com/spf13/pflag",
+    "version": "v1.0.10",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 222,
+        "text": "It is possible to deprecate a flag, or just its shorthand. Deprecating a flag/shorthand hides it from help text and prints a usage message when the deprecated flag/shorthand is used."
+      },
+      {
+        "file": "README.md",
+        "line": 227,
+        "text": "flags.MarkDeprecated(\"badflag\", \"please use --good-flag instead\")"
+      },
+      {
+        "file": "README.md",
+        "line": 229,
+        "text": "This hides \"badflag\" from help text, and prints `Flag --badflag has been deprecated, please use --good-flag instead` when \"badflag\" is used."
+      },
+      {
+        "file": "README.md",
+        "line": 234,
+        "text": "flags.MarkShorthandDeprecated(\"noshorthandflag\", \"please use --noshorthandflag only\")"
+      },
+      {
+        "file": "README.md",
+        "line": 236,
+        "text": "This hides the shortname \"n\" from help text, and prints `Flag shorthand -n has been deprecated, please use --noshorthandflag only` when the shorthand \"n\" is used."
+      }
+    ]
+  },
+  {
+    "module": "github.com/spf13/viper",
+    "version": "v1.21.0",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 847,
+        "text": "The global instance _MAY_ be deprecated in the future."
+      }
+    ]
+  },
+  {
+    "module": "github.com/stretchr/testify",
+    "version": "v1.12.1",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 316,
+        "text": "    github.com/stretchr/testify/http (deprecated)"
+      }
+    ]
+  },
+  {
+    "module": "go.mongodb.org/mongo-driver",
+    "version": "v1.17.9",
+    "findings": [
+      {
+        "file": "go.mod",
+        "line": 1,
+        "text": "// Deprecated: Use go.mongodb.org/mongo-driver/v2 instead."
+      },
+      {
+        "file": "README.md",
+        "line": 2,
+        "text": "This version of the Go driver is no longer actively developed and will not receive new features."
+      },
+      {
+        "file": "README.md",
+        "line": 4,
+        "text": "Bug fixes and critical updates to this version will be made available until early 2026."
+      }
+    ]
+  },
+  {
+    "module": "go.opencensus.io",
+    "version": "v0.24.0",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 242,
+        "text": "been marked as *Deprecated* for at least one minor release (e.g. 0.9.0 to 0.10.0). A release"
+      },
+      {
+        "file": "README.md",
+        "line": 243,
+        "text": "removing the *Deprecated* functionality will be made no sooner than 28 days after the first"
+      },
+      {
+        "file": "README.md",
+        "line": 244,
+        "text": "release in which the functionality was marked *Deprecated*."
+      }
+    ]
+  },
+  {
+    "module": "go.yaml.in/yaml/v3",
+    "version": "v3.0.5",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 27,
+        "text": "[label the project repository as \"unmaintained\"]("
+      }
+    ]
+  },
+  {
+    "module": "golang.org/x/exp",
+    "version": "v0.0.0-20260813180055-c1d0aacb2297",
+    "findings": [
+      {
+        "file": "go.mod",
+        "line": 9,
+        "text": "\tgolang.org/x/tools/go/packages/packagestest v0.1.1-deprecated"
+      },
+      {
+        "file": "go.mod",
+        "line": 14,
+        "text": "\tgolang.org/x/tools/go/expect v0.1.1-deprecated // indirect"
+      },
+      {
+        "file": "README.md",
+        "line": 5,
+        "text": "This subrepository holds experimental and deprecated (in the `old`"
+      }
+    ]
+  },
+  {
+    "module": "google.golang.org/api",
+    "version": "v0.297.0",
+    "findings": [
+      {
+        "file": "README.md",
+        "line": 45,
+        "text": "maintenance mode. This means that we will address critical bugs and security issues but will not add any new features."
+      },
+      {
+        "file": "README.md",
+        "line": 77,
+        "text": "The older `option.WithCredentialsFile` and `option.WithCredentialsJSON` functions are deprecated due to a potential security risk."
+      }
+    ]
+  }
+]

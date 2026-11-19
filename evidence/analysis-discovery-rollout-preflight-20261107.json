@@ -1,0 +1,53 @@
+{
+  "schema": "ouf.analysis-discovery-rollout-preflight.v1",
+  "status": "READ_ONLY_TARGET_INVENTORY_PREPARED_NOT_EXECUTED",
+  "date": "2026-11-07",
+  "sourceOnly": true,
+  "retainedSourceLock": "releases/m2-current-core-source-lock-20261101.json",
+  "registry": {
+    "retainedSource": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+    "discoveryApplicationSource": "4f8fb581916075a539bda4428be7bd8af073a569",
+    "retainedIsDescendant": true,
+    "commitsAhead": 3,
+    "additionalCredentialCustodyAndRotationFixPresent": true,
+    "currentEffectiveProviderConfigurationProven": false,
+    "automaticDowngradeToPR41": false
+  },
+  "gateway": {
+    "retainedSource": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+    "wideCandidateSource": "560fbf6e769c7639a0bc0ddb09380811a4e324e4",
+    "compareStatus": "diverged",
+    "candidateAhead": 71,
+    "candidateBehind": 33,
+    "mergeBase": "dbdc24b5481dc9473b21b360ab1142c9aef0194b",
+    "operationalOwnerToPreserve": true,
+    "currentRoutesRead": false
+  },
+  "reader": {
+    "sourceCommit": "7bdf0e107b534e9db90aabe5e0388c627b7150b8",
+    "path": "scripts/read-analysis-discovery-runtime-20261107.py",
+    "sha256": "ef8dc8c4887122f2b2d76c05eaff7a8850c31004fcd661de2b3e49f51d6cc1b4",
+    "expectedPlanSha256": "f4cc75450360a1a30a7210b5ee8e492bc99c6737d98131537b87b65fa284cc3d",
+    "localTests": 10,
+    "localResult": "PASS",
+    "ciRun": 42422417213,
+    "ciJob": 128553489638,
+    "ciResult": "SUCCESS",
+    "ciLogsRead": true,
+    "testScope": "PYTHON_FIXTURES_WITH_MOCKED_DOCKER_INSPECT_NOT_TARGET_OR_NATIVE_CONTAINER_LIFECYCLE",
+    "exactSourceReadbackVerified": true,
+    "targetExecuted": false,
+    "scriptDeadlineSeconds": 55,
+    "credentialFilesRead": 0,
+    "serviceConfigurationChanged": false
+  },
+  "nextAction": "Operator executes the single pinned read command and returns only its redacted JSON.",
+  "effects": {
+    "runtimeModified": false,
+    "policyModified": false,
+    "sqlIssued": false,
+    "s3Issued": false,
+    "liveDiscoveryIssued": false,
+    "newColumnMappings": false
+  }
+}

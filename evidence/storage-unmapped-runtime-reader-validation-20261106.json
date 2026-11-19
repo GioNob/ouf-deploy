@@ -1,0 +1,17 @@
+{
+  "schema": "ouf.storage-unmapped-runtime-reader-validation.v1",
+  "date": "2026-11-06",
+  "script": "scripts/read-storage-g0-unmapped-runtime-20261106.py",
+  "sha256": "40bf3fa351481b4f91af811418439556c716444c4d9dd2c80f67bdfe2ac13f5f",
+  "bytes": 6221,
+  "syntax": "PASS",
+  "syntheticRedactionAndMountCoverage": "PASS",
+  "rejectedNegativeCases": [
+    "operation drift",
+    "second running non-roster container",
+    "role image binding drift"
+  ],
+  "targetExecutionObserved": false,
+  "providerRequests": 0,
+  "acceptanceCreditAdded": 0
+}

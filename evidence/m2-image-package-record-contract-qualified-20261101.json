@@ -1,0 +1,62 @@
+{
+  "actualImageAndDeliveryProducerFunctionsExecutedInTests": true,
+  "all235AndFrozen11SourcesUnchanged": true,
+  "completeExecutionCompilerIncludesNewOwners": false,
+  "deliveryManifestHashRejectedAsRawPackageHash": true,
+  "externalBuildExportGitAndScanModeled": true,
+  "general": {
+    "allLogsRead": true,
+    "conclusion": "success",
+    "errors": 0,
+    "failures": 0,
+    "jobs": [
+      124848584931,
+      124848585145,
+      124848585161,
+      124848585217,
+      124848585266
+    ],
+    "resourceWarnings": 0,
+    "runId": 41306743355,
+    "skipped": 0,
+    "suites": 30,
+    "tests": 218
+  },
+  "local": {
+    "completePackageTests": 11,
+    "errors": 0,
+    "failures": 0,
+    "membershipTests": 14
+  },
+  "offlinePublisher": {
+    "actualSigstoreAndParentSignatures": true,
+    "allLogsRead": true,
+    "conclusion": "success",
+    "emptyNetworkNamespaceWithoutGithubCredential": true,
+    "jobId": 124848585154,
+    "runId": 41306743383,
+    "suites": 3,
+    "tests": 9
+  },
+  "qualifiedFields": [
+    "schema",
+    "module",
+    "sourceCommit",
+    "imageId",
+    "runtimeUser",
+    "artifactFormat",
+    "imageScanGate",
+    "notReleaseAcceptance",
+    "signatureIssued",
+    "targetApplyAuthorized",
+    "vpsOperations"
+  ],
+  "rawProducerRecordHashSharedByMembershipAndActualMcpPlanner": true,
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-image-package-record-contract-qualified.v1",
+  "signedRawRecordMembershipAndBytesRequired": true,
+  "sourceCommit": "0b6d8fe3935b62887903caebd12a0e986fb61b72",
+  "targetApplyAuthorized": false,
+  "targetPackageAdmitted": false
+}

@@ -1,10 +1,6 @@
 name: Existing Semantic peer port
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tools/semantic_transaction_network/read_gateway_peer_port.py'
-      - '.github/workflows/provider-v2-semantic-peer-port.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

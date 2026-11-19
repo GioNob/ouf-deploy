@@ -1,0 +1,3371 @@
+{
+  "schema": "ouf.new-csv-upload-control-proposal.v1",
+  "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
+  "browserError": {
+    "status": 403,
+    "code": "ONB_CAPABILITY_DENIED",
+    "capability": "ouf.managed-source.file.upload"
+  },
+  "statusRead": {
+    "authorizationDenied": true,
+    "retryable": false,
+    "retried": false
+  },
+  "configuredPolicyRef": "ouf-lab-authorization:53",
+  "grantFindings": [
+    {
+      "grantId": "grant-managed-file-profile-human-admin",
+      "capabilityId": "ouf.managed-source.file.profile",
+      "tenantId": "ouf-lab",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "servicePrincipalId": null,
+      "organizationId": null,
+      "validFrom": "2026-09-25T00:00:00Z",
+      "validUntil": "2026-10-25T00:00:00Z"
+    },
+    {
+      "grantId": "grant-managed-file-upload-human-admin",
+      "capabilityId": "ouf.managed-source.file.upload",
+      "tenantId": "ouf-lab",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "servicePrincipalId": null,
+      "organizationId": null,
+      "validFrom": "2026-09-25T00:00:00Z",
+      "validUntil": "2026-10-25T00:00:00Z"
+    },
+    {
+      "grantId": "ouf-role:70b31dab707db032:017a7d254a860d1ed13de1be6975eb32452ee73e0b88a4df1cad620c30aaaa1d",
+      "capabilityId": "ouf.managed-source.file.upload",
+      "tenantId": "ouf-lab",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "servicePrincipalId": null,
+      "organizationId": null,
+      "validFrom": "2026-09-28T00:00:00Z",
+      "validUntil": "2036-09-15T07:13:50.968730Z",
+      "constraints": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": null,
+        "resourceId": null,
+        "resourceAttributes": {},
+        "allowedDataLabels": [
+          "ANONYMOUS",
+          "OPEN",
+          "PERSONAL",
+          "RESTRICTED",
+          "SENSITIVE"
+        ],
+        "allowedDetailLevels": [
+          "PUBLIC_OPERATIONAL",
+          "RESTRICTED_OPERATIONAL",
+          "SECURITY_SENSITIVE",
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    },
+    {
+      "grantId": "ouf-role:70b31dab707db032:6543d2ee0df053a6aae8eebb3981bcdd1f0dd95cae867313918d6a1d8c585e06",
+      "capabilityId": "ouf.managed-source.file.profile",
+      "tenantId": "ouf-lab",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "servicePrincipalId": null,
+      "organizationId": null,
+      "validFrom": "2026-09-28T00:00:00Z",
+      "validUntil": "2036-09-15T07:13:50.968730Z",
+      "constraints": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": null,
+        "resourceId": null,
+        "resourceAttributes": {},
+        "allowedDataLabels": [
+          "ANONYMOUS",
+          "OPEN",
+          "PERSONAL",
+          "RESTRICTED",
+          "SENSITIVE"
+        ],
+        "allowedDetailLevels": [
+          "PUBLIC_OPERATIONAL",
+          "RESTRICTED_OPERATIONAL",
+          "SECURITY_SENSITIVE",
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    }
+  ],
+  "codeReference": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "sourceCommit": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+    "files": [
+      "api/ManagedFilePickerPage.java",
+      "api/TrustedActorResolver.java",
+      "authorization-sdk/ServletAuthorization.java"
+    ],
+    "finding": "Picker checks requireHuman through capabilities resolved on default ResourceContext(capability,null,tenant,null,empty attributes). Active admin grants require dataAccessLabel/detailLevel, absent in that default. Expired legacy unconstrained grants do not apply.",
+    "browserPrincipalAndLoadedPolicyNotIntrospected": true
+  },
+  "proposal": {
+    "proposalId": "d1f8ba77-7637-4f77-886c-7f50565f3464",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-26T16:49:37.800677Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=d1f8ba77-7637-4f77-886c-7f50565f3464",
+    "finalPolicyRef": null
+  },
+  "baseline": {
+    "issuer": "https://auth.ouf-lab.it/realms/ouf",
+    "roles": [
+      {
+        "roleId": "operational-viewer",
+        "displayName": "Lettore dello stato operativo",
+        "permissions": [
+          {
+            "capabilityId": "ouf.system.status",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "capability",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "admin",
+        "displayName": "Amministratore OUF",
+        "permissions": [
+          {
+            "capabilityId": "authorization.permissions.propose",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "authorization.permissions.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "authorization.policy.admin",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "authorization.proposal.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "installation.configuration.activate",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "installation.configuration.export",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "installation.configuration.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "installation.configuration.write",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "operations.status.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.gateway.operations.summary",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.ingestion.operations.summary",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.file.profile",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.file.upload",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.onboarding.create",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.preview",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.onboarding.configuration.write",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.operations.summary",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.approval.request",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.approve",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.propose",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.publish",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.review",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.review.prepare",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.search",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.system.status",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "resolution.issue.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "resolution.match.approve",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.identity.preflight",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.search",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.onboarding.review.prepare",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "source",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.onboarding.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "source",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.proposal.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "semantic.proposalcommand",
+              "resourceId": null,
+              "resourceAttributes": {
+                "module": "SEMANTIC"
+              },
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.onboarding.revision.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "source",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.onboarding.revision.prepare",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "source",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+        "displayName": "Letture E2E Teatri — run bb2e2af4",
+        "permissions": [
+          {
+            "capabilityId": "ingestion.run.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.contract.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.lineage.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.property.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "teatri-e2e-read-a3208f2f-20261026",
+        "displayName": "Letture E2E Teatri — run a3208f2f",
+        "permissions": [
+          {
+            "capabilityId": "ingestion.run.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.contract.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.lineage.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.property.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026-all-labels-v1",
+        "displayName": "Letture E2E Teatri — run bb2e2af4 — READ label estese, mandato finito",
+        "permissions": [
+          {
+            "capabilityId": "ingestion.run.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.contract.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.lineage.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.property.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "teatri-e2e-read-a3208f2f-20261026-all-labels-v1",
+        "displayName": "Letture E2E Teatri — run a3208f2f — READ label estese, mandato finito",
+        "permissions": [
+          {
+            "capabilityId": "ingestion.run.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.contract.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.lineage.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.property.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      }
+    ],
+    "assignments": [
+      {
+        "assignmentId": "operational-viewer-collaudo-ruolo-iam",
+        "roleId": "operational-viewer",
+        "subjectId": null,
+        "externalRoleRef": "collaudo-funzionario-informatico",
+        "validFrom": "2026-09-20T00:00:00Z",
+        "validUntil": "2036-09-15T07:13:50.968730Z"
+      },
+      {
+        "assignmentId": "ouf-admin-nominal-2026",
+        "roleId": "admin",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-09-28T00:00:00Z",
+        "validUntil": "2036-09-15T07:13:50.968730Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-ouf-admin",
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T06:24:50Z",
+        "validUntil": "2026-10-26T08:24:50Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-a3208f2f-20261026-ouf-admin",
+        "roleId": "teatri-e2e-read-a3208f2f-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T06:24:50Z",
+        "validUntil": "2026-10-26T08:24:50Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-post-mcp-9a374dd0",
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T12:14:26Z",
+        "validUntil": "2026-10-26T14:14:26Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-a3208f2f-20261026-post-mcp-9a374dd0",
+        "roleId": "teatri-e2e-read-a3208f2f-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T12:14:26Z",
+        "validUntil": "2026-10-26T14:14:26Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-diagnostic-read-20261026-v1",
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T15:33:12.331Z",
+        "validUntil": "2026-10-26T17:33:12.331Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-a3208f2f-20261026-diagnostic-read-20261026-v1",
+        "roleId": "teatri-e2e-read-a3208f2f-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T15:33:12.331Z",
+        "validUntil": "2026-10-26T17:33:12.331Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-all-labels-v1-ouf-admin",
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026-all-labels-v1",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T15:54:08.841Z",
+        "validUntil": "2026-10-26T17:33:12.331Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-a3208f2f-20261026-all-labels-v1-ouf-admin",
+        "roleId": "teatri-e2e-read-a3208f2f-20261026-all-labels-v1",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T15:54:08.841Z",
+        "validUntil": "2026-10-26T17:33:12.331Z"
+      }
+    ]
+  },
+  "catalogue": {
+    "issuer": "https://auth.ouf-lab.it/realms/ouf",
+    "roles": [
+      {
+        "roleId": "operational-viewer",
+        "displayName": "Lettore dello stato operativo",
+        "permissions": [
+          {
+            "capabilityId": "ouf.system.status",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "capability",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "admin",
+        "displayName": "Amministratore OUF",
+        "permissions": [
+          {
+            "capabilityId": "authorization.permissions.propose",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "authorization.permissions.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "authorization.policy.admin",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "authorization.proposal.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "installation.configuration.activate",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "installation.configuration.export",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "installation.configuration.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "installation.configuration.write",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "operations.status.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.gateway.operations.summary",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.ingestion.operations.summary",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.file.profile",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.file.upload",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.onboarding.create",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.preview",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.onboarding.configuration.write",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.operations.summary",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.approval.request",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.approve",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.propose",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.publish",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.review",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.review.prepare",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.search",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.system.status",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "resolution.issue.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "resolution.match.approve",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "PUBLIC_OPERATIONAL",
+                "RESTRICTED_OPERATIONAL",
+                "SECURITY_SENSITIVE",
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.identity.preflight",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.search",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.onboarding.review.prepare",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "source",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.onboarding.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "source",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.semantic.proposal.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "semantic.proposalcommand",
+              "resourceId": null,
+              "resourceAttributes": {
+                "module": "SEMANTIC"
+              },
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.onboarding.revision.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "source",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.onboarding.revision.prepare",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "source",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+        "displayName": "Letture E2E Teatri — run bb2e2af4",
+        "permissions": [
+          {
+            "capabilityId": "ingestion.run.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.contract.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.lineage.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.property.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "teatri-e2e-read-a3208f2f-20261026",
+        "displayName": "Letture E2E Teatri — run a3208f2f",
+        "permissions": [
+          {
+            "capabilityId": "ingestion.run.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.contract.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.lineage.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.property.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026-all-labels-v1",
+        "displayName": "Letture E2E Teatri — run bb2e2af4 — READ label estese, mandato finito",
+        "permissions": [
+          {
+            "capabilityId": "ingestion.run.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.contract.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.lineage.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.property.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "teatri-e2e-read-a3208f2f-20261026-all-labels-v1",
+        "displayName": "Letture E2E Teatri — run a3208f2f — READ label estese, mandato finito",
+        "permissions": [
+          {
+            "capabilityId": "ingestion.run.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.contract.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ingestion.lineage.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "INGESTION",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "urban.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.object.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "lineage.property.read",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": null,
+              "resourceId": null,
+              "resourceAttributes": {
+                "detailLevel": "TENANT_OPERATIONAL",
+                "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+                "module": "UDP",
+                "sourceRef": "teatri-csv-6609b245"
+              },
+              "allowedDataLabels": [
+                "ANONYMOUS",
+                "OPEN",
+                "PERSONAL",
+                "RESTRICTED",
+                "SENSITIVE"
+              ],
+              "allowedDetailLevels": [
+                "TENANT_OPERATIONAL"
+              ],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      },
+      {
+        "roleId": "managed-file-preparation-20261026-v1",
+        "displayName": "Preparazione file posseduti — upload, profiling, anteprima temporanei",
+        "permissions": [
+          {
+            "capabilityId": "ouf.managed-source.file.upload",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "capability",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.file.profile",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "capability",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          },
+          {
+            "capabilityId": "ouf.managed-source.preview",
+            "constraints": {
+              "effect": "ALLOW",
+              "externalRoleRef": null,
+              "resourceType": "capability",
+              "resourceId": null,
+              "resourceAttributes": {},
+              "allowedDataLabels": [],
+              "allowedDetailLevels": [],
+              "requiredAcr": null,
+              "requiredAmr": [],
+              "maxAuthenticationAgeSeconds": null
+            }
+          }
+        ]
+      }
+    ],
+    "assignments": [
+      {
+        "assignmentId": "operational-viewer-collaudo-ruolo-iam",
+        "roleId": "operational-viewer",
+        "subjectId": null,
+        "externalRoleRef": "collaudo-funzionario-informatico",
+        "validFrom": "2026-09-20T00:00:00Z",
+        "validUntil": "2036-09-15T07:13:50.968730Z"
+      },
+      {
+        "assignmentId": "ouf-admin-nominal-2026",
+        "roleId": "admin",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-09-28T00:00:00Z",
+        "validUntil": "2036-09-15T07:13:50.968730Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-ouf-admin",
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T06:24:50Z",
+        "validUntil": "2026-10-26T08:24:50Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-a3208f2f-20261026-ouf-admin",
+        "roleId": "teatri-e2e-read-a3208f2f-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T06:24:50Z",
+        "validUntil": "2026-10-26T08:24:50Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-post-mcp-9a374dd0",
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T12:14:26Z",
+        "validUntil": "2026-10-26T14:14:26Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-a3208f2f-20261026-post-mcp-9a374dd0",
+        "roleId": "teatri-e2e-read-a3208f2f-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T12:14:26Z",
+        "validUntil": "2026-10-26T14:14:26Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-diagnostic-read-20261026-v1",
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T15:33:12.331Z",
+        "validUntil": "2026-10-26T17:33:12.331Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-a3208f2f-20261026-diagnostic-read-20261026-v1",
+        "roleId": "teatri-e2e-read-a3208f2f-20261026",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T15:33:12.331Z",
+        "validUntil": "2026-10-26T17:33:12.331Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-all-labels-v1-ouf-admin",
+        "roleId": "teatri-e2e-read-bb2e2af4-20261026-all-labels-v1",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T15:54:08.841Z",
+        "validUntil": "2026-10-26T17:33:12.331Z"
+      },
+      {
+        "assignmentId": "teatri-e2e-read-a3208f2f-20261026-all-labels-v1-ouf-admin",
+        "roleId": "teatri-e2e-read-a3208f2f-20261026-all-labels-v1",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T15:54:08.841Z",
+        "validUntil": "2026-10-26T17:33:12.331Z"
+      },
+      {
+        "assignmentId": "managed-file-preparation-20261026-v1-ouf-admin",
+        "roleId": "managed-file-preparation-20261026-v1",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "externalRoleRef": null,
+        "validFrom": "2026-10-26T16:34:29.450Z",
+        "validUntil": "2026-10-26T18:34:29.450Z"
+      }
+    ]
+  },
+  "oldEntriesPreserved": true,
+  "sourceCreationAuthorized": false,
+  "activationAuthorized": false,
+  "acquisitionAuthorized": false,
+  "uploadedAssetObserved": false,
+  "profilingStarted": false,
+  "policyPublished": false,
+  "M1StillComplete": true
+}

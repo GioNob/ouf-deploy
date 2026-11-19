@@ -1,0 +1,57 @@
+I1103 18:44:18.888228 filer.go:408 Initialized credential manager: filer_etc
+I1103 18:44:18.888673 filer_server.go:294 default to create filer store dir in /data/filerldb2
+I1103 18:44:18.889021 filer_server.go:302 max_file_name_length 255
+I1103 18:44:18.906413 leveldb2_store.go:94 filer store leveldb2 dir: /data/filerldb2
+I1103 18:44:18.906460 file_util.go:29 Folder /data/filerldb2 Permission: -rwxr-xr-x
+I1103 18:44:18.954421 filer.go:435 create filer.store.id to 607240012
+I1103 18:44:18.954599 configuration.go:29 configured filer store to leveldb2
+I1103 18:44:18.955011 filer_server_tus_session.go:637 TUS session cleanup started with interval 1h0m0s
+I1103 18:44:18.956189 master_client.go:27 the cluster has 0 filers
+I1103 18:44:19.957398 master_client.go:27 the cluster has 0 filers
+I1103 18:44:20.958012 master_client.go:27 the cluster has 0 filers
+I1103 18:44:21.958709 master_client.go:27 the cluster has 0 filers
+I1103 18:44:21.958971 master_client.go:27 the cluster has 0 filers
+I1103 18:44:21.959000 filer_server.go:398 127.0.0.1:18888 bootstrap from peers []
+I1103 18:44:21.959052 filer.go:273 127.0.0.1:18888 aggregate from peers []
+I1103 18:44:21.959468 filer.go:491 Start Seaweed Filer 30GB 4.52  at 127.0.0.1:18888
+I1103 18:44:21.959562 meta_aggregator.go:465 loopSubscribeToOneFiler read 127.0.0.1:18888 start from 2026-11-03 18:43:21.958986736 +0000 UTC 1793731401958986736
+W1103 18:44:21.959900 filer.go:529 IAM gRPC service on filer is UNAUTHENTICATED: anyone who can reach this port can create users and policies, and its OIDC provider and role RPCs are refused; set jwt.filer_signing.key in security.toml to require an admin Bearer token
+I1103 18:44:21.960747 master_client.go:27 the cluster has 0 filers
+I1103 18:44:21.960889 meta_aggregator.go:646 subscribing remote 127.0.0.1:18888 meta change: 2026-11-03 18:43:21.958986736 +0000 UTC, clientId:1491609090
+I1103 18:44:21.961541 filer_grpc_server_sub_meta.go:1701 + local listener filer:127.0.0.1:18888.28888@127.0.0.1:45044 clientId -1491609090 clientEpoch 1
+I1103 18:44:21.961560 filer_grpc_server_sub_meta.go:1115  + filer:127.0.0.1:18888.28888@127.0.0.1:45044 local subscribe / from {Time:2026-11-03 18:43:21.958986736 +0000 UTC Offset:-7 IsOffsetBased:false} clientId:-1491609090
+I1103 18:44:22.021766 filer_grpc_server_sub_meta.go:1701 + local listener s3@127.0.0.1:45052 clientId -1952552933 clientEpoch 2
+I1103 18:44:22.021787 filer_grpc_server_sub_meta.go:1115  + s3@127.0.0.1:45052 local subscribe /etc/ from {Time:2026-11-03 18:44:22.015419193 +0000 UTC Offset:-7 IsOffsetBased:false} clientId:-1952552933
+I1103 18:44:22.961619 master_client.go:27 the cluster has 0 filers
+I1103 18:44:23.962934 master_client.go:27 the cluster has 0 filers
+I1103 18:44:24.963908 master_client.go:27 the cluster has 0 filers
+I1103 18:44:24.964174 master_client.go:27 the cluster has 0 filers
+I1103 18:44:25.965572 master_client.go:27 the cluster has 0 filers
+I1103 18:44:26.966261 master_client.go:27 the cluster has 0 filers
+I1103 18:44:27.967606 master_client.go:27 the cluster has 0 filers
+I1103 18:44:28.969098 master_client.go:27 the cluster has 0 filers
+I1103 18:44:28.969392 master_client.go:27 the cluster has 0 filers
+I1103 18:44:29.970829 master_client.go:27 the cluster has 0 filers
+I1103 18:44:30.971450 master_client.go:27 the cluster has 0 filers
+I1103 18:44:31.972508 master_client.go:27 the cluster has 0 filers
+I1103 18:44:32.021896 filer_grpc_server_dlm.go:62 FILER LOCK: Error - name=s3.leader error=no lock server found
+I1103 18:44:32.973174 master_client.go:27 the cluster has 0 filers
+I1103 18:44:32.973442 master_client.go:27 the cluster has 0 filers
+I1103 18:44:32.974012 masterclient.go:465 + filer@127.0.0.1:18888 noticed .filer 127.0.0.1:18888.28888
+I1103 18:44:32.974039 masterclient.go:465 + filer@127.0.0.1:18888 noticed .filer 127.0.0.1:18888.28888
+I1103 18:44:33.975180 masterclient.go:480 LockRing: filer@127.0.0.1:18888 received ring update v1793731473974712530: [127.0.0.1:18888.28888]
+I1103 18:44:33.975221 filer.go:295 LockRing: applying master ring update v1793731473974712530: [127.0.0.1:18888]
+I1103 18:44:35.113095 masterclient.go:467 - filer@127.0.0.1:18888 noticed .s3 127.0.0.1:28333
+I1103 18:44:35.222375 master_client.go:27 the cluster has 0 filers
+I1103 18:44:35.222463 shutdown.go:15 Gracefully stopping gRPC server
+I1103 18:44:35.319086 filer_grpc_server_sub_meta.go:1110 disconnect filer:127.0.0.1:18888.28888@127.0.0.1:45044 local subscriber / clientId:-1491609090
+I1103 18:44:35.319133 filer_grpc_server_sub_meta.go:1729 - local listener filer:127.0.0.1:18888.28888@127.0.0.1:45044 clientId -1491609090 clientEpoch 1
+I1103 18:44:35.319086 filer_grpc_server_sub_meta.go:1110 disconnect s3@127.0.0.1:45052 local subscriber /etc/ clientId:-1952552933
+I1103 18:44:35.319264 filer_grpc_server_sub_meta.go:1729 - local listener s3@127.0.0.1:45052 clientId -1952552933 clientEpoch 2
+I1103 18:44:35.319424 meta_aggregator.go:701 SubscribeLocalMetadata stream 127.0.0.1:18888: rpc error: code = Unavailable desc = filer is shutting down
+I1103 18:44:35.319517 shutdown.go:23 gRPC server stopped gracefully
+I1103 18:44:35.319538 filer_server.go:491 Shutting down filer
+I1103 18:44:35.319588 meta_aggregator.go:481 subscribing remote 127.0.0.1:18888 meta change: rpc error: code = Unavailable desc = filer is shutting down
+I1103 18:44:35.319625 filer_deletion.go:543 retry processor shutting down, 0 items remaining in queue
+I1103 18:44:35.319635 filer_deletion.go:317 deletion processor shutting down
+I1103 18:44:35.522126 meta_aggregator.go:488 stop subscribing peer 127.0.0.1:18888 meta change

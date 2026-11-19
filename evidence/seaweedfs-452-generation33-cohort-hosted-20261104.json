@@ -1,0 +1,89 @@
+{
+  "acceptanceTestsPassed": 0,
+  "artifact": {
+    "bytes": 127980,
+    "digest": "sha256:5a8a59be0d0ee6230322e4828cc1edef5ca1e24689dc2ff7f19ede830203430e",
+    "expiresAt": "2027-02-02T07:44:18Z",
+    "head": "7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791",
+    "id": 13305200887,
+    "name": "seaweedfs-generation33-cohort-41794344274",
+    "path": "evidence/artifacts/seaweedfs-generation33-cohort-41794344274.zip"
+  },
+  "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+  "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+  "checksumMembersVerified": 16,
+  "cohortReceiptSha256": "5b28de1dd43fca337064d41439d302d53dc7f470640fe3fc0d8d1292b1ec02dc",
+  "durableImageCustody": "OPEN",
+  "gatesClosed": 0,
+  "generation": 33,
+  "jobs": [
+    {
+      "conclusion": "success",
+      "headSha": "7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791",
+      "id": 126454780558,
+      "name": "verify-boundaries"
+    },
+    {
+      "conclusion": "success",
+      "headSha": "7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791",
+      "id": 126454854350,
+      "name": "qualify-cohort"
+    },
+    {
+      "conclusion": "success",
+      "headSha": "7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791",
+      "id": 126455651447,
+      "name": "runtime-labs / verified-cohort-then-sequential-labs"
+    }
+  ],
+  "licenceReview": "OPEN",
+  "localReplayReceiptByteIdentical": true,
+  "members": 17,
+  "modifiedMplSource": {
+    "archiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+    "manifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+  },
+  "modifiedVendorDependency": {
+    "canonicalScannerIdentityModified": false,
+    "canonicalSpdxIdentityModified": false,
+    "downstreamNoticePresent": true,
+    "licenceReview": "OPEN",
+    "modifiedConfigSha256": "9983e5e82a9372e9f47db6ccc5a55d9b747fd503caaedb5619e4b37e95c75ab4",
+    "module": "github.com/apache/iceberg-go",
+    "originalChecksumsDescribeModifiedSource": false,
+    "originalConfigSha256": "30ec8eebf86cd2f5df0c8d6bbf8661c0bf72d10fc8c025d6943c9565ae13a604",
+    "originalLegalTexts": {
+      "LICENSE": {
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      "NOTICE": {
+        "bytes": 251,
+        "sha256": "f519dc027959fc106b1b53706b70eb3bd5da2c0bac79336888c58a79d03c8f52"
+      }
+    },
+    "originalZipH1InputOnly": "h1:bTD6Pb4uM4sWcMfIx0/cV1haHMc84r+CvPieUqYzD4I=",
+    "originalZipSha256": "a042ec87708c376362859041b1741213dc4e05400cad7ad0220ea4361a250d55",
+    "patchPath": "patches/iceberg-go/0.7.0-maintained-yaml-vendor.patch",
+    "patchSha256": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef",
+    "redistributionAccepted": false,
+    "sourceProfilePath": "config/seaweedfs-generation33-vendor-source-profile.json",
+    "sourceProfileSha256": "2331b929c579e778a76072d279f8aa47e31cc054c0c8165936de8a7d7a6a5464",
+    "version": "v0.7.0"
+  },
+  "mplSourceArchives": 7,
+  "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+  "publisherSignatureReverifiedLocally": false,
+  "publisherSignatureVerifiedByHostedJob": true,
+  "redistributionAccepted": false,
+  "releaseAdmitted": false,
+  "runId": 41794344274,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-generation33-hosted-cohort-readback.v1",
+  "sourceCommit": "7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791",
+  "status": "TECHNICAL_COHORT_HOSTED_PASS_NOT_ADMITTED",
+  "targetOperations": 0,
+  "thirdPartyLegalTexts": 302,
+  "thirdPartyModules": 214,
+  "wholeWorkflowConclusion": "success"
+}

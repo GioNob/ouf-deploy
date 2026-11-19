@@ -1,8 +1,6 @@
+# Qualificazione storica (2026-10-09): solo manuale, D-055
 name: Provider fresh evidence independent readback
 on:
-  push:
-    paths:
-      - '.github/workflows/provider-v2-fresh-evidence-readback.yml'
   workflow_dispatch:
 permissions:
   contents: read

@@ -1,0 +1,72 @@
+{
+  "schema": "ouf.ingestion-wide-upgrade-qualification.v1",
+  "sourceCommit": "5d926783e3ec3d277b70d4962aa82f37cf2e1b18",
+  "controller": "scripts/upgrade-ingestion-wide-20261108.py",
+  "controllerSha256": "f345e549aa75531f77a244966951ed775e98d90e0e24ebad85940a4bba7b8ee8",
+  "candidateSource": "c85d9fd3be215e518dc6e7d075797720b5afbd91",
+  "artifactId": 13633320899,
+  "candidateArchiveRun": 42519952111,
+  "zipSha256": "83e15e242528d9128ddf5a813d0a9d4512f4076d07f845bab6a63ca1456b0109",
+  "imageArchiveSha256": "6861abc6d2cbc41d8df07546c205a3b8268d0458a6f678b29cd8515350194dae",
+  "jarSha256": "d0e2acc49fe91998b7182d107d1b6f02b1f1da6b49a5520dd6f6eaefa5295523",
+  "ciRun": 42522348023,
+  "jobs": [
+    {
+      "id": 128858382810,
+      "store": "containerd",
+      "status": "PASS",
+      "unitTests": 6,
+      "nativeTests": 2,
+      "skips": 0,
+      "logsRead": true
+    },
+    {
+      "id": 128858383044,
+      "store": "classic",
+      "status": "PASS",
+      "unitTests": 6,
+      "nativeTests": 2,
+      "skips": 0,
+      "logsRead": true
+    }
+  ],
+  "dockerVersion": "29.8.1",
+  "engineApi": "1.44",
+  "postgresVersionFamily": "17",
+  "macProfiles": [
+    "EXPLICIT_LEGACY_CONFIG",
+    "ENDPOINT_ONLY_COMPAT_CONFIG"
+  ],
+  "legacyInitiallyPresentBothProfiles": true,
+  "legacyAbsentOnlyAfterStopDetach": true,
+  "oldContainerRetainedStopped": true,
+  "endpointIpMacAliasesPreserved": true,
+  "exactArchivedJarStarted": true,
+  "readinessHttpStatus": 200,
+  "migrationHistoryV18Preserved": true,
+  "retainedTableFingerprintsPreserved": [
+    "ing_run",
+    "ing_partition",
+    "processing_attempt",
+    "ing_lineage",
+    "handoff_outbox",
+    "runtime_configuration_snapshot",
+    "ing_schedule"
+  ],
+  "applicationRoleSuperuser": false,
+  "flywayDisabledEnvironmentAndArgument": true,
+  "externalConfigurationAndGatewayReadKeyExercised": true,
+  "executionBeansEnabledInFixture": true,
+  "businessRequestsIssuedByTest": 0,
+  "targetAccess": false,
+  "targetInstalled": false,
+  "deliveryReadbackFiles": 8,
+  "deliveryReadbackHashesMatched": true,
+  "shellSyntaxChecked": true,
+  "limitations": [
+    "Native predecessor uses the archived candidate, not a copy of the old VPS image.",
+    "Database rows, external configuration and key bindings are synthetic. The exact VPS Spring configuration is not reproduced.",
+    "Application startup and native replacement qualify the installer, not a functional wide ingestion or the CSV-to-graph E2E.",
+    "Target counts remain point-in-time observations; application startup may execute existing work. Controller holds on compared history or row changes, without rollback or replay."
+  ]
+}

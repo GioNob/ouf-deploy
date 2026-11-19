@@ -1,0 +1,157 @@
+{
+  "schema": "ouf.ths-owner-request-native-plan-qualified.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "status": "QUALIFIED_AND_SUCCESSFULLY_CONSUMED_CONDITIONAL_NATIVE_PLAN_PREPARED",
+  "source": {
+    "commit": "10b97a9598ebe9e63d7edbaac3edeb6633994941",
+    "path": "scripts/prepare-managed-profile-ths-native-plan-20261028.py",
+    "bytes": 41126,
+    "sha256": "34ecd1f65917009523971431f5a60af33bda0eacc1c25d189b1e687494d3ecbd"
+  },
+  "wrapper": {
+    "commit": "6f25824ffea6318caed384cfa7b7e81378bc1e4f",
+    "path": "releases/prepare-managed-profile-ths-native-plan-20261028.sh",
+    "bytes": 4148,
+    "sha256": "ed0c03f4761604d255dd8f5f1c9768a3cc597e3fe86408c2e545da90c90d3930"
+  },
+  "qualification": {
+    "commit": "c3dc48409a4439705a521984c81816584282ed25",
+    "pushRun": 40703684260,
+    "prRun": 40703696104,
+    "unitTests": 91,
+    "newPlanTests": 10,
+    "preservedTests": 81,
+    "skips": 0,
+    "sourceReproduction": true,
+    "syntheticEngineMetadata": true,
+    "actualUnixHttpRootPeerAndPrivateCustody": true,
+    "actualThirteenProcessPins": true,
+    "actualPinnedHttpsNonrootSudoRoot400Delivery": true,
+    "privateFiles600": true,
+    "oldInputBytesUnchanged": true,
+    "driftDeniedBeforePlan": true,
+    "replayDenied": true,
+    "noHumanApprovalSimulated": true,
+    "targetCalls": 0,
+    "conclusion": "success",
+    "pushJobs": [
+      122869960807,
+      122869961317
+    ],
+    "prJobs": [
+      122870003574,
+      122870004119
+    ],
+    "directLogsRead": 4
+  },
+  "parentIamCorrection": {
+    "receipt": "evidence/managed-profile-ths-iam-binding-correction-target-20261028.json",
+    "resultHash": "c82b1b1025086faf4acf0899485643209f8929c4fa8ce6ca045fc2bfbdd7d027",
+    "configurationProfileHash": "d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c",
+    "bindingSnapshotHash": "e7b16276cd7cdba45d3a5ec5d96ba47b8a5bd23cf43db050eedfd5ac9935ee03",
+    "scopeConsumed": true,
+    "administrativeAuthenticationsConsumed": 2,
+    "iamMutationsCompleted": 4
+  },
+  "newScope": "/etc/ouf/deploy-snapshots/managed-profile-ths-native-plan-d0dbbd61-20261028-v1",
+  "limits": {
+    "privateMetadataReads": 5,
+    "engineGets": 27,
+    "seconds": 120,
+    "responseBytes": 2097152,
+    "totalBytes": 25165824
+  },
+  "privateMetadata": [
+    "Three immutable successful two-owner control update metadata: review/result/recovery",
+    "Two consumed IAM correction metadata: exact result and exact configuration-profile"
+  ],
+  "productionModules": [
+    "tools/managed_profile_ths_scopes/native_plan.py",
+    "tools/build_managed_profile_ths_native_plan.py"
+  ],
+  "reusedAlgorithms": [
+    "Completed two-owner history resolution from current scope capture",
+    "Protected private Capture, root Unix SO_PEERCRED Engine, stable binding and process pins",
+    "Teatri config_copy/network, retain_allocations and exact legacy MAC detach policy",
+    "Additive scope request contract and proved IAM profile"
+  ],
+  "conditionalPlan": {
+    "targetRoles": [
+      "onboarding"
+    ],
+    "sameImage": true,
+    "nativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
+    "sourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+    "cohortSize": 13,
+    "unchangedPeers": 12,
+    "retains": [
+      "Prior5requested scopes and every unrelated Env/JSON property",
+      "Mounts, launch, labels, endpoint MAC/IP/aliases, allocated host ports and resources including Memory0",
+      "Restore restart policy and retained stopped old owner",
+      "All36packaged migration facts, bound database and owner-overlay profile"
+    ],
+    "freshDatabaseAdmissionProven": false,
+    "currentJobOrBudgetStateObserved": false,
+    "networkMembershipAdmissionProven": false,
+    "executionEntryQualified": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "imageImportAuthorized": false
+  },
+  "effects": {
+    "iamRequests": 0,
+    "oauthRequests": 0,
+    "engineWrites": 0,
+    "sqlSessions": 0,
+    "imageImports": 0,
+    "configurationFileContentReads": 0,
+    "credentialFileReads": 0,
+    "signingKeyReads": 0,
+    "newGrantsGranted": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "newJobs": 0,
+    "uploads": 0,
+    "acquisitionsExecuted": 0,
+    "sourceActivations": 0,
+    "registryWorkerTouched": false,
+    "scopePatchApplied": false
+  },
+  "dataBoundary": {
+    "retainedEngineEnvAndPrivateProfileMayContainCredentials": true,
+    "private600": true,
+    "noNewSecretFileRead": true,
+    "publicOutputHashesCountersAndScopeNamesOnly": true
+  },
+  "nextGates": [
+    "Exact target plan receipt; no replay on STOP",
+    "Separate qualified same-image single-owner execution with NEW concrete HUMAN review, finite signed authority, current runtime/schema36/jobFAILED5/network/overlay and backup fences",
+    "Fresh USER-only OAuth/card then distinct same-job3attempts900s budget and resume cumulative6–8",
+    "Original/hash/parser/preview61rows to UDP, two real MCP clients and full M2E2E"
+  ],
+  "targetExecuted": true,
+  "currentDeliveryUsable": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "targetFollowUp": {
+    "receipt": "evidence/managed-profile-ths-native-plan-target-20261028.json",
+    "executionInputsHash": "e22a443d2617bf4db06b90ca272fd80e87fe3a05a9b4b6386b15cce51fea11e4",
+    "conditionalNativePlanHash": "9c961982f1e521ca67e25de6d9437cbfc670821c874625d77b9a092da33b6900",
+    "counts": {
+      "bytes": 750536,
+      "engineGets": 27,
+      "privateMetadataReads": 5
+    },
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "scopePatchApplied": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "nextQualifiedExecution": "evidence/managed-profile-ths-request-update-qualified-20261028.json"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.resolution-ths-property-shape-qualification.v1",
+  "sourceCommit": "70b13be02eda847008b9391623cbc3959a938b2c",
+  "ciRun": 39027224121,
+  "ciJob": 117380491820,
+  "tests": 5,
+  "failures": 0,
+  "skipped": 0,
+  "readerSha256": "82d2c386af2995c26b58225cb097c6030418fec4ce7a213f9f17617ee7987a30",
+  "launcherSha256": "28e7de587077e4ac60d57cee2e9d85b13524e0a74f24e1ce6921ae2cb50df1c5",
+  "targetReadPending": true,
+  "effectiveConfigurationProven": false,
+  "readOnly": true,
+  "maximumEngineReads": 2,
+  "maximumSeconds": 35,
+  "credentialValuesPrinted": false,
+  "tokenFilesRead": 0,
+  "grantRequests": 0,
+  "gatewayWrites": 0,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2
+}

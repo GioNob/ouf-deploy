@@ -1,0 +1,1003 @@
+diff --git a/go.mod b/go.mod
+--- a/go.mod
++++ b/go.mod
+@@ -127,6 +127,7 @@
+ 	github.com/aws/aws-sdk-go-v2/config v1.33.6
+ 	github.com/aws/aws-sdk-go-v2/credentials v1.20.6
+ 	github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager v0.4.3
++	github.com/aws/aws-sdk-go-v2/service/iam v1.64.6
+ 	github.com/aws/aws-sdk-go-v2/service/kms v1.62.2
+ 	github.com/aws/aws-sdk-go-v2/service/s3 v1.114.1
+ 	github.com/cespare/xxhash/v2 v2.3.0
+diff --git a/go.sum b/go.sum
+--- a/go.sum
++++ b/go.sum
+@@ -199,6 +199,8 @@
+ github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.8/go.mod h1:xxPZEpflYHJA12366ZGyq66z9dHPCoeCIu99Jck+MPw=
+ github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.4 h1:7Wo47d/xn/7KttCSBd8EGYeZ7ULRFRkUHr6vkZPBzVQ=
+ github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.4/go.mod h1:tDB2IVC1xC3vX8o+6uRlzhTxP3g1b77CZXFX/oD2FnQ=
++github.com/aws/aws-sdk-go-v2/service/iam v1.64.6 h1:6tqE3gHbHFEvARPvlLHgRK1dXoD96ecolfPEurpYXyc=
++github.com/aws/aws-sdk-go-v2/service/iam v1.64.6/go.mod h1:lV0r+RVSkXRA6WhiaxW55qn8n60ObMwQShxaqrs9UeY=
+ github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19 h1:bAdDl/HkGCcGPoe25ToSHEw23VIxt6CT5fLcg111BKg=
+ github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19/go.mod h1:KaUzbLxv4CeSxh6ZCl9B4m7CuFenS8kUEaDs+f/DQr4=
+ github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.11.5 h1:/TYsZXdA8UTa+WCtCYSAJIr1vwl0+eho6TUgJGwFFO8=
+diff --git a/test/s3/policy/policy_test.go b/test/s3/policy/policy_test.go
+--- a/test/s3/policy/policy_test.go
++++ b/test/s3/policy/policy_test.go
+@@ -14,12 +14,13 @@
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/iam"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
++	iamtypes "github.com/aws/aws-sdk-go-v2/service/iam/types"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
++	"github.com/aws/smithy-go"
+ 	"github.com/seaweedfs/seaweedfs/test/testutil"
+ 	"github.com/seaweedfs/seaweedfs/test/volume_server/framework"
+ 	"github.com/seaweedfs/seaweedfs/weed/command"
+@@ -168,41 +169,41 @@
+ 	iamClient := newIAMClient(t, cluster.s3Endpoint)
+ 
+ 	userName := uniqueName("iam-user")
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
+-	require.NoError(t, err)
+-
+-	_, err = iamClient.AttachUserPolicy(&iam.AttachUserPolicyInput{
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
++	require.NoError(t, err)
++
++	_, err = iamClient.AttachUserPolicy(t.Context(), &iam.AttachUserPolicyInput{
+ 		UserName:  aws.String(userName),
+ 		PolicyArn: aws.String(policyArn),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	listOut, err := iamClient.ListAttachedUserPolicies(&iam.ListAttachedUserPoliciesInput{
++	listOut, err := iamClient.ListAttachedUserPolicies(t.Context(), &iam.ListAttachedUserPoliciesInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+ 	require.True(t, attachedPolicyContains(listOut.AttachedPolicies, policyName))
+ 
+-	_, err = iamClient.DetachUserPolicy(&iam.DetachUserPolicyInput{
++	_, err = iamClient.DetachUserPolicy(t.Context(), &iam.DetachUserPolicyInput{
+ 		UserName:  aws.String(userName),
+ 		PolicyArn: aws.String(policyArn),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	listOut, err = iamClient.ListAttachedUserPolicies(&iam.ListAttachedUserPoliciesInput{
++	listOut, err = iamClient.ListAttachedUserPolicies(t.Context(), &iam.ListAttachedUserPoliciesInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+ 	require.False(t, attachedPolicyContains(listOut.AttachedPolicies, policyName))
+ 
+-	_, err = iamClient.AttachUserPolicy(&iam.AttachUserPolicyInput{
++	_, err = iamClient.AttachUserPolicy(t.Context(), &iam.AttachUserPolicyInput{
+ 		UserName:  aws.String(userName),
+ 		PolicyArn: aws.String("arn:aws:iam:::policy/does-not-exist"),
+ 	})
+ 	require.Error(t, err)
+-	if awsErr, ok := err.(awserr.Error); ok {
+-		require.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
+-	}
++	var awsErr smithy.APIError
++	require.True(t, errors.As(err, &awsErr))
++	require.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ }
+ 
+ func TestS3IAMListPoliciesAndGetPolicy(t *testing.T) {
+@@ -221,28 +222,28 @@
+ 	policyContent := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:ListAllMyBuckets","Resource":"*"}]}`
+ 
+ 	iamClient := newIAMClient(t, cluster.s3Endpoint)
+-	_, err = iamClient.CreatePolicy(&iam.CreatePolicyInput{
++	_, err = iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 		PolicyName:     aws.String(policyName),
+ 		PolicyDocument: aws.String(policyContent),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	listOut, err := iamClient.ListPolicies(&iam.ListPoliciesInput{})
++	listOut, err := iamClient.ListPolicies(t.Context(), &iam.ListPoliciesInput{})
+ 	require.NoError(t, err)
+ 	require.True(t, managedPolicyContains(listOut.Policies, policyName))
+ 
+-	getOut, err := iamClient.GetPolicy(&iam.GetPolicyInput{PolicyArn: aws.String(policyArn)})
++	getOut, err := iamClient.GetPolicy(t.Context(), &iam.GetPolicyInput{PolicyArn: aws.String(policyArn)})
+ 	require.NoError(t, err)
+ 	require.NotNil(t, getOut.Policy)
+ 	require.NotNil(t, getOut.Policy.PolicyName)
+ 	require.Equal(t, policyName, *getOut.Policy.PolicyName)
+ 
+ 	missingArn := fmt.Sprintf("arn:aws:iam:::policy/%s", uniqueName("missing"))
+-	_, err = iamClient.GetPolicy(&iam.GetPolicyInput{PolicyArn: aws.String(missingArn)})
++	_, err = iamClient.GetPolicy(t.Context(), &iam.GetPolicyInput{PolicyArn: aws.String(missingArn)})
+ 	require.Error(t, err)
+-	var awsErr awserr.Error
++	var awsErr smithy.APIError
+ 	require.True(t, errors.As(err, &awsErr))
+-	require.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++	require.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ }
+ 
+ func TestS3IAMDeletePolicyInUse(t *testing.T) {
+@@ -261,27 +262,27 @@
+ 	policyContent := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:*","Resource":"*"}]}`
+ 
+ 	iamClient := newIAMClient(t, cluster.s3Endpoint)
+-	_, err = iamClient.CreatePolicy(&iam.CreatePolicyInput{
++	_, err = iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 		PolicyName:     aws.String(policyName),
+ 		PolicyDocument: aws.String(policyContent),
+ 	})
+ 	require.NoError(t, err)
+ 
+ 	userName := uniqueName("iam-user-delete-policy")
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
+-	require.NoError(t, err)
+-
+-	_, err = iamClient.AttachUserPolicy(&iam.AttachUserPolicyInput{
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
++	require.NoError(t, err)
++
++	_, err = iamClient.AttachUserPolicy(t.Context(), &iam.AttachUserPolicyInput{
+ 		UserName:  aws.String(userName),
+ 		PolicyArn: aws.String(policyArn),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	_, err = iamClient.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: aws.String(policyArn)})
++	_, err = iamClient.DeletePolicy(t.Context(), &iam.DeletePolicyInput{PolicyArn: aws.String(policyArn)})
+ 	require.Error(t, err)
+-	var awsErr awserr.Error
++	var awsErr smithy.APIError
+ 	require.True(t, errors.As(err, &awsErr))
+-	require.Equal(t, iam.ErrCodeDeleteConflictException, awsErr.Code())
++	require.Equal(t, "DeleteConflict", awsErr.ErrorCode())
+ }
+ 
+ func TestS3MultipartOperationsInheritPutObjectPermissions(t *testing.T) {
+@@ -310,7 +311,7 @@
+ 	}`
+ 
+ 	iamClient := newIAMClient(t, cluster.s3Endpoint)
+-	_, err = iamClient.CreatePolicy(&iam.CreatePolicyInput{
++	_, err = iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 		PolicyName:     aws.String(policyName),
+ 		PolicyDocument: aws.String(policyContent),
+ 	})
+@@ -318,43 +319,34 @@
+ 
+ 	// Create a user and attach the policy
+ 	userName := uniqueName("multipart-user")
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
+-	require.NoError(t, err)
+-
+-	_, err = iamClient.CreateAccessKey(&iam.CreateAccessKeyInput{UserName: aws.String(userName)})
+-	require.NoError(t, err)
+-
+-	_, err = iamClient.AttachUserPolicy(&iam.AttachUserPolicyInput{
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
++	require.NoError(t, err)
++
++	_, err = iamClient.CreateAccessKey(t.Context(), &iam.CreateAccessKeyInput{UserName: aws.String(userName)})
++	require.NoError(t, err)
++
++	_, err = iamClient.AttachUserPolicy(t.Context(), &iam.AttachUserPolicyInput{
+ 		UserName:  aws.String(userName),
+ 		PolicyArn: aws.String(policyArn),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	// Create S3 client with user credentials (using admin credentials for now, test will still validate permissions)
+-	// In a real scenario, we'd use the user's access key
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:           aws.String("us-east-1"),
+-		Endpoint:         aws.String(cluster.s3Endpoint),
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-		Credentials:      credentials.NewStaticCredentials("admin", "admin", ""),
+-	})
+-	require.NoError(t, err)
+-
+-	s3Client := newS3Client(sess)
++	// Use admin fixture credentials for the multipart API exercise below.
++	// This does not demonstrate enforcement of the created user's policy.
++	s3Client := newS3ClientForCluster(t, cluster)
+ 
+ 	bucketName := uniqueName("multipart-test-bucket")
+ 	objectKey := "test-object"
+ 
+ 	// Create bucket
+-	_, err = s3Client.CreateBucket(&s3.CreateBucketInput{Bucket: aws.String(bucketName)})
++	_, err = s3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{Bucket: aws.String(bucketName)})
+ 	require.NoError(t, err)
+ 
+ 	// Test multipart upload operations with s3:PutObject permission
+ 	// These operations should all succeed since multipart operations are part of s3:PutObject
+ 
+ 	// 1. CreateMultipartUpload
+-	createOut, err := s3Client.CreateMultipartUpload(&s3.CreateMultipartUploadInput{
++	createOut, err := s3Client.CreateMultipartUpload(t.Context(), &s3.CreateMultipartUploadInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 	})
+@@ -364,10 +356,10 @@
+ 
+ 	// 2. UploadPart
+ 	partBody := "test part data"
+-	uploadPartOut, err := s3Client.UploadPart(&s3.UploadPartInput{
++	uploadPartOut, err := s3Client.UploadPart(t.Context(), &s3.UploadPartInput{
+ 		Bucket:     aws.String(bucketName),
+ 		Key:        aws.String(objectKey),
+-		PartNumber: aws.Int64(1),
++		PartNumber: aws.Int32(1),
+ 		UploadId:   aws.String(uploadID),
+ 		Body:       strings.NewReader(partBody),
+ 	})
+@@ -375,7 +367,7 @@
+ 	require.NotNil(t, uploadPartOut.ETag)
+ 
+ 	// 3. ListParts
+-	listPartsOut, err := s3Client.ListParts(&s3.ListPartsInput{
++	listPartsOut, err := s3Client.ListParts(t.Context(), &s3.ListPartsInput{
+ 		Bucket:   aws.String(bucketName),
+ 		Key:      aws.String(objectKey),
+ 		UploadId: aws.String(uploadID),
+@@ -384,15 +376,15 @@
+ 	require.Equal(t, 1, len(listPartsOut.Parts))
+ 
+ 	// 4. CompleteMultipartUpload
+-	completeOut, err := s3Client.CompleteMultipartUpload(&s3.CompleteMultipartUploadInput{
++	completeOut, err := s3Client.CompleteMultipartUpload(t.Context(), &s3.CompleteMultipartUploadInput{
+ 		Bucket:   aws.String(bucketName),
+ 		Key:      aws.String(objectKey),
+ 		UploadId: aws.String(uploadID),
+-		MultipartUpload: &s3.CompletedMultipartUpload{
+-			Parts: []*s3.CompletedPart{
++		MultipartUpload: &s3types.CompletedMultipartUpload{
++			Parts: []s3types.CompletedPart{
+ 				{
+ 					ETag:       uploadPartOut.ETag,
+-					PartNumber: aws.Int64(1),
++					PartNumber: aws.Int32(1),
+ 				},
+ 			},
+ 		},
+@@ -401,14 +393,14 @@
+ 	require.NotNil(t, completeOut.ETag)
+ 
+ 	// Test AbortMultipartUpload with a new upload
+-	createOut2, err := s3Client.CreateMultipartUpload(&s3.CreateMultipartUploadInput{
++	createOut2, err := s3Client.CreateMultipartUpload(t.Context(), &s3.CreateMultipartUploadInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey + "-abort"),
+ 	})
+ 	require.NoError(t, err)
+ 	uploadID2 := *createOut2.UploadId
+ 
+-	_, err = s3Client.AbortMultipartUpload(&s3.AbortMultipartUploadInput{
++	_, err = s3Client.AbortMultipartUpload(t.Context(), &s3.AbortMultipartUploadInput{
+ 		Bucket:   aws.String(bucketName),
+ 		Key:      aws.String(objectKey + "-abort"),
+ 		UploadId: aws.String(uploadID2),
+@@ -416,7 +408,7 @@
+ 	require.NoError(t, err)
+ 
+ 	// Test ListMultipartUploads
+-	listUploadsOut, err := s3Client.ListMultipartUploads(&s3.ListMultipartUploadsInput{
++	listUploadsOut, err := s3Client.ListMultipartUploads(t.Context(), &s3.ListMultipartUploadsInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -441,7 +433,7 @@
+ 
+ 	// Step 1: Create a user (this already worked per the issue)
+ 	userName := uniqueName("lifecycle-user")
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
+ 	require.NoError(t, err, "CreateUser should succeed")
+ 
+ 	// Step 2: Create a managed policy via IAM API
+@@ -455,7 +447,7 @@
+ 			"Resource": "arn:aws:s3:::*"
+ 		}]
+ 	}`
+-	createOut, err := iamClient.CreatePolicy(&iam.CreatePolicyInput{
++	createOut, err := iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 		PolicyName:     aws.String(policyName),
+ 		PolicyDocument: aws.String(policyDoc),
+ 	})
+@@ -464,27 +456,27 @@
+ 	require.Equal(t, policyName, *createOut.Policy.PolicyName)
+ 
+ 	// Step 3: ListPolicies — should include the created policy (was returning 500)
+-	listOut, err := iamClient.ListPolicies(&iam.ListPoliciesInput{})
++	listOut, err := iamClient.ListPolicies(t.Context(), &iam.ListPoliciesInput{})
+ 	require.NoError(t, err, "ListPolicies should succeed (was returning 500)")
+ 	require.True(t, managedPolicyContains(listOut.Policies, policyName),
+ 		"ListPolicies should contain the newly created policy")
+ 
+ 	// Step 4: GetPolicy by ARN — should return the policy (was returning 500)
+-	getOut, err := iamClient.GetPolicy(&iam.GetPolicyInput{PolicyArn: aws.String(policyArn)})
++	getOut, err := iamClient.GetPolicy(t.Context(), &iam.GetPolicyInput{PolicyArn: aws.String(policyArn)})
+ 	require.NoError(t, err, "GetPolicy should succeed (was returning 500)")
+ 	require.NotNil(t, getOut.Policy)
+ 	require.Equal(t, policyName, *getOut.Policy.PolicyName)
+ 	require.Equal(t, policyArn, *getOut.Policy.Arn)
+ 
+ 	// Step 5: AttachUserPolicy — should succeed (was returning 500)
+-	_, err = iamClient.AttachUserPolicy(&iam.AttachUserPolicyInput{
++	_, err = iamClient.AttachUserPolicy(t.Context(), &iam.AttachUserPolicyInput{
+ 		UserName:  aws.String(userName),
+ 		PolicyArn: aws.String(policyArn),
+ 	})
+ 	require.NoError(t, err, "AttachUserPolicy should succeed (was returning 500)")
+ 
+ 	// Step 6: ListAttachedUserPolicies — verify the policy is attached
+-	attachedOut, err := iamClient.ListAttachedUserPolicies(&iam.ListAttachedUserPoliciesInput{
++	attachedOut, err := iamClient.ListAttachedUserPolicies(t.Context(), &iam.ListAttachedUserPoliciesInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err, "ListAttachedUserPolicies should succeed")
+@@ -492,29 +484,29 @@
+ 		"Policy should appear in user's attached policies")
+ 
+ 	// Step 7: Idempotent re-attach should not fail
+-	_, err = iamClient.AttachUserPolicy(&iam.AttachUserPolicyInput{
++	_, err = iamClient.AttachUserPolicy(t.Context(), &iam.AttachUserPolicyInput{
+ 		UserName:  aws.String(userName),
+ 		PolicyArn: aws.String(policyArn),
+ 	})
+ 	require.NoError(t, err, "Re-attaching same policy should be idempotent")
+ 
+ 	// Step 8: DeletePolicy while attached — should fail with DeleteConflict (AWS behavior)
+-	_, err = iamClient.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: aws.String(policyArn)})
++	_, err = iamClient.DeletePolicy(t.Context(), &iam.DeletePolicyInput{PolicyArn: aws.String(policyArn)})
+ 	require.Error(t, err, "DeletePolicy should fail while policy is attached")
+-	var awsErr awserr.Error
++	var awsErr smithy.APIError
+ 	require.True(t, errors.As(err, &awsErr))
+-	require.Equal(t, iam.ErrCodeDeleteConflictException, awsErr.Code(),
++	require.Equal(t, "DeleteConflict", awsErr.ErrorCode(),
+ 		"Should return DeleteConflict when deleting attached policy")
+ 
+ 	// Step 9: DetachUserPolicy
+-	_, err = iamClient.DetachUserPolicy(&iam.DetachUserPolicyInput{
++	_, err = iamClient.DetachUserPolicy(t.Context(), &iam.DetachUserPolicyInput{
+ 		UserName:  aws.String(userName),
+ 		PolicyArn: aws.String(policyArn),
+ 	})
+ 	require.NoError(t, err, "DetachUserPolicy should succeed")
+ 
+ 	// Verify detached
+-	attachedOut, err = iamClient.ListAttachedUserPolicies(&iam.ListAttachedUserPoliciesInput{
++	attachedOut, err = iamClient.ListAttachedUserPolicies(t.Context(), &iam.ListAttachedUserPoliciesInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+@@ -522,19 +514,19 @@
+ 		"Policy should no longer appear in user's attached policies after detach")
+ 
+ 	// Step 10: DeletePolicy — should now succeed (was returning XML parsing error)
+-	_, err = iamClient.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: aws.String(policyArn)})
++	_, err = iamClient.DeletePolicy(t.Context(), &iam.DeletePolicyInput{PolicyArn: aws.String(policyArn)})
+ 	require.NoError(t, err, "DeletePolicy should succeed after detach (was returning XML parsing error)")
+ 
+ 	// Step 11: Verify the policy is gone
+-	listOut, err = iamClient.ListPolicies(&iam.ListPoliciesInput{})
++	listOut, err = iamClient.ListPolicies(t.Context(), &iam.ListPoliciesInput{})
+ 	require.NoError(t, err)
+ 	require.False(t, managedPolicyContains(listOut.Policies, policyName),
+ 		"Deleted policy should not appear in ListPolicies")
+ 
+-	_, err = iamClient.GetPolicy(&iam.GetPolicyInput{PolicyArn: aws.String(policyArn)})
++	_, err = iamClient.GetPolicy(t.Context(), &iam.GetPolicyInput{PolicyArn: aws.String(policyArn)})
+ 	require.Error(t, err, "GetPolicy should fail for deleted policy")
+ 	require.True(t, errors.As(err, &awsErr))
+-	require.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++	require.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ }
+ 
+ // TestS3IAMManagedPolicyErrorCases covers error cases from the user-reported issue:
+@@ -551,88 +543,88 @@
+ 	iamClient := newIAMClient(t, cluster.s3Endpoint)
+ 
+ 	t.Run("GetPolicy with nonexistent ARN returns NoSuchEntity", func(t *testing.T) {
+-		_, err := iamClient.GetPolicy(&iam.GetPolicyInput{
++		_, err := iamClient.GetPolicy(t.Context(), &iam.GetPolicyInput{
+ 			PolicyArn: aws.String("arn:aws:iam:::policy/does-not-exist"),
+ 		})
+ 		require.Error(t, err)
+-		var awsErr awserr.Error
++		var awsErr smithy.APIError
+ 		require.True(t, errors.As(err, &awsErr))
+-		require.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		require.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 	})
+ 
+ 	t.Run("DeletePolicy with nonexistent ARN returns NoSuchEntity", func(t *testing.T) {
+-		_, err := iamClient.DeletePolicy(&iam.DeletePolicyInput{
++		_, err := iamClient.DeletePolicy(t.Context(), &iam.DeletePolicyInput{
+ 			PolicyArn: aws.String("arn:aws:iam:::policy/does-not-exist"),
+ 		})
+ 		require.Error(t, err)
+-		var awsErr awserr.Error
++		var awsErr smithy.APIError
+ 		require.True(t, errors.As(err, &awsErr))
+-		require.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		require.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 	})
+ 
+ 	t.Run("AttachUserPolicy with nonexistent policy returns NoSuchEntity", func(t *testing.T) {
+ 		userName := uniqueName("err-user")
+-		_, err := iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
++		_, err := iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
+ 		require.NoError(t, err)
+ 
+-		_, err = iamClient.AttachUserPolicy(&iam.AttachUserPolicyInput{
++		_, err = iamClient.AttachUserPolicy(t.Context(), &iam.AttachUserPolicyInput{
+ 			UserName:  aws.String(userName),
+ 			PolicyArn: aws.String("arn:aws:iam:::policy/does-not-exist"),
+ 		})
+ 		require.Error(t, err)
+-		var awsErr awserr.Error
++		var awsErr smithy.APIError
+ 		require.True(t, errors.As(err, &awsErr))
+-		require.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		require.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 	})
+ 
+ 	t.Run("AttachUserPolicy with nonexistent user returns NoSuchEntity", func(t *testing.T) {
+ 		policyName := uniqueName("err-policy")
+-		_, err := iamClient.CreatePolicy(&iam.CreatePolicyInput{
++		_, err := iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(`{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:GetObject","Resource":"*"}]}`),
+ 		})
+ 		require.NoError(t, err)
+ 
+-		_, err = iamClient.AttachUserPolicy(&iam.AttachUserPolicyInput{
++		_, err = iamClient.AttachUserPolicy(t.Context(), &iam.AttachUserPolicyInput{
+ 			UserName:  aws.String("nonexistent-user"),
+ 			PolicyArn: aws.String(fmt.Sprintf("arn:aws:iam:::policy/%s", policyName)),
+ 		})
+ 		require.Error(t, err)
+-		var awsErr awserr.Error
++		var awsErr smithy.APIError
+ 		require.True(t, errors.As(err, &awsErr))
+-		require.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		require.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 	})
+ 
+ 	t.Run("DetachUserPolicy that is not attached returns NoSuchEntity", func(t *testing.T) {
+ 		userName := uniqueName("detach-user")
+-		_, err := iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
++		_, err := iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
+ 		require.NoError(t, err)
+ 
+ 		policyName := uniqueName("detach-policy")
+-		_, err = iamClient.CreatePolicy(&iam.CreatePolicyInput{
++		_, err = iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(`{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:GetObject","Resource":"*"}]}`),
+ 		})
+ 		require.NoError(t, err)
+ 
+-		_, err = iamClient.DetachUserPolicy(&iam.DetachUserPolicyInput{
++		_, err = iamClient.DetachUserPolicy(t.Context(), &iam.DetachUserPolicyInput{
+ 			UserName:  aws.String(userName),
+ 			PolicyArn: aws.String(fmt.Sprintf("arn:aws:iam:::policy/%s", policyName)),
+ 		})
+ 		require.Error(t, err)
+-		var awsErr awserr.Error
++		var awsErr smithy.APIError
+ 		require.True(t, errors.As(err, &awsErr))
+-		require.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		require.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 	})
+ 
+ 	t.Run("ListAttachedUserPolicies for nonexistent user returns NoSuchEntity", func(t *testing.T) {
+-		_, err := iamClient.ListAttachedUserPolicies(&iam.ListAttachedUserPoliciesInput{
++		_, err := iamClient.ListAttachedUserPolicies(t.Context(), &iam.ListAttachedUserPoliciesInput{
+ 			UserName: aws.String("nonexistent-user"),
+ 		})
+ 		require.Error(t, err)
+-		var awsErr awserr.Error
++		var awsErr smithy.APIError
+ 		require.True(t, errors.As(err, &awsErr))
+-		require.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		require.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 	})
+ }
+ 
+@@ -651,7 +643,7 @@
+ 	return string(out)
+ }
+ 
+-func newIAMClient(t *testing.T, endpoint string) *iam.IAM {
++func newIAMClient(t *testing.T, endpoint string) *iam.Client {
+ 	t.Helper()
+ 
+ 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
+@@ -663,23 +655,16 @@
+ 		secretKey = "admin"
+ 	}
+ 
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:           aws.String("us-east-1"),
+-		Endpoint:         aws.String(endpoint),
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-		Credentials:      credentials.NewStaticCredentials(accessKey, secretKey, ""),
+-	})
+-	require.NoError(t, err)
+-
+-	return iam.New(sess)
+-}
+-
+-func newS3Client(sess *session.Session) *s3.S3 {
+-	return s3.New(sess)
+-}
+-
+-func attachedPolicyContains(policies []*iam.AttachedPolicy, policyName string) bool {
++	return iam.New(iam.Options{
++		Region:           "us-east-1",
++		BaseEndpoint:     aws.String(endpoint),
++		Credentials:      credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
++		HTTPClient:       &http.Client{Timeout: 30 * time.Second},
++		RetryMaxAttempts: 1,
++	})
++}
++
++func attachedPolicyContains(policies []iamtypes.AttachedPolicy, policyName string) bool {
+ 	for _, policy := range policies {
+ 		if policy.PolicyName != nil && *policy.PolicyName == policyName {
+ 			return true
+@@ -688,7 +673,7 @@
+ 	return false
+ }
+ 
+-func managedPolicyContains(policies []*iam.Policy, policyName string) bool {
++func managedPolicyContains(policies []iamtypes.Policy, policyName string) bool {
+ 	for _, policy := range policies {
+ 		if policy.PolicyName != nil && *policy.PolicyName == policyName {
+ 			return true
+diff --git a/test/s3/normal/iam_test.go b/test/s3/normal/iam_test.go
+--- a/test/s3/normal/iam_test.go
++++ b/test/s3/normal/iam_test.go
+@@ -1,13 +1,13 @@
+ package example
+ 
+ import (
++	"net/http"
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/iam"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
+ 	"github.com/stretchr/testify/require"
+ )
+ 
+@@ -33,16 +33,7 @@
+ 	time.Sleep(500 * time.Millisecond)
+ 
+ 	// Create IAM client with credentials
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:           aws.String("us-west-2"),
+-		Endpoint:         aws.String(cluster.s3Endpoint),
+-		DisableSSL:       aws.Bool(true),
+-		Credentials:      credentials.NewStaticCredentials(accessKey, secretKey, ""),
+-		S3ForcePathStyle: aws.Bool(true),
+-	})
+-	require.NoError(t, err)
+-
+-	iamClient := iam.New(sess)
++	iamClient := newNormalIAMClient(cluster.s3Endpoint, accessKey, secretKey)
+ 
+ 	// Run all IAM tests with authentication
+ 	t.Run("CreateUser", func(t *testing.T) {
+@@ -63,14 +54,14 @@
+ }
+ 
+ // testCreateUserAuthenticated tests CreateUser with AWS Signature V4 authentication
+-func testCreateUserAuthenticated(t *testing.T, iamClient *iam.IAM) {
++func testCreateUserAuthenticated(t *testing.T, iamClient *iam.Client) {
+ 	userName := "alice-" + randomString(8)
+ 
+ 	input := &iam.CreateUserInput{
+ 		UserName: aws.String(userName),
+ 	}
+ 
+-	result, err := iamClient.CreateUser(input)
++	result, err := iamClient.CreateUser(t.Context(), input)
+ 	require.NoError(t, err, "Authenticated CreateUser should succeed")
+ 	require.NotNil(t, result.User)
+ 	require.Equal(t, userName, *result.User.UserName)
+@@ -79,10 +70,10 @@
+ }
+ 
+ // testListUsersAuthenticated tests ListUsers with authentication
+-func testListUsersAuthenticated(t *testing.T, iamClient *iam.IAM) {
++func testListUsersAuthenticated(t *testing.T, iamClient *iam.Client) {
+ 	// First create a user
+ 	userName := "listauth-" + randomString(8)
+-	_, err := iamClient.CreateUser(&iam.CreateUserInput{
++	_, err := iamClient.CreateUser(t.Context(), &iam.CreateUserInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+@@ -91,7 +82,7 @@
+ 	time.Sleep(100 * time.Millisecond)
+ 
+ 	// List users
+-	result, err := iamClient.ListUsers(&iam.ListUsersInput{})
++	result, err := iamClient.ListUsers(t.Context(), &iam.ListUsersInput{})
+ 	require.NoError(t, err, "Authenticated ListUsers should succeed")
+ 	require.NotNil(t, result.Users)
+ 
+@@ -109,11 +100,11 @@
+ }
+ 
+ // testGetUserAuthenticated tests GetUser with authentication
+-func testGetUserAuthenticated(t *testing.T, iamClient *iam.IAM) {
++func testGetUserAuthenticated(t *testing.T, iamClient *iam.Client) {
+ 	userName := "getauth-" + randomString(8)
+ 
+ 	// Create user
+-	_, err := iamClient.CreateUser(&iam.CreateUserInput{
++	_, err := iamClient.CreateUser(t.Context(), &iam.CreateUserInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+@@ -122,7 +113,7 @@
+ 	time.Sleep(100 * time.Millisecond)
+ 
+ 	// Get user
+-	result, err := iamClient.GetUser(&iam.GetUserInput{
++	result, err := iamClient.GetUser(t.Context(), &iam.GetUserInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err, "Authenticated GetUser should succeed")
+@@ -133,11 +124,11 @@
+ }
+ 
+ // testDeleteUserAuthenticated tests DeleteUser with authentication
+-func testDeleteUserAuthenticated(t *testing.T, iamClient *iam.IAM) {
++func testDeleteUserAuthenticated(t *testing.T, iamClient *iam.Client) {
+ 	userName := "delauth-" + randomString(8)
+ 
+ 	// Create user
+-	_, err := iamClient.CreateUser(&iam.CreateUserInput{
++	_, err := iamClient.CreateUser(t.Context(), &iam.CreateUserInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+@@ -146,10 +137,20 @@
+ 	time.Sleep(100 * time.Millisecond)
+ 
+ 	// Delete user
+-	_, err = iamClient.DeleteUser(&iam.DeleteUserInput{
++	_, err = iamClient.DeleteUser(t.Context(), &iam.DeleteUserInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err, "Authenticated DeleteUser should succeed")
+ 
+ 	t.Logf("✓ Deleted user with authentication: %s", userName)
+ }
++
++func newNormalIAMClient(endpoint, accessKey, secretKey string) *iam.Client {
++	return iam.New(iam.Options{
++		Region:           "us-west-2",
++		BaseEndpoint:     aws.String(endpoint),
++		Credentials:      credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
++		HTTPClient:       &http.Client{Timeout: 30 * time.Second},
++		RetryMaxAttempts: 1,
++	})
++}
+diff --git a/test/s3/policy/iam_sdk_v2_test.go b/test/s3/policy/iam_sdk_v2_test.go
+new file mode 100644
+--- /dev/null
++++ b/test/s3/policy/iam_sdk_v2_test.go
+@@ -0,0 +1,165 @@
++package policy
++
++import (
++	"context"
++	"errors"
++	"fmt"
++	"io"
++	"net/http"
++	"net/url"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
++	"github.com/aws/smithy-go"
++	"github.com/stretchr/testify/require"
++)
++
++func TestPolicyIAMSDKV2Configuration(t *testing.T) {
++	for _, tc := range []struct{ name, accessKey, secretKey, wantAccess, wantSecret string }{
++		{"fallback", "", "", "admin", "admin"},
++		{"configured", "fixture-key", "fixture-secret", "fixture-key", "fixture-secret"},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			t.Setenv("AWS_ACCESS_KEY_ID", tc.accessKey)
++			t.Setenv("AWS_SECRET_ACCESS_KEY", tc.secretKey)
++			client := newIAMClient(t, "http://127.0.0.1:8333")
++			o := client.Options()
++			require.Equal(t, "us-east-1", o.Region)
++			require.Equal(t, "http://127.0.0.1:8333", aws.ToString(o.BaseEndpoint))
++			require.Equal(t, 1, o.RetryMaxAttempts)
++			httpClient, ok := o.HTTPClient.(*http.Client)
++			require.True(t, ok)
++			require.Equal(t, 30*time.Second, httpClient.Timeout)
++			creds, err := o.Credentials.Retrieve(t.Context())
++			require.NoError(t, err)
++			require.Equal(t, tc.wantAccess, creds.AccessKeyID)
++			require.Equal(t, tc.wantSecret, creds.SecretAccessKey)
++		})
++	}
++}
++
++// The in-memory transport validates IAM Query serialization and XML response
++// handling. It does not claim a live policy evaluation or authority grant.
++func TestPolicyIAMSDKV2WireAndModels(t *testing.T) {
++	t.Setenv("AWS_ACCESS_KEY_ID", "fixture-key")
++	t.Setenv("AWS_SECRET_ACCESS_KEY", "fixture-secret")
++	client := newIAMClient(t, "http://127.0.0.1:8333")
++	const policyName = "fixture-policy"
++	const policyArn = "arn:aws:iam:::policy/fixture-policy"
++	const userName = "fixture-user"
++	const policyDoc = `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:GetObject","Resource":"arn:aws:s3:::fixture/*"}]}`
++	var actions []string
++	option := func(o *iam.Options) {
++		o.HTTPClient = &http.Client{Timeout: 30 * time.Second, Transport: policyRoundTripper(func(req *http.Request) (*http.Response, error) {
++			require.Equal(t, http.MethodPost, req.Method)
++			require.Equal(t, "127.0.0.1:8333", req.URL.Host)
++			require.Equal(t, "/", req.URL.Path)
++			require.Contains(t, req.Header.Get("Content-Type"), "application/x-www-form-urlencoded")
++			require.Contains(t, req.Header.Get("Authorization"), "Credential=fixture-key/")
++			require.Contains(t, req.Header.Get("Authorization"), "/us-east-1/iam/aws4_request")
++			body, err := io.ReadAll(req.Body)
++			require.NoError(t, err)
++			form, err := url.ParseQuery(string(body))
++			require.NoError(t, err)
++			require.Equal(t, "2010-05-08", form.Get("Version"))
++			action := form.Get("Action")
++			actions = append(actions, action)
++			result := ""
++			switch action {
++			case "CreateUser":
++				require.Equal(t, userName, form.Get("UserName"))
++				result = "<User><UserName>fixture-user</UserName></User>"
++			case "CreateAccessKey":
++				require.Equal(t, userName, form.Get("UserName"))
++				result = "<AccessKey><UserName>fixture-user</UserName><AccessKeyId>fixture-access</AccessKeyId></AccessKey>"
++			case "CreatePolicy":
++				require.Equal(t, policyName, form.Get("PolicyName"))
++				require.Equal(t, policyDoc, form.Get("PolicyDocument"))
++				result = "<Policy><PolicyName>fixture-policy</PolicyName><Arn>" + policyArn + "</Arn></Policy>"
++			case "GetPolicy":
++				require.Equal(t, policyArn, form.Get("PolicyArn"))
++				result = "<Policy><PolicyName>fixture-policy</PolicyName><Arn>" + policyArn + "</Arn></Policy>"
++			case "ListPolicies":
++				result = "<Policies><member><PolicyName>fixture-policy</PolicyName><Arn>" + policyArn + "</Arn></member></Policies><IsTruncated>false</IsTruncated>"
++			case "AttachUserPolicy", "DetachUserPolicy":
++				require.Equal(t, userName, form.Get("UserName"))
++				require.Equal(t, policyArn, form.Get("PolicyArn"))
++			case "ListAttachedUserPolicies":
++				require.Equal(t, userName, form.Get("UserName"))
++				result = "<AttachedPolicies><member><PolicyName>fixture-policy</PolicyName><PolicyArn>" + policyArn + "</PolicyArn></member></AttachedPolicies><IsTruncated>false</IsTruncated>"
++			case "DeletePolicy":
++				require.Equal(t, policyArn, form.Get("PolicyArn"))
++			default:
++				t.Fatalf("unexpected IAM action %s", action)
++			}
++			response := fmt.Sprintf(`<%sResponse xmlns="https://iam.amazonaws.com/doc/2010-05-08/"><%sResult>%s</%sResult><ResponseMetadata><RequestId>fixture</RequestId></ResponseMetadata></%sResponse>`, action, action, result, action, action)
++			return &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": {"text/xml"}}, Body: io.NopCloser(strings.NewReader(response)), Request: req}, nil
++		})}
++	}
++	user, err := client.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)}, option)
++	require.NoError(t, err)
++	require.Equal(t, userName, aws.ToString(user.User.UserName))
++	key, err := client.CreateAccessKey(t.Context(), &iam.CreateAccessKeyInput{UserName: aws.String(userName)}, option)
++	require.NoError(t, err)
++	require.Equal(t, "fixture-access", aws.ToString(key.AccessKey.AccessKeyId))
++	created, err := client.CreatePolicy(t.Context(), &iam.CreatePolicyInput{PolicyName: aws.String(policyName), PolicyDocument: aws.String(policyDoc)}, option)
++	require.NoError(t, err)
++	require.Equal(t, policyArn, aws.ToString(created.Policy.Arn))
++	got, err := client.GetPolicy(t.Context(), &iam.GetPolicyInput{PolicyArn: aws.String(policyArn)}, option)
++	require.NoError(t, err)
++	require.Equal(t, policyName, aws.ToString(got.Policy.PolicyName))
++	policies, err := client.ListPolicies(t.Context(), &iam.ListPoliciesInput{}, option)
++	require.NoError(t, err)
++	require.True(t, managedPolicyContains(policies.Policies, policyName))
++	_, err = client.AttachUserPolicy(t.Context(), &iam.AttachUserPolicyInput{UserName: aws.String(userName), PolicyArn: aws.String(policyArn)}, option)
++	require.NoError(t, err)
++	attached, err := client.ListAttachedUserPolicies(t.Context(), &iam.ListAttachedUserPoliciesInput{UserName: aws.String(userName)}, option)
++	require.NoError(t, err)
++	require.True(t, attachedPolicyContains(attached.AttachedPolicies, policyName))
++	_, err = client.DetachUserPolicy(t.Context(), &iam.DetachUserPolicyInput{UserName: aws.String(userName), PolicyArn: aws.String(policyArn)}, option)
++	require.NoError(t, err)
++	_, err = client.DeletePolicy(t.Context(), &iam.DeletePolicyInput{PolicyArn: aws.String(policyArn)}, option)
++	require.NoError(t, err)
++	require.Equal(t, []string{"CreateUser", "CreateAccessKey", "CreatePolicy", "GetPolicy", "ListPolicies", "AttachUserPolicy", "ListAttachedUserPolicies", "DetachUserPolicy", "DeletePolicy"}, actions)
++}
++
++func TestPolicyIAMSDKV2ErrorsAndBudget(t *testing.T) {
++	client := newIAMClient(t, "http://127.0.0.1:8333")
++	for _, tc := range []struct {
++		code   string
++		status int
++	}{{"NoSuchEntity", 404}, {"DeleteConflict", 409}, {"ServiceFailure", 500}} {
++		t.Run(tc.code, func(t *testing.T) {
++			attempts := 0
++			_, err := client.DeletePolicy(t.Context(), &iam.DeletePolicyInput{PolicyArn: aws.String("arn:aws:iam:::policy/fixture")}, func(o *iam.Options) {
++				o.HTTPClient = &http.Client{Transport: policyRoundTripper(func(req *http.Request) (*http.Response, error) {
++					attempts++
++					body := `<ErrorResponse><Error><Type>Sender</Type><Code>` + tc.code + `</Code><Message>fixture</Message></Error><RequestId>fixture</RequestId></ErrorResponse>`
++					return &http.Response{StatusCode: tc.status, Header: http.Header{"Content-Type": {"text/xml"}}, Body: io.NopCloser(strings.NewReader(body)), Request: req}, nil
++				}), Timeout: 30 * time.Second}
++			})
++			var apiError smithy.APIError
++			require.True(t, errors.As(err, &apiError))
++			require.Equal(t, tc.code, apiError.ErrorCode())
++			require.Equal(t, 1, attempts)
++		})
++	}
++}
++
++func TestPolicyIAMSDKV2Cancellation(t *testing.T) {
++	client := newIAMClient(t, "http://127.0.0.1:8333")
++	ctx, cancel := context.WithCancel(t.Context())
++	cancel()
++	attempts := 0
++	_, err := client.CreateUser(ctx, &iam.CreateUserInput{UserName: aws.String("fixture")}, func(o *iam.Options) {
++		o.HTTPClient = &http.Client{Transport: policyRoundTripper(func(req *http.Request) (*http.Response, error) {
++			attempts++
++			return nil, errors.New("unexpected request after cancellation")
++		}), Timeout: 30 * time.Second}
++	})
++	require.ErrorIs(t, err, context.Canceled)
++	require.Zero(t, attempts)
++}
+diff --git a/test/s3/normal/iam_sdk_v2_test.go b/test/s3/normal/iam_sdk_v2_test.go
+new file mode 100644
+--- /dev/null
++++ b/test/s3/normal/iam_sdk_v2_test.go
+@@ -0,0 +1,115 @@
++package example
++
++import (
++	"context"
++	"errors"
++	"fmt"
++	"io"
++	"net/http"
++	"net/url"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
++	"github.com/aws/smithy-go"
++	"github.com/stretchr/testify/require"
++)
++
++type normalIAMRoundTripper func(*http.Request) (*http.Response, error)
++
++func (f normalIAMRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
++
++func TestNormalIAMSDKV2Configuration(t *testing.T) {
++	c := newNormalIAMClient("http://127.0.0.1:8333", "fixture-key", "fixture-secret")
++	o := c.Options()
++	require.Equal(t, "us-west-2", o.Region)
++	require.Equal(t, "http://127.0.0.1:8333", aws.ToString(o.BaseEndpoint))
++	require.Equal(t, 1, o.RetryMaxAttempts)
++	h, ok := o.HTTPClient.(*http.Client)
++	require.True(t, ok)
++	require.Equal(t, 30*time.Second, h.Timeout)
++	creds, err := o.Credentials.Retrieve(t.Context())
++	require.NoError(t, err)
++	require.Equal(t, "fixture-key", creds.AccessKeyID)
++	require.Equal(t, "fixture-secret", creds.SecretAccessKey)
++}
++
++func TestNormalIAMSDKV2WireAndModels(t *testing.T) {
++	c := newNormalIAMClient("http://127.0.0.1:8333", "fixture-key", "fixture-secret")
++	var actions []string
++	option := func(o *iam.Options) {
++		o.HTTPClient = &http.Client{Timeout: 30 * time.Second, Transport: normalIAMRoundTripper(func(req *http.Request) (*http.Response, error) {
++			require.Equal(t, http.MethodPost, req.Method)
++			require.Equal(t, "127.0.0.1:8333", req.URL.Host)
++			require.Equal(t, "/", req.URL.Path)
++			require.Contains(t, req.Header.Get("Authorization"), "/us-west-2/iam/aws4_request")
++			require.Contains(t, req.Header.Get("Authorization"), "Credential=fixture-key/")
++			data, err := io.ReadAll(req.Body)
++			require.NoError(t, err)
++			form, err := url.ParseQuery(string(data))
++			require.NoError(t, err)
++			require.Equal(t, "2010-05-08", form.Get("Version"))
++			action := form.Get("Action")
++			actions = append(actions, action)
++			result := ""
++			switch action {
++			case "CreateUser", "GetUser":
++				require.Equal(t, "fixture-user", form.Get("UserName"))
++				result = "<User><UserName>fixture-user</UserName></User>"
++			case "ListUsers":
++				result = "<Users><member><UserName>fixture-user</UserName></member></Users><IsTruncated>false</IsTruncated>"
++			case "DeleteUser":
++				require.Equal(t, "fixture-user", form.Get("UserName"))
++			default:
++				t.Fatalf("unexpected action %s", action)
++			}
++			body := fmt.Sprintf(`<%sResponse xmlns="https://iam.amazonaws.com/doc/2010-05-08/"><%sResult>%s</%sResult><ResponseMetadata><RequestId>fixture</RequestId></ResponseMetadata></%sResponse>`, action, action, result, action, action)
++			return &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": {"text/xml"}}, Body: io.NopCloser(strings.NewReader(body)), Request: req}, nil
++		})}
++	}
++	created, err := c.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String("fixture-user")}, option)
++	require.NoError(t, err)
++	require.Equal(t, "fixture-user", aws.ToString(created.User.UserName))
++	listed, err := c.ListUsers(t.Context(), &iam.ListUsersInput{}, option)
++	require.NoError(t, err)
++	require.Len(t, listed.Users, 1)
++	require.Equal(t, "fixture-user", aws.ToString(listed.Users[0].UserName))
++	got, err := c.GetUser(t.Context(), &iam.GetUserInput{UserName: aws.String("fixture-user")}, option)
++	require.NoError(t, err)
++	require.Equal(t, "fixture-user", aws.ToString(got.User.UserName))
++	_, err = c.DeleteUser(t.Context(), &iam.DeleteUserInput{UserName: aws.String("fixture-user")}, option)
++	require.NoError(t, err)
++	require.Equal(t, []string{"CreateUser", "ListUsers", "GetUser", "DeleteUser"}, actions)
++}
++
++func TestNormalIAMSDKV2SingleAttempt(t *testing.T) {
++	c := newNormalIAMClient("http://127.0.0.1:8333", "fixture-key", "fixture-secret")
++	attempts := 0
++	_, err := c.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String("fixture-user")}, func(o *iam.Options) {
++		o.HTTPClient = &http.Client{Timeout: 30 * time.Second, Transport: normalIAMRoundTripper(func(req *http.Request) (*http.Response, error) {
++			attempts++
++			return &http.Response{StatusCode: 500, Header: http.Header{"Content-Type": {"text/xml"}}, Body: io.NopCloser(strings.NewReader(`<ErrorResponse><Error><Type>Receiver</Type><Code>ServiceFailure</Code><Message>fixture</Message></Error></ErrorResponse>`)), Request: req}, nil
++		})}
++	})
++	var apiError smithy.APIError
++	require.True(t, errors.As(err, &apiError))
++	require.Equal(t, "ServiceFailure", apiError.ErrorCode())
++	require.Equal(t, 1, attempts)
++}
++
++func TestNormalIAMSDKV2Cancellation(t *testing.T) {
++	c := newNormalIAMClient("http://127.0.0.1:8333", "fixture-key", "fixture-secret")
++	ctx, cancel := context.WithCancel(t.Context())
++	cancel()
++	attempts := 0
++	_, err := c.DeleteUser(ctx, &iam.DeleteUserInput{UserName: aws.String("fixture-user")}, func(o *iam.Options) {
++		o.HTTPClient = &http.Client{Timeout: 30 * time.Second, Transport: normalIAMRoundTripper(func(req *http.Request) (*http.Response, error) {
++			attempts++
++			return nil, errors.New("unexpected request after cancellation")
++		})}
++	})
++	require.ErrorIs(t, err, context.Canceled)
++	require.Zero(t, attempts)
++}

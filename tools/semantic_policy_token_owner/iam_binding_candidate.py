@@ -52,14 +52,15 @@ def identity(s):
             s.st_nlink, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
 
 @contextmanager
-def protected_parent():
-    require(os.geteuid() == os.getegid() == 0 and PARENT.is_absolute()
-            and '..' not in PARENT.parts and len(PARENT.parts) <= 32, 'ROOT_AND_EXACT_EVIDENCE_PARENT_REQUIRED')
+def protected_parent(path=None):
+    path = PARENT if path is None else Path(path)
+    require(os.geteuid() == os.getegid() == 0 and path.is_absolute()
+            and '..' not in path.parts and len(path.parts) <= 32, 'ROOT_AND_EXACT_EVIDENCE_PARENT_REQUIRED')
     fds, bindings = [], []
     try:
         parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         fds.append(parent)
-        for part in PARENT.parts[1:]:
+        for part in path.parts[1:]:
             before = os.stat(part, dir_fd=parent, follow_symlinks=False)
             require(stat.S_ISDIR(before.st_mode) and before.st_uid == before.st_gid == 0
                     and not before.st_mode & 0o022, 'EVIDENCE_PARENT_CUSTODY_UNPROVEN')

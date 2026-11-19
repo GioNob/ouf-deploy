@@ -1,0 +1,66 @@
+{
+  "schema": "ouf.ingestion-wide-resume-qualification.v1",
+  "status": "QUALIFIED_NOT_TARGET_EXECUTED",
+  "sourceCommit": "9f1dfd3af254606afc28b85d4eef5c9d54d35b3a",
+  "candidateSource": "c85d9fd3be215e518dc6e7d075797720b5afbd91",
+  "candidateImageTargetAlreadyImported": "sha256:562e4c6e19d5227f00fb3159deb506da256d2245ee4a40a652b0c03865704baa",
+  "candidateJarSha256": "d0e2acc49fe91998b7182d107d1b6f02b1f1da6b49a5520dd6f6eaefa5295523",
+  "ciRun": 42526435616,
+  "jobs": [
+    {
+      "id": 128870984249,
+      "store": "classic",
+      "conclusion": "success"
+    },
+    {
+      "id": 128870984118,
+      "store": "containerd",
+      "conclusion": "success"
+    }
+  ],
+  "eachJob": {
+    "legacyGuardTests": 6,
+    "resumeGuardTests": 7,
+    "nativeLifecycleTests": 2,
+    "skipped": 0,
+    "logsRead": true
+  },
+  "engineVersion": "29.8.1",
+  "apiVersion": "1.44",
+  "nativeProfiles": [
+    "EXPLICIT_LEGACY_CONFIG",
+    "ENDPOINT_ONLY_COMPAT_CONFIG"
+  ],
+  "legacyInitiallyPresentRequired": true,
+  "legacyAfterStopPresent": true,
+  "legacyAfterDetachAbsent": true,
+  "endpointIpMacAliasesPreserved": true,
+  "oldRetainedStopped": true,
+  "actualArchivedApplicationStarted": true,
+  "actualActivationLoopRepeatedSamePublicationPolling": true,
+  "bothSchedulesDisabledConsumedUnleased": true,
+  "sixBusinessTablesAndV18Unchanged": true,
+  "onlyMonotonicSchedulePollFieldsChanged": true,
+  "residualImageImports": 0,
+  "residualStops": 0,
+  "residualCreates": 1,
+  "applicationRoleSuperuser": false,
+  "fourReadOnlyMountsPreserved": true,
+  "externalConfigurationAndGatewayReadKeyExercised": true,
+  "flywayDisabledInEnvironmentAndArguments": true,
+  "readinessHttpStatus": 200,
+  "deliveredFilesReadBack": 8,
+  "deliveredHelperChainImportedWithoutCallingMain": true,
+  "controllerSha256": "ab43c6d02e7d8ada08a3325f1e0b9a8559fff7324338b98d117371497bf54390",
+  "limitations": [
+    "Fixture predecessor uses the candidate archived image, not the historical VPS image.",
+    "Synthetic publications, token, keys and database; not the complete target effective Spring configuration.",
+    "Exact historical pre-stop changed columns remain unrecoverable from aggregate fingerprints.",
+    "Native fixture performs direct residual function plus stopped/database guards; target private-file paths and target OID are enforced only by the VPS wrapper.",
+    "Readiness is not wide ingestion, SeaweedFS lake operation, or E2E."
+  ],
+  "targetExecuted": false,
+  "targetReadinessProven": false,
+  "automaticReplay": false,
+  "automaticRollback": false
+}

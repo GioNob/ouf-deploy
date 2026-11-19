@@ -1,0 +1,351 @@
+{
+  "run": {
+    "id": 41715991128,
+    "path": ".github/workflows/storage-452-generation31-cohort.yml",
+    "head_sha": "9ead15c56717c2e301eeb1a2bc1af38b007bfdb8",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "created_at": "2026-11-03T20:48:45Z",
+    "updated_at": "2026-11-03T20:53:51Z",
+    "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41715991128"
+  },
+  "jobs": [
+    {
+      "id": 126195989629,
+      "name": "verify-boundaries",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-03T20:48:48Z",
+      "completed_at": "2026-11-03T20:48:57Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T20:48:49Z",
+          "completed_at": "2026-11-03T20:48:50Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-03T20:48:50Z",
+          "completed_at": "2026-11-03T20:48:53Z"
+        },
+        {
+          "name": "Run python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_generation31_cohort.py -v",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-03T20:48:53Z",
+          "completed_at": "2026-11-03T20:48:54Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-03T20:48:54Z",
+          "completed_at": "2026-11-03T20:48:54Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-03T20:48:54Z",
+          "completed_at": "2026-11-03T20:48:54Z"
+        }
+      ]
+    },
+    {
+      "id": 126196091521,
+      "name": "qualify-cohort",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-03T20:50:13Z",
+      "completed_at": "2026-11-03T20:51:48Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T20:50:13Z",
+          "completed_at": "2026-11-03T20:50:16Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-03T20:50:16Z",
+          "completed_at": "2026-11-03T20:50:20Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-03T20:50:20Z",
+          "completed_at": "2026-11-03T20:50:24Z"
+        },
+        {
+          "name": "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-03T20:50:24Z",
+          "completed_at": "2026-11-03T20:50:32Z"
+        },
+        {
+          "name": "Verify the published generation31 lock and fetch its exact artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-03T20:50:32Z",
+          "completed_at": "2026-11-03T20:50:43Z"
+        },
+        {
+          "name": "Reconstruct the exact patched source for legal text comparison",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-03T20:50:43Z",
+          "completed_at": "2026-11-03T20:50:44Z"
+        },
+        {
+          "name": "Acquire exact module archives for independent checksum and text verification",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-03T20:50:44Z",
+          "completed_at": "2026-11-03T20:51:21Z"
+        },
+        {
+          "name": "Reproduce generation31 image evidence and rebind only identical legal bytes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-03T20:51:21Z",
+          "completed_at": "2026-11-03T20:51:30Z"
+        },
+        {
+          "name": "Independently verify the generation31 publisher signature",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-03T20:51:30Z",
+          "completed_at": "2026-11-03T20:51:34Z"
+        },
+        {
+          "name": "Seal the new cohort evidence without granting admission",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-03T20:51:34Z",
+          "completed_at": "2026-11-03T20:51:34Z"
+        },
+        {
+          "name": "Run actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-03T20:51:34Z",
+          "completed_at": "2026-11-03T20:51:41Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-03T20:51:41Z",
+          "completed_at": "2026-11-03T20:51:43Z"
+        },
+        {
+          "name": "Export the actual uploaded artifact digest",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-03T20:51:43Z",
+          "completed_at": "2026-11-03T20:51:43Z"
+        },
+        {
+          "name": "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-11-03T20:51:43Z",
+          "completed_at": "2026-11-03T20:51:43Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-11-03T20:51:43Z",
+          "completed_at": "2026-11-03T20:51:43Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-11-03T20:51:43Z",
+          "completed_at": "2026-11-03T20:51:43Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-11-03T20:51:43Z",
+          "completed_at": "2026-11-03T20:51:43Z"
+        }
+      ]
+    },
+    {
+      "id": 126197618474,
+      "name": "runtime-labs / verified-cohort-then-sequential-labs",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-03T20:51:51Z",
+      "completed_at": "2026-11-03T20:53:50Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T20:51:52Z",
+          "completed_at": "2026-11-03T20:51:54Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-03T20:51:54Z",
+          "completed_at": "2026-11-03T20:52:15Z"
+        },
+        {
+          "name": "Test generation boundaries and child process routing",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-03T20:52:15Z",
+          "completed_at": "2026-11-03T20:52:16Z"
+        },
+        {
+          "name": "Check committed generation31 lock and predecessor artifact ID",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-03T20:52:16Z",
+          "completed_at": "2026-11-03T20:52:16Z"
+        },
+        {
+          "name": "Download and authenticate the successful predecessor cohort bundle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-03T20:52:16Z",
+          "completed_at": "2026-11-03T20:52:17Z"
+        },
+        {
+          "name": "Download only the bound generation31 producer archive",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-03T20:52:17Z",
+          "completed_at": "2026-11-03T20:52:22Z"
+        },
+        {
+          "name": "Cold restore with mandatory MIME parity then identity TLS egress",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-03T20:52:22Z",
+          "completed_at": "2026-11-03T20:53:33Z"
+        },
+        {
+          "name": "Collect bounded public evidence including failures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-03T20:53:33Z",
+          "completed_at": "2026-11-03T20:53:33Z"
+        },
+        {
+          "name": "Attest successful generation31 runtime evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-03T20:53:33Z",
+          "completed_at": "2026-11-03T20:53:46Z"
+        },
+        {
+          "name": "Retain public diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-03T20:53:46Z",
+          "completed_at": "2026-11-03T20:53:48Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-11-03T20:53:48Z",
+          "completed_at": "2026-11-03T20:53:48Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-03T20:53:48Z",
+          "completed_at": "2026-11-03T20:53:48Z"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13270640992,
+      "name": "storage-generation31-runtime-41715991128",
+      "size_in_bytes": 175359,
+      "digest": "sha256:ce13fc9a13d4fa7e7f8d93874565f4a47124f7ffbabbbd8ec02f1cab72006a92",
+      "created_at": "2026-11-03T20:53:47Z",
+      "expires_at": "2027-02-01T20:48:45Z",
+      "expired": false,
+      "workflow_run": {
+        "id": 41715991128,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "9ead15c56717c2e301eeb1a2bc1af38b007bfdb8"
+      }
+    },
+    {
+      "id": 13269159873,
+      "name": "seaweedfs-generation31-cohort-41715991128",
+      "size_in_bytes": 123479,
+      "digest": "sha256:f7e6a0a112f5aecc2cd8081c9769d4e3fd351fc8a6e4288f37f4f308bbeed998",
+      "created_at": "2026-11-03T20:51:42Z",
+      "expires_at": "2027-02-01T20:48:45Z",
+      "expired": false,
+      "workflow_run": {
+        "id": 41715991128,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "9ead15c56717c2e301eeb1a2bc1af38b007bfdb8"
+      }
+    }
+  ]
+}

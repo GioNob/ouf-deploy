@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.chatbot-semantic-token-only-component-qualification.v1",
+  "sourceCommit": "fec8ef136de34862d0eedc166d837c8ddd20b957",
+  "targetCandidateSha256": "0f89461b7ec0d34078dbacc28d3281c935ca2f5c60dd185f2f763f4ffd3650b4",
+  "nativeFixtureCI": {
+    "runId": 38899332754,
+    "jobId": 116967401758,
+    "result": "PASS",
+    "tests": 47,
+    "metadataAdapters": false,
+    "targetConnections": false
+  },
+  "localRootCustodyRegression": {
+    "result": "PASS",
+    "tests": 19
+  },
+  "localComposedRegression": {
+    "result": "PASS",
+    "tests": 6,
+    "ownershipBootAndUnixSocketAdapters": true
+  },
+  "developmentCapsuleSha256": "f233e099efe5516c9cf0636f884cb549727bcdbf2dc6fd3d6cd6cf5bb11792e8",
+  "runtimeAuthorityIssued": false,
+  "readyForExecution": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "acceptanceGranted": false
+}

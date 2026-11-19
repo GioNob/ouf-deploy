@@ -1,0 +1,108 @@
+{
+  "schema": "ouf.storage-candidate-lock.v2",
+  "generation": 29,
+  "status": "EVIDENCE_PREPARED_NOT_ADMITTED",
+  "date": "2026-11-03",
+  "product": "SeaweedFS",
+  "version": "4.52",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "orderedPatchCount": 29,
+  "producerCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+  "buildManifest": {
+    "path": "releases/seaweedfs-452-generation29-build-manifest-20261103.json",
+    "sha256": "cddbcd4f40c13cb8e86d49d9bf30dc85109aeb3fa50334d92c4690e622d952c9",
+    "patchedSourceTree": "574ad42543851ffe58cc025e14b1011609ff83de"
+  },
+  "buildProfile": {
+    "go": "1.27.3",
+    "os": "linux",
+    "arch": "amd64",
+    "cgo": false,
+    "tags": [],
+    "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+    "compiledPackages": 1811,
+    "compiledPackagesSha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+    "binaryModuleRows": 262,
+    "binaryModuleInventorySha256": "dfedc0d9f4b48e3886dea9c072c329bbe2b297474d402a888a3d3ae0d2a5ebd3"
+  },
+  "image": {
+    "manifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+    "configDigest": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "layerDigest": "sha256:71d9c727671a69b5211dcb91a1c1c32d18b70b2455a81adbc7043ded18e72fb4",
+    "dockerArchiveSha256": "5445f54bb1aab0b3ad5e8f4aa8c759959b1e7554dda7330cc426de6be73d02c7",
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613"
+  },
+  "qualification": {
+    "runId": 41696541570,
+    "runAttempt": 1,
+    "workflow": ".github/workflows/storage-452-generation29-image.yml",
+    "allJobsPassed": true,
+    "storageTests": {
+      "pass": 6156,
+      "skip": 5,
+      "packagesPassed": 21
+    },
+    "imageBoundaryTestsPassed": 31,
+    "vulnerabilitySubgate": "PASS_RAW",
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "scanner": "Trivy 0.70.0",
+    "scanSha256": "b66839208a62788431e354d4f4ee64e208e6e3a8b6e991ba2aeef702f72e9189",
+    "sbomSha256": "464b6cf642fca3c256bb3cf93de56ecdfb03e8567a62aac1562feedcbecea765",
+    "scannedComponents": 264,
+    "spdxRecords": 266,
+    "awsSdkV1": "ABSENT",
+    "deprecatedS3Manager": "ABSENT",
+    "versionSmoke": "NONROOT_READ_ONLY_NO_NETWORK"
+  },
+  "producerArtifact": {
+    "id": 13261202810,
+    "bytes": 194362590,
+    "digest": "sha256:745b49a525412848cc9ea3c03c674f60f033681afc93bd5591ed7a50f20a7dca",
+    "expiresAt": "2027-02-01T18:43:38Z",
+    "retention": "TEMPORARY_CI"
+  },
+  "independentReadback": {
+    "id": 13261522735,
+    "bytes": 28167,
+    "digest": "sha256:15bf6c843014e4014485a880e0e88742dc210d3e74406a1e1cb203ddee963c7a",
+    "expiresAt": "2027-02-01T18:43:38Z",
+    "path": "evidence/artifacts/seaweedfs-452-generation29-image-readback-41696541570.zip",
+    "verifiedInternalChecksums": 20,
+    "verifiedSourceFiles": 37,
+    "assessmentReproduced": true,
+    "ociReconstructed": true,
+    "publisherSignatureVerifiedByHostedJob": true,
+    "locallyByteReverified": true
+  },
+  "licenceRebinding": {
+    "path": "evidence/seaweedfs-452-generation29-licence-rebinding-local-20261103.json",
+    "sha256": "61b8bf30e025d6e361e47e519b156529386a50923d3ab993947b87cd02d8d196",
+    "thirdPartyModules": 262,
+    "thirdPartyLegalTexts": 353,
+    "sourceArchivesRehashedBytes": 389686767,
+    "mplSourceArchives": 17,
+    "status": "REVIEW_OPEN"
+  },
+  "statusOfGates": {
+    "overallSwG1": "OPEN",
+    "licenceReview": "OPEN",
+    "durableReleaseCustody": "OPEN",
+    "cohortQualification": "HOSTED_PENDING",
+    "runtimeLabs29": "PENDING",
+    "gatesClosed": 0,
+    "gatesTotal": 8,
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestsTotal": 21,
+    "realObjectsCopied": 0,
+    "realObjectsTotal": 120
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0
+}

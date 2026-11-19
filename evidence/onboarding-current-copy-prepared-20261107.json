@@ -1,0 +1,42 @@
+{
+  "schema": "ouf.onboarding-current-copy-prepared.v1",
+  "date": "2026-11-07",
+  "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+  "script": {
+    "path": "scripts/sync-current-onboarding-objects-20261107.py",
+    "sha256": "679895bff166d8f7aa256113398ef88f40f90811cd4a72c711199832ef63e5ed"
+  },
+  "validation": {
+    "pythonAst": "PASS",
+    "localHttpFixture": "PASS",
+    "verified": [
+      "missing object copied with conditional PUT and exact body/metadata readback",
+      "identical existing objects reused with no PUT",
+      "different existing object rejected",
+      "new tagged object rejected before PUT",
+      "source ETag drift rejected"
+    ],
+    "notVerifiedLocally": [
+      "VPS host reachability to private container IPs",
+      "current source S3 ListBucket/GetObjectTagging permission",
+      "target TLS on this host-side transfer path"
+    ]
+  },
+  "scope": {
+    "bucket": "ouf-managed-files",
+    "maximumObjects": 512,
+    "maximumTotalBytes": 67108864,
+    "maximumObjectBytes": 10485760,
+    "deadlineSeconds": 600,
+    "sourceWrites": 0,
+    "existingDestinationOverwrites": 0,
+    "sourceOrDestinationDeletes": 0,
+    "serviceStops": 0,
+    "applicationBindingChanges": 0,
+    "databaseRequests": 0
+  },
+  "sourceWriterPause": false,
+  "requiredAtLaterSwitch": "Recheck the source snapshot while pausing the Onboarding writer; recopy only new missing objects if it changed.",
+  "tagHandling": "Existing target objects are not rewritten; historical tag proof is reused, target tags not freshly compared. Any missing object with source tags is refused rather than losing tags or broadening the application identity.",
+  "interpretation": "Success aligns observed Onboarding file bodies/metadata to this source snapshot. It is not an endpoint switch or full MinIO migration; UDP remains separate."
+}

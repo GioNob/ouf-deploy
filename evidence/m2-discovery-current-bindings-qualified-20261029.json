@@ -1,0 +1,127 @@
+{
+  "schema": "ouf.m2-discovery-current-bindings-qualification.v1",
+  "date": "2026-10-29",
+  "timezone": "Europe/Rome",
+  "status": "SOURCE_NATIVE_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+  "sourceCommit": "8af878eca402bfe4598edb77ab0de239c575f506",
+  "sourcePath": "scripts/read-m2-discovery-bindings-20261029.py",
+  "sourceSha256": "788772e96f1e956e5439e2148b80bb825fda700e0a3a05a2021109b71823f215",
+  "qualificationCommit": "7131ea456379b361ef6cb3bc87e57c6030e511c3",
+  "sourcePullRequest": 51,
+  "retainedInstallationRoot": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-update-b03d681a-20261028-v1",
+  "retainedCanonicalResultHash": "0601fdfadd157eedbdd35144e7913e152d3d1f1a67e4927317e2de6a566a61ca",
+  "scope": "/etc/ouf/deploy-snapshots/m2-discovery-current-bindings-0601fdfa-20261029-v1",
+  "codeRoot": "/usr/local/lib/ouf-m2-discovery-bindings-788772e96f1e956e",
+  "maximums": {
+    "engineGets": 27,
+    "privateMetadataReads": 3,
+    "seconds": 90,
+    "responseBytes": 2097152,
+    "totalBytes": 25165824
+  },
+  "delivery": {
+    "commit": "09d2a2ba407f109fe8261ce61a6875b05d16a8d8",
+    "path": "releases/read-m2-discovery-bindings-20261029.sh",
+    "sha256": "eaca415a403169f97d22ce4df6f3f2873e3acd160e2e085d523a1d58d656207c",
+    "operatorAccount": "oufadmin",
+    "root400ChecksumVerification": true,
+    "ghOrTimeoutExecutableRequired": false
+  },
+  "qualification": {
+    "unitTests": 13,
+    "localUnitTestsPassed": true,
+    "nativeDockerVersion": "29.8.1",
+    "actualDisposableCohort": 13,
+    "actualUnixRootPeerAndProcessPins": true,
+    "historyFixtureSynthetic": true,
+    "privateStateAndEnvRetainedRoot600": true,
+    "publicOutputMinimized": true,
+    "positiveContainersAndHistoricalFilesUnchanged": true,
+    "changedPeerDenied": true,
+    "sameScopeReplayDenied": true,
+    "actualPinnedHttpsNonrootSudoDelivery": true,
+    "nonTtyBeforeScopeOrIAM": true,
+    "failedScopePreserved": true,
+    "nonrootCodeReadDenied": true,
+    "jobs": [
+      {
+        "id": 123160353743,
+        "run": 40786337605,
+        "event": "pull_request",
+        "name": "M2 stable discovery current binding capture",
+        "conclusion": "success"
+      },
+      {
+        "id": 123160353650,
+        "run": 40786337668,
+        "event": "pull_request",
+        "name": "M2 stable discovery binding protected delivery",
+        "conclusion": "success"
+      },
+      {
+        "id": 123160346645,
+        "run": 40786335560,
+        "event": "push",
+        "name": "M2 stable discovery current binding capture",
+        "conclusion": "success"
+      },
+      {
+        "id": 123160346781,
+        "run": 40786335641,
+        "event": "push",
+        "name": "M2 stable discovery binding protected delivery",
+        "conclusion": "success"
+      }
+    ],
+    "directLogsRead": [
+      123160353743,
+      123160353650,
+      123160346645,
+      123160346781
+    ],
+    "conclusion": "success",
+    "nullDockerEnvironmentSupportedWithoutInference": true,
+    "intermediateDeliveryGuardFailure": {
+      "commit": "09d2a2ba407f109fe8261ce61a6875b05d16a8d8",
+      "run": 40786330295,
+      "job": 123160329516,
+      "reason": "New wrapper checkout still had the predecessor wrapper comparison pin in its delivery qualifier. The exact-byte guard stopped before invoking delivery. Qualifier pins corrected in7131ea456379b361ef6cb3bc87e57c6030e511c3; final push/PR native+delivery all pass.",
+      "directLogRead": true,
+      "targetExecuted": false
+    }
+  },
+  "notProvenByCapture": [
+    "effective provider configuration",
+    "application readiness/provider reachability",
+    "database admission",
+    "credential file custody/content",
+    "current job/budget/row data",
+    "runtime authority",
+    "permanent capability operation"
+  ],
+  "runtimeEffects": {
+    "engineWrites": 0,
+    "sqlSessions": 0,
+    "iamRequests": 0,
+    "oauthRequests": 0,
+    "credentialFileReads": 0,
+    "configurationFileContentReads": 0,
+    "signingKeyReads": 0,
+    "imageImports": 0,
+    "containerLifecycle": 0,
+    "grants": 0,
+    "budgets": 0,
+    "resumes": 0,
+    "uploads": 0,
+    "jobs": 0,
+    "acquisitions": 0
+  },
+  "targetExecuted": false,
+  "currentDeliveryUsable": true,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

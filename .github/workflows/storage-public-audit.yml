@@ -1,0 +1,64 @@
+name: OUF public storage consumer audit
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/storage-public-audit.yml'
+      - 'scripts/audit-storage-consumers-20261102.py'
+      - 'releases/seaweedfs-public-source-audit-20261102.json'
+      - 'tools/storage_migration/**'
+      - 'tests/test_storage_migration_inventory.py'
+permissions: {contents: read}
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Inventory and migration denial tests
+        run: python3 -I -B -S -m unittest discover -s tests -p test_storage_migration_inventory.py -v
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 73498c17596ae155a3ed9ab36acfd6bb69da9846
+          path: audit-sources/ouf-source-onboarding
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: 0d40da05408a14db31d4d41af2372d6a71480291
+          path: audit-sources/ouf-udp-object-resolution
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 4165b9e149be467d5d7c6bed35e4e1af4e249db1
+          path: audit-sources/ouf-ingestion-runtime
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-semantic-registry
+          ref: c2dae77b42f1811b704465f6ab813c91d808ade4
+          path: audit-sources/ouf-semantic-registry
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-mcp-server
+          ref: d2454f3cb8cd410d284b9dc78349a170187aea1c
+          path: audit-sources/ouf-mcp-server
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: 17439fed7a45d455baa6945ee72a65fa19c14029
+          path: audit-sources/ouf-api-gateway
+          persist-credentials: false
+      - name: Discover storage consumers in exact public source bodies
+        run: python3 -I -B -S scripts/audit-storage-consumers-20261102.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-public-audit-${{ github.run_id }}
+          path: storage-public-audit/
+          if-no-files-found: error
+          retention-days: 90

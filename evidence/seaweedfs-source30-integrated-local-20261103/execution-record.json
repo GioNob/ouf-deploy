@@ -1,0 +1,183 @@
+{
+  "schema": "ouf.local-controlled-execution-record.v1",
+  "source": "Recorded from the actual parent tool invocations; selected environment overrides only. Inherited environment was not captured.",
+  "cwd": "/workspace/scratch/98dabd1608e5/maintained30-stage/source",
+  "goBinary": "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+  "controlledEnvironment": {
+    "TMPDIR": "/workspace/scratch/98dabd1608e5/tmp",
+    "GOTMPDIR": "/workspace/scratch/98dabd1608e5/go-tmp",
+    "GOROOT": "/workspace/scratch/98dabd1608e5/go-toolchain",
+    "GOTOOLCHAIN": "local",
+    "GOPATH": "/workspace/scratch/98dabd1608e5/gopath",
+    "GOMODCACHE": "/workspace/scratch/98dabd1608e5/gopath/pkg/mod",
+    "GOCACHE": "/workspace/scratch/98dabd1608e5/gocache",
+    "GOPROXY": "off",
+    "CGO_ENABLED": "0",
+    "GOOS": "linux",
+    "GOARCH": "amd64"
+  },
+  "commands": [
+    {
+      "args": [
+        "mod",
+        "tidy"
+      ],
+      "overrides": {
+        "GOPROXY": "https://proxy.golang.org"
+      },
+      "stdout": "tidy.stdout",
+      "stderr": "tidy.stderr",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "test",
+        "-mod=readonly",
+        "-count=1",
+        "-timeout=3m",
+        "-json",
+        "./weed/command",
+        "./weed/iam/...",
+        "./weed/iamapi",
+        "./weed/s3api",
+        "./weed/filer",
+        "./weed/s3api/s3_constants",
+        "./weed/s3api/wire",
+        "./weed/s3api/s3err",
+        "./weed/notification/aws_sqs",
+        "./weed/replication/sub",
+        "./weed/kms/...",
+        "./weed/replication/sink/s3sink",
+        "./weed/storage/backend/s3_backend",
+        "./weed/remote_storage/s3",
+        "./weed/notification/kafka",
+        "./weed/notification/webhook",
+        "./weed/replication",
+        "./weed/replication/repl_util",
+        "./weed/util/raftstore",
+        "./weed/util/httpdown",
+        "./weed/storage/needle_map/..."
+      ],
+      "stdout": "regressions.jsonl",
+      "stderr": "regressions.stderr",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "test",
+        "-mod=readonly",
+        "-count=1",
+        "-timeout=90s",
+        "-json",
+        "./weed/server",
+        "-run",
+        "^(TestRaftBoltStoreMetricsReachConfiguredPrometheusSink|TestOUFStandardKafkaFilerPreflightBeforeEffects|TestOUFStandardFilerTLSSnapshotPreservesEffectiveInputs)$"
+      ],
+      "stdout": "server-focused.jsonl",
+      "stderr": "server-focused.stderr",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "test",
+        "-mod=readonly",
+        "-count=1",
+        "-timeout=90s",
+        "-json",
+        "./weed/storage",
+        "-run",
+        "Test.*(Compact|Compaction|NeedleMap|NeedleIndex|Idx)"
+      ],
+      "stdout": "storage-focused.jsonl",
+      "stderr": "storage-focused.stderr",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "test",
+        "-mod=readonly",
+        "-race",
+        "-count=1",
+        "-timeout=90s",
+        "-json",
+        "./weed/util/httpdown",
+        "./weed/util/raftstore"
+      ],
+      "overrides": {
+        "CGO_ENABLED": "1"
+      },
+      "stdout": "race.jsonl",
+      "stderr": "race.stderr",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "list",
+        "-mod=readonly",
+        "-deps",
+        "./weed"
+      ],
+      "stdout": "production-deps.unsorted",
+      "stderr": "production-deps.stderr",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "mod",
+        "tidy",
+        "-diff"
+      ],
+      "stdout": "tidy-after.diff",
+      "stderr": "tidy-after.stderr",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "build",
+        "-mod=readonly",
+        "-trimpath",
+        "-o",
+        "../weed30",
+        "./weed"
+      ],
+      "stdout": "build.stdout",
+      "stderr": "build.stderr",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "version",
+        "-m",
+        "../weed30"
+      ],
+      "stdout": "build-info.txt",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "mod",
+        "graph"
+      ],
+      "overrides": {
+        "GOPROXY": "https://proxy.golang.org"
+      },
+      "stdout": "root-module-graph.txt",
+      "stderr": "root-module-graph.stderr",
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "list",
+        "-m",
+        "all"
+      ],
+      "overrides": {
+        "GOPROXY": "https://proxy.golang.org"
+      },
+      "stdout": "root-modules.txt",
+      "stderr": "root-modules.stderr",
+      "exitCode": 0
+    }
+  ],
+  "note": "Output paths are relative to maintained30-stage. Tests, race, compatibility and tag denials remain distinct; no hosted image claim."
+}

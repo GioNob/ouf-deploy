@@ -1,0 +1,273 @@
+{
+  "acceptanceTestsPassed": 0,
+  "buildEvidenceArtifact": {
+    "bytes": 793980,
+    "digest": "sha256:40e7e672e46c42cdbe9e65fccf84d3680ab45840b163ec0477a15edddcc03991",
+    "expiresAt": "2027-02-01T21:46:45Z",
+    "id": 13274721512,
+    "path": "evidence/artifacts/seaweedfs-452-generation32-build-evidence-41724851743.zip",
+    "verifiedInternalChecksums": 52
+  },
+  "buildManifest": {
+    "patchedSourceTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+    "path": "releases/seaweedfs-452-generation32-build-manifest-20261103.json",
+    "sha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144"
+  },
+  "byteReadback": {
+    "archiveSha256": "c7d7dd91360eb74487d4c9c7603e30db2f63c39cbe8e97099bdb862ee0b661fc",
+    "binarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+    "checksumMembersVerified": 20,
+    "generation": 32,
+    "imageConfigDigest": "sha256:39571977ca401968810e17fb5947969f6db16589f5cea960673923908fdaf93c",
+    "ociManifestDigest": "sha256:5531868a8acc4ac8b1581339e5cae79c7a6211402c936eb74f2bcfcd070831f6",
+    "patchedSourceTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+    "producerCommit": "20bded511e42c844c8aa122bf3906b8200dc6b16",
+    "producerRunId": 41724851743,
+    "publisherSignatureVerifiedByThisScript": false,
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "schema": "ouf.seaweedfs-452-generation-image-readback.v1",
+    "sdkLifecycle": "AWS_SDK_V1_ABSENT",
+    "sourceFilesVerified": 48,
+    "targetOperations": 0,
+    "vulnerabilitySubgate": "PASS_RAW"
+  },
+  "candidateLockSha256": "91a7c874deb5b11f1a18dc483e99f6031644b62abb769a9e11ff1ad29250fb7d",
+  "durableImageCustody": "OPEN",
+  "gatesClosed": 0,
+  "image": {
+    "configDigest": "sha256:39571977ca401968810e17fb5947969f6db16589f5cea960673923908fdaf93c",
+    "dockerArchiveSha256": "86fd54ae717a981f65b7cee05117ccfb4e3ea41119817ebb019bd5ccca60895b",
+    "layerDigest": "sha256:20a1267d5118081fd03f9c0e32a7dfe534168764d460916d253d00e438e04992",
+    "manifestDigest": "sha256:5531868a8acc4ac8b1581339e5cae79c7a6211402c936eb74f2bcfcd070831f6",
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613"
+  },
+  "independentReadback": {
+    "assessmentReproduced": true,
+    "bytes": 36294,
+    "digest": "sha256:f9bf8a0c2eca375f341f95037c3a33107afb5d9153c096cd34877f34f2399066",
+    "expiresAt": "2027-02-01T21:46:45Z",
+    "id": 13275477231,
+    "locallyByteReverified": true,
+    "ociReconstructed": true,
+    "path": "evidence/artifacts/seaweedfs-452-generation32-image-readback-41724851743.zip",
+    "publisherSignatureVerifiedByHostedJob": true,
+    "verifiedInternalChecksums": 20,
+    "verifiedSourceFiles": 48
+  },
+  "jobs": [
+    {
+      "conclusion": "success",
+      "head_sha": "20bded511e42c844c8aa122bf3906b8200dc6b16",
+      "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41724851743/job/126226833882",
+      "id": 126226833882,
+      "name": "verify",
+      "run_attempt": 1,
+      "run_id": 41724851743,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "20bded511e42c844c8aa122bf3906b8200dc6b16",
+      "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41724851743/job/126226834344",
+      "id": 126226834344,
+      "name": "qualify-standard-profile",
+      "run_attempt": 1,
+      "run_id": 41724851743,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "20bded511e42c844c8aa122bf3906b8200dc6b16",
+      "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41724851743/job/126233413411",
+      "id": 126233413411,
+      "name": "runtime_candidate",
+      "run_attempt": 1,
+      "run_id": 41724851743,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "20bded511e42c844c8aa122bf3906b8200dc6b16",
+      "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41724851743/job/126234120522",
+      "id": 126234120522,
+      "name": "independent_image_readback",
+      "run_attempt": 1,
+      "run_id": 41724851743,
+      "status": "completed"
+    }
+  ],
+  "licenseReview": "OPEN",
+  "localCohortReplay": {
+    "binarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+    "candidateLockSha256": "91a7c874deb5b11f1a18dc483e99f6031644b62abb769a9e11ff1ad29250fb7d",
+    "compiledDependencyPolicy": {
+      "allDependenciesMaintained": false,
+      "excludedModulePaths": [
+        "github.com/aws/aws-sdk-go",
+        "github.com/aws/aws-sdk-go-v2/feature/s3/manager",
+        "github.com/boltdb/bolt",
+        "github.com/hashicorp/raft-boltdb",
+        "github.com/mitchellh/mapstructure",
+        "github.com/rcrowley/go-metrics",
+        "github.com/Shopify/sarama",
+        "github.com/facebookgo/clock",
+        "github.com/facebookgo/stats",
+        "go.opencensus.io",
+        "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+        "github.com/envoyproxy/protoc-gen-validate",
+        "github.com/mitchellh/colorstring",
+        "go.mongodb.org/mongo-driver"
+      ],
+      "freshQualificationRequired": true,
+      "rootModuleGraphLegacyEdgesMayRemain": true,
+      "scope": "COMPILED_STANDARD_PROFILE_ONLY",
+      "targetFeatureBinding": "OPEN",
+      "yamlLifecycleStatus": "OPEN"
+    },
+    "dependencyMaintenance": {
+      "allDependenciesMaintained": false,
+      "status": "OPEN"
+    },
+    "durableImageCustody": "OPEN",
+    "generation": 32,
+    "independentReadbackSha256": "f9bf8a0c2eca375f341f95037c3a33107afb5d9153c096cd34877f34f2399066",
+    "legalTextRebindingSha256": "52a889af4a12303deb18ae07efda1826c0d8099e8f38006c1be13623d7cd6b15",
+    "licenceReview": "OPEN",
+    "modifiedMplSourceArchiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+    "modifiedMplSourceManifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53",
+    "mongoV2LegalDeltaSha256": "3ddcd24b110f078518d3473d6522ee9dd126974813714f33dc61cdcdf3300018",
+    "ociManifestDigest": "sha256:5531868a8acc4ac8b1581339e5cae79c7a6211402c936eb74f2bcfcd070831f6",
+    "producerArtifactSha256": "c7d7dd91360eb74487d4c9c7603e30db2f63c39cbe8e97099bdb862ee0b661fc",
+    "publisherSignatureReverifiedByThisScript": false,
+    "publisherVerificationRecordBound": true,
+    "readbackReproduced": true,
+    "redistributionAccepted": false,
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.seaweedfs-generation32-cohort.v1",
+    "sourceRevision": {
+      "excludedGoogleFeatures": [
+        "gcs-remote-storage",
+        "gcs-replication-sink",
+        "google-pubsub-notification",
+        "google-pubsub-replication-input"
+      ],
+      "freshHostedQualificationRequired": true,
+      "kind": "MAINTAINED_CLIENTS_AND_EXPLICIT_STORAGE_PROFILE",
+      "previousGeneration": 31,
+      "previousManifestSha256": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719"
+    },
+    "status": "TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
+    "targetOperations": 0
+  },
+  "producerArtifact": {
+    "bytes": 171624955,
+    "digest": "sha256:c7d7dd91360eb74487d4c9c7603e30db2f63c39cbe8e97099bdb862ee0b661fc",
+    "expiresAt": "2027-02-01T21:46:45Z",
+    "id": 13274791692,
+    "retention": "TEMPORARY_CI"
+  },
+  "publisherSignatureReverifiedLocally": false,
+  "qualification": {
+    "additionalTestCounts": {
+      "compat-tests.jsonl": {
+        "pass_packages": 1,
+        "pass_tests": 3
+      },
+      "kafka-compile.jsonl": {
+        "pass_packages": 4,
+        "skip_packages": 2
+      },
+      "nested-iam-regressions.jsonl": {
+        "pass_packages": 1,
+        "pass_tests": 18
+      },
+      "root-iam-regressions.jsonl": {
+        "pass_packages": 2,
+        "pass_tests": 24
+      }
+    },
+    "allJobsPassed": true,
+    "awsSdkV1": "ABSENT",
+    "canonicalReplayTestsPassed": 8,
+    "deprecatedS3Manager": "ABSENT",
+    "imageBoundaryTestsPassed": 43,
+    "nestedKafkaTidyEmpty": true,
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "regressionProfiles": {
+      "main": {
+        "pass_packages": 41,
+        "pass_tests": 6656,
+        "skip_packages": 9,
+        "skip_tests": 12
+      },
+      "race": {
+        "pass_packages": 3,
+        "pass_tests": 185
+      },
+      "server": {
+        "pass_packages": 1,
+        "pass_tests": 984
+      },
+      "shell": {
+        "fail_tests": 0,
+        "pass_packages": 1,
+        "pass_tests": 306,
+        "skip_tests": 0
+      },
+      "storage": {
+        "pass_packages": 1,
+        "pass_tests": 58
+      }
+    },
+    "runAttempt": 1,
+    "runId": 41724851743,
+    "sbomSha256": "52f817b882e5fe3dd4b492d190506718ba478dbe677d73164107b878c52a60a1",
+    "scanSha256": "bfa9f2b8009f36e2e8a6e31a7c0d23ba24d4422172dd3ff10ae1cee45777cd01",
+    "scannedComponents": 217,
+    "scanner": "Trivy 0.70.0",
+    "spdxRecords": 219,
+    "versionSmoke": "NONROOT_READ_ONLY_NO_NETWORK",
+    "vulnerabilitySubgate": "PASS_RAW",
+    "workflow": ".github/workflows/storage-452-generation32-image.yml"
+  },
+  "realObjectsCopied": 0,
+  "releaseAdmitted": false,
+  "run": {
+    "conclusion": "success",
+    "event": "push",
+    "head_branch": "feat/m2-discovery-complete-profile-20261029",
+    "head_sha": "20bded511e42c844c8aa122bf3906b8200dc6b16",
+    "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41724851743",
+    "id": 41724851743,
+    "name": "Storage 4.52 generation32 image qualification",
+    "path": ".github/workflows/storage-452-generation32-image.yml",
+    "run_attempt": 1,
+    "status": "completed"
+  },
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-generation32-image-and-local-cohort-evidence.v1",
+  "scopePreserved": {
+    "consumedScopes": 17,
+    "engineGetTotal": 52,
+    "farmacieOpen": 10,
+    "farmacieRows": 61,
+    "farmacieType": "STRING",
+    "teatriM1Functional": 6,
+    "teatriM1Technical": 8
+  },
+  "status": "A32_HOSTED_SUCCESS_B32_LOCAL_REPLAY_SUCCESS_HOSTED_COHORT_RUNTIME_PENDING",
+  "targetOperations": 0
+}

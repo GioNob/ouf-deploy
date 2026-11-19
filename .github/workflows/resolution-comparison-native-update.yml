@@ -1,0 +1,27 @@
+name: Resolution confirmation schema and two-app refinement qualification
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths: ['tools/resolution_comparison_update/**', 'scripts/execute-resolution-comparison-update-20261017.py', 'releases/resolution-comparison-update-selection-20261017.json', 'tests/test_resolution_comparison_update_*.py', 'tests/test_resolution_confirm_schema.py', 'tools/resolution_ths_update/plan.py', '.github/workflows/resolution-comparison-native-update.yml']
+permissions: {contents: read}
+jobs:
+  native-scoped-update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Reproduce inherited configuration schema and validate exact confirmation contract
+        run: |
+          python3 -I -B -m unittest discover -s tests -p 'test_resolution_confirm_schema.py' -v
+      - name: Closed graph with effects disabled and pure request invariants
+        run: |
+          python3 -I -B -m unittest discover -s tests -p 'test_resolution_comparison_update_bootstrap.py' -v
+          python3 -I -B -m unittest discover -s tests -p 'test_resolution_comparison_update_plan.py' -v
+      - name: Real root custody, two-role signatures, ordered two-app Docker replacement and retained namespace routes
+        run: |
+          OUF_COMPARISON_ROOT="/var/lib/ouf-udp-native-${{ github.run_id }}"
+          sudo mkdir -m700 "$OUF_COMPARISON_ROOT"
+          sudo cp -R . "$OUF_COMPARISON_ROOT/repository"
+          sudo chown -R root:root "$OUF_COMPARISON_ROOT"
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root OUF_READINESS_DOCKER_NATIVE=1 python3 -I -B -m unittest discover -s "$OUF_COMPARISON_ROOT/repository/tests" -p 'test_resolution_comparison_update_*.py' -v

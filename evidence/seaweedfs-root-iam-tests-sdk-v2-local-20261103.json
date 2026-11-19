@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "status": "LOCAL_PASS_HOSTED_PENDING",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "patchCount": 26,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch",
+    "sha256": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883"
+  },
+  "module": {
+    "Path": "github.com/aws/aws-sdk-go-v2/service/iam",
+    "Version": "v1.64.6",
+    "Sum": "h1:6tqE3gHbHFEvARPvlLHgRK1dXoD96ecolfPEurpYXyc=",
+    "GoModSum": "h1:lV0r+RVSkXRA6WhiaxW55qn8n60ObMwQShxaqrs9UeY=",
+    "Origin": {
+      "VCS": "git",
+      "URL": "https://github.com/aws/aws-sdk-go-v2",
+      "Subdir": "service/iam",
+      "Hash": "c350990c95a551ec1bb7b30a76d25bce33ecd389",
+      "Ref": "refs/tags/service/iam/v1.64.6"
+    }
+  },
+  "changedFiles": {
+    "go.mod": "476566182f9c3f7354530d141abd46d1d5bc1ebeedcf0dffa263ed5ba92e4f67",
+    "go.sum": "8240de8bac1bf1b7dcf11a503264b13d558a728bc6bb091d558d406e31656222",
+    "test/s3/policy/policy_test.go": "630a1ef2519e7932f9f8ed98033434b3159067a3a0d3abb32e9258f0bc589b0a",
+    "test/s3/normal/iam_test.go": "d92e3042fe245fd813207908d5a60d1da2968e63fbff7ee6d67558a7baa0c781",
+    "test/s3/policy/iam_sdk_v2_test.go": "35cad852394e2b9f9a30ad39608f54a9a3a42af2e15cc84201d7894acb93e286",
+    "test/s3/normal/iam_sdk_v2_test.go": "c6cd54a98b5e5c2c01c41abb531ec67beba74c109df968098a7fc6651872e8c6"
+  },
+  "local": {
+    "goVersion": "go1.27.3 linux/amd64",
+    "exactPins": true,
+    "newTopLevelTestsPassed": 8,
+    "newSubcasesPassed": 5,
+    "combinedTopLevelTestsPassed": 16,
+    "combinedSubcasesPassed": 8,
+    "compiledPackages": 2,
+    "exactReapplicationByteIdenticalFiles": 6,
+    "migratedPackageGraph": {
+      "packages": 1803,
+      "sdkV1Packages": 0,
+      "sha256": "75d691075783e9397fec0421d7e3acd8fc4e9502bf552820e655e1f9fb36ce26"
+    },
+    "productionGraph": {
+      "packages": 1811,
+      "byteIdenticalToQualified15PatchCohort": true,
+      "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a"
+    },
+    "productionBinary": {
+      "sha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+      "byteIdenticalToQualified15PatchCohort": true,
+      "build": "CGO_ENABLED=0 go build -mod=readonly -trimpath ./weed",
+      "vcsRevision": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+      "vcsModified": true
+    },
+    "directImportersBefore": 11,
+    "directImportersAfter": 9,
+    "remainingRootModuleImporters": 0,
+    "remainingNestedIamImporters": 9,
+    "reviewCleanup": "Only two IAM checksum lines added to original go.sum order; IAM direct requirement placed before KMS. Deterministic readonly suite repeated after cleanup. Production graph and binary verified before checksum ordering cleanup; module versions and all compiled source bytes unchanged."
+  },
+  "limits": {
+    "liveRoundtripPerformed": false,
+    "moduleGraphEradicationClaimed": false,
+    "optionalIntegrationsSdkV1StillOpen": true,
+    "exact15PatchOciChanged": false,
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "runtimeAuthority": false,
+    "gatesPassed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0
+  },
+  "preserved": [
+    "Scope17/52 Engine GET",
+    "Teatri/M1 8/8 technical and 6/6 functional",
+    "Farmacie61/10 OPEN/STRING",
+    "MinIO remains active"
+  ],
+  "evidenceHashes": {
+    "iam-module-verified.json": "00de15adf662e7dec975d4b2acc1954cbc6fbd3efdae6bd1f2e805634feca953",
+    "test-stderr.log": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "migrated-test-deps.txt": "75d691075783e9397fec0421d7e3acd8fc4e9502bf552820e655e1f9fb36ce26",
+    "reapply.log": "2e2402a4e161a8e01bf3d21045f05ac22fe66b21565a569b0197bbd9df24bdde",
+    "compile.log": "8fc5a2e8f46220d5da382b13a7388aa733a2e5c3100a34b96960a318cfe7055f",
+    "test.jsonl": "625a66e982f28daf525dbf204ff50103cb0d5d4986d34bf66733440f58eda8bb",
+    "remaining-direct-importers.txt": "2c48c3b306d1a943c908e44c8b3a9a938bb2dcbc284290d8508773167e12c35d",
+    "build-info.txt": "461d47585512cc969d1d9b8fe55f22a7d178c6d348c57f89ecaff582bae546c5",
+    "combined-tests.jsonl": "70b668351647e6f07621f06709455ee65064a41dda93a56b152def3cdc6c6b4b",
+    "production-deps.txt": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+    "combined-tests-stderr.log": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381"
+  }
+}

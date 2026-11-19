@@ -1,0 +1,24 @@
+{
+  "productionPackages": 1811,
+  "oldModuleImporters": [
+    {
+      "package": "github.com/hashicorp/go-secure-stdlib/parseutil",
+      "module": "github.com/hashicorp/go-secure-stdlib/parseutil",
+      "version": "v0.2.0"
+    },
+    {
+      "package": "github.com/hashicorp/vault/api",
+      "module": "github.com/hashicorp/vault/api",
+      "version": "v1.23.0"
+    }
+  ],
+  "newModuleImporters": [
+    "github.com/spf13/viper",
+    "github.com/seaweedfs/seaweedfs/weed/iam/ldap"
+  ],
+  "oldPackagePresent": true,
+  "newPackagePresent": true,
+  "CGO_ENABLED": "0",
+  "GOOS": "linux",
+  "GOARCH": "amd64"
+}

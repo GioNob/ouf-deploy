@@ -22,7 +22,7 @@ from file_only_installation import compile_scope as registry_scope
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_policy_token_owner.producer import protected_directory
-from tools.chatbot_file_cohort.action_process import compile_process_plan,FiniteActionProcess,private_file
+from tools.chatbot_file_cohort.action_process import compile_process_plan,FiniteActionProcess,private_file,previous_authorization_actions
 from tools.chatbot_file_cohort.containers import installation_scope
 from tools.chatbot_file_cohort.gateway import publication_scope,NamespaceAdmin
 from tools.chatbot_file_cohort.gateway_runtime import runtime_scope
@@ -58,6 +58,9 @@ def directories(context,registry):
            'imageSemantic','imageUdp','imageOnboarding','imageIngestion','imageMcp')
     result={name:str(Path(context)/name) for name in names}
     for name,path in registry['directoryPlan'].items():
+        if name=='backup' and registry.get('postGrantRecovery')is not None:
+            require(path==registry['postGrantRecovery']['retainedBackupDirectory'],'EXACT_POSTGRANT_RETAINED_BACKUP_REQUIRED')
+            continue
         require(Path(path).is_relative_to(context) and Path(path)!=Path(context),
                 'REGISTRY_PRIVATE_CHILDREN_MUST_USE_GROUPED_CONTEXT')
         result['registry'+name.capitalize()]=path
@@ -95,6 +98,21 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
     require(expected_declaration==closure['declaration'],'COMPLETE_EXECUTING_SOURCE_CLOSURE_CHANGED')
     operation,context=authority_directory(cohort_id,closure_hash,prepared['imagePlan']['cohortManifestHash'])
     require(not os.path.lexists(context),'FULL_ACTION_CONTEXT_ALREADY_EXISTS_NO_REPLAY')
+    recovery=prepared.get('postGrantRecovery')
+    if recovery is None:
+        previous=previous_authorization_actions(prepared['imagePlan']['cohortManifestHash'],closure['executables']['systemctl'])
+        recoveries=[row['ownerPregrantRecovery'] for row in previous if row.get('ownerPregrantRecovery') is not None]
+        require(len(recoveries)<=1 and prepared.get('ownerPregrantRecovery')==(recoveries[0] if recoveries else None),
+            'EXACT_PREGRANT_RECOVERY_MUST_PRECEDE_OWNER_COMPILATION')
+    else:
+        from tools.chatbot_file_cohort.postgrant_recovery import read_predecessor,proof_scope,retained_bindings
+        retained_bindings(recovery)
+        previous=[]
+        require(proof_scope(read_predecessor(recovery['profile']),recovery['newBudget']['actor'])==recovery,
+            'EXACT_POSTGRANT_RECOVERY_MUST_PRECEDE_OWNER_COMPILATION')
+    if previous:
+        prepared=copy.deepcopy(prepared)
+        prepared['previousFiniteActions']=previous
     profile=FileOnlyProfile(prepared['registry']['creationRequest'],prepared['registry']['configtree'])
     expected={'sourceClosureHash':closure_hash,'creationRequestHash':digest(profile.request),
               'intakeHash':digest(prepared),**lineage}
@@ -107,12 +125,20 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
     compiler_action=AggregateAction(gate,encoded({'schema':'ouf.preparation-without-authority.v1'}),closure_hash)
     owner=build_owner(compiler_action,prepared,sources)
     mounted=prepared['registry']['nodeRecipe']['renewableToken']
-    require(mounted['directoryCustodyScopeHash']==digest(owner.output.scope)
-        and mounted['source']==owner.first.binding.output_directory
-        and mounted['fileName']==owner.first.binding.output_member
-        and mounted['gid']==owner.first.binding.output_gid
+    require(mounted['source']==owner.first.binding.output_directory
+        and mounted['fileName']==owner.first.binding.output_member and mounted['gid']==owner.first.binding.output_gid
         and mounted['ownerBindingHash']==owner.first.binding.digest(),
-        'SAME_ACTION_FUTURE_OUTPUT_CUSTODY_AND_NATIVE_OWNER_REQUIRED')
+        'SAME_ACTION_FUTURE_OUTPUT_CUSTODY_AND_NATIVE_OWNER_REQUIRED' if recovery is None
+        else 'SAME_ACTION_OUTPUT_BINDING_AND_NATIVE_OWNER_REQUIRED')
+    if recovery is None:
+        require(mounted['directoryCustodyScopeHash']==digest(owner.output.scope),
+            'SAME_ACTION_FUTURE_OUTPUT_CUSTODY_AND_NATIVE_OWNER_REQUIRED')
+    else:
+        from tools.semantic_policy_token_owner.producer import protected_directory
+        with protected_directory(mounted['source'],gid=mounted['gid'],mode=0o750)as fd:
+            info=os.fstat(fd)
+            require(mounted.get('directoryDevice')==info.st_dev and mounted.get('directoryInode')==info.st_ino
+                and 'directoryCustodyScopeHash'not in mounted,'EXACT_ALREADY_CUSTODIED_OUTPUT_IDENTITY_REQUIRED')
     scopes=owner.scopes()
     scopes.update(applicationCohortInstallation=installation_scope(prepared['cohortPlan']),
         gatewayRoutePublication=publication_scope(prepared['gatewayPlan']),
@@ -139,6 +165,60 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
         phase_intents=prepared['registry']['intents'],lineage=lineage,
         input_hashes={'preparedInputs':digest(prepared),'preparationSourceClosure':preparation_source_hash,
                      'cohortManifest':prepared['imagePlan']['cohortManifestHash']})
+    review['authorizationReview']={'requiresNewRoleConfirmation':prepared['authorization']['plan']['roleProposal'] is not None,
+        'targetRoleCatalogueHash':digest(prepared['authorization']['plan']['targetRoles'])}
+    if previous:review['previousFiniteActions']=copy.deepcopy(previous)
+    database=prepared.get('databasePlan')
+    recipe=prepared['registry']['nodeRecipe']
+    if recipe.get('dockerContext') is not None:
+        review['registryNativeFrameReview']={'dockerContext':copy.deepcopy(recipe['dockerContext']),
+            'runtimeRoot':recipe['runtimeRoot'],'runtimeBinding':copy.deepcopy(recipe['observationConfiguration']['runtimeBinding']),
+            'expectedRootfsSeal':recipe['expectedRootfsSeal']}
+    if database is not None and database.get('mcpAuditRoleAdministration') is not None:
+        require(digest(database)==prepared['cohortPlan'].get('databasePlanHash'),
+                'REVIEWED_DATABASE_PLAN_HASH_REQUIRED')
+        selected=next(row for row in database['modules'] if row['module']=='mcp')
+        # Include the concrete temporary privileges and identities in the
+        # operator's private review, not just their digest in the closed bundle.
+        review['mcpMigrationReview']={'databasePlanHash':digest(database),
+            'database':selected['database'],'applicationRole':selected['user'],
+            'administration':copy.deepcopy(database['mcpAuditRoleAdministration']),
+            'preflight':copy.deepcopy(database['mcpAuditRolePreflight'])}
+        require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
+    if database is not None and database.get('mcpBackupReader') is not None:
+        review['mcpBackupReaderReview']=copy.deepcopy(database['mcpBackupReader'])
+    require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
+    if recovery is not None:
+        review['postGrantRecoveryReview']=copy.deepcopy(recovery)
+        if recovery['profile']=='ouf.chatbot-gateway-schema-continuation.v1':
+            review['completedTechnicalPhases']=[1,2,3,4]
+            review['currentTechnicalPhase']=5
+            review['mcpMigrationReview']['disposition']='COMPLETE_CLEAN_VERIFY_ONLY_NO_REPLAY'
+            review['mcpBackupReaderReview']['disposition']='RETAINED_ARCHIVE_ONLY_ZERO_NEW_DUMPS'
+            review['gatewayContinuationReview']={'historicalAppliedChanges':9,'historicalClaimRetained':True,
+                'remainingChanges':len(prepared['gatewayPlan']['changes']),
+                'newIntentHash':prepared['gatewayPlan']['governedReprocessing']['newIntentHash'],
+                'numericCompatibility':copy.deepcopy(runtime['numericCompatibility']),
+                'newConfigBinding':copy.deepcopy(runtime['newConfigBinding']),
+                'readinessPolicy':copy.deepcopy(runtime['readinessPolicy']),
+                'replayAllowed':False,'sameImageRequired':True}
+            if 'retainedNumericGateway' in recovery:
+                review['gatewayContinuationReview'].update(runtimeDisposition='COMPLETED_EIGHT_STEPS_VERIFY_ONLY',
+                    retainedNumericGateway=copy.deepcopy(recovery['retainedNumericGateway']),
+                    authorizationRoleObservation=copy.deepcopy(prepared['authorization']['plan'].get('retainedRoleObservation')),
+                    forceFreshMcpBeforeProducerRelease=True)
+            if 'retainedCreatedIngestion' in recovery:
+                review['completedTechnicalPhases']=[1,2,3,4,5];review['currentTechnicalPhase']=6
+                review['gatewayContinuationReview'].update(remainingChanges=0,
+                    routeDisposition='COMPLETED_28_SUCCESSOR_EFFECTS_VERIFY_ONLY',
+                    retainedCreatedIngestion=copy.deepcopy(recovery['retainedCreatedIngestion']))
+        if 'retainedFailedIngestion' in recovery:
+            require(digest(prepared['cohortPlan']['replacements'][2])==recovery['retainedFailedIngestion']['proposedIngestionPlanHash'],
+                'REVIEWED_INGESTION_PATH_INTENT_REQUIRED')
+            review['ingestionPathReprocessingReview']=copy.deepcopy(recovery['retainedFailedIngestion'])
+        review['firstControlledGrantMaximumAttempts']=0
+        review['firstControlledGrantMaximumSeconds']=0
+    require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
     review_binding=stage(staging_directory,'full-action-review.json',encoded(review))
     return {'review':review,'reviewBinding':review_binding,'executionProfile':profile,
             'processPlan':scopes['finiteActionProcess'],'context':context}

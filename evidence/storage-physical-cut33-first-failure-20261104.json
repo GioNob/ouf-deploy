@@ -1,0 +1,252 @@
+{
+  "status": "FAILED_NATIVE_PRESERVED",
+  "nativeQualification": false,
+  "nativeRun": 41913004716,
+  "producer": "57a3de3fcab8e826885a791fd7381f1585eaa0cf",
+  "jobs": [
+    {
+      "id": 126865201453,
+      "name": "quiesced-physical-cut",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41913004716,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Test physical cut binding and preserved common-cut and WAL boundaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Build the pinned PostgreSQL 17.11 fixture tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Fetch and bind the exact successful generation33 cohort and image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Verify the successful cohort publisher with its exact source commit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Bind the frozen ledger and cold storage to one named physical recovery point",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7
+        },
+        {
+          "name": "Preserve original backup payloads exact source and negative evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Attest successful synthetic evidence",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Retain complete public fixture evidence including failures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": 126866805022,
+      "name": "original-archive-readback",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 41913004716,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Acquire the exact original archive and verify producer terminal job",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 3
+        },
+        {
+          "name": "Independently verify all ZIP members sources and packaged physical backup bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4
+        },
+        {
+          "name": "Preserve unchanged original and independent readback",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13364540297,
+      "name": "storage-physical-cut33-41913004716",
+      "size_in_bytes": 5996122,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13364540297",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13364540297/zip",
+      "expired": false,
+      "created_at": "2026-11-04T21:09:46Z",
+      "expires_at": "2027-02-02T21:06:57Z",
+      "updated_at": "2026-11-04T21:09:46Z",
+      "digest": "sha256:6c2c8fc856678b1cacae625da61d52f059d41a44592d6e085da50f16ebfe49ff",
+      "workflow_run": {
+        "id": 41913004716,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "57a3de3fcab8e826885a791fd7381f1585eaa0cf"
+      }
+    },
+    {
+      "id": 13363806513,
+      "name": "storage-physical-cut33-readback-41913004716",
+      "size_in_bytes": 5973495,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13363806513",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13363806513/zip",
+      "expired": false,
+      "created_at": "2026-11-04T21:10:01Z",
+      "expires_at": "2027-02-02T21:06:57Z",
+      "updated_at": "2026-11-04T21:10:01Z",
+      "digest": "sha256:6c4420c5ef924115e1f7d928946ef2cfcc414852074945d3e6354a1852d10b5e",
+      "workflow_run": {
+        "id": 41913004716,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "57a3de3fcab8e826885a791fd7381f1585eaa0cf"
+      }
+    }
+  ],
+  "members": 171,
+  "checksums": 170,
+  "documents": {
+    "receipt.json": {
+      "acceptanceTestsPassed": 0,
+      "allStartedProcessesStopped": true,
+      "completeProductionBackupClaimed": false,
+      "failures": [
+        "RuntimeError: FIXTURE_SQL_RETURN_CODE"
+      ],
+      "gatesClosed": 0,
+      "lateralIsolationQualified": false,
+      "liveAtomicSnapshotQualified": false,
+      "pitrQualified": false,
+      "productionCodeChanged": false,
+      "releaseAdmitted": false,
+      "rpoMeasured": false,
+      "rtoMeasured": false,
+      "runtimeAuthorityIssued": false,
+      "status": "SYNTHETIC_PHYSICAL_COMMON_CUT33_BLOCKED",
+      "targetOperations": 0,
+      "targetPitrQualified": false,
+      "targetWriterFenceQualified": false,
+      "zeroProductionAcknowledgedLossQualified": false
+    },
+    "common-cut.json": {
+      "baseIndexSha256": "b69bb4c94c8c2a8eeb33dafa80f36ef60a0087246503772a99be9c99b91fab4b",
+      "cohortReceiptSha256": "5b28de1dd43fca337064d41439d302d53dc7f470640fe3fc0d8d1292b1ec02dc",
+      "coldIndexSha256": "7a8cf6f2e24846b5947f311f1ebf2221d0743e47a82af2b4bc1acbb3a8dc0590",
+      "ledgerSha256": "01bcd20394cc7f5803c99cf43293361ce6c3c4b959eba593428000b3ecbd45d5",
+      "lockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+      "readOnlyConfigSha256": "ed4a7916bc3bb7e45c26138b6f7a06f4e3cfecf0c1e606026b8c491b26ebe5f9",
+      "schema": "ouf.synthetic-physical-common-cut33.v1",
+      "sourcePostgresStopped": true,
+      "sourceStorageStoppedAndWithheld": true,
+      "sourceSystemIdentifier": "7704426359175527747",
+      "targetLsn": "0/4008E60",
+      "targetName": "ouf_joint33_frozen_epoch2",
+      "targetWalSegment": "000000010000000000000004",
+      "timeline": 1,
+      "walIndexSha256": "a78e2389f98c28ec65578f3779eb0b9e7946913e91eb0a26f9593a37e8c62dc0"
+    },
+    "missing-wal-gate.json": {
+      "mutatingRetries": 0,
+      "pgCtlStartReturnCode": 0,
+      "postgresTerminated": true,
+      "restoredS3ProcessesStarted": 0,
+      "sourceProcessesStopped": true,
+      "status": "BLOCKED_BEFORE_S3_RESTORE",
+      "targetWalSegment": "000000010000000000000004"
+    }
+  },
+  "restoredPostgresLog": "2026-11-04 21:09:44.042 UTC [12984] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit\n2026-11-04 21:09:44.042 UTC [12984] LOG:  listening on Unix socket \"/home/runner/work/_temp/joint33/lab/restored-socket/.s.PGSQL.55439\"\n2026-11-04 21:09:44.044 UTC [12987] LOG:  database system was interrupted; last known up at 2026-11-04 21:09:09 UTC\n2026-11-04 21:09:44.391 UTC [12987] LOG:  starting backup recovery with redo LSN 0/2000028, checkpoint LSN 0/2000080, on timeline ID 1\n2026-11-04 21:09:44.502 UTC [12987] LOG:  restored log file \"000000010000000000000002\" from archive\n2026-11-04 21:09:44.503 UTC [12987] LOG:  starting point-in-time recovery to \"ouf_joint33_frozen_epoch2\"\n2026-11-04 21:09:44.504 UTC [12987] LOG:  redo starts at 0/2000028\n2026-11-04 21:09:44.551 UTC [12994] FATAL:  the database system is not accepting connections\n2026-11-04 21:09:44.551 UTC [12994] DETAIL:  Hot standby mode is disabled.\n2026-11-04 21:09:44.554 UTC [12984] LOG:  received fast shutdown request\n2026-11-04 21:09:44.616 UTC [12985] LOG:  shutting down\n2026-11-04 21:09:44.618 UTC [12984] LOG:  database system is shut down\n",
+  "pgCtlStartOutput": "waiting for server to start.... done\nserver started\n",
+  "failedSql": "SELECT json_build_object(\n 'control',(SELECT row_to_json(c) FROM ouf_fence_lab.control c),\n 'intents',(SELECT json_agg(i ORDER BY operation) FROM ouf_fence_lab.intents i),\n 'events',(SELECT json_agg(e ORDER BY sequence) FROM ouf_fence_lab.events e));",
+  "failedSqlStderr": "psql: error: connection to server on socket \"/home/runner/work/_temp/joint33/lab/restored-socket/.s.PGSQL.55439\" failed: FATAL:  the database system is not accepting connections\nDETAIL:  Hot standby mode is disabled.\n",
+  "diagnosis": "pg_ctl start returned zero while archive recovery still rejected SQL with Hot standby mode disabled. The first ledger query ran before SQL readiness and caused clean fail-closed cleanup. Missing-WAL native case had already blocked S3 correctly. No native PASS transferred from partial evidence.",
+  "correction": "Bounded pg_isready read-only probes (60 attempts /20 seconds,2-second probe timeout), accepting only exit0 before ledger checks; exit1/2 transient, invalid exit permanent. Identity/target/WAL/fence/ledger/S3 checks unchanged;3 regression tests added.",
+  "localVerification": {
+    "originalZipSha256": "6c2c8fc856678b1cacae625da61d52f059d41a44592d6e085da50f16ebfe49ff",
+    "originalZipBytes": 5996122,
+    "allMemberChecksumsVerified": true,
+    "localNewTests": 15,
+    "skipped": 0,
+    "environmentObservations": [
+      "Optional old common-cut suite in a partial source-only copy:10PASS/1ERROR missing vendor profile; no full local suite PASS claimed. Native complete repository passed32tests.",
+      "Initial readiness test invocation used a sandbox-default temporary directory without write permission; rerun with allowed OS temporary directory passed15/15. No production logic or test assertion relaxed."
+    ]
+  },
+  "targetOperations": 0
+}

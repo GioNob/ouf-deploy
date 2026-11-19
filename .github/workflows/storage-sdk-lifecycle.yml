@@ -1,0 +1,348 @@
+name: Storage SDK lifecycle regression
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/storage-sdk-lifecycle.yml'
+      - 'scripts/assess-storage-sdk-lifecycle.py'
+      - 'scripts/qualify-seaweedfs-452-image.py'
+      - 'tools/storage_security/runtime_image.py'
+      - 'tests/test_seaweedfs_452_image.py'
+      - 'tests/test_storage_runtime_image.py'
+      - 'tests/test_storage_sdk_lifecycle.py'
+      - 'patches/seaweedfs/4.52-listing-remove-sdk-v1.patch'
+      - 'patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch'
+      - 'patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch'
+      - 'patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch'
+      - 'patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch'
+      - 'patches/seaweedfs/4.52-sqs-sdk-v2.patch'
+      - 'patches/seaweedfs/4.52-sqs-sdk-v2-added-packages.txt'
+      - 'patches/seaweedfs/4.52-kms-sdk-v2.patch'
+      - 'patches/seaweedfs/4.52-kms-sdk-v2-added-packages.txt'
+      - 'patches/seaweedfs/4.52-s3sink-sdk-v2.patch'
+      - 'patches/seaweedfs/4.52-s3sink-sdk-v2-added-packages.txt'
+      - 'patches/seaweedfs/4.52-s3backend-sdk-v2.patch'
+      - 'patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch'
+      - 'patches/seaweedfs/4.52-remote-storage-s3-sdk-v2-removed-packages.txt'
+      - 'patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch'
+      - 'patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1-removed-packages.txt'
+      - 'patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch'
+      - 'patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch'
+      - 'patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch'
+      - 'patches/seaweedfs/4.52-go-network-security-fixes.patch'
+      - 'evidence/seaweedfs-sdk-v1-test-closure-local-20261103.json'
+      - 'evidence/artifacts/storage-runtime-image-readback-41527990598.zip'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify lifecycle evidence handling and the exact 4.51 denial
+        run: python3 -I -B -S -m unittest discover -s tests -p test_storage_sdk_lifecycle.py -v
+      - name: Verify legacy and 4.52 runtime image boundaries
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_runtime_image.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_image.py -v
+  seaweedfs_patches:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CGO_ENABLED: '0'
+      GOTOOLCHAIN: local
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          path: seaweedfs
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Apply the exact patches and compare the dependency graphs
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          go list -mod=readonly -deps ./weed | LC_ALL=C sort > "$RUNNER_TEMP/seaweedfs-baseline-deps"
+          git apply --check ../patches/seaweedfs/4.52-listing-remove-sdk-v1.patch
+          git apply ../patches/seaweedfs/4.52-listing-remove-sdk-v1.patch
+          git apply --check ../patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch
+          git apply ../patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch
+          git apply --check ../patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch
+          git apply ../patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch
+          git apply --check ../patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch
+          git apply ../patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch
+          git apply --check ../patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch
+          git apply ../patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch
+          git apply --check ../patches/seaweedfs/4.52-sqs-sdk-v2.patch
+          git apply ../patches/seaweedfs/4.52-sqs-sdk-v2.patch
+          git apply --check ../patches/seaweedfs/4.52-kms-sdk-v2.patch
+          git apply ../patches/seaweedfs/4.52-kms-sdk-v2.patch
+          git apply --check ../patches/seaweedfs/4.52-s3sink-sdk-v2.patch
+          git apply ../patches/seaweedfs/4.52-s3sink-sdk-v2.patch
+          git apply --check ../patches/seaweedfs/4.52-s3backend-sdk-v2.patch
+          git apply ../patches/seaweedfs/4.52-s3backend-sdk-v2.patch
+          git apply --check ../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch
+          git apply ../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch
+          git apply --check ../patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch
+          git apply ../patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch
+          git apply --check ../patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch
+          git apply ../patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch
+          git apply --check ../patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch
+          git apply ../patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch
+          git apply --check ../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch
+          git apply ../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch
+          git apply --check ../patches/seaweedfs/4.52-go-network-security-fixes.patch
+          git apply ../patches/seaweedfs/4.52-go-network-security-fixes.patch
+          git diff --check
+          if grep -R --include='*.go' --exclude='*_test.go' -F '"github.com/aws/aws-sdk-go/' weed; then
+            exit 1
+          fi
+          if grep -R --include='*.go' -F '"github.com/aws/aws-sdk-go/' weed; then
+            exit 1
+          fi
+          go list -mod=readonly -deps -test ./weed/command ./weed/iam/... ./weed/iamapi ./weed/s3api ./weed/s3api/s3_constants ./weed/s3api/wire ./weed/s3api/s3err ./weed/notification/aws_sqs ./weed/replication/sub ./weed/kms/... ./weed/replication/sink/s3sink ./weed/storage/backend/s3_backend ./weed/remote_storage/s3 | LC_ALL=C sort -u > "$RUNNER_TEMP/seaweedfs-qualified-test-deps"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-qualified-test-deps"; then
+            exit 1
+          fi
+          if grep -F '"github.com/aws/aws-sdk-go/' weed/s3api/s3api_object_handlers_list.go; then
+            exit 1
+          fi
+          go list -mod=readonly -f '{{join .Imports "\n"}}' ./weed/s3api/s3err > "$RUNNER_TEMP/seaweedfs-s3err-imports"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-s3err-imports"; then
+            exit 1
+          fi
+          go list -mod=readonly -f '{{join .Imports "\n"}}' ./weed/command > "$RUNNER_TEMP/seaweedfs-command-imports"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-command-imports"; then
+            exit 1
+          fi
+          go list -mod=readonly -deps ./weed | LC_ALL=C sort > "$RUNNER_TEMP/seaweedfs-patched-deps"
+          sed 's|^github.com/aws/aws-sdk-go/service/iam$|github.com/seaweedfs/seaweedfs/weed/iam/wire|' "$RUNNER_TEMP/seaweedfs-baseline-deps" | LC_ALL=C sort > "$RUNNER_TEMP/seaweedfs-expected-deps"
+          echo github.com/seaweedfs/seaweedfs/weed/s3api/wire >> "$RUNNER_TEMP/seaweedfs-expected-deps"
+          sed -i '\|^github.com/aws/aws-sdk-go/service/sqs$|d' "$RUNNER_TEMP/seaweedfs-expected-deps"
+          cat ../patches/seaweedfs/4.52-sqs-sdk-v2-added-packages.txt >> "$RUNNER_TEMP/seaweedfs-expected-deps"
+          sed -i '\|^github.com/aws/aws-sdk-go/service/kms$|d' "$RUNNER_TEMP/seaweedfs-expected-deps"
+          cat ../patches/seaweedfs/4.52-kms-sdk-v2-added-packages.txt >> "$RUNNER_TEMP/seaweedfs-expected-deps"
+          cat ../patches/seaweedfs/4.52-s3sink-sdk-v2-added-packages.txt >> "$RUNNER_TEMP/seaweedfs-expected-deps"
+          grep -Fvx -f ../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2-removed-packages.txt "$RUNNER_TEMP/seaweedfs-expected-deps" > "$RUNNER_TEMP/seaweedfs-expected-deps-next"
+          mv "$RUNNER_TEMP/seaweedfs-expected-deps-next" "$RUNNER_TEMP/seaweedfs-expected-deps"
+          grep -Fvx -f ../patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1-removed-packages.txt "$RUNNER_TEMP/seaweedfs-expected-deps" > "$RUNNER_TEMP/seaweedfs-expected-deps-next"
+          mv "$RUNNER_TEMP/seaweedfs-expected-deps-next" "$RUNNER_TEMP/seaweedfs-expected-deps"
+          LC_ALL=C sort -o "$RUNNER_TEMP/seaweedfs-expected-deps" "$RUNNER_TEMP/seaweedfs-expected-deps"
+          go list -mod=readonly -f '{{join .Imports "\n"}}' ./weed/notification/aws_sqs ./weed/replication/sub > "$RUNNER_TEMP/seaweedfs-sqs-imports"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-sqs-imports"; then
+            exit 1
+          fi
+          go list -mod=readonly -f '{{join .Imports "\n"}}' ./weed/kms/aws > "$RUNNER_TEMP/seaweedfs-kms-imports"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-kms-imports"; then
+            exit 1
+          fi
+          go list -mod=readonly -f '{{join .Imports "\n"}}' ./weed/replication/sink/s3sink > "$RUNNER_TEMP/seaweedfs-s3sink-imports"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-s3sink-imports"; then
+            exit 1
+          fi
+          go list -mod=readonly -f '{{join .Imports "\n"}}' ./weed/storage/backend/s3_backend > "$RUNNER_TEMP/seaweedfs-s3backend-imports"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-s3backend-imports"; then
+            exit 1
+          fi
+          go list -mod=readonly -f '{{join .Imports "\n"}}' ./weed/remote_storage/s3 > "$RUNNER_TEMP/seaweedfs-remote-s3-imports"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-remote-s3-imports"; then
+            exit 1
+          fi
+          if grep -q '^github.com/aws/aws-sdk-go-v2/feature/s3/manager' "$RUNNER_TEMP/seaweedfs-patched-deps"; then
+            exit 1
+          fi
+          go list -mod=readonly -f '{{join .Imports "\n"}}' ./weed/s3api/s3_constants > "$RUNNER_TEMP/seaweedfs-constants-imports"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-constants-imports"; then
+            exit 1
+          fi
+          cmp "$RUNNER_TEMP/seaweedfs-expected-deps" "$RUNNER_TEMP/seaweedfs-patched-deps"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-patched-deps"; then
+            exit 1
+          fi
+      - name: Run command, IAM, S3, ACL, SQS, KMS, S3 sink, tier backend and remote S3 regressions
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          go test -mod=readonly -count 1 -timeout 3m -json ./weed/command ./weed/iam/... ./weed/iamapi ./weed/s3api ./weed/s3api/s3_constants ./weed/s3api/wire ./weed/s3api/s3err ./weed/notification/aws_sqs ./weed/replication/sub ./weed/kms/... ./weed/replication/sink/s3sink ./weed/storage/backend/s3_backend ./weed/remote_storage/s3 | tee "$RUNNER_TEMP/seaweedfs-regressions.jsonl"
+          go list -mod=readonly -deps -test ./unmaintained/s3/presigned_put ./test/s3/remote_cache/utils | LC_ALL=C sort -u > "$RUNNER_TEMP/seaweedfs-storage-tool-test-deps"
+          if grep -Eq '^github[.]com/aws/(aws-sdk-go|aws-sdk-go-v2/feature/s3/manager)(/|$)' "$RUNNER_TEMP/seaweedfs-storage-tool-test-deps"; then
+            exit 1
+          fi
+          go test -mod=readonly -count 1 -timeout 30s -json ./unmaintained/s3/presigned_put ./test/s3/remote_cache/utils | tee "$RUNNER_TEMP/seaweedfs-storage-tools.jsonl"
+          go build -mod=readonly -trimpath -o "$RUNNER_TEMP/weed-lab" ./weed
+          go version -m "$RUNNER_TEMP/weed-lab" > "$RUNNER_TEMP/seaweedfs-build-info.txt"
+          if grep -Eq '^[[:space:]]*dep[[:space:]]+github[.]com/aws/aws-sdk-go[[:space:]]' "$RUNNER_TEMP/seaweedfs-build-info.txt"; then
+            exit 1
+          fi
+          sha256sum "$RUNNER_TEMP/weed-lab" > "$RUNNER_TEMP/seaweedfs-binary-sha256.txt"
+      - name: Run remote-cache integration tests on two loopback SeaweedFS instances
+        working-directory: seaweedfs/test/s3/remote_cache
+        timeout-minutes: 8
+        env:
+          GOFLAGS: -mod=readonly
+        run: |
+          set -euo pipefail
+          go list -deps -test . ./utils | LC_ALL=C sort -u > "$RUNNER_TEMP/seaweedfs-remote-cache-test-deps"
+          if grep -Eq '^github[.]com/aws/(aws-sdk-go|aws-sdk-go-v2/feature/s3/manager)(/|$)' "$RUNNER_TEMP/seaweedfs-remote-cache-test-deps"; then
+            exit 1
+          fi
+          trap 'make stop-primary stop-remote' EXIT
+          make test-with-server TEST_TIMEOUT=5m 'TEST_PATTERN=^TestRemoteCache(Basic|RangeRequest|NotFound|CopyObject(Part)?|EvictUnderPressure)$' |& tee "$RUNNER_TEMP/seaweedfs-remote-cache-integration.log"
+      - name: Stage the exact build for same-run image qualification
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/seaweedfs-candidate-build"
+          install -m 0555 "$RUNNER_TEMP/weed-lab" "$RUNNER_TEMP/seaweedfs-candidate-build/weed"
+          cp LICENSE "$RUNNER_TEMP/seaweedfs-candidate-build/LICENSE"
+          cp "$RUNNER_TEMP/seaweedfs-patched-deps" "$RUNNER_TEMP/seaweedfs-candidate-build/compiled-deps"
+          cp "$RUNNER_TEMP/seaweedfs-build-info.txt" "$RUNNER_TEMP/seaweedfs-candidate-build/build-info.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seaweedfs-candidate-build
+          path: ${{ runner.temp }}/seaweedfs-candidate-build/
+          if-no-files-found: error
+          retention-days: 3
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: seaweedfs-sdk-lifecycle-evidence
+          path: |
+            ${{ runner.temp }}/seaweedfs-*-deps
+            ${{ runner.temp }}/seaweedfs-*-imports
+            ${{ runner.temp }}/seaweedfs-regressions.jsonl
+            ${{ runner.temp }}/seaweedfs-storage-tools.jsonl
+            ${{ runner.temp }}/seaweedfs-remote-cache-integration.log
+            seaweedfs/test/s3/remote_cache/primary-weed.log
+            seaweedfs/test/s3/remote_cache/remote-weed.log
+            ${{ runner.temp }}/seaweedfs-build-info.txt
+            ${{ runner.temp }}/seaweedfs-binary-sha256.txt
+          if-no-files-found: error
+          retention-days: 90
+  runtime_candidate:
+    needs: [verify, seaweedfs_patches]
+    outputs:
+      artifact-id: ${{ steps.candidate-upload.outputs.artifact-id }}
+      artifact-digest: ${{ steps.candidate-upload.outputs.artifact-digest }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: seaweedfs-candidate-build
+          path: ${{ runner.temp }}/seaweedfs-candidate-build
+      - name: Package the exact standard build into a deterministic OCI layout
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/qualify-seaweedfs-452-image.py package "$RUNNER_TEMP/seaweedfs-candidate-build" candidate-image
+          docker load --input candidate-image/runtime.docker.tar
+          docker image inspect --format '{{.Id}}' ouf-seaweedfs-candidate:4.52-85fa52c6 > candidate-image/daemon-image-id.txt
+          : > empty.trivyignore
+      - name: Scan the candidate image with all severities and unfixed findings
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: image
+          image-ref: ouf-seaweedfs-candidate:4.52-85fa52c6
+          format: json
+          output: candidate-image/fresh-image-scan.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - name: Bind SPDX and raw findings to the exact image and test its version entrypoint
+        run: |
+          set -euo pipefail
+          trivy convert --format spdx-json --output candidate-image/image.spdx.json candidate-image/fresh-image-scan.json
+          python3 -I -B -S scripts/qualify-seaweedfs-452-image.py assess candidate-image "$GITHUB_SHA" "$GITHUB_RUN_ID"
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 32 --memory 256m --cpus 1 --tmpfs /tmp:rw,noexec,nosuid,size=16777216 ouf-seaweedfs-candidate:4.52-85fa52c6 version > candidate-image/version-smoke.txt
+          test -s candidate-image/version-smoke.txt
+      - name: Seal evidence and input source hashes
+        run: |
+          set -euo pipefail
+          sha256sum .github/workflows/storage-sdk-lifecycle.yml scripts/qualify-seaweedfs-452-image.py scripts/assess-storage-sdk-lifecycle.py tools/storage_security/runtime_image.py tests/test_seaweedfs_452_image.py tests/test_storage_runtime_image.py patches/seaweedfs/4.52-*.patch > candidate-image/source-SHA256SUMS
+          cd candidate-image
+          find . -type f ! -path './SHA256SUMS' -printf '%P\0' | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+      - name: Attest the candidate image evidence
+        id: candidate-attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: candidate-image/SHA256SUMS
+      - run: cp "${{ steps.candidate-attestation.outputs.bundle-path }}" candidate-image/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: candidate-upload
+        if: always()
+        with:
+          name: seaweedfs-452-candidate-image-${{ github.run_id }}
+          path: candidate-image/
+          if-no-files-found: error
+          retention-days: 90
+  independent_image_readback:
+    needs: runtime_candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      attestations: read
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install the pinned provenance verifier
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 90 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar --no-same-owner -xzf gh297.tar.gz --strip-components=1 -C gh297 gh_2.97.0_linux_amd64/bin/gh
+      - name: Re-read the exact ZIP and verify publisher provenance on a separate runner
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_ARTIFACT: ${{ needs.runtime_candidate.outputs.artifact-id }}
+          CANDIDATE_DIGEST: ${{ needs.runtime_candidate.outputs.artifact-digest }}
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_ARTIFACT" =~ ^[0-9]+$ ]]
+          digest="${CANDIDATE_DIGEST#sha256:}"
+          [[ "$digest" =~ ^[0-9a-f]{64}$ ]]
+          url="https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$CANDIDATE_ARTIFACT/zip"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 150 --max-filesize 536870912 \
+            --header "Authorization: Bearer $GH_TOKEN" --header 'Accept: application/vnd.github+json' "$url" -o candidate-image.zip
+          python3 -I -B -S scripts/readback-seaweedfs-452-image.py candidate-image.zip candidate-readback "$digest" "$GITHUB_SHA" "$GITHUB_RUN_ID"
+          gh297/bin/gh attestation verify candidate-readback/SHA256SUMS --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/storage-sdk-lifecycle.yml" \
+            --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" --deny-self-hosted-runners \
+            --bundle candidate-readback/provenance.json --format json > candidate-readback/publisher-verification.json
+          test -s candidate-readback/publisher-verification.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: seaweedfs-452-independent-image-readback-${{ github.run_id }}
+          path: candidate-readback/
+          if-no-files-found: warn
+          retention-days: 90

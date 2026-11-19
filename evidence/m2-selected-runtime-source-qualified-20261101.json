@@ -1,0 +1,112 @@
+{
+  "actualDockerVersion": "29.8.1",
+  "actualOriginalExportsVerified": 13,
+  "allFiveArtifactMembersRead": true,
+  "automaticReplayAllowed": false,
+  "capsuleBytes": 307649,
+  "capsuleSha256": "d7e433b2d42c89aa8cdd8ccf49ce5dd97f0deb17479cba844c666270ff7a0f12",
+  "completeIndexAccepted": false,
+  "cumulativeDirectEngineGets": 35,
+  "currentOperatorCommandReady": false,
+  "date": "2026-11-01",
+  "downloadedArtifactMatchesLocalBuilder": true,
+  "errors": 0,
+  "failures": 0,
+  "genericInstallerDefaultIntroduced": false,
+  "installationSpecificSelectedPlatform": {
+    "architecture": "amd64",
+    "os": "linux"
+  },
+  "layerVerificationLoopAstEqualsFrozenAlgorithm": true,
+  "localCryptographicTrustChainRerun": false,
+  "maximumAttempts": 1,
+  "maximumCumulativeControlAttempts": 11,
+  "maximumSeconds": 600,
+  "newEngineGets": 0,
+  "newLauncherQualified": false,
+  "nonselectedBranchesAdmitted": false,
+  "originalRuntimeConfigManifestLayerProofsEqualFrozenVerifier": true,
+  "priorTargetControlAttempts": 10,
+  "protocolReferences": [
+    "https://specs.opencontainers.org/image-spec/image-index/?v=v1.1.1",
+    "https://specs.opencontainers.org/image-spec/image-layout/",
+    "https://docs.docker.com/reference/cli/docker/image/save/"
+  ],
+  "publicVendorFixture": {
+    "archiveBytes": 2235392,
+    "archiveSha256": "5e5425956fb28847744ee214231f4d513928693737dcbddb99184d6cf851e7ef",
+    "nativeDigest": "sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec",
+    "nonselectedBranchesAdmitted": false,
+    "previousVerifierStopReproduced": true,
+    "reference": "docker.io/library/busybox:1.37.0",
+    "removingActualSelectedConfigOrLayerDenies": true,
+    "selectedRuntimeBytesVerified": true,
+    "unavailableAuxiliaryManifests": 7,
+    "unavailableOtherPlatformManifests": 8,
+    "vendorContainerExecuted": false
+  },
+  "qualification": [
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "push",
+      "jobs": [
+        124937281373,
+        124937281573
+      ],
+      "run": 41336480788,
+      "suites": 4,
+      "tests": 23
+    },
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "pull_request",
+      "jobs": [
+        124937304889,
+        124937305099
+      ],
+      "run": 41336488322,
+      "suites": 4,
+      "tests": 23
+    }
+  ],
+  "releaseAcceptance": false,
+  "resourceWarnings": 0,
+  "runtimeBudgetResetOrGrant": false,
+  "schema": "ouf.m2-selected-runtime-source-qualified.v1",
+  "skips": 0,
+  "sourceArtifactId": 13094449213,
+  "sourceArtifactZipBytes": 112622,
+  "sourceArtifactZipSha256": "cae6b8467fc0f575c16171e6b061f4c917ac72fdd2e2f973ace4c4abf2f6b8b7",
+  "sourceCommit": "59784ccbdb895d79abf9a399175180273ae15dcc",
+  "sourceCount": 21,
+  "sourceMapSha256": "101e56e9b063d437b8675823024bb4822ae91dc257e7293fe894b167f1626487",
+  "sourcePublisherBundle": "evidence/m2-selected-runtime-source-20261101.sigstore.json",
+  "sourcePublisherResult": "evidence/m2-selected-runtime-source-publisher-20261101.json",
+  "sourcePublisherVerification": "ACTUAL_GH_2_97_0_CRYPTOGRAPHIC_VERIFY_ON_HOSTED_RUNNER_RESULT_AND_SIGNED_SUBJECT_READ_BACK",
+  "suiteTests": {
+    "actualDockerOriginalVendorAndMissingSelectedDenials": 3,
+    "exactTenScopeControl": 5,
+    "sealedCapsule": 5,
+    "selectedIdentityAndLayerBinding": 10
+  },
+  "targetApplyAuthorized": false,
+  "targetGraphPrivateEvidenceHash": "f54c14e334545054a4c6d3f56d51c3ad9d8c4038653dd2c813b4408dabc295ea",
+  "targetGraphResultHash": "95e66e217be370477f7bece3a3ac7313857c92d73dd7d6fabd41c2200f67cea7",
+  "targetReceipt": "evidence/m2-image-graph-target-20261101.json",
+  "targetRuntimeAuthorityIssued": false,
+  "targetSelectedRuntimeBytesVerified": false,
+  "teatriReferencesConsulted": [
+    "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
+    "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+    "docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md"
+  ],
+  "timezone": "Europe/Rome",
+  "unchangedSourceDifferences": 0,
+  "unchangedSourceMaps": {
+    "execution": 235,
+    "graphDiagnostic": 19,
+    "previousVerifier": 17
+  }
+}

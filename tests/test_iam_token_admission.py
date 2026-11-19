@@ -14,6 +14,7 @@ import unittest
 import urllib.parse
 import urllib.request
 from http.server import ThreadingHTTPServer,BaseHTTPRequestHandler
+from unittest.mock import patch
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes,serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -32,9 +33,11 @@ def certificate(root):
     return ca,pem
 
 class Fixture:
-    def __init__(self,root):
+    def __init__(self,root,*,lifetime=300):
+        assert type(lifetime) is int and 90<=lifetime<=3600
+        self.lifetime=lifetime
         self.ca,self.key=certificate(root);self.calls=[];self.body_mode=None;self.code=200;self.after=None
-        self.token_issued_at=int(time.time())
+        self.token_issued_at=int(time.time());self.connection_close=False;self.body_piece_bytes=None;self.body_delay=0
         fixture=self
         class Handler(BaseHTTPRequestHandler):
             protocol_version='HTTP/1.1'
@@ -46,7 +49,7 @@ class Fixture:
                 if self.path.endswith('/.well-known/openid-configuration'):
                     value={'issuer':fixture.profile.issuer,'token_endpoint':fixture.profile.token_endpoint,'introspection_endpoint':fixture.profile.introspection_endpoint}
                 elif self.path.endswith('/introspect'):value=copy.deepcopy(fixture.active())
-                else:value={'access_token':'FIXTURE_TOKEN','token_type':'Bearer','expires_in':300}
+                else:value={'access_token':'FIXTURE_TOKEN','token_type':'Bearer','expires_in':fixture.lifetime}
                 if fixture.body_mode=='changed':value['issuer']='https://other.invalid/realms/fixture'
                 if fixture.body_mode=='inactive':value={'active':False}
                 if type(fixture.body_mode) is tuple:value[fixture.body_mode[0]]=fixture.body_mode[1]
@@ -57,8 +60,15 @@ class Fixture:
                 self.send_response(fixture.code);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(raw)))
                 if fixture.code==429:self.send_header('Retry-After','900')
                 if fixture.code==302:self.send_header('Location','https://unapproved.invalid/token')
+                if fixture.connection_close:
+                    self.send_header('Connection','close');self.close_connection=True
                 self.end_headers()
-                try:self.wfile.write(raw)
+                try:
+                    if fixture.body_piece_bytes is None:self.wfile.write(raw)
+                    else:
+                        for index in range(0,len(raw),fixture.body_piece_bytes):
+                            time.sleep(fixture.body_delay)
+                            self.wfile.write(raw[index:index+fixture.body_piece_bytes]);self.wfile.flush()
                 except (BrokenPipeError,ConnectionResetError):pass
         self.server=ThreadingHTTPServer(('127.0.0.1',0),Handler)
         context=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);context.load_cert_chain(self.ca,self.key)
@@ -68,7 +78,7 @@ class Fixture:
         self.thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.thread.start()
     def active(self):
         now=self.token_issued_at
-        return {'active':True,'iss':self.profile.issuer,'client_id':self.profile.client_id,'sub':self.profile.subject_id,'tenant_id':self.profile.tenant_id,'ouf_actor_type':'SERVICE','aud':self.profile.audience,'scope':'authorization.bundle.read','iat':now,'exp':now+300}
+        return {'active':True,'iss':self.profile.issuer,'client_id':self.profile.client_id,'sub':self.profile.subject_id,'tenant_id':self.profile.tenant_id,'ouf_actor_type':'SERVICE','aud':self.profile.audience,'scope':'authorization.bundle.read','iat':now,'exp':now+self.lifetime}
     def close(self):self.server.shutdown();self.thread.join(2);self.server.server_close()
     def context(self):return ssl.create_default_context(cafile=str(self.ca))
 
@@ -88,6 +98,49 @@ class IamAdmissionTest(unittest.TestCase):
         self.assertEqual(result['access_token'],'FIXTURE_TOKEN')
         self.assertEqual([x[0].rsplit('/',1)[-1] for x in self.fixture.calls],['openid-configuration','introspect','token'])
         self.assertEqual(self.fixture.calls[1][1]['client_id'],['fixture-client'])
+    def test_http10_and_explicit_connection_close_keep_body_alive_and_release_socket(self):
+        import tools.semantic_policy_token_owner.iam_admission as implementation
+        original=implementation._Connection.connect;sockets=[]
+        def connected(connection):
+            original(connection);sockets.append(connection.sock.sock)
+        with patch.object(implementation._Connection,'connect',connected):
+            for protocol,close in (('HTTP/1.0',False),('HTTP/1.1',True)):
+                with self.subTest(protocol=protocol,connectionClose=close):
+                    self.fixture.server.RequestHandlerClass.protocol_version=protocol
+                    self.fixture.connection_close=close
+                    self.fixture.body_piece_bytes=17;self.fixture.body_delay=0.001
+                    self.assertTrue(self.admission.prepare(time.monotonic()+10))
+                    self.assertTrue(self.admission.admit('FIXTURE_TOKEN',time.monotonic()+300,time.monotonic()+10))
+                    b=Binding(self.fixture.profile.token_endpoint,'fixture-client','authorization.bundle.read',str(self.root),'token.jwt',10001)
+                    result=HttpsGrant(self.clock,opener=self.transport).request(b,'DISPOSABLE_FIXTURE_SECRET',time.monotonic()+10)
+                    self.assertEqual(result['access_token'],'FIXTURE_TOKEN')
+                    self.assertTrue(all(sock.fileno()==-1 for sock in sockets))
+        self.assertEqual(len(self.fixture.calls),6)
+        self.assertEqual(sum(path.endswith('/token') for path,_ in self.fixture.calls),2)
+    def test_closing_response_body_trickle_respects_whole_deadline_and_post_is_not_no_effect(self):
+        self.fixture.connection_close=True;self.fixture.body_piece_bytes=1;self.fixture.body_delay=0.03
+        for mutating in (False,True):
+            with self.subTest(mutating=mutating):
+                p=self.fixture.profile
+                request=urllib.request.Request(p.token_endpoint,data=b'fixture') if mutating else urllib.request.Request(p.issuer+'/.well-known/openid-configuration')
+                start=time.monotonic()
+                with self.assertRaises(Temporary) as raised:
+                    with self.transport.open(request,0.15) as response:response.read(65537)
+                self.assertEqual(raised.exception.no_effect,not mutating)
+                self.assertLess(time.monotonic()-start,1)
+    def test_rejected_closing_response_releases_socket_even_while_exception_is_retained(self):
+        import tools.semantic_policy_token_owner.iam_admission as implementation
+        original=implementation._Connection.connect;sockets=[]
+        def connected(connection):
+            original(connection);sockets.append(connection.sock.sock)
+        self.fixture.connection_close=True
+        with patch.object(implementation._Connection,'connect',connected):
+            for status,expected in ((429,Temporary),(302,Permanent)):
+                self.fixture.code=status
+                with self.subTest(status=status),self.assertRaises(expected) as raised:
+                    self.admission.prepare(time.monotonic()+10)
+                self.assertIsNotNone(raised.exception)
+                self.assertTrue(all(sock.fileno()==-1 for sock in sockets))
     def test_issuer_revocation_expiry_identity_scope_and_audience_are_denied(self):
         bad=[('client_id','other'),('sub','other'),('tenant_id','other'),('ouf_actor_type','HUMAN'),('iss','https://other.invalid'),('aud',['other']),('scope','authorization.bundle.read privileged.write'),('exp',int(time.time())+1),('exp',True),('iat',int(time.time())+30),'inactive']
         for mode in bad:
@@ -133,3 +186,4 @@ class IamAdmissionTest(unittest.TestCase):
         self.assertEqual(self.fixture.calls,[])
 
 if __name__=='__main__':unittest.main()
+

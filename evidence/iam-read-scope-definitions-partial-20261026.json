@@ -1,0 +1,247 @@
+{
+  "schema": "ouf.iam-read-scopes-browser-partial.v1",
+  "browserFallbackExplicitlyAuthorized": true,
+  "secureBrowserAuthUsed": true,
+  "credentialValuesObserved": false,
+  "authentication": {
+    "firstAttempt": "site returned Invalid username or password; user identified application-account credentials mistake",
+    "secondAttempt": "after explicit user correction, positive signed-in Keycloak console observed",
+    "consoleAccount": "oufadmin",
+    "noCredentialValuesRecorded": true
+  },
+  "realm": "ouf",
+  "clientId": "ouf-chatgpt",
+  "clientInternalId": "3e64ac3a-eeaa-47bd-94ec-b78040b39e71",
+  "clientObservedUrl": "https://auth.ouf-lab.it/admin/master/console/#/ouf/clients/3e64ac3a-eeaa-47bd-94ec-b78040b39e71/clientScopes",
+  "bindingEvidence": {
+    "enabled": true,
+    "protocol": "OpenID Connect",
+    "redirectUri": "https://chatgpt.com/connector_platform_oauth_redirect",
+    "pkceRequired": true,
+    "pkceMethod": "S256",
+    "oufAdminSessionsVisible": true,
+    "currentConnectorLinkTokenClientIdDirectlyObserved": false
+  },
+  "baselineAssignedClientScopes": [
+    {
+      "name": "ouf-chatgpt-dedicated",
+      "assignedType": "None"
+    },
+    {
+      "name": "acr",
+      "assignedType": "Default"
+    },
+    {
+      "name": "address",
+      "assignedType": "Optional"
+    },
+    {
+      "name": "authorization.permissions.propose",
+      "assignedType": "Default"
+    },
+    {
+      "name": "authorization.permissions.read",
+      "assignedType": "Default"
+    },
+    {
+      "name": "authorization.proposal.read",
+      "assignedType": "Default"
+    },
+    {
+      "name": "basic",
+      "assignedType": "Default"
+    },
+    {
+      "name": "email",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ingestion.operations.read",
+      "assignedType": "Default"
+    },
+    {
+      "name": "mcp.connect",
+      "assignedType": "Default"
+    },
+    {
+      "name": "microprofile-jwt",
+      "assignedType": "Optional"
+    },
+    {
+      "name": "offline_access",
+      "assignedType": "Optional"
+    },
+    {
+      "name": "operations.status.read",
+      "assignedType": "Default"
+    },
+    {
+      "name": "organization",
+      "assignedType": "Optional"
+    },
+    {
+      "name": "ouf.managed-source.file.profile",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.managed-source.file.upload",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.managed-source.onboarding.create",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.managed-source.onboarding.read",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.managed-source.onboarding.review.prepare",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.managed-source.preview",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.onboarding.revision.prepare",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.onboarding.revision.read",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.semantic.approval.request",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.semantic.proposal.read",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.semantic.propose",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.semantic.read",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.semantic.review.prepare",
+      "assignedType": "Default"
+    },
+    {
+      "name": "ouf.semantic.search",
+      "assignedType": "Default"
+    },
+    {
+      "name": "phone",
+      "assignedType": "Optional"
+    },
+    {
+      "name": "profile",
+      "assignedType": "Default"
+    },
+    {
+      "name": "roles",
+      "assignedType": "Default"
+    },
+    {
+      "name": "urban.object.search",
+      "assignedType": "Default"
+    },
+    {
+      "name": "web-origins",
+      "assignedType": "Default"
+    }
+  ],
+  "allSixRequiredReadScopesAbsentFromClient": true,
+  "existingRealmReadScope": {
+    "name": "ingestion.run.read",
+    "id": "023b8792-3762-43e3-8f4f-e85bdad9d1f4",
+    "realmAssignedType": "None",
+    "includeInTokenScope": true,
+    "includeInOpenIdProviderMetadata": true,
+    "changed": false
+  },
+  "createdDefinitions": [
+    {
+      "name": "ingestion.contract.read",
+      "id": "c3dfdd8a-f088-4639-beb4-0867076e3905",
+      "protocol": "openid-connect",
+      "realmAssignedType": "None",
+      "includeInTokenScope": true,
+      "includeInOpenIdProviderMetadata": true,
+      "displayOnConsentScreen": true,
+      "createdAndReadBack": true,
+      "clientAssignmentDispatched": false
+    },
+    {
+      "name": "ingestion.lineage.read",
+      "id": "fd654927-b341-416e-9c9d-4ccdf8f65092",
+      "protocol": "openid-connect",
+      "realmAssignedType": "None",
+      "includeInTokenScope": true,
+      "includeInOpenIdProviderMetadata": true,
+      "displayOnConsentScreen": true,
+      "createdAndReadBack": true,
+      "clientAssignmentDispatched": false
+    },
+    {
+      "name": "urban.object.read",
+      "id": "ac96ddab-a6b9-44a7-ae44-853edf64ef03",
+      "protocol": "openid-connect",
+      "realmAssignedType": "None",
+      "includeInTokenScope": true,
+      "includeInOpenIdProviderMetadata": true,
+      "displayOnConsentScreen": true,
+      "createdAndReadBack": true,
+      "clientAssignmentDispatched": false
+    }
+  ],
+  "remainingDefinitionCreations": [
+    "lineage.object.read",
+    "lineage.property.read"
+  ],
+  "clientAssignmentsDispatched": 0,
+  "realmDefaultAssignmentsDispatched": 0,
+  "roleOrMapperWritesDispatched": 0,
+  "workloadClientChanged": false,
+  "deviceClientChanged": false,
+  "oauthClientSecretsRead": false,
+  "tokenValuesRead": false,
+  "automaticReview": {
+    "status": "REJECTED",
+    "attemptedAction": "create lineage.object.read and lineage.property.read",
+    "reason": "La creazione di due nuovi client scope è una modifica IAM persistente; l’autorizzazione copre la correzione degli scope del client, ma non specifica chiaramente la creazione di definizioni realm-wide invece della sola assegnazione al client.",
+    "bypassAttempted": false,
+    "rejectedBatchEffectsObserved": false,
+    "postRejectionObservedPage": "urban.object.read settings, createdDefinitions=3"
+  },
+  "freshExplicitApprovalRequiredFor": {
+    "createPersistentRealmDefinitions": [
+      "lineage.object.read",
+      "lineage.property.read"
+    ],
+    "realmType": "None",
+    "onlyClient": "ouf-chatgpt",
+    "assignClientType": "Default",
+    "assignReadScopes": [
+      "ingestion.run.read",
+      "ingestion.contract.read",
+      "ingestion.lineage.read",
+      "urban.object.read",
+      "lineage.object.read",
+      "lineage.property.read"
+    ],
+    "preserveAllExisting33ClientAssignments": true,
+    "noRealmDefaultScope": true
+  },
+  "noNewAcquisitionReadAfterPolicy51Denial": true,
+  "policy51ReadWindowUntil": "2026-10-26T14:14:26Z",
+  "automaticGrantExtension": false,
+  "registryWorkerTouched": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

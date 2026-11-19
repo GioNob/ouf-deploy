@@ -1,0 +1,109 @@
+{
+  "broad": {
+    "pass": {
+      "topLevel": 2859,
+      "subtests": 4791,
+      "total": 7650,
+      "packages": 42
+    },
+    "skip": {
+      "topLevel": 11,
+      "subtests": 0,
+      "total": 11,
+      "packages": 10
+    },
+    "fail": {
+      "topLevel": 0,
+      "subtests": 0,
+      "total": 0,
+      "packages": 0
+    }
+  },
+  "focusedWithinFinalBroadRun": {
+    "pass": {
+      "topLevel": 10,
+      "subtests": 23,
+      "total": 33,
+      "packages": 0
+    },
+    "skip": {
+      "topLevel": 0,
+      "subtests": 0,
+      "total": 0,
+      "packages": 0
+    },
+    "fail": {
+      "topLevel": 0,
+      "subtests": 0,
+      "total": 0,
+      "packages": 0
+    }
+  },
+  "redBaseline": {
+    "pass": {
+      "topLevel": 1,
+      "subtests": 0,
+      "total": 1,
+      "packages": 0
+    },
+    "skip": {
+      "topLevel": 0,
+      "subtests": 0,
+      "total": 0,
+      "packages": 0
+    },
+    "fail": {
+      "topLevel": 1,
+      "subtests": 6,
+      "total": 7,
+      "packages": 1
+    }
+  },
+  "skips": [
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+      "test": "TestAzureSinkInitialization"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+      "test": "TestAzureSinkInitializeFromConfig"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+      "test": "TestAzureSinkEntryOperations"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+      "test": "TestAzureSinkPrecondition"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+      "test": "TestAzureSinkIdempotentCreate"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+      "test": "TestAzureSinkInvalidCredentials"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "test": "TestCheckGovernanceBypassPermissionIntegrationBehavior"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "test": "TestGovernanceBypassWithIAMPermission"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "test": "TestGovernancePermissionIntegration"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "test": "TestGovernancePermissionEndToEnd"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "test": "TestImplicitDirectoryIntegration"
+    }
+  ],
+  "rawOutputNote": "One output event contains an unescaped line break. Raw bytes are preserved; strict=False JSON stream decoding yields all 36914 events. Terminal test and package events are well-formed."
+}

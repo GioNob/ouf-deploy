@@ -1,0 +1,47 @@
+{
+  "specVersion": "0.3.0",
+  "contractBaseline": "ouf-contracts-v1.0.0-rc3-coherence",
+  "scenarioCount": 25,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "677d1904631fd6ed221772688b28c130b5d0d0e5cfbee6a2e8f0b315e8a8adeb"
+    },
+    {
+      "path": "contracts/contract-catalog.yaml",
+      "sha256": "43b631ae72777e0ddddf69a06469028917e3891fda9575ddce8ae144ee1a7b78"
+    },
+    {
+      "path": "contracts/v1.0-freeze-manifest.json",
+      "sha256": "1bb71e3c689dd21ccc3c3fcd8bcf238039b6aef79c3e9373032acf731476eea0"
+    },
+    {
+      "path": "evidence/e2e-evidence-record-v1.json",
+      "sha256": "c8d8910756ffd6058b0c967991c0b384e0dd9ccedb1e12ae0f92e81ce038e284"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "2b4d18241c72199d6797d7bb8fd6385cdcb23f3e7761cc319ef5cfdfbf582fc7"
+    },
+    {
+      "path": "spec/e2e-scenario-catalog.yaml",
+      "sha256": "e53d7c0cf881572d81789fe524a9dca98ebc30b543e9c1a172196fd66b539f9e"
+    },
+    {
+      "path": "spec/frozen-acceptance-traceability.yaml",
+      "sha256": "cbeee0e5e27dece9f42ea19e7b17cc687dfa2ba1d23d9eed17aef0d48dfa4f3d"
+    },
+    {
+      "path": "spec/legacy-id-mapping.yaml",
+      "sha256": "c839a538e3a412886f2b473841fdb3efa99282923883953fa6b427d2677cb159"
+    },
+    {
+      "path": "spec/scenario-ownership.yaml",
+      "sha256": "981915594a8354149c691214d2199147fe4555fa595caa3f5416ec8b2b11277b"
+    },
+    {
+      "path": "tests/test_catalog.py",
+      "sha256": "5f96e1c5d08cf3bbc331c269af1b1a1a96370073e1ea37fd948bf1113ee73555"
+    }
+  ]
+}

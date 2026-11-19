@@ -1,0 +1,222 @@
+--- a/test/s3/multipart/aws_upload.go
++++ b/test/s3/multipart/aws_upload.go
+@@ -4,16 +4,16 @@
+ 
+ import (
+ 	"bytes"
++	"context"
+ 	"flag"
+ 	"fmt"
+ 	"net/http"
+ 	"os"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+ )
+ 
+ const (
+@@ -21,7 +21,7 @@
+ 	maxRetries         = 3
+ 	awsAccessKeyID     = "any"
+ 	awsSecretAccessKey = "any"
+-	awsBucketRegion    = "us‑west‑1"
++	awsBucketRegion    = "us-west-1"
+ 	awsBucketName      = "bucket1"
+ )
+ 
+@@ -32,13 +32,8 @@
+ func main() {
+ 	flag.Parse()
+ 
+-	creds := credentials.NewStaticCredentials(awsAccessKeyID, awsSecretAccessKey, "")
+-	_, err := creds.Get()
+-	if err != nil {
+-		fmt.Printf("bad credentials: %s", err)
+-	}
+-	cfg := aws.NewConfig().WithRegion(awsBucketRegion).WithCredentials(creds).WithDisableSSL(true).WithEndpoint("localhost:8333").WithS3ForcePathStyle(true)
+-	svc := s3.New(session.New(), cfg)
++	ctx := context.Background()
++	svc := newS3Client()
+ 
+ 	file, err := os.Open(*filename)
+ 	if err != nil {
+@@ -59,7 +54,7 @@
+ 		ContentType: aws.String(fileType),
+ 	}
+ 
+-	resp, err := svc.CreateMultipartUpload(input)
++	resp, err := svc.CreateMultipartUpload(ctx, input)
+ 	if err != nil {
+ 		fmt.Println(err.Error())
+ 		return
+@@ -68,7 +63,7 @@
+ 
+ 	var curr, partLength int64
+ 	var remaining = size
+-	var completedParts []*s3.CompletedPart
++	var completedParts []types.CompletedPart
+ 	partNumber := 1
+ 	for curr = 0; remaining != 0; curr += partLength {
+ 		if remaining < maxPartSize {
+@@ -76,10 +71,10 @@
+ 		} else {
+ 			partLength = maxPartSize
+ 		}
+-		completedPart, err := uploadPart(svc, resp, buffer[curr:curr+partLength], partNumber)
++		completedPart, err := uploadPart(ctx, svc, resp, buffer[curr:curr+partLength], partNumber)
+ 		if err != nil {
+ 			fmt.Println(err.Error())
+-			err := abortMultipartUpload(svc, resp)
++			err := abortMultipartUpload(ctx, svc, resp)
+ 			if err != nil {
+ 				fmt.Println(err.Error())
+ 			}
+@@ -91,13 +86,10 @@
+ 	}
+ 
+ 	// list parts
+-	parts, err := svc.ListParts(&s3.ListPartsInput{
+-		Bucket:           input.Bucket,
+-		Key:              input.Key,
+-		MaxParts:         nil,
+-		PartNumberMarker: nil,
+-		RequestPayer:     nil,
+-		UploadId:         resp.UploadId,
++	parts, err := svc.ListParts(ctx, &s3.ListPartsInput{
++		Bucket:   input.Bucket,
++		Key:      input.Key,
++		UploadId: resp.UploadId,
+ 	})
+ 	if err != nil {
+ 		fmt.Println(err.Error())
+@@ -108,67 +100,79 @@
+ 		fmt.Printf("part %d: %v\n", i, part)
+ 	}
+ 
+-	completeResponse, err := completeMultipartUpload(svc, resp, completedParts)
++	completeResponse, err := completeMultipartUpload(ctx, svc, resp, completedParts)
+ 	if err != nil {
+ 		fmt.Println(err.Error())
+ 		return
+ 	}
+ 
+-	fmt.Printf("Successfully uploaded file: %s\n", completeResponse.String())
++	fmt.Printf("Successfully uploaded file: %v\n", completeResponse)
++}
++
++func newS3Client() *s3.Client {
++	cfg := aws.Config{
++		Region:           awsBucketRegion,
++		Credentials:      credentials.NewStaticCredentialsProvider(awsAccessKeyID, awsSecretAccessKey, ""),
++		RetryMaxAttempts: 1,
++	}
++	return s3.NewFromConfig(cfg, func(options *s3.Options) {
++		options.BaseEndpoint = aws.String("http://localhost:8333")
++		options.UsePathStyle = true
++	})
+ }
+ 
+-func completeMultipartUpload(svc *s3.S3, resp *s3.CreateMultipartUploadOutput, completedParts []*s3.CompletedPart) (*s3.CompleteMultipartUploadOutput, error) {
++func completeMultipartUpload(ctx context.Context, svc *s3.Client, resp *s3.CreateMultipartUploadOutput, completedParts []types.CompletedPart) (*s3.CompleteMultipartUploadOutput, error) {
+ 	completeInput := &s3.CompleteMultipartUploadInput{
+ 		Bucket:   resp.Bucket,
+ 		Key:      resp.Key,
+ 		UploadId: resp.UploadId,
+-		MultipartUpload: &s3.CompletedMultipartUpload{
++		MultipartUpload: &types.CompletedMultipartUpload{
+ 			Parts: completedParts,
+ 		},
+ 	}
+-	return svc.CompleteMultipartUpload(completeInput)
++	return svc.CompleteMultipartUpload(ctx, completeInput)
+ }
+ 
+-func uploadPart(svc *s3.S3, resp *s3.CreateMultipartUploadOutput, fileBytes []byte, partNumber int) (*s3.CompletedPart, error) {
++func uploadPart(ctx context.Context, svc *s3.Client, resp *s3.CreateMultipartUploadOutput, fileBytes []byte, partNumber int) (types.CompletedPart, error) {
+ 	tryNum := 1
+ 	partInput := &s3.UploadPartInput{
+ 		Body:          bytes.NewReader(fileBytes),
+ 		Bucket:        resp.Bucket,
+ 		Key:           resp.Key,
+-		PartNumber:    aws.Int64(int64(partNumber)),
++		PartNumber:    aws.Int32(int32(partNumber)),
+ 		UploadId:      resp.UploadId,
+ 		ContentLength: aws.Int64(int64(len(fileBytes))),
+ 	}
+ 
++	// The SDK is limited to one attempt. The explicit loop retries the same
++	// upload ID and part number, which replaces that part rather than creating
++	// an additional multipart mutation.
+ 	for tryNum <= maxRetries {
+-		uploadResult, err := svc.UploadPart(partInput)
++		uploadResult, err := svc.UploadPart(ctx, partInput)
+ 		if err != nil {
+ 			if tryNum == maxRetries {
+-				if aerr, ok := err.(awserr.Error); ok {
+-					return nil, aerr
+-				}
+-				return nil, err
++				return types.CompletedPart{}, err
+ 			}
+ 			fmt.Printf("Retrying to upload part #%v\n", partNumber)
+ 			tryNum++
+ 		} else {
+ 			fmt.Printf("Uploaded part #%v\n", partNumber)
+-			return &s3.CompletedPart{
++			return types.CompletedPart{
+ 				ETag:       uploadResult.ETag,
+-				PartNumber: aws.Int64(int64(partNumber)),
++				PartNumber: aws.Int32(int32(partNumber)),
+ 			}, nil
+ 		}
+ 	}
+-	return nil, nil
++	return types.CompletedPart{}, nil
+ }
+ 
+-func abortMultipartUpload(svc *s3.S3, resp *s3.CreateMultipartUploadOutput) error {
++func abortMultipartUpload(ctx context.Context, svc *s3.Client, resp *s3.CreateMultipartUploadOutput) error {
+ 	fmt.Println("Aborting multipart upload for UploadId#" + *resp.UploadId)
+ 	abortInput := &s3.AbortMultipartUploadInput{
+ 		Bucket:   resp.Bucket,
+ 		Key:      resp.Key,
+ 		UploadId: resp.UploadId,
+ 	}
+-	_, err := svc.AbortMultipartUpload(abortInput)
++	_, err := svc.AbortMultipartUpload(ctx, abortInput)
+ 	return err
+ }
+--- /dev/null
++++ b/test/s3/multipart/aws_upload_test.go
+@@ -0,0 +1,23 @@
++package main
++
++import (
++	"testing"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++)
++
++func TestNewS3ClientUsesBoundedLocalConfiguration(t *testing.T) {
++	options := newS3Client().Options()
++	if options.Region != "us-west-1" {
++		t.Fatalf("Region = %q, want %q", options.Region, "us-west-1")
++	}
++	if got := aws.ToString(options.BaseEndpoint); got != "http://localhost:8333" {
++		t.Fatalf("BaseEndpoint = %q, want %q", got, "http://localhost:8333")
++	}
++	if !options.UsePathStyle {
++		t.Fatal("UsePathStyle = false, want true for the local S3 fixture")
++	}
++	if options.RetryMaxAttempts != 1 {
++		t.Fatalf("RetryMaxAttempts = %d, want 1", options.RetryMaxAttempts)
++	}
++}
+

@@ -1,0 +1,129 @@
+name: Storage complete IAM module on maintained SDK
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-iam-module-sdk-v2.yml
+      - patches/seaweedfs/4.52-iam-module-sdk-v2.patch
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-iam-module-sdk-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-iam-module:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GOTOOLCHAIN: local
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          path: seaweedfs
+          persist-credentials: false
+
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+
+      - name: Apply the exact patch sequence and bind the remaining source scope
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          for patch in \
+            ../patches/seaweedfs/4.52-listing-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-sqs-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-kms-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3sink-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3backend-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-go-network-security-fixes.patch \
+            ../patches/seaweedfs/4.52-basic-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-sse-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-normal-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-iam-module-sdk-v2.patch
+          do
+            git apply --check "$patch"
+            git apply "$patch"
+          done
+          git diff --check
+          evidence="$RUNNER_TEMP/storage-iam-module-sdk-v2-evidence"
+          mkdir -p "$evidence"
+          status=0
+          grep -RIl --include='*.go' -F '"github.com/aws/aws-sdk-go/' . > "$evidence/remaining-direct-importers.txt" || status=$?
+          test "$status" -eq 1
+          test ! -s "$evidence/remaining-direct-importers.txt"
+          status=0
+          grep -E 'github.com/aws/aws-sdk-go( |/)' test/s3/iam/go.mod test/s3/iam/go.sum > "$evidence/remaining-iam-v1-module-entries.txt" || status=$?
+          test "$status" -eq 1
+          test ! -s "$evidence/remaining-iam-v1-module-entries.txt"
+          printf '%s\n' 984eac6a790be89e2a11de175a7413e1e3e32dd3 > "$evidence/upstream-source-sha.txt"
+          sha256sum ../patches/seaweedfs/4.52-iam-module-sdk-v2.patch > "$evidence/patch-sha256.txt"
+          git diff --stat > "$evidence/patch-stat.txt"
+
+      - name: Compile the exact IAM module and run bounded client and signer tests
+        working-directory: seaweedfs/test/s3/iam
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-iam-module-sdk-v2-evidence"
+          go test -mod=readonly -run '^$' ./... | tee "$evidence/compile.log"
+          go test -mod=readonly -run '^Test(IAMFrameworkV2|IAMFixtureS3V2|IAMFixtureRawQueryV2|SignSigV4Request)' -count=1 -v ./... | tee "$evidence/test.log"
+          go list -mod=readonly -deps -test ./... | LC_ALL=C sort -u > "$evidence/iam-test-deps.txt"
+          go list -mod=readonly -m all > "$evidence/iam-modules.txt"
+          status=0
+          grep -E '^github.com/aws/aws-sdk-go(/| |$)|^github.com/aws/aws-sdk-go-v2/feature/s3/manager(/| |$)' "$evidence/iam-test-deps.txt" "$evidence/iam-modules.txt" > "$evidence/unsupported-module-findings.txt" || status=$?
+          test "$status" -eq 1
+          test ! -s "$evidence/unsupported-module-findings.txt"
+          sha256sum go.mod go.sum > "$evidence/module-pins-before-tidy.txt"
+          go mod tidy
+          sha256sum --strict --check "$evidence/module-pins-before-tidy.txt" > "$evidence/tidy-idempotence.log"
+          cd "$evidence"
+          sha256sum ./* | LC_ALL=C sort > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest the bounded evidence manifest
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-iam-module-sdk-v2-evidence/SHA256SUMS
+
+      - name: Retain the bounded evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-iam-module-sdk-v2-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-iam-module-sdk-v2-evidence/
+          if-no-files-found: error
+          retention-days: 90

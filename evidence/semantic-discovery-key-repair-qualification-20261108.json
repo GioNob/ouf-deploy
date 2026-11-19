@@ -1,0 +1,66 @@
+{
+  "schema": "ouf.semantic-discovery-key-repair-qualification.v1",
+  "status": "QUALIFIED_TARGET_EXECUTION_AWAITED",
+  "sourceCommit": "bece4c5b3dbaf20dcec05b19b4352284a23cc92e",
+  "script": "scripts/repair-semantic-discovery-key-20261108.py",
+  "scriptSha256": "8dc1752060b32f321bebc9816e9caa817d9707b2889603a236be8b482f338a40",
+  "candidate": {
+    "sourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+    "artifactId": 13066396654,
+    "jarSha256": "e69f961a06fa37d019f4015d98dd5419ee9da1fa1387b5b0edaac4214a0cb016",
+    "applicationRebuilt": false
+  },
+  "change": {
+    "property": "ouf.semantic.discovery-delegation.key-file",
+    "before": "/run/secrets/semantic-discovery-owner.key",
+    "after": "/run/secrets/semantic-read-owner.key",
+    "existingKeyMustMatchCurrentGatewaySigner": true,
+    "keyFilesWritten": 0,
+    "keyRotation": false,
+    "gatewayWrites": 0,
+    "imageImports": 0,
+    "explicitMigration": false,
+    "oldContainersRetainedStopped": true
+  },
+  "ci": {
+    "run": 42511861759,
+    "engine": "29.8.1",
+    "jobs": [
+      {
+        "id": 128826450209,
+        "backend": "classic",
+        "conclusion": "success",
+        "unitTests": 5,
+        "macNegativeTests": 6,
+        "nativeTests": 2,
+        "skips": 0,
+        "logsRead": true
+      },
+      {
+        "id": 128826450480,
+        "backend": "containerd",
+        "conclusion": "success",
+        "unitTests": 5,
+        "macNegativeTests": 6,
+        "nativeTests": 2,
+        "skips": 0,
+        "logsRead": true
+      }
+    ],
+    "missingConfiguredKeyFailureReproduced": true,
+    "legacyConfigMacPresentInitially": true,
+    "failedExitedContainerDetachedAndRetained": true,
+    "existingMountAndEndpointMacPreserved": true,
+    "readinessUp": true,
+    "v12HistoryAndFixtureReceiptUnchanged": true
+  },
+  "targetExecuted": false,
+  "e2eProven": false,
+  "limitations": [
+    "CI exercises the exact archived application, both legacy MAC profiles, configured existing key and real Docker/PostgreSQL, using synthetic credentials and issuer/audience/workload.",
+    "CI does not enable target OUF IAM or contact its policy/issuer/provider; target readiness and complete discovery remain unproven.",
+    "Operational controller freshly compares existing file bytes against current APISIX signer, reads exact V12 metadata, then changes one ENV value in a replacement.",
+    "Spring startup may access IAM/policy and validate the database; the controller dispatches no explicit migration and requires unchanged V12 history afterwards.",
+    "The old V10 and failed V12 journals and containers remain preserved; no automatic rollback or replay."
+  ]
+}

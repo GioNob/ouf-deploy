@@ -1,0 +1,56 @@
+[
+  {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "",
+    "GOWORK": "off",
+    "args": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "/workspace/scratch/98dabd1608e5/yaml-observe33-stage/proposal/tests/test_prepare_iceberg_vendor_patch.py"
+    ],
+    "cwd": "/workspace/scratch/98dabd1608e5/tmp/tmpg2xyxp88/work",
+    "durationSeconds": 0.166,
+    "exitCode": 0,
+    "expectedNonzero": false,
+    "name": "test_prepare_iceberg_vendor_patch",
+    "stderrSha256": "57124123467dbbe1ca5d436859efdfe93af582d2d99a5638d3579053357894e8",
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timeoutSeconds": 300
+  },
+  {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "",
+    "GOWORK": "off",
+    "args": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "/workspace/scratch/98dabd1608e5/yaml-observe33-stage/proposal/tests/test_vendor_yaml_source_profile.py"
+    ],
+    "cwd": "/workspace/scratch/98dabd1608e5/tmp/tmpg2xyxp88/work",
+    "durationSeconds": 0.366,
+    "exitCode": 0,
+    "expectedNonzero": false,
+    "name": "test_vendor_yaml_source_profile",
+    "stderrSha256": "4182629240b73a3e654371410238acfc54c16b0991acb8c166c3b40ba0d41edc",
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timeoutSeconds": 300
+  },
+  {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "",
+    "GOWORK": "off",
+    "args": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "/workspace/scratch/98dabd1608e5/yaml-observe33-stage/proposal/tests/test_vendor_module_origins.py"
+    ],
+    "cwd": "/workspace/scratch/98dabd1608e5/tmp/tmpg2xyxp88/work",
+    "durationSeconds": 0.416,
+    "exitCode": 0,
+    "expectedNonzero": false,
+    "name": "test_vendor_module_origins",
+    "stderrSha256": "d18670e34280535b78b2bcd252178173ea248c0179274239b6730085106f21c9",
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timeoutSeconds": 300
+  }
+]

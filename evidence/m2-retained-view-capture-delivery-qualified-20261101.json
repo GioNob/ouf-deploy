@@ -1,0 +1,92 @@
+{
+  "actualIsolatedSourceImportVerified": true,
+  "actualTargetKernelViewInputCaptured": false,
+  "artifactId": 13082135784,
+  "artifactZipSha256": "937c6514986c0e26187f26c19c925cf66538ff883fbf8f099049d90c5513b55f",
+  "byteExactLocalExport": true,
+  "capsuleBytes": 162016,
+  "capsuleCommit": "00de07a457442903041ad8b47899458bb283c714",
+  "capsuleSha256": "4ddb3625fd961bbd1cd40866227b3ff95af478b791f6058806a5414e9355d811",
+  "certificateOids": {
+    "10": "91a0aeaf1664a387e1d9559ced604f5fb449b37f",
+    "11": "github-hosted",
+    "12": "https://github.com/GioNob/ouf-deploy",
+    "13": "91a0aeaf1664a387e1d9559ced604f5fb449b37f",
+    "14": "refs/heads/feat/m2-discovery-complete-profile-20261029",
+    "15": "1409074354",
+    "17": "96419716",
+    "8": "https://token.actions.githubusercontent.com",
+    "9": "https://github.com/GioNob/ouf-deploy/.github/workflows/m2-retained-effective-views.yml@refs/heads/feat/m2-discovery-complete-profile-20261029"
+  },
+  "cumulativeDirectEngineGets": 22,
+  "currentOwnerCompatibility": {
+    "allLogsRead": true,
+    "jobs": [
+      124835589382,
+      124835589556
+    ],
+    "runId": 41302293325,
+    "suites": 4,
+    "tests": 33
+  },
+  "expectedPermissionOrContentPolicyEstablished": false,
+  "finalQualification": {
+    "activeSQLiteWalCheckpointsAndTokenRotationQualified": true,
+    "allLogsRead": true,
+    "jobs": [
+      124836690015,
+      124836690213
+    ],
+    "runId": 41302674676,
+    "suites": 4,
+    "tests": 19
+  },
+  "generalQualification": {
+    "allLogsRead": true,
+    "errors": 0,
+    "failures": 0,
+    "jobs": [
+      124835589571,
+      124835589722,
+      124835589738,
+      124835589746,
+      124835589749
+    ],
+    "resourceWarnings": 0,
+    "runId": 41302293317,
+    "skips": 0,
+    "suites": 29,
+    "tests": 209
+  },
+  "launcherCommit": "a60b4d6d88e9f96ee3620dc845642f9504b91d33",
+  "launcherSha256": "c180ed3ebb307e13169fee64ee9bb1594ba8b76b72184173b96877226e7c8482",
+  "liveOwnerAuthenticated": false,
+  "localCertificateAndSubjectReadback": true,
+  "localCryptoTrustChainVerificationRerun": false,
+  "mountedFileContentBytesRead": 0,
+  "newInputDirectEngineGets": 0,
+  "original235AndEightSealedStaticSourcesUnchanged": true,
+  "previousScopesRemainConsumed": 5,
+  "publisherJob": 124835590076,
+  "rawCapsuleAndLauncherUrlsByteExactReadback": true,
+  "releaseAcceptance": false,
+  "runnerPinnedGh297OfflineVerificationPassed": true,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.retained-effective-view-capture-delivery-qualified.v1",
+  "sourceCommit": "91a0aeaf1664a387e1d9559ced604f5fb449b37f",
+  "sourceCount": 11,
+  "sourceMapSha256": "d3c6d1f4496f87336b27fd088f2cf5273dd18b6349bf778c4c95b4b1a8b37d0a",
+  "sourceQualification": {
+    "allLogsRead": true,
+    "jobs": [
+      124835589869,
+      124835590076
+    ],
+    "runId": 41302293479,
+    "suites": 3,
+    "tests": 15
+  },
+  "targetApplyAuthorized": false,
+  "targetEntrypointInvokedByAgent": false,
+  "workflowRun": 41302293479
+}

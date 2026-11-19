@@ -1,0 +1,32 @@
+{
+  "schema": "ouf.ingestion-readiness-stopped-reader-qualification.v1",
+  "sourceCommit": "e1db6dbd8b285483c9023872374576620dab03af",
+  "runId": 39762976840,
+  "jobs": [
+    {
+      "id": 119771429271,
+      "python": "3.12",
+      "tests": 4,
+      "skipped": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119771429693,
+      "python": "3.13.5",
+      "tests": 4,
+      "skipped": 0,
+      "conclusion": "success"
+    }
+  ],
+  "pins": {
+    "sha256": "27b28c604b7cf7de5422f067df375d0f226bf1dff0b336dda03124f7f762720c",
+    "blob": "dbd88b3e53e5146f94e78fc52ddb42275fd57c8f",
+    "bytes": 10305
+  },
+  "scope": "ROOT_PRIVATE_METADATA_ONLY_ACTUAL_CAS_PREFIX_FIXTURES_AND_ISOLATED_READER_REPRODUCTION",
+  "targetSnapshotObserved": false,
+  "currentLiveRuntimeProven": false,
+  "runtimeAuthorityIssued": false,
+  "oauthRequests": 0,
+  "runtimeEffectsDispatched": 0
+}

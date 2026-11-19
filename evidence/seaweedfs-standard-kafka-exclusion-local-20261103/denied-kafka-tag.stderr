@@ -1,0 +1,3 @@
+failed to start telemetry sidecar: os.Executable: readlink /proc/self/exe: no such file or directory
+# github.com/seaweedfs/seaweedfs/weed/command [github.com/seaweedfs/seaweedfs/weed/command.test]
+weed/command/ouf_unsupported_kafka_tag.go:7:9: undefined: OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_KAFKA_NOTIFICATION_OR_REPLICATION

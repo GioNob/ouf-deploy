@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.onboarding-wide-preflight-qualification.v1",
+  "status": "QUALIFIED_TARGET_READ_AWAITED",
+  "sourceCommit": "91568e8deaf41bfd059b4a3ec41a91e2c5c953c7",
+  "script": "scripts/read-onboarding-wide-preflight-20261108.py",
+  "scriptSha256": "fca0dccd2ed5e42904fa57a8c0d898eb537c233070653379971ef29d7b5498d6",
+  "packageRecordSha256": "3bc9191934011c52a682c4c509c2de60349d8ab9c2494e5a64348661db816fe2",
+  "ci": {
+    "run": 42516065460,
+    "job": 128839231269,
+    "conclusion": "success",
+    "tests": 5,
+    "skipped": 0,
+    "logsRead": true,
+    "postgresql": 17
+  },
+  "local": {
+    "testsPassed": 4,
+    "nativeSkipped": 1,
+    "reason": "No local PostgreSQL; native test executed successfully in CI",
+    "deliveryBashSyntaxPassed": true
+  },
+  "proofs": [
+    "History read uses explicit READ ONLY and rollback under SELECT-only non-superuser role",
+    "Missing, extra, changed, failed and baseline-instead-of-SQL history not reported as exact",
+    "Declared JDBC host remains the retained PostgreSQL; identity override rejected",
+    "Storage override ambiguity is visible; credential values and raw arguments are not emitted",
+    "Installed package comparison distinguishes migration parity from changed class bytes"
+  ],
+  "limits": [
+    "No target read or candidate startup executed by this qualification",
+    "No native two-network container replacement is qualified by these reader tests",
+    "Declared database and storage properties are not a claim of effective Spring configuration",
+    "Credential files are stat-only; existing truststore bytes are hashed and not emitted",
+    "No migration, route, token, business or S3 request"
+  ],
+  "targetExecuted": false
+}

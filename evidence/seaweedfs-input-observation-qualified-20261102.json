@@ -1,0 +1,211 @@
+{
+  "schema": "ouf.storage-input-observation-qualified.v1",
+  "date": "2026-11-02",
+  "status": "QUALIFIED_AWAITING_OPERATOR",
+  "previousTargetReceipt": {
+    "path": "evidence/seaweedfs-inventory-input-stop-target-20261102.json",
+    "control": 15,
+    "consumed": true,
+    "cumulativeControlAttempts": 15,
+    "cumulativeEngineGets": 50,
+    "credentialFilesOpened": 0,
+    "credentialSourceBytesRead": 0,
+    "metadataCandidates": 5,
+    "s3Reached": false,
+    "configEnvAlreadyPassedThroughInspectMemory": true,
+    "failedMetadataPredicate": "UNPROVEN"
+  },
+  "diagnosis": {
+    "sourceCustodyAdmitted": false,
+    "inputPermissionsModified": false,
+    "allCandidatesBeforeAnyContent": true,
+    "readPolicy": "DECLARED_EXISTING_REGULAR_BOUNDED_STABLE_NO_SYMLINK_NO_CUSTODY_ADMISSION",
+    "unsupportedRequiredInput": "COMPLETE_METADATA_REVIEW_BEFORE_CONTENT_AND_S3",
+    "inputOwnerModeAndLinksReportedInTargetReceipt": false
+  },
+  "producer": {
+    "source": "91dc1f079bf7f6760d6dcf1f613b6c8a418f03d2",
+    "runId": 41446908345,
+    "jobId": 125282187196,
+    "workflow": ".github/workflows/storage-inputs-qualification.yml",
+    "artifact": {
+      "id": 13141714058,
+      "size": 172802,
+      "sha": "f3bbe5a324cf45ead9627cc80766bccc1f696092334a6727c980ddea8f88fd72"
+    },
+    "archive": "evidence/artifacts/storage-inputs-qualified-41446908345.zip",
+    "qualification": {
+      "schema": "ouf.storage-input-observation-qualification.v1",
+      "status": "PASS",
+      "producerSource": "91dc1f079bf7f6760d6dcf1f613b6c8a418f03d2",
+      "exactPreviousReaderSha256": "430631fe4dfd1b844229637373ea176c2e84e81e1491919f4a25cc36c68359a8",
+      "closedSources": 28,
+      "allPrior26SourcesUnchanged": true,
+      "allPrior24SourcesUnchanged": true,
+      "original23SourcesUnchanged": true,
+      "javaTests": 12,
+      "newPythonGuards": 20,
+      "freshMinioInspectsPerSuccessfulCase": 2,
+      "nativeCredentialCases": 4,
+      "metadataOnlyNegativeCases": 1,
+      "thirteenInspectScanReplayed": false,
+      "realDockerEngineQualified": true,
+      "historicalScopeChecks": "MODELLED",
+      "vpsObserved": false,
+      "rawServerGate": "HELD",
+      "releaseAdmitted": false,
+      "targetOperations": 0,
+      "oldScopeRearmed": false
+    },
+    "nativeCases": {
+      "status": "PASS",
+      "cases": [
+        {
+          "case": "mode0644",
+          "status": "PASS",
+          "records": 1010,
+          "freshMinioInspects": 2,
+          "inputMetadataComplete": true,
+          "inputPermissionsAndOwnerUnmodified": true,
+          "sourceCustodyAdmitted": false,
+          "reproducedExactControl15Stop": true,
+          "retainedSnapshotBytesPreserved": true,
+          "tamperedPreviousStopDeniedBeforeEngineAndS3": true
+        },
+        {
+          "case": "owner10001",
+          "status": "PASS",
+          "records": 1010,
+          "freshMinioInspects": 2,
+          "inputMetadataComplete": true,
+          "inputPermissionsAndOwnerUnmodified": true,
+          "sourceCustodyAdmitted": false,
+          "reproducedExactControl15Stop": true,
+          "retainedSnapshotBytesPreserved": true,
+          "tamperedPreviousStopDeniedBeforeEngineAndS3": true
+        },
+        {
+          "case": "hardlink",
+          "status": "PASS",
+          "records": 1010,
+          "freshMinioInspects": 2,
+          "inputMetadataComplete": true,
+          "inputPermissionsAndOwnerUnmodified": true,
+          "sourceCustodyAdmitted": false,
+          "reproducedExactControl15Stop": true,
+          "retainedSnapshotBytesPreserved": true,
+          "tamperedPreviousStopDeniedBeforeEngineAndS3": true
+        },
+        {
+          "case": "oversize",
+          "status": "PASS",
+          "unsupportedInputMetadataComplete": true,
+          "contentReads": 0,
+          "s3Requests": 0,
+          "freshMinioInspects": 1,
+          "reproducedExactControl15Stop": true,
+          "retainedSnapshotBytesPreserved": true,
+          "tamperedPreviousStopDeniedBeforeEngineAndS3": true
+        }
+      ],
+      "realDockerEngineQualified": true,
+      "historicalScopeChecks": "MODELLED",
+      "minioRoleProcessInFixture": "SYNTHETIC_STATIC_WAITER_HOST_NETWORK_WITH_SEPARATE_REAL_S3_SERVER",
+      "exactOriginalSdkReused": true,
+      "oldFifteenScopesPreserved": true,
+      "thirteenInspectScanReplayed": false,
+      "targetOperations": 0,
+      "runtimeAuthorityIssued": false
+    }
+  },
+  "independent": {
+    "source": "7e4106199ca17ed1bde82981c4ed81aef76a5de9",
+    "runId": 41447457400,
+    "jobId": 125283989929,
+    "workflow": ".github/workflows/storage-input-readback.yml",
+    "artifact": {
+      "id": 13143395104,
+      "size": 21002,
+      "sha": "75e8bfec3e2e348d9fbb1f2d8ca88e48504556dd4994b1dd46dfb3529550c46e"
+    },
+    "archive": "evidence/artifacts/storage-inputs-independent-readback-41447457400.zip",
+    "status": "PASS",
+    "checksumMembers": 18,
+    "checksumSubjectSha256": "c2859d276678c973e8d4659076a5f6b8c1feccc305c9f87e2c0e716931b8df34",
+    "publishedFilesCompared": 2,
+    "publishedBytesCompared": 407097,
+    "publisherWorkflowAndSourceAndRefVerified": true,
+    "hostedRunnerRequired": true,
+    "verifierVersion": "2.97.0",
+    "sourceInspectionOnly": true
+  },
+  "publication": {
+    "commit": "14006308605553483b9a5ba0df9bf51ed56761f2",
+    "launcherCommit": "7e4106199ca17ed1bde82981c4ed81aef76a5de9",
+    "launcherSha256": "da9fcbb5caaef59276fbad44eb14e201bb6414f591f319699edcc8ade49d58c5",
+    "capsuleSha256": "ec5c94e074ec2efb90b77ea383ac3047416f5472cd6813b42fd739b1f49fb14b",
+    "capsuleBytes": 405203,
+    "payloadBytes": 296642,
+    "payloadLimitBytes": 327680,
+    "closedSources": 28,
+    "allPrior26SourcesUnchanged": true,
+    "original23SourcesUnchanged": true
+  },
+  "failedQualification": {
+    "source": "2d01d3032a2c770c35a93ce9f9cba0b84359b8c7",
+    "runId": 41446529251,
+    "jobId": 125280903935,
+    "status": "FAILURE_NOT_QUALIFIED",
+    "observedCause": "RANDOM_TEMPORARY_DIRECTORY_SUFFIX_CREATED_INVALID_DOCKER_IMAGE_REFERENCE",
+    "correction": "DETERMINISTIC_HEX_IMAGE_IDENTIFIER_FIXTURE_ONLY_THEN_COMPLETE_NEW_QUALIFICATION",
+    "targetOperations": 0
+  },
+  "nextOperatorAction": {
+    "control": 16,
+    "scope": "/etc/ouf/deploy-snapshots/seaweedfs-inventory-inputs-20261102-v1",
+    "install": "/usr/local/lib/ouf-storage-inventory-inputs-20261102",
+    "previousEngineGets": 50,
+    "maximumNewEngineGets": 2,
+    "maximumCumulativeEngineGets": 52,
+    "retainedSnapshotControl": 14,
+    "retainedContainerSnapshots": 13,
+    "otherTwelveBindingsRefreshed": false,
+    "capacityAndMemoryFromControl": 14,
+    "sdkReinstalled": false,
+    "oldScopeRearmed": false,
+    "automaticReplayAllowed": false,
+    "targetExecuted": false,
+    "objectBodiesRead": 0,
+    "s3Writes": 0,
+    "sqlRequests": 0,
+    "containerLifecycleOperations": 0,
+    "instructions": "docs/OUF_SEAWEEDFS_INPUT_OBSERVATION_20261102.md"
+  },
+  "security": {
+    "sdkFreshScan": "ZERO_FINDINGS",
+    "serverRawGate": "HELD_ONE_UNKNOWN",
+    "serverReleaseAdmitted": false,
+    "currentMinioReplaced": false,
+    "currentMinioVulnerabilitiesRemoved": false
+  },
+  "invariants": {
+    "frozenSourceCounts": [
+      235,
+      19,
+      17,
+      21,
+      23,
+      24,
+      26
+    ],
+    "allEightSeaweedfsGates": "OPEN",
+    "all21AcceptanceTests": "OPEN",
+    "m2Accepted": false,
+    "teatriAndSameFarmaciePreserved": true,
+    "newUploadOrProfiling": false,
+    "migrationPerformed": false,
+    "targetApplyAuthorized": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperationsSinceReceipt15": 0
+  }
+}

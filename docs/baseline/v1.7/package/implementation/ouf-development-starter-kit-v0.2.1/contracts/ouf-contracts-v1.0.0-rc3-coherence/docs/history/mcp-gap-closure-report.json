@@ -1,0 +1,32 @@
+{
+  "repositoryVersion": "0.11",
+  "result": "PASS",
+  "gapClosure": {
+    "MCP-GAP-01": {
+      "status": "CLOSED",
+      "artifact": "mcp/canonical-capability-manifest-v1.json"
+    },
+    "MCP-GAP-02": {
+      "status": "CLOSED",
+      "artifact": "consistency/mcp-capability-projection-rules-v1.yaml"
+    }
+  },
+  "schemaValidation": {
+    "standardDescriptorErrors": [],
+    "trustedHumanDescriptorErrors": [],
+    "negativeDescriptorStructuralErrors": []
+  },
+  "projectionValidation": {
+    "standardErrors": [],
+    "trustedHumanErrors": [],
+    "negativeDetectedErrors": [
+      "MCP-P01 capabilityId mismatch",
+      "MCP-P04 operationClass mismatch",
+      "MCP-P05 requiredAuthorizationCapability mismatch",
+      "MCP-P07 effective toolEligible mismatch",
+      "MCP-P08 physical URL forbidden in gatewayBindingRef",
+      "MCP-P13 input schema mismatch"
+    ]
+  },
+  "scopeCreepAssessment": "No MCP Server source/document/behavior/protocol/architecture change. Closure is contract repository only."
+}

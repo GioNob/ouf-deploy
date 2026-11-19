@@ -1,0 +1,68 @@
+{
+  "schema": "ouf.managed-csv-control-image-plan-case.v1",
+  "captureRoot": "/etc/ouf/deploy-snapshots/managed-csv-recovery-control-inputs-20261027-v1/reconcile-retained-peer-binding-v1",
+  "captureHash": "14a96f782827c8948fabd857d9e3958cbe588a38dc9bd0968c342467f09ca9c1",
+  "captureResult": {
+    "acquisitionsExecuted": 0,
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "captureAccounting": {
+      "cumulativeCounts": {
+        "bytes": 1153763,
+        "engineGets": 27,
+        "privateMetadataReads": 8
+      },
+      "currentScopeCounts": {
+        "bytes": 670087,
+        "engineGets": 27,
+        "privateMetadataReads": 5
+      },
+      "retainedConsumedScopeCounts": {
+        "bytes": 483676,
+        "engineGets": 0,
+        "privateMetadataReads": 3
+      }
+    },
+    "cohortSize": 13,
+    "complete": true,
+    "containerWrites": 0,
+    "contextPath": "/etc/ouf/deploy-snapshots/managed-csv-recovery-control-inputs-20261027-v1/reconcile-retained-peer-binding-v1",
+    "counts": {
+      "bytes": 670087,
+      "engineGets": 27,
+      "privateMetadataReads": 5
+    },
+    "credentialFileReads": 0,
+    "currentApplicationPolicyOrLabelsObserved": false,
+    "currentJobOrBudgetStateObserved": false,
+    "historicalAuthorityReused": false,
+    "humanBudgetsGranted": 0,
+    "imageImports": 0,
+    "inputsHash": "14a96f782827c8948fabd857d9e3958cbe588a38dc9bd0968c342467f09ca9c1",
+    "installationSigningKeysRead": false,
+    "newGrantsGranted": 0,
+    "oauthRequests": 0,
+    "releaseAcceptance": false,
+    "resumes": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.managed-csv-recovery-input-capture-result.v1",
+    "sourceActivations": 0,
+    "sqlSessions": 0,
+    "status": "MANAGED_CSV_RECOVERY_CURRENT_INPUTS_CAPTURED_NOT_AUTHORIZED",
+    "targetRoles": [
+      "onboarding",
+      "mcp"
+    ]
+  },
+  "retainedReviewPath": "/etc/ouf/deploy-snapshots/onboarding-profile-recovery-v36-apply-564038c5d487f0a4-v1/review.json",
+  "retainedReviewHash": "27355a4ee5c18d59e029d394aa871c6c34cd79103146cd95f15db4f6fd306a07",
+  "outputRoot": "/etc/ouf/deploy-snapshots/managed-csv-control-image-plan-14a96f782827c894-v1",
+  "helperHashes": {
+    "image_custody": "5d0fc0edb1ebd9386326eadbbee08f2cf0a9fd1e122940c0661b5ac5e3655ed8",
+    "plan_helper": "09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd",
+    "retained_mac": "cb5dbbee4a80ce71860dfe5d32362a662d98898c58fd82009e69c5eb6ac1f7ce",
+    "stage_image": "63badba653890bb82cde89aabd9277017b52f10f644a6a8cf6918d997fe1d36f"
+  },
+  "targetApplyAuthorized": false
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "ouf.acquisition-redaction-image-plan-target-receipt.v1",
+  "source": "OWNER_SUPPLIED_VPS_TRANSCRIPT",
+  "receivedDuring": "2026-10-26",
+  "result": {
+    "acquisitionsExecuted": 0,
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": true,
+    "containerWrites": 0,
+    "contextPath": "/etc/ouf/deploy-snapshots/acquisition-redaction-image-plan-9bbe7298c2eff0be-v1",
+    "continuationAuthorized": false,
+    "counts": {
+      "ciZipReads": 2,
+      "containerWrites": 0,
+      "engineGets": 0,
+      "imageImports": 0,
+      "nativeArchivesPrepared": 2,
+      "privateMetadataReads": 2
+    },
+    "credentialFileReads": 0,
+    "currentApplicationPolicyOrLabelsObserved": false,
+    "currentRuntimeRevalidated": false,
+    "executionEntryQualified": false,
+    "frozenPlanHash": "d5ce0235cd9014656ceaacd0dcc984a5ff0db93e2be3cac9e67c18fc42f156e2",
+    "imageImports": 0,
+    "inputsHash": "9bbe7298c2eff0be51bf943919c9db0044413256b08efe620a503f79aef4d7d2",
+    "installationSigningKeysRead": false,
+    "nativeImages": {
+      "ingestion": {
+        "archiveBytes": 276520960,
+        "configurationImageId": "sha256:5b4a0465a24c801d4703d54c89660f1528ad028ff83660067c41be7dbe23565a",
+        "derivedArchiveSha256": "c0a94d767f3a666c93a465bbe4201fc6647a77be55f92b82b20ce19ae4b43280",
+        "nativeImageId": "sha256:01bb94a698d9632a27abc490d298db345111c04be04fc9d4d97a758edc080385"
+      },
+      "udp": {
+        "archiveBytes": 257003520,
+        "configurationImageId": "sha256:7d3686b795e8086fe24e6f3749eaf1ee0d6fb9976adb57c4abbcfd3ee0e6a82f",
+        "derivedArchiveSha256": "a26d65e46da9f27eef9bd8fa076742ef1e28dde2a97fa90af2a13b0d80fc72c3",
+        "nativeImageId": "sha256:8e54e2d33bab7209bb5718bb565662600816066170a763f849d560764226df9d"
+      }
+    },
+    "nativePlanHash": "f11dbe659ba4367a1d873a8938f43546a6851bbdcbb907eb588cb1323122f5fd",
+    "oauthRequests": 0,
+    "registryWorkerTouched": false,
+    "releaseAcceptance": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.acquisition-redaction-image-plan-prepared.v1",
+    "sourceActivations": 0,
+    "sqlSessions": 0,
+    "status": "ACQUISITION_REDACTION_IMAGES_AND_PLAN_PREPARED_NOT_AUTHORIZED"
+  },
+  "exit": 0,
+  "deliveryExit": 0,
+  "directory": "/home/oufadmin/ouf-redaction-plan-delivery.be68IBiz",
+  "log": "/home/oufadmin/ouf-redaction-plan-delivery.be68IBiz/bootstrap.log",
+  "protectedCode": "/usr/local/lib/ouf-acquisition-redaction-image-plan-16133fe2870bdb8c/prepare.py",
+  "sourceClosureRoot0400ChecksumsReported": true,
+  "imagesMatchIndependentContainerdQualification": true,
+  "scopeConsumed": true,
+  "repeatAllowed": false,
+  "privatePlanReadByChat": false,
+  "targetRuntimeChanged": false
+}

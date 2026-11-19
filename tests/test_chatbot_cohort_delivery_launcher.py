@@ -6,6 +6,7 @@ deploy. GitHub and sudo transports are never called. No real package acceptance,
 HUMAN approval, installation authority or target mutation is represented here.
 """
 import base64
+import ast
 import copy
 import hashlib
 import importlib.util
@@ -31,6 +32,7 @@ from pathlib import Path
 p=argparse.ArgumentParser()
 for name in ("source-directory","package-archive","staging-directory","source-commit","preparation-source-hash"):
     p.add_argument("--"+name,required=True)
+p.add_argument("--prepare-only",action="store_true",default=argparse.SUPPRESS)
 a=p.parse_args();source=Path(a.source_directory);stage=Path(a.staging_directory)
 members={str(v.relative_to(stage)):{"mode":oct(stat.S_IMODE(v.stat().st_mode)),
     "uid":v.stat().st_uid,"gid":v.stat().st_gid,"sha256":hashlib.sha256(v.read_bytes()).hexdigest()}
@@ -46,6 +48,52 @@ def encoded(value): return json.dumps(value, sort_keys=True, separators=(',', ':
 
 
 class DeliveryLauncherTest(unittest.TestCase):
+    def test_published_capsule_and_package_pins_match_the_actual_delivered_sources(self):
+        raw = (ROOT/launcher.CAPSULE_PATH).read_bytes()
+        self.assertEqual(sha(raw), launcher.CAPSULE_SHA256)
+        manifest = json.loads(raw)
+        selected = json.loads((ROOT/'tools/chatbot_file_cohort/preparation_sources.json').read_bytes())['files']
+        self.assertEqual(set(manifest['files']), set(selected))
+        # A published capsule remains immutable when a shared library gains a new
+        # separately qualified profile. Compare its exact retained source snapshot,
+        # never rewrite historical hashes to authorize today's different bytes.
+        historical = {'tools/chatbot_file_cohort/authorization.py':
+            ROOT/'tests/fixtures/historical-cohort/authorization-8987585e7cf4.py.txt',
+            'tools/chatbot_file_cohort/human_session.py':
+            ROOT/'tests/fixtures/historical-cohort/human-session-11dc195dfa0f.py.txt'}
+        for name, expected in manifest['files'].items():
+            with self.subTest(member=name):
+                self.assertEqual(sha(historical.get(name,ROOT/name).read_bytes()), expected)
+        def constants(path):
+            return {node.targets[0].id:ast.literal_eval(node.value)
+                for node in ast.parse((ROOT/path).read_bytes()).body
+                if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)
+                and node.targets[0].id in ('RUN', 'PRODUCER', 'ARCHIVE')}
+        expected = {'RUN':launcher.PACKAGE_RUN, 'PRODUCER':launcher.PACKAGE_COMMIT,
+                    'ARCHIVE':launcher.PACKAGE_SHA256}
+        self.assertEqual(constants('tools/chatbot_file_cohort/entry.py'), expected)
+        self.assertEqual(constants('tests/qualify_chatbot_cohort_artifact.py'), expected)
+        self.assertEqual(sha((ROOT/'scripts/download-file-cohort.py').read_bytes()), launcher.DOWNLOADER_SHA256)
+
+    def test_retained_capsule_accepts_its_exact_snapshot_and_rejects_the_new_profile(self):
+        cases = [
+            ('authorization.py', 'authorization-8987585e7cf4.py.txt',
+             '8987585e7cf471f4906830cc1f7ffa0c2a25331bea9ddd982dcd4ddc3bbb346b'),
+            ('human_session.py', 'human-session-11dc195dfa0f.py.txt',
+             '11dc195dfa0fa63a35e9ba3bf0b6a65fd73e3d76be7efa9fed8b4d2f852e8d75'),
+        ]
+        for member, fixture, expected in cases:
+            with self.subTest(member=member):
+                name = 'tools/chatbot_file_cohort/' + member
+                old = (ROOT/'tests/fixtures/historical-cohort'/fixture).read_bytes()
+                current = (ROOT/name).read_bytes()
+                manifest = {'schema':'ouf.chatbot-file-preparation-capsule.v1','files':{name:expected}}
+                self.assertEqual(sha(old), expected)
+                self.assertNotEqual(sha(current), expected)
+                self.assertEqual(self.select(self.archive([('repo/'+name,old,tarfile.REGTYPE)]),manifest),{name:old})
+                with self.assertRaisesRegex(ValueError,'SOURCE_HASH_MISMATCH'):
+                    self.select(self.archive([('repo/'+name,current,tarfile.REGTYPE)]),manifest)
+
     def setUp(self):
         self.assertEqual((os.geteuid(), os.getegid()), (0, 0), 'native root-custody fixture required')
         self.tmp = tempfile.TemporaryDirectory(dir=ROOT, prefix='launcher-fixture-')
@@ -86,9 +134,9 @@ class DeliveryLauncherTest(unittest.TestCase):
         self.assertEqual(launcher.ROOT_BODY.count(selected), 1)
         return launcher.ROOT_BODY.replace(selected, 'base=Path('+repr(str(self.base))+')')
 
-    def run_root(self, payload=None, expected=None, flags=('-I', '-B', '-S')):
+    def run_root(self, payload=None, expected=None, flags=('-I', '-B', '-S'),prepare_only=False):
         return self.real_run([sys.executable, *flags, '-c',
-            'EXPECTED='+repr(expected or self.expected)+'\n'+self.root_body(), COMMIT, str(self.package)],
+            'EXPECTED='+repr(expected or self.expected)+'\nPREPARE_ONLY='+repr(prepare_only)+'\n'+self.root_body(), COMMIT, str(self.package)],
             input=self.payload() if payload is None else payload, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, timeout=15)
 
@@ -150,6 +198,13 @@ class DeliveryLauncherTest(unittest.TestCase):
         for path in (stage, *(p for p in stage.rglob('*') if p.is_dir())):
             self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o700)
         self.assertEqual(list(stage.rglob('*.pyc')), [])
+
+    def test_prepare_only_flag_reaches_isolated_root_entry(self):
+        result=self.run_root(prepare_only=True)
+        self.assertEqual(result.returncode,0,result.stderr.decode())
+        receipt=json.loads(result.stdout)
+        self.assertTrue(receipt['arguments']['prepare_only'])
+        self.assertFalse(receipt['targetApplyAuthorized'])
 
     def test_root_hash_complete_set_and_source_bytes_are_rechecked_before_any_entry(self):
         self.assert_denied(self.run_root(expected='0'*64), 'ROOT_CAPSULE_MANIFEST_HASH_MISMATCH')

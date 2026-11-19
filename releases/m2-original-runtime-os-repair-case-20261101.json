@@ -1,0 +1,62 @@
+{
+  "allOriginalRootfsLayersMustRemainPrefix": true,
+  "allowedPackageVersionChanges": [
+    "brotli-libs",
+    "musl",
+    "musl-utils"
+  ],
+  "applicationSourceRebuildAllowed": false,
+  "architecture": "x86_64",
+  "branch": "v3.24",
+  "currentRoleCaseReplacementAllowed": false,
+  "findings": [
+    "CVE-2026-111497",
+    "CVE-2026-107891"
+  ],
+  "fixedPackages": [
+    {
+      "bytes": 429435,
+      "filename": "brotli-libs-1.2.1-r0.apk",
+      "package": "brotli-libs",
+      "sha256": "62a7e37e43bbfc1f8525a00ad2125fd5897135dc93b849733884cb78ffd8e26c",
+      "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/brotli-libs-1.2.1-r0.apk",
+      "version": "1.2.1-r0"
+    },
+    {
+      "bytes": 415466,
+      "filename": "musl-1.2.6-r3.apk",
+      "package": "musl",
+      "sha256": "e142255d0fa397f14318996bc10378093dcc069dc3dd1b6818c8f28a789c21da",
+      "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/musl-1.2.6-r3.apk",
+      "version": "1.2.6-r3"
+    },
+    {
+      "bytes": 13598,
+      "filename": "musl-utils-1.2.6-r3.apk",
+      "package": "musl-utils",
+      "sha256": "47263d05842c5e12d01e0369e5b5bea51733323501c00ca21968a5102de137ca",
+      "url": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/musl-utils-1.2.6-r3.apk",
+      "version": "1.2.6-r3"
+    }
+  ],
+  "originalApplicationJarBytesMustRemainUnchanged": true,
+  "originalPackageVersions": {
+    "brotli-libs": "1.2.0-r1",
+    "musl": "1.2.6-r2",
+    "musl-utils": "1.2.6-r2"
+  },
+  "originalRoleCaseFile": "releases/m2-current-core-artifact-origins-20261101.json",
+  "purpose": "UNSELECTED_SECURITY_REPAIR_CANDIDATES_ONLY",
+  "releaseAcceptance": false,
+  "roles": [
+    "ingestion",
+    "udp"
+  ],
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-original-runtime-os-repair-case.v1",
+  "targetApplyAuthorized": false,
+  "vendorReferences": [
+    "https://security.alpinelinux.org/vuln/CVE-2026-111497",
+    "https://security.alpinelinux.org/vuln/CVE-2026-107891"
+  ]
+}

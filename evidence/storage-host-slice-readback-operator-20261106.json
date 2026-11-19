@@ -1,0 +1,73 @@
+{
+  "acceptanceCreditAdded": 0,
+  "automaticReplayAllowed": false,
+  "automaticRestartAllowed": false,
+  "commandReceipts": 19,
+  "credentialBodiesRead": 0,
+  "currentLiveStateProven": false,
+  "filesRead": 3,
+  "filesWritten": 0,
+  "intentReceipts": 0,
+  "localInputSha256": {
+    "claim.private.json": "622a6a5291c8b9e6ef85bae175d92b23b207b99ad3ec9b1b4d954d0c71d7645b",
+    "command-001.private.json": "9ba599f8ea1938ff3c79c13bab7b2ca5b314dfe199ecf4e47df0a4677b0da67f",
+    "reviewed-draft.private.json": "c4d59b3894f59d6679f11d48dbec2a3d7f5cbba6c8aa89bbee78b63e86475d0a"
+  },
+  "otherScopeEntries": 0,
+  "preMutationJournalConsistent": true,
+  "providerRequests": 0,
+  "replyReceipts": 0,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.storage-host-slice-held-readback.v1",
+  "serviceObservations": [
+    {
+      "controlGroupPresentAtAttempt": false,
+      "escapedSliceValidatorAccepted": true,
+      "legacyValidatorAccepted": true,
+      "slice": "system.slice",
+      "sliceSha256": "ade97982a63b9f649aa12fa4eb0b1d4e2784d51c0b6b2bf4a28299f839e3e99e",
+      "unit": "ouf-gateway-policy-token.service"
+    },
+    {
+      "controlGroupPresentAtAttempt": false,
+      "escapedSliceValidatorAccepted": true,
+      "legacyValidatorAccepted": true,
+      "slice": "system.slice",
+      "sliceSha256": "ade97982a63b9f649aa12fa4eb0b1d4e2784d51c0b6b2bf4a28299f839e3e99e",
+      "unit": "ouf-ingestion-policy-token.service"
+    },
+    {
+      "controlGroupPresentAtAttempt": false,
+      "escapedSliceValidatorAccepted": true,
+      "legacyValidatorAccepted": true,
+      "slice": "system.slice",
+      "sliceSha256": "ade97982a63b9f649aa12fa4eb0b1d4e2784d51c0b6b2bf4a28299f839e3e99e",
+      "unit": "ouf-onboarding-identity-token.service"
+    },
+    {
+      "controlGroupPresentAtAttempt": false,
+      "escapedSliceValidatorAccepted": true,
+      "legacyValidatorAccepted": false,
+      "slice": "system-ouf\\x2dpolicy\\x2dtoken.slice",
+      "sliceSha256": "7a725f9f09f11b823d03e20bb1798ecff6a15cf4e29a09e12b4db8010fdc67ad",
+      "unit": "ouf-policy-token@onboarding.service"
+    },
+    {
+      "controlGroupPresentAtAttempt": false,
+      "escapedSliceValidatorAccepted": true,
+      "legacyValidatorAccepted": false,
+      "slice": "system-ouf\\x2dpolicy\\x2dtoken.slice",
+      "sliceSha256": "7a725f9f09f11b823d03e20bb1798ecff6a15cf4e29a09e12b4db8010fdc67ad",
+      "unit": "ouf-policy-token@udp.service"
+    },
+    {
+      "controlGroupPresentAtAttempt": true,
+      "escapedSliceValidatorAccepted": true,
+      "legacyValidatorAccepted": true,
+      "slice": "system.slice",
+      "sliceSha256": "ade97982a63b9f649aa12fa4eb0b1d4e2784d51c0b6b2bf4a28299f839e3e99e",
+      "unit": "ouf-registry-token-7cb59501000058b5dc5030ad.service"
+    }
+  ],
+  "status": "RETAINED_HOST_JOURNAL_READ"
+}

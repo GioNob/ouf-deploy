@@ -1,9 +1,6 @@
 name: OUF signed discovery target stage
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [.github/workflows/signed-discovery-target-stage.yml, scripts/stage-signed-discovery.py]
 permissions:
   contents: read
 concurrency:

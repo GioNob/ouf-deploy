@@ -1,0 +1,580 @@
+diff --git a/weed/util/httpdown/http_down.go b/weed/util/httpdown/http_down.go
+--- a/weed/util/httpdown/http_down.go
++++ b/weed/util/httpdown/http_down.go
+@@ -14,9 +14,6 @@
+ 	"sync"
+ 	"syscall"
+ 	"time"
+-
+-	"github.com/facebookgo/clock"
+-	"github.com/facebookgo/stats"
+ )
+ 
+ const (
+@@ -33,15 +30,16 @@
+ 	// serving loop. You must call Wait after calling Serve or ListenAndServe.
+ 	Wait() error
+ 
+-	// Stop stops the listener. It will block until all connections have been
+-	// closed.
++	// Stop stops the listener and drains active connections, then attempts
++	// forced closure within the configured stop and kill budgets.
+ 	Stop() error
+ }
+ 
+ // HTTP defines the configuration for serving a http.Server. Multiple calls to
+-// Serve or ListenAndServe can be made on the same HTTP instance. The default
+-// timeouts of 1 minute each result in a maximum of 2 minutes before a Stop()
+-// returns.
++// Serve or ListenAndServe can be made on the same HTTP instance. The stop and
++// kill phases default to 1 minute each. Listener/connection Close methods and
++// Stats/ConnState callbacks must return promptly; the phase budgets cannot
++// interrupt arbitrary blocking implementations of those interfaces.
+ type HTTP struct {
+ 	// StopTimeout is the duration before we begin force closing connections.
+ 	// Defaults to 1 minute.
+@@ -54,11 +52,7 @@
+ 	KillTimeout time.Duration
+ 
+ 	// Stats is optional. If provided, it will be used to record various metrics.
+-	Stats stats.Client
+-
+-	// Clock allows for testing timing related functionality. Do not specify this
+-	// in production code.
+-	Clock clock.Clock
++	Stats Stats
+ 
+ 	// when set CertFile and KeyFile, the httpDown will start a http with TLS.
+ 	// Files containing a certificate and matching private key for the
+@@ -81,16 +75,11 @@
+ 	if killTimeout == 0 {
+ 		killTimeout = defaultKillTimeout
+ 	}
+-	klock := h.Clock
+-	if klock == nil {
+-		klock = clock.New()
+-	}
+ 
+ 	ss := &server{
+ 		stopTimeout:  stopTimeout,
+ 		killTimeout:  killTimeout,
+ 		stats:        h.Stats,
+-		clock:        klock,
+ 		oldConnState: s.ConnState,
+ 		listener:     l,
+ 		server:       s,
+@@ -126,7 +115,7 @@
+ 	}
+ 	l, err := net.Listen("tcp", addr)
+ 	if err != nil {
+-		stats.BumpSum(h.Stats, "listen.error", 1)
++		bumpSum(h.Stats, "listen.error", 1)
+ 		return nil, err
+ 	}
+ 	if s.TLSConfig != nil {
+@@ -139,8 +128,7 @@
+ type server struct {
+ 	stopTimeout time.Duration
+ 	killTimeout time.Duration
+-	stats       stats.Client
+-	clock       clock.Clock
++	stats       Stats
+ 
+ 	oldConnState func(net.Conn, http.ConnState)
+ 	server       *http.Server
+@@ -184,8 +172,9 @@
+ 		close(s.active)
+ 		close(s.idle)
+ 		close(s.closed)
+-		close(s.stop)
+-		close(s.kill)
++		// Do not close the control channels: a timeout may become ready at the
++		// same instant as stopDone. A late kill selects stopDone instead of
++		// sending to a closed channel.
+ 	}()
+ 
+ 	var stopDone chan struct{}
+@@ -210,7 +199,8 @@
+ 
+ 	// setup a ticker to report various values every minute. if we don't have a
+ 	// Stats implementation provided, we Stop it so it never ticks.
+-	statsTicker := s.clock.Ticker(time.Minute)
++	statsTicker := time.NewTicker(time.Minute)
++	defer statsTicker.Stop()
+ 	if s.stats == nil {
+ 		statsTicker.Stop()
+ 	}
+@@ -242,7 +232,7 @@
+ 				c.Close()
+ 			}
+ 		case c := <-s.closed:
+-			stats.BumpSum(s.stats, "conn.closed", 1)
++			bumpSum(s.stats, "conn.closed", 1)
+ 			decConn(c)
+ 			delete(conns, c)
+ 
+@@ -271,7 +261,7 @@
+ 
+ 		case killDone := <-s.kill:
+ 			// force close all connections
+-			stats.BumpSum(s.stats, "kill.conn.count", float64(len(conns)))
++			bumpSum(s.stats, "kill.conn.count", float64(len(conns)))
+ 			for c := range conns {
+ 				c.Close()
+ 			}
+@@ -288,7 +278,7 @@
+ }
+ 
+ func (s *server) serve() {
+-	stats.BumpSum(s.stats, "serve", 1)
++	bumpSum(s.stats, "serve", 1)
+ 	switch {
+ 	case s.certFile != "" || s.keyFile != "":
+ 		s.serveErr <- s.server.ServeTLS(s.listener, s.certFile, s.keyFile)
+@@ -312,8 +302,8 @@
+ 
+ func (s *server) Stop() error {
+ 	s.stopOnce.Do(func() {
+-		defer stats.BumpTime(s.stats, "stop.time").End()
+-		stats.BumpSum(s.stats, "stop", 1)
++		defer bumpTime(s.stats, "stop.time").End()
++		bumpSum(s.stats, "stop", 1)
+ 
+ 		// first disable keep-alive for new connections
+ 		s.server.SetKeepAlivesEnabled(false)
+@@ -329,27 +319,39 @@
+ 		// wait for stop
+ 		select {
+ 		case <-stopDone:
+-		case <-s.clock.After(s.stopTimeout):
+-			defer stats.BumpTime(s.stats, "kill.time").End()
+-			stats.BumpSum(s.stats, "kill", 1)
+-
+-			// stop timed out, wait for kill
+-			killDone := make(chan struct{})
+-			s.kill <- killDone
+-			select {
+-			case <-killDone:
+-			case <-s.clock.After(s.killTimeout):
+-				// kill timed out, give up
+-				stats.BumpSum(s.stats, "kill.timeout", 1)
+-			}
++		case <-time.After(s.stopTimeout):
++			defer bumpTime(s.stats, "kill.time").End()
++			bumpSum(s.stats, "kill", 1)
++
++			// Include publication to the manager in the kill budget; it may
++			// already have drained, or still be closing another connection.
++			s.killWithinBudget(stopDone)
+ 		}
+ 
+ 		if closeErr != nil && !isUseOfClosedError(closeErr) {
+-			stats.BumpSum(s.stats, "listener.close.error", 1)
++			bumpSum(s.stats, "listener.close.error", 1)
+ 			s.stopErr = closeErr
+ 		}
+ 	})
+ 	return s.stopErr
++}
++
++func (s *server) killWithinBudget(stopDone <-chan struct{}) {
++	deadline := time.NewTimer(s.killTimeout)
++	defer deadline.Stop()
++	killDone := make(chan struct{})
++	select {
++	case <-stopDone:
++		return
++	case s.kill <- killDone:
++		select {
++		case <-killDone:
++		case <-deadline.C:
++			bumpSum(s.stats, "kill.timeout", 1)
++		}
++	case <-deadline.C:
++		bumpSum(s.stats, "kill.timeout", 1)
++	}
+ }
+ 
+ func isUseOfClosedError(err error) bool {
+diff --git a/weed/util/httpdown/stats.go b/weed/util/httpdown/stats.go
+new file mode 100644
+--- /dev/null
++++ b/weed/util/httpdown/stats.go
+@@ -0,0 +1,28 @@
++package httpdown
++
++// Stats is the optional observation boundary used by HTTP. Implementations
++// must not block serving or shutdown. The former external Client interface
++// satisfies this smaller interface without an adapter; histogram and prefix
++// machinery are not used by this package.
++type Stats interface {
++	BumpAvg(key string, value float64)
++	BumpSum(key string, value float64)
++	BumpTime(key string) interface{ End() }
++}
++
++func bumpSum(client Stats, key string, value float64) {
++	if client != nil {
++		client.BumpSum(key, value)
++	}
++}
++
++type noOpTimer struct{}
++
++func (noOpTimer) End() {}
++
++func bumpTime(client Stats, key string) interface{ End() } {
++	if client != nil {
++		return client.BumpTime(key)
++	}
++	return noOpTimer{}
++}
+diff --git a/weed/util/httpdown/http_down_test.go b/weed/util/httpdown/http_down_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/util/httpdown/http_down_test.go
+@@ -0,0 +1,344 @@
++package httpdown
++
++import (
++	"crypto/ecdsa"
++	"crypto/elliptic"
++	"crypto/rand"
++	"crypto/tls"
++	"crypto/x509"
++	"crypto/x509/pkix"
++	"encoding/pem"
++	"io"
++	"math/big"
++	"net"
++	"net/http"
++	"strings"
++	"sync"
++	"sync/atomic"
++	"testing"
++	"time"
++)
++
++type observedListener struct {
++	net.Listener
++	closed chan struct{}
++	once   sync.Once
++}
++
++func (l *observedListener) Close() error {
++	err := l.Listener.Close()
++	l.once.Do(func() { close(l.closed) })
++	return err
++}
++
++func boundedSignal(t *testing.T, ch <-chan struct{}, name string) {
++	t.Helper()
++	select {
++	case <-ch:
++	case <-time.After(3 * time.Second):
++		t.Fatal("timeout: " + name)
++	}
++}
++
++func startFixture(t *testing.T, config HTTP, hs *http.Server) (*server, *observedListener) {
++	t.Helper()
++	l, err := net.Listen("tcp", "127.0.0.1:0")
++	if err != nil {
++		t.Fatal(err)
++	}
++	listener := &observedListener{Listener: l, closed: make(chan struct{})}
++	s := config.Serve(hs, listener).(*server)
++	t.Cleanup(func() { hs.Close(); s.Stop() })
++	return s, listener
++}
++
++func fixtureClient(t *testing.T) *http.Client {
++	t.Helper()
++	transport := &http.Transport{Proxy: nil}
++	t.Cleanup(transport.CloseIdleConnections)
++	return &http.Client{Transport: transport, Timeout: 3 * time.Second}
++}
++
++func stopAsync(s Server) <-chan error {
++	done := make(chan error, 1)
++	go func() { done <- s.Stop() }()
++	return done
++}
++
++func stopResult(t *testing.T, ch <-chan error) {
++	t.Helper()
++	select {
++	case err := <-ch:
++		if err != nil {
++			t.Fatal(err)
++		}
++	case <-time.After(3 * time.Second):
++		t.Fatal("Stop did not finish")
++	}
++}
++
++func assertNoAccept(t *testing.T, address string) {
++	t.Helper()
++	c, err := net.DialTimeout("tcp", address, 200*time.Millisecond)
++	if err == nil {
++		c.Close()
++		t.Fatal("listener accepted after Stop closed it")
++	}
++}
++
++func TestHTTPDownDrainsInflightRequestAndRejectsNewConnections(t *testing.T) {
++	entered, release := make(chan struct{}), make(chan struct{})
++	var releaseOnce sync.Once
++	defer releaseOnce.Do(func() { close(release) })
++	hs := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		close(entered)
++		<-release
++		io.WriteString(w, "completed")
++	})}
++	s, l := startFixture(t, HTTP{StopTimeout: 2 * time.Second, KillTimeout: time.Second}, hs)
++	result := make(chan error, 1)
++	go func() {
++		r, e := fixtureClient(t).Get("http://" + l.Addr().String())
++		if e == nil {
++			defer r.Body.Close()
++			b, re := io.ReadAll(r.Body)
++			e = re
++			if e == nil && string(b) != "completed" {
++				e = io.ErrUnexpectedEOF
++			}
++		}
++		result <- e
++	}()
++	boundedSignal(t, entered, "handler entry")
++	stopped := stopAsync(s)
++	boundedSignal(t, l.closed, "listener close")
++	assertNoAccept(t, l.Addr().String())
++	select {
++	case <-stopped:
++		t.Fatal("Stop returned before active request drained")
++	default:
++	}
++	releaseOnce.Do(func() { close(release) })
++	select {
++	case err := <-result:
++		if err != nil {
++			t.Fatal(err)
++		}
++	case <-time.After(3 * time.Second):
++		t.Fatal("response not drained")
++	}
++	stopResult(t, stopped)
++	if err := s.Wait(); err != nil {
++		t.Fatal(err)
++	}
++}
++
++func TestHTTPDownGraceTimeoutForceClosesActiveTCPAndCancelsRequest(t *testing.T) {
++	entered, cancelled := make(chan struct{}), make(chan struct{})
++	hs := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { close(entered); <-r.Context().Done(); close(cancelled) })}
++	s, l := startFixture(t, HTTP{StopTimeout: 40 * time.Millisecond, KillTimeout: time.Second}, hs)
++	client := fixtureClient(t)
++	result := make(chan error, 1)
++	go func() {
++		r, e := client.Get("http://" + l.Addr().String())
++		if r != nil {
++			r.Body.Close()
++		}
++		result <- e
++	}()
++	boundedSignal(t, entered, "active request")
++	started := time.Now()
++	stopResult(t, stopAsync(s))
++	if elapsed := time.Since(started); elapsed < 30*time.Millisecond || elapsed > 2*time.Second {
++		t.Fatalf("grace budget: %s", elapsed)
++	}
++	boundedSignal(t, cancelled, "request cancellation after forced TCP close")
++	select {
++	case err := <-result:
++		if err == nil {
++			t.Fatal("force closed request succeeded")
++		}
++	case <-time.After(3 * time.Second):
++		t.Fatal("client still blocked")
++	}
++	assertNoAccept(t, l.Addr().String())
++}
++
++func TestHTTPDownIdleConnectionClosedImmediatelyAndConnStateForwarded(t *testing.T) {
++	idle := make(chan struct{}, 1)
++	var active, closed atomic.Int32
++	hs := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { io.WriteString(w, "ok") }), ConnState: func(_ net.Conn, state http.ConnState) {
++		switch state {
++		case http.StateActive:
++			active.Add(1)
++		case http.StateIdle:
++			idle <- struct{}{}
++		case http.StateClosed:
++			closed.Add(1)
++		}
++	}}
++	s, l := startFixture(t, HTTP{StopTimeout: 2 * time.Second, KillTimeout: time.Second}, hs)
++	r, err := fixtureClient(t).Get("http://" + l.Addr().String())
++	if err != nil {
++		t.Fatal(err)
++	}
++	io.Copy(io.Discard, r.Body)
++	r.Body.Close()
++	boundedSignal(t, idle, "idle connection")
++	started := time.Now()
++	stopResult(t, stopAsync(s))
++	if time.Since(started) > time.Second {
++		t.Fatal("idle connection consumed grace period")
++	}
++	if active.Load() != 1 || closed.Load() != 1 {
++		t.Fatalf("callbacks active=%d closed=%d", active.Load(), closed.Load())
++	}
++}
++
++func TestHTTPDownNewConnectionWithoutRequestIsForceClosed(t *testing.T) {
++	accepted := make(chan struct{}, 1)
++	hs := &http.Server{ConnState: func(_ net.Conn, state http.ConnState) {
++		if state == http.StateNew {
++			accepted <- struct{}{}
++		}
++	}}
++	s, l := startFixture(t, HTTP{StopTimeout: 30 * time.Millisecond, KillTimeout: time.Second}, hs)
++	c, err := net.DialTimeout("tcp", l.Addr().String(), time.Second)
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer c.Close()
++	boundedSignal(t, accepted, "new TCP connection")
++	stopResult(t, stopAsync(s))
++	c.SetReadDeadline(time.Now().Add(time.Second))
++	var b [1]byte
++	if _, err = c.Read(b[:]); err == nil {
++		t.Fatal("new connection remained readable")
++	}
++}
++
++func TestHTTPDownStopConcurrentAndRepeatedIsIdempotent(t *testing.T) {
++	s, l := startFixture(t, HTTP{StopTimeout: time.Second, KillTimeout: time.Second}, &http.Server{})
++	results := make(chan error, 16)
++	for i := 0; i < 16; i++ {
++		go func() { results <- s.Stop() }()
++	}
++	for i := 0; i < 16; i++ {
++		stopResult(t, results)
++	}
++	stopResult(t, stopAsync(s))
++	boundedSignal(t, l.closed, "listener closed")
++	assertNoAccept(t, l.Addr().String())
++}
++
++func TestHTTPDownAlreadyDrainedNegativeTimeoutDoesNotSendToClosedControlChannel(t *testing.T) {
++	for i := 0; i < 100; i++ {
++		s, _ := startFixture(t, HTTP{StopTimeout: -time.Nanosecond, KillTimeout: -time.Nanosecond}, &http.Server{})
++		stopResult(t, stopAsync(s))
++	}
++}
++
++func TestHTTPDownKillPublicationConsumesItsFiniteBudget(t *testing.T) {
++	stats := &recordingStats{sums: map[string]float64{}, times: map[string]int{}}
++	s := &server{killTimeout: 20 * time.Millisecond, kill: make(chan chan struct{}), stats: stats}
++	started := time.Now()
++	s.killWithinBudget(make(chan struct{})) // No manager is available to receive.
++	if elapsed := time.Since(started); elapsed < 15*time.Millisecond || elapsed > time.Second {
++		t.Fatalf("kill publication budget %s", elapsed)
++	}
++	stats.mu.Lock()
++	defer stats.mu.Unlock()
++	if stats.sums["kill.timeout"] != 1 {
++		t.Fatal("kill timeout was not recorded")
++	}
++}
++
++func TestHTTPDownTimeoutDefaultsAndNegativeImmediateSemantics(t *testing.T) {
++	for _, tc := range []struct {
++		name       string
++		config     HTTP
++		stop, kill time.Duration
++	}{
++		{"zero-default", HTTP{}, time.Minute, time.Minute},
++		{"configured", HTTP{StopTimeout: 30 * time.Second, KillTimeout: 5 * time.Minute}, 30 * time.Second, 5 * time.Minute},
++		{"negative-immediate", HTTP{StopTimeout: -time.Nanosecond, KillTimeout: -time.Nanosecond}, -time.Nanosecond, -time.Nanosecond},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			s, _ := startFixture(t, tc.config, &http.Server{})
++			if s.stopTimeout != tc.stop || s.killTimeout != tc.kill {
++				t.Fatal("timeout semantics changed")
++			}
++			stopResult(t, stopAsync(s))
++		})
++	}
++}
++
++type recordingStats struct {
++	mu    sync.Mutex
++	sums  map[string]float64
++	times map[string]int
++}
++type recordingTimer struct {
++	owner *recordingStats
++	key   string
++}
++
++func (r *recordingStats) BumpAvg(string, float64) {}
++func (r *recordingStats) BumpSum(k string, v float64) {
++	r.mu.Lock()
++	defer r.mu.Unlock()
++	r.sums[k] += v
++}
++func (r *recordingStats) BumpTime(k string) interface{ End() } { return recordingTimer{r, k} }
++func (r recordingTimer) End()                                  { r.owner.mu.Lock(); defer r.owner.mu.Unlock(); r.owner.times[r.key]++ }
++
++func TestHTTPDownOptionalStatsRecordStopWithoutExternalClient(t *testing.T) {
++	stats := &recordingStats{sums: map[string]float64{}, times: map[string]int{}}
++	s, _ := startFixture(t, HTTP{Stats: stats}, &http.Server{})
++	stopResult(t, stopAsync(s))
++	stopResult(t, stopAsync(s))
++	stats.mu.Lock()
++	defer stats.mu.Unlock()
++	if stats.sums["stop"] != 1 || stats.sums["serve"] != 1 || stats.times["stop.time"] != 1 {
++		t.Fatalf("stats %#v %#v", stats.sums, stats.times)
++	}
++}
++
++func TestHTTPDownTLSGetCertificateSourcePreserved(t *testing.T) {
++	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
++	if err != nil {
++		t.Fatal(err)
++	}
++	template := &x509.Certificate{SerialNumber: big.NewInt(1), Subject: pkix.Name{CommonName: "fixture"}, NotBefore: time.Now().Add(-time.Hour), NotAfter: time.Now().Add(time.Hour), IPAddresses: []net.IP{net.ParseIP("127.0.0.1")}, KeyUsage: x509.KeyUsageDigitalSignature, ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth}}
++	der, err := x509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)
++	if err != nil {
++		t.Fatal(err)
++	}
++	keyDer, err := x509.MarshalECPrivateKey(key)
++	if err != nil {
++		t.Fatal(err)
++	}
++	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der})
++	cert, err := tls.X509KeyPair(certPEM, pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: keyDer}))
++	if err != nil {
++		t.Fatal(err)
++	}
++	var requested atomic.Int32
++	hs := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { io.WriteString(w, "tls-ok") }), TLSConfig: &tls.Config{MinVersion: tls.VersionTLS12, GetCertificate: func(*tls.ClientHelloInfo) (*tls.Certificate, error) { requested.Add(1); return &cert, nil }}}
++	s, l := startFixture(t, HTTP{StopTimeout: time.Second, KillTimeout: time.Second}, hs)
++	roots := x509.NewCertPool()
++	roots.AppendCertsFromPEM(certPEM)
++	transport := &http.Transport{TLSClientConfig: &tls.Config{RootCAs: roots, MinVersion: tls.VersionTLS12}, Proxy: nil}
++	defer transport.CloseIdleConnections()
++	client := &http.Client{Transport: transport, Timeout: 3 * time.Second}
++	r, err := client.Get("https://" + l.Addr().String())
++	if err != nil {
++		t.Fatal(err)
++	}
++	b, err := io.ReadAll(r.Body)
++	r.Body.Close()
++	if err != nil || strings.TrimSpace(string(b)) != "tls-ok" || requested.Load() == 0 {
++		t.Fatal("TLS certificate callback failed")
++	}
++	stopResult(t, stopAsync(s))
++}

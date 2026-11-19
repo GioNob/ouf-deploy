@@ -1,0 +1,62 @@
+{
+  "schema": "ouf.ingestion401-deployed-jar-target-summary.v1",
+  "sourceReceiptSchema": "ouf.ingestion401-deployed-jar-read.v1",
+  "selectedFieldsOnly": true,
+  "contextPath": "/etc/ouf/deploy-snapshots/installation-binding-apply-execution-w8nfc1ko",
+  "complete": true,
+  "readOnly": true,
+  "jarSha256": "58199f4be91c4e99ac4b5fd2ac863303f4154257b88750d095c62409ab8f7630",
+  "jarBytes": 66173314,
+  "applicationJarCoveredByMount": false,
+  "applicationJarPathQualifiedAgainstCurrentEntrypoint": true,
+  "ingestionReadOnlyRootFilesystem": false,
+  "currentIngestionGenerationVerified": true,
+  "engineArchiveGetRequests": 1,
+  "engineGetRequests": 2,
+  "classesLoadedByCurrentJvmProven": false,
+  "applicationClasses": [
+    {
+      "class": "IngestionIamSecurityConfiguration",
+      "present": true,
+      "sha256": "68edae63eb5d011f380f7a5757c997897e56778732d2cc514caf1a8672ec6ebd",
+      "conditionalOnIamEnabled": true
+    },
+    {
+      "class": "IngestionIamDisabledConfiguration",
+      "present": true,
+      "sha256": "818f36a66bf5de0b1521683efab29010cd8763aaabfb590532cccd388fa44fc0",
+      "conditionalOnIamDisabled": true,
+      "denyAllPresent": true
+    },
+    {
+      "class": "IngestionIamSecurityConfiguration$TrustedPrincipalBridge",
+      "present": true,
+      "sha256": "7de96e2e29e4c3bf4f40ebbe11ef277707c73151a17d22ecc33eda688c848a14"
+    },
+    {
+      "class": "TrustedAuthorizationContext",
+      "present": true,
+      "sha256": "44d89236ba640313e3ea28498b66f70575eb29d41c9a5d50a0d2ea5546b55a0b"
+    },
+    {
+      "class": "OperationalAwarenessApi",
+      "present": true,
+      "sha256": "92655d818e53658ccc1e85ee8a88f72fa45ddf307cb5704d8c70816865d62734"
+    }
+  ],
+  "springBootSecurityVersion": "4.0.8",
+  "springSecurityVersion": "7.0.7",
+  "iamConfigurationDefaultFalse": true,
+  "securityAutoConfigurationExclusionMentioned": false,
+  "credentialFilesOpened": 0,
+  "humanCredentialJournalsRead": 0,
+  "oauthRequests": 0,
+  "gatewayWrites": 0,
+  "containerLifecycleOperations": 0,
+  "journalWrites": 0,
+  "specific401CauseProven": false,
+  "lastReportedOAuthAttempts": 259,
+  "maximumCumulativeOAuthAttempts": 264,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}

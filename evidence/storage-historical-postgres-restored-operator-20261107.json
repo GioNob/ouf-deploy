@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.storage-historical-postgres-restored-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_VPS_RESULT",
+  "programCommit": "5ae47689adeaf39f241527c9364a2c0c9e9b0b9b",
+  "decisionReference": "GIOVANNI-NONPROD-ISOLATED-POSTGRES-RESTORE-20261107-01",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "additionalContainerRuns": 7,
+    "coldControlStateVerified": true,
+    "databasesOpened": 7,
+    "databasesWithSampleRow": 7,
+    "g3Complete": false,
+    "historicalRestoreOnly": true,
+    "minioRestored": false,
+    "networkMode": "none",
+    "priorContainerRuns": 3,
+    "privateManifestSha256": "58484aea53aefeb1fff390578ba6562efabffd914caf64944eee7c9d9a2e0d79",
+    "reusedExtractedCluster": true,
+    "schema": "ouf.storage-retained-postgres-restore.v1",
+    "status": "ISOLATED_HISTORICAL_POSTGRES_RESTORED"
+  },
+  "acceptanceCreditAdded": 0
+}

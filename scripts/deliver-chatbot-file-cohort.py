@@ -20,11 +20,11 @@ import sys
 import tarfile
 
 REPOSITORY='GioNob/ouf-deploy'
-CAPSULE_PATH='releases/chatbot-file-preparation-capsule-20261014.json'
-CAPSULE_SHA256='a3416824e4a0aa0927238c3c8c1803abf47996aed99c8b5f19386b8309543a28'
-PACKAGE_COMMIT='f31a653ee1da56b29a6171c159f9c601523735b9'
-PACKAGE_RUN=38536134146
-PACKAGE_SHA256='be55c6eda4485a4c90da9872f63e2533abe21c741c4926ecc129626cc01530f9'
+CAPSULE_PATH='releases/chatbot-file-preparation-capsule-20261015.json'
+CAPSULE_SHA256 = '258ffc9a16f02542895d0558948ddaf6b5c3021e2c158d4344193bfa4ae89d39'
+PACKAGE_COMMIT='8bff54a52a0ce15daccaf2aee932004f106dd178'
+PACKAGE_RUN=38584614991
+PACKAGE_SHA256='144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300'
 DOWNLOADER_SHA256='f62b16e337e3871a62dc4117a0bd0b0f04a012ae63db62031dabcc723b8a2000'
 MAX_SOURCE_BYTES=8*1024**2
 
@@ -179,15 +179,18 @@ put(attempt_fd,'preparation-manifest.json',manifest_raw)
 source=stage/'source';entry=source/'scripts/install-chatbot-file-cohort.py'
 attempt=stage/attempt_name
 for fd in reversed(held):os.close(fd)
-os.execv(sys.executable,[sys.executable,'-I','-B','-S',str(entry),'--source-directory',str(source),
+entry_args=[sys.executable,'-I','-B','-S',str(entry),'--source-directory',str(source),
     '--package-archive',archive,'--staging-directory',str(attempt),'--source-commit',commit,
-    '--preparation-source-hash',EXPECTED])
+    '--preparation-source-hash',EXPECTED]
+if globals().get('PREPARE_ONLY',False) is True:entry_args.append('--prepare-only')
+os.execv(sys.executable,entry_args)
 '''
 
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--source-commit',required=True)
     parser.add_argument('--package-archive',help='Existing exact qualified ZIP to verify and reuse without downloading it again')
+    parser.add_argument('--prepare-only',action='store_true',help='Exit at the complete private review before issuing runtime authority')
     args=parser.parse_args()
     require(re.fullmatch('[0-9a-f]{40}',args.source_commit) and re.fullmatch('[0-9a-f]{64}',CAPSULE_SHA256),
             'FROZEN_EXACT_DELIVERY_SOURCE_REQUIRED')
@@ -236,7 +239,7 @@ def main():
                      'files':{name:base64.b64encode(raw).decode() for name,raw in sources.items()}})
     require(len(payload)<=12*1024**2,'BOUNDED_ROOT_SOURCE_TRANSFER_REQUIRED')
     print('Pacchetto e sorgenti verificati. Avvio preparazione completa e revisione sul VPS.',flush=True)
-    root='EXPECTED='+repr(CAPSULE_SHA256)+'\n'+ROOT_BODY
+    root='EXPECTED='+repr(CAPSULE_SHA256)+'\nPREPARE_ONLY='+repr(args.prepare_only)+'\n'+ROOT_BODY
     result=subprocess.run(['sudo','--','/usr/bin/python3','-I','-B','-S','-c',root,
         args.source_commit,str(package_archive)],input=payload,check=False)
     return result.returncode

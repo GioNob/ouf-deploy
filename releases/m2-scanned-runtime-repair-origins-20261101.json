@@ -1,0 +1,62 @@
+{
+  "candidateSelectionChanged": false,
+  "freshScanHighCriticalUnknownFindings": 0,
+  "originalApplicationBytesAndMigrationsUnchanged": true,
+  "publisherProvenanceEmitted": true,
+  "publisherProvenanceIndependentlyVerified": false,
+  "releaseAcceptance": false,
+  "roles": {
+    "ingestion": {
+      "applicationJarSha256": "54424047880b6c96c512efb55dbd1c241e98180f4d679c342760980385f771f1",
+      "applicationSourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "artifactId": 13088374953,
+      "candidateArchiveSha256": "95cefdd95347a0cfadce39e172e798f3935b2b7052dd6ebed27cd9db0d90dce6",
+      "changedPackageNames": [
+        "brotli-libs",
+        "musl",
+        "musl-utils"
+      ],
+      "configurationImageId": "sha256:29c6d44ce546cd55cc65db6d881e2f8496891b20708c63ff05f8daf0ddfbf4c8",
+      "nativeImageId": "sha256:e3d397d1fe394b49bb639618c7ba41c64ee4492f805c43634fff46f1d2e13f89",
+      "provenanceSha256": "81b1802caa45fc8fa19a2e15db3f1db819a2c959cc391460fecaba4e7547f23f",
+      "repairProofSha256": "a3d6e5356f709cf9f26dbd78387fb34c36d1c1cd359436039fca467e57345e85",
+      "repository": "GioNob/ouf-deploy",
+      "runId": 41319954409,
+      "runtimeAuthorityIssued": false,
+      "scanInputArchiveSha256": "c5e5d631a733cc94a69864aa1867b23691aa68fff773594a374325673e13289f",
+      "scanSha256": "a9b0ca26e9de1a3a8dc204b60bf296a78ca2f8b5f980c39074a40c7aba6cc5d0",
+      "selectedForInstallation": false,
+      "targetApplyAuthorized": false,
+      "zipBytes": 279117140,
+      "zipSha256": "93a55649ab8ce4ce08ab854e5a47f26f9ee8a34533b539769c0fd82939c6d057"
+    },
+    "udp": {
+      "applicationJarSha256": "15818fe09317c909271d05198cc6bc5e55558268427dac3e43e14259b308ed84",
+      "applicationSourceCommit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "artifactId": 13089430534,
+      "candidateArchiveSha256": "58afae66abce2ac5495e9d71f5b14d516789d1ef85a244d56ff772a410972e01",
+      "changedPackageNames": [
+        "brotli-libs",
+        "musl",
+        "musl-utils"
+      ],
+      "configurationImageId": "sha256:e227e9cf58019b6b04be5dfbb3500a8b94d78eba634b57b306acf6c1631888c2",
+      "nativeImageId": "sha256:9beae4c9829dbce0bef59856a142a5abb1283dec188dbb56dceaf18751993831",
+      "provenanceSha256": "ff5e15ff565583653c342fa9f63fb630e1c5b99b4a8e182d3d948d8a5e933f5e",
+      "repairProofSha256": "d70f3369b9e2f5b48819598fd6ed4a8330b838c7136cf35abf994ea6f08d7e55",
+      "repository": "GioNob/ouf-deploy",
+      "runId": 41319954409,
+      "runtimeAuthorityIssued": false,
+      "scanInputArchiveSha256": "c919c669cdcec8ba64ddb23e6294acfd946270b6f61b6f96473a36e48d81382f",
+      "scanSha256": "a2d976200ce70b2bb58145e2358f5f8d6807468c98884916db287bb94925ae36",
+      "selectedForInstallation": false,
+      "targetApplyAuthorized": false,
+      "zipBytes": 241933081,
+      "zipSha256": "1d703c8b76470488821586b8fccb30cfd3bf4222c7815aba525d99a66d6f2f43"
+    }
+  },
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-scanned-runtime-repair-artifact-origins.v1",
+  "sourceCommit": "efec6d2b199bd49fa2938d08b3e5eae8b850f437",
+  "targetApplyAuthorized": false
+}

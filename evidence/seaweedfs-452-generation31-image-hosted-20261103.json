@@ -1,0 +1,276 @@
+{
+  "buildEvidenceArtifact": {
+    "bytes": 635422,
+    "digest": "sha256:17679a13f4c40c14b9abd10e56c5ea28823a56e2df1f33363546fe032a91dc7a",
+    "id": 13269112444,
+    "path": "evidence/artifacts/seaweedfs-452-generation31-build-evidence-41712811559.zip",
+    "verification": {
+      "additionalTestCounts": {
+        "compat-tests.jsonl": {
+          "pass_packages": 1,
+          "pass_tests": 3
+        },
+        "kafka-compile.jsonl": {
+          "pass_packages": 4,
+          "skip_packages": 2
+        },
+        "nested-iam-regressions.jsonl": {
+          "pass_packages": 1,
+          "pass_tests": 18
+        },
+        "root-iam-regressions.jsonl": {
+          "pass_packages": 2,
+          "pass_tests": 24
+        }
+      },
+      "checksumManifestSha256": "5e9b70a66535df82234bd14049b22b82cf4053ccc2e8cf66ee697ddbc9cff03c",
+      "compiledGraphMatches": true,
+      "files": {
+        "build-info.txt": "fec35d57dbf5614c2422f0dc897ca6c692093a1d071c8fcce51f81d16258496d",
+        "compat-receipt.json": "08febd174ebe46f5ede3ca86f1d38ff7980ea2ed7db9323c440adf6eec4ef45f",
+        "compat-tests.jsonl": "f6805fe5b85c70799cbc195dbf06f5360a8abf8893f28bbc590c359842cd51d1",
+        "compat-tests.jsonl.stderr": "d96e5048f4593fd81bf9a7f31f5e27e59daa66629893ca49d336dacb1607e453",
+        "denied-elastic-rclone.log": "6f7702c92ac8d26b4a859de2e5f30541bf5ebad8842529abd67890001cee3677",
+        "denied-elastic.log": "6f7702c92ac8d26b4a859de2e5f30541bf5ebad8842529abd67890001cee3677",
+        "denied-kafka-openbao-vault.log": "f11803ba23977e0db8db52c6696d533d405d2181b337e70476e2a6ff3bb3a3fa",
+        "denied-kafka.log": "6bca47fdfffbaf2756501ba0128bb5505ee02f796d2fe6a499332eabe447c970",
+        "denied-openbao.log": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+        "denied-rclone.log": "19efbfc1192c284b61fc2e17b1ebf7205cce8ee5627ff0628ac25e3ba80fde53",
+        "denied-vault.log": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+        "kafka-compile.jsonl": "0634f47cbf4cad1757fe5e3189652d25bc22bf785a249c55a7822bcaa599a7e7",
+        "kafka-compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "kafka-tidy.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "kafka-tidy.stderr": "f712556a447fd4a95f5f846b9eaf9fece388653b8b142c766937f13c0d377291",
+        "nested-iam-regressions.jsonl": "1e0a544454d2b46cd02c874dd9de507d609e6f9ba09d25401df1f8ded8860743",
+        "nested-iam-regressions.stderr": "a4ab218bbf91629bd1802003ce366fc5e555ab7f22454ebb068c579893382b84",
+        "nested-lockfiles-before.sha256": "ab7d0be061b4078e76ea252b31d59041035030b286fc1c92cd31f490c14148e6",
+        "ordered-patch-paths.txt": "083f8605478d0fe5a53418fcff622c0d11926cc23e59f8151c3e67e4eaea3a5d",
+        "patch-stat.txt": "74ce96af5e244a9ba0552adc6767c5c3bf22960b8cc8da1c8b4e03d9475ce84d",
+        "patched-source-tree.txt": "59e8712619615b2e2151feaf143a0b66457454a01b13d3be9e85f34f7166e5f4",
+        "patches-sha256.txt": "abe2fc3371b04aca883adf5d73984437408d7cf363eb6be6a35e7bc04ace7ad4",
+        "production-deps.txt": "b5463bc0795b319fa6195640a419bd369fd5c9638ab99b153ba3aae7eb336a08",
+        "race-counts.json": "f465e0f5ba7ec8bbea05b0a84462d2ea87ad6a4ff47b0ee7b5d7618fa913e950",
+        "race.jsonl": "dda328d7d642bac20975ba786719b3851cfdabdea45a6e8afa5b610ac5eb825c",
+        "race.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "regression-counts.json": "b294a35b3f05a93cbb672523f284d284446ac55d6e38fde97381addb547ae5d6",
+        "regressions.jsonl": "f068de428b6444ab626bcb2790746795b072feb130a948b91e0aa4004a47b506",
+        "regressions.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "remaining-direct-sdk-v1-importers.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "root-iam-regressions.jsonl": "a9b85dfdc9bbd5792040280d89c7946bcf9387ea4bb9bb1e9cb257baaa3a8399",
+        "root-iam-regressions.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "root-lockfiles-sha256.txt": "204f9df5863788069313608c5cddd99a9db1d49c18bd167710bd0cb3146a0c4f",
+        "root-module-graph.txt": "97e8b0ab27a020e79b05c952b091f25ce8ace095d075229f762a8b055bdf4f0a",
+        "root-modules.txt": "62a705884da9c05b13bfbec489d817c811dcda0ea4f2ed54942f9ea1d3408365",
+        "server-focused-counts.json": "bff672dd562d65069234d39872ab6cc22ef0803c0497917c7bdb14ced4f1a1aa",
+        "server-focused.jsonl": "cb0fc251db39a0009a1527f6d04615f261910639bd54879e986810a3852c853a",
+        "server-focused.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "storage-focused-counts.json": "97c6d5c0c83262826cf3539aa3ee9ded0bab09c65c5e440db5d7aeaebaeac129",
+        "storage-focused.jsonl": "ddf8233d165d134a6dcd05322ffe7b47f7db9ae989e1298c6c8526cc6b06c31f",
+        "storage-focused.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tidy.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tidy.stderr": "cada2c6a38b252327d88036c13fc646b1a543a830b88ab16861c97c2a99a7f5e",
+        "upstream-source-sha.txt": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93"
+      },
+      "nestedKafkaTidyEmpty": true,
+      "orderedPatches": 31,
+      "patchedTreeMatches": true,
+      "profiles": {
+        "main": {
+          "counts": {
+            "pass_packages": 30,
+            "pass_tests": 6371,
+            "skip_packages": 4,
+            "skip_tests": 5
+          },
+          "environmentConditionalOutcomes": {},
+          "logSha256": "f068de428b6444ab626bcb2790746795b072feb130a948b91e0aa4004a47b506",
+          "profile": "main",
+          "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+          "targetOperations": 0,
+          "terminalPackagesSha256": "0a413b22aaf0ff0bdaa3fd57128d72c38fcdb465d750293130b8ab33960ac972",
+          "terminalTestsSha256": "ac5404abdc4137518911561b1af7f19e69bb805591d1023ddff55423ea135f0e"
+        },
+        "race": {
+          "counts": {
+            "pass_packages": 2,
+            "pass_tests": 25
+          },
+          "environmentConditionalOutcomes": {},
+          "logSha256": "dda328d7d642bac20975ba786719b3851cfdabdea45a6e8afa5b610ac5eb825c",
+          "profile": "race",
+          "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+          "targetOperations": 0,
+          "terminalPackagesSha256": "8c9b7d821a314333db697beef89ce06c92c06cb500543c773d2e1232490b7a6f",
+          "terminalTestsSha256": "e103b2d1a615669d91637c79ea894c5827c6e35bb4d15b22163ab95819b5c745"
+        },
+        "server": {
+          "counts": {
+            "pass_packages": 1,
+            "pass_tests": 7
+          },
+          "environmentConditionalOutcomes": {},
+          "logSha256": "cb0fc251db39a0009a1527f6d04615f261910639bd54879e986810a3852c853a",
+          "profile": "server",
+          "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+          "targetOperations": 0,
+          "terminalPackagesSha256": "4a9e99d596111f0d7e05a0bc625ee4067ef915dde2b577ed18497cca0e5a4201",
+          "terminalTestsSha256": "284bed3612f12af2a94b6a6c412b2f67f09beffd89a8196331bd2b478bbe3230"
+        },
+        "storage": {
+          "counts": {
+            "pass_packages": 1,
+            "pass_tests": 58
+          },
+          "environmentConditionalOutcomes": {
+            "TestRebuildIdx_UnwritableIdxDirSkipsOnlyThisVolume": "pass",
+            "TestSortedFileNeedleMap_HoldsNoDescriptors": "pass"
+          },
+          "logSha256": "ddf8233d165d134a6dcd05322ffe7b47f7db9ae989e1298c6c8526cc6b06c31f",
+          "profile": "storage",
+          "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+          "targetOperations": 0,
+          "terminalPackagesSha256": "211d61f322c3c35d86ec1413455e0d69533c0343227db95bef23f2037cd84c91",
+          "terminalTestsSha256": "6ad75c5b9bf23def24c0a1891393a5b4ee28d737782bcef9dba46cf5291b2ff3"
+        }
+      },
+      "rootTidyEmpty": true,
+      "schema": "ouf.generation31-build-raw-verification.v1",
+      "status": "RAW_HASHES_AND_TEST_IDENTITIES_VERIFIED",
+      "targetOperations": 0,
+      "verifiedFiles": 44
+    }
+  },
+  "buildManifestSha256": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719",
+  "byteReadback": {
+    "archiveSha256": "ab13f8b17a2c7405f32f1cb6c858b3780cffd554823e069f98bcef5938aaab43",
+    "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "checksumMembersVerified": 20,
+    "generation": 31,
+    "imageConfigDigest": "sha256:31b99e914181a85a3e0ca3ca6b66621827df298235b215ccf1d0042fd4653771",
+    "ociManifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484",
+    "patchedSourceTree": "c2b7d4bd32316af277a76fb21c09894004c24b4b",
+    "producerCommit": "5d0d456bec5073192b8a1a86e35bb0dcbd97a6b5",
+    "producerRunId": 41712811559,
+    "publisherSignatureVerifiedByThisScript": false,
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "schema": "ouf.seaweedfs-452-generation-image-readback.v1",
+    "sdkLifecycle": "AWS_SDK_V1_ABSENT",
+    "sourceFilesVerified": 45,
+    "targetOperations": 0,
+    "vulnerabilitySubgate": "PASS_RAW"
+  },
+  "candidateArchiveExpiresAt": "2027-02-01T20:28:00Z",
+  "candidateArchiveStorage": "RAW_190496220_BYTES_VERIFIED_IN_WORKSPACE_AND_GITHUB_ARTIFACT_NOT_COMMITTED",
+  "candidateLockPath": "releases/seaweedfs-452-generation31-candidate-lock-20261103.json",
+  "candidateLockSha256": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba",
+  "checkedAt": "2026-11-03T20:41:32.342201+00:00",
+  "dependencyMaintenance": {
+    "allDependenciesMaintained": false,
+    "status": "OPEN"
+  },
+  "freshScanSha256": "12cc59d4fbf7c555b3cb89288f86e02f1b328c62a786313ba833ae678ddcaccb",
+  "freshSpdxSha256": "f4ed5d86baaca81bb7d0c37c58dca4348d2ac2f1b79873600d3a233a528b0b36",
+  "generation": 31,
+  "independentReadback": {
+    "assessmentReproduced": true,
+    "bytes": 30441,
+    "digest": "sha256:c266081e2ffc7371cf71ee9b1f5aeab00c5795d9b573b27e74a6dd9604c86ce8",
+    "expiresAt": "2027-02-01T20:28:00Z",
+    "id": 13268882990,
+    "locallyByteReverified": true,
+    "ociReconstructed": true,
+    "path": "evidence/artifacts/seaweedfs-452-generation31-image-readback-41712811559.zip",
+    "publisherSignatureVerifiedByHostedJob": true,
+    "verifiedInternalChecksums": 20,
+    "verifiedSourceFiles": 45
+  },
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 126184989766,
+      "name": "qualify-standard-profile"
+    },
+    {
+      "conclusion": "success",
+      "id": 126184990226,
+      "name": "verify"
+    },
+    {
+      "conclusion": "success",
+      "id": 126190379106,
+      "name": "runtime_candidate"
+    },
+    {
+      "conclusion": "success",
+      "id": 126190884664,
+      "name": "independent_image_readback"
+    }
+  ],
+  "localCryptographicSignatureVerificationClaimed": false,
+  "modifiedMplSource": {
+    "archiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+    "manifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+  },
+  "phaseBHostedCohort": "PENDING",
+  "phaseBLocalCohort": {
+    "path": "evidence/seaweedfs-452-generation31-cohort-local-20261103.json",
+    "sha256": "b9d72ddeee6f96c392604008f6f9b4b1f4bffaef56142851fe3cea3bbf37c798",
+    "status": "PASS_LOCAL_REPLAY_NOT_HOSTED_B_OR_RUNTIME"
+  },
+  "preservedFiles": {
+    "evidence/seaweedfs-452-generation31-image-hosted-20261103/build-verification.json": {
+      "bytes": 7472,
+      "sha256": "0144347cd7be7efd3296fb0103c55a6549cb4bdf561a14982dd00a0c5b61feba"
+    },
+    "evidence/seaweedfs-452-generation31-image-hosted-20261103/fresh-image-scan.json": {
+      "bytes": 130206,
+      "sha256": "12cc59d4fbf7c555b3cb89288f86e02f1b328c62a786313ba833ae678ddcaccb"
+    },
+    "evidence/seaweedfs-452-generation31-image-hosted-20261103/github-metadata.json": {
+      "bytes": 15642,
+      "sha256": "d607490d22987d3dd85860fec36d548ca483dba67165becd911dc8874fb04a64"
+    },
+    "evidence/seaweedfs-452-generation31-image-hosted-20261103/image.spdx.json": {
+      "bytes": 368320,
+      "sha256": "f4ed5d86baaca81bb7d0c37c58dca4348d2ac2f1b79873600d3a233a528b0b36"
+    },
+    "evidence/seaweedfs-452-generation31-image-hosted-20261103/version-smoke.txt": {
+      "bytes": 31,
+      "sha256": "8ba0650a9e1ffb8194bf2aa492023b651c034c1c1f1d31920b79002f0fa2c0d4"
+    }
+  },
+  "producerArtifact": {
+    "bytes": 190496220,
+    "digest": "sha256:ab13f8b17a2c7405f32f1cb6c858b3780cffd554823e069f98bcef5938aaab43",
+    "expiresAt": "2027-02-01T20:28:00Z",
+    "id": 13269461421,
+    "retention": "TEMPORARY_CI"
+  },
+  "producerCommit": "5d0d456bec5073192b8a1a86e35bb0dcbd97a6b5",
+  "publisherSignatureVerifiedByHostedReader": true,
+  "rawSeverityCounts": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "LOW": 0,
+    "MEDIUM": 0,
+    "UNKNOWN": 0
+  },
+  "releaseAdmitted": false,
+  "runAttempt": 1,
+  "runId": 41712811559,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41712811559",
+  "runtimeAuthorityIssued": false,
+  "runtimeLabs31": "PENDING",
+  "scanAndSpdxInventoriesMatchBinary": true,
+  "scannedBinaryComponents": 236,
+  "schema": "ouf.seaweedfs-generation31-hosted-image.v1",
+  "spdxRecords": 238,
+  "status": "HOSTED_PASS_BYTES_REVERIFIED_NOT_ADMITTED",
+  "targetOperations": 0
+}

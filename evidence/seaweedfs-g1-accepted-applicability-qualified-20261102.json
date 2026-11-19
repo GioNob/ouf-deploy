@@ -1,0 +1,106 @@
+{
+  "schema": "ouf.security-accepted-applicability-dossier.v1",
+  "date": "2026-11-02",
+  "status": "OWNER_ACCEPTED_EXACT_DISPOSITION_QUALIFIED",
+  "decisionRef": "urn:ouf:decision:OUF-SW-G1-20261102-01",
+  "decision": "evidence/seaweedfs-g1-applicability-owner-decision-20261102.json",
+  "vex": "evidence/seaweedfs-g1-openvex-20261102.json",
+  "source": "214c0e8a9681340fa71ea7f03ed6875a015097b6",
+  "runId": 41519037628,
+  "jobId": 125529976902,
+  "conclusion": "success",
+  "artifact": {
+    "id": 13177635436,
+    "bytes": 62216,
+    "sha256": "643d19062002ddb3b684c094922e7fe6b77b21f4da69836c4c4efee2356d80ab",
+    "retainedArchive": "evidence/artifacts/seaweedfs-accepted-applicability-41519037628.zip",
+    "checksumMembers": 16,
+    "checksumSubjectSha256": "f67963a8e15afc885849957b15b350114d8a3f630dcf344a040a01c0ba4a0f22",
+    "attestationAvailable": true,
+    "assessmentAttestationSignatureIndependentlyVerified": false
+  },
+  "qualification": {
+    "schema": "ouf.accepted-applicability-qualification.v1",
+    "status": "PASS",
+    "producerSource": "214c0e8a9681340fa71ea7f03ed6875a015097b6",
+    "runId": 41519037628,
+    "tests": 9,
+    "originalPublisherAuthenticated": true,
+    "freshOfficialAdvisoryChecked": true,
+    "oldSourceClosureUnchanged": 28,
+    "enclosedExecutablesExecuted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "overallSwG1": "OPEN"
+  },
+  "assessment": {
+    "schema": "ouf.security-accepted-applicability-assessment.v1",
+    "status": "ACCEPTED_APPLICABILITY_ONLY",
+    "decisionRef": "urn:ouf:decision:OUF-SW-G1-20261102-01",
+    "binarySha256": "bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74",
+    "rawCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "UNKNOWN": 1,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "unresolvedCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "UNKNOWN": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "classifiedFindings": [
+      {
+        "target": "weed",
+        "id": "GO-2026-5932",
+        "severity": "UNKNOWN",
+        "status": "not_affected",
+        "justification": "vulnerable_code_not_present"
+      }
+    ],
+    "rawGate": "HELD",
+    "vulnerabilitySubgate": "PASS_WITH_EXACT_DISPOSITION",
+    "overallSwG1": "OPEN",
+    "allEightMigrationGatesRemainOpen": true,
+    "sourceReportModified": false,
+    "scannerIgnoreAdded": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "releaseAcceptance": false,
+    "migrationReady": false,
+    "evidenceArchiveSha256": "00a3559a38bcf84f122863e2aaa0e31122452603462735c3f16ea126a10fab4f",
+    "advisoryFreshlyFetchedByCi": true,
+    "provenanceBasis": "FROZEN_INDEPENDENT_READBACK_41507064288_OF_EXACT_PRODUCER_41504703184",
+    "newSignatureVerificationPerformedByThisScript": false,
+    "originalProposalUnchanged": true,
+    "targetOperations": 0
+  },
+  "authority": {
+    "ownerConversationApprovalRecorded": true,
+    "technicalAssessmentBy": "Codex",
+    "thsDecisionClaimed": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "releaseAcceptance": false,
+    "migrationReady": false
+  },
+  "invariants": {
+    "originalProposalUnchanged": true,
+    "rawReportsUnchanged": true,
+    "all28PriorSourcesUnchanged": true,
+    "oldRuntimeScopesConsumed": 17,
+    "cumulativeEngineGets": 52,
+    "newTargetOperations": 0
+  },
+  "overallSwG1": "OPEN",
+  "allEightMigrationGatesAnd21AcceptanceTests": "OPEN",
+  "remainingG1": [
+    "final OCI image and OS/binary/client scans",
+    "complete SBOM and licence obligations",
+    "durable release artifact custody and publisher chain",
+    "final deployment cohort compatibility and admission"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "ouf.onboarding-seaweedfs-switch-prepared.v1",
+  "date": "2026-11-07",
+  "status": "LOCAL_CHECKS_PASSED_VPS_PENDING",
+  "prerequisiteReceipt": "evidence/onboarding-current-copy-aligned-operator-20261107.json",
+  "scope": "SAME_IMAGE_ONBOARDING_BINDING_ONLY",
+  "copyHelperSha256": "13ee203be367eaf0c8679d163ca5b664c4b91ac5100efd61146e1c97c61e4fcc",
+  "localValidation": {
+    "pythonSyntax": "PASS",
+    "replacementSequenceFixture": {
+      "cases": 6,
+      "result": "PASS",
+      "nativeDocker": false
+    },
+    "truststore": {
+      "result": "PASS",
+      "realKeytool": true,
+      "javaVersion": "17.0.20",
+      "existingCertificatesRetained": 125,
+      "syntheticCaAdded": 1,
+      "vpsJava21Tested": false
+    },
+    "runtimeBindingFixture": {
+      "result": "PASS",
+      "checks": [
+        "Select replacement container",
+        "Reject incomplete handover",
+        "Reject running retired owner"
+      ]
+    }
+  },
+  "effects": {
+    "vpsExecuted": false,
+    "applicationHttpUploadTested": false,
+    "applicationBindingsChanged": false,
+    "functionalMilestonesClosed": 0
+  },
+  "sourceReferences": [
+    "https://github.com/moby/moby/blob/v25.0.0/api/swagger.yaml",
+    "https://github.com/moby/moby/blob/v25.0.0/daemon/container_operations.go"
+  ],
+  "files": [
+    {
+      "path": "scripts/switch-onboarding-to-seaweedfs-20261107.py",
+      "sha256": "1048b02e5ce9890d809af1a96973120ec5f48513ae58567f426dd0501089dc58"
+    },
+    {
+      "path": "scripts/ouf-runtime-20261107.py",
+      "sha256": "1ad2fdf7aebeecf64a194893357f929f979c0d0ff67bb8c411b4e6da78b8c5cc"
+    },
+    {
+      "path": "tests/check_onboarding_storage_switch.py",
+      "sha256": "50ee214a5650082f38261e20953cef12973bb7e4f2a025d214a2bb324e6f72fe"
+    },
+    {
+      "path": "tests/check_onboarding_storage_truststore.py",
+      "sha256": "fb001d1e319e70c7dc75fa3420d6e2dabf7c3df06b8cfaa4ad2f5dde5cfd3fac"
+    },
+    {
+      "path": "tests/check_runtime_storage_binding.py",
+      "sha256": "88936993a64c58631c14831c3fbadc8d3ce3150fd618c743a6143c9696404cc0"
+    }
+  ]
+}

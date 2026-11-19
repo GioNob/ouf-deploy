@@ -1,0 +1,52 @@
+{
+  "schema": "ouf.storage-g0-held-readback-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "readbackSource": "0036de5bd6f41cfd37024d4de9eb2765093dc9b7",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "claimSha256": "5bf27b0cd677efa3c4fb101e8431c84f6abcc622d1f28bc34ae5ee5a91ff6688",
+    "consumedEngineGets": 1,
+    "credentialFilesRead": 0,
+    "cumulativeEngineGets": 53,
+    "decisionSha256": "4a474ef3c8a67742f7148afff4b1d8da2691a1f603d9d767dcd6fbf887dce3d4",
+    "executionInputSha256": "aa002304872db4408f1910f76f18c8634e372d619428e2fb746f3e9754e86664",
+    "expectedScopeMembersOnly": true,
+    "filesModified": 0,
+    "g0Complete": false,
+    "historyReceiptsPreserved": 17,
+    "metadataObservation": {
+      "allBoundRoleDirectoryNamesPresent": true,
+      "boundRoleDirectoryNamesPresent": 13,
+      "containerConfigurationFilesRead": 0,
+      "directoryNamesMatchingContainerIds": 145,
+      "liveEngineContainerCountProven": false,
+      "otherEntries": 0,
+      "path": "/var/lib/docker/containers",
+      "providerRequests": 0,
+      "scanComplete": true,
+      "status": "LOCAL_DIRECTORY_NAMES_OBSERVED",
+      "symlinkEntries": 0
+    },
+    "operationId": "seaweedfs-g0-20261106-v1",
+    "priorControls": 17,
+    "priorEngineGets": 52,
+    "providerRequests": 0,
+    "resultMatchesReported": true,
+    "resultSha256": "09f6c8791f35a459d6325a9d42d808acd72d7bbee23e0f54ff7d68a7224f63c2",
+    "runtimeAuthorityIssued": false,
+    "s3AndDbPhasesNotReachedAccordingToLocalReceipts": true,
+    "schema": "ouf.storage-g0-held-readback.v1",
+    "scopeConsumed": true,
+    "status": "HELD_ATTEMPT_BOUND_NO_REPLAY_AUTHORITY"
+  },
+  "interpretation": {
+    "localMetadataDirectories": 145,
+    "all13BoundRoleDirectoriesPresent": true,
+    "liveContainerCountProven": false,
+    "oldAttemptMatchedAndLocallyBound": true,
+    "newCollectionAuthorized": false,
+    "acceptanceCreditAdded": 0
+  }
+}

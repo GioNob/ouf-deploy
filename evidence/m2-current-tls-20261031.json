@@ -1,0 +1,108 @@
+{
+  "schema": "ouf.discovery-current-tls-source-evidence.v1",
+  "date": "2026-10-31",
+  "sourceCommit": "539332cd7c0423ef2cd8f7ce258530ac1c214b20",
+  "sourceTree": "80d5f8605422bcbca22db5c040154be9f01fe529",
+  "qualification": {
+    "runId": 41226588399,
+    "finalLogsRead": true,
+    "tests": 67,
+    "suites": 10,
+    "failures": 0,
+    "skipped": 0,
+    "resourceWarnings": 0,
+    "protocolJob": {
+      "jobId": 124611909546,
+      "suites": [
+        {
+          "name": "runningRegistry",
+          "tests": 12,
+          "seconds": 1.552
+        },
+        {
+          "name": "currentCohort",
+          "tests": 7,
+          "seconds": 0.378
+        },
+        {
+          "name": "currentInstalledWorker",
+          "tests": 7,
+          "seconds": 95.025
+        },
+        {
+          "name": "currentOperationalWorker",
+          "tests": 5,
+          "seconds": 66.344
+        },
+        {
+          "name": "currentDatabases",
+          "tests": 7,
+          "seconds": 1.689
+        },
+        {
+          "name": "currentTlsTrust",
+          "tests": 6,
+          "seconds": 0.452
+        },
+        {
+          "name": "pausedFrame",
+          "tests": 8,
+          "seconds": 0.173
+        },
+        {
+          "name": "pausedNode",
+          "tests": 6,
+          "seconds": 0.206
+        }
+      ]
+    },
+    "nativeDatabaseJob": {
+      "jobId": 124611909404,
+      "tests": 2,
+      "seconds": 11.232
+    },
+    "nativeTlsJob": {
+      "jobId": 124611909540,
+      "tests": 7,
+      "seconds": 1.01,
+      "actual": [
+        "root-protected explicit public CA bytes and PKCS12/OpenSSL parser",
+        "pinned Python entering actual current network namespace",
+        "real TLS sockets/chains/hostname verification and wrong CA/hostname denial",
+        "composed CurrentTlsIdentities.observe with real authenticated Unix peer GETs and four TLS sessions",
+        "peer drift and modeled QUIESCED operational denial after successful TLS",
+        "namespace descriptor closure on denial; Engine constructor denial before open"
+      ],
+      "modeled": [
+        "selected/profile/admitted Java Registry and worker lineage in composed native TLS fixture",
+        "Unix Engine JSON peer metadata supplied by disposable local server",
+        "actual target Registry namespace and complete thirteen-peer target cohort"
+      ]
+    }
+  },
+  "parentBinding": "runtime inputs v2 additionalInputsHashes.tlsIam; exact execution profile/Java truststore/CA references",
+  "credentialOrOAuthRequests": 0,
+  "privateKeysReadByTlsObserver": 0,
+  "initialFiniteProviderAuthorityExtended": false,
+  "observedWorkerLocksAcquired": 0,
+  "fullCohortProven": false,
+  "currentTargetAdmissionProven": false,
+  "applicationE2EProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "producerReleaseDispatched": false,
+  "releaseAcceptance": false,
+  "nextSourceUnderQualification": {
+    "sourceCommit": "9ac569d70dc67eab760b79517fa0c95daa46fb72",
+    "module": "current_iam_workload.py",
+    "localProtocolTests": 8,
+    "nativeQualificationComplete": false
+  },
+  "openWork": [
+    "native workload IAM configuration/credential qualification; actual bearer admission remains distinct",
+    "custody/supply-chain/retirement/backup/fencing composition",
+    "concrete sealed checkpoint/controller and early operational handoff/READY12 continuation",
+    "new complete execution closure/package and exact private review",
+    "target/full M2 qualification"
+  ]
+}

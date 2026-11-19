@@ -1,0 +1,284 @@
+{
+  "artifactId": 13101916659,
+  "componentFindings": [
+    {
+      "blockingFindingCounts": {
+        "HIGH": 8
+      },
+      "class": "os-pkgs",
+      "target": "copy-evidence/scan-input.docker.tar (redhat 9.6)",
+      "type": "redhat"
+    },
+    {
+      "blockingFindingCounts": {
+        "CRITICAL": 2,
+        "HIGH": 50,
+        "UNKNOWN": 4
+      },
+      "class": "lang-pkgs",
+      "target": "usr/bin/mc",
+      "type": "gobinary"
+    },
+    {
+      "blockingFindingCounts": {
+        "CRITICAL": 7,
+        "HIGH": 69,
+        "UNKNOWN": 4
+      },
+      "class": "lang-pkgs",
+      "target": "usr/bin/minio",
+      "type": "gobinary"
+    }
+  ],
+  "cumulativeTargetControls": 12,
+  "cumulativeTargetEngineGets": 35,
+  "date": "2026-11-01",
+  "failureIsSecurityAdmissionDenial": true,
+  "finalLogRead": true,
+  "jobId": 124986151771,
+  "memberSha256": {
+    "configuration.json": "69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+    "copy-result.json": "5fad75ce8d28f3020e800f73c718ab346689bd800004889a1164069df871cb4c",
+    "root.json": "14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+    "selected.json": "a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2",
+    "trivy-image.json": "2e7070fe0d2ec92563b3c52b56b5196a9566e1813c797aca3db8e22d8821911d"
+  },
+  "membersRead": 5,
+  "newVpsOperations": 0,
+  "ownerDecisionMade": false,
+  "ownerDirectionRequired": true,
+  "preservedZip": "evidence/artifacts/m2-minio-exact-copy-security-41352708811.zip",
+  "proposal": "docs/decisions/OUF_M2_OBJECT_STORAGE_DIRECTION_20261101.md",
+  "releaseAcceptance": false,
+  "result": {
+    "allSelectedLayerAndExpandedDiffIdsVerified": true,
+    "anonymousTokenRequests": 1,
+    "candidateSelectionChanged": false,
+    "configurationImageId": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+    "contentAddressedReads": 12,
+    "copyIsNotOriginalVendorPublisher": true,
+    "copyRegistry": "ghcr.io",
+    "copyRepository": "datalens-tech/minio",
+    "copyUse": "EVIDENCE_RECOVERY_ONLY_NO_RUNTIME_REFERENCE_CHANGE",
+    "existingUserCredentialsRead": false,
+    "freshSecurityGatePassed": false,
+    "imageExecuted": false,
+    "layers": [
+      {
+        "blobBytes": 7240601,
+        "blobDigest": "sha256:b83ce1c86227e7eb8f809d5634df70202a43b5a2a42ad5881de019c6e7bb77ab",
+        "diffId": "sha256:702bea3dc94887d2fcf1aa0d56565c57d5ca6d24659c8d0b6cbde5c58d6c182f",
+        "expandedBytes": 23511040,
+        "ordinal": 0
+      },
+      {
+        "blobBytes": 1637189,
+        "blobDigest": "sha256:f94d28849fa387176d83fed06c02b5814597103420f929f8f74ad5c212e62a7a",
+        "diffId": "sha256:88e53e46c4d2bed466a6b02167ef9d8cef2c9392c4ee9fb64f7a0e7c38c31858",
+        "expandedBytes": 3544576,
+        "ordinal": 1
+      },
+      {
+        "blobBytes": 122724,
+        "blobDigest": "sha256:81260b1730768c85f8ebdba7d561c7189971d84eef7dc0ff2b03d83957dcdd4a",
+        "diffId": "sha256:d37092179ddccad1ee0b97d96b129b58f41d5acc765698bf3b972896347f3d84",
+        "expandedBytes": 216064,
+        "ordinal": 2
+      },
+      {
+        "blobBytes": 39450432,
+        "blobDigest": "sha256:f9c0805c25ee5c0d375a9c16810eafb57cf658d7b6814c179d52496272bec8a4",
+        "diffId": "sha256:65df1de0fc5d5ed3b009724450521360e9cac82bb7a18c2565705224e5d966be",
+        "expandedBytes": 110994432,
+        "ordinal": 3
+      },
+      {
+        "blobBytes": 11188523,
+        "blobDigest": "sha256:1008deaf6ec413772a3de8828d030bd6472ec80c59a8595f3f9fee2524576692",
+        "diffId": "sha256:d9e4fbf4fcf5a2a873b09a4f801d1576be6ef9acfc4d712e4bb010fe323a98bc",
+        "expandedBytes": 30540800,
+        "ordinal": 4
+      },
+      {
+        "blobBytes": 2401645,
+        "blobDigest": "sha256:71e9fc939447059a2e6b8db211155a6d0217582e6a93d13e53c111df359b05cf",
+        "diffId": "sha256:6e4622138e7123a662eb8da39c3da85d1605d7a9a0749b8939b3b22b3d14a1d5",
+        "expandedBytes": 5506048,
+        "ordinal": 5
+      },
+      {
+        "blobBytes": 180305,
+        "blobDigest": "sha256:c1bc68842c41cb716734641f75dc37d629f05df5f812a8cc2e7e0370d4e833ec",
+        "diffId": "sha256:c4f9743e910169563769da2e07bf10a78fb4c9b0c489a2ee2c1f8bb25dc5bac6",
+        "expandedBytes": 1884672,
+        "ordinal": 6
+      },
+      {
+        "blobBytes": 11876,
+        "blobDigest": "sha256:0288b5a0d7e71a2cdbdf114cb9869ce2bc4b05adfd6aa5e3ee9fa4b3847e7b80",
+        "diffId": "sha256:469babe0725a8ef9ea8ee85eed6e55dc33682ff9ba4fc4b61e4434e0ac1e447b",
+        "expandedBytes": 36864,
+        "ordinal": 7
+      },
+      {
+        "blobBytes": 496,
+        "blobDigest": "sha256:34013573f2786dfd3f6a542374c2bb7821fa6924de6ed320dc808582d50879d3",
+        "diffId": "sha256:48a0959ec57746c5b54d3f0ee68ba154defefab5c979c49d4afa78e2a183303f",
+        "expandedBytes": 3584,
+        "ordinal": 8
+      }
+    ],
+    "originalVendorPublisherAuthenticated": false,
+    "releaseAcceptance": false,
+    "rootIndexDigest": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+    "runtimeAuthorityIssued": false,
+    "runtimeReferenceChanged": false,
+    "scanSha256": "2e7070fe0d2ec92563b3c52b56b5196a9566e1813c797aca3db8e22d8821911d",
+    "scannerArchiveSha256": "833814e66510a63e61c46a42ab3d8ca94fde0cc2d99965a67e2e181a9d46ece4",
+    "schema": "ouf.m2-minio-exact-copy-security.v1",
+    "selectedRuntimeManifestDigest": "sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2",
+    "targetApplyAuthorized": false,
+    "targetOperations": 0,
+    "vulnerabilityCounts": {
+      "CRITICAL": 9,
+      "HIGH": 127,
+      "LOW": 27,
+      "MEDIUM": 171,
+      "UNKNOWN": 8
+    }
+  },
+  "runId": 41352708811,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-minio-exact-copy-security-readback.v1",
+  "sourceCommit": "46e9ce6ae7fd56af23526a2eb376763363bddc4e",
+  "targetApplyAuthorized": false,
+  "unfixedBlockingFindings": [
+    {
+      "InstalledVersion": "v0.40.0",
+      "PkgName": "golang.org/x/crypto",
+      "References": [
+        "https://go.dev/issue/44226",
+        "https://pkg.go.dev/vuln/GO-2026-5932"
+      ],
+      "Severity": "UNKNOWN",
+      "Status": "affected",
+      "Title": "The golang.org/x/crypto/openpgp package is unmaintained, unsafe by design, and has known security issues",
+      "VulnerabilityID": "GO-2026-5932",
+      "target": "usr/bin/mc"
+    },
+    {
+      "InstalledVersion": "v0.0.0-20250907161309-07c3a429bfed+dirty",
+      "PkgName": "github.com/minio/minio",
+      "References": [
+        "https://github.com/minio/minio",
+        "https://github.com/minio/minio/security/advisories/GHSA-5cx5-wh4m-82fh",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-33322"
+      ],
+      "Severity": "CRITICAL",
+      "Status": "affected",
+      "Title": "MinIO has JWT Algorithm Confusion in OIDC Authentication",
+      "VulnerabilityID": "CVE-2026-33322",
+      "target": "usr/bin/minio"
+    },
+    {
+      "InstalledVersion": "v0.0.0-20250907161309-07c3a429bfed+dirty",
+      "PkgName": "github.com/minio/minio",
+      "References": [
+        "https://github.com/minio/minio",
+        "https://github.com/minio/minio/security/advisories/GHSA-jv87-32hw-hh99",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-33419"
+      ],
+      "Severity": "CRITICAL",
+      "Status": "affected",
+      "Title": "MinIO LDAP login brute-force via user enumeration and missing rate limit",
+      "VulnerabilityID": "CVE-2026-33419",
+      "target": "usr/bin/minio"
+    },
+    {
+      "InstalledVersion": "v0.0.0-20250907161309-07c3a429bfed+dirty",
+      "PkgName": "github.com/minio/minio",
+      "References": [
+        "https://docs.min.io/enterprise/aistor-object-store/upgrade-aistor-server/community-edition",
+        "https://github.com/minio/minio",
+        "https://github.com/minio/minio/security/advisories/GHSA-3rh2-v3gr-35p9",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-34204"
+      ],
+      "Severity": "HIGH",
+      "Status": "affected",
+      "Title": "MinIO is Vulnerable to SSE Metadata Injection via Replication Headers",
+      "VulnerabilityID": "CVE-2026-34204",
+      "target": "usr/bin/minio"
+    },
+    {
+      "InstalledVersion": "v0.0.0-20250907161309-07c3a429bfed+dirty",
+      "PkgName": "github.com/minio/minio",
+      "References": [
+        "https://docs.min.io/enterprise/aistor-object-store/upgrade-aistor-server/community-edition",
+        "https://github.com/minio/minio",
+        "https://github.com/minio/minio/commit/7c14cdb60e53dbfdad2be644dfb180cab19fffa7",
+        "https://github.com/minio/minio/pull/8200",
+        "https://github.com/minio/minio/security/advisories/GHSA-h749-fxx7-pwpg",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-39414",
+        "https://pkg.go.dev/vuln/GO-2026-5415?q"
+      ],
+      "Severity": "HIGH",
+      "Status": "affected",
+      "Title": "MinIO affected a DoS via Unbounded Memory Allocation in S3 Select CSV Parsing",
+      "VulnerabilityID": "CVE-2026-39414",
+      "target": "usr/bin/minio"
+    },
+    {
+      "InstalledVersion": "v0.0.0-20250907161309-07c3a429bfed+dirty",
+      "PkgName": "github.com/minio/minio",
+      "References": [
+        "https://github.com/minio/minio",
+        "https://github.com/minio/minio/commit/76913a9fd5c6e5c2dbd4e8c7faf56ed9e9e24091",
+        "https://github.com/minio/minio/pull/16484",
+        "https://github.com/minio/minio/security/advisories/GHSA-9c4q-hq6p-c237",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-40344"
+      ],
+      "Severity": "HIGH",
+      "Status": "affected",
+      "Title": "MinIO has an Unauthenticated Object Write via Missing Signature Verification in Unsigned-Trailer Uploads",
+      "VulnerabilityID": "CVE-2026-40344",
+      "target": "usr/bin/minio"
+    },
+    {
+      "InstalledVersion": "v0.0.0-20250907161309-07c3a429bfed+dirty",
+      "PkgName": "github.com/minio/minio",
+      "References": [
+        "https://github.com/minio/minio",
+        "https://github.com/minio/minio/commit/76913a9fd5c6e5c2dbd4e8c7faf56ed9e9e24091",
+        "https://github.com/minio/minio/pull/16484",
+        "https://github.com/minio/minio/security/advisories/GHSA-hv4r-mvr4-25vw",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-41145"
+      ],
+      "Severity": "HIGH",
+      "Status": "affected",
+      "Title": "MinIO has an Unauthenticated Object Write via Query-String Credential Signature Bypass in Unsigned-Trailer Uploads",
+      "VulnerabilityID": "CVE-2026-41145",
+      "target": "usr/bin/minio"
+    },
+    {
+      "InstalledVersion": "v0.37.0",
+      "PkgName": "golang.org/x/crypto",
+      "References": [
+        "https://go.dev/issue/44226",
+        "https://pkg.go.dev/vuln/GO-2026-5932"
+      ],
+      "Severity": "UNKNOWN",
+      "Status": "affected",
+      "Title": "The golang.org/x/crypto/openpgp package is unmaintained, unsafe by design, and has known security issues",
+      "VulnerabilityID": "GO-2026-5932",
+      "target": "usr/bin/minio"
+    }
+  ],
+  "upstreamSource": {
+    "commit": "7aac2a2c5b7c882e68c1ce017d8256be2feea27f",
+    "readmeSaysUnmaintained": true,
+    "repository": "minio/minio"
+  },
+  "workflowConclusion": "failure",
+  "zipBytes": 270309,
+  "zipSha256": "59786c63c06d53f081a9e66469d0bf8bb05ed2eb7b7030645d48d1570728d2ca"
+}

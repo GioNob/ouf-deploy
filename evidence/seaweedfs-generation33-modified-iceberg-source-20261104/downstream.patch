@@ -1,0 +1,22 @@
+--- a/vendor/github.com/apache/iceberg-go/config/config.go
++++ b/vendor/github.com/apache/iceberg-go/config/config.go
+@@ -15,6 +15,10 @@
+ // specific language governing permissions and limitations
+ // under the License.
+ 
++// OUF downstream modification (2026-11-03): use the YAML organization
++// maintained go.yaml.in/yaml/v3 implementation. Base: Apache Iceberg Go
++// v0.7.0, commit 89a9104ec3639d38ab07e4461721cb5270e95571.
++
+ package config
+ 
+ import (
+@@ -23,7 +27,7 @@
+ 	"os"
+ 	"path/filepath"
+ 
+-	"gopkg.in/yaml.v3"
++	"go.yaml.in/yaml/v3"
+ )
+ 
+ const (

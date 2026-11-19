@@ -1,0 +1,27 @@
+{
+  "schema": "ouf.storage-crash33-failed-readback.v1",
+  "runId": 41803868175,
+  "jobId": 126485976430,
+  "producerCommit": "7e6d80a3f003aa6c245edca39deedcb658749296",
+  "artifactId": 13308034292,
+  "archiveSha256": "ccfa6b4c1d3fc8acfbdad709db82c72f87163ce9d408eafe4ad9b7b50ae7f8fd",
+  "archiveBytes": 172085,
+  "archiveMembers": 225,
+  "checksumsVerified": 224,
+  "sourcesVerified": 23,
+  "runConclusion": "failure",
+  "crashRecoveryQualified": false,
+  "failure": "EXACT_ACK_AND_FENCE_HISTORY_REQUIRED",
+  "observedEventSequences": [
+    1,
+    2,
+    3,
+    34,
+    35,
+    36
+  ],
+  "originalCommittedEventsPreserved": true,
+  "ledgerBeforeAfterImmediateRestartIdentical": true,
+  "diagnosis": "Verifier incorrectly required gapless PostgreSQL identity values. All six expected event payloads are present in order; committed prefix unchanged. Restore was not reached in crash path.",
+  "reference": "https://www.postgresql.org/docs/17/functions-sequence.html"
+}

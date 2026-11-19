@@ -1,0 +1,14 @@
+{
+  "schema": "ouf.storage-host-preparation-systemd-failure.v1",
+  "runId": 42303969794,
+  "jobId": 128188526869,
+  "sourceCommit": "142775573eede991a81ace166a9b6ef06d73983a",
+  "unitTestsPass": 13,
+  "nativeResult": "FAIL",
+  "failure": "Assertion expecting13units and11bound configuration files after completed prepare()",
+  "exactMissingConfigurationUnknown": true,
+  "productionHeld": false,
+  "targetMutation": false,
+  "correctionScope": "Print redacted preparation result before fixture assertions; production unchanged; reuse 13 unit tests by source digests",
+  "acceptanceCreditAdded": 0
+}

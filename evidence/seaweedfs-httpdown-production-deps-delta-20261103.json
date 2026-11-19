@@ -1,0 +1,17 @@
+{
+  "baselinePackages": 1811,
+  "newPackages": 1809,
+  "removed": [
+    "github.com/facebookgo/clock",
+    "github.com/facebookgo/stats"
+  ],
+  "added": [],
+  "environment": {
+    "CGO_ENABLED": "0",
+    "GOOS": "linux",
+    "GOARCH": "amd64",
+    "go": "1.27.3"
+  },
+  "baselineSha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+  "newSha256": "7c654418517a1e6e21579b340fbc6c8a4a0344b636440ffd85c297d06e046d45"
+}

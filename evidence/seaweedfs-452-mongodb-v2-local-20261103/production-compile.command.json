@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "test",
+    "-mod=readonly",
+    "-run",
+    "^$",
+    "./weed"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 14.616637229919434
+}

@@ -1,0 +1,40 @@
+{
+  "actualHostedLogRead": true,
+  "artifactId": 13098758053,
+  "date": "2026-11-01",
+  "independentPublicRegistryHTTPRead": {
+    "anonymousChallenge": 401,
+    "anonymousRegistryTokenRequestSucceeded": true,
+    "descriptorBytesAccepted": 0,
+    "exactRootReadStatus": 401,
+    "exactSelectedManifestReadStatus": 401,
+    "mutableTagOrRepositoryFallbackUsed": false
+  },
+  "interpretation": "Hosted descriptor process failed; successful job means bounded result retained, not image-origin admission. Underlying registry HTTP status was not retained by that CLI wrapper.",
+  "jobId": 124964417510,
+  "releaseAcceptance": false,
+  "result": {
+    "completeOriginalIndexProven": false,
+    "exactSelectedDescriptorProven": false,
+    "expectedConfigurationDigest": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+    "lookupProcessInvocations": 1,
+    "mutableTagUsed": false,
+    "publisherAuthenticated": false,
+    "reasonCode": "EXACT_SELECTED_MINIO_DESCRIPTOR_UNAVAILABLE",
+    "reference": "quay.io/minio/minio@sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2",
+    "releaseAcceptance": false,
+    "repositoryFallbackUsed": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.m2-retained-minio-selected-descriptor.v1",
+    "selectedRuntimeManifestDigest": "sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2",
+    "status": "UNRESOLVED_NOT_ADMITTED",
+    "targetApplyAuthorized": false,
+    "targetCalls": 0
+  },
+  "runId": 41345531053,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-minio-selected-descriptor-readback.v1",
+  "targetApplyAuthorized": false,
+  "zipBytes": 600,
+  "zipSha256": "1e173d0ca38be0e085c76a0ba333cc3d1f46ad758e52eb84b7ffa9c2e90ece5f"
+}

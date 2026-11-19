@@ -1,0 +1,63 @@
+{
+  "pass": {
+    "tests": 7650,
+    "topLevel": 3039,
+    "packages": 34
+  },
+  "skip": {
+    "tests": 14,
+    "topLevel": 14,
+    "packages": 9
+  },
+  "fail": {
+    "tests": 10,
+    "topLevel": 5,
+    "packages": 1
+  },
+  "failures": [
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestFsMvMovesIntoExistingDestinationDirectory"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestFsVerifyVerifyEntryPrunability/missing_on_all_locations"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestFsVerifyVerifyEntryPrunability/healthy_on_one_of_two_locations"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestFsVerifyVerifyEntryPrunability/concurrent_path_matches_sequential"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestFsVerifyVerifyEntryPrunability"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestFsVerifyPruneEntryGuards"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestFsVerifyManifestResolutionFailure/healthy_raw_needle_but_unresolvable_manifest_is_not_verified"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestFsVerifyManifestResolutionFailure/missing_manifest_needle_is_prunable"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestFsVerifyManifestResolutionFailure"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": "TestS3BucketCreateRequestsExclusiveCreate"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "test": null
+    }
+  ]
+}

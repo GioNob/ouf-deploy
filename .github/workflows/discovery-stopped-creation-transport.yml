@@ -1,0 +1,17 @@
+name: Discovery stopped creation transport
+on:
+  pull_request:
+    paths:
+      - scripts/create-discovery-stopped-candidates-20261111.py
+      - tests/test_discovery_stopped_creation_transport.py
+      - .github/workflows/discovery-stopped-creation-transport.yml
+permissions: {contents: read}
+jobs:
+  unix-http:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Exercise HTTPConnection with a real local Unix socket
+        run: python3.12 -I -B -m unittest discover -s tests -p test_discovery_stopped_creation_transport.py -v

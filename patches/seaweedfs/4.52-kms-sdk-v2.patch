@@ -1,0 +1,754 @@
+diff --git a/go.mod b/go.mod
+--- a/go.mod
++++ b/go.mod
+@@ -123,9 +123,10 @@
+ 	github.com/apple/foundationdb/bindings/go v0.0.0-20250911184653-27f7192f47c3
+ 	github.com/arangodb/go-driver v1.6.9
+ 	github.com/armon/go-metrics v0.4.1
+-	github.com/aws/aws-sdk-go-v2 v1.47.3
++	github.com/aws/aws-sdk-go-v2 v1.47.5
+ 	github.com/aws/aws-sdk-go-v2/config v1.33.6
+ 	github.com/aws/aws-sdk-go-v2/credentials v1.20.6
++	github.com/aws/aws-sdk-go-v2/service/kms v1.62.2
+ 	github.com/aws/aws-sdk-go-v2/service/s3 v1.114.1
+ 	github.com/cespare/xxhash/v2 v2.3.0
+ 	github.com/cognusion/imaging v1.0.4
+@@ -321,8 +322,8 @@
+ 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.20 // indirect
+ 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.20.1 // indirect
+ 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.22.34 // indirect
+-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.4 // indirect
+-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.4 // indirect
++	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.8 // indirect
++	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.8 // indirect
+ 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.4 // indirect
+ 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19 // indirect
+ 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.11.5 // indirect
+@@ -333,7 +334,7 @@
+ 	github.com/aws/aws-sdk-go-v2/service/sso v1.38.1 // indirect
+ 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.43.1 // indirect
+ 	github.com/aws/aws-sdk-go-v2/service/sts v1.51.1
+-	github.com/aws/smithy-go v1.28.5
++	github.com/aws/smithy-go v1.28.7
+ 	github.com/boltdb/bolt v1.3.1 // indirect
+ 	github.com/bradenaw/juniper v0.15.3 // indirect
+ 	github.com/buengese/sgzip v0.1.1 // indirect
+diff --git a/go.sum b/go.sum
+--- a/go.sum
++++ b/go.sum
+@@ -175,6 +175,8 @@
+ github.com/aws/aws-sdk-go v1.55.8/go.mod h1:ZkViS9AqA6otK+JBBNH2++sx1sgxrPKcSzPPvQkUtXk=
+ github.com/aws/aws-sdk-go-v2 v1.47.3 h1:HRoT/MkNi3bjO5xF4dCzLzvVmkvRGHj3/cLINDnJejk=
+ github.com/aws/aws-sdk-go-v2 v1.47.3/go.mod h1:xSl+OSI5ZUw6bSMupWc218zE5Pl+65MCCu3ySWFY99A=
++github.com/aws/aws-sdk-go-v2 v1.47.5 h1:5yA+A+BiXbDq1ZLbYwPViwhEGDMdR0MEhL8Jh2LnLS4=
++github.com/aws/aws-sdk-go-v2 v1.47.5/go.mod h1:iNIkogrRvFwm+1OQIUOP2lPBtlXZboOIUWiCa+pHEMw=
+ github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.20 h1:GPRlPwz40I2B2VrBEASOA3Bi77NyeqejNLkifosX0rs=
+ github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.20/go.mod h1:g7PNzKcsOKWb4fkSRBA7BZVAS6Y8IcxzN+nRohhQ1Q8=
+ github.com/aws/aws-sdk-go-v2/config v1.33.6 h1:MBjkSTLczek/UgiK+EYPIoRTqE7gP8vtW3OFbFo7Nug=
+@@ -189,8 +191,12 @@
+ github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager v0.4.3/go.mod h1:pjQYVtvVBEtlsf2p6nXMsjPuDaWs9GM44FMdHbmnmYU=
+ github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.4 h1:CLq4+8UHCI+ZZYl/EuJxXovaIVN2xeeT8JV+dsApQ5E=
+ github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.4/go.mod h1:Wv4q5sAM04xAMkoOedxLx2inVf6K5FdxYp+A61L+q/0=
++github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.8 h1:gzIWc3DTPfPbWKrQnmL6BV6WD7NPD1htxzgdk/bQ/Z4=
++github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.8/go.mod h1:vvUA5cDAZWGo4R14FZPZfXfJCmgsafOWEq78Kg0D+ug=
+ github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.4 h1:dD4MR81I7YkpEBRk6UP9rocC2QnT3qVuXwzlYTtfGEs=
+ github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.4/go.mod h1:EcXV1kAFd5XwSkDHlj94gnF3q5CkJyYiIJfH8N0VmrE=
++github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.8 h1:PWv+vG8aCLS8qd+HPdYhK7Vees90aKHWFFQ1AGYD/8E=
++github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.8/go.mod h1:xxPZEpflYHJA12366ZGyq66z9dHPCoeCIu99Jck+MPw=
+ github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.4 h1:7Wo47d/xn/7KttCSBd8EGYeZ7ULRFRkUHr6vkZPBzVQ=
+ github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.4/go.mod h1:tDB2IVC1xC3vX8o+6uRlzhTxP3g1b77CZXFX/oD2FnQ=
+ github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19 h1:bAdDl/HkGCcGPoe25ToSHEw23VIxt6CT5fLcg111BKg=
+@@ -201,6 +207,8 @@
+ github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.14.4/go.mod h1:wm04I5DMuNVvZHFe/dHnUxincvNbbK7AiNBbYsQivek=
+ github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.20.4 h1:pPiWfgeNxqluKEph7hvU88kuGKBPOWzO+Dk9t2zqqNs=
+ github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.20.4/go.mod h1:YlwGoIUDG/3kBQbdNOVs/xKZ9J01G8e/6D1mRBj9uTk=
++github.com/aws/aws-sdk-go-v2/service/kms v1.62.2 h1:f0+3opcARrLmWoMciHVzlc1Ww8qFXhvrlscmPShpM+s=
++github.com/aws/aws-sdk-go-v2/service/kms v1.62.2/go.mod h1:YVEFrNMhrD35Z6qdvzvpGHDbmFmhZ/Nf58Ubv9dROVU=
+ github.com/aws/aws-sdk-go-v2/service/s3 v1.114.1 h1:9T6eO8/WXhij4PQaa2WaYsdekSCmT9Hw66Pw0S8do0Q=
+ github.com/aws/aws-sdk-go-v2/service/s3 v1.114.1/go.mod h1:9APRWGLFITKD+xzWSIyT9V7QV4bNlEuIieWlzXgGFlI=
+ github.com/aws/aws-sdk-go-v2/service/signin v1.10.1 h1:DzCCWLzcIRQ77F3DEUljud7bEjTgFOIKXP52NmVRyhU=
+@@ -217,6 +225,8 @@
+ github.com/aws/aws-sdk-go-v2/service/sts v1.51.1/go.mod h1:26zA0GhDrLo+yiLI2yXWxqB1PdsShfLikoI7GOEgugM=
+ github.com/aws/smithy-go v1.28.5 h1:OqbqKtzY9NUnr2yAe9+hiTdFb20tNaK/lI0PMOGXX9k=
+ github.com/aws/smithy-go v1.28.5/go.mod h1:YE2RhdIuDbA5E5bTdciG9KrW3+TiEONeUWCqxX9i1Fc=
++github.com/aws/smithy-go v1.28.7 h1:h/n1SHrwVtaDYLz8mR1/Kq4Xh4RaFbFW7bOYckg9mfE=
++github.com/aws/smithy-go v1.28.7/go.mod h1:YE2RhdIuDbA5E5bTdciG9KrW3+TiEONeUWCqxX9i1Fc=
+ github.com/bahlo/generic-list-go v0.2.0 h1:5sz/EEAK+ls5wF+NeqDpk5+iNdMDXrh3z3nPnH1Wvgk=
+ github.com/bahlo/generic-list-go v0.2.0/go.mod h1:2KvAjgMlE5NNynlg/5iLrrCCZ2+5xWbdbCW3pNTGyYg=
+ github.com/bazelbuild/rules_go v0.46.0 h1:CTefzjN/D3Cdn3rkrM6qMWuQj59OBcuOjyIp3m4hZ7s=
+diff --git a/weed/kms/aws/aws_kms.go b/weed/kms/aws/aws_kms.go
+--- a/weed/kms/aws/aws_kms.go
++++ b/weed/kms/aws/aws_kms.go
+@@ -3,16 +3,20 @@
+ import (
+ 	"context"
+ 	"encoding/base64"
++	"errors"
+ 	"fmt"
+-	"net/http"
+-	"strings"
++	"math"
++	"net"
++	"net/url"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/kms"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
++	awsconfig "github.com/aws/aws-sdk-go-v2/config"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/kms"
++	"github.com/aws/aws-sdk-go-v2/service/kms/types"
++	"github.com/aws/smithy-go"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	seaweedkms "github.com/seaweedfs/seaweedfs/weed/kms"
+@@ -26,7 +30,7 @@
+ 
+ // AWSKMSProvider implements the KMSProvider interface using AWS KMS
+ type AWSKMSProvider struct {
+-	client   *kms.KMS
++	client   *kms.Client
+ 	region   string
+ 	endpoint string // For testing with LocalStack or custom endpoints
+ }
+@@ -39,11 +43,11 @@
+ 	SessionToken   string `json:"session_token"`   // AWS session token (optional for STS)
+ 	Endpoint       string `json:"endpoint"`        // Custom endpoint (optional, for LocalStack/testing)
+ 	Profile        string `json:"profile"`         // AWS profile name (optional)
+-	RoleARN        string `json:"role_arn"`        // IAM role ARN to assume (optional)
+-	ExternalID     string `json:"external_id"`     // External ID for role assumption (optional)
++	RoleARN        string `json:"role_arn"`        // Reserved; nonempty values require a supported binding
++	ExternalID     string `json:"external_id"`     // Reserved; nonempty values require a supported binding
+ 	ConnectTimeout int    `json:"connect_timeout"` // Connection timeout in seconds (default: 10)
+ 	RequestTimeout int    `json:"request_timeout"` // Request timeout in seconds (default: 30)
+-	MaxRetries     int    `json:"max_retries"`     // Maximum number of retries (default: 3)
++	MaxRetries     int    `json:"max_retries"`     // Must be zero; owner governs retries/reconciliation
+ }
+ 
+ // NewAWSKMSProvider creates a new AWS KMS provider
+@@ -52,64 +56,68 @@
+ 		return nil, fmt.Errorf("AWS KMS configuration is required")
+ 	}
+ 
+-	// Extract configuration
++	// Binding changes must be explicit. Never select a default region or a
++	// different identity because a static credential tuple is incomplete.
+ 	region := config.GetString("region")
+ 	if region == "" {
+-		region = "us-east-1" // Default region
+-	}
+-
+-	accessKey := config.GetString("access_key")
+-	secretKey := config.GetString("secret_key")
++		return nil, fmt.Errorf("AWS KMS requires an explicit region")
++	}
++	accessKey, secretKey := config.GetString("access_key"), config.GetString("secret_key")
+ 	sessionToken := config.GetString("session_token")
+-	endpoint := config.GetString("endpoint")
+-	profile := config.GetString("profile")
+-
+-	// Timeouts and retries
+-	connectTimeout := config.GetInt("connect_timeout")
++	endpoint, profile := config.GetString("endpoint"), config.GetString("profile")
++	if (accessKey == "") != (secretKey == "") || (sessionToken != "" && accessKey == "") {
++		return nil, fmt.Errorf("AWS KMS requires a complete static credential tuple")
++	}
++	// These fields were previously ignored, which could silently use another identity.
++	if config.GetString("role_arn") != "" || config.GetString("external_id") != "" {
++		return nil, fmt.Errorf("AWS KMS role_arn/external_id require a supported identity binding")
++	}
++	if config.GetInt("max_retries") != 0 {
++		return nil, fmt.Errorf("AWS KMS max_retries must be zero; retries require owner governance")
++	}
++	connectTimeout, requestTimeout := config.GetInt("connect_timeout"), config.GetInt("request_timeout")
+ 	if connectTimeout == 0 {
+-		connectTimeout = 10 // Default 10 seconds
+-	}
+-
+-	requestTimeout := config.GetInt("request_timeout")
++		connectTimeout = 10
++	}
+ 	if requestTimeout == 0 {
+-		requestTimeout = 30 // Default 30 seconds
+-	}
+-
+-	maxRetries := config.GetInt("max_retries")
+-	if maxRetries == 0 {
+-		maxRetries = 3 // Default 3 retries
+-	}
+-
+-	// Create AWS session
+-	awsConfig := &aws.Config{
+-		Region:     aws.String(region),
+-		MaxRetries: aws.Int(maxRetries),
+-		HTTPClient: &http.Client{
+-			Timeout: time.Duration(requestTimeout) * time.Second,
+-		},
+-	}
+-
+-	// Set custom endpoint if provided (for testing with LocalStack)
++		requestTimeout = 30
++	}
++	for _, seconds := range []int{connectTimeout, requestTimeout} {
++		if seconds < 0 || int64(seconds) > math.MaxInt64/int64(time.Second) {
++			return nil, fmt.Errorf("AWS KMS timeouts must be positive representable durations")
++		}
++	}
+ 	if endpoint != "" {
+-		awsConfig.Endpoint = aws.String(endpoint)
+-		awsConfig.DisableSSL = aws.Bool(strings.HasPrefix(endpoint, "http://"))
+-	}
+-
+-	// Configure credentials
+-	if accessKey != "" && secretKey != "" {
+-		awsConfig.Credentials = credentials.NewStaticCredentials(accessKey, secretKey, sessionToken)
++		u, err := url.Parse(endpoint)
++		if err != nil || u.Hostname() == "" || (u.Scheme != "https" && u.Scheme != "http") || u.User != nil || u.RawQuery != "" || u.ForceQuery || u.Fragment != "" || u.Opaque != "" {
++			return nil, fmt.Errorf("AWS KMS endpoint must be an explicit HTTP(S) binding without credentials, query or fragment")
++		}
++	}
++	transport := awshttp.NewBuildableClient().WithTimeout(time.Duration(requestTimeout) * time.Second).
++		WithDialerOptions(func(d *net.Dialer) { d.Timeout = time.Duration(connectTimeout) * time.Second })
++	opts := []func(*awsconfig.LoadOptions) error{
++		awsconfig.WithRegion(region), awsconfig.WithRetryMaxAttempts(1), awsconfig.WithHTTPClient(transport),
++	}
++	if accessKey != "" {
++		opts = append(opts, awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKey, secretKey, sessionToken)))
+ 	} else if profile != "" {
+-		awsConfig.Credentials = credentials.NewSharedCredentials("", profile)
+-	}
+-	// If neither are provided, use default credential chain (IAM roles, etc.)
+-
+-	sess, err := session.NewSession(awsConfig)
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to create AWS session: %w", err)
++		opts = append(opts, awsconfig.WithSharedConfigProfile(profile))
++	}
++	cfg, err := awsconfig.LoadDefaultConfig(context.Background(), opts...)
++	if err != nil {
++		return nil, fmt.Errorf("load AWS KMS configuration: %w", err)
++	}
++	client := kms.NewFromConfig(cfg, func(o *kms.Options) {
++		if endpoint != "" {
++			o.BaseEndpoint = &endpoint
++		}
++	})
++	if endpoint == "" && client.Options().BaseEndpoint != nil {
++		return nil, fmt.Errorf("AWS KMS endpoint override requires an explicit endpoint binding")
+ 	}
+ 
+ 	provider := &AWSKMSProvider{
+-		client:   kms.New(sess),
++		client:   client,
+ 		region:   region,
+ 		endpoint: endpoint,
+ 	}
+@@ -129,7 +137,7 @@
+ 	}
+ 
+ 	// Validate key spec
+-	var keySpec string
++	var keySpec types.DataKeySpec
+ 	switch req.KeySpec {
+ 	case seaweedkms.KeySpecAES256:
+ 		keySpec = "AES_256"
+@@ -140,17 +148,17 @@
+ 	// Build KMS request
+ 	kmsReq := &kms.GenerateDataKeyInput{
+ 		KeyId:   aws.String(req.KeyID),
+-		KeySpec: aws.String(keySpec),
++		KeySpec: keySpec,
+ 	}
+ 
+ 	// Add encryption context if provided
+ 	if len(req.EncryptionContext) > 0 {
+-		kmsReq.EncryptionContext = aws.StringMap(req.EncryptionContext)
++		kmsReq.EncryptionContext = req.EncryptionContext
+ 	}
+ 
+ 	// Call AWS KMS
+ 	glog.V(4).Infof("AWS KMS: Generating data key for key ID %s", req.KeyID)
+-	result, err := p.client.GenerateDataKeyWithContext(ctx, kmsReq)
++	result, err := p.client.GenerateDataKey(ctx, kmsReq)
+ 	if err != nil {
+ 		return nil, p.convertAWSError(err, req.KeyID)
+ 	}
+@@ -209,12 +217,12 @@
+ 
+ 	// Add encryption context if provided
+ 	if len(req.EncryptionContext) > 0 {
+-		kmsReq.EncryptionContext = aws.StringMap(req.EncryptionContext)
++		kmsReq.EncryptionContext = req.EncryptionContext
+ 	}
+ 
+ 	// Call AWS KMS
+ 	glog.V(4).Infof("AWS KMS: Decrypting data key (blob size: %d bytes)", len(req.CiphertextBlob))
+-	result, err := p.client.DecryptWithContext(ctx, kmsReq)
++	result, err := p.client.Decrypt(ctx, kmsReq)
+ 	if err != nil {
+ 		return nil, p.convertAWSError(err, "")
+ 	}
+@@ -251,7 +259,7 @@
+ 
+ 	// Call AWS KMS
+ 	glog.V(4).Infof("AWS KMS: Describing key %s", req.KeyID)
+-	result, err := p.client.DescribeKeyWithContext(ctx, kmsReq)
++	result, err := p.client.DescribeKey(ctx, kmsReq)
+ 	if err != nil {
+ 		return nil, p.convertAWSError(err, req.KeyID)
+ 	}
+@@ -262,14 +270,14 @@
+ 
+ 	metadata := result.KeyMetadata
+ 	response := &seaweedkms.DescribeKeyResponse{
+-		KeyID:       aws.StringValue(metadata.KeyId),
+-		ARN:         aws.StringValue(metadata.Arn),
+-		Description: aws.StringValue(metadata.Description),
++		KeyID:       aws.ToString(metadata.KeyId),
++		ARN:         aws.ToString(metadata.Arn),
++		Description: aws.ToString(metadata.Description),
+ 	}
+ 
+ 	// Convert AWS key usage to our enum
+-	if metadata.KeyUsage != nil {
+-		switch *metadata.KeyUsage {
++	if metadata.KeyUsage != "" {
++		switch metadata.KeyUsage {
+ 		case "ENCRYPT_DECRYPT":
+ 			response.KeyUsage = seaweedkms.KeyUsageEncryptDecrypt
+ 		case "GENERATE_DATA_KEY":
+@@ -278,8 +286,8 @@
+ 	}
+ 
+ 	// Convert AWS key state to our enum
+-	if metadata.KeyState != nil {
+-		switch *metadata.KeyState {
++	if metadata.KeyState != "" {
++		switch metadata.KeyState {
+ 		case "Enabled":
+ 			response.KeyState = seaweedkms.KeyStateEnabled
+ 		case "Disabled":
+@@ -292,8 +300,8 @@
+ 	}
+ 
+ 	// Convert AWS origin to our enum
+-	if metadata.Origin != nil {
+-		switch *metadata.Origin {
++	if metadata.Origin != "" {
++		switch metadata.Origin {
+ 		case "AWS_KMS":
+ 			response.Origin = seaweedkms.KeyOriginAWS
+ 		case "EXTERNAL":
+@@ -332,49 +340,50 @@
+ 
+ // convertAWSError converts AWS KMS errors to our standard KMS errors
+ func (p *AWSKMSProvider) convertAWSError(err error, keyID string) error {
+-	if awsErr, ok := err.(awserr.Error); ok {
+-		switch awsErr.Code() {
++	var awsErr smithy.APIError
++	if errors.As(err, &awsErr) {
++		switch awsErr.ErrorCode() {
+ 		case "NotFoundException":
+ 			return &seaweedkms.KMSError{
+ 				Code:    seaweedkms.ErrCodeNotFoundException,
+-				Message: awsErr.Message(),
++				Message: awsErr.ErrorMessage(),
+ 				KeyID:   keyID,
+ 			}
+ 		case "DisabledException", "KeyUnavailableException":
+ 			return &seaweedkms.KMSError{
+ 				Code:    seaweedkms.ErrCodeKeyUnavailable,
+-				Message: awsErr.Message(),
++				Message: awsErr.ErrorMessage(),
+ 				KeyID:   keyID,
+ 			}
+ 		case "AccessDeniedException":
+ 			return &seaweedkms.KMSError{
+ 				Code:    seaweedkms.ErrCodeAccessDenied,
+-				Message: awsErr.Message(),
++				Message: awsErr.ErrorMessage(),
+ 				KeyID:   keyID,
+ 			}
+ 		case "InvalidKeyUsageException":
+ 			return &seaweedkms.KMSError{
+ 				Code:    seaweedkms.ErrCodeInvalidKeyUsage,
+-				Message: awsErr.Message(),
++				Message: awsErr.ErrorMessage(),
+ 				KeyID:   keyID,
+ 			}
+ 		case "InvalidCiphertextException":
+ 			return &seaweedkms.KMSError{
+ 				Code:    seaweedkms.ErrCodeInvalidCiphertext,
+-				Message: awsErr.Message(),
++				Message: awsErr.ErrorMessage(),
+ 				KeyID:   keyID,
+ 			}
+ 		case "KMSInternalException", "KMSInvalidStateException":
+ 			return &seaweedkms.KMSError{
+ 				Code:    seaweedkms.ErrCodeKMSInternalFailure,
+-				Message: awsErr.Message(),
++				Message: awsErr.ErrorMessage(),
+ 				KeyID:   keyID,
+ 			}
+ 		default:
+ 			// For unknown AWS errors, wrap them as internal failures
+ 			return &seaweedkms.KMSError{
+ 				Code:    seaweedkms.ErrCodeKMSInternalFailure,
+-				Message: fmt.Sprintf("AWS KMS error %s: %s", awsErr.Code(), awsErr.Message()),
++				Message: fmt.Sprintf("AWS KMS error %s: %s", awsErr.ErrorCode(), awsErr.ErrorMessage()),
+ 				KeyID:   keyID,
+ 			}
+ 		}
+diff --git a/weed/kms/aws/aws_kms_test.go b/weed/kms/aws/aws_kms_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/kms/aws/aws_kms_test.go
+@@ -0,0 +1,343 @@
++package aws
++
++import (
++	"bytes"
++	"context"
++	"encoding/base64"
++	"encoding/json"
++	"errors"
++	"fmt"
++	"io"
++	"math"
++	"net/http"
++	"os"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"testing"
++	"time"
++
++	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
++	"github.com/aws/aws-sdk-go-v2/service/kms"
++	"github.com/aws/smithy-go"
++	seaweedkms "github.com/seaweedfs/seaweedfs/weed/kms"
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/spf13/viper"
++)
++
++type httpFunc func(*http.Request) (*http.Response, error)
++
++func (f httpFunc) Do(r *http.Request) (*http.Response, error) { return f(r) }
++
++func isolateCredentials(t *testing.T) {
++	t.Helper()
++	for _, key := range []string{"AWS_PROFILE", "AWS_DEFAULT_PROFILE", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN", "AWS_WEB_IDENTITY_TOKEN_FILE", "AWS_ROLE_ARN", "AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_KMS", "AWS_CONTAINER_CREDENTIALS_FULL_URI", "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI"} {
++		t.Setenv(key, "")
++	}
++	t.Setenv("AWS_EC2_METADATA_DISABLED", "true")
++	path := filepath.Join(t.TempDir(), "empty")
++	if err := os.WriteFile(path, nil, 0600); err != nil {
++		t.Fatal(err)
++	}
++	t.Setenv("AWS_CONFIG_FILE", path)
++	t.Setenv("AWS_SHARED_CREDENTIALS_FILE", path)
++}
++
++func fixtureConfig() *viper.Viper {
++	c := viper.New()
++	c.Set("region", "us-east-1")
++	c.Set("access_key", "fixture-id")
++	c.Set("secret_key", "fixture-secret")
++	c.Set("session_token", "fixture-session")
++	return c
++}
++
++func providerFor(t *testing.T, c *viper.Viper) *AWSKMSProvider {
++	t.Helper()
++	p, err := NewAWSKMSProvider(util.NewViperProxy(c))
++	if err != nil {
++		t.Fatal(err)
++	}
++	return p.(*AWSKMSProvider)
++}
++
++func sdkFixture(t *testing.T, transport httpFunc) *AWSKMSProvider {
++	t.Helper()
++	isolateCredentials(t)
++	p := providerFor(t, fixtureConfig())
++	opts := p.client.Options()
++	opts.HTTPClient = transport
++	p.client = kms.New(opts)
++	return p
++}
++
++func response(status int, body string) *http.Response {
++	return &http.Response{StatusCode: status, Header: http.Header{"Content-Type": []string{"application/x-amz-json-1.1"}}, Body: io.NopCloser(strings.NewReader(body))}
++}
++
++func TestKMSCredentialBindingsAndTimeouts(t *testing.T) {
++	isolateCredentials(t)
++	t.Setenv("AWS_ACCESS_KEY_ID", "environment-id")
++	t.Setenv("AWS_SECRET_ACCESS_KEY", "environment-secret")
++	for _, explicit := range []bool{true, false} {
++		t.Run(fmt.Sprint(explicit), func(t *testing.T) {
++			c := fixtureConfig()
++			want := "fixture-id"
++			if !explicit {
++				c.Set("access_key", "")
++				c.Set("secret_key", "")
++				c.Set("session_token", "")
++				want = "environment-id"
++			}
++			c.Set("connect_timeout", 7)
++			c.Set("request_timeout", 19)
++			p := providerFor(t, c)
++			o := p.client.Options()
++			creds, err := o.Credentials.Retrieve(context.Background())
++			if err != nil {
++				t.Fatal(err)
++			}
++			if creds.AccessKeyID != want {
++				t.Fatal("wrong credential source")
++			}
++			if explicit && creds.SessionToken != "fixture-session" {
++				t.Fatal("session token lost")
++			}
++			tr, ok := o.HTTPClient.(*awshttp.BuildableClient)
++			if !ok || tr.GetTimeout() != 19*time.Second || tr.GetDialer().Timeout != 7*time.Second || o.RetryMaxAttempts != 1 || o.Region != "us-east-1" {
++				t.Fatal("binding or bounded transport lost")
++			}
++		})
++	}
++}
++
++func TestKMSProfileAndExplicitEndpoint(t *testing.T) {
++	isolateCredentials(t)
++	path := filepath.Join(t.TempDir(), "credentials")
++	if err := os.WriteFile(path, []byte("[fixture]\naws_access_key_id = profile-id\naws_secret_access_key = profile-secret\n"), 0600); err != nil {
++		t.Fatal(err)
++	}
++	t.Setenv("AWS_SHARED_CREDENTIALS_FILE", path)
++	c := fixtureConfig()
++	c.Set("access_key", "")
++	c.Set("secret_key", "")
++	c.Set("session_token", "")
++	c.Set("profile", "fixture")
++	c.Set("endpoint", "https://kms.fixture.invalid")
++	t.Setenv("AWS_ENDPOINT_URL_KMS", "https://unreviewed.invalid")
++	p := providerFor(t, c)
++	o := p.client.Options()
++	creds, err := o.Credentials.Retrieve(context.Background())
++	if err != nil {
++		t.Fatal(err)
++	}
++	if creds.AccessKeyID != "profile-id" || o.BaseEndpoint == nil || *o.BaseEndpoint != "https://kms.fixture.invalid" {
++		t.Fatal("profile or explicit endpoint lost")
++	}
++	tr := o.HTTPClient.(*awshttp.BuildableClient)
++	if tr.GetTimeout() != 30*time.Second || tr.GetDialer().Timeout != 10*time.Second {
++		t.Fatal("default bounds lost")
++	}
++}
++
++func TestKMSInvalidBindingsFailBeforeRequests(t *testing.T) {
++	isolateCredentials(t)
++	if p, err := NewAWSKMSProvider(nil); err == nil || p != nil {
++		t.Fatal("nil config accepted")
++	}
++	for _, tc := range []struct {
++		name, key string
++		value     any
++	}{
++		{"region", "region", ""}, {"partial-id", "access_key", ""}, {"partial-secret", "secret_key", ""},
++		{"role", "role_arn", "arn:fixture"}, {"external", "external_id", "fixture"},
++		{"retries", "max_retries", 3}, {"negative-retries", "max_retries", -1},
++		{"negative-connect", "connect_timeout", -1}, {"negative-request", "request_timeout", -1},
++		{"overflow", "request_timeout", math.MaxInt64},
++		{"relative", "endpoint", "kms.invalid"}, {"scheme", "endpoint", "file:///fixture"},
++		{"userinfo", "endpoint", "https://user:pass@kms.invalid"}, {"query", "endpoint", "https://kms.invalid?secret=x"},
++		{"fragment", "endpoint", "https://kms.invalid#fragment"}, {"parse", "endpoint", "https://%xx"},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			c := fixtureConfig()
++			c.Set(tc.key, tc.value)
++			if p, err := NewAWSKMSProvider(util.NewViperProxy(c)); err == nil || p != nil {
++				t.Fatal("unsafe configuration accepted")
++			}
++		})
++	}
++	c := fixtureConfig()
++	c.Set("access_key", "")
++	c.Set("secret_key", "")
++	if _, err := NewAWSKMSProvider(util.NewViperProxy(c)); err == nil {
++		t.Fatal("orphan session token accepted")
++	}
++	for _, key := range []string{"AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_KMS"} {
++		t.Run(key, func(t *testing.T) {
++			t.Setenv(key, "https://unexpected.invalid")
++			if _, err := NewAWSKMSProvider(util.NewViperProxy(fixtureConfig())); err == nil {
++				t.Fatal("implicit endpoint accepted")
++			}
++		})
++	}
++}
++
++func TestKMSSDKWireEnvelopeAndAliases(t *testing.T) {
++	calls := 0
++	plain := bytes.Repeat([]byte{42}, 32)
++	cipher := []byte("encrypted-fixture")
++	encCtx := map[string]string{"aws:s3:arn": "arn:aws:s3:::fixture/key"}
++	p := sdkFixture(t, func(r *http.Request) (*http.Response, error) {
++		calls++
++		if !strings.Contains(r.Header.Get("Authorization"), "Credential=fixture-id/") || !strings.Contains(r.Header.Get("Authorization"), "/us-east-1/kms/aws4_request") || r.Header.Get("X-Amz-Security-Token") != "fixture-session" {
++			t.Fatal("SigV4 or session binding lost")
++		}
++		var body struct {
++			KeyId, KeySpec    string
++			CiphertextBlob    []byte
++			EncryptionContext map[string]string
++		}
++		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
++			t.Fatal(err)
++		}
++		switch r.Header.Get("X-Amz-Target") {
++		case "TrentService.GenerateDataKey":
++			if body.KeyId != "alias/fixture" || body.KeySpec != "AES_256" || !reflect.DeepEqual(body.EncryptionContext, encCtx) {
++				t.Fatal("generate request changed")
++			}
++			return response(200, fmt.Sprintf(`{"KeyId":"resolved-key","Plaintext":%q,"CiphertextBlob":%q}`, base64.StdEncoding.EncodeToString(plain), base64.StdEncoding.EncodeToString(cipher))), nil
++		case "TrentService.Decrypt":
++			if !bytes.Equal(body.CiphertextBlob, cipher) || !reflect.DeepEqual(body.EncryptionContext, encCtx) {
++				t.Fatal("decrypt context/ciphertext changed")
++			}
++			return response(200, fmt.Sprintf(`{"KeyId":"resolved-key","Plaintext":%q}`, base64.StdEncoding.EncodeToString(plain))), nil
++		case "TrentService.DescribeKey":
++			if body.KeyId != "alias/fixture" {
++				t.Fatal("alias changed")
++			}
++			return response(200, `{"KeyMetadata":{"KeyId":"resolved-key","Arn":"arn:fixture","Description":"fixture","KeyUsage":"ENCRYPT_DECRYPT","KeyState":"Enabled","Origin":"AWS_KMS"}}`), nil
++		default:
++			t.Fatal("unexpected operation")
++			return nil, nil
++		}
++	})
++	ctx := context.Background()
++	generated, err := p.GenerateDataKey(ctx, &seaweedkms.GenerateDataKeyRequest{KeyID: "alias/fixture", KeySpec: seaweedkms.KeySpecAES256, EncryptionContext: encCtx})
++	if err != nil {
++		t.Fatal(err)
++	}
++	expected, err := seaweedkms.CreateEnvelope("aws", "resolved-key", base64.StdEncoding.EncodeToString(cipher), nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if !bytes.Equal(generated.CiphertextBlob, expected) || !bytes.Equal(generated.Plaintext, plain) || generated.KeyID != "resolved-key" {
++		t.Fatal("stored envelope or key changed")
++	}
++	decrypted, err := p.Decrypt(ctx, &seaweedkms.DecryptRequest{CiphertextBlob: expected, EncryptionContext: encCtx})
++	if err != nil {
++		t.Fatal(err)
++	}
++	if !bytes.Equal(decrypted.Plaintext, plain) || decrypted.KeyID != "resolved-key" {
++		t.Fatal("decrypt result changed")
++	}
++	desc, err := p.DescribeKey(ctx, &seaweedkms.DescribeKeyRequest{KeyID: "alias/fixture"})
++	if err != nil {
++		t.Fatal(err)
++	}
++	if desc.KeyID != "resolved-key" || desc.ARN != "arn:fixture" || desc.Description != "fixture" || desc.KeyUsage != seaweedkms.KeyUsageEncryptDecrypt || desc.KeyState != seaweedkms.KeyStateEnabled || desc.Origin != seaweedkms.KeyOriginAWS {
++		t.Fatal("metadata changed")
++	}
++	id, err := p.GetKeyID(ctx, "alias/fixture")
++	if err != nil || id != "resolved-key" {
++		t.Fatal("alias resolution failed")
++	}
++	if calls != 4 {
++		t.Fatalf("calls=%d", calls)
++	}
++	if err := p.Close(); err != nil {
++		t.Fatal(err)
++	}
++}
++
++func TestKMSSDKErrorMappingAndNoHiddenRetry(t *testing.T) {
++	for _, tc := range []struct{ code, want string }{
++		{"NotFoundException", seaweedkms.ErrCodeNotFoundException}, {"DisabledException", seaweedkms.ErrCodeKeyUnavailable},
++		{"KeyUnavailableException", seaweedkms.ErrCodeKeyUnavailable}, {"AccessDeniedException", seaweedkms.ErrCodeAccessDenied},
++		{"InvalidKeyUsageException", seaweedkms.ErrCodeInvalidKeyUsage}, {"InvalidCiphertextException", seaweedkms.ErrCodeInvalidCiphertext},
++		{"KMSInternalException", seaweedkms.ErrCodeKMSInternalFailure}, {"KMSInvalidStateException", seaweedkms.ErrCodeKMSInternalFailure},
++		{"UnexpectedFailure", seaweedkms.ErrCodeKMSInternalFailure},
++	} {
++		t.Run(tc.code, func(t *testing.T) {
++			calls := 0
++			p := sdkFixture(t, func(r *http.Request) (*http.Response, error) {
++				calls++
++				return response(500, fmt.Sprintf(`{"__type":%q,"message":"fixture error"}`, tc.code)), nil
++			})
++			_, err := p.GenerateDataKey(context.Background(), &seaweedkms.GenerateDataKeyRequest{KeyID: "alias/fixture", KeySpec: seaweedkms.KeySpecAES256})
++			var mapped *seaweedkms.KMSError
++			if !errors.As(err, &mapped) || mapped.Code != tc.want || mapped.KeyID != "alias/fixture" || !strings.Contains(mapped.Message, "fixture error") || calls != 1 {
++				t.Fatalf("mapping/retry mismatch: %v calls=%d", err, calls)
++			}
++		})
++	}
++}
++
++func TestKMSWrappedAPIErrorAndTransportFailure(t *testing.T) {
++	p := &AWSKMSProvider{}
++	wrapped := fmt.Errorf("outer: %w", &smithy.GenericAPIError{Code: "AccessDeniedException", Message: "fixture"})
++	var mapped *seaweedkms.KMSError
++	if !errors.As(p.convertAWSError(wrapped, "key"), &mapped) || mapped.Code != seaweedkms.ErrCodeAccessDenied {
++		t.Fatal("wrapped API error lost")
++	}
++	calls := 0
++	p = sdkFixture(t, func(r *http.Request) (*http.Response, error) {
++		calls++
++		return nil, fmt.Errorf("fixture transport failure")
++	})
++	_, err := p.DescribeKey(context.Background(), &seaweedkms.DescribeKeyRequest{KeyID: "key"})
++	if !errors.As(err, &mapped) || mapped.Code != seaweedkms.ErrCodeKMSInternalFailure || calls != 1 {
++		t.Fatal("transport failure or single attempt lost")
++	}
++}
++
++func TestKMSInputValidationNoIO(t *testing.T) {
++	p := sdkFixture(t, func(*http.Request) (*http.Response, error) {
++		t.Fatal("invalid input reached transport")
++		return nil, nil
++	})
++	ctx := context.Background()
++	for _, req := range []*seaweedkms.GenerateDataKeyRequest{nil, {}, {KeyID: "key", KeySpec: "unknown"}} {
++		if _, err := p.GenerateDataKey(ctx, req); err == nil {
++			t.Fatal("invalid generate accepted")
++		}
++	}
++	for _, req := range []*seaweedkms.DescribeKeyRequest{nil, {}} {
++		if _, err := p.DescribeKey(ctx, req); err == nil {
++			t.Fatal("invalid describe accepted")
++		}
++	}
++	for _, blob := range [][]byte{nil, []byte("bad json"), []byte(`{"provider":"other","key_id":"key","ciphertext":"YQ=="}`), []byte(`{"provider":"aws","key_id":"key","ciphertext":"*"}`)} {
++		if _, err := p.Decrypt(ctx, &seaweedkms.DecryptRequest{CiphertextBlob: blob}); err == nil {
++			t.Fatal("invalid decrypt accepted")
++		}
++	}
++	if _, err := p.Decrypt(ctx, nil); err == nil {
++		t.Fatal("nil decrypt accepted")
++	}
++	if _, err := p.GetKeyID(ctx, ""); err == nil {
++		t.Fatal("empty alias accepted")
++	}
++}
++
++func TestKMSCancelledContextAndMissingMetadata(t *testing.T) {
++	calls := 0
++	p := sdkFixture(t, func(*http.Request) (*http.Response, error) { calls++; return response(200, `{}`), nil })
++	ctx, cancel := context.WithCancel(context.Background())
++	cancel()
++	if _, err := p.DescribeKey(ctx, &seaweedkms.DescribeKeyRequest{KeyID: "key"}); err == nil || calls != 0 {
++		t.Fatal("cancelled operation sent")
++	}
++	if _, err := p.DescribeKey(context.Background(), &seaweedkms.DescribeKeyRequest{KeyID: "key"}); err == nil {
++		t.Fatal("missing metadata accepted")
++	}
++}

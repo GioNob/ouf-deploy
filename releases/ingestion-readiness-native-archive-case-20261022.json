@@ -1,0 +1,12 @@
+{
+  "schema": "ouf.ingestion-readiness-native-archive-case.v1",
+  "snapshotRoot": "/etc/ouf/deploy-snapshots",
+  "parentInputsPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-inputs-0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df/native-inputs.json",
+  "parentInputsHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
+  "originalCompressedArchiveSha256": "5f6893d1ac63d5c5ee96c961e5c91a3b1c058a6300af169663961f1d5fbf8be6",
+  "configurationImageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+  "nativeImageId": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+  "nativeArchiveSha256": "d8acfed23e9388d6ba5434a5731789c8b272395208f07272aeae4c7eb4c6026e",
+  "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+  "expectedStageCount": 12
+}

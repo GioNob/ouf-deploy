@@ -1,0 +1,105 @@
+{
+  "schema": "ouf.managed-profile-ths-client-selection-qualified.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "status": "QUALIFIED_NEW_CLIENT_SELECTION_NOT_EXECUTED_ON_TARGET",
+  "source": {
+    "commit": "398a557268fe472a1adf92f8e79a9dfe513090b0",
+    "path": "scripts/read-managed-profile-ths-client-20261028.py",
+    "bytes": 37407,
+    "sha256": "762887b0f5b700cf16b97d5c38a6fb3e2e72422e7cf25e1f0fe34ce2f1adbd54"
+  },
+  "wrapper": {
+    "commit": "185c1e7e7665212ef4279c6678179c0b48a6bbc4",
+    "path": "releases/read-managed-profile-ths-client-20261028.sh",
+    "sha256": "f9044ce26a520f8d53ae401ac6731d3b2899b8bfc6a7225c7312fc03d753c3ce"
+  },
+  "qualification": {
+    "commit": "24ecce7010a765d5d3178ac5286f53e10b1624d9",
+    "pushRun": 40674237338,
+    "prRun": 40674249545,
+    "pushJobs": [
+      122768451408,
+      122768451575
+    ],
+    "prJobs": [
+      122768495403,
+      122768495783
+    ],
+    "conclusion": "success",
+    "directLogsRead": true,
+    "newTests": 12,
+    "preservedScopeTests": 22,
+    "skips": 0,
+    "realPositive": "Actual Unix HTTP/root SO_PEERCRED, root400 historical metadata, observed /opt/ouf and secret-file uid10003/mode400 custody, actual /proc/current-pid/root mounted-file identity; container metadata and IAM process pins synthetic.3metadata/5GET/1config; raw secret canary never retained.",
+    "realDelivery": "Immutable HTTPS wrapper/source as nonroot oufadmin, real sudo/root400/checksum ROOT, nonroot code read denied, no TTY stops before scope. Protected main synthetic STOP exercises actual root scope/result/log600 and no replay; no HUMAN approval simulated.",
+    "negative": "Duplicate/literal registration maps, ambiguous override/config loader, placeholder, missing client, bad issuer/endpoint, generation drift, different mounted inode, repeated scope all denied.",
+    "firstFailedFixture": {
+      "run": 40673986635,
+      "job": 122767583968,
+      "reason": "Hosted runner /opt ancestry was runner-owned; source custody guard correctly denied. Disposable fixture sets root /opt rather than relaxing source guard. No target execution."
+    }
+  },
+  "reuse": {
+    "precedent": "releases/RESOLUTION_THS_CONFIGURATION_20261017.md",
+    "source": "tools/acquisition_read_native/plan_helper.py private_config/custody definitions; source_revision_update/configuration.py owner_json_overlay/additional_location; prior capture Engine/Capture/process_pin/stable_binding",
+    "astEquality": true,
+    "oldEntrypointsInvoked": false,
+    "historicalAuthorityReused": false
+  },
+  "newScope": "/etc/ouf/deploy-snapshots/managed-profile-ths-client-selection-fdc61884-20261028-v1",
+  "priorConsumedInputsHash": "fdc618841f14eeb0c99ee3f61f0971affefff5f13d740d406db376d3daaa7bec",
+  "limits": {
+    "seconds": 60,
+    "privateMetadataReads": 3,
+    "engineGets": 5,
+    "configurationFileContentReads": 1,
+    "responseBytes": 2097152,
+    "totalBytes": 25165824
+  },
+  "selectedConfiguration": "Only /opt/ouf/secrets/onboarding-ths.yaml, exact entire metadata/hash from successful update review, exact read-only mounted destination, /proc owner file identity and unchanged process/root/boot pins. No search or fallback.",
+  "dataBoundary": {
+    "configurationMayContainCredentialFields": true,
+    "rawOverlayPersisted": false,
+    "publicFields": [
+      "registrationId",
+      "clientId",
+      "clientIdOrigin",
+      "providerId",
+      "providerIdExplicit",
+      "issuer",
+      "realm",
+      "authorizationGrantTypeConfigured",
+      "selectedMountTarget",
+      "hashes",
+      "counts"
+    ],
+    "credentialValuesPrinted": false,
+    "credentialTokenOrSigningKeyFilesRead": 0,
+    "iamBindingObserved": false,
+    "browserTokenInspected": false
+  },
+  "effects": {
+    "iamRequests": 0,
+    "oauthRequests": 0,
+    "engineWrites": 0,
+    "sqlSessions": 0,
+    "imageImports": 0,
+    "newGrantsGranted": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "newJobs": 0,
+    "uploads": 0,
+    "sourceActivations": 0,
+    "acquisitionsExecuted": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "scopePatchApplied": false
+  },
+  "targetExecuted": false,
+  "currentDeliveryUsable": true,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

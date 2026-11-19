@@ -1,0 +1,35 @@
+{
+  "schema": "ouf.yaml33-observer-independent-review.v1",
+  "status": "PASS_SOURCE_OBSERVER_CODE_ONLY",
+  "parentManifestSha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+  "rootSourceTree32": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "deliveryFilesVerified": 45,
+  "deliveryBytesVerified": 290701,
+  "observerTestsIndependentlyPassed": 11,
+  "canonicalHelperByteIdentical": true,
+  "checks": [
+    "all delivery bytes and hashes",
+    "all 14 input pins",
+    "corrected parent manifest and tree",
+    "clone clean upstream then apply --index preserving tracked ignored files",
+    "independent canonical read-tree/cached-patch replay",
+    "all baseline vendor files authenticated against original ZIP bytes",
+    "full vendor module origins separate from compiled subset",
+    "two clean paths and binary reproduction required",
+    "source-only observation preserves failure logs and has no release authority"
+  ],
+  "limits": [
+    "full vendor and binary observation not executed locally",
+    "no generation33 image qualification, scanner, SPDX, licence, cohort or runtime proof",
+    "downstream maintenance ownership remains OPEN"
+  ],
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "reviewedReceiptSha256": "7c25480e5f4f1ebb99b0cf08234f98a8c208b1a0be841e508d69989beffc2d6f",
+  "runnerSha256": "f7bd5cf59c43c14d063a6561424543bb5da432ad5d01e0e828df4cbfe84cbd2e",
+  "rawTestEvidence": {
+    "tests.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests.stderr": "057ae8a09488a449b27d8a9d97870c304a9161d7605a90da306b933d1dcd329c"
+  }
+}

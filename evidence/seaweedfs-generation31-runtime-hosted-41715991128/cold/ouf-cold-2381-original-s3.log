@@ -1,0 +1,19 @@
+I1103 20:52:41.557557 s3.go:330 S3 read filer buckets dir: /buckets
+I1103 20:52:41.557600 s3.go:331 S3 read filer maxMB: 4
+I1103 20:52:41.557603 s3.go:333 S3 read master addresses for discovery: [127.0.0.1:19333]
+I1103 20:52:41.557610 s3.go:341 connected to filers [127.0.0.1:18888]
+I1103 20:52:41.557624 s3.go:363 Starting S3 API Server with standard IAM
+I1103 20:52:41.560006 filer_client.go:180 FilerClient: started filer discovery for group '' (refresh interval: 5m0s)
+W1103 20:52:41.560065 s3_sse_s3.go:868 SSE-S3 KeyManager: neither s3.sse.kek.passphrase nor WEED_S3_SSE_KEK_PASSPHRASE is set; the KEK will be stored on the filer in plaintext. Set one to enable encrypted-at-rest KEK storage.
+I1103 20:52:41.560259 s3_sse_s3.go:566 SSE-S3 KeyManager: No KEK configured. SSE-S3 encryption is disabled. Set s3.sse.kek or s3.sse.key in security.toml to enable it.
+E1103 20:52:41.560689 s3api_server.go:424 Failed to load IAM configuration: no signing key found for STS service; please provide 'signingKey' in IAM config, configure 'jwt.filer_signing.key' in security.toml, or ensure SSE-S3 is initialized
+I1103 20:52:41.561423 masterclient.go:465 + s3@127.0.0.1:28333 noticed .s3 127.0.0.1:28333
+I1103 20:52:41.563371 s3.go:582 Start Seaweed S3 API Server 30GB 4.52  at http port 18333
+I1103 20:52:41.565033 s3api_bucket_owner_index.go:277 bucket owner index ready
+I1103 20:52:41.721656 master_client.go:27 the cluster has 0 filers
+I1103 20:52:52.522303 masterclient.go:465 + s3@127.0.0.1:28333 noticed .filer 127.0.0.1:18888.28888
+I1103 20:52:52.522329 filer_client.go:526 FilerClient: discovered 1 new filer(s) in group '': [127.0.0.1:18888]
+I1103 20:52:53.523111 masterclient.go:480 LockRing: s3@127.0.0.1:28333 received ring update v1793739173522610473: [127.0.0.1:18888.28888]
+I1103 20:52:54.332128 s3api_object_handlers_delete.go:227 DeleteObjectHandler ouf-recovery-fixture deleted.bin
+I1103 20:52:54.626061 shutdown.go:15 Gracefully stopping gRPC server
+I1103 20:52:54.626205 shutdown.go:23 gRPC server stopped gracefully

@@ -1,0 +1,28 @@
+name: Storage capture after held stop
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - scripts/capture-storage-after-held-stop-20261107.py
+      - tests/test_storage_capture_after_held_stop.py
+      - tests/qualify_storage_capture_after_held_stop_native.py
+      - .github/workflows/storage-capture-after-held-stop.yml
+permissions:
+  contents: read
+concurrency:
+  group: storage-capture-after-held-stop-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Continuation boundary tests
+        run: python3 -I -B -S -m unittest discover -s tests -p test_storage_capture_after_held_stop.py -v
+      - name: Install encryption utility
+        run: sudo apt-get update && sudo apt-get install -y age
+      - name: Late event HOLD and capture-only native continuation
+        run: sudo -n env GITHUB_ACTIONS=true python3 -I -B -S tests/qualify_storage_capture_after_held_stop_native.py

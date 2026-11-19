@@ -1,0 +1,39 @@
+{
+  "schema": "ouf.onboarding-diagnostic-current-inputs-target-evidence.v1",
+  "origin": "operator-pasted-terminal-output",
+  "receivedDate": "2026-10-26",
+  "exitCode": 0,
+  "deliveryExitCode": 0,
+  "scopeConsumed": true,
+  "operatorDirectory": "/home/oufadmin/ouf-onboarding-diagnostic-inputs-delivery.rJJwNGhc",
+  "operatorLog": "/home/oufadmin/ouf-onboarding-diagnostic-inputs-delivery.rJJwNGhc/bootstrap.log",
+  "receipt": {
+    "acquisitionsExecuted": 0,
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": true,
+    "containerWrites": 0,
+    "contextPath": "/etc/ouf/deploy-snapshots/onboarding-diagnostic-current-inputs-20261026-v1",
+    "continuationAuthorized": false,
+    "counts": {
+      "bytes": 127338,
+      "engineGets": 3,
+      "privateMetadataReads": 3
+    },
+    "credentialFileReads": 0,
+    "currentApplicationPolicyOrLabelsObserved": false,
+    "historicalAuthorityReused": false,
+    "imageImports": 0,
+    "inputsHash": "5909d1003e88231c1d41a799a12539127d27386f79a04ed345ad9d29eaaddb6d",
+    "installationSigningKeysRead": false,
+    "oauthRequests": 0,
+    "releaseAcceptance": false,
+    "retainedCandidateIdentityObserved": true,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.onboarding-diagnostic-current-input-capture-result.v1",
+    "sourceActivations": 0,
+    "sqlSessions": 0,
+    "status": "ONBOARDING_DIAGNOSTIC_CURRENT_INPUTS_CAPTURED_NOT_AUTHORIZED"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "ouf.storage-cold-v3-prepared-operator-receipt.v1",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "downloadAndSha256ReportedSuccessful": true,
+  "programV3InstalledReported": true,
+  "reportedResult": {
+    "acceptanceCreditAdded": 0,
+    "includesWholeSharedPostgresCluster": true,
+    "maximumProducedBytes": 68719476736,
+    "maximumSeconds": 3600,
+    "planSha256": "1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f",
+    "remaining": [
+      "APPROVED_STOP_CONTAINMENT_AND_WINDOW",
+      "PUBLIC_ENCRYPTION_RECIPIENT",
+      "CAPTURE",
+      "OFFHOST_TRANSFER_AND_ISOLATED_RESTORE"
+    ],
+    "reviewedRuntimeSources": 5,
+    "roles": [
+      "apisix",
+      "caddy",
+      "etcd",
+      "gateway-owner",
+      "ingestion",
+      "ingestion-evidence-read",
+      "keycloak",
+      "mcp",
+      "minio",
+      "onboarding",
+      "postgres",
+      "semantic",
+      "udp",
+      "udp-evidence-read"
+    ],
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-cold-backup-preparation.v1",
+    "sourceCount": 34,
+    "status": "PLAN_PREPARED_NOT_STOP_AUTHORITY",
+    "stoppedSharingContainers": 103,
+    "targetWrites": 0
+  },
+  "targetCaptureExecuted": false,
+  "stopAuthorityIssued": false,
+  "acceptanceCreditAdded": 0
+}

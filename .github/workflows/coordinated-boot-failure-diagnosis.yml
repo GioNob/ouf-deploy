@@ -1,9 +1,6 @@
 name: OUF coordinated boot failure read-only diagnosis
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [.github/workflows/coordinated-boot-failure-diagnosis.yml]
 permissions:
   contents: read
 jobs:

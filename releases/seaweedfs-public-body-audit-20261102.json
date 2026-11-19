@@ -1,0 +1,999 @@
+{
+  "schema": "ouf.storage-public-body-audit.v1",
+  "modules": [
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "scannedTextFiles": 375,
+      "excludedFiles": 64,
+      "hits": [
+        {
+          "path": ".github/workflows/module-ci.yml",
+          "sha256": "69d921eeeb013e73b66bee942b68a99d3a97880c47dd8192e4e578c6af840bcb",
+          "gitBlob": "50d0e84ac967eb17abd9da9a75276aa9cd942bc4",
+          "matchingLines": [
+            61
+          ]
+        },
+        {
+          "path": "README.md",
+          "sha256": "fb8dbfe23b3caee4a4672295d73f12ec8b8dcee5e74f246810bee940cd442882",
+          "gitBlob": "e97c6eb05afa9fef9fbb3269b631bee0324ac422",
+          "matchingLines": [
+            57
+          ]
+        },
+        {
+          "path": "contracts/installation/examples/ouf-lab-v1.json",
+          "sha256": "751d0e43be899fae7311a9c2d40ccf3e1a98d6907c4144cad360e505a0d2f9e0",
+          "gitBlob": "60fcaf442f63b3621415f619d29a5a30bbfa0635",
+          "matchingLines": [
+            46
+          ]
+        },
+        {
+          "path": "openapi/onboarding-v1.yaml",
+          "sha256": "c88e6f6350afc00f4eaa3f320131f82fd7c2da7c903aff1f863fe0a84857f5b7",
+          "gitBlob": "70454a8d3418f1f72c1035a814826934879f0bd5",
+          "matchingLines": [
+            385
+          ]
+        },
+        {
+          "path": "pom.xml",
+          "sha256": "4ccf9fb8d579d672d1493eb7f2bf5750e095eb933415be8f36870e402f72da61",
+          "gitBlob": "25c2b143d75c562d424ec397cdb57ec1dfc6520a",
+          "matchingLines": [
+            43,
+            44
+          ]
+        },
+        {
+          "path": "scripts/ci_r4a_staging_container_smoke.sh",
+          "sha256": "5e032d1fb83e74046f50056fe098089ef35d54768fa477f3a91004bff4636614",
+          "gitBlob": "b65c65dd801648a2607c5bc1a8ca76e330f9bbe0",
+          "matchingLines": [
+            3,
+            29,
+            31,
+            32,
+            35,
+            36,
+            46
+          ]
+        },
+        {
+          "path": "scripts/r4a_managed_csv_smoke.py",
+          "sha256": "dcdb6e83b933bf57f29c46c599601680ef609263131be4ba40d0625e4b3a305c",
+          "gitBlob": "ece720dd037edcf1ba2158a12fd5f948772e9a29",
+          "matchingLines": [
+            163
+          ]
+        },
+        {
+          "path": "scripts/r4a_minio_staging_bootstrap.py",
+          "sha256": "5e9910d328967e266b4b15fe83fa28d543f44bc3183914a88bf22f7df96f0a46",
+          "gitBlob": "34cad2173d34966a813378944ed2bc0060fd77fd",
+          "matchingLines": [
+            2,
+            5,
+            6,
+            24,
+            25,
+            45,
+            46,
+            48,
+            50,
+            51,
+            53,
+            64,
+            67,
+            101,
+            125,
+            128,
+            167,
+            186,
+            195,
+            212,
+            244,
+            255
+          ]
+        },
+        {
+          "path": "scripts/r4a_minio_staging_plan.py",
+          "sha256": "20f4d3222ea8203d2503cfbcd666a9e57e3b4727b88b0af1ed62639b672bf215",
+          "gitBlob": "43ab630e961733948784808d88b785a65e9611fe",
+          "matchingLines": [
+            2,
+            4,
+            20,
+            21,
+            27,
+            28,
+            30,
+            33,
+            34,
+            35,
+            37,
+            77,
+            80,
+            83,
+            86,
+            100
+          ]
+        },
+        {
+          "path": "scripts/r4a_minio_staging_preflight.py",
+          "sha256": "ca744a2d07a9dc83ca8887b5b57c09d1c08da0bf345df274c8cdb105dc3814c6",
+          "gitBlob": "e3df175049f3fb05db36c20bf7a89befe42a307e",
+          "matchingLines": [
+            2,
+            16,
+            18,
+            20,
+            21,
+            29,
+            30,
+            31,
+            34,
+            36,
+            38,
+            50
+          ]
+        },
+        {
+          "path": "scripts/r4a_onboarding_rollout_gate.py",
+          "sha256": "146a8ecb8abbdd50d2655628feffc3331915ba7b4fd6dd19b9c97e7b88952248",
+          "gitBlob": "bc74eb6d24c04bcab2de9533e936038abb517e54",
+          "matchingLines": [
+            2,
+            4,
+            75,
+            76,
+            78,
+            80,
+            81,
+            82,
+            88,
+            89,
+            91,
+            119,
+            124
+          ]
+        },
+        {
+          "path": "scripts/r4a_onboarding_staging_candidate.py",
+          "sha256": "991ed7965d8b674edff1e526154ee1fb0e050b308932a203e08f843ef6a4c8b9",
+          "gitBlob": "4034c956b02a83a7b25d876788e1d24c646aef0b",
+          "matchingLines": [
+            24,
+            25,
+            29
+          ]
+        },
+        {
+          "path": "scripts/r4a_onboarding_staging_preflight.py",
+          "sha256": "1d62f4fad73e76f6c06c9719ca280c24c512cd2325fc5090897f5edccb3f8811",
+          "gitBlob": "16d36d8b82e81d0643b1e63683f9889eb7e0f44f",
+          "matchingLines": [
+            19,
+            60,
+            61,
+            70,
+            76,
+            77
+          ]
+        },
+        {
+          "path": "scripts/r4a_stage_deploy_snapshot.py",
+          "sha256": "12c79064ea2fbabeb9700d9c605a5b18d0214bc980d19ff29ba4c2632ad7339b",
+          "gitBlob": "f4cdcabe6d1405aa9b23ab4e639e6525ba07de8b",
+          "matchingLines": [
+            18
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileMcpApi.java",
+          "sha256": "17a27d2e701c5a373cbc0a846a73f93c71a0cff289e1b5688935cb5530d5c627",
+          "gitBlob": "8b6a876da7d704f15a2ae9dad23450a5e4f1c31a",
+          "matchingLines": [
+            127
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/GatewayManagedFileObjectStore.java",
+          "sha256": "615fef7644b254215692166bc6b02a54b7aa6b02edaf66c0aa3c0f26abad0b41",
+          "gitBlob": "4bc70145cb8ce7e7f576f5cfbcb30ea3b7fcbe71",
+          "matchingLines": [
+            18
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileService.java",
+          "sha256": "95b48ebeba33de2b8b1a5ad9159a2e1fd5d94ad126a4c4e4caaecf4e4c9c40e6",
+          "gitBlob": "f8ee955f070aacbed2f71b80f3b0296d60644168",
+          "matchingLines": [
+            95
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedProfileFailurePolicy.java",
+          "sha256": "c13360fee074f6b2f4c5a31a799f1047313f85b0e9be0b14fdd477d92e0ba3ae",
+          "gitBlob": "6d9fa805ccbc3f49ffca8976d96835e762f4788a",
+          "matchingLines": [
+            11
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java",
+          "sha256": "f5c7a82ef6ae1be7a65cc0b8dd915b6ef0bac71b3b95fe22d53de156050a56ec",
+          "gitBlob": "b7867a7e4cf17ec85de9b71e7c9a0d157347bcad",
+          "matchingLines": [
+            3,
+            4,
+            5,
+            19,
+            20,
+            22,
+            23,
+            27,
+            28,
+            29,
+            37,
+            41,
+            48,
+            56,
+            65
+          ]
+        },
+        {
+          "path": "src/main/resources/db/migration/V5__managed_file_profiles.sql",
+          "sha256": "6ab69fdc83365b1db9b5181d7817ccf7ee4a007223355333fd6c89f834fede40",
+          "gitBlob": "6862db82411d06306260166442925ccbea50cab8",
+          "matchingLines": [
+            4
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/GatewayManagedFileObjectStoreTest.java",
+          "sha256": "c6dcf2610748a1acaffd760033657cbb5770b741168ce2f442bc2d4d548b145a",
+          "gitBlob": "3f919345e98fe19c90f07aefd92e5226ae20474d",
+          "matchingLines": [
+            25,
+            28,
+            41,
+            43,
+            45
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/IngestionConfigurationAuditRuntimeTest.java",
+          "sha256": "351501dcfed6fb594ef98dec900076f83d5a6760ae28dfd41190c541803a9eb4",
+          "gitBlob": "916d1f987805c2dba1694f9a029133c4f04ae5e1",
+          "matchingLines": [
+            148,
+            149
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/IntakeTenantMigrationUpgradeTest.java",
+          "sha256": "e92e5914442fcd4729a871bb3da26f302eff4a0d26ef02348f6fc4c9731f9c77",
+          "gitBlob": "05f703718ed38079b81809bb134dd31aab531bc5",
+          "matchingLines": [
+            21
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/LegacyOwnerMigrationUpgradeTest.java",
+          "sha256": "9aff1be28a7cbe314927f9ff1d0ab45c36d6543e158e483507f52898e7822bee",
+          "gitBlob": "58e0ff005a1cd9b8ce509387912bebb35419b5f2",
+          "matchingLines": [
+            21
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileAuthorizationTest.java",
+          "sha256": "0d0cf6cf5c66b300b299ac6d2ad29b2e0dd0397eb9f3ed712e9342a11785e99a",
+          "gitBlob": "c5afa8872d11adfef0163f8a52bc8569d821251d",
+          "matchingLines": [
+            65
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileDelegatedUploadApiTest.java",
+          "sha256": "985d95321804445546e705d70fcb2a5fb086fdaea8ee85040eedd6878cf444c0",
+          "gitBlob": "971320e0cd87cb92cddd45e7613e4c23a900a235",
+          "matchingLines": [
+            40,
+            42
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileIntakeTenantRuntimeTest.java",
+          "sha256": "4fa0b5850e02c1d5fa59ea5c7d20be6d851117864ea329a070e5c097a74cfafc",
+          "gitBlob": "da6c9a5aedcd504a042437e9dfe935b4c03f2978",
+          "matchingLines": [
+            34,
+            42,
+            52,
+            59,
+            61,
+            66,
+            71,
+            78,
+            80,
+            82
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileMcpApiTest.java",
+          "sha256": "84cb4e9728aac071e7cbb5d65a0560e56c49861f99352250862f961a9eeeb2a7",
+          "gitBlob": "5d239c84e7711395e87ea2e000cc3d9eb3c6523b",
+          "matchingLines": [
+            57
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileOwnershipRecoveryRuntimeTest.java",
+          "sha256": "d306c9046b5bdc8b12595ee092a20c6f8c9c023cdb0bfa2dbd819bdf85879386",
+          "gitBlob": "04fe097a27ff35f7143519e39f120e06f89f0fae",
+          "matchingLines": [
+            28
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileProfileWorkerTest.java",
+          "sha256": "9b80dca2ae5f2319f554edc5bbd9fe31a78fbe6fc2e34b5229f681d786bcf4e9",
+          "gitBlob": "e8d66049b234f5cfcfa1dd24292e8fc38ecd05b7",
+          "matchingLines": [
+            16,
+            20
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileRecoveryRuntimeTest.java",
+          "sha256": "65dc1a44c748f751da950e4c4ec04f9f7883b08d8693ce3b0b41d3e4d39d7a7c",
+          "gitBlob": "528ba780916f919d603ac17813492cfcf4653b52",
+          "matchingLines": [
+            20,
+            36,
+            57
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileRuntimeTest.java",
+          "sha256": "89e48fb90492db4929a9e7d95dd1a81e78693d56106d00b96a01f514068be1e1",
+          "gitBlob": "b5049f46848a3b56be7714e13b3d465722afeac1",
+          "matchingLines": [
+            25,
+            35,
+            50,
+            51,
+            66,
+            67,
+            97,
+            98,
+            109,
+            112,
+            113,
+            114,
+            117,
+            118,
+            137,
+            139,
+            151,
+            152
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileStagingApiTest.java",
+          "sha256": "30c69e9845a88963dc859e956bbdedbd32fa5188010dd8a86e19fdb96a157df6",
+          "gitBlob": "b00fe73b5632a6ce4ca56e16c43f45cad8ff686a",
+          "matchingLines": [
+            35,
+            41,
+            44
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedOnboardingReviewRuntimeTest.java",
+          "sha256": "03f5ff8c43d594e1ab6323be1db257a0c5e6fd253885b0b7b88dc221c72c175a",
+          "gitBlob": "70a254ace770a31526aaaedc09b8080e7e83d0db",
+          "matchingLines": [
+            329,
+            330
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedProfileBudgetRuntimeTest.java",
+          "sha256": "22bbafdea9d6bf3c2bcc4a22180a293e9e3c6a8408a7a6468e3d9e65778b91f1",
+          "gitBlob": "9339e09c969f4f852f8871a1723196c43b8785a6",
+          "matchingLines": [
+            25,
+            149
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedProfileFailureRuntimeTest.java",
+          "sha256": "be0398d2f6ca473e55cc1309810243d03f90359748d3d4d2b1ffa017983a8a8b",
+          "gitBlob": "1991d75423106bf7662aef04b88db1773a49685e",
+          "matchingLines": [
+            21
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/ProfileBudgetMigrationUpgradeTest.java",
+          "sha256": "c598d23771c72ea7426c5d6de2b680a4e2cada1d15a64538e84ac628dbd92e12",
+          "gitBlob": "595f2b2d8d7c67b5cab5fdc9c85f02d90e8c5467",
+          "matchingLines": [
+            21
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedFileNativeRegistrationTenantTest.java",
+          "sha256": "fb48c4d123325c41e9788f1efdfa77b194f76d71430d51ba0abe00bc744612f0",
+          "gitBlob": "0e104023b642bede16fb81935f696ee3572d0dc4",
+          "matchingLines": [
+            18
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedFileProfileDiagnosticTest.java",
+          "sha256": "5f8734251c91b8394815ae5b5146ac695246a4fb4c97ed7796459896246f3ed8",
+          "gitBlob": "2d0f63a08d83989ac82db674af2b3f22b79e5a61",
+          "matchingLines": [
+            24
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/ManagedProfileTransportTest.java",
+          "sha256": "25a09715ad4be108916e03f789417ddfcc629c150e4a4e94ceff2360e2a6924b",
+          "gitBlob": "a6d9ef4d59860cb4ba451030bc4ff3ef46b4b96c",
+          "matchingLines": [
+            25,
+            26
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStoreTest.java",
+          "sha256": "30f3fbc80549d6d29a52b1f995a652f572d9a81d326562d604e96fdfe016c907",
+          "gitBlob": "3f52554c1f9fb6360121340da21b1a160a7b05d3",
+          "matchingLines": [
+            5,
+            15,
+            22,
+            29,
+            30,
+            33,
+            34,
+            35,
+            36,
+            38,
+            40,
+            43,
+            44,
+            45,
+            48
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/pairwise/ActivationPublisherFixture.java",
+          "sha256": "d1590cd2ba2e275a1c78279480e88d57d5a1067930b75a779555a565f1119867",
+          "gitBlob": "8d03ff49b0ac15243bcc9af5adedf03faf96cd22",
+          "matchingLines": [
+            29
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/pairwise/ChatbotVerticalPublisherFixture.java",
+          "sha256": "16fadf31ba309983ba7862d924c6ceacf29f85f7506431f87df048efe5428334",
+          "gitBlob": "35877a9cfd2b1a13de1c1c6ed6a5035672de48f3",
+          "matchingLines": [
+            54,
+            55
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/pairwise/GeoPackagePublisherFixture.java",
+          "sha256": "0da869c2e01ba4baa3dac502a1ea42f5d6c545d7a0c9c76b50609ed734cb8cb4",
+          "gitBlob": "1614c61ea856cf1393bd2bb849a1215be3dda729",
+          "matchingLines": [
+            19,
+            21,
+            28,
+            29
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/pairwise/ManagedFormatsPublisherFixture.java",
+          "sha256": "3056e9073b9383759aaa7318058eb708757f4403cd11ae45e1c86b5b4a01018e",
+          "gitBlob": "53dd875e700c5b4a57d7f1ce78e7173c4c1dd36b",
+          "matchingLines": [
+            53,
+            55
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/pairwise/ServingPublisherFixture.java",
+          "sha256": "e7236c821b20b98ea92a7ccbbe6bf09cd4fe293c2ba2551ebbcb3e422035ab80",
+          "gitBlob": "f6b148c2a68ab5b896bb762698bab8aa53d3de0b",
+          "matchingLines": [
+            34
+          ]
+        },
+        {
+          "path": "tests/browser/profile-recovery.test.cjs",
+          "sha256": "731e410d6df6539ae7a9ed2259edb5574408bfad59d7a7f38861edbbf05d02cd",
+          "gitBlob": "fef13c01ea0bb041ca6e1785091ca509c66b8a65",
+          "matchingLines": [
+            62
+          ]
+        },
+        {
+          "path": "tests/test_r4a_minio_staging_bootstrap.py",
+          "sha256": "330b7d328d79f0c5aadac1c85c213ce1bd4d73d884a32929ee53921f68c7ef7c",
+          "gitBlob": "f3727048f8fb694f1a8430201ab95eaea26b315b",
+          "matchingLines": [
+            12,
+            15
+          ]
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "scannedTextFiles": 213,
+      "excludedFiles": 56,
+      "hits": [
+        {
+          "path": ".github/workflows/module-ci.yml",
+          "sha256": "b5b6d3a5410665509596adb667baaa1d7930d7f2d1cdf935c0f68bf4207ae5ef",
+          "gitBlob": "f2d4c2c3b37e94695b22312ca822579379610538",
+          "matchingLines": [
+            22,
+            23,
+            24,
+            37,
+            39,
+            41,
+            42,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            53,
+            56,
+            84,
+            85
+          ]
+        },
+        {
+          "path": "scripts/ci/build-pinned-minio-image.sh",
+          "sha256": "25abcbd3416c549a9236eb93b32a0f78b14814cb7ad2ce1726461bb4ee3e9d7e",
+          "gitBlob": "d9c62fa2a5cf11ad2e339b8281c2ecd67acd136d",
+          "matchingLines": [
+            6,
+            7,
+            10,
+            11,
+            14,
+            15,
+            18,
+            19
+          ]
+        },
+        {
+          "path": "scripts/ci/pitr-minio-restore-drill.sh",
+          "sha256": "0baf064eaeead6dc14f461107a0c30a5a2f96a259f6b47f3bb0489e94cff599e",
+          "gitBlob": "6fe014e6ebcd0c37ccc6fbcbff153e7813e5fdc7",
+          "matchingLines": [
+            6,
+            7,
+            10,
+            11,
+            14,
+            15,
+            24,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            92,
+            93,
+            98,
+            99,
+            100,
+            113,
+            114,
+            122,
+            127
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedServingService.java",
+          "sha256": "5776dcbedc38a260568895255a1eb3116c1e77c7b044b234b13bbda6a5312fc1",
+          "gitBlob": "4d86277da25f54786b0b1d14d70c8203069408b4",
+          "matchingLines": [
+            28,
+            35
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/udp/RelationshipMaterializer.java",
+          "sha256": "da2d6922683744cc658eab09bea7db5e44b3e5192d493b46d3216323ac46dce8",
+          "gitBlob": "21f58eacc6a74d8246a7c3121c189ff71e8c87e8",
+          "matchingLines": [
+            47,
+            49
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/udp/S3LakeConfiguration.java",
+          "sha256": "5a323ae336b73eb5c7656d02dfaa339bb1c799d54eb41c2313a70017059cdd0f",
+          "gitBlob": "5c6a7fbb5d46b7f2b7540623e2e138dcf6bd5178",
+          "matchingLines": [
+            12,
+            14
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapter.java",
+          "sha256": "b590a8d3de8125e54586663a4fd21886a0d9d8f339436ff0dbde78a41c06c178",
+          "gitBlob": "0c6045a8736a4bcf8c84da0ba524d3cb739d11be",
+          "matchingLines": [
+            8,
+            12,
+            15,
+            16
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/udp/SpatialMaterializer.java",
+          "sha256": "74381f1c74804d4ab4c5ffcfd201a9442dee71a6d13f2aa8563fec00999554d3",
+          "gitBlob": "03d805bc941aa2c3594bd2900d4e1c33315bcc9d",
+          "matchingLines": [
+            90
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/pairwise/ServingConsumerFixture.java",
+          "sha256": "ed829ac3cc422836c4e963d84fdd0a825712a05c1020f7ab15d12facb69f9741",
+          "gitBlob": "68834d94d4cab73b6dda7b123d7ea3adaf516b3e",
+          "matchingLines": [
+            15,
+            40
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/udp/GovernedIdentityEngineTest.java",
+          "sha256": "ee72f95f6f1ab53abd91fefac172d0619686194a78436a1b6411c447f67a2b46",
+          "gitBlob": "df649d58484107473c534fd7c9f75bef1595d9a5",
+          "matchingLines": [
+            28,
+            32
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/udp/HistoricalReplayRuntimeTest.java",
+          "sha256": "f1fe516882c275c800b668ad8a21f7881240c58a20ad723e88616cb1a886e9b7",
+          "gitBlob": "1b3eaff87dc86b0de19602620565570a49721724",
+          "matchingLines": [
+            47
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/udp/MinioLakeAcceptanceTest.java",
+          "sha256": "93e0f42900811618f6be939ab0aba01e3cc234bd730560f59dae087d83624c75",
+          "gitBlob": "0db373e91e9c8a2ad0c86d96253a9133fd6cd66e",
+          "matchingLines": [
+            14,
+            19,
+            21,
+            22,
+            27,
+            29,
+            31,
+            34
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/udp/RelationshipMaterializerRuntimeTest.java",
+          "sha256": "479c5521931028c3ac388fd590693bcf4f4442ca2b428e17ed3177daff2cb05f",
+          "gitBlob": "7ef013d4c7890dfd7f2ecd58da1108ea7ea9f359",
+          "matchingLines": [
+            23
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapterTest.java",
+          "sha256": "b74a0205d6a292a9f3fe0479078f1f3fd0caef9628ac76ddb45bab99abb25dbd",
+          "gitBlob": "145546ce9fb23d456e3a091347d1aafc024027f6",
+          "matchingLines": [
+            11,
+            15,
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "scannedTextFiles": 184,
+      "excludedFiles": 51,
+      "hits": [
+        {
+          "path": ".github/workflows/r2b-serving-live.yml",
+          "sha256": "8a0a1878bcf766a2da394237740461abc94f2ea6589d4cb9e6a12d145c1b61f3",
+          "gitBlob": "c521c9241d9877cead4a9839c460c9d2d0d1c728",
+          "matchingLines": [
+            21,
+            22,
+            23,
+            40,
+            41
+          ]
+        },
+        {
+          "path": ".github/workflows/r2c-publication-live.yml",
+          "sha256": "227e800dc373da8a3792efee98e98f1fe873e9cd6895e17c19fbf1b6c0591edb",
+          "gitBlob": "f822cb6e93b3c3c77b0acacf9af6cba49901ea01",
+          "matchingLines": [
+            23,
+            24,
+            25,
+            47,
+            48
+          ]
+        },
+        {
+          "path": ".github/workflows/r2e-geopackage-live.yml",
+          "sha256": "f63c955dc7c281e25b4f4fcc3be4711063e11a0b8056fc5bcb45395e6e480801",
+          "gitBlob": "b7ef629acbf59d4cfb0a7a62681b3c2945654a1f",
+          "matchingLines": [
+            25,
+            26,
+            27,
+            51,
+            52
+          ]
+        },
+        {
+          "path": ".github/workflows/r4a-chatbot-vertical.yml",
+          "sha256": "93266934abd418b82c6707c97a82a394619c0b89100bd6fc51a001a524654a04",
+          "gitBlob": "fd98050c32dbe877665519e052d7cd014a03111f",
+          "matchingLines": [
+            30,
+            31,
+            32,
+            61,
+            62
+          ]
+        },
+        {
+          "path": "pairwise/r2a_activation.py",
+          "sha256": "3fc21e0caa1b3bfeabbaba96c64f3e92b07feac8d794be9b854dfadf961f781a",
+          "gitBlob": "ce09366d5f8ca9c9371a322a1b72b2092b1ad82d",
+          "matchingLines": [
+            64
+          ]
+        },
+        {
+          "path": "pairwise/r2b_serving.py",
+          "sha256": "63c2c4cf2266a855b654ce6dd4e563575a6311325a833dccb90ff727d364d1ef",
+          "gitBlob": "23c8e6af01984f05d4f7047fc6dd668a6394cf31",
+          "matchingLines": [
+            2,
+            48,
+            67,
+            100
+          ]
+        },
+        {
+          "path": "pairwise/r2c_publication.py",
+          "sha256": "28e4d0df346fbdacf62e49d56edd1cc4dfcd21df26984fde58af6f33520850a7",
+          "gitBlob": "6fe6adf26f1994f3cf57c97adad5326b31cb0091",
+          "matchingLines": [
+            47,
+            73,
+            139
+          ]
+        },
+        {
+          "path": "pairwise/r2e_geopackage.py",
+          "sha256": "dabe602f16e1d7b4df822c1e60edc35cae63ef06972f13edf8f9a4ef5298de2b",
+          "gitBlob": "4ee83d3dccf57c4b13d614f2e3ec3bdb91d07b69",
+          "matchingLines": [
+            47,
+            75,
+            126
+          ]
+        },
+        {
+          "path": "pairwise/r4a_chatbot_vertical.py",
+          "sha256": "02617313afa96e1ae5f4424055e154b4626b7ad6a919a842cfbb38afd4e667c5",
+          "gitBlob": "ec6ef87f44a3e0e410942e895bcd019d960a66f0",
+          "matchingLines": [
+            82,
+            169,
+            250
+          ]
+        },
+        {
+          "path": "scripts/ci/build-pinned-minio-image.sh",
+          "sha256": "6f306ef071661704527838e2ecf97e9dd6490cbda4cc4850181779cf0e834b41",
+          "gitBlob": "e5b4c59ecf5f8c18c9b91ce5360018bd6d2a495e",
+          "matchingLines": [
+            6,
+            7,
+            10,
+            11,
+            14,
+            15,
+            18,
+            19
+          ]
+        },
+        {
+          "path": "src/main/java/it/comune/trieste/ouf/ingestion/ExecutionGatewayClient.java",
+          "sha256": "efda58e0b9023ffca5cb2516c2320df8fbaa53f3e17dab21a482773af1fda10e",
+          "gitBlob": "6a949f2fe3d88423b7dc1b9b24bd34d88fcbce24",
+          "matchingLines": [
+            31
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/ingestion/ExecutionGatewayClientTest.java",
+          "sha256": "8fb106059003bc3a1bda364b899f057a0ddfae79b546e08d652e26280c9e5c27",
+          "gitBlob": "f5d5cc87db4433ba4f089adcf84149d1f49f20c0",
+          "matchingLines": [
+            27
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/ingestion/FrozenConfigurationProbeTest.java",
+          "sha256": "1e16f9a244947aaa322fcbe625bd310ae913b572bb3011f034f1250ea3059645",
+          "gitBlob": "a8bdc23e1b28193b14e474f041b2ff680a7cd7ee",
+          "matchingLines": [
+            115
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/ingestion/ManagedGeoPackageAdapterTest.java",
+          "sha256": "ec25a830f66f0220b69331fa57ceacc2362cd507826bb1ab44912b687a4a816b",
+          "gitBlob": "5e5c1a210a5e873f4211c7b0f5ba590d40971ccf",
+          "matchingLines": [
+            32
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/ingestion/PublishedExecutionMapperTest.java",
+          "sha256": "46238f15e3951b3165e8c1c11fefd29e9190f996b5ddcc1c3f878029d9e8ba56",
+          "gitBlob": "b79c311a4750a6d13f3094a4d5deb15fd07a2255",
+          "matchingLines": [
+            11,
+            25
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/ingestion/QuarantineRuntimeTest.java",
+          "sha256": "1469f7bc08e511f2a0f48f084e4c427a4ab2e2c08c4089dff6a60342e4ec8018",
+          "gitBlob": "d5896c47bcae25616742e5a75e37b317721507c1",
+          "matchingLines": [
+            17,
+            18,
+            19
+          ]
+        },
+        {
+          "path": "src/test/java/it/comune/trieste/ouf/ingestion/ReplayWorkerRuntimeTest.java",
+          "sha256": "277f68b0c9aa3359ba5c68d8efd62fad7738b093461a1d7b7b5ab108de850ab3",
+          "gitBlob": "698a47bb8014532a2172cfbd8751b7fe5da9f892",
+          "matchingLines": [
+            18,
+            22
+          ]
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "commit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+      "scannedTextFiles": 180,
+      "excludedFiles": 41,
+      "hits": [
+        {
+          "path": "evidence/ouf-pet-gap-register-v1.7.json",
+          "sha256": "5bdd42f111aecd4e5a52ae0f223bbe909d0c40276727eccfa146353cf13cdc64",
+          "gitBlob": "130bf4ced660e0a0f1ffb8931e3c15a4eee0c9db",
+          "matchingLines": [
+            1743,
+            1963,
+            2193,
+            2194,
+            4286,
+            4669
+          ]
+        },
+        {
+          "path": "evidence/r2e-geopackage-process-summary.json",
+          "sha256": "a92f9da7b5ac2729d3f923ee15c0b551728d482b4fb429461c8fe8b0ee76e7ca",
+          "gitBlob": "396d1aa0b1901cb34ecf07e09665a914c6d1035a",
+          "matchingLines": [
+            35
+          ]
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+      "scannedTextFiles": 203,
+      "excludedFiles": 54,
+      "hits": [
+        {
+          "path": "internal/kernel/upload_discovery_test.go",
+          "sha256": "ac06caa3867c92e5105c95cde5993455cb24791ac69dcdd149326956ddf400aa",
+          "gitBlob": "5a711f2382821878640c5e78c2b78434d02e2190",
+          "matchingLines": [
+            188
+          ]
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "commit": "17439fed7a45d455baa6945ee72a65fa19c14029",
+      "scannedTextFiles": 180,
+      "excludedFiles": 50,
+      "hits": [
+        {
+          "path": "README.md",
+          "sha256": "fd2727d4b10e51a803ed8b22cf326040f55637133779e7629df52313195baa7e",
+          "gitBlob": "c495915cba11071795131c27c2bc5187c1a7b4b1",
+          "matchingLines": [
+            7
+          ]
+        },
+        {
+          "path": "ouf-config/routes/northbound/onboarding-managed-file-read.yaml",
+          "sha256": "8e54259c2b6f4880157fbb000f8a5772a888e7b022161802fbef33905c7987db",
+          "gitBlob": "114e3e4d97902a07f721fbff3f4f3f930c11d202",
+          "matchingLines": [
+            18
+          ]
+        },
+        {
+          "path": "tests/fixtures/onboarding-managed-file-contract.json",
+          "sha256": "3aa843ca29bb4d2b1d288316e4ab2977a1f358325d6e83e28ca6aedc943b19e0",
+          "gitBlob": "2adc9f4d38d7cf5a6b3e71f1a7abcdcb2e89a385",
+          "matchingLines": [
+            9
+          ]
+        },
+        {
+          "path": "tools/compile_config.py",
+          "sha256": "b6253f66e7e42606f4cb478194ce8c2671a825d32f5671cb07b04b428605a4f8",
+          "gitBlob": "44782d03f06d1cce115bfca7697f4b25347eaa86",
+          "matchingLines": [
+            54
+          ]
+        }
+      ]
+    }
+  ],
+  "targetInventoryComplete": false,
+  "exclusions": [
+    "vendor and embedded authorization SDK",
+    "documentation",
+    "symlinks/non-UTF8/files over256KiB"
+  ],
+  "method": "Regex source-body discovery, not semantic proof of absence of indirect consumers",
+  "targetOperations": 0
+}

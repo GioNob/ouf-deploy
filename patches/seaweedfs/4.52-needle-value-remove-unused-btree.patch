@@ -1,0 +1,24 @@
+diff --git a/weed/storage/needle_map/needle_value.go b/weed/storage/needle_map/needle_value.go
+index d8918a011..3b3a257c3 100644
+--- a/weed/storage/needle_map/needle_value.go
++++ b/weed/storage/needle_map/needle_value.go
+@@ -1,7 +1,6 @@
+ package needle_map
+ 
+ import (
+-	"github.com/google/btree"
+ 	. "github.com/seaweedfs/seaweedfs/weed/storage/types"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+ )
+@@ -12,11 +11,6 @@ type NeedleValue struct {
+ 	Size   Size   `comment:"Size of the data portion"`
+ }
+ 
+-func (this NeedleValue) Less(than btree.Item) bool {
+-	that := than.(NeedleValue)
+-	return this.Key < that.Key
+-}
+-
+ func (nv NeedleValue) ToBytes() []byte {
+ 	return ToBytes(nv.Key, nv.Offset, nv.Size)
+ }

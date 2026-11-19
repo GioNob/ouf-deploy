@@ -1,0 +1,220 @@
+{
+  "schema": "ouf.seaweedfs-raft-metrics-migration-local.v1",
+  "status": "LOCAL_SOURCE_REGRESSION_PASS_NOT_IMAGE_QUALIFIED",
+  "date": "2026-11-03",
+  "baseGeneration": 29,
+  "sourcePatchProposedOrder": 30,
+  "baseUpstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "basePatchedSourceTree": "574ad42543851ffe58cc025e14b1011609ff83de",
+  "productionChange": "Use existing hashicorp/go-metrics v0.7.0 provider for SeaweedFS sink, matching raft v1.8.0 and raft-boltdb/v2 v2.4.2 emission. Extract unchanged sink initialization into private helper for real producer regression.",
+  "patches": {
+    "patches/seaweedfs/4.52-raft-metrics-hashicorp.patch": {
+      "sha256": "a88b1fdfcfcc26b5bcb189bc7824d437bcdec7fc895bed82df86e54ab2030472",
+      "bytes": 4572
+    },
+    "patches/seaweedfs/4.52-raft-metrics-module-cleanup.patch": {
+      "sha256": "70a9dbfbf181211d2a282476edf3e1f251014ec6ed389f5027bc4a8c9a7204df",
+      "bytes": 1728
+    }
+  },
+  "moduleCleanupSeparatelyProposed": true,
+  "maintainedModuleVersionChanges": 0,
+  "newModuleVersions": 0,
+  "sourceDelta": [
+    "weed/server/raft_hashicorp.go",
+    "weed/server/raft_metrics_test.go"
+  ],
+  "isolatedRegression": {
+    "test": "TestRaftBoltStoreMetricsReachConfiguredPrometheusSink",
+    "childProcessBudgetSeconds": 15,
+    "realActions": [
+      "BoltStore.StoreLog",
+      "BoltStore.GetLog",
+      "Prometheus.Registry.Gather"
+    ],
+    "assertions": [
+      "log index/term/type/body roundtrip",
+      "exactly one logsPerBatch summary sample with sum=1",
+      "exactly one storeLogs timer sample",
+      "exactly one getLog timer sample"
+    ],
+    "redBaseline": {
+      "imports": "github.com/armon/go-metrics and /prometheus",
+      "cgo": 1,
+      "result": "FAIL_EXPECTED",
+      "missingMetricFamilies": 3
+    },
+    "green": {
+      "imports": "github.com/hashicorp/go-metrics and /prometheus",
+      "cgo0": "PASS",
+      "cgo1": "PASS",
+      "withSeparateModuleCleanupCgo0": "PASS"
+    },
+    "startsRaftServer": false,
+    "networkRequests": 0,
+    "targetOperations": 0
+  },
+  "qualifiedProfileRegression": {
+    "go": "1.27.3",
+    "os": "linux",
+    "arch": "amd64",
+    "cgo": 0,
+    "mod": "readonly",
+    "count": 1,
+    "timeoutPerPackageSeconds": 180,
+    "testsPass": 6156,
+    "testsSkip": 5,
+    "packagesPass": 21,
+    "packagesNoTestsSkip": 6,
+    "testsFail": 0,
+    "newMetricsTestSeparatePass": 1
+  },
+  "exploratoryExtendedRegression": {
+    "cgo": 1,
+    "testsPass": 7126,
+    "testsSkip": 7,
+    "testsFail": 1,
+    "packagesPass": 21,
+    "packagesFail": 1,
+    "status": "FAILED_SANDBOX_DNS_REPRODUCED_ON_BASE_GENERATION29",
+    "failedTest": "TestBuildGuardedRemoteStorageClient",
+    "causeObserved": "DNS oauth2.googleapis.com UDP53 network unreachable",
+    "baseGeneration29SameFailureReproduced": true,
+    "notClaimedAsQualifiedPass": true
+  },
+  "productionGraph": {
+    "cgo": 0,
+    "beforePackages": 1811,
+    "afterPackages": 1810,
+    "sha256": "e6eb2027b0b75dd3aba92dc62c80822b0b911cc1b0f837a15405c347f0807030",
+    "removed": [
+      "github.com/armon/go-metrics",
+      "github.com/armon/go-metrics/prometheus"
+    ],
+    "added": [
+      "github.com/hashicorp/go-metrics/prometheus"
+    ],
+    "armonPackages": 0,
+    "awsSdkV1Packages": 0,
+    "deprecatedS3ManagerPackages": 0
+  },
+  "moduleCleanup": {
+    "tidyFixedPoint": "PASS",
+    "fixedPointDiffBytes": 0,
+    "directArmonRequirementRemoved": true,
+    "existingHashicorpRequirementPromotedToDirect": true,
+    "armonGoSumRowsRetained": 2,
+    "legacyTestReason": "raft-boltdb/v2.test -> github.com/hashicorp/raft-boltdb -> github.com/armon/go-metrics",
+    "fullModuleGraphArmonAbsent": false,
+    "historicalGraphEdgeAlsoPresent": "github.com/hashicorp/raft@v1.7.0 -> github.com/armon/go-metrics@v0.4.1"
+  },
+  "independentPatchReplay": "PASS_EXACT_BYTE_PARITY",
+  "candidate29FilesUnchanged": true,
+  "newBinaryBuilt": false,
+  "newImageQualified": false,
+  "combinedProfileQualification": "PENDING_PARENT_INTEGRATION",
+  "licenceReview": "OPEN",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "consumedScopePreserved": 17,
+  "engineGetCumulativePreserved": 52,
+  "proofFiles": {
+    "evidence/seaweedfs-raft-metrics-local-20261103/baseline29-network-test.jsonl": {
+      "sha256": "0b617c6612176bf9982699c1b5fd6a15cd3cfecb8c92fff882d5c1f66b029bf0",
+      "bytes": 1922
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/baseline29-network-test.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/extended-server-failure.jsonl": {
+      "sha256": "2ddc57180a1d7b53c7a7e79d9fe9b3ecc7edd39b44e6bd43249ff361aa410a66",
+      "bytes": 1435
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green-cgo0.jsonl": {
+      "sha256": "04e7c027c284b61857bdb647115268d5de8bdf21a142e84ee1980188ef687fdb",
+      "bytes": 1548
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green-cgo0.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green.jsonl": {
+      "sha256": "a8346f750d86a321876a8a9006ac32116c48caa93718a0a9e1a7c6ba1539dc93",
+      "bytes": 1548
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-module-cleanup-cgo0.jsonl": {
+      "sha256": "326fe0d6e99efa2e4e7afda7cacc46a3d99d72316ed4fd9c4e28c2d47d308a1d",
+      "bytes": 1547
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-module-cleanup-cgo0.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-red.jsonl": {
+      "sha256": "0b6d2a941812ca15183ac85b570c964417f663e34d375bfde50a40609dc99762",
+      "bytes": 3492
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-red.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-fixed-point.diff": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-fixed-point.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-why-armon.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-why-armon.txt": {
+      "sha256": "80d49c832e254297e7904008d52d898d032014da99d94520866ce725e12ba1a6",
+      "bytes": 211
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/production-deps-cgo0.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/production-deps-cgo0.txt": {
+      "sha256": "e6eb2027b0b75dd3aba92dc62c80822b0b911cc1b0f837a15405c347f0807030",
+      "bytes": 74953
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/regressions-cgo0-terminal-events.json": {
+      "sha256": "8d39911ac50c004e562be800ca67e73c2185ffe31827cc2b89514da06ab440e1",
+      "bytes": 449559
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/source-delta.json": {
+      "sha256": "04bd14e0667ee41d0988c13e279627c3d52ed2607ee0ce1f87283259ef840ad0",
+      "bytes": 157
+    }
+  },
+  "workspaceRawEvidence": {
+    "regressions.jsonl": {
+      "sha256": "01ec59e9776322beaf653ca3cbfbb311a7e8d45356d5c6eb9ebf577dbb4737f7",
+      "bytes": 9477114
+    },
+    "regressions-cgo0.jsonl": {
+      "sha256": "227f7894b26a1ef7b110531692b60136a6d7e8155fada146fd96c7e1e9478cb8",
+      "bytes": 7879036
+    },
+    "module-cleanup-graph.txt": {
+      "sha256": "87def2d242aee52c812ef795d7ecb6fec5805d4aa7c9e776ef77ff9f7c452ec8",
+      "bytes": 369075
+    },
+    "initial-harness-proc-failure.jsonl": {
+      "sha256": "2b263b95f1c72808c076e2e24d49ec8498632a448a8d72ce7802c80290bcac14",
+      "bytes": 1862
+    }
+  }
+}

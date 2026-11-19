@@ -1,0 +1,50 @@
+{
+  "completePrivateCustodyProven": false,
+  "controllerVersion": 6,
+  "currentStaticByteObserverEngineGets": 0,
+  "expectedPermissionOrContentPolicyEstablished": false,
+  "fullNativeOwnerLeavesAreTargetAcceptance": false,
+  "generalQualification": {
+    "allLogsRead": true,
+    "jobs": [
+      124829431762,
+      124829431913,
+      124829431973,
+      124829432013,
+      124829432081
+    ],
+    "passedTests": 203,
+    "runId": 41300221035,
+    "suites": 28
+  },
+  "liveMembersObservedOrAdmitted": false,
+  "nativeFixturesUseActualDocker2981": true,
+  "nativeFsShape": {
+    "distinctStaticFiles": 13,
+    "mutable": 4,
+    "nodes": 33,
+    "readonly": 25,
+    "staticDeclarations": 17
+  },
+  "nativeQualification": {
+    "allLogsRead": true,
+    "jobs": [
+      124829431838,
+      124829432014
+    ],
+    "passedTests": 26,
+    "runId": 41300221066,
+    "suites": 3
+  },
+  "nativeReads": 26,
+  "original235AndEightSourceCapsuleUnchanged": true,
+  "privateCandidateReadByAgent": false,
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.retained-static-intake-native-qualified.v1",
+  "sourceCommit": "420125ec4836f64987012be5402d713f3c7c43cc",
+  "targetApplyAuthorized": false,
+  "targetCandidateHash": "de4546d0ee39be6b3c3cca2e5d5307167564a953ca8428762840b0b205768023",
+  "targetResultHash": "39426368418d74a71e894d82f88fed3f7fba40734d25269a18438a63adf14881",
+  "typedOwners": 14
+}

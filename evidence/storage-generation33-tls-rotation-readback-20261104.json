@@ -1,0 +1,182 @@
+{
+  "date": "2026-11-04",
+  "engineeringProgressCreditAdded": 0,
+  "independentReadback": {
+    "archivePrivateKeyMarkerScan": "PASS",
+    "rawTlsReadAndDenialCasesChecked": true,
+    "unchangedStorageContainerGenerationsChecked": true
+  },
+  "internalChecksumsVerified": 30,
+  "jobLog": {
+    "path": "evidence/storage-pitr-tls-readback-20261104/job-126462267970.log",
+    "sha256": "183163539229bb890b39defc57c7fd1231d23acc8f1b7ec565e36d5395d66e92"
+  },
+  "nativeReceipt": {
+    "acceptanceTestsPassed": 0,
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+    "cleanContainerStops": 5,
+    "cohortArchiveSha256": "5a8a59be0d0ee6230322e4828cc1edef5ca1e24689dc2ff7f19ede830203430e",
+    "cohortArtifactId": 13305200887,
+    "cohortReceiptSha256": "5b28de1dd43fca337064d41439d302d53dc7f470640fe3fc0d8d1292b1ec02dc",
+    "finalNewTrustAccepted": true,
+    "finalOldTrustRejected": true,
+    "fixtureCredentialsOnly": true,
+    "gatesClosed": 0,
+    "gatewayReplacement": {
+      "method": "STOP_REMOVE_RECREATE_S3_GATEWAY",
+      "oldGatewayExitCode": 0,
+      "replacementGatewayId": "a6e5ef0ed3e1a9fb148ec53286480f35bad58f5f704cc53954ee10764921bee6",
+      "retainedRoleIds": [
+        "10ac889360e22f88d942f107d6310df6faf1154f7daed8ba2a192a247e117285",
+        "0fb7aa2494c14b2bc1ab86170fe72e2210656dc91c8397ccd94a3d3656837637",
+        "a6107ee532dcbec0988a380e4934f8d4df2c5764563113bb083ffc02ab00c2f5"
+      ],
+      "retiredGatewayId": "2c6b3b34c8d4e67f68cfd9ddd6de9a9fb754460fe9f641a1d5393deb75390cd3",
+      "simultaneousS3Gateways": 1
+    },
+    "generation": 33,
+    "hotReloadQualified": false,
+    "interRoleLateralIsolationQualified": false,
+    "mTLSQualified": false,
+    "maximumConcurrentContainers": 4,
+    "mutatingRequestRetries": 0,
+    "negativeTrustCases": 4,
+    "objectParity": {
+      "bytes": 72,
+      "contentType": "application/octet-stream",
+      "key": "staging/tls-rotation.bin",
+      "sha256": "9305a06bee28e25692c8e6e1dfb0ca8bbfd4cf5729902a49e463b26ca23be2cd"
+    },
+    "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+    "overlapTrustBeforeAndAfter": true,
+    "positiveTrustCases": 4,
+    "postRotationMutatingRequests": 0,
+    "privateKeysUploaded": false,
+    "productionSecretCustodyQualified": false,
+    "publicCertificateIdentities": {
+      "a": {
+        "ca": {
+          "derSha256": "45a12185ea7d98617f0f8d8eeeb0253514d28affcc7b437b4394e29c6c6a85c3",
+          "pemSha256": "61af0f0afd49874a18ed9cfd1c2bb4290ecc8762f7aab9f4d51bae1f0a097c69",
+          "serialHex": "507FD588C2297A1D05C4A351B11A44712D404309"
+        },
+        "leaf": {
+          "derSha256": "7c96fc1e1bdaed5117d0f4fd6ccadfd3bccfcd0de11e725457b0a0ed2e4cd5e4",
+          "pemSha256": "a0835a06fa651e19fe776c5922a8bb40b0b00d9c65e0178dd60f69a12f32c374",
+          "serialHex": "65"
+        }
+      },
+      "b": {
+        "ca": {
+          "derSha256": "9a65b932599b80ccde90e86fbe54545387ef8678fa150cf14fbc310770e8ca04",
+          "pemSha256": "e66551bd8190e219e103ab0c8e8d465f1fb64509329818d6d34d834f27cbb943",
+          "serialHex": "5E97214DA2377DFC2603B8804E3636E7E1F589D2"
+        },
+        "leaf": {
+          "derSha256": "f816e54f942a94eedc2fcfa6168345ac22df3d78a9a95279403f4b759de00d30",
+          "pemSha256": "4eb777fea72f9ce6895175e143e7b73ec38d946204da78488616581052f7bcbd",
+          "serialHex": "CA"
+        }
+      }
+    },
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "s3CredentialRotationQualified": false,
+    "schema": "ouf.storage-generation33-tls-rotation.v1",
+    "serverCertificateRotationByRestart": true,
+    "status": "SYNTHETIC_TLS_STAGED_TRUST_AND_GATEWAY_REPLACEMENT_PASS",
+    "targetOperations": 0,
+    "zeroDowntimeQualified": false
+  },
+  "originalArtifact": {
+    "bytes": 42526,
+    "id": 13306410532,
+    "path": "evidence/artifacts/storage-generation33-tls-rotation-41796664091.zip",
+    "sha256": "2f54c76a0527105ea411a114393627067c2b082b3ada5f56b2e654a68f33e3be"
+  },
+  "originalManifestSha256": "d4aa3ec47772a3a2c4d5e4c2e6d1aa260bb26e96515a1ec816c63e06e7d6b7c2",
+  "preserved": {
+    "acceptanceTestsPassed": 0,
+    "consumedScopes": 17,
+    "cumulativeEngineGets": 52,
+    "gatesClosed": 0,
+    "minioActive": true,
+    "realObjectsCopied": 0,
+    "targetOperations": 0
+  },
+  "publisherSignatureReverifiedLocally": false,
+  "schema": "ouf.storage-hosted-evidence-readback.v1",
+  "sourceBindingsVerifiedAgainstExactGitTree": [
+    {
+      "gitBlobSha": "ac34f3391259bd06370bde2c0fddc1a23b1d82c3",
+      "path": "scripts/run-storage-generation33-tls-rotation.py",
+      "sha256": "4adfac0959792c128180fa0f7bb40a3d93cdbef77f37eafb9e87b37544ae6516"
+    },
+    {
+      "gitBlobSha": "c66b57308ac5f7ca6f9ff191897848c7b17e6102",
+      "path": "tests/test_storage_tls_rotation_generation33.py",
+      "sha256": "d98b968b82c2242c4e74c1ec619fe5678630ccdb89af2037edf7f3935239dbd8"
+    },
+    {
+      "gitBlobSha": "c9b5f78924a044aea37854d5608d8b40e58ce96e",
+      "path": ".github/workflows/storage-generation33-tls-rotation.yml",
+      "sha256": "bf129602937f22dad18bce4e01c95e2b0540790e3092c97f25728e6413122b25"
+    },
+    {
+      "gitBlobSha": "fba293be49721808c760b59482817a087ea5f554",
+      "path": "scripts/run-seaweedfs-452-generation33-labs.py",
+      "sha256": "54c87ec96eacebf9d25030c600eb1b9fdfc6effc4e498da48d4212f71f17e7e2"
+    },
+    {
+      "gitBlobSha": "a18240032eb843360c5b5475be9f6676728451d4",
+      "path": "scripts/storage-generation33-lab-binding.py",
+      "sha256": "27623db617bdf10b70e3af1d3ae6097909e82a357cd8170b807b2cd0643a8651"
+    },
+    {
+      "gitBlobSha": "7bd789e0808c52027dfa0a620966155f52ac1a1c",
+      "path": "scripts/run-seaweedfs-452-cold-recovery.py",
+      "sha256": "a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089"
+    },
+    {
+      "gitBlobSha": "a1109ff3e7e88b064e91c4f20daff0a9b338bc8b",
+      "path": "scripts/run-seaweedfs-452-identity-tls.py",
+      "sha256": "50f75e99b0f3f012b2651e6856fecfc3f1742d20676c70c36499f30e84e75185"
+    },
+    {
+      "gitBlobSha": "f9079d1a52f982e2ada223d84d2f8c23365d3784",
+      "path": "scripts/readback-seaweedfs-452-generation33-image.py",
+      "sha256": "dcdfda30f4d6f95148b4b799fbb55d062780d76b8455a0bc1d85559c14a41928"
+    },
+    {
+      "gitBlobSha": "92eba2edafd48bcbc64b925f33212304a07b48b6",
+      "path": "scripts/qualify-seaweedfs-452-generation33-image.py",
+      "sha256": "f64c11b9dad5b3865dd2c7d2d89fb157bff7890a492d62f053b3fa3e59794cf9"
+    },
+    {
+      "gitBlobSha": "b025095ae666dae79dd2233e6307b11c2e0d2e37",
+      "path": "tools/storage_security/generation_image_v4.py",
+      "sha256": "235d9c162cd9b5ab12920a86d885ec8ce248fe52f8fd5f32c77027aa1d8221fe"
+    },
+    {
+      "gitBlobSha": "340c27a35111b2560789fa86c4b5569132bc80ba",
+      "path": "tools/storage_security/generation_readback_v1.py",
+      "sha256": "d90a633307be766e3a7266226b3da2e8fadbdcff57fd9f11fb16b41e1909b59f"
+    },
+    {
+      "gitBlobSha": "148fd6914e5da578c3a97fd523d7286415ad4885",
+      "path": "releases/seaweedfs-452-generation33-candidate-lock-20261104.json",
+      "sha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8"
+    },
+    {
+      "gitBlobSha": "2d335c41e75e7bebb242107181fbfd66e76feffb",
+      "path": "releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json",
+      "sha256": "6fa4e051e4a5c3f41c262ce4b3d1b0b36c0de27d462c930268ef99a542b40232"
+    }
+  ],
+  "sourceCommit": "9fbe9ef71ba296523e904686d7409b4c9150209f",
+  "workflowConclusion": "success",
+  "workflowJobId": 126462267970,
+  "workflowRunId": 41796664091,
+  "zipMembers": 31
+}

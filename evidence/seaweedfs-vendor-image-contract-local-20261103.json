@@ -1,0 +1,27 @@
+{
+  "schema": "ouf.generation33-vendor-image-contract-local.v1",
+  "status": "PREPARATORY_CONTRACT_TESTED_NOT_IMAGE_QUALIFIED",
+  "intendedGeneration": 33,
+  "sourcePatchCount": 32,
+  "dependencyPatchCount": 1,
+  "frozenParentManifestSha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+  "testsPassed": 19,
+  "fullVendorMaterializationRun": false,
+  "actualVendorBinaryBuilt": false,
+  "actualGeneration33ManifestWritten": false,
+  "rawScanOrSPDXProduced": false,
+  "cryptographicArchiveVerificationPerformedByThisContract": false,
+  "sourceObservationOwner": "separate YAML vendor observer",
+  "downstreamTechnicalOwnership": "OPEN",
+  "allDependenciesMaintained": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "frozenParentRootSourceGitTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "parentTreeCorrection": {
+    "indexedEntries": 4567,
+    "previousEmptyIndexOmittedTrackedEntries": 24,
+    "sourceFileBytesChanged": false,
+    "binaryAndCompiledGraphChanged": false
+  }
+}

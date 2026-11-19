@@ -1,0 +1,40 @@
+{
+  "schema": "ouf.storage-capture-only-operator-decision.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "USER_EXPLICIT_CHAT_AUTHORIZATION",
+  "operator": "Giovanni",
+  "userStatement": "Autorizzo",
+  "decisionReference": "GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01",
+  "reviewedPackageCommit": "67ad84d02584f518928ad1c8ca3b86de5a3e00e9",
+  "package": "docs/OUF_STORAGE_CAPTURE_AFTER_HELD_STOP_20261107.md",
+  "status": "APPROVED_SINGLE_CAPTURE_CONTINUATION_TARGET_EXECUTION_PENDING",
+  "scope": {
+    "attempts": 1,
+    "sources": 34,
+    "roles": 14,
+    "includesWholeSharedPostgresCluster": true,
+    "preserveUnattributedEtcdExecSequences": 3,
+    "newStopSignals": 0,
+    "restartPolicyChanges": 0,
+    "hostMutations": 0,
+    "restarts": 0
+  },
+  "limits": {
+    "captureSeconds": 3600,
+    "captureCommands": 256,
+    "captureRunnerProducedBytes": 68719476736,
+    "priorCumulativeStopAllowanceSeconds": 2400,
+    "priorCumulativeStopCommandCalls": 184,
+    "newStopAllowanceSeconds": 0,
+    "priorHostReadCallsCharged": 1,
+    "legacyValidUntilEpoch": 1794081219,
+    "expiryExtended": false
+  },
+  "targetExecuted": false,
+  "automaticReplayAllowed": false,
+  "automaticRestartAllowed": false,
+  "runtimeAuthorityIssued": false,
+  "humanRuntimeAuthenticationProven": false,
+  "acceptanceCreditAdded": 0
+}

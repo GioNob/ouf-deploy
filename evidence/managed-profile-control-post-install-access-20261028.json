@@ -1,0 +1,96 @@
+{
+  "schema": "ouf.managed-profile-control-post-install-access.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "installedReceipt": "evidence/managed-csv-control-update-target-20261028.json",
+  "status": "INSTALLED_JOB_ACCESS_DENIED_ROLE_PROPOSAL_REJECTED_DESCRIPTOR_GATE",
+  "account": {
+    "linkName": "ouf-admin",
+    "linkId": "link_6aafef96b4148191b767e9af7b756a07",
+    "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+    "proof": "Explicit account routing plus successful fresh same-owner/tenant protected proposal read; PermissionProposalService.status validates subject and tenant. Browser identity not inferred."
+  },
+  "ownProposalRead": {
+    "proposalId": "b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-10-27T14:29:59.514655Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "finalPolicyRef": "ouf-lab-authorization:56"
+  },
+  "jobRead": {
+    "code": "authorization denied",
+    "retryable": false,
+    "authorizationPhase": "MCP_PRE_ADMISSION",
+    "reasonCode": "NO_APPLICABLE_GRANT",
+    "evaluatedPolicyVersion": 56
+  },
+  "roleRead": {
+    "success": true,
+    "roles": 7,
+    "assignments": 11,
+    "recheckedUnchanged": true
+  },
+  "grantsRead": {
+    "policyRef": "ouf-lab-authorization:56",
+    "policyHash": "sha256:c52e856c8d95032f6942e1618fb0102f0b704acc5f41f044648e9466aaf9d323",
+    "meaning": "CONFIGURED_GRANTS_NOT_EFFECTIVE_PERMISSIONS",
+    "subjectConfiguredGrantCount": 134,
+    "nextAfter": null
+  },
+  "capabilitiesRead": {
+    "success": false,
+    "error": {
+      "Type": "",
+      "Title": "",
+      "Code": "",
+      "Detail": "",
+      "Status": 400,
+      "RetryAfter": ""
+    },
+    "retryPerformed": false
+  },
+  "permissionProposal": {
+    "calls": 1,
+    "result": {
+      "Type": "",
+      "Title": "ONB_BAD_REQUEST",
+      "Code": "ONB_BAD_REQUEST",
+      "Detail": "AUTH_ROLE_CAPABILITY_INVALID",
+      "Status": 400,
+      "RetryAfter": ""
+    },
+    "receiptCreated": false,
+    "sourceReason": "Owner OufRoleCatalogue.compile requires every old/new role capability to exist in active policy and allow HUMAN; validation precedes insert/audit. Which descriptor is invalid remains unobserved.",
+    "noAutomaticRetry": true,
+    "proposedButRejectedInput": "evidence/managed-profile-control-permission-input-20261028.json",
+    "oldRolesPreserved": 7,
+    "oldAssignmentsPreserved": 11
+  },
+  "teatriReuse": {
+    "source": "tools/csv_last_row_recovery/permissions.py",
+    "descriptorPublicationHandoff": "docs/handoffs/OUF_ACQUISITION_DESCRIPTOR_HUMAN_PUBLICATION_20261025.md",
+    "historicalSameRoleGate": "AUTH_ROLE_CAPABILITY_INVALID",
+    "noOldDescriptorReadOrPublishReplayed": true
+  },
+  "oufCalls": {
+    "ownedProposalReads": 1,
+    "jobReads": 1,
+    "rolesReads": 2,
+    "capabilitiesReads": 1,
+    "grantsPages": 1,
+    "permissionProposalAttempts": 1,
+    "total": 7
+  },
+  "newGrantsPublished": 0,
+  "humanBudgetsGranted": 0,
+  "resumes": 0,
+  "uploads": 0,
+  "newJobs": 0,
+  "acquisitions": 0,
+  "agentThsAccess": false,
+  "registryWorkerTouched": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false
+}

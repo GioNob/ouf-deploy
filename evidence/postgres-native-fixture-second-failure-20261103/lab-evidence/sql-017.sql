@@ -1,0 +1,1 @@
+SELECT count(*) FROM pg_stat_activity WHERE application_name='ouf-uncommitted-writer' AND wait_event='PgSleep'

@@ -1,0 +1,41 @@
+{
+  "schema": "ouf.teatri-semantic-publication-and-onboarding-review-block.v1",
+  "date": "2026-10-17",
+  "semanticPublication": {
+    "observedVia": "LIVE_MCP_SEMANTIC_SEARCH_AND_EXACT_GET",
+    "status": "ACTIVE",
+    "artifactId": "e34887ee-e101-4a2c-9ecc-7927a15f795c",
+    "revisionId": "a1db3912-2b72-42eb-af88-a775fcd0e2ab",
+    "publicationSetId": "9fe7d1ee-9e13-40bc-ad50-53e36ea0076b",
+    "publicationChecksum": "632fe084bdb359afe419bbf5651fc4711930c31e5cf1503c8da19cace803af28",
+    "contentHash": "c96bb4c80f2c5b32616b2c8632438213dd7e269728e005612acb46970830da1f",
+    "rdfHash": "6e4668ea42cf1c75b822e17a8ca9cb71fb2c4d8f500eed628282fa6039a6dbaa",
+    "statementCount": 105,
+    "snapshotPartial": false,
+    "allMappedTermsAsserted": true
+  },
+  "currentProfile": {
+    "assetId": "6609b245-86ed-4315-8ce0-73f2a8555bf3",
+    "profileId": "7984c39c-7396-4248-ab0a-f2efc390b49c",
+    "version": 1,
+    "rows": 13,
+    "columns": 20,
+    "redactedPreviewRead": true,
+    "rawBytesRead": false
+  },
+  "onboarding": {
+    "sourceId": "teatri-csv-6609b245",
+    "automaticApprovalReviewRejected": true,
+    "executedByMcp": false,
+    "draftCreated": false,
+    "reason": "Explicit authorization covered the semantic DRAFT, not this durable source configuration and its RESTRICTED metadata.",
+    "workaroundPerformed": false,
+    "retryPerformed": false,
+    "explicitUserAuthorizationRequired": true
+  },
+  "functionalMilestonesProven": 1,
+  "completedTechnicalPhases": 8,
+  "csvEndToEndProven": false,
+  "sourceActivated": false,
+  "acceptanceGranted": false
+}

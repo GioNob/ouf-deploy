@@ -1,0 +1,96 @@
+{
+  "addedRoutesVerified": 3,
+  "adminCredentialConfigurationsRead": 1,
+  "adminGetAttempts": 17,
+  "adminPutAttempts": 8,
+  "businessRequestsIssued": 0,
+  "containerConfigurationChanged": false,
+  "credentialValuesEmitted": false,
+  "databaseWrites": 0,
+  "externalAdminKeyFilesRead": 1,
+  "finalRouteCount": 87,
+  "gatewayOwnerReplaced": false,
+  "gatewayStatus": "GATEWAY_EIGHT_ROUTES_APPLIED_VERIFIED",
+  "observedAt": "2026-11-08T16:56:09.269124+00:00",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/gateway-analysis-apply-2876c0c3a892f0dc",
+  "providerEnableDispatched": false,
+  "providerRequests": 0,
+  "readOnlyDatabaseSessionsAttempted": 1,
+  "routeWritesVerified": 8,
+  "runtimeChanged": true,
+  "s3Requests": 0,
+  "schema": "ouf.gateway-analysis-apply.v1",
+  "semanticDatabase": {
+    "databaseOid": "21558",
+    "discoveryStates": [],
+    "identifiersOrIntentsRead": false,
+    "migrationAppliedByScript": false,
+    "migrations": [
+      {
+        "checksum": null,
+        "success": true,
+        "version": null
+      },
+      {
+        "checksum": -229176171,
+        "success": true,
+        "version": "1"
+      },
+      {
+        "checksum": -370046820,
+        "success": true,
+        "version": "2"
+      },
+      {
+        "checksum": 1421470298,
+        "success": true,
+        "version": "3"
+      },
+      {
+        "checksum": -1092036175,
+        "success": true,
+        "version": "4"
+      },
+      {
+        "checksum": 1905797703,
+        "success": true,
+        "version": "5"
+      },
+      {
+        "checksum": 648864672,
+        "success": true,
+        "version": "6"
+      },
+      {
+        "checksum": 1546537302,
+        "success": true,
+        "version": "7"
+      },
+      {
+        "checksum": -319796023,
+        "success": true,
+        "version": "8"
+      },
+      {
+        "checksum": 521654427,
+        "success": true,
+        "version": "9"
+      },
+      {
+        "checksum": 1273060826,
+        "success": true,
+        "version": "10"
+      }
+    ],
+    "readOnly": true,
+    "recoveryColumnPresent": false,
+    "sourceV12IntroducesRecoveryState": true,
+    "status": "SEMANTIC_METADATA_READ",
+    "v12RecordedSuccessful": false
+  },
+  "serviceStops": 0,
+  "status": "GATEWAY_APPLIED_SEMANTIC_METADATA_READ",
+  "tokenRequests": 0,
+  "unchangedRoutesVerified": 79,
+  "updatedRoutesVerified": 5
+}

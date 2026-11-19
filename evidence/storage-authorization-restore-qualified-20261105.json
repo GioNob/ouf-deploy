@@ -1,0 +1,450 @@
+{
+  "schema": "ouf.onboarding-authorization-restore-qualification.v1",
+  "date": "2026-11-05",
+  "repository": "GioNob/ouf-source-onboarding",
+  "branch": "feat/storage-upload-intent-20261105",
+  "sourceCommit": "087fcf21e7402cd5057972093dc0565f03e35427",
+  "status": "QUALIFIED_INTERNAL_POPULATED_AUTHORIZATION_PHYSICAL_RESTORE",
+  "contract": {
+    "candidateCapability": "installation.storage.recovery",
+    "owner": "installation",
+    "resourceType": "installation-storage-recovery",
+    "requiredScope": "installation.storage.recovery",
+    "operation": "EXECUTE",
+    "actor": "HUMAN",
+    "automaticRegistration": false,
+    "automaticGrant": false,
+    "maximumFreshAuthenticationSeconds": 900,
+    "maximumDecisionSeconds": 900,
+    "sameDatabaseOnly": true,
+    "actualPolicyRegistryEvaluated": true,
+    "policyActivationLock": 741093,
+    "commandIdempotency": true,
+    "projectionExpectedVersion": true,
+    "terminalRevocation": true,
+    "implicitBudgetRenewal": false,
+    "mandatoryIndependentFence": true,
+    "productionFenceInstalled": false,
+    "independentGenerationPinned": true,
+    "migration": "V41",
+    "legacyDecisionGeneration": 0,
+    "legacyGenerationUsable": false,
+    "ownerFenceRecheckedAfterAudit": true,
+    "currentAuthorityOutsideRestoreSet": true
+  },
+  "physicalState": {
+    "cut": {
+      "policyVersion": 1,
+      "authorityGeneration": 1,
+      "projectionVersion": 2,
+      "decisionStates": [
+        "DELIVERED",
+        "REVOKED"
+      ],
+      "deliveryEvents": 5,
+      "ownerEvents": 4
+    },
+    "afterCut": {
+      "policyVersion": 2,
+      "authorityGeneration": 2,
+      "currentAuthorityRevoked": true,
+      "projectionVersion": 3,
+      "projectionDecision": null,
+      "decisionStates": [
+        "REVOKED",
+        "REVOKED"
+      ],
+      "deliveryEvents": 6
+    },
+    "restored": {
+      "policyVersion": 1,
+      "authorityGeneration": 1,
+      "projectionVersion": 2,
+      "currentExternalGeneration": 2,
+      "currentExternalAuthorityRevoked": true,
+      "freshPrepareRejected": true,
+      "oldRedeliveryRejected": true,
+      "missingCurrentFenceRejected": true,
+      "ownerPolicyAndAuditExactlyPreserved": true
+    }
+  },
+  "firstAttempt": {
+    "sourceCommit": "788046bf76a2ce152b1d4880a7855327f3aff50f",
+    "nativeRunId": 42017913877,
+    "nativeJobId": 127212986048,
+    "nativeOwnerScenarios": 63,
+    "apiStorageTests": 8,
+    "physicalRunId": 42017913750,
+    "producerJobId": 127212985997,
+    "producerStatus": "SUCCESS",
+    "readbackJobId": 127213887742,
+    "readbackStatus": "FAILED_REVOCATION_AFTER_NAMED_CUT",
+    "cause": "Full-JSON SQL ordering changes after DELIVERED becomes REVOKED; the verifier compared the unsorted post-transition expected list. Exact rows matched after sorting by decision_id.",
+    "fixCommit": "087fcf21e7402cd5057972093dc0565f03e35427",
+    "fixScope": "Only independent readback: compare complete changed decision rows by stable primary key; additional altered-generation negative probe. Java/SQL/policy/fixture unchanged.",
+    "localDiagnosis": {
+      "archiveBytes": 7172284,
+      "archiveSha256": "8d3a95a4d071547e1afd752c4d4e4044d396ee9f0f91f89c00b594c22dd17a80",
+      "metadataDigestMatched": true,
+      "exactPostRevocationRowsMatchedAfterKeySort": true,
+      "alteredGenerationRejected": true,
+      "fullLocalReadbackClaimed": false
+    },
+    "receipt": {
+      "status": "PASS",
+      "targetOperations": 0,
+      "releaseAdmitted": false,
+      "namedPhysicalRecovery": true,
+      "actualOwnerTablesPreserved": true,
+      "pendingReconciledWithoutPut": true,
+      "staleApplicationWriterBlocked": true,
+      "staleS3PutDenied": true,
+      "missingWalBlocksS3": true,
+      "objects": 2,
+      "objectBytes": 36,
+      "cleanStorageStops": 12,
+      "cleanPostgresStops": 2,
+      "targetName": "ouf_onboarding_upload_frozen_v39",
+      "systemIdentifier": "7704645548980613160",
+      "postgresImageId": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+      "backupFiles": 1695,
+      "freshRuntimeAttestationRequired": true,
+      "revokedAuthorityRestoreBlocked": true,
+      "currentAuthorityOutsideOwnerBackup": true,
+      "currentAuthoritySha256": "cb55b9a8084abda9695fcf1402451a89ba16e9c154719b742ce9073cc37111de",
+      "liveWorkerDatabaseRestoreBlocked": true,
+      "populatedAuthorizationHistoryRestored": true,
+      "restoredPolicyCannotPrepareOrRedeliver": true,
+      "scope": "synthetic Onboarding owner only; no UDP/Ingestion or operational binding"
+    },
+    "artifacts": [
+      {
+        "id": 13410790717,
+        "name": "onboarding-common-cut-readback-42017913750",
+        "size_in_bytes": 7164784,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13410790717",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13410790717/zip",
+        "expired": false,
+        "created_at": "2026-11-05T11:20:41Z",
+        "expires_at": "2027-02-03T11:18:31Z",
+        "updated_at": "2026-11-05T11:20:41Z",
+        "digest": "sha256:70163d0371ff00f3b98c63ac277b887c42afce94ad4666bc87386dc032938d49",
+        "workflow_run": {
+          "id": 42017913750,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "788046bf76a2ce152b1d4880a7855327f3aff50f"
+        }
+      },
+      {
+        "id": 13409298911,
+        "name": "onboarding-common-cut-42017913750",
+        "size_in_bytes": 7172284,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13409298911",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13409298911/zip",
+        "expired": false,
+        "created_at": "2026-11-05T11:20:29Z",
+        "expires_at": "2027-02-03T11:18:31Z",
+        "updated_at": "2026-11-05T11:20:29Z",
+        "digest": "sha256:8d3a95a4d071547e1afd752c4d4e4044d396ee9f0f91f89c00b594c22dd17a80",
+        "workflow_run": {
+          "id": 42017913750,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "788046bf76a2ce152b1d4880a7855327f3aff50f"
+        }
+      },
+      {
+        "id": 13409733221,
+        "name": "onboarding-upload-native-42017913877",
+        "size_in_bytes": 103223,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13409733221",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13409733221/zip",
+        "expired": false,
+        "created_at": "2026-11-05T11:20:33Z",
+        "expires_at": "2027-02-03T11:18:31Z",
+        "updated_at": "2026-11-05T11:20:33Z",
+        "digest": "sha256:61ef4e63d497f88a6298d0d247cefcd3c9bf183d575fcb67e628bd123f582196",
+        "workflow_run": {
+          "id": 42017913877,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "788046bf76a2ce152b1d4880a7855327f3aff50f"
+        }
+      }
+    ],
+    "workflowRuns": [
+      {
+        "id": 42017921700,
+        "name": "Managed profile minimized diagnostic",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42017921629,
+        "name": "R2f trusted review browser",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42017921643,
+        "name": "Source Onboarding module CI",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42017913919,
+        "name": "Managed profile minimized diagnostic",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42017913897,
+        "name": "R2f trusted review browser",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42017913750,
+        "name": "Onboarding physical common cut and stale writer recovery",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 42017913877,
+        "name": "Onboarding durable upload native owner",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42017913715,
+        "name": "Source Onboarding module CI",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "localValidation": {
+    "diffCheck": "PASS",
+    "pythonSyntax": "PASS",
+    "walPlaceholderRegression": "PASS",
+    "javaExecutedLocally": false,
+    "firstArtifactDiagnosisOnly": true,
+    "finalArchiveDownloadedLocally": false
+  },
+  "priorCheckpoint": {
+    "source": "f909fbfbc3f060f2cb83238cb94c8d7b710f77dc",
+    "deploy": "254228b5f96130cc072a80e17079a2bbd2747513",
+    "deployWorkflowsSucceeded": 50,
+    "deployWorkflowsTotal": 50,
+    "allPriorEvidencePreserved": true
+  },
+  "authority": {
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "merge": false,
+    "deployment": false,
+    "runtimeGrantIssued": false,
+    "sourceLockChanged": false,
+    "minioChanged": false,
+    "realObjects": 0,
+    "miniPetCredits": 18.3,
+    "miniPetTotal": 46,
+    "gatesPassed": 0,
+    "gatesTotal": 8,
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestsTotal": 21
+  },
+  "remaining": [
+    "Production independent-current-authority verifier holding revocation exclusion through commit",
+    "Gateway/THS authentication/session and approved capability registration",
+    "All-writer custody and durable denial audit",
+    "Distributed revocation/acknowledgement and network-ambiguous delivery",
+    "Logical rollback at unchanged PostgreSQL postmaster; UDP/Ingestion and mixed rollout",
+    "Governed reopening and representative RPO/RTO"
+  ],
+  "native": {
+    "runId": 42018524212,
+    "jobId": 127215042365,
+    "status": "SUCCESS",
+    "ownerScenarios": 63,
+    "apiStorageTests": 8,
+    "newScenarios": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "physical": {
+    "runId": 42018524202,
+    "producerJobId": 127215043102,
+    "readbackJobId": 127215996971,
+    "status": "SUCCESS",
+    "receipt": {
+      "status": "PASS",
+      "targetOperations": 0,
+      "releaseAdmitted": false,
+      "namedPhysicalRecovery": true,
+      "actualOwnerTablesPreserved": true,
+      "pendingReconciledWithoutPut": true,
+      "staleApplicationWriterBlocked": true,
+      "staleS3PutDenied": true,
+      "missingWalBlocksS3": true,
+      "objects": 2,
+      "objectBytes": 36,
+      "cleanStorageStops": 12,
+      "cleanPostgresStops": 2,
+      "targetName": "ouf_onboarding_upload_frozen_v39",
+      "systemIdentifier": "7704646733391904808",
+      "postgresImageId": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+      "backupFiles": 1695,
+      "freshRuntimeAttestationRequired": true,
+      "revokedAuthorityRestoreBlocked": true,
+      "currentAuthorityOutsideOwnerBackup": true,
+      "currentAuthoritySha256": "a996e131341d61cbabe0a50170177b21eb68cc73e1720db0a441c6a362f0baec",
+      "liveWorkerDatabaseRestoreBlocked": true,
+      "populatedAuthorizationHistoryRestored": true,
+      "restoredPolicyCannotPrepareOrRedeliver": true,
+      "scope": "synthetic Onboarding owner only; no UDP/Ingestion or operational binding"
+    },
+    "readback": {
+      "archiveSha256": "862239b9531405ea56bda7945816397b3c05ccae3495aea0aa56888ab8f2c4ea",
+      "backupFiles": 1695,
+      "checksums": 38,
+      "commit": "087fcf21e7402cd5057972093dc0565f03e35427",
+      "independentNativeRestore": false,
+      "members": 39,
+      "negativeReadbacks": [
+        "EXACT_SOURCE_BINDING_SET",
+        "TERMINAL_PASS",
+        "COMPONENT_BINDING",
+        "EXACT_OWNER_AFTER_RESTORE",
+        "NEGATIVE_WAL_GATE",
+        "RESTART_BLOCKED_BEFORE_BUDGET",
+        "RESTORE_AUTHORITY_REJECTED",
+        "REVOCATION_AFTER_NAMED_CUT",
+        "LIVE_WORKER_DATABASE_BINDING",
+        "RESTORED_AUTHORIZATION_CANNOT_REISSUE",
+        "RESTORED_AUTHORIZATION_CANNOT_REISSUE",
+        "RESTORED_AUTHORIZATION_CANNOT_REISSUE",
+        "REVOCATION_AFTER_NAMED_CUT",
+        "POST_CUT_REVOCATION_AUDIT",
+        "POST_CUT_POLICY_REVOCATION"
+      ],
+      "objects": 2,
+      "sources": 272,
+      "status": "PASS",
+      "targetOperations": 0
+    },
+    "populatedV40HistoryRestoreQualified": true,
+    "revocationAfterCutBlocksFreshPreparationAndRedelivery": true
+  },
+  "artifacts": [
+    {
+      "id": 13411121370,
+      "name": "onboarding-common-cut-readback-42018524202",
+      "bytes": 7165954,
+      "sha256": "sha256:76540f526be9712a4dbb0861008a7e3e988268a7c11aaae9067c5fd03c14cc96",
+      "expiresAt": "2027-02-03T11:23:05Z",
+      "runId": 42018524202,
+      "commit": "087fcf21e7402cd5057972093dc0565f03e35427"
+    },
+    {
+      "id": 13410711639,
+      "name": "onboarding-common-cut-42018524202",
+      "bytes": 7173225,
+      "sha256": "sha256:862239b9531405ea56bda7945816397b3c05ccae3495aea0aa56888ab8f2c4ea",
+      "expiresAt": "2027-02-03T11:23:05Z",
+      "runId": 42018524202,
+      "commit": "087fcf21e7402cd5057972093dc0565f03e35427"
+    },
+    {
+      "id": 13409979051,
+      "name": "onboarding-upload-native-42018524212",
+      "bytes": 103291,
+      "sha256": "sha256:27523c52e18361aab645e7bcd247d7c7c47fbb99f378129f167c710c5283ca54",
+      "expiresAt": "2027-02-03T11:23:05Z",
+      "runId": 42018524212,
+      "commit": "087fcf21e7402cd5057972093dc0565f03e35427"
+    }
+  ],
+  "sourceCI": {
+    "successful": 8,
+    "total": 8,
+    "runs": [
+      {
+        "id": 42018532040,
+        "name": "Managed profile minimized diagnostic",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "087fcf21e7402cd5057972093dc0565f03e35427"
+      },
+      {
+        "id": 42018532122,
+        "name": "R2f trusted review browser",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "087fcf21e7402cd5057972093dc0565f03e35427"
+      },
+      {
+        "id": 42018532139,
+        "name": "Source Onboarding module CI",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "087fcf21e7402cd5057972093dc0565f03e35427"
+      },
+      {
+        "id": 42018524316,
+        "name": "Managed profile minimized diagnostic",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "087fcf21e7402cd5057972093dc0565f03e35427"
+      },
+      {
+        "id": 42018524761,
+        "name": "R2f trusted review browser",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "087fcf21e7402cd5057972093dc0565f03e35427"
+      },
+      {
+        "id": 42018524212,
+        "name": "Onboarding durable upload native owner",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "087fcf21e7402cd5057972093dc0565f03e35427"
+      },
+      {
+        "id": 42018524202,
+        "name": "Onboarding physical common cut and stale writer recovery",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "087fcf21e7402cd5057972093dc0565f03e35427"
+      },
+      {
+        "id": 42018524519,
+        "name": "Source Onboarding module CI",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "087fcf21e7402cd5057972093dc0565f03e35427"
+      }
+    ],
+    "generalModuleTests": {
+      "reported": 428,
+      "skippedNative": 63,
+      "executed": 365,
+      "failures": 0,
+      "errors": 0
+    }
+  }
+}

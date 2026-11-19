@@ -1,0 +1,112 @@
+diff --git a/test/volume_server/grpc/fetch_remote_s3_test.go b/test/volume_server/grpc/fetch_remote_s3_test.go
+index 856b71235..52daf9497 100644
+--- a/test/volume_server/grpc/fetch_remote_s3_test.go
++++ b/test/volume_server/grpc/fetch_remote_s3_test.go
+@@ -11,10 +11,9 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 
+ 	"github.com/seaweedfs/seaweedfs/test/testutil"
+ 	"github.com/seaweedfs/seaweedfs/test/volume_server/framework"
+@@ -87,15 +86,33 @@ func startWeedMini(t *testing.T) (s3Endpoint string, cleanup func()) {
+ 	}
+ }
+ 
+-func newS3Client(endpoint string) *s3.S3 {
+-	sess, _ := session.NewSession(&aws.Config{
+-		Region:           aws.String("us-east-1"),
+-		Endpoint:         aws.String(endpoint),
+-		Credentials:      credentials.NewStaticCredentials("admin", "admin", ""),
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
++func newS3Client(endpoint string) *s3.Client {
++	cfg := aws.Config{
++		Region:           "us-east-1",
++		Credentials:      credentials.NewStaticCredentialsProvider("admin", "admin", ""),
++		RetryMaxAttempts: 1,
++	}
++	return s3.NewFromConfig(cfg, func(options *s3.Options) {
++		options.BaseEndpoint = aws.String(endpoint)
++		options.UsePathStyle = true
+ 	})
+-	return s3.New(sess)
++}
++
++func TestNewS3ClientUsesBoundedLocalConfiguration(t *testing.T) {
++	options := newS3Client("http://127.0.0.1:8333").Options()
++
++	if options.Region != "us-east-1" {
++		t.Fatalf("region = %q, want us-east-1", options.Region)
++	}
++	if got := aws.ToString(options.BaseEndpoint); got != "http://127.0.0.1:8333" {
++		t.Fatalf("base endpoint = %q, want http://127.0.0.1:8333", got)
++	}
++	if !options.UsePathStyle {
++		t.Fatal("path-style addressing is disabled")
++	}
++	if options.RetryMaxAttempts != 1 {
++		t.Fatalf("retry max attempts = %d, want 1", options.RetryMaxAttempts)
++	}
+ }
+ 
+ // TestFetchAndWriteNeedleFromS3 tests the full FetchAndWriteNeedle flow:
+@@ -115,11 +132,13 @@ func TestFetchAndWriteNeedleFromS3(t *testing.T) {
+ 
+ 	// Create bucket and upload test data
+ 	bucket := "test-remote-fetch"
+-	s3Client.CreateBucket(&s3.CreateBucketInput{Bucket: aws.String(bucket)})
++	if _, err := s3Client.CreateBucket(context.Background(), &s3.CreateBucketInput{Bucket: aws.String(bucket)}); err != nil {
++		t.Fatalf("create bucket: %v", err)
++	}
+ 
+ 	testData := []byte("Hello from S3 remote storage! This is test data for FetchAndWriteNeedle.")
+ 	testKey := "test-object.dat"
+-	_, err := s3Client.PutObject(&s3.PutObjectInput{
++	_, err := s3Client.PutObject(context.Background(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(testKey),
+ 		Body:   bytes.NewReader(testData),
+@@ -183,17 +202,21 @@ func TestFetchAndWriteNeedleFromS3WithPartialRead(t *testing.T) {
+ 	s3Client := newS3Client(s3Endpoint)
+ 
+ 	bucket := "partial-read-test"
+-	s3Client.CreateBucket(&s3.CreateBucketInput{Bucket: aws.String(bucket)})
++	if _, err := s3Client.CreateBucket(context.Background(), &s3.CreateBucketInput{Bucket: aws.String(bucket)}); err != nil {
++		t.Fatalf("create bucket: %v", err)
++	}
+ 
+ 	// Upload 1KB of data
+ 	fullData := make([]byte, 1024)
+ 	for i := range fullData {
+ 		fullData[i] = byte(i % 256)
+ 	}
+-	s3Client.PutObject(&s3.PutObjectInput{
++	if _, err := s3Client.PutObject(context.Background(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucket), Key: aws.String("big.dat"),
+ 		Body: bytes.NewReader(fullData),
+-	})
++	}); err != nil {
++		t.Fatalf("put object: %v", err)
++	}
+ 
+ 	clusterHarness := framework.StartVolumeCluster(t, matrix.P1())
+ 	conn, grpcClient := framework.DialVolumeServer(t, clusterHarness.VolumeGRPCAddress())
+@@ -238,7 +261,9 @@ func TestFetchAndWriteNeedleS3NotFound(t *testing.T) {
+ 	s3Client := newS3Client(s3Endpoint)
+ 
+ 	bucket := "notfound-test"
+-	s3Client.CreateBucket(&s3.CreateBucketInput{Bucket: aws.String(bucket)})
++	if _, err := s3Client.CreateBucket(context.Background(), &s3.CreateBucketInput{Bucket: aws.String(bucket)}); err != nil {
++		t.Fatalf("create bucket: %v", err)
++	}
+ 
+ 	clusterHarness := framework.StartVolumeCluster(t, matrix.P1())
+ 	conn, grpcClient := framework.DialVolumeServer(t, clusterHarness.VolumeGRPCAddress())

@@ -1,0 +1,29 @@
+{
+  "schema": "ouf.semantic-discovery-key-binding-reader-qualification.v1",
+  "status": "LOCAL_DECLARATION_MOUNT_AND_SIGNER_TESTS_PASS",
+  "script": "scripts/read-semantic-discovery-key-binding-20261108.py",
+  "scriptSha256": "dad3bca82b930b2dded125183323fcb124ecb9ca127b699109498fb4ca2780a2",
+  "dependencies": {
+    "read-discovery-contract-20261108.py": "468660ed73a24c7b8a842f5b99a9c268890c99bb4206ca2e4719865326b27277",
+    "read-analysis-discovery-runtime-20261107.py": "ef8dc8c4887122f2b2d76c05eaff7a8850c31004fcd661de2b3e49f51d6cc1b4"
+  },
+  "tests": {
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "scope": [
+      "Preserves ENV/JSON/argument declaration conflicts and failed-log path match without unrelated values",
+      "Reads only host metadata with no symlink traversal, reports missing source and no mount distinctly",
+      "Reads current Lua signer environment reference without publishing key bytes; compares declared issuer/audience/workload"
+    ]
+  },
+  "pythonSyntaxPassed": true,
+  "targetExecuted": false,
+  "fixApplied": false,
+  "limitations": [
+    "Declarations and stopped-container host mount metadata are not complete effective Spring configuration or a live container filesystem view.",
+    "Admin GET reads current route configuration, not effective authorization or functional discovery.",
+    "No key material is generated, read from key files, copied, published, rotated or substituted. Admin authentication uses the already qualified reader.",
+    "Original native startup fixture omitted the configured discovery key; it did not cover this VPS failure. No new target/native startup success claimed."
+  ]
+}

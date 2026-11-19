@@ -1,0 +1,74 @@
+{
+  "schema": "ouf.semantic-ready-search-denial.v1",
+  "recordedOn": "2026-11-07",
+  "applicationStart": {
+    "source": "OPERATOR_SUPPLIED_OUTPUT",
+    "receipt": "evidence/semantic-application-ready-operator-20261107.json",
+    "status": "OUF_SEMANTIC_APPLICATION_READY",
+    "sameContainer": true,
+    "sameImage": true,
+    "readinessHttpStatus": 200
+  },
+  "search": {
+    "source": "LIVE_GOVERNED_OUF_TOOL",
+    "capability": "ouf.semantic.search",
+    "arguments": {
+      "q": "teatro",
+      "limit": 20
+    },
+    "account": "ouf-admin",
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "content": "{\"total_count\":0,\"incomplete_results\":true,\"items\":[]}",
+        "title": "code",
+        "modified_date": null,
+        "url": "https://api.github.com/search/code?q=ouf-semantic-read-owner-v1+repo:GioNob/ouf-api-gateway",
+        "display_url": "https://api.github.com/search/code?q=ouf-semantic-read-owner-v1+repo:GioNob/ouf-api-gateway",
+        "display_title": "code",
+        "structuredContent": {
+          "title": "code",
+          "content": "{\"total_count\":0,\"incomplete_results\":true,\"items\":[]}",
+          "display_url": "https://api.github.com/search/code?q=ouf-semantic-read-owner-v1+repo:GioNob/ouf-api-gateway"
+        }
+      },
+      "isError": false
+    },
+    "attempts": 1,
+    "repeatedAfterDenial": false
+  },
+  "interpretation": {
+    "connectionBlockRemovedForObservedRequest": true,
+    "searchSucceeded": false,
+    "receiptOrPolicyCauseDistinguished": false,
+    "configuredAdminGrantPresent": true,
+    "loadedSemanticPolicyKnown": false
+  },
+  "sourceReview": {
+    "repository": "GioNob/ouf-semantic-registry",
+    "commit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+    "paths": [
+      "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticConsultationApi.java",
+      "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticReadDelegation.java",
+      "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/ActiveBundleRefresher.java",
+      "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/LocalAuthorization.java"
+    ],
+    "finding": "Consultation endpoint maps receipt verification and local authorization SecurityException to one 403. ActiveBundleRefresher reads a token file on each refresh; errors are stored as POLICY_REFRESH_FAILURE. Readiness alone does not expose its loaded policy."
+  },
+  "restartComparison": {
+    "status": "OPEN",
+    "roles": [
+      "onboarding",
+      "udp"
+    ],
+    "onlyObservedChangedConfigField": "MacAddress",
+    "normalizationApplied": false,
+    "fullE2eHelperStillRequiresFullFingerprint": true
+  },
+  "nextAction": "Read exact current Semantic declarations and mounted token metadata; one HTTPS GET to configured active-policy endpoint; do not issue token, change grants or repeat Semantic start."
+}

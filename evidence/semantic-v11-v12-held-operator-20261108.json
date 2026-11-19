@@ -1,0 +1,22 @@
+{
+  "businessRequestsIssued": 0,
+  "containerConfigurationChanged": false,
+  "credentialValuesEmitted": false,
+  "databaseWrites": 0,
+  "javaExecutionDispatched": false,
+  "migrationDispatched": false,
+  "observedAt": "2026-11-08T17:16:23.256284+00:00",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/semantic-v11-v12-20261108",
+  "providerEnableDispatched": false,
+  "providerRequests": 0,
+  "readOnlyDatabaseSessionsAttempted": 0,
+  "reason": "INSTALLED_MIGRATIONS_DIFFER_FROM_SOURCE",
+  "s3Requests": 0,
+  "schema": "ouf.semantic-v11-v12-upgrade.v1",
+  "serviceStops": 0,
+  "springApplicationStarted": false,
+  "status": "HELD",
+  "temporaryHelperRemoved": false,
+  "temporaryHelperStaged": false,
+  "tokenRequests": 0
+}

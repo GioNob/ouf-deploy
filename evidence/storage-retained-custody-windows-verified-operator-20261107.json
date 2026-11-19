@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.storage-retained-custody-windows-verified-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_WINDOWS_RESULT",
+  "verifierCommit": "e0e6574fec895be4020d81e9f211a1bd99b1ce62",
+  "result": {
+    "schema": "ouf.storage-retained-custody-windows-verified.v1",
+    "status": "HISTORICAL_CUSTODY_DECRYPTED_AND_MANIFEST_VERIFIED",
+    "archiveBytes": 6544578724,
+    "privateManifestSha256": "58484aea53aefeb1fff390578ba6562efabffd914caf64944eee7c9d9a2e0d79",
+    "payloadMembersVerified": 53,
+    "evidenceMembersVerified": 3,
+    "plaintextFilesWritten": 0,
+    "restorePerformed": false,
+    "acceptanceCreditAdded": 0
+  },
+  "acceptanceCreditAdded": 0
+}

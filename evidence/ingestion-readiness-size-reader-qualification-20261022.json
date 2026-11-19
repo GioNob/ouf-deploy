@@ -1,0 +1,41 @@
+{
+  "schema": "ouf.ingestion-readiness-size-reader-qualification.v1",
+  "sourceCommit": "a607d4feeb0060468b17eb4e8983f4dd03bda974",
+  "runId": 39742778066,
+  "jobs": [
+    {
+      "id": 119703832334,
+      "python": "3.12",
+      "tests": 78,
+      "status": "PASS"
+    },
+    {
+      "id": 119703832993,
+      "python": "3.13.5",
+      "tests": 78,
+      "status": "PASS"
+    }
+  ],
+  "skipped": 0,
+  "readerPins": {
+    "schema": "ouf.ingestion-readiness-unissued-reader-delivery.v1",
+    "caseHash": "48504e63aa2d8b051d46599c4341c3c6291fc97fbc8693e754ab2d1f3c1a2f46",
+    "readerSourceSha256": "52ea4dedb50678089a36b05be630c5beb92d7a40e87512a291e2386586ece0b5",
+    "artifactSha256": "b79b62abfc0fd4b48a1f1b7047b443fe7d672b887f40f9cf1967b933574ada07",
+    "bytes": 29354,
+    "readOnly": true,
+    "runtimeAuthorityIssued": false,
+    "oauthRequests": 0,
+    "automaticReplayAllowed": false,
+    "artifactPath": "scripts/reconcile-ingestion-readiness-unissued-20261022.py",
+    "gitBlob": "d91593205f8f521cad54a26486cb7199a773508e"
+  },
+  "scope": "Typed large-review V2 signing/load and sealed142 import; read-only stopped unissued reader including isolated CLI and reproducibility",
+  "fullV2ProductionControllerQualified": false,
+  "oldPlatformJobStatus": "IN_PROGRESS_AT_RECORDING",
+  "targetRuntimeEffects": 0,
+  "targetPatchStagesApplied": 0,
+  "oauthAttempts": 296,
+  "oauthCeiling": 296,
+  "releaseAcceptance": false
+}

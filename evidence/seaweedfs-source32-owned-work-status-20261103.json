@@ -1,0 +1,8 @@
+{
+  "ownedDirectory": "/workspace/scratch/98dabd1608e5/source32-integrated-stage/go-work",
+  "exists": true,
+  "entries": 0,
+  "bytes": 0,
+  "cleanupPerformed": false,
+  "reason": "Owned completed-build work already removed with prior generation32 receipts; directory is empty; no shared work touched."
+}

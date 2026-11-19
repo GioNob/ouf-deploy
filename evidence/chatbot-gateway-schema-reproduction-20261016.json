@@ -1,0 +1,121 @@
+{
+  "schema": "ouf.gateway-admin-schema-reproduction.v1",
+  "targetAccess": false,
+  "runtimeAuthorityIssued": false,
+  "technicalPhase": 5,
+  "functionalMilestonesProven": 0,
+  "original": {
+    "gatewaySource": "bf179e96200deb84942ad32507edef52a4284cd0",
+    "deploySource": "02413079de9eba98119096dc9d327274c073aa94",
+    "runId": 38844107608,
+    "jobId": 116790586582,
+    "routeCount": 37,
+    "acceptedCount": 36,
+    "rejected": [
+      {
+        "id": "mcp-managed-file-review-prepare",
+        "status": 400,
+        "requestSha256": "4506393721c3bef83d7aa98965a9f371f555e8c6c66ca8eb9e137cf1727a90b6",
+        "syntheticFixtureError": "{'error_msg': 'failed to check the configuration of plugin request-validation err: /usr/local/apisix//deps/share/lua/5.1/jsonschema/store.lua:199: Only location independent id is supported. Unsupported $id: urn:ouf:managed-file-execution-proposal:lexical-csv:v1'}"
+      }
+    ],
+    "acceptedButNonidentical": [
+      {
+        "id": "semantic-proposal-review",
+        "status": 201,
+        "requestSha256": "4522c8dd5f3b15ec3a94fd3e312fd178bc87ed38f484ac11a254036033a64d78",
+        "readbackMatches": false
+      },
+      {
+        "id": "semantic-proposal-validate",
+        "status": 201,
+        "requestSha256": "412e9386398597def79e5b8dfe8d7b41b9c4d08b3f1955db0f7d860abd994c26",
+        "readbackMatches": false
+      }
+    ]
+  },
+  "candidate": {
+    "gatewaySource": "f0d11909f8dce34811036800944ed4c6665d1972",
+    "deploySource": "16adcd7eed08b526c24018536109bfcc18f7b5d0",
+    "runId": 38844842784,
+    "jobId": 116792910278,
+    "unitTests": 14,
+    "image": {
+      "image": [
+        "apache/apisix@sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d"
+      ],
+      "imageId": "sha256:b6fd21b8c341f3bf274ddabbad2e3c1bbb6a17566f0e41bf618166e63e4641e4"
+    },
+    "routeCount": 37,
+    "acceptedCount": 37,
+    "exactReadbackCount": 34,
+    "remainingDifferences": [
+      {
+        "id": "mcp-managed-file-review-prepare",
+        "status": 201,
+        "requestSha256": "ab11b9e1a315bba314d9d613f8ae840f4c70e5d04a94f4ba9d4817603300a171",
+        "readbackMatches": false,
+        "syntheticFixtureDifferences": [
+          {
+            "path": "/plugins/request-validation/body_schema/properties/Arguments/properties/expectedVersion/maximum",
+            "expectedType": "int",
+            "observedType": "float",
+            "expected": 9007199254740991,
+            "observed": 9007199254741000
+          }
+        ]
+      },
+      {
+        "id": "semantic-proposal-review",
+        "status": 201,
+        "requestSha256": "4522c8dd5f3b15ec3a94fd3e312fd178bc87ed38f484ac11a254036033a64d78",
+        "readbackMatches": false,
+        "syntheticFixtureDifferences": [
+          {
+            "path": "/plugins/request-validation/body_schema/properties/Arguments/properties/expectedRowVersion/maximum",
+            "expectedType": "int",
+            "observedType": "float",
+            "expected": 9007199254740991,
+            "observed": 9007199254741000
+          }
+        ]
+      },
+      {
+        "id": "semantic-proposal-validate",
+        "status": 201,
+        "requestSha256": "412e9386398597def79e5b8dfe8d7b41b9c4d08b3f1955db0f7d860abd994c26",
+        "readbackMatches": false,
+        "syntheticFixtureDifferences": [
+          {
+            "path": "/plugins/request-validation/body_schema/properties/Arguments/properties/expectedRowVersion/maximum",
+            "expectedType": "int",
+            "observedType": "float",
+            "expected": 9007199254740991,
+            "observed": 9007199254741000
+          }
+        ]
+      }
+    ]
+  },
+  "canonicalSchemaChanged": false,
+  "targetCauseIndependentlyConfirmed": false,
+  "projectionOnlyRemovesExactUnreferencedNestedId": true,
+  "numericDifferenceAcceptanceAllowed": false,
+  "candidateReadyForTargetApply": false,
+  "nextRequiredEvidence": "Exact target planned schema hashes and current image binding; fix numeric roundtrip before any reviewed new intent",
+  "readerQualification": {
+    "source": "16adcd7eed08b526c24018536109bfcc18f7b5d0",
+    "runId": 38844842741,
+    "jobId": 116792910398,
+    "tests": 16,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "realNamespaceGet": true,
+    "realPostgresForPredecessorReader": true,
+    "newReaderDatabaseCalls": 0,
+    "newReaderBackupReads": 0,
+    "readerSha256": "ca6ae2d3e8691e9ca61082f2e7eb9fa5dfbd8f4ea733802c4971f2d95a1d590d",
+    "launcherSha256": "e6958d0cfe03eb2fb2023e7423e82a31cc81480aba78d69409c59ae556554ece"
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "artifact": {
+    "runId": 39053287081,
+    "artifactId": 12108980258,
+    "imageId": "sha256:fd9f8bb72da280d3e5942356c85dd0b633dd6d1525a72ed6250dbaaaf5d12a1c",
+    "sourceLockSha256": "dbac02dd6a1190b90e1e0353ba841aadb2ace35c985c4dc65c8e78559208a98e",
+    "zipSha256": "f802b447bf867174641687de305a4c9dc4e48be3a1a76b8fb9ae9904ba3132a5"
+  },
+  "candidateSourceCommit": "3bc856dd67baa0358d4b9c20759245ed18f09b8c",
+  "completedTechnicalPhases": 8,
+  "databaseMigrationsAllowed": false,
+  "deployedSourceCommit": "6a306b0b8235ad1696dff13d5053c5157750752d",
+  "expectedMigrationTree": [
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V10__lake_object_lifecycle.sql",
+      "sha": "02ce975d0868523550fef24e191604b99b0a54fa",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V11__handoff_raw_lake_reference.sql",
+      "sha": "7a6117f2c733f1b83a9ba7f868e01cc21aa4557e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V12__lake_maintenance_scheduler.sql",
+      "sha": "b69244f632646b71709d51ba151c50db6e75050e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V13__lake_shadow_rebuild.sql",
+      "sha": "e118efc0acae15ce224b9bea66a7e21546b903e0",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V14__shadow_rebuild_fencing_and_rollback.sql",
+      "sha": "fa260d1ced51aefd65c39fa1a8fc14a3fba2643b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V15__historical_reproduce.sql",
+      "sha": "e87025dae8793b3b66a40ffd0af2e4cc0a6f77e8",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V16__materialization_reference_integrity.sql",
+      "sha": "320d626fe7bd0dca348bddf9df60d365da028488",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V17__selective_bitemporal_delta_history.sql",
+      "sha": "037a61dbfa80ea536cf698535986fc5097d5c216",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V18__capability_retry_guard.sql",
+      "sha": "dc731138fdc6e799e2c37287c5ba17017d684bb0",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V19__source_raw_handoff_reference.sql",
+      "sha": "15e5c00bf070b5744840b7ba643542b626f94ee7",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V1__handoff_and_resolution_core.sql",
+      "sha": "4c7528f1bfb2bce710c8203f8c10edd0432146db",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V20__governed_coordinate_transformations.sql",
+      "sha": "878eb089f0dbec97b9a1e49173bf1ea825713f4a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V21__pinned_relationship_reconciliation.sql",
+      "sha": "abeaf7b9d93a1df80c28cb96f7f3dc6fa58f76cb",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V22__weighted_identity_evidence.sql",
+      "sha": "94bde780313624467333ff87f165cd7326715096",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V23__geometry_authority_conflict.sql",
+      "sha": "419bdeac944f4eea01aca01762be8e63f12a77cf",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V24__human_geometry_decisions.sql",
+      "sha": "7be27237d4a8314832e475bc731f804db099091a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V25__human_property_decisions.sql",
+      "sha": "a8e343e3fc98824f95c2720613053e7f6fba4376",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V26__geometry_roles_and_validity.sql",
+      "sha": "bec04095f79d4126d8d158fa59461b1846f57833",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V27__identity_scope_serialization.sql",
+      "sha": "10c9ddbe5cfb0a9c34a62f3120d01fb5cc0598d9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V28__identity_value_lookup.sql",
+      "sha": "999b6ed054681c2db89e69b30adc2623be448f56",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V29__identity_field_shape_catalog.sql",
+      "sha": "0a861aeda2f285b3a1198471774af78cd9cb18b2",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V2__canonical_revision_authority.sql",
+      "sha": "48fe86e803e6e2e5ac6487f53ea1e265ac5a75e5",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V30__resolution_review_package.sql",
+      "sha": "2ef5aa8a7e3d340909ea4428823612c85737a9a2",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V31__serialize_identity_coverage_invalidation.sql",
+      "sha": "b17ba62531be7be177c2010b5c53d294b3247820",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V32__governed_identity_preactivation_attestation.sql",
+      "sha": "35055c3df2749031354a676f16b2ae1cbaa82a37",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V33__human_new_identity_decision.sql",
+      "sha": "cd1fff22f0c30463e833aebc805c1dd9e56661eb",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V34__repeat_human_review_after_stale_coverage.sql",
+      "sha": "31a01405ee2b423e2d3555a205530ec98d403f22",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V3__relationship_resolution.sql",
+      "sha": "fbea83ca659d5ab1d7074d74f8737cbdbf0b0fee",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V4__spatial_resolution.sql",
+      "sha": "c247da666f07b9396ae4c1cb9f2b5537c4ab335b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V5__human_resolution_merge_split.sql",
+      "sha": "d2f86c489c4624825eedc8980360753b18766120",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V6__merge_repoint_and_contribution_links.sql",
+      "sha": "9f5b138162fe3bf61208d88b287dcff6041ced99",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V7__governed_serving.sql",
+      "sha": "b4816889f4dcd7625d4d08724f1b14e7f94d71f4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V8__query_complexity_budget.sql",
+      "sha": "89a743d1227cbcd774f4b86e0f7eac9a9eac011a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V9__spatial_query_budget.sql",
+      "sha": "c3483b09d7d62d29fe318255144db41aac2218bb",
+      "type": "blob"
+    }
+  ],
+  "functionalMilestonesProven": 2,
+  "identityDecisionsAllowed": false,
+  "maximumGatewayWrites": 0,
+  "newPolicyWorkerStarted": false,
+  "readiness": {
+    "readinessPath": "/actuator/health/readiness",
+    "readinessPort": 8080
+  },
+  "retainedBootstrap": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
+    "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
+  },
+  "retainedReadRouteId": "ths-resolution-package-read",
+  "rolloutContext": "/etc/ouf/deploy-snapshots/resolution-comparison-execution-di_tb213",
+  "rolloutSourceCommit": "d6da86415abe673d9ac1a692118bd2d0a218b644",
+  "schema": "ouf.teatri-materialization-private-review-selection.v1",
+  "scope": "PREPARE_SINGLE_UDP_APPROVED_IDENTITY_RECOVERY_REVIEW_NO_RUNTIME_AUTHORITY",
+  "rolloutReviewSha256": "22ea08f621f150948f56a8fd8d865979db4376206a4b1cc7262ef9b8e79428e9",
+  "currentHumanReview": {
+    "path": "/etc/ouf/deploy-snapshots/teatri-policy-restore-execution-yx8kb66n/review.json",
+    "sha256": "b8b53d64fa09a3776f1f6b21e30992fb4d4bcb89bf6a57efc1f51873795d555c"
+  },
+  "newPrivateReviewOnly": true
+}

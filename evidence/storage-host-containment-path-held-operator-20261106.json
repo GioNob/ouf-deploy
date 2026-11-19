@@ -1,0 +1,34 @@
+{
+  "schema": "ouf.storage-host-containment-path-held-operator.v1",
+  "provenance": "Giovanni pasted VPS stdout in conversation; no direct agent VPS access",
+  "sourceCommit": "2adcde61c91058ab720ea20eeaf1902bed3a5827",
+  "sourceSha256": "a4fe4def22c21889c313c7c32e885aedd8e4c0de43fba1d76c2657ab746dbb47",
+  "reported": {
+    "status": "HELD",
+    "reason": "UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW",
+    "partialPreparationPreserved": true,
+    "serviceMutations": 0,
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
+  },
+  "codePathReview": {
+    "phase": "UNIT_CONFIGURATION_READ_BEFORE_PREPARATION_DIRECTORY_CREATION",
+    "preparerWritesReached": false,
+    "configurationsMayHaveBeenReadBeforeHold": true,
+    "exactFailedUnitKnown": false,
+    "exactFailedPathKnown": false,
+    "currentTargetFilesystemIndependentlyObserved": false
+  },
+  "correction": {
+    "description": "Accept canonical manager-reported external unit configuration only through unchanged protected descriptor reader; invalid/unreadable entries retained as redacted review findings",
+    "officialReference": "https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html",
+    "scriptSha256": "a465d17b02f7621926a773b819bcbc8cc89261f530249a8149d8136a9fec625d",
+    "scriptBytes": 16077,
+    "localTestsPass": 9,
+    "serviceMutationExecutorImplemented": false,
+    "oldOperationReplayAuthorized": false
+  },
+  "acceptanceCreditAdded": 0
+}

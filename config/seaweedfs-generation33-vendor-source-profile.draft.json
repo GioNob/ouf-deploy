@@ -1,0 +1,60 @@
+{
+  "schema": "ouf.seaweedfs-vendor-yaml-source-profile.v1",
+  "generation": 33,
+  "previousGeneration": 32,
+  "status": "DRAFT_WAITING_FOR_FULL_VENDOR_AND_GENERATION32_MANIFEST",
+  "dependencySourceMode": "vendor-with-reviewed-source-patches",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "allDependenciesMaintained": false,
+  "targetOperations": 0,
+  "maintenance": {
+    "status": "OPEN",
+    "technicalOwner": null,
+    "reviewCadence": "EACH_CANDIDATE_AND_WEEKLY_WHILE_PATCH_ACTIVE"
+  },
+  "build": {
+    "go": "1.27.3",
+    "os": "linux",
+    "arch": "amd64",
+    "cgo": false,
+    "tags": [],
+    "trimpath": true,
+    "moduleMode": "vendor"
+  },
+  "upstream": {
+    "module": "github.com/apache/iceberg-go",
+    "version": "v0.7.0",
+    "commit": "89a9104ec3639d38ab07e4461721cb5270e95571",
+    "zipSha256": "a042ec87708c376362859041b1741213dc4e05400cad7ad0220ea4361a250d55",
+    "h1InputOnly": "h1:bTD6Pb4uM4sWcMfIx0/cV1haHMc84r+CvPieUqYzD4I=",
+    "checksumDoesNotDescribePatchedSource": true
+  },
+  "maintainedYaml": {
+    "module": "go.yaml.in/yaml/v3",
+    "version": "v3.0.5",
+    "h1": "h1:N6y/pJk8buWs9NY5ERU2HSMfm+IuD/OtfdAnq6kESPw="
+  },
+  "patch": {
+    "file": "github.com/apache/iceberg-go/config/config.go",
+    "sha256": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef",
+    "originalFileSha256": "30ec8eebf86cd2f5df0c8d6bbf8661c0bf72d10fc8c025d6943c9565ae13a604",
+    "modifiedFileSha256": "9983e5e82a9372e9f47db6ccc5a55d9b747fd503caaedb5619e4b37e95c75ab4"
+  },
+  "vendor": {
+    "baseTreeSha256": null,
+    "patchedTreeSha256": null,
+    "modulesTxtSha256": null,
+    "fileCount": null
+  },
+  "rootLockfilesSha256": {
+    "go.mod": null,
+    "go.sum": null
+  },
+  "baseSourceTreeSha256": null,
+  "materializerSha256": "a8f919469002c42995aa94d96d3adeb28f93b6e9fe3df3c3d366c55077b9e4d2",
+  "previousGenerationManifestSha256": null,
+  "previousSourceGitTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "moduleOriginsSha256": null,
+  "moduleOriginCount": null
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "ouf.storage-retained-oci33-docker-image-held-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_VPS_RESULT",
+  "decisionReference": "GIOVANNI-NONPROD-RETAINED-TO-OCI33-20261107-01",
+  "programCommit": "d45d48fad99ade923ed17070a782c8778f999221",
+  "result": {
+    "schema": "ouf.storage-retained-to-oci33-rehearsal.v1",
+    "status": "HELD",
+    "reason": "DOCKER_IMAGE_FAILED",
+    "acceptanceCreditAdded": 0
+  },
+  "inferredFromPinnedControlFlow": {
+    "stagedZipAndInnerTarVerified": true,
+    "containerRunsStarted": 0,
+    "copyPutsStarted": 0,
+    "imageLoadCompletionKnown": false
+  },
+  "acceptanceCreditAdded": 0
+}

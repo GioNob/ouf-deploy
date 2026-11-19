@@ -1,0 +1,58 @@
+{
+  "schema": "ouf.postpatch-owned-source-read.v1",
+  "observedAt": "2026-10-22T13:08:49Z",
+  "observationTimeNote": "UTC clock captured immediately after source response; not provider event timestamp",
+  "readOnly": true,
+  "ownerAccountEstablishedFrom": "releases/TEATRI_MANAGED_CSV_ONBOARDING_REVIEW_20261017.json",
+  "ownerReadback": {
+    "sourceId": "teatri-csv-6609b245",
+    "onboardingVersionId": "c9fec43c-19b3-4ffb-9111-781bc347c5b0",
+    "state": "APPROVED",
+    "lockVersion": 3,
+    "configurationHash": "sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d",
+    "humanApprovalRequired": false,
+    "challengeId": "9bca610c-aa24-4be3-ac29-0e5454e9d877",
+    "challengeStatus": "CONFIRMED",
+    "expiresAt": "2026-10-19T08:03:31.199+00:00",
+    "reviewUrl": "https://api.ouf-lab.it/trusted-human/onboarding/?challenge=9bca610c-aa24-4be3-ac29-0e5454e9d877",
+    "challengeExpired": true,
+    "ingestionCompatibilityObserved": false,
+    "activationProgress": {
+      "readiness_started_at": "2026-10-21T17:27:58.016+00:00",
+      "readiness_attempts": 2,
+      "readiness_generation": 3,
+      "readiness_phase": "PAUSED",
+      "readiness_lease_until": null,
+      "readiness_next_at": "2026-10-21T17:28:49.864+00:00",
+      "readiness_last_code": "ONB_READINESS_DEPENDENCY_503",
+      "profile": "managed-review-activation.v1",
+      "maximumAttempts": 128,
+      "maximumElapsedSeconds": 86400,
+      "requiresAuthenticatedHumanResume": true
+    }
+  },
+  "sourceMutationPerformed": false,
+  "deniedIngestionReadRetried": false,
+  "permissionChanges": false,
+  "newTechnicalOAuthRequested": false,
+  "runtimeReplay": false,
+  "patchStagesComplete": 12,
+  "technicalPhases": 8,
+  "functionalMilestones": 4,
+  "releaseAcceptance": false,
+  "sourceInspection": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+    "files": [
+      "ManagedOnboardingReviewService.java",
+      "src/main/resources/ths/workflow-review.js"
+    ],
+    "findings": [
+      "PAUSED dependency503 can proceed through existing explicit HUMAN activate path; separate resume endpoint is for BLOCKED dependency403 only.",
+      "Confirmation expiry does not invalidate an already CONFIRMED approval for activation.",
+      "Activation guards retain128 attempts/24hours and reserve50seconds before budget end; original start gives deadline2026-10-22T17:27:58.016Z.",
+      "Repository inspection does not prove exact deployed source generation or activation success."
+    ]
+  },
+  "nextAction": "HUMAN reviews exact existing source/version/hash in owner-issued THS card and may explicitly choose Verifica e attiva; no agent activation or automatic retry. Preserve prior budget and review. Read exact source/version after outcome."
+}

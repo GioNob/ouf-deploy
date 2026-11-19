@@ -1,0 +1,83 @@
+{
+  "schema": "ouf.generation29-runtime-labs-local.v1",
+  "status": "LOCAL_ADAPTER_PASS_AWAITING_ACTUAL_COHORT_ARTIFACT_AND_HOSTED_RUNTIME",
+  "unitTestsPassed": 28,
+  "pythonAst": "PASS",
+  "workflowYaml": "PASS",
+  "workflowShellSyntax": "PASS",
+  "workflowTrigger": "workflow_call",
+  "automaticPredecessor": "qualify-cohort",
+  "requiredInputs": [
+    "cohort-artifact-id",
+    "cohort-archive-sha256",
+    "lock-sha256",
+    "cohort-receipt-sha256"
+  ],
+  "sourceHashesAndEvidence": {
+    "scripts/storage-generation29-lab-binding.py": {
+      "sha256": "1c9bc6f500251c616d45ac0de62011c271e1ecfb77192708e07c568b28d97186",
+      "bytes": 7373
+    },
+    "scripts/run-seaweedfs-452-generation29-labs.py": {
+      "sha256": "50137d011238799b306286bf948738fb7dfaa00752ec90613b8f6d616cb29e0d",
+      "bytes": 14894
+    },
+    "tests/test_storage_generation29_lab_binding.py": {
+      "sha256": "e2ce453dcc7fe255ebf51f21f1ec7c8a2aad83435cf14836855b9881765103d5",
+      "bytes": 6660
+    },
+    "tests/test_storage_generation29_labs.py": {
+      "sha256": "809507215b6b08542047b3686e0a969e76546e8b9b27c4d36fc98d4ae6fef06a",
+      "bytes": 18176
+    },
+    ".github/workflows/storage-452-generation29-runtime-labs.yml": {
+      "sha256": "35e688dec33397ec221bea36e2ded97b3d156b88a771bc901dc24151d587886f",
+      "bytes": 7532
+    },
+    "docs/OUF_SEAWEEDFS_GENERATION29_RUNTIME_LABS_PLAN_20261103.md": {
+      "sha256": "14fc17ab79237a8b722c16dd828c41c34921139fb8241c39e62af755383eecaf",
+      "bytes": 9371
+    },
+    "evidence/seaweedfs-generation29-runtime-labs-local-20261103/adapter-tests.txt": {
+      "sha256": "a9674e2119ea5a26ecbb7d2ba5dbe35cde6bd8b2c2c708e4cc16b5d066d9056e",
+      "bytes": 4945
+    },
+    "evidence/seaweedfs-generation29-runtime-labs-local-20261103/actual-local-bundle-binding-check.json": {
+      "sha256": "88d06ac5e968b7de0b60dab93ee622062cb001b34241f319a64be86236f79959",
+      "bytes": 449
+    }
+  },
+  "legacyHarnessFilesModified": false,
+  "dockerRuns": 0,
+  "runtimeGeneration29TestsRun": 0,
+  "runtimeLockOrArtifactFactsInvented": false,
+  "maximumConcurrentContainers": 4,
+  "labsSequential": true,
+  "mutatingRequestRetries": 0,
+  "coldOctetStreamPassRequiredAt": [
+    "seed",
+    "verify"
+  ],
+  "identityRequiredCases": {
+    "S3": 23,
+    "TLSNegative": 2,
+    "egress": 2
+  },
+  "limits": [
+    "Pure local tests use explicit synthetic in-memory lock/artifact fixtures; they do not qualify any hosted artifact.",
+    "Real cohort bundle and lock remain owned by the phase B producer and must match before Docker.",
+    "No execution of generation29 OCI runtime yet; no inheritance of generation15 runtime results.",
+    "Production network policy, mTLS, lateral isolation, rotation and PostgreSQL coordinated recovery are outside this laboratory."
+  ],
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "realLocalCohortBundleCompatibility": {
+    "status": "PASS_LOCAL_NOT_HOSTED",
+    "evidence": "evidence/seaweedfs-generation29-runtime-labs-local-20261103/actual-local-bundle-binding-check.json",
+    "sha256": "88d06ac5e968b7de0b60dab93ee622062cb001b34241f319a64be86236f79959",
+    "dockerCommands": 0
+  }
+}

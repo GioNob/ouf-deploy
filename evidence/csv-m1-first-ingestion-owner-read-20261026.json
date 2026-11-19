@@ -1,0 +1,1352 @@
+{
+  "schema": "ouf.ingestion.acquisition-evidence.v1",
+  "run": {
+    "run_id": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+    "source_id": "teatri-csv-6609b245",
+    "bundle_id": "bundle-teatri-csv-6609b245",
+    "bundle_version": "2",
+    "bundle_checksum": "sha256:7cebf0ba655d7f0f853b9dc647164de30f1f079e50281e36d24f05db57ad0d1f",
+    "mode": "MANAGED_ONCE",
+    "state": "SUCCEEDED",
+    "phase": "MANAGED_ONCE",
+    "failure_code": null,
+    "created_at": "2026-10-24T22:10:56.026+00:00",
+    "updated_at": "2026-10-24T22:11:11.024+00:00",
+    "snapshot_id": "575ed075-a235-4057-9c64-78277a4af4d2",
+    "snapshot_observed_at": "2026-10-26T15:57:09.242+00:00",
+    "read_only_snapshot": true,
+    "publication_id": "dffa2a5e-740b-4e3d-95a0-14c841940b72",
+    "managed_content_hash": "sha256:08b20658b2b4eadf34d25cd93eead2945096b353ae33b797cf3c41df5319c9e9",
+    "snapshot_matches_run": true
+  },
+  "counts": {
+    "attempts": 13,
+    "failed_attempts": 0,
+    "lineage_records": 13,
+    "handoffs": 13,
+    "unresolved_quarantines": 0
+  },
+  "items": [
+    {
+      "lineage_id": "195894c5-b5bd-4f17-b854-fd4a1ea98a2d",
+      "handoff_id": "c687e7ce-0c39-4674-89e8-fb216cc4fb84",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:03.719+00:00",
+      "sequence_no": 6,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:90fd83d00205651e02b9b7078c53cbe0419a41773ca254d6dfd86b5a8aba22aa",
+      "output_hash": "sha256:3c8b82ead56db03458b5b325b4d31cb0ce486c4e6a295e28a8567e8b7ceed01b",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:bfa43037151eeef75a8966263417416b730d362710fcc9f340bb6adb466fe185",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "27b9f2f3-4315-45f6-a4bc-043dea31459e",
+      "handoff_id": "50241383-69fe-4aa9-8c0a-ceabf406345d",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:10:58.449+00:00",
+      "sequence_no": 1,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:4f6fa782975e21eff832d73bc7d4ade583447a474a13c67eed636358c9cb25a9",
+      "output_hash": "sha256:b6a10f8f74d8fac710becd281203cefd64b4458603c78e1df51cf7d898c9a172",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:653743c0c47775842e771ca69fae9668083942e33f06af188f9fe4f7354e0d43",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "30b575f8-f421-4586-9358-a07000be9462",
+      "handoff_id": "5b3583d9-40af-411f-93c5-9fbee9566d08",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:10:59.527+00:00",
+      "sequence_no": 2,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:1d6ee2768d6db6f99f6770554d1677631a7d862e20d8b6dcb1233edef9b822e7",
+      "output_hash": "sha256:eea6aee8c5eb39ef49d1176381585b16fce72d30c4e13839ebf2c4934570378e",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:95e6377ce56c17b2e9fada800d31f5a6c5bafb63b3f86f624158105f9ac82594",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "4b312443-cdb8-44e9-9879-fc51fd9c4130",
+      "handoff_id": "ccf51e08-b838-487d-a75e-2104b6e42a46",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:00.576+00:00",
+      "sequence_no": 3,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:f034f4c4e2d49388356f5abbe66a057908fa45981c410b792e2fc08cac5dbf07",
+      "output_hash": "sha256:665c040da40e84e5b16cbe6a7eb8c80fc681bda0c07b06c3e2f5efc282520492",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:4d21d3fc6d17289243bd2dca82cc90163b10d2e7b648b228ddc8c3a8cadd7d56",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "4ff46178-d855-4737-9c2d-3841c9d26947",
+      "handoff_id": "898b23f2-0449-406c-bf19-0c135f000665",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:08.946+00:00",
+      "sequence_no": 11,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:a33621f3ea408e087ce13dc762db8193dd69e976119ed0df5d7f128331ea4d55",
+      "output_hash": "sha256:610b28b286effc6e872d882821c082fc1102d1b9b8ef410b1c54101c3254a5f7",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:25b48c05e3d29c794016ec1afb488fcf998cdfd3a9bbc78b1f8f153d839d5951",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "7bcf62a3-6055-40c7-91f0-80e036c30539",
+      "handoff_id": "1de7d574-8024-4145-9bec-b5f71afee164",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:07.904+00:00",
+      "sequence_no": 10,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:d2679e3af06245aa779267a91e14f72398d0b4fecd4a53bac7998de5d1d4788a",
+      "output_hash": "sha256:003cbc6e5c02b343d5e80cbf32a87314a937235c23a567193b113b33a5751d60",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:6b35ba1d2722327b4443ed0150856e9152f350972049e645870650cd63bff9e1",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "882574d4-10a3-4b7b-92b8-348dc99a5a89",
+      "handoff_id": "6f129b72-d197-4f40-a223-796981030154",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:11.022+00:00",
+      "sequence_no": 13,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:da38cbc67b2b6c65693ca72b1e8e884b40461d02228aec8554703ddb61ebfbcb",
+      "output_hash": "sha256:5fbe03c4b3b5e15066da2ff516fd81a9d43db33121b6908fd7cd22d808cc633d",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:5a72392b025fe33c68d02cec50b4651c959933daa1dd1daaf7ce11b948a6a79d",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "bc0153e5-8f26-4add-91b5-479729c37d90",
+      "handoff_id": "be259422-5ffa-48de-a14d-d372432f8431",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:06.851+00:00",
+      "sequence_no": 9,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:fbbd6fe68a8505581749f16a861445a00576deb3f074b1167f0636e7f959f861",
+      "output_hash": "sha256:53a42169666cdbf8e44f929513a5913374bad834fee275a67b99fc797a6de466",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:fed058b75bee1f26df91f65fc884939faebfdef575fd1399093c8e4fe909da8f",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "c5181a0d-9291-47a3-a0d0-ef406f1d8d31",
+      "handoff_id": "20545139-a7db-42c6-8d29-d8a13f770b42",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:01.624+00:00",
+      "sequence_no": 4,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:480bd44dcc6252e348f02887d86868c7832c1c78b198ccc8302d336e4e1c6811",
+      "output_hash": "sha256:d6f56c598a44cbeaed4102eb8d5a823f09f99d7d15818383e927f2c06f9dbc54",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:f7d18d766a3d60d693054416fb3f1e1bba833d8787ce8326e63017ca15330689",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "dc2d0a72-75b4-4eb1-aed1-a85d4f7aa3e6",
+      "handoff_id": "f5b2a8c0-f652-47c4-852a-6bd4d77504fd",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:09.983+00:00",
+      "sequence_no": 12,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:f542a58ebe7f833e12ac16590a0b7db75c21bde54b2581b70179e172dbec5acb",
+      "output_hash": "sha256:b9118ffefa3a7051fc624aa8b29f4b50354f3373a740ff4be665e9d99e5b0ae8",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:0b48077a9c533113b05e981e2d820bf5fe7fcd54f45ce11b6fb00d02de48e842",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "dd029661-e659-4359-a8cd-fdcdbd7c139b",
+      "handoff_id": "0df5b735-6737-4eb9-947d-39985c647ded",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:02.672+00:00",
+      "sequence_no": 5,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:1f0ec8b2954869e424172ff88a2a1b64c026784f9fc75ba80f17c9c90fd414cf",
+      "output_hash": "sha256:f667816cb1075897c575ead023d6674aa2f5d75e899271b72f6576ba406dbe78",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:fd741fcff445022bd7f02be792cfde2b59642bff1493cbb757980fcbe60cdd9a",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "e425b6b0-4e48-4d79-8a0a-72f78041c6f4",
+      "handoff_id": "b247e6d5-4b5d-4eae-adf2-466739ffa2ed",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:04.765+00:00",
+      "sequence_no": 7,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:3de06d7149c2ae88ae8c44bb9ce949f04ef19c5d99b1addde4fc69142fa6616c",
+      "output_hash": "sha256:be510852ebd45988d5c9278b6ee73a97f2cb96818b8903aaaf0fcc876d58c0c0",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:c0de3602bfc61f610c48a3d8794af6353ee92a2683205e8b92a87bbf01103314",
+      "durableAckRecorded": true
+    },
+    {
+      "lineage_id": "f8bb441e-e34a-4c7d-82c0-295074435d7b",
+      "handoff_id": "93900bdf-e5a6-4d0b-ab55-6734272748d1",
+      "handoff_state": "ACKED",
+      "acked_at": "2026-10-24T22:11:05.806+00:00",
+      "sequence_no": 8,
+      "partition_key": "default",
+      "candidate_watermark_recorded": true,
+      "payload_run_matches": true,
+      "payload_handoff_matches": true,
+      "payload_lineage_matches": true,
+      "payload_source_matches": true,
+      "raw_hash": "sha256:0f8df46dda98b8b3872a111fc6bc652e4c160a94d183ebb9d98d3cc1a9450024",
+      "output_hash": "sha256:b7c8760113102f4a7afefeaaa3201455893ade4fe2b92614efba16cd0aae644f",
+      "mappedProperties": [
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione"
+        },
+        {
+          "valueState": "EMPTY_STRING",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/additionalType"
+        },
+        {
+          "valueState": "VALUE",
+          "propertyIri": "https://schema.org/name"
+        }
+      ],
+      "downstreamReceiptRecorded": true,
+      "downstreamReceiptHash": "sha256:ca540b3619d1eaf9d1e20d56087c532e55151b6771895d330ec7d99efe3bd345",
+      "durableAckRecorded": true
+    }
+  ],
+  "partitions": [
+    {
+      "partition_key": "default",
+      "state": "SUCCEEDED",
+      "watermark_present": true,
+      "watermark_belongs_to_requested_run": true,
+      "committed_handoff_id": "6f129b72-d197-4f40-a223-796981030154",
+      "committed_sequence_no": 13,
+      "committed_handoff_has_ack": true,
+      "watermark_matches_candidate": true,
+      "watermark_not_before_ack": true,
+      "complete_ack_prefix": true
+    }
+  ],
+  "partitionTruncated": false,
+  "nextLineageId": null,
+  "partial": false,
+  "redactionReasons": [],
+  "authorization": "AUTHORIZED",
+  "authorizationDecisionRef": "ouf-lab-authorization:53",
+  "downstreamMaterializationProven": false
+}

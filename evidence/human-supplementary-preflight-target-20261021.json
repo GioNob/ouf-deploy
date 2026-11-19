@@ -1,0 +1,29 @@
+{
+  "administrativeLedgerAttempts": [
+    283,
+    284
+  ],
+  "attempts": 284,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "complete": true,
+  "completedOwnerActionReplayed": false,
+  "completedPublicationReplayed": false,
+  "completedTechnicalPhases": 8,
+  "elapsedSeconds": 0.022378983994713053,
+  "finishedAtUnix": 1792563076.797031,
+  "functionalMilestonesProven": 4,
+  "maximumCumulativeOAuthAttempts": 288,
+  "newHumanWindowOpened": false,
+  "notReleaseAcceptance": true,
+  "oauthRequestsReservedThisInvocation": 0,
+  "oldHumanJournalAttempts": 282,
+  "readOnly": true,
+  "remainingAttempts": 4,
+  "reviewHash": "981d810332ad855e7b9305d15fc4bbb10796bc50d556241060d7044c43d715dc",
+  "runtimeAuthorityIssued": false,
+  "runtimePreparationRetained": true,
+  "schema": "ouf.human-supplementary-ledger-result.v1",
+  "startedAtUnix": 1792563076.77465,
+  "status": "SUPPLEMENTARY_HUMAN_REVIEW_READY_NO_AUTHORITY"
+}

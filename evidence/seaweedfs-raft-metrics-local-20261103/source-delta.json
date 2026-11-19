@@ -1,0 +1,8 @@
+{
+  "changedFiles": [
+    "weed/server/raft_hashicorp.go",
+    "weed/server/raft_metrics_test.go"
+  ],
+  "baselineFileCount": 4534,
+  "newFileCount": 4535
+}

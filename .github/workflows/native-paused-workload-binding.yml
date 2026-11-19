@@ -1,6 +1,8 @@
 name: OUF paused workload native state binding
 on:
   workflow_dispatch:
+  pull_request:
+    paths: [tools/semantic_application_cutover/paused_workload_binding.py, tools/semantic_application_cutover/file_only_node_owner.py, tests/test_paused_workload_binding.py, tests/test_file_only_retained_checkpoint.py, tests/native_paused_workload_binding.py, .github/workflows/native-paused-workload-binding.yml]
   push:
     branches: [main]
     paths:
@@ -9,6 +11,9 @@ on:
       - tests/test_paused_workload_binding.py
       - tests/native_paused_workload_binding.py
       - .github/workflows/native-paused-workload-binding.yml
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

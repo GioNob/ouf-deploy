@@ -1,0 +1,10 @@
+{
+	"Path": "github.com/aws/aws-sdk-go-v2/service/iam",
+	"Version": "v1.64.6",
+	"Time": "2026-10-27T18:15:19Z",
+	"Dir": "/home/runner/go/pkg/mod/github.com/aws/aws-sdk-go-v2/service/iam@v1.64.6",
+	"GoMod": "/home/runner/go/pkg/mod/cache/download/github.com/aws/aws-sdk-go-v2/service/iam/@v/v1.64.6.mod",
+	"GoVersion": "1.24",
+	"Sum": "h1:6tqE3gHbHFEvARPvlLHgRK1dXoD96ecolfPEurpYXyc=",
+	"GoModSum": "h1:lV0r+RVSkXRA6WhiaxW55qn8n60ObMwQShxaqrs9UeY="
+}

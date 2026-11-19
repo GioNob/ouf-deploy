@@ -1,0 +1,43 @@
+{
+  "schema": "ouf.semantic-token-only-sealed-delivery-qualification.v1",
+  "installationSpecific": true,
+  "sourceCommit": "c3e39aaf5783be6428fdb95dff1a3836748c0ce3",
+  "launcherCommit": "3a500b77081d9ee109468748db55e2d99954b55c",
+  "launcherPath": "scripts/launch-chatbot-semantic-token-session-20261016.sh",
+  "launcherSha256": "df509e9c44b7b1e08ce6acc3e4e0847aa18d0bcda7eadc525a808d3ba806f7ac",
+  "sourceQualification": {
+    "runId": 38902222309,
+    "jobId": 116976988186,
+    "result": "PASS",
+    "tests": 72,
+    "nativeLinux": true,
+    "syntheticFixtures": true,
+    "dispatchHumanAndTerminalSimulated": true,
+    "lateGrantCancellationPreservesAttemptsAndPreventsPublication": true
+  },
+  "deliveryQualification": {
+    "runId": 38902296302,
+    "jobId": 116977233087,
+    "result": "PASS",
+    "tests": 2,
+    "childSynthetic": true
+  },
+  "backupRegression": {
+    "runId": 38902296171,
+    "result": "PASS"
+  },
+  "developmentCapsuleSha256": "3294e99e4fbe44dd2ff19f223a4b18d0b3e8ea41a1f7c0109e491312e12c1aa1",
+  "targetCandidateSha256": "0f89461b7ec0d34078dbacc28d3281c935ca2f5c60dd185f2f763f4ffd3650b4",
+  "requiresFreshAuthenticatedHumanDecision": true,
+  "targetExecutionObserved": false,
+  "runtimeAuthorityIssued": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "controlledPriorAttempts": 69,
+  "maximumNewAttemptsIfApproved": 128,
+  "maximumCumulativeAttemptsIfApproved": 197,
+  "maximumSessionSecondsIfApproved": 3600,
+  "automaticBudgetRenewal": false,
+  "budgetReset": false,
+  "acceptanceGranted": false
+}

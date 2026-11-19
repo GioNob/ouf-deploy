@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.storage-host-containment-cardinality-held-operator.v1",
+  "sourceCommit": "acb3425e268ea537e0692e75598e601bac1abf0c",
+  "sourceSha256": "a465d17b02f7621926a773b819bcbc8cc89261f530249a8149d8136a9fec625d",
+  "provenance": "Operator-provided VPS stdout; not direct agent observation",
+  "reported": {
+    "status": "HELD",
+    "reason": "PROPERTY_CARDINALITY",
+    "partialPreparationPreserved": true,
+    "serviceMutations": 0,
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
+  },
+  "review": {
+    "preparationWritesReached": false,
+    "exactFailedUnitKnown": false,
+    "exactFailedPropertyKnown": false,
+    "missingVersusRepeatedKnown": false,
+    "priorFixtureAssumption": "Mock always emitted every requested property including empty values",
+    "corrections": [
+      "Explicit systemctl show --all",
+      "Optional unknown values remain null with unit/key/count findings",
+      "Preserve multivalue ExecStop/ExecStopPost privately",
+      "Critical cardinality failure includes redacted context",
+      "Native systemd fixture required before delivery"
+    ],
+    "officialReference": "https://www.freedesktop.org/software/systemd/man/latest/systemctl.html"
+  },
+  "correctedScript": {
+    "bytes": 18228,
+    "sha256": "caac2981e43b96150bc0875405facfc4cb34ad8b188adc210e4ed214bb5bf5b1",
+    "localTestsPass": 13,
+    "nativeCI": "pending"
+  },
+  "acceptanceCreditAdded": 0
+}

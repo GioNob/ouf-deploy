@@ -1,0 +1,45 @@
+{
+  "schema": "ouf.storage-test-cold-held-operator.v1",
+  "date": "2026-11-06",
+  "source": "Operator-pasted VPS output; agent has no direct VPS access",
+  "decisionReference": "GIOVANNI-NONPROD-COLD-20261106-01",
+  "installation": {
+    "schema": "ouf.storage-test-cold-stop-installation.v1",
+    "status": "PINNED_TOOLS_INSTALLED_NO_STOP_OR_CAPTURE",
+    "filesInstalled": 3,
+    "exactExistingFilesReused": 0,
+    "providerRequests": 0,
+    "legacyPlanModified": false,
+    "runtimeAuthorityIssued": false,
+    "targetStopPerformed": false,
+    "targetCapturePerformed": false,
+    "acceptanceCreditAdded": 0
+  },
+  "stop": {
+    "status": "HELD",
+    "reason": "RUN_SOURCE_CHANGED_SINCE_PLAN",
+    "partialOperationPreserved": true,
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
+  },
+  "launcherMessage": "HELD: fermo non completato; non rilanciare.",
+  "captureReachedByLauncher": false,
+  "stopAttemptConsumed": true,
+  "phaseAtFailureProven": false,
+  "mutationsPerformed": null,
+  "currentServiceState": null,
+  "reasonForUncertainty": "verify_runtime_sources is called before first mutation AND from final offline check; identical reason cannot identify phase without journal",
+  "next": "Read retained claim/derived plan/journal names and current local runtime identities; no Engine/provider calls or writes",
+  "reader": {
+    "path": "scripts/read-storage-cold-runtime-drift-20261106.py",
+    "bytes": 8841,
+    "sha256": "3db75d639eeba5c0c7b4e8ea014722294dcfeaa1bf314721f0a8b376733ba7ec",
+    "checks": "Local pure checks PASS: metadata-only/body-change distinction, redaction, pre-mutation/partial-intent classification, unknown entry detection",
+    "nativeExecutionClaimed": false,
+    "targetExecutionReported": false
+  },
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0
+}

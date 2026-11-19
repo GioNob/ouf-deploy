@@ -1,0 +1,28 @@
+name: Source revision private preparation
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/prepare-source-revision-inputs.py', 'releases/source-revision-private-preparation-20261018.json', 'tests/test_source_revision_private_preparation.py', '.github/workflows/source-revision-private-preparation.yml']
+permissions: {contents: read}
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:17-alpine
+        ports: ['5432:5432']
+        env: {POSTGRES_USER: postgres, POSTGRES_HOST_AUTH_METHOD: trust}
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Closed launcher syntax
+        run: bash -n scripts/launch-source-revision-private-preparation-20261018.sh
+      - name: Actual root custody, image bytes and three PostgreSQL read queries
+        run: |
+          sudo install -d -m 0700 /root/ouf-revision-preparation-tests
+          sudo cp -a . /root/ouf-revision-preparation-tests/repository
+          sudo chown -R root:root /root/ouf-revision-preparation-tests
+          sudo chmod -R go-w /root/ouf-revision-preparation-tests
+          sudo env OUF_PREPARATION_POSTGRES=1 python3 -I -B -S -m unittest discover -s /root/ouf-revision-preparation-tests/repository/tests -p test_source_revision_private_preparation.py -v

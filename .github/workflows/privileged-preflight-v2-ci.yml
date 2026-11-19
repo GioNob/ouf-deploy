@@ -18,12 +18,16 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: GioNob/ouf-api-gateway
           ref: 1d75e404b5a84f361ed2160c611f91aaa68d3fd8
           path: gateway-source
           persist-credentials: false
+      - name: Allow exec on /run (newer runner images mount it noexec)
+        run: sudo mount -o remount,exec /run
       - name: Shell syntax and bounded native inventory upgrade tests
         run: |
           bash -n scripts/upgrade-discovery-preflight-v2.sh

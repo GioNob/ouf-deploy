@@ -1,0 +1,12 @@
+{
+  "schema": "ouf.rollout-reader-byte-pin-correction.v1",
+  "cause": "Published reader was missing one trailing newline relative to the locally hashed file",
+  "readerLogicChanged": false,
+  "originalPublishedCharacters": 6750,
+  "reviewedCharacters": 6751,
+  "readerSha256": "f4dc42a9ffe2488e01b7bab26e064e1f44b83d803a889c9837ee929b0dc444e5",
+  "operatorObserved": "Checksum failed before sudo reader execution",
+  "targetStateReadByFailedCommand": false,
+  "serviceMutations": 0,
+  "budgetReset": false
+}

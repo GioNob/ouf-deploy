@@ -1,0 +1,76 @@
+{
+  "schema": "ouf.security-applicability-review-proposal.v1",
+  "date": "2026-11-02",
+  "approvalStatus": "DRAFT_NOT_REVIEWED_NOT_ADMITTED",
+  "product": {
+    "name": "OUF-owned SeaweedFS 4.51 patched server",
+    "binarySha256": "bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74",
+    "sourceCommit": "153ab668c99731a6d29492bf6c61d0b4fa701101",
+    "goToolchain": "go1.27.3",
+    "cgoEnabled": false,
+    "compiledPackageCount": 1738,
+    "compiledPackagesSha256": "67534a54978a5a157673a6a21ea26c147b0dbcb60c60d30497ce39e6ee3c435b",
+    "upstreamPublisherSignatureProven": false,
+    "ownedWorkflowProvenanceAvailable": true
+  },
+  "advisory": {
+    "id": "GO-2026-5932",
+    "sourceUrl": "https://vuln.go.dev/ID/GO-2026-5932.json",
+    "published": "2026-07-07T22:15:29Z",
+    "modified": "2026-07-07T22:15:29Z",
+    "affectedModule": "golang.org/x/crypto",
+    "affectedPackagePrefix": "golang.org/x/crypto/openpgp",
+    "fixedVersion": null
+  },
+  "observed": {
+    "rawHigh": 0,
+    "rawCritical": 0,
+    "rawUnknown": 1,
+    "affectedPackagesInCompiledGraph": [],
+    "modulePresent": true
+  },
+  "proposedDisposition": {
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_present",
+    "specification": "https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md",
+    "impactStatement": "The affected OpenPGP package family is absent from the exact static binary compilation graph; the containing module is present for other packages."
+  },
+  "policyChangeRequested": {
+    "currentGate": "RAW_HIGH_CRITICAL_UNKNOWN_ZERO",
+    "proposedScope": "ALLOW_ONE_EXACT_REVIEWED_APPLICABILITY_DISPOSITION_FOR_THIS_BINARY_AND_ADVISORY_ONLY",
+    "requiresExplicitOwnerDecision": true,
+    "automaticGateChange": false,
+    "rawReportPreserved": true,
+    "otherFindingsNeverSuppressed": true
+  },
+  "invalidationTriggers": [
+    "binary checksum",
+    "source or dependency patch",
+    "Go toolchain or build options",
+    "compiled package graph",
+    "advisory scope or new finding"
+  ],
+  "decision": {
+    "reviewer": null,
+    "decisionRef": null,
+    "accepted": false
+  },
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "releaseAcceptance": false,
+  "migrationAuthorized": false,
+  "standardOpenVexDocumentIssued": false,
+  "scannerIgnoreAdded": false,
+  "allEightMigrationGatesRemainOpen": true,
+  "document": "docs/OUF_SEAWEEDFS_G1_APPLICABILITY_REVIEW_20261102.md",
+  "evidence": {
+    "copyDossier": "evidence/seaweedfs-copy-core-qualified-20261102.json",
+    "independentRunId": 41507064288,
+    "retainedMetadataArchive": "evidence/artifacts/storage-copy-readback-41507064288.zip",
+    "metadataArchiveSha256": "00a3559a38bcf84f122863e2aaa0e31122452603462735c3f16ea126a10fab4f",
+    "rawReport": "trivy-binary.json",
+    "compiledGraph": "compiled-packages.json",
+    "exactPublisherSignatureVerified": true,
+    "publisher": "OUF-owned workflow; not upstream vendor"
+  }
+}

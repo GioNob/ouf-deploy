@@ -1,0 +1,142 @@
+{
+  "schema": "ouf.historical-advisory-drift-assessment.v1",
+  "status": "HISTORICAL_FRESHNESS_STALE_NOT_ADMITTED_CURRENT_CANDIDATES_SEPARATE",
+  "sourceCommit": "63ae5b2a71873aad0586c9bb3b5819f054fa7c09",
+  "failedRun": 41709442513,
+  "failedJob": 126173341642,
+  "artifact": {
+    "id": 13266117382,
+    "sha256": "f22a4705c8213e6f206e190d5631c93d32c1997d009d1942c30febe2fe5cc096",
+    "bytes": 1059
+  },
+  "officialUrl": "https://vuln.go.dev/ID/GO-2026-5932.json",
+  "freshBytesEqualFailedCIArtifact": true,
+  "historicalCanonicalSha256": "26df709c385ffdb7845f0c94907d420136cbcd88c4e2a188032fe425a3ecb5a5",
+  "freshCanonicalSha256": "5e41013a01fdf0f434ce126d4e1a3a8d7b209accc112a00d8905ca0329605acb",
+  "freshModified": "2026-11-02T22:01:43Z",
+  "semanticChangedFields": [
+    "affected",
+    "modified",
+    "references"
+  ],
+  "affectedPackagePathsUnchanged": true,
+  "newStandaloneModuleAdded": true,
+  "fixedCryptoVersionAdded": "0.58.1-0.20261009181718-2f1f834330b2",
+  "oldDecisionRef": "urn:ouf:decision:OUF-SW-G1-20261102-01",
+  "oldDecisionBinarySha256": "bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74",
+  "oldDecisionUnchanged": true,
+  "historicalSnapshotReplayStatus": "ACCEPTED_APPLICABILITY_ONLY",
+  "freshAdvisoryReassessmentStatus": "ADVISORY_CHANGED_REASSESSMENT_REQUIRED",
+  "freshDispositionAccepted": false,
+  "currentCandidates": {
+    "29": {
+      "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+      "packageCount": 1811,
+      "graph": {
+        "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+        "bytes": 74977
+      },
+      "buildInfo": {
+        "sha256": "4d0a9eabc3fb020456824361b0bb944c6de92c3250ae5df5e2ae3bf6785e0c11",
+        "bytes": 25462
+      },
+      "cryptoVersion": "v0.58.1-0.20261009181718-2f1f834330b2",
+      "standaloneOpenpgpModulePresent": false,
+      "affectedImportedPackages": [],
+      "status": "NO_AFFECTED_PACKAGE_AND_FIXED_MODULE_OBSERVED_NOT_OWNER_DISPOSITION",
+      "freshImageScanPerformedByThisAudit": false
+    },
+    "30": {
+      "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+      "packageCount": 1740,
+      "graph": {
+        "sha256": "b5463bc0795b319fa6195640a419bd369fd5c9638ab99b153ba3aae7eb336a08",
+        "bytes": 72376
+      },
+      "buildInfo": {
+        "sha256": "e8d477c3462d388954a1a3777e69c85f63aa101839959eead77d8d1abde7d87a",
+        "bytes": 22692
+      },
+      "cryptoVersion": "v0.58.1-0.20261009181718-2f1f834330b2",
+      "standaloneOpenpgpModulePresent": false,
+      "affectedImportedPackages": [],
+      "status": "NO_AFFECTED_PACKAGE_AND_FIXED_MODULE_OBSERVED_NOT_OWNER_DISPOSITION",
+      "freshImageScanPerformedByThisAudit": false
+    }
+  },
+  "triggerScope": {
+    "status": "EXACT_HISTORICAL_INPUT_SCOPE_ONLY",
+    "paths": [
+      ".github/workflows/seaweedfs-accepted-applicability.yml",
+      "evidence/artifacts/storage-copy-readback-41507064288.zip",
+      "evidence/seaweedfs-g1-advisory-GO-2026-5932-20261102.json",
+      "evidence/seaweedfs-g1-applicability-owner-decision-20261102.json",
+      "evidence/seaweedfs-g1-applicability-review-proposal-20261102.json",
+      "evidence/seaweedfs-g1-openvex-20261102.json",
+      "releases/seaweedfs-inventory-inputs-20261102/prepare-inputs.py",
+      "scripts/evaluate-seaweedfs-g1-accepted-applicability-20261102.py",
+      "scripts/readback-storage-copy-evidence-20261102.py",
+      "scripts/verify-storage-copy-evidence-20261102.py",
+      "tests/test_storage_accepted_applicability.py",
+      "tools/m2_discovery_installation_profile/custody_capture.py",
+      "tools/m2_discovery_installation_profile/retained_hash_reconciliation.py",
+      "tools/m2_discovery_installation_profile/retained_image_capture.py",
+      "tools/m2_discovery_installation_profile/retained_image_graph.py",
+      "tools/m2_discovery_installation_profile/retained_image_graph_diagnostic.py",
+      "tools/m2_discovery_installation_profile/retained_image_identity.py",
+      "tools/m2_discovery_installation_profile/retained_image_intake.py",
+      "tools/m2_discovery_installation_profile/retained_image_reader.py",
+      "tools/m2_discovery_installation_profile/retained_image_verification.py",
+      "tools/m2_discovery_installation_profile/retained_mount_capture.py",
+      "tools/m2_discovery_installation_profile/retained_mount_intake.py",
+      "tools/m2_discovery_installation_profile/retained_mount_lifecycle.py",
+      "tools/m2_discovery_installation_profile/retained_mount_role_correction.py",
+      "tools/m2_discovery_installation_profile/retained_readonly_hashes.py",
+      "tools/m2_discovery_installation_profile/retained_runtime_origin_profile.py",
+      "tools/m2_discovery_installation_profile/retained_runtime_origins.py",
+      "tools/m2_discovery_installation_profile/retained_selected_image_identity.py",
+      "tools/m2_discovery_installation_profile/retained_selected_image_verification.py",
+      "tools/m2_discovery_installation_profile/retained_static_custody.py",
+      "tools/m2_discovery_installation_profile/retained_static_intake.py",
+      "tools/m2_discovery_installation_profile/retained_view_capture.py",
+      "tools/m2_discovery_installation_profile/retained_view_intake.py",
+      "tools/m2_discovery_installation_profile/retained_view_primitives.py",
+      "tools/storage_copy/copy.go",
+      "tools/storage_copy/copy_test.go",
+      "tools/storage_copy/go.mod",
+      "tools/storage_copy/go.sum",
+      "tools/storage_copy/s3.go",
+      "tools/storage_copy/s3_test.go",
+      "tools/storage_copy/wire.go",
+      "tools/storage_migration/minio_credential_binding.py",
+      "tools/storage_migration/minio_input_observation.py",
+      "tools/storage_migration/target_inventory_credentials.py",
+      "tools/storage_migration/target_inventory_inputs.py",
+      "tools/storage_migration/target_inventory_reconciliation.py",
+      "tools/storage_planning/inventory_manifest.py",
+      "tools/storage_security/accepted_applicability.py"
+    ],
+    "historicalSourceRecordCount": 8,
+    "sealedHistoricalSourceCount": 28,
+    "allOldTriggerSpecificPathsPreserved": true,
+    "broadStorageSecurityGlobRemoved": true,
+    "jobsPermissionsStepsByteIdentical": true,
+    "keeperChanged": false,
+    "failureSilencedOrConvertedToPass": false,
+    "noAdvisoryMonitorAdded": true
+  },
+  "limits": {
+    "historicalFailurePreserved": true,
+    "allWorkflowsSuccessClaimed": false,
+    "generation31EvaluatedByThisAudit": false,
+    "ownerDecisionCreatedOrChanged": false,
+    "scannerIgnoreAdded": false,
+    "newAcceptanceGranted": false,
+    "currentPlanModified": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "humanActionRequiredToContinueCurrentCandidate": false,
+    "humanReassessmentNeededIfOldExactBinaryDispositionIsReauthorized": true,
+    "progressCreditAdded": 0
+  }
+}

@@ -1,0 +1,248 @@
+diff --git a/test/s3/remote_cache/utils/create_bucket.go b/test/s3/remote_cache/utils/create_bucket.go
+index 42a534ac8..573461204 100644
+--- a/test/s3/remote_cache/utils/create_bucket.go
++++ b/test/s3/remote_cache/utils/create_bucket.go
+@@ -1,15 +1,17 @@
+ package main
+ 
+ import (
++	"context"
++	"errors"
+ 	"fmt"
+ 	"log"
+ 	"os"
+-	"strings"
++	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/smithy-go"
+ )
+ 
+ func main() {
+@@ -21,24 +23,23 @@ func main() {
+ 	secretKey := os.Args[3]
+ 	bucket := os.Args[4]
+ 
+-	sess, err := session.NewSession(&aws.Config{
+-		Endpoint:         aws.String(endpoint),
+-		Region:           aws.String("us-east-1"),
+-		Credentials:      credentials.NewStaticCredentials(accessKey, secretKey, ""),
+-		S3ForcePathStyle: aws.Bool(true),
++	svc := s3.New(s3.Options{
++		BaseEndpoint: aws.String(endpoint),
++		Region:       "us-east-1",
++		Credentials:  credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
++		UsePathStyle: true,
++		Retryer:      aws.NopRetryer{},
+ 	})
+-	if err != nil {
+-		log.Fatal(err)
+-	}
+-
+-	svc := s3.New(sess)
+-	_, err = svc.CreateBucket(&s3.CreateBucketInput{
++	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
++	defer cancel()
++	_, err := svc.CreateBucket(ctx, &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	if err != nil {
+ 		// BucketAlreadyExists/BucketAlreadyOwnedByYou are acceptable
+-		if strings.Contains(err.Error(), "BucketAlreadyOwnedByYou") ||
+-			strings.Contains(err.Error(), "BucketAlreadyExists") {
++		var apiErr smithy.APIError
++		if errors.As(err, &apiErr) &&
++			(apiErr.ErrorCode() == "BucketAlreadyOwnedByYou" || apiErr.ErrorCode() == "BucketAlreadyExists") {
+ 			fmt.Printf("Bucket %s already exists\n", bucket)
+ 		} else {
+ 			log.Fatalf("Failed to create bucket: %v", err)
+diff --git a/unmaintained/s3/presigned_put/presigned_put.go b/unmaintained/s3/presigned_put/presigned_put.go
+index f4c7ad6e8..85f62591e 100644
+--- a/unmaintained/s3/presigned_put/presigned_put.go
++++ b/unmaintained/s3/presigned_put/presigned_put.go
+@@ -1,81 +1,75 @@
+ package main
+ 
+ import (
++	"context"
+ 	"crypto/md5"
+ 	"encoding/base64"
+ 	"fmt"
++	"log"
+ 	"net/http"
+ 	"strings"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/s3"
+-	util_http "github.com/seaweedfs/seaweedfs/weed/util/http"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/config"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ )
+ 
+-// Downloads an item from an S3 Bucket in the region configured in the shared config
+-// or AWS_REGION environment variable.
+-//
+-// Usage:
+-//
+-//	go run presigned_put.go
+-//
+-// For this exampl to work, the domainName is needd
+-//
+-//	weed s3 -domainName=localhost
+-func main() {
+-	util_http.InitGlobalHttpClient()
+-
+-	h := md5.New()
+-	content := strings.NewReader(stringContent)
+-	content.WriteTo(h)
++const payload = "Example payload for a presigned S3 PUT with a signed Content-MD5 header.\n"
+ 
+-	// Initialize a session in us-west-2 that the SDK will use to load
+-	// credentials from the shared credentials file ~/.aws/credentials.
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:   aws.String("us-east-1"),
+-		Endpoint: aws.String("http://localhost:8333"),
+-	})
+-
+-	// Create S3 service client
+-	svc := s3.New(sess)
++// Run against a local SeaweedFS S3 gateway with credentials from the AWS SDK
++// configuration chain: go run ./unmaintained/s3/presigned_put
++func main() {
++	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
++	defer cancel()
+ 
+-	putRequest, output := svc.PutObjectRequest(&s3.PutObjectInput{
+-		Bucket: aws.String("dev"),
+-		Key:    aws.String("testKey"),
++	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("us-east-1"))
++	if err != nil {
++		log.Fatal("load AWS configuration: ", err)
++	}
++	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
++		o.BaseEndpoint = aws.String("http://localhost:8333")
++		o.UsePathStyle = true
+ 	})
+-	fmt.Printf("output: %+v\n", output)
+-
+-	md5s := base64.StdEncoding.EncodeToString(h.Sum(nil))
+-	putRequest.HTTPRequest.Header.Set("Content-MD5", md5s)
+-
+-	url, err := putRequest.Presign(15 * time.Minute)
++	req, err := presignedPutRequest(ctx, s3.NewPresignClient(client), "dev", "testKey", payload)
+ 	if err != nil {
+-		fmt.Println("error presigning request", err)
+-		return
++		log.Fatal("prepare presigned PUT: ", err)
+ 	}
+ 
+-	fmt.Println(url)
+-
+-	req, err := http.NewRequest("PUT", url, strings.NewReader(stringContent))
+-	req.Header.Set("Content-MD5", md5s)
++	httpClient := &http.Client{
++		CheckRedirect: func(*http.Request, []*http.Request) error {
++			return http.ErrUseLastResponse
++		},
++	}
++	resp, err := httpClient.Do(req)
+ 	if err != nil {
+-		fmt.Println("error creating request", url)
+-		return
++		// A transport error can include the credential-bearing presigned URL.
++		log.Fatal("presigned PUT transport failed")
+ 	}
++	defer resp.Body.Close()
++	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
++		log.Fatalf("presigned PUT failed: HTTP %d", resp.StatusCode)
++	}
++	fmt.Printf("presigned PUT succeeded: HTTP %d\n", resp.StatusCode)
++}
+ 
+-	resp, err := http.DefaultClient.Do(req)
++func presignedPutRequest(ctx context.Context, client *s3.PresignClient, bucket, key, body string) (*http.Request, error) {
++	digest := md5.Sum([]byte(body))
++	md5Header := base64.StdEncoding.EncodeToString(digest[:])
++	signed, err := client.PresignPutObject(ctx, &s3.PutObjectInput{
++		Bucket:     aws.String(bucket),
++		Key:        aws.String(key),
++		ContentMD5: aws.String(md5Header),
++	}, s3.WithPresignExpires(15*time.Minute))
+ 	if err != nil {
+-		fmt.Printf("error put request: %v\n", err)
+-		return
++		return nil, err
+ 	}
+-	defer util_http.CloseResponse(resp)
+-	fmt.Printf("response: %+v\n", resp)
++	req, err := http.NewRequestWithContext(ctx, signed.Method, signed.URL, strings.NewReader(body))
++	if err != nil {
++		return nil, fmt.Errorf("invalid presigned request")
++	}
++	req.Header = signed.SignedHeader.Clone()
++	req.Host = req.Header.Get("Host")
++	req.Header.Del("Host")
++	return req, nil
+ }
+-
+-var stringContent = `Generate a Pre-Signed URL for an Amazon S3 PUT Operation with a Specific Payload
+-You can generate a pre-signed URL for a PUT operation that checks whether users upload the correct content. When the SDK pre-signs a request, it computes the checksum of the request body and generates an MD5 checksum that is included in the pre-signed URL. Users must upload the same content that produces the same MD5 checksum generated by the SDK; otherwise, the operation fails. This is not the Content-MD5, but the signature. To enforce Content-MD5, simply add the header to the request.
+-
+-The following example adds a Body field to generate a pre-signed PUT operation that requires a specific payload to be uploaded by users.
+-`
+diff --git a/unmaintained/s3/presigned_put/presigned_put_test.go b/unmaintained/s3/presigned_put/presigned_put_test.go
+new file mode 100644
+index 000000000..ba401684b
+--- /dev/null
++++ b/unmaintained/s3/presigned_put/presigned_put_test.go
+@@ -0,0 +1,41 @@
++package main
++
++import (
++	"io"
++	"net/http"
++	"testing"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++)
++
++func TestPresignedPutRequest(t *testing.T) {
++	client := s3.New(s3.Options{
++		Region:       "us-east-1",
++		BaseEndpoint: aws.String("http://localhost:8333"),
++		UsePathStyle: true,
++		Credentials:  credentials.NewStaticCredentialsProvider("fixture", "fixture-secret", ""),
++	})
++	req, err := presignedPutRequest(t.Context(), s3.NewPresignClient(client), "dev", "key with space", "abc")
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer req.Body.Close()
++	if req.Method != http.MethodPut || req.URL.Host != "localhost:8333" ||
++		req.Host != "localhost:8333" || req.URL.EscapedPath() != "/dev/key%20with%20space" {
++		t.Fatal("PUT endpoint, signed host or object path changed")
++	}
++	query := req.URL.Query()
++	if query.Get("X-Amz-SignedHeaders") != "content-md5;host" ||
++		query.Get("X-Amz-Expires") != "900" || query.Get("X-Amz-Signature") == "" {
++		t.Fatal("missing signed headers, expiry or signature")
++	}
++	if got := req.Header.Get("Content-MD5"); got != "kAFQmDzST7DWlj99KOF/cg==" {
++		t.Fatalf("Content-MD5 = %q", got)
++	}
++	body, err := io.ReadAll(req.Body)
++	if err != nil || string(body) != "abc" {
++		t.Fatalf("unexpected request body: %q, %v", body, err)
++	}
++}

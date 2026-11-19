@@ -1,0 +1,61 @@
+{
+  "schema": "ouf.semantic-mcp-admin-file-channel-recovery.v1",
+  "date": "2026-10-17",
+  "sourceCommit": "8a50e878c74a3c1ab131aa57d1366887b089803d",
+  "previousStoppedContext": "/etc/ouf/deploy-snapshots/semantic-mcp-update-execution-molgvvlx",
+  "previousStopByControlFlow": "BEFORE_PERMIT_REVIEW_OR_INFRASTRUCTURE_AUTHORITY",
+  "failure": "EXISTING_EXPLICIT_ADMIN_CREDENTIAL_CHANNEL_REQUIRED",
+  "secondaryFailure": "BOOTSTRAP_EXCEPTION_HANDLER_ATTRIBUTE_TYPO",
+  "metadataObservedVia": "USER_SUPPLIED_READ_ONLY_TARGET_OUTPUT",
+  "targetCredentialChannel": {
+    "administratorMatchesReview": true,
+    "passwordEnvironmentPresent": false,
+    "passwordFileConfigured": true,
+    "credentialFilesReadByMetadataReader": 0,
+    "credentialValuesPrinted": false
+  },
+  "qualification": {
+    "scopedRun": 39008633533,
+    "scopedJob": 117326176308,
+    "scopedConclusion": "success",
+    "nativeRun": 39008633524,
+    "nativeJob": 117326176353,
+    "nativeConclusion": "success",
+    "nativeCompletedStages": 16,
+    "nativePostgresPasswordFileConfigured": true,
+    "nativeAdminUrlDerivedFromReadOnlyRootSecret": true,
+    "nativeMcpServerBootstrapped": true,
+    "semanticCalls": 0,
+    "targetEffects": 0
+  },
+  "livePolicy": {
+    "observedVia": "USER_SUPPLIED_PINNED_READER_OUTPUT",
+    "logPath": "/home/oufadmin/ouf-semantic-policy-refresh-v3.ir6MSer4/read.log",
+    "httpStatus": 200,
+    "bundleVersion": 40,
+    "expiredAtRead": false,
+    "hostTransportOnly": true,
+    "registryLoadedSnapshotProven": false
+  },
+  "activePolicySession": {
+    "contextPath": "/etc/ouf/deploy-snapshots/semantic-mcp-update-execution-9xl_yy2c",
+    "authorityHash": "5a0ed5855aecfa9ed509839c7fa37398918c08ff6dd094fb4070f77e78f4e5c8",
+    "expiresAt": 1792219616,
+    "humanOAuthAttemptsAtStart": 61,
+    "predecessorControlledAttempts": 128,
+    "maximumCumulativeGrantAttempts": 197,
+    "automaticRenewal": false,
+    "budgetReset": false
+  },
+  "freshOwnerRead": {
+    "observedAt": 1792217190,
+    "connectionRef": "link_6aafef96b4148191b767e9af7b756a07",
+    "commandKey": "teatri-semantic-draft-be74308e098aa3a6-20261016",
+    "httpStatus": 404,
+    "code": "PROPOSAL_RECEIPT_NOT_FOUND",
+    "semanticMutationDispatched": false
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "acceptanceGranted": false
+}

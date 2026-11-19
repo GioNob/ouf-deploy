@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "test",
+    "-mod=readonly",
+    "-json",
+    "-count=1",
+    "-p",
+    "2",
+    "-timeout=180s",
+    "./weed/iamapi",
+    "./weed/s3api/s3_constants",
+    "./weed/s3api/wire",
+    "./weed/storage/backend/s3_backend",
+    "./weed/util/raftstore",
+    "./weed/util/httpdown",
+    "./weed/storage/needle_map/..."
+  ],
+  "cwd": "source32-integrated-stage/source",
+  "exitCode": 0,
+  "elapsedSeconds": 17.784,
+  "CGO_ENABLED": "0",
+  "GOOS": "linux",
+  "GOARCH": "amd64",
+  "GOPROXY": "off",
+  "GOTMPDIR": "/workspace/scratch/98dabd1608e5/source32-integrated-stage/go-work",
+  "TMPDIR": "/workspace/scratch/98dabd1608e5/tmp"
+}

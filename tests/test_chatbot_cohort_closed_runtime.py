@@ -38,6 +38,29 @@ try:
  assert entry.HumanSession is sys.modules['tools.chatbot_file_cohort.human_session'].HumanSession
  assert entry.AggregateAction is sys.modules['tools.semantic_policy_token_owner.owner_installation'].AggregateAction
  assert entry.GatewayRuntime is sys.modules['tools.chatbot_file_cohort.gateway_runtime'].GatewayRuntime
+ assert entry.public_failure_reason(entry.PlanDenied('ROLE_BASELINE_DRIFT'))=='ROLE_BASELINE_DRIFT'
+ assert entry.public_failure_reason(entry.ImageCustodyDenied('NATIVE_IMAGE_IDENTITY_DRIFT'))=='NATIVE_IMAGE_IDENTITY_DRIFT'
+ assert entry.public_failure_reason(ValueError('DO_NOT_PRINT_PRIVATE_VALUE'))=='ValueError'
+ assert entry.public_failure_reason(entry.Permanent('AUTHORITY_EXPIRED'))=='AUTHORITY_EXPIRED'
+ unknown_permanent=entry.Permanent('INTEGRITY_UNPROVEN');unknown_permanent.code='PRIVATE_SENTINEL'
+ assert entry.public_failure_reason(unknown_permanent)=='Permanent'
+ assert entry.public_failure_reason(RuntimeError('private value'))=='RuntimeError'
+ assert entry.public_failure_reason(entry.CreationDenied('CREATION_HOST_CONFIG_DRIFT'))=='CREATION_HOST_CONFIG_DRIFT'
+ assert entry.public_failure_reason(entry.CreationDenied('PRIVATE_SENTINEL'))=='CreationDenied'
+ try:
+  sys.modules['engine_creation'].require(False,'CREATION_HOST_CONFIG_DRIFT')
+ except entry.CreationDenied as error:
+  d=entry.public_failure_diagnostic(error)
+  assert any(x['module']=='engine_creation' and x['function']=='require' for x in d['locations'])
+  assert 'PRIVATE_SENTINEL' not in json.dumps(d)
+ try:
+  raise OSError(9,'PRIVATE_MESSAGE_MUST_NOT_APPEAR','/private/credential')
+ except OSError as error:
+  error.safe_diagnostics={'phase':'FIRST_CONTROLLED_GRANT_AND_PUBLICATION','privateValue':'PRIVATE_MESSAGE_MUST_NOT_APPEAR'}
+  diagnostic=entry.public_failure_diagnostic(error)
+  assert diagnostic['errno']==9 and diagnostic['errnoName']=='EBADF'
+  assert diagnostic['componentPhase']=='FIRST_CONTROLLED_GRANT_AND_PUBLICATION'
+  assert 'PRIVATE_MESSAGE' not in json.dumps(diagnostic) and '/private/credential' not in json.dumps(diagnostic)
  print(json.dumps({'entry':entry.__name__,'modules':manifest['moduleCount'],'sameConcreteOwnerTypes':True}))
 except Exception as e:
  print(json.dumps({'denied':str(e)}));raise SystemExit(1)

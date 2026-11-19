@@ -1,0 +1,113 @@
+{
+  "schema": "ouf.chatbot-mcp-phase2-continuation-qualification.v1",
+  "runtimeSource": "70af66b26d9a8dfdd7151c55f44eb5795fcc84a8",
+  "nativeQualificationSource": "9306c6bb5bc81016e596f6cf8d0e461d8b3b583d",
+  "technicalPhase": 2,
+  "technicalPhase1ArchivesVerified": true,
+  "functionalMilestonesProven": 0,
+  "native": {
+    "runId": 38839051380,
+    "jobId": 116774653689,
+    "conclusion": "success",
+    "summary": {
+      "afterMigrationCount": 12,
+      "artifactSha256": "554d04fc354cf48b56b32914ed0e63def8cca100606e24a8a5f62f7ee8c69208",
+      "beforeMigrationCount": 9,
+      "candidateDatabaseUserCreateRole": false,
+      "candidateDatabaseUserSuperuser": false,
+      "cleanup": {
+        "appMembership": 0,
+        "beforeMigrationsMatch": false,
+        "databaseMatched": true,
+        "databaseOid": 5,
+        "expectedMigrationsMatch": true,
+        "functionOwnerCount": 2,
+        "historyHash": "b997012242bf9b9f248010a858b22114cdde9162163edb78cc49171b4a7cdf14",
+        "incidentOidMatches": true,
+        "incidentOwnerMatches": true,
+        "incidentPreservedAclMatches": true,
+        "incidentTriggerAuthority": false,
+        "incidentTriggerGrantCount": 0,
+        "membershipCount": 0,
+        "migrationCount": 12,
+        "noLogin": true,
+        "readOnly": true,
+        "roleExists": true,
+        "roleMatched": true,
+        "schemaCreate": false,
+        "superuser": true
+      },
+      "containerExitCode": 0,
+      "createCount": 1,
+      "immutableConfigurationPreserved": true,
+      "nativeImageId": "sha256:4dfefd95c88048b86cc13006bca1b0dbfd173feed12e0e1e32f35691f593eaeb",
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.mcp-phase2-native-migration-qualification.v1",
+      "signedAggregateEndToEnd": false,
+      "sourceCommit": "f249b3dcc58c2a96742092d90fa09fd90b705bd0",
+      "startCount": 1,
+      "targetAccess": false
+    },
+    "artifact": {
+      "id": 12020760097,
+      "name": "mcp-migration-continuation-38839051380",
+      "size_in_bytes": 1921,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/12020760097",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/12020760097/zip",
+      "expired": false,
+      "created_at": "2026-10-16T02:10:51Z",
+      "expires_at": "2026-11-15T02:10:50Z",
+      "updated_at": "2026-10-16T02:10:51Z",
+      "digest": "sha256:456355b91f07df256c0efa73698a5722b9916e1ed6c3226201f1a6003be624e5",
+      "workflow_run": {
+        "id": 38839051380,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "fix/cohort-mcp-backup-recovery-20261016",
+        "head_sha": "9306c6bb5bc81016e596f6cf8d0e461d8b3b583d"
+      }
+    }
+  },
+  "backup": {
+    "runId": 38838880431,
+    "jobId": 116774109154,
+    "conclusion": "success",
+    "tests": 79,
+    "suites": 7
+  },
+  "local": {
+    "migrationRecoveryTests": 13,
+    "conclusion": "success",
+    "productionMigrationOwnerCovered": true,
+    "nativeEffectsSynthetic": true
+  },
+  "fullDelivery": {
+    "runId": 38838880289,
+    "jobId": 116774108573,
+    "conclusion": "success",
+    "tests": 435,
+    "suites": 58,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "limits": {
+    "targetAccess": false,
+    "runtimeAuthorityIssued": false,
+    "targetPhase2Complete": false,
+    "chatbotEndToEndProven": false,
+    "nativeSignedAggregateEndToEnd": false,
+    "applicationRolePromoted": false,
+    "initialNativeFixtureFailureRun": 38838880390,
+    "initialNativeFixtureFailureReason": "Historical migrations 1-9 create roles; corrected disposable setup removes SUPERUSER and CREATEROLE before candidate migrations 10-12."
+  },
+  "delivery": {
+    "capsuleSha256": "f7682c9433bfa6aa90d348f58e7e428a868be78171b209efef47fc85cae57182",
+    "scriptSha256": "37701cf02614616052cce699280c055d826a0064342f2af064c63a0ca872fe94",
+    "launcherSha256": "2c48df480b21a252e49aae268450a3cf301b662a0ae823fcfdcbb3a11409365c",
+    "newDumpMaximumAttempts": 0,
+    "migrationCreateAllowed": false,
+    "migrationStartMaximumAttempts": 1,
+    "retainedCumulativeGrants": 6
+  }
+}

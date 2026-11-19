@@ -1,0 +1,33 @@
+{
+  "schema": "ouf.mcp-read-transport-gateway82-cloud-checkpoint.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "completedGatewayContext": "/etc/ouf/deploy-snapshots/mcp-ingestion-read-transport-execution-azxw328z",
+  "gatewayWrites": 2,
+  "routeCount": 82,
+  "routeMapHash": "d5a4040e30e289c150f9d2862ff41e83e22809a9e2202ac19388e744f2c5e927",
+  "sourceCommit": "8e47f464bca7ff994075917a8be929a9bf42413d",
+  "qualification": {
+    "runId": 39255807172,
+    "jobId": 118070668089,
+    "passed": 206
+  },
+  "delivery": {
+    "commit": "06644621d75175039f852cd59b1120e0e84a1809",
+    "runId": 39256066202,
+    "passed": 4
+  },
+  "lastReportedOAuthAttempts": 229,
+  "maximumCumulativeOAuthAttempts": 256,
+  "originalHumanWindowExpiresAt": 1792415703,
+  "admissionRequiresSeconds": 1200,
+  "admissionDeadlinePassed": true,
+  "newHumanWindowOpened": false,
+  "runtimeAuthorityIssuedByCloud": false,
+  "mcpRuntimeExecutionProven": false,
+  "sourceActivated": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "notReleaseAcceptance": true,
+  "nextAction": "PREPARE_DISTINCT_FINITE_HUMAN_CONTINUATION_WITH_CUMULATIVE_HISTORY_THEN_NEW_MCP_CAPSULE"
+}

@@ -1,0 +1,19 @@
+name: Storage retained custody SCP stage
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - scripts/stage-retained-custody-windows-20261107.py
+      - tests/qualify_retained_custody_scp_stage.py
+      - .github/workflows/storage-retained-custody-scp-stage.yml
+permissions:
+  contents: read
+jobs:
+  stage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: sudo -n env GITHUB_ACTIONS=true python3 -I -B -S tests/qualify_retained_custody_scp_stage.py

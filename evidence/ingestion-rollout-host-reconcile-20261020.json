@@ -1,0 +1,67 @@
+{
+  "schema": "ouf.ingestion-rollout-operator-host-reconcile.v1",
+  "evidenceType": "USER_REPORTED_READ_ONLY_TERMINAL_OUTPUT",
+  "accountReported": "oufadmin",
+  "pythonReported": "3.13.5",
+  "python312InReportedPath": false,
+  "python312AbsenceProven": false,
+  "contextMetadataReceivedAt": "2026-10-20T13:57:25Z",
+  "contextNames": [
+    "ingestion-rollout-packet-kkj_njiz",
+    "ingestion-rollout-packet-reconcile-0wd4wyuf",
+    "ingestion-frame-mac-reconcile-qfcpqd9f"
+  ],
+  "allReportedDirectory": true,
+  "allReportedSymlink": false,
+  "allReportedUid": 0,
+  "allReportedMode": "0700",
+  "packetMatchReceivedAt": "2026-10-20T14:00:09Z",
+  "packetMatchesRetainedCanonicalHash": true,
+  "retainedPacketHash": "ad1bdb240483f85785b989f28cd895a72394ea964baabd85ad3062b10180fe5c",
+  "metadataOrPacketMatchIsRuntimeAuthority": false,
+  "python313QualificationComplete": true,
+  "python313ComponentRun": 39434844122,
+  "python313ComponentJob": 118669028220,
+  "python313ComponentResult": "PASS",
+  "python313PostgresJob": 118669028980,
+  "python313PostgresResult": "PASS",
+  "python313FullSequenceJob": 118669029054,
+  "python313FullSequenceResult": "STOP_RECONCILE_FIXTURE_DATABASE_PREREQUISITES",
+  "fullSequenceReason": "CURRENT_DATABASE_READ_PREREQUISITES_NOT_PROVEN",
+  "diagnosticFixtureCommit": "502a9fb823d06e899031f226011d601266981695",
+  "retainedTargetContextsModified": false,
+  "credentialFilesOpenedByReportedCommands": 0,
+  "oauthRequestsByReportedCommands": 0,
+  "databaseCallsByReportedCommands": 0,
+  "engineCallsByReportedCommands": 0,
+  "targetRuntimeEffects": 0,
+  "runtimeAuthorityIssued": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "qualificationScope": "CI_ONLY_NOT_TARGET_ADMISSION",
+  "qualifiedDiagnosticCommit": "502a9fb823d06e899031f226011d601266981695",
+  "qualifiedRuns": {
+    "components": {
+      "run": 39435850047,
+      "job": 118672527066,
+      "tests": 162,
+      "result": "PASS"
+    },
+    "postgres17": {
+      "run": 39435850464,
+      "job": 118672528575,
+      "tests": 3,
+      "result": "PASS"
+    },
+    "nativeSequence": {
+      "run": 39435850464,
+      "job": 118672530240,
+      "tests": 3,
+      "result": "PASS"
+    }
+  },
+  "initialFailureRetained": true,
+  "initialFailedDatabasePredicateIdentified": false
+}

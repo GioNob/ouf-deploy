@@ -1,0 +1,154 @@
+{
+  "status": "LAB_QUALIFIED_NOT_RUNTIME_ADMITTED",
+  "upstream": "seaweedfs/seaweedfs@984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "patches": 6,
+  "final_patch_source": "ouf-deploy@7da527895dfacc34650b3cf9feb700912a8c09f5",
+  "go": "1.27.3",
+  "CGO_ENABLED": 0,
+  "GOPROXY": "off",
+  "module_mode": "readonly",
+  "go_mod_and_sum_unchanged": true,
+  "sdk_v2_sqs": "v1.51.0 (already pinned in upstream go.mod/go.sum)",
+  "test_pass_events": 5444,
+  "test_skip_events": 5,
+  "packages": [
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/utils",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/sts",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/wire",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/policy",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iamapi",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/oidc",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/integration",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/s3err",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/wire",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/notification/aws_sqs",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sub",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/command",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "status": "pass"
+    }
+  ],
+  "lifecycle_evaluator_python_tests": 8,
+  "graph": {
+    "total_packages": 1845,
+    "sdk_v1_packages": 53,
+    "sdk_v1_direct_importer_packages": 5,
+    "sdk_v1_direct_import_edges": 29,
+    "delta_from_five_patches": {
+      "added_packages": 96,
+      "added_manifest": "patches/seaweedfs/4.52-sqs-sdk-v2-added-packages.txt",
+      "removed": [
+        "github.com/aws/aws-sdk-go/service/sqs"
+      ]
+    }
+  },
+  "ci": {
+    "four_patches": {
+      "run": 41578323726,
+      "status": "success"
+    },
+    "five_patches": {
+      "run": 41580156811,
+      "status": "in_progress_at_checkpoint"
+    },
+    "six_patches_final": {
+      "run": 41580991342,
+      "status": "queued_at_checkpoint"
+    }
+  },
+  "files": [
+    {
+      "path": "deploy/patches/seaweedfs/4.52-sqs-sdk-v2.patch",
+      "bytes": 22088,
+      "sha256": "53d01c3c9fd604365874f7aa8f12e88231267fa3ba46895e029fbefebbf919c3"
+    },
+    {
+      "path": "deploy/patches/seaweedfs/4.52-sqs-sdk-v2-added-packages.txt",
+      "bytes": 4404,
+      "sha256": "12ca4fdccdceef4e3960f43493b58c78478635fce2acb9eb4bd956d870fbb14a"
+    },
+    {
+      "path": "toolchain/sqs-v2-exact-final-tests.jsonl",
+      "bytes": 7133458,
+      "sha256": "24b7b440f4ff2fe46ea5615e1ee06468b32e6a8f9507e59d0fdefd13a7de7aa1"
+    },
+    {
+      "path": "toolchain/sqs-v2-import-edges.txt",
+      "bytes": 482455,
+      "sha256": "da120b8b6ab94fcc2f67075b61b7de7fbfdf5e04b8386c5bc6e667e94a7cff33"
+    },
+    {
+      "path": "toolchain/weed-4.52-sqs-v2-lab",
+      "bytes": 225783494,
+      "sha256": "0c074c381d64eef4181702a50f6194d11aaa280ef459b8c6cf107f3d1fae5609"
+    },
+    {
+      "path": "toolchain/sqs-v2-build-info.txt",
+      "bytes": 24933,
+      "sha256": "3bbf161e3b09470b2c4d043dd556a3a8e316ffc088076e76148e5bd0e243c0f2"
+    }
+  ],
+  "verified_contracts": [
+    "Actual SDK v2 serialization and SigV4 signing via synthetic HTTP transport; no AWS contact",
+    "Exact protobuf payload, key attribute, delay10, longpoll20, visibility20, batch1",
+    "Static credential precedence and environment fallback; partial credentials fail closed",
+    "Explicit region required; implicit v2 service endpoint overrides denied before operation",
+    "30-second HTTP transport; one SDK attempt including ambiguous HTTP503 send",
+    "QueueDoesNotExist remains typed; missing URL is an error",
+    "No delete before replication acknowledgement; failed sink or invalid event stays unacknowledged"
+  ],
+  "limitations": [
+    "Tests use the actual SDK with synthetic HTTP responses, not an AWS account or target deployment.",
+    "SDK v2 default credential chain differs from v1; shared profiles, role/web identity, process, SSO and external credential endpoints require their own binding/authority qualification.",
+    "One SDK attempt is not a durable retry/reconciliation system. Existing owner callback cannot report delete failure to caller; outer budgets and full SQS recovery remain unqualified.",
+    "The migration adds 96 maintained-client/config/auth packages while both SDK generations coexist. Exact graph is enforced; new image, SBOM, security, licences, custody and cohort must be requalified.",
+    "Earlier exact-binary applicability disposition does not apply to this new executable.",
+    "No target operation, real copy, merge, release acceptance or runtime admission.",
+    "Initial local S3 suite failed due absent /tmp; TMPDIR corrected without test changes."
+  ]
+}

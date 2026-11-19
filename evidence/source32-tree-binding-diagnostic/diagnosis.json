@@ -1,0 +1,592 @@
+{
+  "schema": "ouf.source32-tree-binding-diagnosis.v1",
+  "manifestSha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "method": "isolated bare Git object store with readonly alternates, alternate index read-tree upstream followed by all32 exact patch blobs via git apply --cached; no worktree reconstruction",
+  "allPatchHashesVerified": true,
+  "steps": [
+    {
+      "number": 1,
+      "path": "patches/seaweedfs/4.52-listing-remove-sdk-v1.patch",
+      "sha256": "5163410b0c1e4f524a3a19a3ba487a8a01307a5de737036d2cd5bf63d9c59cd1",
+      "resultTree": "99adc4d6b8bb74e73058bf93036f006d1f6d4d1e",
+      "stderr": ""
+    },
+    {
+      "number": 2,
+      "path": "patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch",
+      "sha256": "777210894faf79a581172df8d7b44ce2ef90e217b3d5f0997d4e61c2f6738f24",
+      "resultTree": "ff7c10f0376cf350384ce2e838eac17a4bdcacde",
+      "stderr": ""
+    },
+    {
+      "number": 3,
+      "path": "patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch",
+      "sha256": "25d35f2154c815ccbd49415b4624cf0f9de821d5019709764b43a154e7f2edc8",
+      "resultTree": "f5a7726243e8b46d2afdfa9822fa23a398334ec6",
+      "stderr": ""
+    },
+    {
+      "number": 4,
+      "path": "patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch",
+      "sha256": "1fe2238d34096cf0c7d948e08f6a148d16d23cb96827a36daeebd9da1f1954d3",
+      "resultTree": "4efdc407051edcf6d368b5bfc22d885a06397fff",
+      "stderr": ""
+    },
+    {
+      "number": 5,
+      "path": "patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch",
+      "sha256": "64daedd2a53ad737b894306a8ee0bf3db952c9442092ca2dfc3224ba51d7764d",
+      "resultTree": "6c5962c91b66804df992233b2fa48b1588645724",
+      "stderr": ""
+    },
+    {
+      "number": 6,
+      "path": "patches/seaweedfs/4.52-sqs-sdk-v2.patch",
+      "sha256": "53d01c3c9fd604365874f7aa8f12e88231267fa3ba46895e029fbefebbf919c3",
+      "resultTree": "5c304c2512bea9bed09061bd474fe7856f4fa4bb",
+      "stderr": ""
+    },
+    {
+      "number": 7,
+      "path": "patches/seaweedfs/4.52-kms-sdk-v2.patch",
+      "sha256": "6df667c5408dc97c7dbd447620c2ea6b688fc0b37bb2d43f2d471e9326c3f31a",
+      "resultTree": "070338fee84de29fe4e96f52a4d4c604b72a238e",
+      "stderr": ""
+    },
+    {
+      "number": 8,
+      "path": "patches/seaweedfs/4.52-s3sink-sdk-v2.patch",
+      "sha256": "fdb8cfc105b2cf5a8254085c8518ff35ad2d2dd00b3b4b13e05f33cc31d75cd4",
+      "resultTree": "5d47b3b3a3ca545f91ce7019da60e7fb4ca00413",
+      "stderr": ""
+    },
+    {
+      "number": 9,
+      "path": "patches/seaweedfs/4.52-s3backend-sdk-v2.patch",
+      "sha256": "3b99b23c7855339635ae08b25fd9db22caacc9ea420ee544c86adf24e8944ed9",
+      "resultTree": "d649e0b657f293b0a1d55d294be2c264d2d377ab",
+      "stderr": ""
+    },
+    {
+      "number": 10,
+      "path": "patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch",
+      "sha256": "63a8b9dc591f6d1b48d491b140b5a7611da92e0903cc26e3a346b1f17a8ce530",
+      "resultTree": "b95231cba7a00294d7b8727987b6f432a05586d6",
+      "stderr": ""
+    },
+    {
+      "number": 11,
+      "path": "patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch",
+      "sha256": "fe9d28e137b0f37a00fc134ce01c20275d5c01b8e4cc83e014aceb32e554e95f",
+      "resultTree": "cbeec7a7d60044bdc719cc62931361bc526b59e3",
+      "stderr": ""
+    },
+    {
+      "number": 12,
+      "path": "patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch",
+      "sha256": "89d017e69418aa93671b4fd4c219d5cbcf571367b50426303697ba939c4b0a30",
+      "resultTree": "3febced69361d0d9f8ce7d1b745cf70bbef8bc06",
+      "stderr": ""
+    },
+    {
+      "number": 13,
+      "path": "patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch",
+      "sha256": "59b72ea7a8d57bfd63a67d267f2fe4f95bb9d8c701a499c80f8698af2348f714",
+      "resultTree": "534b1dcf7ec6c717d2fa320c3a59227e71319e58",
+      "stderr": ""
+    },
+    {
+      "number": 14,
+      "path": "patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch",
+      "sha256": "1dc0dd0514dd0af43d928eff8bc8a9ed4739c66b8ebb4a6f62d9a449110344d6",
+      "resultTree": "f237bb7daea65c0cf617348f0c3be9e5364bd49d",
+      "stderr": ""
+    },
+    {
+      "number": 15,
+      "path": "patches/seaweedfs/4.52-go-network-security-fixes.patch",
+      "sha256": "a32f169988281c2702b24af0fb8f9868930b50226f0bdda7f9276f7f24dde53e",
+      "resultTree": "da5f06f3b18e861146bb8b5fed334dccaa1d2e7f",
+      "stderr": ""
+    },
+    {
+      "number": 16,
+      "path": "patches/seaweedfs/4.52-basic-tests-sdk-v2.patch",
+      "sha256": "ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40",
+      "resultTree": "6ac0c7ea8003f5e49ad7fdebfb43b95a2a7ed308",
+      "stderr": ""
+    },
+    {
+      "number": 17,
+      "path": "patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch",
+      "sha256": "3477b4233312670e5e6174e9e734d1590b9f38445fe0991f0bf2f63c89ea7cf8",
+      "resultTree": "4f60261d51d82e8791c140b69af97d7e5c19b67f",
+      "stderr": ""
+    },
+    {
+      "number": 18,
+      "path": "patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch",
+      "sha256": "743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7",
+      "resultTree": "e2dad75ab92c9aa8c4616d73aae233476fd8f3f0",
+      "stderr": ""
+    },
+    {
+      "number": 19,
+      "path": "patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch",
+      "sha256": "aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398",
+      "resultTree": "555f9fdf1efee3378d38d54159632d1aef33d7f3",
+      "stderr": ""
+    },
+    {
+      "number": 20,
+      "path": "patches/seaweedfs/4.52-sse-tests-sdk-v2.patch",
+      "sha256": "53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c",
+      "resultTree": "bcc2a382a9907286e80562b56f8b067dee7f9ff5",
+      "stderr": ""
+    },
+    {
+      "number": 21,
+      "path": "patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch",
+      "sha256": "cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b",
+      "resultTree": "30d3c628a86977929d542ea99adc42e35f374999",
+      "stderr": ""
+    },
+    {
+      "number": 22,
+      "path": "patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch",
+      "sha256": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19",
+      "resultTree": "40ae78697b08c7b3f113cc5f692f0227eb181ae6",
+      "stderr": ""
+    },
+    {
+      "number": 23,
+      "path": "patches/seaweedfs/4.52-normal-tests-sdk-v2.patch",
+      "sha256": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b",
+      "resultTree": "7505abf011f1fd873c754002c79fd2bf408ed23c",
+      "stderr": ""
+    },
+    {
+      "number": 24,
+      "path": "patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch",
+      "sha256": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5",
+      "resultTree": "58a0c7867724f35ee52adeb2098279ccbdaa0739",
+      "stderr": ""
+    },
+    {
+      "number": 25,
+      "path": "patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch",
+      "sha256": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7",
+      "resultTree": "518f5b7356818dac2dd7aa6423c985b4d074233c",
+      "stderr": ""
+    },
+    {
+      "number": 26,
+      "path": "patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch",
+      "sha256": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883",
+      "resultTree": "6416408e983df3042d22c424a1541c71ddc8d333",
+      "stderr": ""
+    },
+    {
+      "number": 27,
+      "path": "patches/seaweedfs/4.52-iam-module-sdk-v2.patch",
+      "sha256": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a",
+      "resultTree": "fe96f0655621a9d814175b4e272c5ef79fc3a1e9",
+      "stderr": ""
+    },
+    {
+      "number": 28,
+      "path": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
+      "sha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
+      "resultTree": "43fca1c8049048870d8c61059d33145d2be99847",
+      "stderr": ""
+    },
+    {
+      "number": 29,
+      "path": "patches/seaweedfs/4.52-s3-content-type-persistence.patch",
+      "sha256": "54982d752afc77e680cfa75b5ada1febc6680709bdb46f8d284f2090448849bc",
+      "resultTree": "574ad42543851ffe58cc025e14b1011609ff83de",
+      "stderr": ""
+    },
+    {
+      "number": 30,
+      "path": "patches/seaweedfs/4.52-maintained-dependency-closure.patch",
+      "sha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422",
+      "resultTree": "13b3de2f130667ed060e94291fcf64b37b7f037a",
+      "stderr": ""
+    },
+    {
+      "number": 31,
+      "path": "patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch",
+      "sha256": "0120cc01549a960177294610ecd26b495b5f867af5ef8b1b9321dba17ddc16ad",
+      "resultTree": "c2b7d4bd32316af277a76fb21c09894004c24b4b",
+      "stderr": ""
+    },
+    {
+      "number": 32,
+      "path": "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch",
+      "sha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+      "resultTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+      "stderr": ""
+    }
+  ],
+  "claimedLocalTree": "d58d388bd4b791ffbc41814cc670af44af20f47c",
+  "claimedLocalEntryCount": 4543,
+  "exactCachedPrefixTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "exactCachedPrefixEntryCount": 4567,
+  "matchesHostedTree": true,
+  "differences": [
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/.cargo-ok",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "5f8b795830acbab5961c1a28c76a7916c9631493"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "afbf9d0f3560b0fd7795e81c42a0a79ee6b6fc67e064f77826aee642cad28d91",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/.cargo-ok"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/.cargo_vcs_info.json",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "9df5c30758ef92e3e7328cb4874e0f4c8afc7530"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "382d0728705215734ff5281dfccfcf6c280828babb11d1fa709199fdde4345d7",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/.cargo_vcs_info.json"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/.gitattributes",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "1af754e962539e49cf92f69beed4422e5ba9895e"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "4fc5798b8edb3fd9eb55675aae0e81094f61dc2ea53a2dbb8cca5ff4f6044922",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/.gitattributes"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/.gitignore",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "e9e21997b1aca0707f8749ea13c09aec66c899d2"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "07d64eb09a56c853b7853a47276799b38d7d6d25a4314b0c1abc10432c214e17",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/.gitignore"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/CHANGELOG.md",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "5a86a132952f6bc9e9f339dbd89e5a44b501e9ac"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "e76d259bef9d514145f3a4e3f8d4d477e694ce90f152371c59e70fbb71ed92ca",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/CHANGELOG.md"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/Cargo.toml",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "a6171580a659a764ffa60ab245b9fab152d45c8a"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "1ce8d14fa12d4118cc3bc2ab9ea0480e16f87cf1b8bb3a56bdca4b377cd9d53b",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/Cargo.toml"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/Cargo.toml.orig",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "e9cbc8cf9f5bebbbaeca923dfa24a12c6d64142e"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "0645a989aee5fee1d358104da8308987c1123356314ac5273e4a23d67e876dce",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/Cargo.toml.orig"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/LICENSE",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "87c0c378737723b27dcc3570e486e61bc9922344"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "590944b7d6584b19e089020fb61305d2ac45c83e1bff7cdea9831bc1ec435e5d",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/LICENSE"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/README.md",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "5d79fab7c2bc248082fc56f9d606e6062803a945"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "f210bb1c589c5d708877a71e97c8bb92c83513f59daf6b558bd509e4d5cbd395",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/README.md"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/benches/reconstruct.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "e9d6b6f07e86e3c998b110ccb482fa74d54eba89"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "de88483fdfbd13337e20e469d8f2aeab857ea65b1700dd8ec93c2a5d28c81357",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/benches/reconstruct.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/build.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "de9c5f18e8df889aacb1c304a667d9348f171265"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "63680725554a5fcd7f404b9b26cada43a1d6f8100820613a87fe5ae1ec19207f",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/build.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/sage/galois_ext_test.sage",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "cab1bdf1062f7f633ea058b71899b59a2a1029a1"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "0ce2bc26da3572b19291b58f7b1476026cebda4ea647054597cb9ba6875fd048",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/sage/galois_ext_test.sage"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/simd_c/reedsolomon.c",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "12a921100acd0728f76244ffec3182ef4be9a1bc"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "90a79dc3e7123bc5130e92c97d36aae9fcc4eedaea41a5da6c62e4fde3e6328f",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/simd_c/reedsolomon.c"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/simd_c/reedsolomon.h",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "4bd9ec0e902656d1212405a30176ac443484a572"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "897279b583f90a13ea5e3486888d6ba9cce5e29bd8e389cfafec16c2ac1ec5b8",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/simd_c/reedsolomon.h"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/src/core.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "57733f5886d97fb8e0dbad747b684148fc8f06aa"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "c697a1684cc84b2c5b81f4b3979bfbfe58146064fb466f822d236bd94b09041a",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/src/core.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/src/errors.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "761343685d1fbf4c02f0de2b865cbae95e8998b3"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "5126f18ef1df56c71bf84774431934b3326b27845df53ee3574a320796e92aea",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/src/errors.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/src/galois_16.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "500ac8d2a5e7cd6a24f5b28188cf93ad3bf7505f"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "0043b90e8dd5c19e1de9c2701a7f757b201c96af974128aa5a6091bb036c87a2",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/src/galois_16.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/src/galois_8.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "01adc09d91118d0eb80d51017844abc985aecf6d"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "785e6a1a8ce21e6236f852b9e90f9c4e41e39ccaf75ba0f2ac0fa5aad4b2e65b",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/src/galois_8.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/src/lib.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "0ba04ae0e386c9437c17c806cd74dfeb0f9a2a21"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "e3bc072d453d17f8d6999fe539361a31b55f9341f3cc6867b1fc9753e8b10044",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/src/lib.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/src/macros.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "340b27430422f9da6542f24761c955417496ea4d"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "83760fffbbab4a3e1b59e601610cf881c01365bde5d26e7c2c6ec127cd031fe7",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/src/macros.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/src/matrix.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "508d43046573f22cc14e628aef07bee43a395e00"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "cb50516bca688f90e73cbf0c0116db89d5491db1b73ca17d1678880c598ea81a",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/src/matrix.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/src/tests/galois_16.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "872472e85bc987951ac17afe50bfa18552ff729b"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "9e1d23464cf70029d4ac45a2adaeb4eb9bbf658e863eb54b38cfd05c95000446",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/src/tests/galois_16.rs"
+    },
+    {
+      "path": "seaweed-volume/vendor/reed-solomon-erasure/src/tests/mod.rs",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "488443b25878768a569ef51fac834c644ecfb10d"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "171323b375ddf66c2ece663c81d2214c4b95154815163ddf980ec2bb383e9498",
+      "ignoreRule": ".gitignore:2:vendor\tseaweed-volume/vendor/reed-solomon-erasure/src/tests/mod.rs"
+    },
+    {
+      "path": "weed/images/sample1.jpg",
+      "claimedTreeEntry": null,
+      "cachedReplayEntry": {
+        "mode": "100644",
+        "kind": "blob",
+        "oid": "991b59bac4a2bc70b621317156c95259d6b8c55b"
+      },
+      "workingFilePresent": true,
+      "workingBytesEqualCorrectBlob": true,
+      "sourceManifestContainsMatchingSha256": true,
+      "sha256": "aee2956dd029bb08b068d33eb260243caa0745d9d2dcf53608832b0f51e41c8a",
+      "ignoreRule": ".gitignore:94:weed/*/*.jpg\tweed/images/sample1.jpg"
+    }
+  ],
+  "cause": "An initially empty alternate index followed by git add -A omitted24 pre-existing tracked upstream files matched by ignore rules. The working files and source-file manifest retained all24 correct bytes. Cached replay seeded from upstream preserves their tracked state.",
+  "scope": "Git tree provenance computation is wrong in the local frozen receipt; compiled bytes and source file bytes are not shown to differ by this discrepancy. No frozen files or expected values changed.",
+  "causalControls": [
+    {
+      "indexSeed": "EMPTY",
+      "operation": "git add -A against byte-identical frozen working tree, objects written only in isolated diagnostic bare repo",
+      "resultTree": "d58d388bd4b791ffbc41814cc670af44af20f47c",
+      "expectedTreeMatched": true
+    },
+    {
+      "indexSeed": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+      "operation": "git add -A against byte-identical frozen working tree, objects written only in isolated diagnostic bare repo",
+      "resultTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+      "expectedTreeMatched": true
+    }
+  ]
+}

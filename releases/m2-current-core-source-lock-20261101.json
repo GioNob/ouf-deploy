@@ -1,0 +1,68 @@
+{
+  "allRuntimeArtifactMembershipProven": false,
+  "candidateSelectionChanged": false,
+  "cohortId": "m2-discovery-core-20261101",
+  "completeExecutionPackage": false,
+  "modules": [
+    {
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "kind": "DOCKER_SAVE",
+      "module": "ingestion",
+      "originArtifactId": 12370330790,
+      "originZipSha256": "f28562307f37e663e90944d45b9f0ca5d6f9011fca6f5154c199679a7b006c64",
+      "repository": "ouf-ingestion-runtime"
+    },
+    {
+      "commit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+      "kind": "DOCKER_SAVE",
+      "module": "mcp",
+      "originArtifactId": 12761775539,
+      "originZipSha256": "dbc4c918f71d0b3bf089c1b4a868ebf11ff9d3c9b1de44530cb6cd3df0cb71d7",
+      "repository": "ouf-mcp-server"
+    },
+    {
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "kind": "DOCKER_SAVE",
+      "module": "onboarding",
+      "originArtifactId": 12836316286,
+      "originZipSha256": "7719c1045753fe38bbdc498adb8f540c61bad411c25969badf71ec4d3ec5d91b",
+      "repository": "ouf-source-onboarding"
+    },
+    {
+      "commit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+      "kind": "DOCKER_SAVE",
+      "module": "semantic",
+      "originArtifactId": 13066396654,
+      "originZipSha256": "1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba",
+      "repository": "ouf-semantic-registry"
+    },
+    {
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "kind": "DOCKER_SAVE",
+      "module": "udp",
+      "originArtifactId": 12119360632,
+      "originZipSha256": "bfedb02531bb0d80a2b940049e20da7c4216e68eeab0857ced8ef479d602feac",
+      "repository": "ouf-udp-object-resolution"
+    },
+    {
+      "commit": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+      "kind": "SOURCE_AND_ROUTE_PACKAGE",
+      "module": "gateway",
+      "privateRuntimeProposalRequired": true,
+      "repository": "ouf-api-gateway",
+      "retainedRuntimeImageId": "sha256:979de5eb0a554e0adfe924969627eb62362c4165974357afcee5bf30450f8f21"
+    }
+  ],
+  "originalSourceFormatsPreserved": true,
+  "registryRuntimeRequirements": {
+    "discoveryWorkerEnabled": true,
+    "effectiveMountPurposes": 7,
+    "fileFirstProfileUsed": false,
+    "providerEnabled": true,
+    "schema": "ouf.m2-core-registry-runtime-requirements.v1"
+  },
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.discovery-current-core-source-lock.v1",
+  "targetApplyAuthorized": false
+}

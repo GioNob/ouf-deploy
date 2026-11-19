@@ -1,0 +1,55 @@
+{
+  "allRuntimeArtifactMembershipProven": false,
+  "completePrivateCustodyProven": false,
+  "conclusion": "success",
+  "cumulativeDirectEngineGetsUnchanged": 35,
+  "cumulativeTargetControlAttemptsUnchanged": 11,
+  "currentApplicationConfigurationOrLivenessProven": false,
+  "date": "2026-11-01",
+  "exactPublicRegistryRootAndSelectedConfigDescriptorMatches": [
+    "apisix",
+    "caddy",
+    "keycloak",
+    "postgres"
+  ],
+  "frozenSourceMapsVerified": {
+    "current_review_sources.json": 235,
+    "retained_image_graph_sources.json": 19,
+    "retained_image_verification_sources.json": 17,
+    "retained_selected_image_sources.json": 21
+  },
+  "gatewayCatalogueMaterializers": 10,
+  "gatewayCatalogueSourceFilesIndependentlyMatchedToOriginalGitTree": 380,
+  "jobId": 124947684673,
+  "normativeLimit": "Version/section reconciliation consulted; original seven PET texts are not present in this turn, no new full PET compliance claimed.",
+  "normativeReconciliationConsulted": "releases/PET_ROADMAP_RECONCILIATION_20261010.md",
+  "originalRoleSnapshotsReconciled": 13,
+  "privateSelectedProofRoleJoinPerformed": false,
+  "publicRegistryOriginalDescriptorMembersPreserved": 8,
+  "qualifiedAppliedReadReplicaNativeIdMatches": 2,
+  "qualifiedOriginalCoreNativeIdMatches": 4,
+  "releaseAcceptance": false,
+  "retainedSemanticOldCandidatePackageReadbackPerformed": true,
+  "retainedSemanticSourceInferred": false,
+  "runId": 41339964353,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-runtime-public-origin-reconciliation-qualified.v1",
+  "sourceCommit": "0357ef813f09cf21420c484362f06719bad13e98",
+  "sourcePublisherAuthenticated": false,
+  "targetApplyAuthorized": false,
+  "targetControlAttemptsAdded": 0,
+  "teatriBaselineConsulted": [
+    "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
+    "docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md"
+  ],
+  "threeLocalMetadataDenialChecksPassed": true,
+  "unresolvedReferences": {
+    "gateway-owner": "ORIGINAL_CI_ARTIFACT_HAS_JUNIT_NOT_EXECUTABLE_IMAGE",
+    "minio": "EXACT_ORIGINAL_REGISTRY_DESCRIPTOR_UNAVAILABLE_NO_FALLBACK",
+    "semantic": "EXAMINED_HISTORICAL_CANDIDATE_ENVELOPES_DO_NOT_BIND_RETAINED_NATIVE_ID"
+  },
+  "vendorConfigurationAndLayerBlobsFetched": 0,
+  "vendorLookupProcessInvocations": 9,
+  "vendorOriginalArtifactId": 13097121795,
+  "vpsOperations": 0
+}

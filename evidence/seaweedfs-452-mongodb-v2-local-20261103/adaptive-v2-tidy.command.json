@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "mod",
+    "tidy"
+  ],
+  "cwd": "adaptive-v2-control",
+  "exitCode": 0
+}

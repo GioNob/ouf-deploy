@@ -1,0 +1,19 @@
+{
+  "repositoryVersion": "0.4",
+  "contract": "CanonicalDataEnvelope v1",
+  "schemaValid": true,
+  "positiveFixtures": {
+    "UPSERT": true,
+    "DELETE": true,
+    "ADDITIVE_OPTIONAL": true
+  },
+  "negativeFixtures": {
+    "invalid-major": [
+      "'1.0' was expected"
+    ],
+    "invalid-no-schema-version": [
+      "'sourceSchemaVersion' is a required property"
+    ]
+  },
+  "scope": "CanonicalDataEnvelope only"
+}

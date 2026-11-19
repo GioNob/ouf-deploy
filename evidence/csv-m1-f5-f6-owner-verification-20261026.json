@@ -1,0 +1,141 @@
+{
+  "schema": "ouf.csv-m1-f5-f6-owner-verification.v1",
+  "observedAt": "2026-10-26T16:01:17Z",
+  "policyRef": "ouf-lab-authorization:53",
+  "proposal": {
+    "proposalId": "b7df94f4-10d8-4897-8655-42e3f6e27ba4",
+    "revision": 1,
+    "state": "PUBLISHED"
+  },
+  "baseline": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md",
+  "checks": {
+    "sameCsv": true,
+    "distinctRuns": true,
+    "same13Identities": true,
+    "identityStablePerRow": true,
+    "all20MappedPerRow": true,
+    "all26ReceiptLineageContentJoins": true,
+    "all13Current20UniqueSelections": true,
+    "newRunOmissionsOnlyEmptyStrings": true,
+    "noOpenIssues": true,
+    "cinema8IdsRevisionsPropertiesPreserved": true
+  },
+  "gateDecision": {
+    "G4": "PASS",
+    "F5": "PROVEN",
+    "F6": "PROVEN",
+    "M1": "COMPLETE",
+    "M2": "NOT_ACCEPTED",
+    "releaseAcceptance": false
+  },
+  "readCalls": 4,
+  "newAcquisitionsExecuted": 0,
+  "sourceActivations": 0,
+  "configurationWrites": 0,
+  "historicalDecisionReplays": 0,
+  "allReadSnapshotsComplete": true,
+  "rowsPerRun": 13,
+  "canonicalObjects": 13,
+  "currentSelectedPropertiesPerObject": 20,
+  "newRunContributionCounts": [
+    15,
+    12,
+    15,
+    17,
+    18,
+    15,
+    12,
+    15,
+    11,
+    19,
+    17,
+    18,
+    16
+  ],
+  "omissionExplanation": "Every missing new-run property relative to its 20 mapped IRIs is EMPTY_STRING; both-run current selected contributions cover exactly 20 unique IRIs for every object. Prior contribution references remain visible. No output data values read through acquisition tools.",
+  "actualObservedLabels": [
+    "RESTRICTED"
+  ],
+  "revisionQualification": "Different approved bundle/publication/profile; not evidence of no-op behavior for same configuration.",
+  "cinemaBaselineRef": "evidence/cinema-pre-second-acquisition-20261018.json",
+  "cinemaCurrent": [
+    {
+      "urbanObjectId": "0418930b-0929-47fb-bab9-a1bc5d6d3fdb",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyIris": [
+        "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+        "https://api.ouf-lab.it/semantic/cinema#nome"
+      ]
+    },
+    {
+      "urbanObjectId": "070a6a44-a934-4f82-aec9-5723762fa908",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyIris": [
+        "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+        "https://api.ouf-lab.it/semantic/cinema#nome"
+      ]
+    },
+    {
+      "urbanObjectId": "44d19ec1-0b63-49c9-a758-da4b37e90f84",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyIris": [
+        "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+        "https://api.ouf-lab.it/semantic/cinema#nome"
+      ]
+    },
+    {
+      "urbanObjectId": "4594e467-cc1d-45f9-be3b-93ad3cc19d20",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyIris": [
+        "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+        "https://api.ouf-lab.it/semantic/cinema#nome"
+      ]
+    },
+    {
+      "urbanObjectId": "4613bce3-29c3-48f9-b2e7-882d7c9c4449",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyIris": [
+        "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+        "https://api.ouf-lab.it/semantic/cinema#nome"
+      ]
+    },
+    {
+      "urbanObjectId": "659eaa85-7f0b-49e2-bade-42728ebfb12d",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyIris": [
+        "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+        "https://api.ouf-lab.it/semantic/cinema#nome"
+      ]
+    },
+    {
+      "urbanObjectId": "65e7da72-6ff5-4b37-b9cb-54fc89a10a33",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyIris": [
+        "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+        "https://api.ouf-lab.it/semantic/cinema#nome"
+      ]
+    },
+    {
+      "urbanObjectId": "feb48d73-0195-4ddf-84b2-abdfb75cbc36",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyIris": [
+        "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+        "https://api.ouf-lab.it/semantic/cinema#nome"
+      ]
+    }
+  ],
+  "limitations": [
+    "M1 existing case only; M2 repeatable new CSV, WP5 and WP6 remain separate",
+    "No source activation or third acquisition",
+    "Historical effort coverage remains incomplete",
+    "No merge or release acceptance"
+  ]
+}

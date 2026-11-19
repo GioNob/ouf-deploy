@@ -1,0 +1,64 @@
+{
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "patchNumber": 27,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-iam-module-sdk-v2.patch",
+    "sha256": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a"
+  },
+  "files": {
+    "test/s3/iam/Makefile": "a4b8098f176a9d2e54f7942880e31be6d3737367d026bc9413f402d25f65756f",
+    "test/s3/iam/README.md": "e3f7b51cbcb07083148a56b85a9198408136417b4631d2a6ea9cc342f3b53a11",
+    "test/s3/iam/framework_clients_v2.go": "781528af8fbe2933dd032029b80eb948992f0fc94a5e69a076445ef5b9ac8336",
+    "test/s3/iam/framework_clients_v2_test.go": "1c2da50711b8b61dea3abe3c8f4aab2ab8ec028f6e20daa1bdc87cbf8b654e81",
+    "test/s3/iam/go.mod": "f52ebe5060c285796722ea36851c0a5f991f67b3a5586b2987c8940f00ea62ff",
+    "test/s3/iam/go.sum": "28cdd28aa2d4f88fa9349e2ddf4f4d7ab398e4bf486dae55e9f99627904fe750",
+    "test/s3/iam/s3_iam_admin_test.go": "6f7c575619682ce991ae5a2e8919dcd5e53bb9c1e432ee13203c15a982feb463",
+    "test/s3/iam/s3_iam_distributed_test.go": "382d31424e8a560f4dece849fcde703222a64cd41faa6332e2f15c4ae9008226",
+    "test/s3/iam/s3_iam_framework.go": "a2fc8c42f96691627dce7b4d12ed1fde5d9f9031fcddff9a604469e235f926e3",
+    "test/s3/iam/s3_iam_group_test.go": "6c2bc412bef75768723be4932b6e0f5a2b252f72f772dfa1fb98d7298bbaab2b",
+    "test/s3/iam/s3_iam_inline_policy_condition_test.go": "eed50cde5d0dd7998cbf5953fd1476af9773d93bf0e111c072f44732d50c2ea6",
+    "test/s3/iam/s3_iam_integration_test.go": "7556b2d081f6f81d48d433140a412c98fc130afdba1bb458a59fa99dec1aea8f",
+    "test/s3/iam/s3_keycloak_integration_test.go": "83750e24d8dfa7ea9ab73b539317332470eb03c4ac9e783579a8ec86d4dfdb89",
+    "test/s3/iam/s3_policy_variables_test.go": "f88be62a0d3b2762817946ec446a21c0032824e79c7b67e3c47d76e28b0a9a4e",
+    "test/s3/iam/s3_sts_web_identity_api_test.go": "75e2b04c3dff407538517dcf99614145a45b53d7f5d41839517f1588e5fc4424"
+  },
+  "iamDirectImportersBefore": 9,
+  "iamDirectImportersAfter": 0,
+  "cumulativeRepositoryDirectImportersAfter": 0,
+  "fullPatchReapplication": {
+    "result": "PASS",
+    "patches": 27,
+    "changedFilesByteIdentical": 15
+  },
+  "exactModuleCompile": {
+    "command": "go test -mod=readonly -run ^$ ./...",
+    "result": "PASS",
+    "substitutions": false
+  },
+  "exactDeterministicTests": {
+    "result": "PASS",
+    "topLevel": 14,
+    "subcases": 4,
+    "newTopLevel": 6,
+    "networkRequests": 0
+  },
+  "moduleGraph": {
+    "packageCount": 303,
+    "moduleEntriesIncludingMain": 20,
+    "sdkV1Packages": 0,
+    "sdkV1Modules": 0,
+    "deprecatedS3ManagerPackages": 0
+  },
+  "retainedHistoricalPins": {
+    "jwt": "v5.3.0",
+    "testify": "v1.8.4"
+  },
+  "addedIamClient": "github.com/aws/aws-sdk-go-v2/service/iam v1.64.6",
+  "hostedEvidence": {
+    "status": "PENDING"
+  },
+  "optionalRootModuleEdgesQualified": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0
+}

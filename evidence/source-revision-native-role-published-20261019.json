@@ -1,0 +1,29 @@
+{
+  "schema": "ouf.source-revision-native-role-publication-observation.v1",
+  "observedDate": "2026-10-19",
+  "proposalId": "f25d9028-b81f-4eec-a567-43fa160f869b",
+  "proposalRevision": 1,
+  "state": "PUBLISHED",
+  "finalPolicyRef": "ouf-lab-authorization:45",
+  "expiresAt": "2026-10-19T07:14:12.010181Z",
+  "evidenceSources": [
+    "operator THS publication message",
+    "direct ouf-admin authorization.proposal.read bounded receipt"
+  ],
+  "priorRoleWaitAttempts": [
+    1,
+    2
+  ],
+  "priorReadinessWaitSuperseded": true,
+  "runtimeFinalReceiptObserved": false,
+  "independentInfrastructureReadbackObserved": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "functionalStage5Proven": false,
+  "functionalStage6Proven": false,
+  "profilePublicationsByThisObservation": 0,
+  "jobRetriesByThisObservation": 0,
+  "runtimeAuthorityIssuedByThisObservation": false,
+  "proposalConfirmationPerformedByAssistant": false,
+  "nextStep": "Original native process consumes published proposal and emits final result; after STOP reconcile without replay."
+}

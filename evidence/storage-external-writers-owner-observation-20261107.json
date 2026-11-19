@@ -1,0 +1,16 @@
+{
+  "schema": "ouf.storage-external-writers-owner-observation.v1",
+  "date": "2026-11-07",
+  "provenance": "OPERATOR_STATEMENT",
+  "environment": "NONPRODUCTION",
+  "statement": "nessun noto",
+  "scope": [
+    "administrative-tools",
+    "external-consumers"
+  ],
+  "knownAdditionalWriters": [],
+  "technicalAbsenceProven": false,
+  "persistentFenceVerified": false,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0
+}

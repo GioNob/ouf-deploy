@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.chatbot-semantic-mcp-claim-observed.v1",
+  "readOnly": true,
+  "acceptanceGranted": false,
+  "budgetReset": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "targetLog": "/home/oufadmin/ouf-semantic-mcp-claim-read.zuAdwY5t/read.log",
+  "attemptId": "9d676b80-8f5f-4160-ac9e-57f0935f78be",
+  "state": "FAILED",
+  "dispatchState": "ACKNOWLEDGED",
+  "lockVersion": 2,
+  "reservationState": "RECONCILED",
+  "actualToolCalls": 1,
+  "reservedToolCalls": 1,
+  "databaseOid": 21560,
+  "readerSourceCommit": "2ec7baf4bbd79e22f832df892d5614116e2c964f",
+  "readerCI": {
+    "run": 38934302504,
+    "passed": 12
+  },
+  "targetReleaseBindingProven": false,
+  "claimRearmed": false,
+  "correctionDeployed": false
+}

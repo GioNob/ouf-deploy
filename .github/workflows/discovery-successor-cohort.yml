@@ -1,0 +1,19 @@
+name: Discovery successor cohort composition
+on:
+  push:
+    branches: [docs/storage-functional-reset-20261107]
+    paths:
+      - tools/semantic_cohort_admission/compose_successor_cohort.py
+      - tests/test_discovery_successor_cohort.py
+      - evidence/discovery-generation-sources-read-operator-20261109.json
+      - .github/workflows/discovery-successor-cohort.yml
+permissions: {contents: read}
+jobs:
+  successor-composition:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Independent frame compilation and closed multi-network peer rebinding
+        run: python3 -I -B -m unittest discover -s tests -p test_discovery_successor_cohort.py -v

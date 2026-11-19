@@ -1,0 +1,370 @@
+﻿2026-11-04T08:04:09.3134722Z Current runner version: '2.338.2'
+2026-11-04T08:04:09.3161510Z ##[group]Runner Image Provisioner
+2026-11-04T08:04:09.3162738Z Hosted Compute Agent
+2026-11-04T08:04:09.3163377Z Version: 20261021.618
+2026-11-04T08:04:09.3163995Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-04T08:04:09.3164809Z Build Date: 2026-10-21T00:45:21Z
+2026-11-04T08:04:09.3165518Z Worker ID: {2ed107b5-f83b-47e1-bfab-4ea2be7c3744}
+2026-11-04T08:04:09.3166737Z Region: westus3
+2026-11-04T08:04:09.3167314Z Cloud: Azure
+2026-11-04T08:04:09.3167841Z ##[endgroup]
+2026-11-04T08:04:09.3169514Z ##[group]Operating System
+2026-11-04T08:04:09.3170157Z Ubuntu
+2026-11-04T08:04:09.3170793Z 24.04.5
+2026-11-04T08:04:09.3171327Z LTS
+2026-11-04T08:04:09.3171848Z ##[endgroup]
+2026-11-04T08:04:09.3172455Z ##[group]Runner Image
+2026-11-04T08:04:09.3173561Z Image: ubuntu-24.04
+2026-11-04T08:04:09.3174279Z Version: 20261025.353.1
+2026-11-04T08:04:09.3175542Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-04T08:04:09.3177164Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-04T08:04:09.3178217Z ##[endgroup]
+2026-11-04T08:04:09.3179559Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T08:04:09.3181934Z Actions: read
+2026-11-04T08:04:09.3182977Z Attestations: write
+2026-11-04T08:04:09.3183681Z Contents: read
+2026-11-04T08:04:09.3184294Z Metadata: read
+2026-11-04T08:04:09.3184921Z ##[endgroup]
+2026-11-04T08:04:09.3187147Z Secret source: Actions
+2026-11-04T08:04:09.3188195Z Cache mode: write
+2026-11-04T08:04:09.3189195Z Prepare workflow directory
+2026-11-04T08:04:09.3553616Z Prepare all required actions
+2026-11-04T08:04:09.3604018Z Getting action download info
+2026-11-04T08:04:09.7020526Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-11-04T08:04:09.8635368Z Download action repository 'actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be' (SHA:e8998f949152b193b063cb0ec769d69d929409be)
+2026-11-04T08:04:10.4615828Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-04T08:04:10.6723737Z Getting action download info
+2026-11-04T08:04:10.7901883Z Download action repository 'actions/attest-build-provenance@1176ef556905f349f669722abf30bce1a6e16e01' (SHA:1176ef556905f349f669722abf30bce1a6e16e01)
+2026-11-04T08:04:11.3746483Z Download action repository 'actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc' (SHA:ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc)
+2026-11-04T08:04:11.9861726Z Complete job name: exact-cohort-tls-rotation
+2026-11-04T08:04:12.0800026Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-11-04T08:04:12.0800960Z with:
+2026-11-04T08:04:12.0801338Z   persist-credentials: false
+2026-11-04T08:04:12.0801758Z   repository: GioNob/ouf-deploy
+2026-11-04T08:04:12.0805243Z   token: ***
+2026-11-04T08:04:12.0805633Z   ssh-strict: true
+2026-11-04T08:04:12.0805979Z   ssh-user: git
+2026-11-04T08:04:12.0806307Z   clean: true
+2026-11-04T08:04:12.0806667Z   sparse-checkout-cone-mode: true
+2026-11-04T08:04:12.0807068Z   fetch-depth: 1
+2026-11-04T08:04:12.0807402Z   fetch-tags: false
+2026-11-04T08:04:12.0807761Z   show-progress: true
+2026-11-04T08:04:12.0808111Z   lfs: false
+2026-11-04T08:04:12.0808454Z   submodules: false
+2026-11-04T08:04:12.0808804Z   set-safe-directory: true
+2026-11-04T08:04:12.0809488Z ##[endgroup]
+2026-11-04T08:04:12.4073600Z Syncing repository: GioNob/ouf-deploy
+2026-11-04T08:04:12.4075771Z ##[group]Getting Git version info
+2026-11-04T08:04:12.4076886Z Working directory is '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-04T08:04:12.4077883Z [command]/usr/bin/git version
+2026-11-04T08:04:12.4258384Z git version 2.56.0
+2026-11-04T08:04:12.4283086Z ##[endgroup]
+2026-11-04T08:04:12.4305253Z Temporarily overriding HOME='/home/runner/work/_temp/121abd9c-e210-4a13-8521-8122d1ad91c5' before making global git config changes
+2026-11-04T08:04:12.4308028Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T08:04:12.4312851Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-04T08:04:12.4403346Z Deleting the contents of '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-04T08:04:12.4414570Z ##[group]Initializing the repository
+2026-11-04T08:04:12.4416409Z [command]/usr/bin/git init /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-04T08:04:12.4554980Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T08:04:12.4556509Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T08:04:12.4559164Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T08:04:12.4560010Z hint: call:
+2026-11-04T08:04:12.4561071Z hint:
+2026-11-04T08:04:12.4561883Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T08:04:12.4562960Z hint:
+2026-11-04T08:04:12.4563702Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T08:04:12.4564850Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T08:04:12.4565816Z hint:
+2026-11-04T08:04:12.4566387Z hint: 	git branch -m <name>
+2026-11-04T08:04:12.4567001Z hint:
+2026-11-04T08:04:12.4567832Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T08:04:12.4570430Z Initialized empty Git repository in /home/runner/work/ouf-deploy/ouf-deploy/.git/
+2026-11-04T08:04:12.4694143Z [command]/usr/bin/git remote add origin https://github.com/GioNob/ouf-deploy
+2026-11-04T08:04:12.4696376Z ##[endgroup]
+2026-11-04T08:04:12.4697356Z ##[group]Disabling automatic garbage collection
+2026-11-04T08:04:12.4698418Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T08:04:12.4700345Z ##[endgroup]
+2026-11-04T08:04:12.4701213Z ##[group]Setting up auth
+2026-11-04T08:04:12.4702070Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T08:04:12.4746358Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T08:04:12.5199617Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T08:04:12.5248195Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T08:04:12.5524145Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T08:04:12.5578064Z ##[endgroup]
+2026-11-04T08:04:12.5579286Z ##[group]Fetching the repository
+2026-11-04T08:04:12.5592791Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +9fbe9ef71ba296523e904686d7409b4c9150209f:refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-04T08:04:16.3665549Z From https://github.com/GioNob/ouf-deploy
+2026-11-04T08:04:16.3667468Z  * [new ref]         9fbe9ef71ba296523e904686d7409b4c9150209f -> origin/feat/m2-discovery-complete-profile-20261029
+2026-11-04T08:04:16.3680379Z ##[endgroup]
+2026-11-04T08:04:16.3681197Z ##[group]Determining the checkout info
+2026-11-04T08:04:16.3681963Z ##[endgroup]
+2026-11-04T08:04:16.3684708Z [command]/usr/bin/git sparse-checkout disable
+2026-11-04T08:04:16.3758443Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-04T08:04:16.3803211Z ##[group]Checking out the ref
+2026-11-04T08:04:16.3810004Z [command]/usr/bin/git checkout --progress --force -B feat/m2-discovery-complete-profile-20261029 refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-04T08:04:17.0408912Z Switched to a new branch 'feat/m2-discovery-complete-profile-20261029'
+2026-11-04T08:04:17.0425025Z branch 'feat/m2-discovery-complete-profile-20261029' set up to track 'origin/feat/m2-discovery-complete-profile-20261029'.
+2026-11-04T08:04:17.0452256Z ##[endgroup]
+2026-11-04T08:04:17.0510485Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T08:04:17.0548490Z 9fbe9ef71ba296523e904686d7409b4c9150209f
+2026-11-04T08:04:17.0562943Z ##[group]Removing auth
+2026-11-04T08:04:17.0569310Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T08:04:17.0630827Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T08:04:17.0918937Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T08:04:17.0957200Z http.https://github.com/.extraheader
+2026-11-04T08:04:17.0967944Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-04T08:04:17.1014497Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T08:04:17.1279249Z ##[endgroup]
+2026-11-04T08:04:17.1510764Z ##[group]Run python3 -I -B -S -m unittest discover -s tests -p test_storage_tls_rotation_generation33.py -v
+2026-11-04T08:04:17.1511664Z [36;1mpython3 -I -B -S -m unittest discover -s tests -p test_storage_tls_rotation_generation33.py -v[0m
+2026-11-04T08:04:17.1535038Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:04:17.1535335Z ##[endgroup]
+2026-11-04T08:04:18.1016657Z test_after_client_cannot_repeat_seed (test_storage_tls_rotation_generation33.RotationTests.test_after_client_cannot_repeat_seed) ... ok
+2026-11-04T08:04:18.1019670Z test_after_stage_reads_only_and_proves_both_trust_modes (test_storage_tls_rotation_generation33.RotationTests.test_after_stage_reads_only_and_proves_both_trust_modes) ... ok
+2026-11-04T08:04:18.1021693Z test_equal_length_corruption_fails (test_storage_tls_rotation_generation33.RotationTests.test_equal_length_corruption_fails) ... ok
+2026-11-04T08:04:18.1024283Z test_gateway_arguments_pin_only_second_certificate_and_existing_roots (test_storage_tls_rotation_generation33.RotationTests.test_gateway_arguments_pin_only_second_certificate_and_existing_roots) ... ok
+2026-11-04T08:04:18.1025740Z test_incomplete_list_fails_even_with_expected_object (test_storage_tls_rotation_generation33.RotationTests.test_incomplete_list_fails_even_with_expected_object) ... ok
+2026-11-04T08:04:18.1029376Z test_private_keys_are_restricted_and_never_overlap_input (test_storage_tls_rotation_generation33.RotationTests.test_private_keys_are_restricted_and_never_overlap_input) ... ok
+2026-11-04T08:04:18.1209794Z test_real_tls_opposite_trust_and_hostname_fail_closed (test_storage_tls_rotation_generation33.RotationTests.test_real_tls_opposite_trust_and_hostname_fail_closed) ... ok
+2026-11-04T08:04:18.1342313Z test_real_tls_overlap_accepts_both_generations_and_fingerprints (test_storage_tls_rotation_generation33.RotationTests.test_real_tls_overlap_accepts_both_generations_and_fingerprints) ... ok
+2026-11-04T08:04:18.1349776Z test_replacement_requires_new_gateway_same_storage_no_restart (test_storage_tls_rotation_generation33.RotationTests.test_replacement_requires_new_gateway_same_storage_no_restart) ... ok
+2026-11-04T08:04:18.1566139Z test_wrong_certificate_rejected_before_http_request (test_storage_tls_rotation_generation33.RotationTests.test_wrong_certificate_rejected_before_http_request) ... ok
+2026-11-04T08:04:18.1570680Z 
+2026-11-04T08:04:18.1571116Z ----------------------------------------------------------------------
+2026-11-04T08:04:18.1571816Z Ran 10 tests in 0.866s
+2026-11-04T08:04:18.1572094Z 
+2026-11-04T08:04:18.1572275Z OK
+2026-11-04T08:04:18.1813211Z ##[group]Run set -euo pipefail
+2026-11-04T08:04:18.1813598Z [36;1mset -euo pipefail[0m
+2026-11-04T08:04:18.1813864Z [36;1mpython3 -I -B -S - <<'PYCODE'[0m
+2026-11-04T08:04:18.1814456Z [36;1mimport hashlib, importlib.util, json, os, pathlib, subprocess[0m
+2026-11-04T08:04:18.1814977Z [36;1mp=pathlib.Path('scripts/run-storage-generation33-tls-rotation.py')[0m
+2026-11-04T08:04:18.1815470Z [36;1mspec=importlib.util.spec_from_file_location('rotation',p)[0m
+2026-11-04T08:04:18.1816031Z [36;1mrotation=importlib.util.module_from_spec(spec);spec.loader.exec_module(rotation)[0m
+2026-11-04T08:04:18.1816622Z [36;1mbound=rotation.labs.binding_api.load(pathlib.Path.cwd(),rotation.LOCK_SHA)[0m
+2026-11-04T08:04:18.1817172Z [36;1minputs=pathlib.Path(os.environ['RUNNER_TEMP'])/'tls33-inputs';inputs.mkdir()[0m
+2026-11-04T08:04:18.1817670Z [36;1mdef fetch(artifact_id,filename,expected_size,expected_sha):[0m
+2026-11-04T08:04:18.1818035Z [36;1m    dest=inputs/filename[0m
+2026-11-04T08:04:18.1818574Z [36;1m    url='https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/'+str(artifact_id)+'/zip'[0m
+2026-11-04T08:04:18.1819284Z [36;1m    subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',[0m
+2026-11-04T08:04:18.1819892Z [36;1m                    '--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','180',[0m
+2026-11-04T08:04:18.1820501Z [36;1m                    '--max-filesize',str(expected_size),'-H','Authorization: Bearer '+os.environ['GH_TOKEN'],[0m
+2026-11-04T08:04:18.1821154Z [36;1m                    '-H','Accept: application/vnd.github+json',url,'--output',str(dest)],check=True)[0m
+2026-11-04T08:04:18.1821643Z [36;1m    assert dest.stat().st_size==expected_size[0m
+2026-11-04T08:04:18.1822157Z [36;1m    with dest.open('rb') as stream:assert hashlib.file_digest(stream,'sha256').hexdigest()==expected_sha[0m
+2026-11-04T08:04:18.1822838Z [36;1m    return dest[0m
+2026-11-04T08:04:18.1823363Z [36;1mcohort=fetch(rotation.COHORT_ARTIFACT_ID,'cohort.zip',rotation.COHORT_ARCHIVE_BYTES,rotation.COHORT_ARCHIVE_SHA)[0m
+2026-11-04T08:04:18.1824073Z [36;1mreceipt=rotation.labs.bind_cohort_artifact(cohort,inputs/'bound-cohort',bound,[0m
+2026-11-04T08:04:18.1824611Z [36;1m                                          rotation.COHORT_ARCHIVE_SHA,rotation.COHORT_SHA)[0m
+2026-11-04T08:04:18.1825008Z [36;1mrotation.binding(receipt)[0m
+2026-11-04T08:04:18.1825304Z [36;1mimage=bound['lock']['producerArtifact'][0m
+2026-11-04T08:04:18.1825756Z [36;1mfetch(image['id'],'image.zip',image['bytes'],image['digest'].removeprefix('sha256:'))[0m
+2026-11-04T08:04:18.1826180Z [36;1mPYCODE[0m
+2026-11-04T08:04:18.1846007Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:04:18.1846269Z env:
+2026-11-04T08:04:18.1849037Z   GH_TOKEN: ***
+2026-11-04T08:04:18.1849261Z ##[endgroup]
+2026-11-04T08:04:25.3966289Z ##[group]Run set -euo pipefail
+2026-11-04T08:04:25.3966633Z [36;1mset -euo pipefail[0m
+2026-11-04T08:04:25.3967070Z [36;1mcurl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 90 \[0m
+2026-11-04T08:04:25.3967791Z [36;1m  https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz[0m
+2026-11-04T08:04:25.3968632Z [36;1mprintf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict[0m
+2026-11-04T08:04:25.3969221Z [36;1mmkdir gh297[0m
+2026-11-04T08:04:25.3969652Z [36;1mtar --no-same-owner -xzf gh297.tar.gz --strip-components=1 -C gh297 gh_2.97.0_linux_amd64/bin/gh[0m
+2026-11-04T08:04:25.3970301Z [36;1mgh297/bin/gh attestation verify "$RUNNER_TEMP/tls33-inputs/bound-cohort/SHA256SUMS" \[0m
+2026-11-04T08:04:25.3970759Z [36;1m  --repo GioNob/ouf-deploy \[0m
+2026-11-04T08:04:25.3971275Z [36;1m  --signer-workflow GioNob/ouf-deploy/.github/workflows/storage-452-generation33-cohort.yml \[0m
+2026-11-04T08:04:25.3971852Z [36;1m  --source-digest 7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791 \[0m
+2026-11-04T08:04:25.3972347Z [36;1m  --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 \[0m
+2026-11-04T08:04:25.3973296Z [36;1m  --deny-self-hosted-runners --format json > "$RUNNER_TEMP/tls33-inputs/cohort-publisher-verification.json"[0m
+2026-11-04T08:04:25.3974149Z [36;1mtest -s "$RUNNER_TEMP/tls33-inputs/cohort-publisher-verification.json"[0m
+2026-11-04T08:04:25.3993681Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:04:25.3993927Z env:
+2026-11-04T08:04:25.3996706Z   GH_TOKEN: ***
+2026-11-04T08:04:25.3996925Z ##[endgroup]
+2026-11-04T08:04:25.8283143Z gh297.tar.gz: OK
+2026-11-04T08:04:30.4114123Z ##[group]Run set -euo pipefail
+2026-11-04T08:04:30.4114489Z [36;1mset -euo pipefail[0m
+2026-11-04T08:04:30.4114920Z [36;1mpython3 -I -B -S scripts/run-storage-generation33-tls-rotation.py run \[0m
+2026-11-04T08:04:30.4115475Z [36;1m  "$RUNNER_TEMP/tls33-inputs/image.zip" "$RUNNER_TEMP/tls33-lab" \[0m
+2026-11-04T08:04:30.4115970Z [36;1m  "$RUNNER_TEMP/tls33-inputs/bound-cohort/cohort-receipt.json"[0m
+2026-11-04T08:04:30.4136018Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:04:30.4136305Z ##[endgroup]
+2026-11-04T08:05:02.0836819Z ##[group]Run python3 -I -B -S - <<'PYCODE'
+2026-11-04T08:05:02.0837231Z [36;1mpython3 -I -B -S - <<'PYCODE'[0m
+2026-11-04T08:05:02.0837582Z [36;1mimport hashlib,json,os,pathlib,shutil[0m
+2026-11-04T08:05:02.0838057Z [36;1mtemp=pathlib.Path(os.environ['RUNNER_TEMP']);out=temp/'tls33-evidence';out.mkdir()[0m
+2026-11-04T08:05:02.0838584Z [36;1mwork=temp/'tls33-lab/evidence';inputs=temp/'tls33-inputs'[0m
+2026-11-04T08:05:02.0838937Z [36;1mtotal=0[0m
+2026-11-04T08:05:02.0839151Z [36;1mdef copy_public(source,dest):[0m
+2026-11-04T08:05:02.0839417Z [36;1m    global total[0m
+2026-11-04T08:05:02.0839861Z [36;1m    if source.is_symlink() or not source.is_file():raise ValueError('REGULAR_PUBLIC_EVIDENCE_REQUIRED')[0m
+2026-11-04T08:05:02.0840390Z [36;1m    raw=source.read_bytes();total+=len(raw)[0m
+2026-11-04T08:05:02.0840842Z [36;1m    if len(raw)>16*1024*1024 or total>64*1024*1024:raise ValueError('EVIDENCE_SIZE_BUDGET')[0m
+2026-11-04T08:05:02.0841386Z [36;1m    if source.suffix=='.key' or any(marker in raw for marker in[0m
+2026-11-04T08:05:02.0841925Z [36;1m        (b'-----BEGIN PRIVATE KEY',b'-----BEGIN RSA PRIVATE KEY',b'-----BEGIN EC PRIVATE KEY')):[0m
+2026-11-04T08:05:02.0842469Z [36;1m        raise ValueError('PRIVATE_KEY_MUST_NOT_ENTER_EVIDENCE')[0m
+2026-11-04T08:05:02.0843423Z [36;1m    dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)[0m
+2026-11-04T08:05:02.0843830Z [36;1mif work.is_dir():[0m
+2026-11-04T08:05:02.0844216Z [36;1m    for source in sorted(work.iterdir()):copy_public(source,out/'lab'/source.name)[0m
+2026-11-04T08:05:02.0844945Z [36;1mfor name in ('cohort-publisher-verification.json','bound-cohort/cohort-receipt.json','bound-cohort/SHA256SUMS'):[0m
+2026-11-04T08:05:02.0845523Z [36;1m    source=inputs/name[0m
+2026-11-04T08:05:02.0845894Z [36;1m    if source.is_file():copy_public(source,out/'input-verification'/name)[0m
+2026-11-04T08:05:02.0846583Z [36;1mpaths=['scripts/run-storage-generation33-tls-rotation.py','tests/test_storage_tls_rotation_generation33.py',[0m
+2026-11-04T08:05:02.0847422Z [36;1m       '.github/workflows/storage-generation33-tls-rotation.yml','scripts/run-seaweedfs-452-generation33-labs.py',[0m
+2026-11-04T08:05:02.0848228Z [36;1m       'scripts/storage-generation33-lab-binding.py','scripts/run-seaweedfs-452-cold-recovery.py',[0m
+2026-11-04T08:05:02.0848989Z [36;1m       'scripts/run-seaweedfs-452-identity-tls.py','scripts/readback-seaweedfs-452-generation33-image.py',[0m
+2026-11-04T08:05:02.0849771Z [36;1m       'scripts/qualify-seaweedfs-452-generation33-image.py','tools/storage_security/generation_image_v4.py',[0m
+2026-11-04T08:05:02.0850615Z [36;1m       'tools/storage_security/generation_readback_v1.py','releases/seaweedfs-452-generation33-candidate-lock-20261104.json',[0m
+2026-11-04T08:05:02.0851373Z [36;1m       'releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json'][0m
+2026-11-04T08:05:02.0852195Z [36;1m(out/'source-sha256.json').write_text(json.dumps({p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest() for p in paths},indent=2)+'\n')[0m
+2026-11-04T08:05:02.0853314Z [36;1m(out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(out))+'\n'[0m
+2026-11-04T08:05:02.0854207Z [36;1m                                   for p in sorted(out.rglob('*')) if p.is_file() and p!=out/'SHA256SUMS'))[0m
+2026-11-04T08:05:02.0854632Z [36;1mPYCODE[0m
+2026-11-04T08:05:02.0854860Z [36;1mcd "$RUNNER_TEMP/tls33-evidence"[0m
+2026-11-04T08:05:02.0855162Z [36;1msha256sum --strict --check SHA256SUMS[0m
+2026-11-04T08:05:02.0875855Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:05:02.0876117Z ##[endgroup]
+2026-11-04T08:05:02.1323960Z input-verification/bound-cohort/SHA256SUMS: OK
+2026-11-04T08:05:02.1324784Z input-verification/bound-cohort/cohort-receipt.json: OK
+2026-11-04T08:05:02.1325560Z input-verification/cohort-publisher-verification.json: OK
+2026-11-04T08:05:02.1326232Z lab/a-ca.pem: OK
+2026-11-04T08:05:02.1327065Z lab/a-server.pem: OK
+2026-11-04T08:05:02.1327446Z lab/b-ca.pem: OK
+2026-11-04T08:05:02.1327690Z lab/b-server.pem: OK
+2026-11-04T08:05:02.1327953Z lab/ca-overlap.pem: OK
+2026-11-04T08:05:02.1328227Z lab/certificate-identities.json: OK
+2026-11-04T08:05:02.1328528Z lab/containers.json: OK
+2026-11-04T08:05:02.1328779Z lab/exact-image.json: OK
+2026-11-04T08:05:02.1329046Z lab/lock-ring-ready.json: OK
+2026-11-04T08:05:02.1329311Z lab/network.json: OK
+2026-11-04T08:05:02.1329713Z lab/ouf-tls33-2397-filer-stopped.json: OK
+2026-11-04T08:05:02.1330210Z lab/ouf-tls33-2397-filer.log: OK
+2026-11-04T08:05:02.1330689Z lab/ouf-tls33-2397-master-stopped.json: OK
+2026-11-04T08:05:02.1331221Z lab/ouf-tls33-2397-master.log: OK
+2026-11-04T08:05:02.1331716Z lab/ouf-tls33-2397-s3-next-stopped.json: OK
+2026-11-04T08:05:02.1332221Z lab/ouf-tls33-2397-s3-next.log: OK
+2026-11-04T08:05:02.1333004Z lab/ouf-tls33-2397-volume-stopped.json: OK
+2026-11-04T08:05:02.1333729Z lab/ouf-tls33-2397-volume.log: OK
+2026-11-04T08:05:02.1334160Z lab/ready-a.json: OK
+2026-11-04T08:05:02.1334464Z lab/ready-b.json: OK
+2026-11-04T08:05:02.1334699Z lab/receipt.json: OK
+2026-11-04T08:05:02.1334969Z lab/replacement-containers.json: OK
+2026-11-04T08:05:02.1335280Z lab/retired-gateway.json: OK
+2026-11-04T08:05:02.1335534Z lab/retired-gateway.log: OK
+2026-11-04T08:05:02.1335763Z lab/seed.json: OK
+2026-11-04T08:05:02.1335964Z lab/verify-b.json: OK
+2026-11-04T08:05:02.1336176Z source-sha256.json: OK
+2026-11-04T08:05:02.1470121Z ##[group]Run actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+2026-11-04T08:05:02.1470632Z with:
+2026-11-04T08:05:02.1470938Z   subject-path: /home/runner/work/_temp/tls33-evidence/SHA256SUMS
+2026-11-04T08:05:02.1471325Z   push-to-registry: false
+2026-11-04T08:05:02.1471561Z   show-summary: true
+2026-11-04T08:05:02.1474719Z   github-token: ***
+2026-11-04T08:05:02.1474959Z ##[endgroup]
+2026-11-04T08:05:02.1545966Z ##[start-action display=Run actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01;id=__actions_attest-build-provenance.generate-build-provenance-predicate]
+2026-11-04T08:05:02.1584265Z ##[group]Run actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01
+2026-11-04T08:05:02.1584774Z ##[endgroup]
+2026-11-04T08:05:03.1441355Z ##[end-action id=__actions_attest-build-provenance.generate-build-provenance-predicate;outcome=success;conclusion=success;duration_ms=989]
+2026-11-04T08:05:03.1446949Z ##[start-action display=Run actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc;id=__actions_attest-build-provenance.attest]
+2026-11-04T08:05:03.1487395Z ##[group]Run actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc
+2026-11-04T08:05:03.1487777Z with:
+2026-11-04T08:05:03.1488092Z   subject-path: /home/runner/work/_temp/tls33-evidence/SHA256SUMS
+2026-11-04T08:05:03.1488527Z   predicate-type: https://slsa.dev/provenance/v1
+2026-11-04T08:05:03.1492193Z   predicate: {"buildDefinition":{"buildType":"https://actions.github.io/buildtypes/workflow/v1","externalParameters":{"workflow":{"ref":"refs/heads/feat/m2-discovery-complete-profile-20261029","repository":"https://github.com/GioNob/ouf-deploy","path":".github/workflows/storage-generation33-tls-rotation.yml"}},"internalParameters":{"github":{"event_name":"push","repository_id":"1409074354","repository_owner_id":"96419716","runner_environment":"github-hosted"}},"resolvedDependencies":[{"uri":"git+https://github.com/GioNob/ouf-deploy@refs/heads/feat/m2-discovery-complete-profile-20261029","digest":{"gitCommit":"9fbe9ef71ba296523e904686d7409b4c9150209f"}}]},"runDetails":{"builder":{"id":"https://github.com/GioNob/ouf-deploy/.github/workflows/storage-generation33-tls-rotation.yml@refs/heads/feat/m2-discovery-complete-profile-20261029"},"metadata":{"invocationId":"https://github.com/GioNob/ouf-deploy/actions/runs/41796664091/attempts/1"}}}
+2026-11-04T08:05:03.1496178Z   push-to-registry: false
+2026-11-04T08:05:03.1496435Z   show-summary: true
+2026-11-04T08:05:03.1499382Z   github-token: ***
+2026-11-04T08:05:03.1499642Z ##[endgroup]
+2026-11-04T08:05:04.5642910Z Attestation created for SHA256SUMS@sha256:d4aa3ec47772a3a2c4d5e4c2e6d1aa260bb26e96515a1ec816c63e06e7d6b7c2
+2026-11-04T08:05:04.5645151Z ##[group][36mAttestation signed using certificate from Public Good Sigstore instance[39m
+2026-11-04T08:05:04.5648944Z -----BEGIN CERTIFICATE-----
+2026-11-04T08:05:04.5653253Z MIIISzCCB9CgAwIBAgIURKLCXDHu5wsW8Sl9wCmANgL1rL4wCgYIKoZIzj0EAwMw
+2026-11-04T08:05:04.5654555Z NzEVMBMGA1UEChMMc2lnc3RvcmUuZGV2MR4wHAYDVQQDExVzaWdzdG9yZS1pbnRl
+2026-11-04T08:05:04.5655734Z cm1lZGlhdGUwHhcNMjYxMTA0MDgwNTAzWhcNMjYxMTA0MDgxNTAzWjAAMFkwEwYH
+2026-11-04T08:05:04.5656928Z KoZIzj0CAQYIKoZIzj0DAQcDQgAEl++w11SdX7+pUqPQSDj7RDIy/AhrTDJDyPHT
+2026-11-04T08:05:04.5658061Z ZOcqMnfVMv80YKUQhlYC7J5Rqp7iTOQIXVyO7/8SiC9tYNUTpqOCBu8wggbrMA4G
+2026-11-04T08:05:04.5659151Z A1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggrBgEFBQcDAzAfBgNVHSMEGDAWgBTf
+2026-11-04T08:05:04.5660250Z 0+nPViQRlvmo2OkoVaLGLhhkPzCBpAYDVR0RAQH/BIGZMIGWhoGTaHR0cHM6Ly9n
+2026-11-04T08:05:04.5661387Z aXRodWIuY29tL0dpb05vYi9vdWYtZGVwbG95Ly5naXRodWIvd29ya2Zsb3dzL3N0
+2026-11-04T08:05:04.5662775Z b3JhZ2UtZ2VuZXJhdGlvbjMzLXRscy1yb3RhdGlvbi55bWxAcmVmcy9oZWFkcy9m
+2026-11-04T08:05:04.5663916Z ZWF0L20yLWRpc2NvdmVyeS1jb21wbGV0ZS1wcm9maWxlLTIwMjYxMDI5MDkGCisG
+2026-11-04T08:05:04.5664886Z AQQBg78wAQEEK2h0dHBzOi8vdG9rZW4uYWN0aW9ucy5naXRodWJ1c2VyY29udGVu
+2026-11-04T08:05:04.5665827Z dC5jb20wEgYKKwYBBAGDvzABAgQEcHVzaDA2BgorBgEEAYO/MAEDBCg5ZmJlOWVm
+2026-11-04T08:05:04.5666993Z NzFiYTI5NjUyM2U5MDQ2ODZkNzQwOWI0YzkxNTAyMDlmMEgGCisGAQQBg78wAQQE
+2026-11-04T08:05:04.5667893Z OlN0b3JhZ2UgZ2VuZXJhdGlvbjMzIHN0YWdlZCBUTFMgdHJ1c3QgYW5kIGdhdGV3
+2026-11-04T08:05:04.5668729Z YXkgcm90YXRpb24wHwYKKwYBBAGDvzABBQQRR2lvTm9iL291Zi1kZXBsb3kwRAYK
+2026-11-04T08:05:04.5674332Z KwYBBAGDvzABBgQ2cmVmcy9oZWFkcy9mZWF0L20yLWRpc2NvdmVyeS1jb21wbGV0
+2026-11-04T08:05:04.5675592Z ZS1wcm9maWxlLTIwMjYxMDI5MDsGCisGAQQBg78wAQgELQwraHR0cHM6Ly90b2tl
+2026-11-04T08:05:04.5676740Z bi5hY3Rpb25zLmdpdGh1YnVzZXJjb250ZW50LmNvbTCBpQYKKwYBBAGDvzABCQSB
+2026-11-04T08:05:04.5677806Z lgyBk2h0dHBzOi8vZ2l0aHViLmNvbS9HaW9Ob2Ivb3VmLWRlcGxveS8uZ2l0aHVi
+2026-11-04T08:05:04.5678748Z L3dvcmtmbG93cy9zdG9yYWdlLWdlbmVyYXRpb24zMy10bHMtcm90YXRpb24ueW1s
+2026-11-04T08:05:04.5679720Z QHJlZnMvaGVhZHMvZmVhdC9tMi1kaXNjb3ZlcnktY29tcGxldGUtcHJvZmlsZS0y
+2026-11-04T08:05:04.5680658Z MDI2MTAyOTA4BgorBgEEAYO/MAEKBCoMKDlmYmU5ZWY3MWJhMjk2NTIzZTkwNDY4
+2026-11-04T08:05:04.5681575Z NmQ3NDA5YjRjOTE1MDIwOWYwHQYKKwYBBAGDvzABCwQPDA1naXRodWItaG9zdGVk
+2026-11-04T08:05:04.5682763Z MDQGCisGAQQBg78wAQwEJgwkaHR0cHM6Ly9naXRodWIuY29tL0dpb05vYi9vdWYt
+2026-11-04T08:05:04.5683636Z ZGVwbG95MDgGCisGAQQBg78wAQ0EKgwoOWZiZTllZjcxYmEyOTY1MjNlOTA0Njg2
+2026-11-04T08:05:04.5684948Z ZDc0MDliNGM5MTUwMjA5ZjBGBgorBgEEAYO/MAEOBDgMNnJlZnMvaGVhZHMvZmVh
+2026-11-04T08:05:04.5685836Z dC9tMi1kaXNjb3ZlcnktY29tcGxldGUtcHJvZmlsZS0yMDI2MTAyOTAaBgorBgEE
+2026-11-04T08:05:04.5686736Z AYO/MAEPBAwMCjE0MDkwNzQzNTQwKQYKKwYBBAGDvzABEAQbDBlodHRwczovL2dp
+2026-11-04T08:05:04.5687618Z dGh1Yi5jb20vR2lvTm9iMBgGCisGAQQBg78wAREECgwIOTY0MTk3MTYwgaUGCisG
+2026-11-04T08:05:04.5688487Z AQQBg78wARIEgZYMgZNodHRwczovL2dpdGh1Yi5jb20vR2lvTm9iL291Zi1kZXBs
+2026-11-04T08:05:04.5689355Z b3kvLmdpdGh1Yi93b3JrZmxvd3Mvc3RvcmFnZS1nZW5lcmF0aW9uMzMtdGxzLXJv
+2026-11-04T08:05:04.5690502Z dGF0aW9uLnltbEByZWZzL2hlYWRzL2ZlYXQvbTItZGlzY292ZXJ5LWNvbXBsZXRl
+2026-11-04T08:05:04.5691435Z LXByb2ZpbGUtMjAyNjEwMjkwOAYKKwYBBAGDvzABEwQqDCg5ZmJlOWVmNzFiYTI5
+2026-11-04T08:05:04.5692505Z NjUyM2U5MDQ2ODZkNzQwOWI0YzkxNTAyMDlmMBQGCisGAQQBg78wARQEBgwEcHVz
+2026-11-04T08:05:04.5693724Z aDBYBgorBgEEAYO/MAEVBEoMSGh0dHBzOi8vZ2l0aHViLmNvbS9HaW9Ob2Ivb3Vm
+2026-11-04T08:05:04.5694702Z LWRlcGxveS9hY3Rpb25zL3J1bnMvNDE3OTY2NjQwOTEvYXR0ZW1wdHMvMTAWBgor
+2026-11-04T08:05:04.5695617Z BgEEAYO/MAEWBAgMBnB1YmxpYzB1BgorBgEEAYO/MAEYBGcMZXJlcG86R2lvTm9i
+2026-11-04T08:05:04.5696533Z QDk2NDE5NzE2L291Zi1kZXBsb3lAMTQwOTA3NDM1NDpyZWY6cmVmcy9oZWFkcy9m
+2026-11-04T08:05:04.5697472Z ZWF0L20yLWRpc2NvdmVyeS1jb21wbGV0ZS1wcm9maWxlLTIwMjYxMDI5MIGLBgor
+2026-11-04T08:05:04.5698443Z BgEEAdZ5AgQCBH0EewB5AHcA3T0wasbHETJjGR4cmWc3AqJKXrjePK3/h4pygC8p
+2026-11-04T08:05:04.5699532Z 7o4AAAGhpZcSUgAABAMASDBGAiEAsd92JuNRTLthYnZPWuPiRhjMMsDicYHZNgb4
+2026-11-04T08:05:04.5700492Z EsKx/ZkCIQCdMB0kO8H/6XU9RWxSYUM0bXqaQwqpwpiUuh8o5uAsvDAKBggqhkjO
+2026-11-04T08:05:04.5701406Z PQQDAwNpADBmAjEAj3G/ugU1hQ6VWe3ZauOdjUvIChxZnXHO8HYyZ4kzqkSAALwk
+2026-11-04T08:05:04.5702345Z f4uJqXSSmwsCWJN+AjEAibJfa5R380Em9yIA9QWcqcoeWVuWwBfClvQfnq0+gr+e
+2026-11-04T08:05:04.5703279Z WmUDKMS72BZM3Uibg6oO
+2026-11-04T08:05:04.5703718Z -----END CERTIFICATE-----
+2026-11-04T08:05:04.5704028Z 
+2026-11-04T08:05:04.5704642Z ##[endgroup]
+2026-11-04T08:05:04.5705438Z [36mAttestation signature uploaded to Rekor transparency log[39m
+2026-11-04T08:05:04.5706260Z https://search.sigstore.dev?logIndex=3687304560
+2026-11-04T08:05:04.5706969Z [36mAttestation uploaded to repository[39m
+2026-11-04T08:05:04.5707657Z https://github.com/GioNob/ouf-deploy/attestations/63480571
+2026-11-04T08:05:04.6298808Z ##[end-action id=__actions_attest-build-provenance.attest;outcome=success;conclusion=success;duration_ms=1485]
+2026-11-04T08:05:04.6395691Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-04T08:05:04.6396120Z with:
+2026-11-04T08:05:04.6396392Z   name: storage-generation33-tls-rotation-41796664091
+2026-11-04T08:05:04.6396756Z   path: /home/runner/work/_temp/tls33-evidence/
+2026-11-04T08:05:04.6397061Z   if-no-files-found: error
+2026-11-04T08:05:04.6397296Z   retention-days: 90
+2026-11-04T08:05:04.6397512Z   compression-level: 6
+2026-11-04T08:05:04.6397733Z   overwrite: false
+2026-11-04T08:05:04.6397951Z   include-hidden-files: false
+2026-11-04T08:05:04.6398205Z ##[endgroup]
+2026-11-04T08:05:04.8211053Z (node:3339) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T08:05:04.8212396Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T08:05:04.8353652Z With the provided path, there will be 31 files uploaded
+2026-11-04T08:05:04.8359398Z Artifact name is valid!
+2026-11-04T08:05:04.8359863Z Root directory input is valid!
+2026-11-04T08:05:05.1917140Z Beginning upload of artifact content to blob storage
+2026-11-04T08:05:05.2472417Z (node:3339) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-04T08:05:05.5573049Z Uploaded bytes 42526
+2026-11-04T08:05:05.6191272Z Finished uploading artifact content to blob storage!
+2026-11-04T08:05:05.6192362Z SHA256 digest of uploaded artifact zip is 2f54c76a0527105ea411a114393627067c2b082b3ada5f56b2e654a68f33e3be
+2026-11-04T08:05:05.6193970Z Finalizing artifact upload
+2026-11-04T08:05:06.1042038Z Artifact storage-generation33-tls-rotation-41796664091.zip successfully finalized. Artifact ID 13306410532
+2026-11-04T08:05:06.1044074Z Artifact storage-generation33-tls-rotation-41796664091 has been successfully uploaded! Final size is 42526 bytes. Artifact ID is 13306410532
+2026-11-04T08:05:06.1049579Z Artifact download URL: https://github.com/GioNob/ouf-deploy/actions/runs/41796664091/artifacts/13306410532
+2026-11-04T08:05:06.1268575Z Post job cleanup.
+2026-11-04T08:05:06.2222486Z [command]/usr/bin/git version
+2026-11-04T08:05:06.2275311Z git version 2.56.0
+2026-11-04T08:05:06.2325449Z Temporarily overriding HOME='/home/runner/work/_temp/40446dc6-6191-469a-96d8-4e69ea84f1cc' before making global git config changes
+2026-11-04T08:05:06.2326975Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T08:05:06.2332238Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-04T08:05:06.2383727Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T08:05:06.2430778Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T08:05:06.2725961Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T08:05:06.2788110Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T08:05:06.3236309Z Cleaning up orphan processes
+2026-11-04T08:05:06.3639466Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01, actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc, actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

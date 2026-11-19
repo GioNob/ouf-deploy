@@ -1,0 +1,76 @@
+{
+  "compiledPackageCount": 1533,
+  "compiledDependencyModuleCount": 215,
+  "rootModuleCountIncludingMain": 781,
+  "compiledDeniedModuleAbsent": [
+    "github.com/aws/aws-sdk-go",
+    "github.com/aws/aws-sdk-go-v2/feature/s3/manager",
+    "github.com/boltdb/bolt",
+    "github.com/mitchellh/mapstructure",
+    "github.com/rcrowley/go-metrics",
+    "github.com/Shopify/sarama",
+    "github.com/benbjohnson/clock",
+    "github.com/montanaflynn/stats",
+    "go.mongodb.org/mongo-driver",
+    "go.opencensus.io",
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+    "github.com/envoyproxy/protoc-gen-validate",
+    "github.com/mitchellh/colorstring",
+    "github.com/schollz/progressbar/v3",
+    "github.com/rivo/uniseg"
+  ],
+  "remainingRootLegacyEdges": [
+    {
+      "Path": "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+      "Version": "v1.38.0"
+    },
+    {
+      "Path": "github.com/Shopify/sarama",
+      "Version": "v1.33.0"
+    },
+    {
+      "Path": "github.com/benbjohnson/clock",
+      "Version": "v1.3.0"
+    },
+    {
+      "Path": "github.com/envoyproxy/protoc-gen-validate",
+      "Version": "v1.3.3"
+    },
+    {
+      "Path": "github.com/mitchellh/mapstructure",
+      "Version": "v1.5.1-0.20220423185008-bf980b35cac4"
+    },
+    {
+      "Path": "github.com/montanaflynn/stats",
+      "Version": "v0.7.0"
+    },
+    {
+      "Path": "github.com/rcrowley/go-metrics",
+      "Version": "v0.0.0-20201227073835-cf1acfcdf475"
+    },
+    {
+      "Path": "go.mongodb.org/mongo-driver",
+      "Version": "v1.11.6"
+    },
+    {
+      "Path": "go.opencensus.io",
+      "Version": "v0.24.0"
+    }
+  ],
+  "yamlCompiled": [
+    [
+      "github.com/goccy/go-yaml",
+      "v1.18.0"
+    ],
+    [
+      "go.yaml.in/yaml/v3",
+      "v3.0.5"
+    ],
+    [
+      "gopkg.in/yaml.v3",
+      "v3.0.1"
+    ]
+  ],
+  "rootGraphClaim": "No lifecycle closure claim for uncompiled transitive graph; YAML remains OPEN.",
+  "moduleVersionsHash": "99951924780c4f77804411624161a637ce05525462ae0cf0fbe1e2a141da70db"
+}

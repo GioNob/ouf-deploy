@@ -1,0 +1,40 @@
+{
+  "compat-tests.jsonl": {
+    "pass_tests": 3,
+    "pass_packages": 1
+  },
+  "kafka-compile.jsonl": {
+    "skip_packages": 2,
+    "pass_packages": 4
+  },
+  "nested-iam-regressions.jsonl": {
+    "pass_tests": 18,
+    "pass_packages": 1
+  },
+  "race.jsonl": {
+    "pass_tests": 185,
+    "pass_packages": 3
+  },
+  "regressions.jsonl": {
+    "pass_tests": 6656,
+    "pass_packages": 41,
+    "skip_packages": 9,
+    "skip_tests": 12
+  },
+  "root-iam-regressions.jsonl": {
+    "pass_tests": 24,
+    "pass_packages": 2
+  },
+  "server-focused.jsonl": {
+    "pass_tests": 984,
+    "pass_packages": 1
+  },
+  "shell-hosted.jsonl": {
+    "pass_tests": 306,
+    "pass_packages": 1
+  },
+  "storage-focused.jsonl": {
+    "pass_tests": 58,
+    "pass_packages": 1
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "ouf.mcp-ingestion-read-transport-qualified-delivery.v1",
+  "policyRef": "ouf-lab-authorization:47",
+  "candidate": {
+    "path": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-ingestion-read-transport-39232718756",
+    "manifestSha256": "c685d0c26e7fcdf4936c5d86341a79f23310b09e40b02441b870ff89333a0ce6",
+    "sourceCommit": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+    "imageId": "sha256:bf40c534c96221e5cc989871a13465565942e86556751410ba6812a977e40631",
+    "vpsServiceEffects": 0,
+    "runtimeAuthorityIssued": false
+  },
+  "nativeSourceCommit": "f57728d2aa68dc9cf58b86a7f3fad04b45df82dc",
+  "qualificationRun": 39234772487,
+  "qualificationJob": 118001084280,
+  "testsPassed": 120,
+  "localDeliveryTestsPassed": 4,
+  "sourceModuleCount": 185,
+  "launcherSha256": "2423d20043558657d8154bb962a7b22676556c058d1f07f68bff18b6fb84e77b",
+  "humanGateRequired": true,
+  "runtimeAuthorityIssued": false,
+  "vpsServiceEffects": 0,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "newHumanLoginAllowed": false,
+  "originalHumanWindowExpiresAt": 1792405963,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "deliveryQualificationRun": 39235070853,
+  "deliveryQualificationJob": 118002052188,
+  "deliveryTestsPassed": 4,
+  "deliverySourceCommit": "f28d6b60a764c755c7be324dced698afa7a315f8"
+}

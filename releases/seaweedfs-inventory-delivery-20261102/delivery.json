@@ -1,0 +1,139 @@
+{
+  "schema": "ouf.storage-inventory-delivery.v1",
+  "controlProfile": {
+    "schema": "ouf.storage-baseline-read-control.v1",
+    "maximumAttempts": 1,
+    "maximumSeconds": 600,
+    "maximumEngineGets": 65,
+    "maximumContainers": 64,
+    "maximumEngineResponseBytes": 2097152,
+    "maximumCredentialSources": 2,
+    "maximumCredentialBytesEach": 4096,
+    "maximumS3Requests": 10000,
+    "maximumPrivateInventoryBytes": 67108864,
+    "maximumS3Records": 25000,
+    "maximumS3Seconds": 300,
+    "backendGoMemoryLimit": "256MiB",
+    "backendGoMaxProcs": 1,
+    "objectBodiesRead": 0,
+    "sqlRequests": 0,
+    "containerLifecycleOperations": 0,
+    "runtimeAuthorityIssued": false,
+    "automaticReplayAllowed": false,
+    "previousControlAttempts": 12,
+    "previousEngineGets": 35,
+    "migrationAuthorized": false
+  },
+  "scopePath": "/etc/ouf/deploy-snapshots/seaweedfs-inventory-20261102-v1",
+  "backendInstallPath": "/usr/local/lib/ouf-storage-inventory-20261102/inventory",
+  "producerSource": "6cddeee707b67bd27568aa7a3890e28ebecf274f",
+  "capsuleSha256": "13d0cb759e5b46c4f71fc496cce08ffde9e69d5d6d77a1d83d0ebe18f34e0d78",
+  "backendSha256": "430631fe4dfd1b844229637373ea176c2e84e81e1491919f4a25cc36c68359a8",
+  "backendBytes": 9314464,
+  "compressedBackendSha256": "25a80b05040d1cddb590e834bce321e6f0e592f5e272c986696d1bda4613df7e",
+  "compressedBackendBytes": 3595172,
+  "parts": [
+    {
+      "name": "inventory.part000",
+      "bytes": 196608,
+      "sha256": "02da0525d9b6095b143e4f11f382959cdda6779e8118823348b2dd43e7074f93"
+    },
+    {
+      "name": "inventory.part001",
+      "bytes": 196608,
+      "sha256": "1e3c58a1a955bceff1bdf83843a7c38ede3c74178aa9b9f60675721cec4aceaf"
+    },
+    {
+      "name": "inventory.part002",
+      "bytes": 196608,
+      "sha256": "6b6070fdf57ebfdea27647ffbd787f547684f94b75814d6fc0d78bbaaae074ae"
+    },
+    {
+      "name": "inventory.part003",
+      "bytes": 196608,
+      "sha256": "ab452506463726f080d67de9499b0c63046439346e8f5651c12d92f722d8869b"
+    },
+    {
+      "name": "inventory.part004",
+      "bytes": 196608,
+      "sha256": "ae1e50d457bb57043ee11de89c581bc65d1c67c114a4dfb37fad6e611e06927a"
+    },
+    {
+      "name": "inventory.part005",
+      "bytes": 196608,
+      "sha256": "6b4be5080142ce8da56d9c1b5fa33fe1d0a184bb47a81216854de28c7bb22ee8"
+    },
+    {
+      "name": "inventory.part006",
+      "bytes": 196608,
+      "sha256": "fe16f9939cf1731e4a15f72d7a1dd3c75546c4cc0fe1cc2eff29ecf767d06ce1"
+    },
+    {
+      "name": "inventory.part007",
+      "bytes": 196608,
+      "sha256": "a814e3bdf0a287cc988dd630705fb0cda8f90e5b154f77ac3aa637f238ecf79a"
+    },
+    {
+      "name": "inventory.part008",
+      "bytes": 196608,
+      "sha256": "16f2378c9d4fc793e0327f94f195bed9f508b637fca12d4917f81ae32f864f37"
+    },
+    {
+      "name": "inventory.part009",
+      "bytes": 196608,
+      "sha256": "cb6258902c5719b0ecc9b0d3750af3810fa5999983391d92deb44ccb94ccbcc5"
+    },
+    {
+      "name": "inventory.part010",
+      "bytes": 196608,
+      "sha256": "13259d88bf552f70a2e0841aac90bc5f2ff4f8ce12ea77e6aee95afc38d3a88e"
+    },
+    {
+      "name": "inventory.part011",
+      "bytes": 196608,
+      "sha256": "4399f6dec5955d6137876a37344e73cd88a99830c68570c79edbdbfaecca9869"
+    },
+    {
+      "name": "inventory.part012",
+      "bytes": 196608,
+      "sha256": "626f95a9db2b70dcaae949a289b7dbf2f0f4c62ee01d8d16dda1796ff83caa43"
+    },
+    {
+      "name": "inventory.part013",
+      "bytes": 196608,
+      "sha256": "347d62ecefc9a8a6753dd81536e2ad62c86277f2463def0adfb237e3b33ff866"
+    },
+    {
+      "name": "inventory.part014",
+      "bytes": 196608,
+      "sha256": "5d982262215ddf4ad362997d43933b5b77d5b1cdbc00edb9601c79afc2743eb8"
+    },
+    {
+      "name": "inventory.part015",
+      "bytes": 196608,
+      "sha256": "deb13ccaa7d06e7346e1d1d579642e31849a82c40ec7cb5687db7316c6110588"
+    },
+    {
+      "name": "inventory.part016",
+      "bytes": 196608,
+      "sha256": "533b3f98ba2c119b0ae394fb346925ea9549b498ec9a684d9d2514ab177ed1f6"
+    },
+    {
+      "name": "inventory.part017",
+      "bytes": 196608,
+      "sha256": "2e93f79dba3531b6bf8a711b603c11ba7c682e5609992fa13016e337a44548d7"
+    },
+    {
+      "name": "inventory.part018",
+      "bytes": 56228,
+      "sha256": "82343ca45ce9d4536474ded9b75d00c4b1f584fdbb9462d7445dafd59502448d"
+    }
+  ],
+  "closedSourceCount": 24,
+  "original23SourcesUnchanged": true,
+  "capsuleTamperDenied": true,
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "targetExecutionPreparedNotPerformed": true,
+  "rootCredentialValuesSpooled": false
+}

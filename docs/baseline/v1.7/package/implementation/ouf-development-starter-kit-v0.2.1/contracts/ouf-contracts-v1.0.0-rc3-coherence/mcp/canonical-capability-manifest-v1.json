@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/mcp/canonical-capability-manifest-v1.json",
+  "title": "OUF MCP Canonical Capability Manifest v1",
+  "description": "Machine-readable form of the canonical MCP capability descriptor frozen by MCP Server v1.1.",
+  "type": "object",
+  "required": [
+    "toolName",
+    "capabilityId",
+    "capabilityVersion",
+    "owner",
+    "operationClass",
+    "mcpClass",
+    "publicationState",
+    "toolEligible",
+    "requiredAuthorizationCapability",
+    "gatewayBindingRef",
+    "inputSchemaRef",
+    "outputSchemaRef",
+    "actorTypes",
+    "baseCostEnvelope",
+    "conditionalOutcomeCost"
+  ],
+  "properties": {
+    "toolName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capabilityId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capabilityVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operationClass": {
+      "type": "string",
+      "enum": [
+        "READ",
+        "COMPUTE",
+        "PROPOSE",
+        "COMMAND"
+      ]
+    },
+    "mcpClass": {
+      "type": "string",
+      "enum": [
+        "MCP_TOOL",
+        "MCP_PROPOSAL_ONLY",
+        "TRUSTED_HUMAN_ONLY"
+      ]
+    },
+    "publicationState": {
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "CANDIDATE",
+        "RETIRED"
+      ]
+    },
+    "toolEligible": {
+      "type": "boolean"
+    },
+    "requiredAuthorizationCapability": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gatewayBindingRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "inputSchemaRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "outputSchemaRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actorTypes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "HUMAN_USER",
+          "AI_AGENT",
+          "MCP_SERVER",
+          "SERVICE_IDENTITY",
+          "EXTERNAL_SYSTEM"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "baseCostEnvelope": {
+      "type": "object",
+      "required": [
+        "hardMaxToolCalls",
+        "hardMaxGraphCalls",
+        "hardMaxDistinctObjects",
+        "hardMaxResultBytes",
+        "hardMaxElapsedMs"
+      ],
+      "properties": {
+        "hardMaxToolCalls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hardMaxGraphCalls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hardMaxDistinctObjects": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hardMaxResultBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hardMaxElapsedMs": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "conditionalOutcomeCost": {
+      "type": "object",
+      "required": [
+        "mismatchCalls",
+        "equivalentRetryCalls"
+      ],
+      "properties": {
+        "mismatchCalls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "equivalentRetryCalls": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "purpose": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "useWhen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "doNotUseWhen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "preferredAlternatives": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "operationalLimits": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "resultSemantics": {
+      "type": [
+        "object",
+        "string",
+        "null"
+      ]
+    },
+    "securityNotes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mcpClass": {
+            "const": "TRUSTED_HUMAN_ONLY"
+          }
+        },
+        "required": [
+          "mcpClass"
+        ]
+      },
+      "then": {
+        "properties": {
+          "toolEligible": {
+            "const": false
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "OUF MCP Server v1.1 §70",
+    "OUF MCP Server v1.1 §122.3"
+  ],
+  "x-ouf-scope-control": "Machine-readable contractization of MCP Server v1.1 only. No MCP Server behavior, protocol baseline, architecture, runtime component or THS boundary is changed.",
+  "x-ouf-invariants": [
+    "toolEligible=false prevents registration",
+    "tools/list visibility is not authorization",
+    "every tools/call is re-authorized server-side and by backend owner",
+    "gatewayBindingRef is logical/governed and never a physical host/baseUrl",
+    "TRUSTED_HUMAN_ONLY is toolEligible=false",
+    "Protected Human Operations are not represented by any mcpClass and must not appear in manifest"
+  ]
+}

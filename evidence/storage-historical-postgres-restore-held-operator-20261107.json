@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.storage-historical-postgres-restore-held-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_VPS_RESULT",
+  "decisionReference": "GIOVANNI-NONPROD-ISOLATED-POSTGRES-RESTORE-20261107-01",
+  "programCommit": "e91387a661f2eb68d7e09ec0820557fa25c26644",
+  "result": {
+    "schema": "ouf.storage-retained-postgres-restore.v1",
+    "status": "HELD",
+    "reason": "POSTGRES_ROW_READ_NOT_PROVEN",
+    "acceptanceCreditAdded": 0
+  },
+  "inferredFromPinnedControlFlow": {
+    "manifestBindingPassed": true,
+    "clusterExtracted": true,
+    "coldControlCheckPassed": true,
+    "catalogOpened": true,
+    "rowReadProven": false
+  },
+  "acceptanceCreditAdded": 0
+}

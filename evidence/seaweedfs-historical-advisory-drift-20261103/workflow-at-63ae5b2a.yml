@@ -1,0 +1,73 @@
+name: SeaweedFS accepted exact-binary applicability qualification
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/seaweedfs-accepted-applicability.yml'
+      - 'tools/storage_security/**'
+      - 'tests/test_storage_accepted_applicability.py'
+      - 'scripts/evaluate-seaweedfs-g1-accepted-applicability-20261102.py'
+      - 'evidence/seaweedfs-g1-applicability-owner-decision-20261102.json'
+      - 'evidence/seaweedfs-g1-advisory-GO-2026-5932-20261102.json'
+      - 'evidence/seaweedfs-g1-openvex-20261102.json'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Verify frozen original qualification bytes and all prior sources
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: python3 -I -B -S scripts/readback-storage-copy-evidence-20261102.py
+      - name: Authenticate original producer source ref and hosted runner again
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar -xzf gh297.tar.gz --strip-components=1 -C gh297
+          gh297/bin/gh attestation verify copy-readback/SHA256SUMS --repo GioNob/ouf-deploy --signer-workflow GioNob/ouf-deploy/.github/workflows/storage-copy-lab.yml --source-digest 99a6d0f00dd1fe490438cef95ce98ee98e7c3ae4 --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 --deny-self-hosted-runners --bundle copy-readback/provenance.json --format json > copy-readback/publisher-verification.json
+      - name: Fetch bounded current official advisory and evaluate exact accepted disposition
+        run: |
+          set -euo pipefail
+          mkdir g1-evidence
+          python3 -I -B -S - <<'PY'
+          import urllib.request
+          from pathlib import Path
+          with urllib.request.urlopen('https://vuln.go.dev/ID/GO-2026-5932.json', timeout=30) as r:
+              data = r.read(65537)
+          assert 0 < len(data) <= 65536, 'BOUNDED_OFFICIAL_ADVISORY_REQUIRED'
+          Path('g1-evidence/current-advisory.json').write_bytes(data)
+          PY
+          python3 -I -B -S tests/test_storage_accepted_applicability.py > g1-evidence/tests.txt 2>&1
+          python3 -I -B -S scripts/evaluate-seaweedfs-g1-accepted-applicability-20261102.py --current-advisory g1-evidence/current-advisory.json > g1-evidence/assessment.json
+      - name: Seal decision, VEX, source and raw evidence without altering original gate
+        run: |
+          python3 -I -B -S - <<'PY'
+          import hashlib, json, os, shutil
+          from pathlib import Path
+          out = Path('g1-evidence')
+          paths = ['tools/storage_security/accepted_applicability.py', 'tests/test_storage_accepted_applicability.py', 'scripts/evaluate-seaweedfs-g1-accepted-applicability-20261102.py', '.github/workflows/seaweedfs-accepted-applicability.yml', 'evidence/seaweedfs-g1-applicability-owner-decision-20261102.json', 'evidence/seaweedfs-g1-openvex-20261102.json', 'evidence/seaweedfs-g1-advisory-GO-2026-5932-20261102.json', 'evidence/seaweedfs-g1-applicability-review-proposal-20261102.json']
+          (out/'source-records.json').write_text(json.dumps({p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths}, indent=2)+'\n')
+          for p in paths[4:]:
+              shutil.copyfile(p, out/Path(p).name)
+          for name in ['candidate.json', 'compiled-packages.json', 'trivy-binary.json', 'byte-readback.json', 'publisher-verification.json', 'provenance.json', 'SHA256SUMS']:
+              shutil.copyfile(Path('copy-readback')/name, out/('original-'+name))
+          (out/'qualification.json').write_text(json.dumps({'schema':'ouf.accepted-applicability-qualification.v1','status':'PASS','producerSource':os.environ['GITHUB_SHA'],'runId':int(os.environ['GITHUB_RUN_ID']),'tests':9,'originalPublisherAuthenticated':True,'freshOfficialAdvisoryChecked':True,'oldSourceClosureUnchanged':28,'enclosedExecutablesExecuted':False,'runtimeAuthorityIssued':False,'targetOperations':0,'overallSwG1':'OPEN'},indent=2)+'\n')
+          (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n' for p in sorted(out.iterdir()) if p.is_file()))
+          PY
+      - name: Attest exact assessment evidence
+        id: attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with: {subject-path: g1-evidence/SHA256SUMS}
+      - run: cp "${{ steps.attestation.outputs.bundle-path }}" g1-evidence/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: seaweedfs-accepted-applicability-${{ github.run_id }}
+          path: g1-evidence/
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,28 @@
+{
+  "schema": "ouf.storage-cold-event-readback-local-qualification.v1",
+  "status": "PASS_SYNTHETIC_RETAINED_JOURNAL",
+  "testsPassed": 6,
+  "fixture": {
+    "hostContainers": 145,
+    "selectedRoles": 14,
+    "sharingContainers": 103,
+    "policyChanges": 35,
+    "stopSignals": 14,
+    "stoppedGroups": 5,
+    "originalDriverHold": "UNEXPECTED_CONTAINER_EVENT"
+  },
+  "checks": [
+    "All retained bytes and metadata frames unchanged",
+    "Exact 49 mutation intents/replies and 35 policy receipts bound",
+    "Health-command comparison never treated as authenticated event attribution",
+    "Private exec/configuration/container identities redacted",
+    "Nonempty stderr hashed and counted without body export",
+    "Tampered intent, missing reply and symlink rejected",
+    "Foreign and unknown events never accepted"
+  ],
+  "providerRequests": 0,
+  "targetOperations": 0,
+  "nativeStopOrBackupQualificationRepeated": false,
+  "targetUnexpectedEventIdentified": false,
+  "acceptanceCreditAdded": 0
+}

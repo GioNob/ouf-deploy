@@ -1,0 +1,59 @@
+{
+  "schema": "ouf.yaml-vendor-source-profile-code-proposal.v1",
+  "status": "CODE_PREPARED_FULL_VENDOR_QUALIFICATION_OPEN",
+  "generationIntended": 33,
+  "baseGeneration": 32,
+  "baseSourceGitTree": "d58d388bd4b791ffbc41814cc670af44af20f47c",
+  "baseBinarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+  "tests": {
+    "materializer": 8,
+    "profileAndOriginsFinal": 32,
+    "additionalCliRoundtripAndRawOutputReject": 1,
+    "totalUniqueTestMethods": 41,
+    "originCliOverwriteRejections": 2,
+    "originalBinary32ModulesVerified": 215
+  },
+  "scope": {
+    "fullVendorProduced": false,
+    "generation33BinaryProduced": false,
+    "generation31Or32Mutated": false,
+    "moduleCacheMutated": false,
+    "rawScannerOrSpdxRewritten": false,
+    "githubWrites": 0,
+    "targetOperations": 0,
+    "runtimeAuthorityIssued": false,
+    "releaseAdmitted": false,
+    "allDependenciesMaintained": false
+  },
+  "downstreamMaintenance": {
+    "status": "OPEN",
+    "technicalOwner": null
+  },
+  "root32LockHashes": {
+    "go.mod": "eb6b1c7d7871c857fae8da9e9cb6f282c2812bb988a29b76a6fbab5b9441bdc8",
+    "go.sum": "5bf04778982209263172e76833a9800eb7b2470d8613b4ad50934570544297a4"
+  },
+  "materializerSha256": "a8f919469002c42995aa94d96d3adeb28f93b6e9fe3df3c3d366c55077b9e4d2",
+  "patchSha256": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef",
+  "originalModuleInputInventorySha256": "2232c3be82d7175d1c80ee5d7ea0ab1f782f33cb49169cdb766c7bfc7f0ddb05",
+  "limitations": [
+    "Original-input inventory is for actual binary32, not a nonexistent vendor binary33. Regenerate/rebind it to the actual vendor binary.",
+    "Contract source-profile tests use explicit synthetic generation/binary/scanner records. They do not qualify release identity or real publisher execution.",
+    "Full vendor and candidate33 build deferred for disk margin; selected cached module trees total 1.68 GB, free space observed 2.14 GB.",
+    "Existing qualifier h1 assumptions require a separately reviewed vendor-aware engine; canonical raw scanner/SPDX artifacts remain immutable.",
+    "No downstream maintainer assignment or automatic maintenance/admission inference."
+  ],
+  "evidence": {
+    "materializer-tests.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "materializer-tests.stderr": "5a2d588b235b0f37e8451ddc5cc1c372007929e7294d89b6dd0ccd9a4922c816",
+    "profile-origins-final.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "profile-origins-final.stderr": "92c03af86045dd3abb10ad3e3539dcc2ac642ed3a2741edd18886bf75c714c5e",
+    "cli-final.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cli-final.stderr": "6a61db54f21f88286ae1b6f78691ddf19794c7c470a48773276ef5775c3212c5",
+    "base32-original-module-origins-cli.json": "2232c3be82d7175d1c80ee5d7ea0ab1f782f33cb49169cdb766c7bfc7f0ddb05",
+    "base32-origin-collection.stdout": "dbbc72cb22b6692cfbf7cfe2082f7b64ad1779e63fa96503dbd94d69d3ab1734",
+    "base32-origin-collection.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "origin-cli-rejections.json": "bafdeaa61e6b903f333522a4d4560c7f6e46ef14a0f985cca91df2b637a2c833",
+    "disk-budget.json": "154813e21a02c8d88d7e5e5aba7017cf9c4cd6e4c59a2e1cc7b130a82fe4f2ea"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "ouf.pet-baseline-cloud-integrity.v1",
+  "archiveSha256": "e63df67e8817eec38a9d4b3eb736b020f693b932f3360dc02f4555330f2201ce",
+  "checksumCount": 323,
+  "checksumsPassed": true,
+  "manifestStatus": "CURRENT_NORMATIVE_BASELINE",
+  "normativePrecedence": [
+    "Cross-Module Alignment Matrix v1.7 governs cross-module consistency and later supersessions.",
+    "L1 PETs govern implementation requirements for their modules.",
+    "Terminology/Supersession Notice v1.1 remains applicable unless superseded by Matrix v1.7 or a later PET revision.",
+    "Blueprint v0.3 remains applicable for unchanged system integration requirements; later Matrix/PET revisions prevail on conflict."
+  ],
+  "normativeDocuments": {
+    "L0": [
+      {
+        "path": "docs/l0/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.docx",
+        "version": "1.7",
+        "status": "CURRENT",
+        "supersedes": "OUF_Cross_Module_Alignment_Matrix_v1_5_MCP_Go_Aligned.docx",
+        "role": "cross-module normative alignment authority"
+      },
+      {
+        "path": "docs/l0/OUF_Normative_Terminology_Supersession_Notice_v1_1.docx",
+        "version": "1.1",
+        "status": "CURRENT_UNCHANGED",
+        "role": "normative terminology/supersession notice"
+      },
+      {
+        "path": "docs/l0/OUF_System_Integration_Development_Blueprint_v0_3.docx",
+        "version": "0.3",
+        "status": "CURRENT_UNCHANGED",
+        "role": "system integration/development blueprint; read with Matrix v1.7 for later supersessions"
+      }
+    ],
+    "L1": [
+      {
+        "path": "docs/l1/OUF_MCP_Server_v1_4_Go_Channel_Neutral_Operational_Awareness.docx",
+        "version": "1.4",
+        "status": "CURRENT",
+        "supersedes": "OUF_MCP_Server_v1_2_Go_Implementation_Baseline.docx"
+      },
+      {
+        "path": "docs/l1/OUF_PET_Authorization_Access_Control_v1_5_Operational_Awareness.docx",
+        "version": "1.5",
+        "status": "CURRENT",
+        "supersedes": "OUF_PET_Authorization_Access_Control_v1_4_Development_Ready.docx"
+      },
+      {
+        "path": "docs/l1/OUF_PET_Data_Lake_UDP_Urban_Object_Registry_v1_3_Development_Ready.docx",
+        "version": "1.3",
+        "status": "CURRENT_UNCHANGED"
+      },
+      {
+        "path": "docs/l1/OUF_PET_EF_Ingestion_Runtime_v1_3_Operational_Awareness.docx",
+        "version": "1.3",
+        "status": "CURRENT",
+        "supersedes": "OUF_PET_EF_Ingestion_Runtime_v1_2(2).docx"
+      },
+      {
+        "path": "docs/l1/OUF_PET_Semantic_Model_Registry_v1_3_Development_Ready.docx",
+        "version": "1.3",
+        "status": "CURRENT_UNCHANGED"
+      },
+      {
+        "path": "docs/l1/OUF_PET_Source_Onboarding_Configuration_THS_v1_6_Operational_Awareness.docx",
+        "version": "1.6",
+        "status": "CURRENT",
+        "supersedes": "OUF_PET_Source_Onboarding_Configuration_THS_v1_5_Development_Ready.docx"
+      },
+      {
+        "path": "docs/l1/OUF_PET_Urban_API_Gateway_v1_5_Channel_Neutral_Operational_Awareness.docx",
+        "version": "1.5",
+        "status": "CURRENT",
+        "supersedes": "OUF_PET_Urban_API_Gateway_v1_3_Development_Ready.docx"
+      }
+    ]
+  },
+  "fullPlatformAcceptanceProven": false
+}

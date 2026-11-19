@@ -1,0 +1,29 @@
+{
+  "acceptanceTestsPassed": 0,
+  "activeStorageBackend": "MinIO",
+  "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+  "candidateVersion": "4.52",
+  "coldProofTransferredToGeneration29": false,
+  "gatesPassed": 0,
+  "generation29ImageQualification": "HOSTED_IMAGE_PASS_COHORT_AND_RUNTIME_PENDING",
+  "generation29ImageReceiptSha256": "9b6ff3d19e18d9c20d1577c32744a3a4e4b2ae0a66a5d0940ca713f9a17057c8",
+  "historicalColdRecovery15": "HOSTED_PASS_MIME_FAIL_NOT_ACCEPTANCE",
+  "hostedSourceClosureRunCount": 6,
+  "knownCompatibilityDefects": [
+    "CONTENT_TYPE_MISMATCH"
+  ],
+  "optionalModuleGraphEradicationClaimed": false,
+  "progressPercent": 38.04347826086957,
+  "qualifiedImagePatchCount": 15,
+  "realObjectsCopied": 0,
+  "releaseAdmitted": false,
+  "remainingRepositoryDirectSdkV1Importers": 0,
+  "repositoryPatchCount": 28,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.storage-plan-current-verification.v1",
+  "sourceClosureReceiptSha256": "79ecb185c8ec15baca290808b6921f3ebdf9dd8a5e344f3a53f01900ba041adc",
+  "standardProfileClosure": "HOSTED_PASS",
+  "standardProfileReceiptSha256": "26315a1dca4b24f0d73423de35e88cbba6283dc2e24ab906378b82cc8b5db9cb",
+  "status": "PASS_NOT_ADMITTED",
+  "targetOperations": 0
+}

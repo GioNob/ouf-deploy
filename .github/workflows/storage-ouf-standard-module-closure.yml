@@ -1,0 +1,190 @@
+name: Storage OUF standard module closure
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-ouf-standard-module-closure.yml
+      - patches/seaweedfs/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-ouf-standard-module-closure-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify-standard-profile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CGO_ENABLED: "0"
+      GOTOOLCHAIN: local
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          path: seaweedfs
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Apply the exact 28 patches for the OUF standard profile
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          mkdir -p "$RUNNER_TEMP/storage-ouf-standard-evidence"
+          for patch in \
+            ../patches/seaweedfs/4.52-listing-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-sqs-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-kms-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3sink-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3backend-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-go-network-security-fixes.patch \
+            ../patches/seaweedfs/4.52-basic-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-sse-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-normal-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-iam-module-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-ouf-standard-optional-closure.patch
+          do
+            sha256sum "$patch" >> "$RUNNER_TEMP/storage-ouf-standard-evidence/patches-sha256.txt"
+            git apply --check "$patch"
+            git apply "$patch"
+          done
+          git diff --check
+          test "$(wc -l < "$RUNNER_TEMP/storage-ouf-standard-evidence/patches-sha256.txt")" -eq 28
+          printf '%s\n' 984eac6a790be89e2a11de175a7413e1e3e32dd3 > "$RUNNER_TEMP/storage-ouf-standard-evidence/upstream-source-sha.txt"
+          git diff --stat > "$RUNNER_TEMP/storage-ouf-standard-evidence/patch-stat.txt"
+
+      - name: Prove the root module closure and tidy fixed point
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-ouf-standard-evidence"
+          go mod tidy -diff > "$evidence/tidy.diff" 2> "$evidence/tidy.stderr"
+          test ! -s "$evidence/tidy.diff"
+          go mod graph > "$evidence/root-module-graph.txt"
+          go list -m all > "$evidence/root-modules.txt"
+          if grep -E '(^| )github.com/(aws/aws-sdk-go|aws/aws-sdk-go-v2/feature/s3/manager|olivere/elastic/v7|rclone/rclone)(@| |$)' "$evidence/root-module-graph.txt" "$evidence/root-modules.txt"; then
+            exit 1
+          fi
+          (grep -RIl --include='*.go' -F '"github.com/aws/aws-sdk-go/' . || test "$?" -eq 1) |
+            LC_ALL=C sort > "$evidence/remaining-direct-sdk-v1-importers.txt"
+          test ! -s "$evidence/remaining-direct-sdk-v1-importers.txt"
+          sha256sum go.mod go.sum > "$evidence/root-lockfiles-sha256.txt"
+
+      - name: Run the qualified 20-package standard regression
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          go test -mod=readonly -count=1 -timeout=3m -json \
+            ./weed/command ./weed/iam/... ./weed/iamapi ./weed/s3api \
+            ./weed/s3api/s3_constants ./weed/s3api/wire ./weed/s3api/s3err \
+            ./weed/notification/aws_sqs ./weed/replication/sub ./weed/kms/... \
+            ./weed/replication/sink/s3sink ./weed/storage/backend/s3_backend \
+            ./weed/remote_storage/s3 > "$RUNNER_TEMP/storage-ouf-standard-evidence/regressions.jsonl" 2> "$RUNNER_TEMP/storage-ouf-standard-evidence/regressions.stderr"
+          python3 - <<'PYCODE'
+          import collections, json, os, pathlib
+          evidence = pathlib.Path(os.environ["RUNNER_TEMP"]) / "storage-ouf-standard-evidence"
+          counts = collections.Counter()
+          for line in (evidence / "regressions.jsonl").open():
+              row = json.loads(line)
+              if row.get("Action") in ("pass", "skip", "fail"):
+                  counts[row["Action"] + ("_tests" if "Test" in row else "_packages")] += 1
+          (evidence / "regression-counts.json").write_text(json.dumps(dict(counts), indent=2) + "\n")
+          assert counts["fail_tests"] == counts["fail_packages"] == 0, counts
+          assert counts["pass_packages"] == 20, counts
+          assert counts["pass_tests"] == 5591 and counts["skip_tests"] == 5, counts
+          PYCODE
+
+      - name: Recheck root IAM fixtures and independently qualified nested modules
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-ouf-standard-evidence"
+          go test -mod=readonly -run '^(TestBucketPolicySDKV2|TestNormalSDKV2|TestPolicyIAMSDKV2|TestNormalIAMSDKV2)' -count=1 -timeout=60s -json ./test/s3/policy ./test/s3/normal > "$evidence/root-iam-regressions.jsonl" 2> "$evidence/root-iam-regressions.stderr"
+          sha256sum test/s3/iam/go.mod test/s3/iam/go.sum test/kafka/go.mod test/kafka/go.sum > "$evidence/nested-lockfiles-before.sha256"
+          (
+            cd test/s3/iam
+            go test -mod=readonly -run '^Test(IAMFrameworkV2|IAMFixtureS3V2|IAMFixtureRawQueryV2|SignSigV4Request)' -count=1 -timeout=60s -json ./... > "$evidence/nested-iam-regressions.jsonl" 2> "$evidence/nested-iam-regressions.stderr"
+          )
+          (
+            cd test/kafka
+            go mod tidy -diff > "$evidence/kafka-tidy.diff" 2> "$evidence/kafka-tidy.stderr"
+            test ! -s "$evidence/kafka-tidy.diff"
+            go test -mod=readonly -run '^$' -json ./... > "$evidence/kafka-compile.jsonl" 2> "$evidence/kafka-compile.stderr"
+          )
+          sha256sum --strict --check "$evidence/nested-lockfiles-before.sha256"
+
+      - name: Prove unchanged standard graph and exact qualified binary
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-ouf-standard-evidence"
+          go list -mod=readonly -deps ./weed | LC_ALL=C sort -u > "$evidence/production-deps.txt"
+          echo "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a  $evidence/production-deps.txt" | sha256sum -c -
+          test "$(wc -l < "$evidence/production-deps.txt")" -eq 1811
+          go build -mod=readonly -trimpath -o "$RUNNER_TEMP/ouf-standard-weed" ./weed
+          echo "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033  $RUNNER_TEMP/ouf-standard-weed" | sha256sum -c -
+          go version -m "$RUNNER_TEMP/ouf-standard-weed" > "$evidence/build-info.txt"
+          sha256sum "$RUNNER_TEMP/ouf-standard-weed" > "$evidence/binary-sha256.txt"
+
+      - name: Deny excluded optional tag profiles explicitly
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-ouf-standard-evidence"
+          for tags in elastic rclone elastic,rclone; do
+            logfile="$evidence/denied-${tags//,/-}.log"
+            if go build -mod=readonly -trimpath -tags="$tags" -o "$RUNNER_TEMP/denied-optional-weed" ./weed > "$logfile" 2>&1; then
+              echo "Excluded optional tags unexpectedly built: $tags" >&2
+              exit 1
+            fi
+            grep -F 'OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE' "$logfile"
+          done
+          cd "$evidence"
+          sha256sum ./* | LC_ALL=C sort > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest the bounded standard profile evidence
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-ouf-standard-evidence/SHA256SUMS
+      - name: Retain the bounded evidence, including failed qualifications
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-ouf-standard-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-ouf-standard-evidence/
+          if-no-files-found: error
+          retention-days: 90

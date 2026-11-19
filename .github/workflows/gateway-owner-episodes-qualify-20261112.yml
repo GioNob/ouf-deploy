@@ -1,0 +1,79 @@
+name: Qualify Gateway collector and owner episodes 20261112
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/gateway-owner-episodes-qualify-20261112.yml
+      - .github/workflows/gateway-owner-episodes-archive-20261112.yml
+      - scripts/*gateway*episodes*20261112*
+      - tests/*gateway_episodes*20261112.py
+      - docs/OUF_GATEWAY_INCIDENT_EPISODES_DEPLOY_20261112.md
+permissions: {contents: read}
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        store: [classic, containerd]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: d69009831eced471a667f353192c8f23370cd5c0
+          path: gateway-source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Unit HELD guards and real old-to-new SQLite WAL migration
+        env: {OUF_GATEWAY_TEST_SOURCE: '${{ github.workspace }}/gateway-source'}
+        run: |
+          set -euo pipefail
+          test "$(git -C gateway-source rev-parse HEAD)" = d69009831eced471a667f353192c8f23370cd5c0
+          python3 -B -m unittest discover -s tests -p test_gateway_episodes_deploy_20261112.py -v
+          bash -n scripts/launch-gateway-collector-episodes-20261112.sh
+          bash -n scripts/launch-gateway-owner-episodes-20261112.sh
+          bash -n scripts/install-gateway-owner-episodes-public-archive-20261112.sh
+      # Copied from ingestion-wide-resume.yml: same pinned Engine and isolated
+      # hosted data root, necessary for the required actual legacy MAC lifecycle.
+      - name: Select qualified Engine29.8.1 store in isolated hosted data root
+        env: {SELECTED_STORE: '${{ matrix.store }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check -
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          Path('/tmp/ouf-docker-29.json').write_text(json.dumps({'features':{'containerd-snapshotter':os.environ['SELECTED_STORE']=='containerd'},'exec-opts':['native.cgroupdriver=systemd']}))
+          PY
+          sudo systemd-run --unit=ouf-docker-gateway-episodes-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
+          for ouf_poll in $(seq 1 60); do
+            if sudo docker info >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+      - name: Native atomic A and CLI Docker B lifecycles, no skips
+        run: |
+          set -o pipefail
+          sudo env OUF_GATEWAY_TEST_SOURCE="$GITHUB_WORKSPACE/gateway-source" python3 -I -B tests/qualify_gateway_episodes_native_20261112.py 2>&1 | tee gateway-episodes-native.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gateway-episodes-qualification-${{ matrix.store }}-${{ github.run_id }}
+          path: gateway-episodes-native.log
+          retention-days: 30

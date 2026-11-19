@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.storage-historical-minio-restore-held-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_VPS_RESULT",
+  "programCommit": "f3f22efb066cd814251ebb0f161d434727ce8083",
+  "decisionReference": "GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01",
+  "result": {
+    "schema": "ouf.storage-retained-minio-restore.v1",
+    "status": "HELD",
+    "reason": "MINIO_ISOLATED_READY_TIMEOUT",
+    "acceptanceCreditAdded": 0
+  },
+  "inferredFromPinnedControlFlow": {
+    "manifestBindingPassed": true,
+    "sourceExtracted": true,
+    "containerPidObserved": true,
+    "networkNamespacePinned": true,
+    "signedBucketGetSucceeded": false,
+    "s3InventoryStarted": false,
+    "isolatedCleanupReturnedWithoutHold": true
+  },
+  "readinessFailureCauseProven": false,
+  "acceptanceCreditAdded": 0
+}

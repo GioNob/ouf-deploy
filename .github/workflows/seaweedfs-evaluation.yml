@@ -1,0 +1,109 @@
+name: SeaweedFS isolated evaluation
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/seaweedfs-evaluation.yml'
+      - 'scripts/qualify-seaweedfs-20261102.py'
+      - 'scripts/run-seaweedfs-contract-20261102.py'
+      - 'tests/test_seaweedfs_evaluation.py'
+      - 'tools/storage_migration/**'
+      - 'tools/storage_inventory/**'
+      - 'tests/test_storage_migration_inventory.py'
+      - 'tests/test_storage_target_inventory.py'
+      - 'scripts/test-storage-target-native-20261102.py'
+      - 'scripts/package-storage-inventory-delivery-20261102.py'
+      - 'tests/fixtures/seaweedfs-contract/**'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Test scanner fail-closed rules
+        run: |
+          python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_evaluation.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_migration_inventory.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_target_inventory.py -v
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 153ab668c99731a6d29492bf6c61d0b4fa701101
+          path: sw-source
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: true
+          cache-dependency-path: sw-source/go.sum
+      - name: Acquire immutable release bytes and record source separately
+        run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py stage sw-evaluation --source sw-source
+      - name: Build distinct candidate with corrected JOSE and network dependencies
+        run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py rebuild sw-evaluation --source sw-source
+      - name: Build and test read-only inventory component with pinned AWS SDK
+        env: {GOTOOLCHAIN: go1.27.3, CGO_ENABLED: '0'}
+        run: |
+          set -euo pipefail
+          cd tools/storage_inventory
+          go mod tidy
+          go mod verify
+          go test -v ./... | tee ../../sw-evaluation/inventory-unit-tests.txt
+          go build -trimpath -ldflags="-s -w" -o ../../sw-evaluation/bin/storage-inventory .
+          cp go.mod ../../sw-evaluation/inventory.go.mod
+          cp go.sum ../../sw-evaluation/inventory.go.sum
+          go version -m ../../sw-evaluation/bin/storage-inventory > ../../sw-evaluation/inventory-build-info.txt
+      - run: ': > empty.trivyignore'
+      - name: Scan exact patched Go executable including unfixed vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: rootfs
+          scan-ref: sw-evaluation/bin
+          format: json
+          output: sw-evaluation/trivy-binary.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - name: Preserve raw gate and evaluate narrowly scoped isolated diagnostic eligibility
+        run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py gate sw-evaluation
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 73498c17596ae155a3ed9ab36acfd6bb69da9846
+          path: onboarding-source
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: 0d40da05408a14db31d4d41af2372d6a71480291
+          path: udp-source
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Execute original OUF adapters against isolated real SeaweedFS
+        run: python3 -I -B -S scripts/run-seaweedfs-contract-20261102.py
+      - name: Prepare closed monouse inventory delivery after native diagnostics pass
+        run: python3 -I -B -S scripts/package-storage-inventory-delivery-20261102.py sw-evaluation/bin/storage-inventory sw-evaluation/inventory-delivery
+      - name: Preserve exact evaluated bytes and result even on denial
+        if: always()
+        run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py seal sw-evaluation
+      - name: Attest evaluation checksum subject
+        id: attestation
+        if: always()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with: {subject-path: sw-evaluation/SHA256SUMS}
+      - name: Retain attestation bundle
+        if: always() && steps.attestation.outcome == 'success'
+        run: cp "${{ steps.attestation.outputs.bundle-path }}" sw-evaluation/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: seaweedfs-evaluation-${{ github.run_id }}
+          path: sw-evaluation/
+          if-no-files-found: error
+          retention-days: 90

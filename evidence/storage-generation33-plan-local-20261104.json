@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.generation33-plan-delivery.v1",
+  "baseCommit": "7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791",
+  "generation33And32TestsPassed": 11,
+  "fullHistorical71TestSuite": "PENDING_HOSTED",
+  "generation32CanonicalSha256": "228760f4c060831aada7b3bcb200a01e9c3681fbdced59ca9ca1ea9c53021326",
+  "progress": "18.3/46 = 39.7826%, 40\u00b110, engineering only",
+  "progressReceipts": [
+    "coordinated32 hosted41782068196",
+    "publication fixture fence hosted41794344238"
+  ],
+  "releaseAdmitted": false,
+  "targetOperations": 0,
+  "runtimeAuthorityIssued": false,
+  "testsLogSha256": "341e3355d3ceceda909b2d79c4a57e377bb805d060193c5c1bed701409b9db1c",
+  "wholeHistoricalGeneration32ViewRestoresExactly": true,
+  "priorProgressPreservedInHistoricalView": true
+}

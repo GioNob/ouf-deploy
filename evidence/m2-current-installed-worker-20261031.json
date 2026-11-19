@@ -1,0 +1,94 @@
+{
+  "schema": "ouf.discovery-current-installed-worker-source-evidence.v1",
+  "date": "2026-10-31",
+  "sourceCommit": "1cf569c50e05aced3e9963ee81d28c99d833c92f",
+  "sourceTree": "1fcf4a891b4b7415972ccfc631d8700fc1fe592b",
+  "qualification": {
+    "runId": 41217385264,
+    "jobId": 124584664498,
+    "finalLogRead": true,
+    "conclusion": "success",
+    "suites": [
+      {
+        "name": "runningRegistry",
+        "tests": 12,
+        "seconds": 1.572
+      },
+      {
+        "name": "currentCohort",
+        "tests": 7,
+        "seconds": 0.383
+      },
+      {
+        "name": "currentInstalledWorker",
+        "tests": 7,
+        "seconds": 95.802
+      },
+      {
+        "name": "pausedFrame",
+        "tests": 8,
+        "seconds": 0.18
+      },
+      {
+        "name": "pausedNode",
+        "tests": 6,
+        "seconds": 0.203
+      }
+    ],
+    "failures": 0,
+    "skipped": 0,
+    "actual": [
+      "root-private original worker material and immutable clocks",
+      "Ed25519/HUMAN fixture and signed provider protocol",
+      "durable materialization/start/sequence/native-evidence journals",
+      "exclusive worker lifetime flock held during a successful read",
+      "Unix Engine peer credential and GET allowlist fixture"
+    ],
+    "modeled": [
+      "native Docker/process/mount/HTTP/SQL leaves",
+      "actual systemd manager and positive kernel leases",
+      "current selected native owner lineage",
+      "current provider native generation"
+    ],
+    "workerCases": [
+      "current read without paused reentry/signing/manager dispatch",
+      "held lifetime flock does not block read",
+      "QUIESCED/nonpositive/stale generation/counter regression denies",
+      "native failure has one read and no repair/retry",
+      "original clock drift denies without rearm",
+      "installed configuration drift is preserved and denied",
+      "completed sequence must equal phase evidence"
+    ]
+  },
+  "local": {
+    "initialSixTestsSeconds": 91.456,
+    "newCompletedSequenceCaseAndUpdatedSuccessSeconds": 34.785,
+    "distinctWorkerCases": 7
+  },
+  "semantics": {
+    "newModule": "tools/m2_discovery_installation_profile/current_worker.py",
+    "originalInstallationOwnersUntouched": true,
+    "original37_108_128_136ClosuresUntouched": true,
+    "workerRecoveryOrKernelLockAcquired": false,
+    "retainedMaterialRecompiledWithOriginalClocks": true,
+    "currentReadOnlyInstalledObserverReused": true,
+    "initialProviderWindowExtended": false,
+    "newRuntimePackageProduced": false,
+    "fullNativeCheckpointIntegrated": false
+  },
+  "openWork": [
+    "current native DB/TLS/IAM/backup/fencing/custody/supply-chain composition",
+    "concrete sealed full native checkpoints and coordinated installation controller",
+    "finite provider window versus HUMAN authorization preparation ordering",
+    "new sealed source package and exact private review",
+    "target admission and M2 acceptance"
+  ],
+  "currentVpsQuiescedIncidentDemonstrated": false,
+  "currentTargetAdmissionProven": false,
+  "fullCohortProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "producerReleaseDispatched": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

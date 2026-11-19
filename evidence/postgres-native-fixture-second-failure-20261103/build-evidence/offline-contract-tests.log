@@ -1,0 +1,14 @@
+test_child_environment_does_not_inherit_pg_credentials_or_connection (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_child_environment_does_not_inherit_pg_credentials_or_connection) ... ok
+test_command_timeout_is_finite (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_command_timeout_is_finite) ... ok
+test_exit_status_and_diagnostics_preserved (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_exit_status_and_diagnostics_preserved) ... ok
+test_failed_forced_cleanup_does_not_claim_server_stopped (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_failed_forced_cleanup_does_not_claim_server_stopped) ... ok
+test_fast_stop_timeout_attempts_forced_cleanup_and_remains_failure (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_fast_stop_timeout_attempts_forced_cleanup_and_remains_failure) ... ok
+test_harness_rejects_root_without_creating_database_or_output (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_harness_rejects_root_without_creating_database_or_output) ... ok
+test_local_fixed_database_argv_and_claim_boundaries (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_local_fixed_database_argv_and_claim_boundaries) ... ok
+test_overbudget_output_is_rejected (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_overbudget_output_is_rejected) ... ok
+test_success_requires_all_seven_native_cases_and_no_skips (test_storage_recovery_native_lab_contract.NativeLabContractTests.test_success_requires_all_seven_native_cases_and_no_skips) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.178s
+
+OK

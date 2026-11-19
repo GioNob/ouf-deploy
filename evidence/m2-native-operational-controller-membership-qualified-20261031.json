@@ -1,0 +1,212 @@
+{
+  "schema": "ouf.m2-native-operational-controller-membership-qualification.v1",
+  "date": "2026-10-31",
+  "timezone": "Europe/Rome",
+  "status": "SOURCE_NATIVE_CHECKPOINTS_AND_SELECTED_ARTIFACT_MEMBERSHIP_QUALIFIED",
+  "latestSourceCommit": "ed908d3f89b455ceb765660e49b23551ed88e140",
+  "sourceChanges": [
+    {
+      "commit": "e1a0898ffd316ca257b1d9de36da31f417e53055",
+      "change": "Concrete phase9-11 operational witnesses and one-fence READY12 composition; correct the circular in-flight verification precondition."
+    },
+    {
+      "commit": "3ab5efaf34f897e5cb95751474a7f1909f191705",
+      "change": "Join publisher checksum subject, source lock, two original/derived image archives and four migration sources; require typed membership in the held controller."
+    },
+    {
+      "commit": "ed908d3f89b455ceb765660e49b23551ed88e140",
+      "change": "Qualify actual offline publisher/parent cryptography together with named artifact membership."
+    }
+  ],
+  "causalDefect": {
+    "priorReader": "RunningWorkloadBinding",
+    "priorReaderRequires": "APPLIED VERIFY_APPLICATION",
+    "callSiteWas": "IN_FLIGHT VERIFY_APPLICATION",
+    "negativeControl": "Actual completed-only reader raises StopIteration on the in-flight fixture before any native process observation.",
+    "correction": "Separate VerifyingRegistryBinding authenticates the completed START_REPLACEMENT receipt and current non-root process/configuration while requiring exact IN_FLIGHT11. It never reads or creates a premature VERIFY_APPLICATION receipt.",
+    "legacyCompletedReaderChanged": false
+  },
+  "qualifications": [
+    {
+      "sourceCommit": "e1a0898ffd316ca257b1d9de36da31f417e53055",
+      "runId": 41241146386,
+      "tests": 157,
+      "suites": 24,
+      "allFinalLogsRead": true
+    },
+    {
+      "sourceCommit": "3ab5efaf34f897e5cb95751474a7f1909f191705",
+      "runId": 41242174196,
+      "tests": 169,
+      "suites": 25,
+      "allFinalLogsRead": true,
+      "jobs": [
+        {
+          "id": 124658139240,
+          "kind": "protocol",
+          "tests": 152,
+          "suites": 20
+        },
+        {
+          "id": 124658139015,
+          "kind": "native PostgreSQL and Docker producer fence",
+          "tests": 4,
+          "suites": 2
+        },
+        {
+          "id": 124658139196,
+          "kind": "native Keycloak26.7.4 no-refresh IAM",
+          "tests": 4,
+          "suites": 1
+        },
+        {
+          "id": 124658139225,
+          "kind": "actual non-root process before verification completion; modeled Engine",
+          "tests": 2,
+          "suites": 1
+        },
+        {
+          "id": 124658139286,
+          "kind": "native TLS",
+          "tests": 7,
+          "suites": 1
+        }
+      ]
+    },
+    {
+      "sourceCommit": "ed908d3f89b455ceb765660e49b23551ed88e140",
+      "runId": 41242593604,
+      "jobId": 124659373661,
+      "tests": 6,
+      "suites": 2,
+      "allFinalLogsRead": true,
+      "scope": "Original publisher crypto3 plus actual parent/subject/membership join3 in an empty network namespace without GitHub credentials.",
+      "limits": "Disposable CI package only. Engine and remaining cohort admission guards modeled. No target package/admission or complete runtime membership."
+    },
+    {
+      "sourceCommit": "ed908d3f89b455ceb765660e49b23551ed88e140",
+      "runId": 41242593716,
+      "jobId": 124659373932,
+      "tests": 39,
+      "suites": 4,
+      "allFinalLogsRead": true,
+      "scope": "Publication8, frozen parent12, current review16 and exported compiler cryptography3."
+    }
+  ],
+  "verificationOutcome": {
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "resourceWarnings": 0
+  },
+  "scope": {
+    "operationalPhases": [
+      "ADMIT_MIGRATION",
+      "START_REPLACEMENT",
+      "VERIFY_APPLICATION"
+    ],
+    "readOnlyReconciliationSupported": true,
+    "initialProviderMandateReentered": false,
+    "heldControllerNamedObservations": 18,
+    "sameTransitionInvocationFenceRequired": true,
+    "observationIntervalIsAtomicSnapshot": false,
+    "selectedImages": [
+      "semantic",
+      "mcp"
+    ],
+    "migrationModules": [
+      "onboarding",
+      "ingestion",
+      "udp",
+      "mcp"
+    ],
+    "publisherSubjectRoleRequired": "cohortChecksums",
+    "publisherSubjectBasenameRequired": "COHORT_SHA256SUMS",
+    "archiveExtractionPerformed": false,
+    "archiveExecutionPerformed": false,
+    "current235SourceCompilerHashesMatch": true,
+    "frozenSourceMapsUnchanged": [
+      108,
+      128,
+      136,
+      235
+    ],
+    "newNativeControllersIncludedInCurrent235SourceCompiler": false,
+    "originalRegistryChildBytesRewritten": false
+  },
+  "normativeSources": {
+    "Matrix1.7": {
+      "originalDocxPath": "docs/baseline/v1.7/package/docs/l0/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.docx",
+      "sha256": "d48a3b36ea3dd23622da380ec498f753fcd37f49f534735fe7ef904def387b1b",
+      "sectionsConsulted": [
+        "7",
+        "7.1",
+        "7.2"
+      ],
+      "matchesPublicationManifest": true
+    },
+    "Blueprint0.3": {
+      "originalDocxPath": "docs/baseline/v1.7/package/docs/l0/OUF_System_Integration_Development_Blueprint_v0_3.docx",
+      "sha256": "732dbff800d5ea5b971125817dc383eab5d760a92d5c9749fc75825e956122fd",
+      "sectionsConsulted": [
+        "9",
+        "10"
+      ],
+      "matchesPublicationManifest": true
+    },
+    "Gateway1.5": {
+      "originalDocxPath": "docs/baseline/v1.7/package/docs/l1/OUF_PET_Urban_API_Gateway_v1_5_Channel_Neutral_Operational_Awareness.docx",
+      "sha256": "d5ac46d60f5d34819cc28c87a8bb81b84aa232ece9925d81c369ddbcb301db72",
+      "sectionsConsulted": [
+        "T33.5",
+        "T33.13"
+      ],
+      "matchesPublicationManifest": true
+    },
+    "Semantic1.3": {
+      "originalDocxPath": "docs/baseline/v1.7/package/docs/l1/OUF_PET_Semantic_Model_Registry_v1_3_Development_Ready.docx",
+      "sha256": "c28c4dbb1ca04d877890c00e3cfe5a52725d3aa2a51f7afec9177cae11514175",
+      "sectionsConsulted": [
+        "20",
+        "20.1"
+      ],
+      "matchesPublicationManifest": true
+    }
+  },
+  "otherRulesConsulted": [
+    "docs/OUF_M2_MINIPET_v1_0_20261026.md (current v1.3)",
+    "docs/OUF_M2_DISCOVERY_STABLE_OPERATION_20261029.md",
+    "docs/OUF_RESILIENCE_POLICY.md (v3)"
+  ],
+  "preserved": {
+    "M1": "Teatri technical8/8 and functional6/6 acquired",
+    "Farmacie": "Same SUCCEEDED profile,61rows/10columns/10OPEN; ministerial code STRING",
+    "uploadProfileAcquisitionReplay": false
+  },
+  "remaining": [
+    "Complete artifact membership and private custody for the reviewed full cohort",
+    "Actual workload bearer admission",
+    "Complete sealed early/late phase checkpoint and execution controller",
+    "Complete execution package and exact current private target review/authority",
+    "Real Farmacie-to-UDP every-row outcomes and governed semantic discovery/adoption",
+    "G5-G7,24AT,8UX,8stability,boot/rotation and two independent clients"
+  ],
+  "targetEffects": {
+    "applicationLifecycleOperations": 0,
+    "acquisitions": 0,
+    "profilingJobs": 0,
+    "sourceActivations": 0,
+    "iamMutations": 0,
+    "runtimeAuthorityIssued": false,
+    "budgetReset": false,
+    "automaticReplayAllowed": false
+  },
+  "M2Complete": false,
+  "fullCohortProven": false,
+  "completePrivateCustodyProven": false,
+  "actualWorkloadBearerAdmissionProven": false,
+  "completeExecutionPackageReady": false,
+  "targetCommandReady": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

@@ -1,0 +1,106 @@
+{
+  "actualDockerVersion": "29.8.1",
+  "actualNativeFixtureAuxiliaryAttestations": 13,
+  "actualNativeFixtureRequestedIdentityKinds": {
+    "OCI_INDEX": 13
+  },
+  "automaticReplayAllowed": false,
+  "capsuleBytes": 237245,
+  "capsuleSha256": "70ab863a3bdb9855672acd5bf9af33d1678ad29ba35c0259ce0bf38e6b64337f",
+  "currentOperatorCommandReady": false,
+  "date": "2026-11-01",
+  "downloadedArtifactMatchesActualLocalBuilder": true,
+  "embeddedBuildkitAttestationTrustAccepted": false,
+  "errors": 0,
+  "failures": 0,
+  "frozenExecutionSourceMismatches": 0,
+  "frozenExecutionSourcesChecked": 235,
+  "launcherQualified": false,
+  "localCryptographicTrustChainRerun": false,
+  "priorCaptureDirectEngineGets": 35,
+  "priorCaptureScopesConsumed": 7,
+  "protocolReferences": [
+    "https://github.com/moby/buildkit/blob/master/docs/attestations/attestation-storage.md",
+    "https://github.com/opencontainers/image-spec/blob/main/manifest.md"
+  ],
+  "publisherWorkflow": "GioNob/ouf-deploy/.github/workflows/m2-retained-image-intake.yml",
+  "qualification": [
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "push",
+      "jobs": [
+        124910228676,
+        124910228826
+      ],
+      "suites": 5,
+      "tests": 30,
+      "workflowRun": 41327435923
+    },
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "pull_request",
+      "jobs": [
+        124910246349,
+        124910246565
+      ],
+      "suites": 5,
+      "tests": 30,
+      "workflowRun": 41327441818
+    }
+  ],
+  "releaseAcceptance": false,
+  "resourceWarnings": 0,
+  "retainedInitialFailedQualifications": [
+    {
+      "reason": "Native Docker input requested an OCI index; original verifier only selected a leaf manifest.",
+      "runs": [
+        41326260712,
+        41326266599
+      ],
+      "source": "43f6c59a1d366c42045febbcb2b8c142edb9eacf"
+    },
+    {
+      "reason": "BuildKit auxiliary OCI empty-config attestation was incorrectly required to be a runnable image.",
+      "runs": [
+        41326957007,
+        41326963342
+      ],
+      "source": "0411b201a586e01d69526232bda945cdcd8ad41b"
+    }
+  ],
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-image-byte-verification-source-qualified.v1",
+  "skips": 0,
+  "sourceArtifactId": 13091359357,
+  "sourceArtifactZipBytes": 91026,
+  "sourceArtifactZipSha256": "255e8c648e941ebbc97e30845cef0af73d02657d4dddbaa1d98c9be59d372416",
+  "sourceCommit": "01f503393443627d49b716dc5eb55e3da2d060cc",
+  "sourceCount": 17,
+  "sourceMapSha256": "fa7b7a03b56e044177a7a205c6a1d167698cce820ab883c499232334429017bc",
+  "sourcePublisherBundle": "evidence/m2-image-byte-verification-source-20261101.sigstore.json",
+  "sourcePublisherTrustIsRuntimeAuthority": false,
+  "sourcePublisherVerification": "ACTUAL_GH_2_97_0_CRYPTOGRAPHIC_VERIFY_ON_HOSTED_RUNNER_RESULT_AND_SIGNED_SUBJECT_READ_BACK",
+  "sourcePublisherVerificationResult": "evidence/m2-image-byte-verification-source-publisher-20261101.json",
+  "suiteTests": {
+    "actualDocker29Native": 3,
+    "byteIdentity": 12,
+    "purePrivateIntake": 4,
+    "sealedCapsule": 5,
+    "sevenStageReaderAndDurableControl": 6
+  },
+  "targetApplyAuthorized": false,
+  "targetCaptureEvidence": "evidence/m2-native-image-archives-target-20261101.json",
+  "targetVerificationExecuted": false,
+  "timezone": "Europe/Rome",
+  "verificationProfile": {
+    "directEngineGets": 0,
+    "maximumArchiveBytesPerImage": 2147483648,
+    "maximumAttempts": 1,
+    "maximumAuxiliaryAttestationBytesPerImage": 268435456,
+    "maximumExpandedBytesPerImage": 8589934592,
+    "maximumExpandedSetBytes": 34359738368,
+    "maximumSeconds": 600
+  }
+}

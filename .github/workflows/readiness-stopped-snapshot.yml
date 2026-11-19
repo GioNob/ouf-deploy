@@ -1,0 +1,30 @@
+name: Read-only stopped patch snapshot
+on:
+  push:
+    branches: [feat/csv-e2e-owner-composition-20261020]
+    paths: ['tools/ingestion_readiness_patch_execution/stopped_patch_*.py','tests/test_readiness_patch_stopped_snapshot.py','scripts/read-ingestion-readiness-stopped-20261022.py','.github/workflows/readiness-stopped-snapshot.yml']
+  pull_request:
+    paths: ['tools/ingestion_readiness_patch_execution/stopped_patch_*.py','tests/test_readiness_patch_stopped_snapshot.py','scripts/read-ingestion-readiness-stopped-20261022.py','.github/workflows/readiness-stopped-snapshot.yml']
+permissions: {contents: read}
+jobs:
+  stopped-metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12','3.13.5']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python }}'}
+      - name: Actual private journals and isolated reader without services
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-stopped-patch-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_stopped_snapshot.py -v

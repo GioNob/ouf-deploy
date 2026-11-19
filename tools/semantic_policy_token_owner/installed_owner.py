@@ -8,19 +8,124 @@ and retained operation/generation are required on every dependent step.
 import copy
 import fcntl
 import hashlib
+import http.client
 import json
+import math
 import os
 from pathlib import Path
 import stat
+import socket
 import subprocess
 import time
 import uuid
+from urllib.parse import quote
 from cutover_authority import CutoverAuthority
 from tools.semantic_lease_recovery.bounded_recovery import Permanent,Temporary,fingerprint
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.semantic_policy_token_owner.producer import Binding,CredentialFile,DomainOwner,protected_directory,identity,check
 from tools.semantic_policy_token_owner.iam_admission import OnlineIamAdmission,unique
 from tools.semantic_policy_token_owner.source_stage import declaration,FILES,stage_authority_matches
+
+GOVERNED_SESSION='ouf.policy-token-governed-worker-session.v1'
+GOVERNED_HISTORY='ouf.policy-token-governed-worker-continuation.v1'
+
+def compile_governed_session(review,records,first,policy,context,generation,interval):
+    """Pure scope compiler. Its result requires a fresh typed HUMAN authority.
+
+    Counts derive from bound retained records, never from a schema suffix.
+    Legacy, unknown earlier accounting remains explicitly unreconciled.
+    """
+    check(type(review)is dict and review.get('schema')in('ouf.chatbot-semantic-functional-session-review.v1','ouf.chatbot-semantic-functional-session-review.v2','ouf.chatbot-semantic-functional-session-review.v3')
+        and review.get('readyForExecution')is False and review.get('runtimeAuthorityIssued')is False
+        and review.get('humanApprovalGranted')is False)
+    required={'recovery.json','owner-session.json','owner-admission.json','owner-status.json'}
+    check(type(records)is dict and set(records)==required
+        and {k:fingerprint(v)for k,v in records.items()}==review.get('predecessorRecordHashes'))
+    old=records['recovery.json'];session=records['owner-session.json'];admission=records['owner-admission.json']
+    prior=old.get('controlledCumulativeGrantAttempts');count=old.get('attempts');base=old.get('controlledPredecessorGrantAttempts')
+    check(type(prior)is int and type(count)is int and type(base)is int and
+        0<=count<=128 and 1<=base<=prior<=1000000 and prior==base+count
+        and old.get('state')=='CANCELLED'and old.get('reason')=='CANCELLED_BY_OWNER'
+        and admission.get('state')=='BLOCKED'and old.get('workerSessionHash')==fingerprint(session)
+        and session.get('predecessorGrantAttempts')==base
+        and session.get('schema') in (GOVERNED_SESSION,'ouf.policy-token-new-finite-worker-session.v'+str(base))
+        and old.get('policyHash')==fingerprint(session.get('policy'))
+        and old.get('contextRef')==session.get('contextRef')and old.get('generationRef')==session.get('generationRef'))
+    legacy={'state':'UNKNOWN','cumulativeGrantAttemptCount':None,'reconciled':False,'gapRemainsOpen':True}
+    check(old.get('legacyHistory')==legacy and fingerprint(first)==old.get('firstGrantReceiptHash')
+        and first.get('state')=='TOKEN_PUBLISHED_NOT_RUNTIME_ACCEPTED'
+        and first.get('attemptSlotsConsumed')==1 and first.get('gapRemainsOpen')is True
+        and first.get('historicalAccountingReconciled')is False
+        and first.get('legacyHistoricalGrantAttempts')is None
+        and first.get('operation')==session.get('predecessorFirstGrantOperation')
+        and first.get('scopeHash')==session.get('predecessorFirstGrantScopeHash')
+        and first.get('bootId')==old.get('bootId'))
+    budget=review.get('proposedFiniteBudget');decision=review.get('requiredOwnerDecision')
+    test_budget=review['schema']=='ouf.chatbot-semantic-functional-session-review.v3'
+    bounded=review['schema']in('ouf.chatbot-semantic-functional-session-review.v2','ouf.chatbot-semantic-functional-session-review.v3')
+    limit=budget.get('maximumNewTokenGrantAttempts')if type(budget)is dict else None
+    check(type(limit)is int and 1<=limit<=128 and (bounded or limit==128))
+    if bounded:
+        check(type(session.get('maximumCumulativeGrantAttempts'))is int
+            and (test_budget or prior+limit==session['maximumCumulativeGrantAttempts'])
+            and review.get('predecessorFenceBinding')==session.get('fenceBinding')
+            and review['predecessorJournalDirectory']==session['fenceBinding']['value']['journalPath'])
+    if test_budget:
+        profile=review.get('finiteTestProfile')
+        check(type(profile)is dict and set(profile)=={'schema','maximumNewTokenGrantAttempts','maximumSeconds','renewalIntervalSeconds','automaticRenewalAllowed','purpose','preserveCumulativeHistory'}
+            and profile.get('schema')=='ouf.policy-token-test-session-profile.v1'
+            and type(profile.get('maximumNewTokenGrantAttempts'))is int and profile['maximumNewTokenGrantAttempts']==limit
+            and type(profile.get('maximumSeconds'))is int and profile['maximumSeconds']==3600
+            and type(profile.get('renewalIntervalSeconds'))is int and profile['renewalIntervalSeconds']==60
+            and profile.get('purpose')=='CONFIGURATION_AND_VALIDATION'
+            and profile.get('automaticRenewalAllowed')is False and profile.get('preserveCumulativeHistory')is True
+            and decision.get('explicitNewTestBudgetRequired')is True
+            and decision.get('newCumulativeCeilingRequiresFreshHumanDecision')is True)
+    check(type(budget)is dict and budget.get('priorControlledGrantAttempts')==prior
+        and budget.get('predecessorWorkerAttempts')==count
+        and budget.get('maximumNewTokenGrantAttempts')==limit
+        and budget.get('maximumCumulativeGrantAttempts')==prior+limit
+        and budget.get('maximumSeconds')==3600 and budget.get('renewalIntervalSeconds')==interval==60
+        and budget.get('automaticRenewalAllowed')is False
+        and decision.get('explicitContinuationAfterOwnerCancellationRequired')is True
+        and decision.get('freshAuthenticatedHumanDecisionRequired')is True)
+    check(type(policy)is dict and set(policy)=={'delays','max_attempts','max_elapsed','attempt_timeout','jitter'}
+        and policy['delays']==[5,15,60,300,900]and type(policy['max_attempts'])is int
+        and 1<=policy['max_attempts']<=limit and (not bounded or policy['max_attempts']==limit) and type(policy['max_elapsed'])is int
+        and type(policy['attempt_timeout'])is int
+        and 1<=policy['attempt_timeout']<=policy['max_elapsed']<=3600 and policy['jitter']==.2)
+    check(all(type(x)is str and len(x)==64 and all(c in '0123456789abcdef'for c in x)
+        for x in(context,generation,session.get('logicalOwnerScopeHash',''))))
+    predecessor=Path(review.get('predecessorJournalDirectory',''))
+    check(predecessor.is_absolute()and str(predecessor)==review['predecessorJournalDirectory']
+        and '..'not in predecessor.parts and predecessor!=Path('/')
+        and decision.get('newJournalAndPersistentFencingRequired')is True)
+    parent=predecessor.parent;logical=session['logicalOwnerScopeHash'];review_hash=fingerprint(review)
+    if test_budget:
+        prior_fence=review['predecessorFenceBinding']
+        check(prior_fence.get('path')==str(parent/('semantic-functional-session-'+logical+'.fence.json'))
+            and prior_fence.get('value',{}).get('logicalOwnerScopeHash')==logical
+            and prior_fence['value'].get('active')is True)
+    journal=str(parent/('semantic-functional-worker-'+review_hash))
+    fence={'path':str(parent/('semantic-functional-session-'+logical+'.fence.json')),
+        'value':{'schema':'ouf.semantic-functional-session-fence.v1','logicalOwnerScopeHash':logical,
+            'reviewHash':review_hash,'journalPath':journal,'predecessorWorkerHash':fingerprint(old),'active':True}}
+    return {'schema':GOVERNED_SESSION,'controlledHistoryProfile':GOVERNED_HISTORY,
+        **({'predecessorFenceBinding':copy.deepcopy(review['predecessorFenceBinding'])}if bounded else{}),
+        **({'testBudgetProfileHash':fingerprint(review['finiteTestProfile']),
+            'predecessorCumulativeCeiling':session['maximumCumulativeGrantAttempts']}if test_budget else{}),
+        'operation':'OPEN_NEW_FINITE_WORKER_AFTER_EXPLICIT_CANCELLED_PREDECESSOR_REVIEW',
+        'reviewHash':fingerprint(review),'predecessorRecordHashes':copy.deepcopy(review['predecessorRecordHashes']),
+        'predecessorGrantAttempts':prior,'maximumCumulativeGrantAttempts':prior+policy['max_attempts'],
+        'logicalOwnerScopeHash':session['logicalOwnerScopeHash'],
+        'predecessorFirstGrantOperation':first['operation'],'predecessorFirstGrantScopeHash':first['scopeHash'],
+        'firstGrantReceiptHash':fingerprint(first),'contextRef':context,'generationRef':generation,
+        'policy':copy.deepcopy(policy),'intervalSeconds':interval,
+        'requestedHumanActor':copy.deepcopy(review['requestedHumanActor']),
+        'fenceBinding':fence,
+        'commandKey':review['commandKey'],'proposalHash':review['proposalHash'],
+        'automaticBudgetRenewalAllowed':False,'consumedClaimReplayAllowed':False,
+        'legacyHistoryDisposition':'UNKNOWN_RETAINED_NOT_RECONCILED'}
 
 def read_private(directory,name,limit):
     s=os.stat(name,dir_fd=directory,follow_symlinks=False)
@@ -86,21 +191,34 @@ class AdmissionStore:
 class LegacyWriterFence:
     """Read only the two previously identified units. Never mask/stop them here."""
     UNITS=('ouf-policy-token@semantic.service','ouf-policy-token@semantic.timer')
-    def guard(self):
-        p=subprocess.run(['/usr/bin/systemctl','show',*self.UNITS,'--no-pager','--property=Id,LoadState,ActiveState,UnitFileState,MainPID'],
-            stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5,
+    @staticmethod
+    def quiescent(rows,units):
+        # Keep the standalone worker closure independent of installer modules.
+        # Contract tests compare this predicate with the retirement component.
+        return set(rows)==set(units) and all(row.get('LoadState')=='masked'
+            and row.get('UnitFileState')=='masked' and row.get('Job')==''
+            and (row.get('ActiveState'),row.get('SubState')) in (
+                {('inactive','dead'),('failed','failed')} if unit.endswith('.timer') else {('inactive','dead')})
+            and row.get('MainPID','0' if unit.endswith('.timer') else None)=='0'
+            for unit,row in rows.items())
+    def read_units(self):
+        props={'Id','LoadState','ActiveState','SubState','UnitFileState','MainPID','Job'}
+        p=subprocess.run(['/usr/bin/systemctl','show',*self.UNITS,'--no-pager',
+            '--property=Id,LoadState,ActiveState,SubState,UnitFileState,MainPID,Job'],
+            stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=5,
             env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
         check(p.returncode==0 and 0<len(p.stdout)<=8192)
         rows={}
         for block in p.stdout.decode('ascii').strip().split('\n\n'):
             value={}
             for line in block.splitlines():
-                k,sep,v=line.partition('=');check(sep and k in ('Id','LoadState','ActiveState','UnitFileState','MainPID') and k not in value);value[k]=v
-            check({'Id','LoadState','ActiveState','UnitFileState'}<=set(value)<= {'Id','LoadState','ActiveState','UnitFileState','MainPID'} and value['Id'] in self.UNITS and value['Id'] not in rows)
-            check(value['LoadState']=='masked' and value['UnitFileState']=='masked'
-                  and value['ActiveState']=='inactive'
-                  and (value.get('MainPID')=='0' if value['Id'].endswith('.service') else value.get('MainPID','0')=='0'));rows[value['Id']]=value
-        check(set(rows)==set(self.UNITS));return True
+                key,sep,item=line.partition('=');check(sep and key in props and key not in value);value[key]=item
+            check(props-{'MainPID'}<=set(value)<=props and value['Id'] in self.UNITS and value['Id'] not in rows)
+            rows[value['Id']]=value
+        check(set(rows)==set(self.UNITS))
+        return rows
+    def guard(self):
+        check(self.quiescent(self.read_units(),self.UNITS));return True
 
 def owner_binding_inputs(binding,credential,admission,journal,context_ref,generation_ref,policy_hash,renewal_profile,interval_seconds,worker_session_hash=None):
     check(type(binding) is Binding and type(credential) is CredentialFile and type(admission) is OnlineIamAdmission
@@ -197,20 +315,44 @@ class InstalledTokenOwner(DomainOwner):
             time.sleep(min(1,deadline-now))
     def guard_worker_session(self,row):
         signed=json.loads(self.raw,object_pairs_hook=unique).get('policyTokenFiniteWorkerSession')
+        if type(signed)is dict and signed.get('schema')==GOVERNED_SESSION:
+            self.guard_governed_worker_session(row,signed)
+            return
+        prior=signed.get('predecessorGrantAttempts')if type(signed)is dict else None
+        check(type(prior)is int and prior in(1,2,3,4,5,6,8,9,10))
         check(type(signed)is dict and fingerprint(signed)==row['workerSessionHash']
             and self.configuration.get('workerSessionHash')==row['workerSessionHash']
-            and signed.get('schema')=='ouf.policy-token-new-finite-worker-session.v1'
+            and signed.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
             and signed.get('contextRef')==self.context and signed.get('generationRef')==self.generation
             and fingerprint(signed.get('policy'))==row['policyHash']
             and signed.get('intervalSeconds')==row['intervalSeconds']
-            and signed.get('predecessorGrantAttempts')==1
+            and signed.get('predecessorGrantAttempts')==prior
             and signed.get('automaticBudgetRenewalAllowed')is False
             and signed.get('consumedClaimReplayAllowed')is False
             and row.get('legacyHistory')=={'state':'UNKNOWN','cumulativeGrantAttemptCount':None,
                 'reconciled':False,'gapRemainsOpen':True}
-            and row.get('controlledPredecessorGrantAttempts')==1
-            and row.get('controlledCumulativeGrantAttempts')==1+row['attempts'])
+            and row.get('controlledPredecessorGrantAttempts')==prior
+            and row.get('controlledCumulativeGrantAttempts')==prior+row['attempts'])
+        if prior==1:check('controlledHistoryProfile'not in signed and 'controlledHistoryProfile'not in row)
         with protected_directory(self.journal.root)as directory:
+            if prior in(2,3,4,5,6,8,9,10):
+                check(signed.get('controlledHistoryProfile')==row.get('controlledHistoryProfile')=='ouf.policy-token-cancelled-worker-continuation.v1'
+                    and signed.get('newBudget',{}).get('priorControlledGrantAttempts')==prior)
+                for key in('predecessorCancelledWorkerHash','predecessorWorkerSessionHash'):check(signed.get(key)==row.get(key))
+                worker_raw=read_private(directory,'owner-predecessor-worker.json',32768)
+                session_raw=read_private(directory,'owner-predecessor-session.json',32768)
+                check(hashlib.sha256(worker_raw).hexdigest()==signed['predecessorCancelledWorkerHash']
+                    and hashlib.sha256(session_raw).hexdigest()==signed['predecessorWorkerSessionHash'])
+                previous=json.loads(worker_raw,object_pairs_hook=unique);old_session=json.loads(session_raw,object_pairs_hook=unique)
+                previous_count=6 if prior==8 else prior-1
+                previous_attempts=2 if prior==8 else 1
+                check(previous.get('state')=='CANCELLED'and previous.get('attempts')==previous_attempts
+                    and previous.get('controlledPredecessorGrantAttempts')==previous_count and previous.get('controlledCumulativeGrantAttempts')==prior
+                    and previous.get('workerSessionHash')==signed['predecessorWorkerSessionHash']
+                    and previous.get('firstGrantReceiptHash')==row['firstGrantReceiptHash']
+                    and old_session.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(previous_count)
+                    and old_session.get('predecessorGrantAttempts')==previous_count
+                    and old_session.get('logicalOwnerScopeHash')==signed['logicalOwnerScopeHash'])
             check(json.loads(read_private(directory,'owner-session.json',16384),object_pairs_hook=unique)==signed)
             raw=read_private(directory,'owner-first-grant.json',16384)
             check(hashlib.sha256(raw).hexdigest()==row['firstGrantReceiptHash'])
@@ -229,6 +371,76 @@ class InstalledTokenOwner(DomainOwner):
                 and raw.decode('ascii').strip()==row['bootId'])
         finally:os.close(fd)
 
+    def guard_governed_worker_session(self,row,signed):
+        with protected_directory(self.journal.root)as directory:
+            review=json.loads(read_private(directory,'owner-session-review.json',131072),object_pairs_hook=unique)
+            records={name:json.loads(read_private(directory,'predecessor-'+name,131072),object_pairs_hook=unique)
+                for name in ('recovery.json','owner-session.json','owner-admission.json','owner-status.json')}
+            old_policy=records['owner-session.json'].get('policy',{})
+            check(type(old_policy.get('max_attempts'))is int and
+                0<=records['recovery.json']['attempts']<=old_policy['max_attempts']<=128)
+            first=json.loads(read_private(directory,'owner-first-grant.json',16384),object_pairs_hook=unique)
+            compiled=compile_governed_session(review,records,first,signed['policy'],self.context,self.generation,signed['intervalSeconds'])
+            check(compiled==signed and json.loads(read_private(directory,'owner-session.json',131072),object_pairs_hook=unique)==signed)
+        prior=signed['predecessorGrantAttempts'];attempts=row.get('attempts')
+        fence=signed['fenceBinding'];path=Path(fence['path'])
+        check(str(self.journal.root)==fence['value']['journalPath'])
+        with protected_directory(path.parent)as directory:
+            check(json.loads(read_private(directory,path.name,16384),object_pairs_hook=unique)==fence['value'])
+        check(fingerprint(signed)==row.get('workerSessionHash')==self.configuration.get('workerSessionHash')
+            and row.get('controlledHistoryProfile')==GOVERNED_HISTORY
+            and row.get('controlledPredecessorGrantAttempts')==prior and type(attempts)is int
+            and 0<=attempts<=signed['policy']['max_attempts']
+            and row.get('controlledCumulativeGrantAttempts')==prior+attempts
+            and row.get('controlledCumulativeGrantAttempts')<=signed['maximumCumulativeGrantAttempts']
+            and row.get('policyHash')==fingerprint(signed['policy'])
+            and row.get('intervalSeconds')==signed['intervalSeconds']
+            and row.get('firstGrantReceiptHash')==signed['firstGrantReceiptHash']
+            and row.get('legacyHistory')==records['recovery.json']['legacyHistory']
+            and row.get('bootId')==first['bootId'])
+        fd=os.open('/proc/sys/kernel/random/boot_id',os.O_RDONLY|os.O_NOFOLLOW)
+        try:
+            info=os.fstat(fd);raw=os.read(fd,65)
+            check(info.st_uid==info.st_gid==0 and not info.st_mode&0o022
+                and raw.decode('ascii').strip()==row['bootId'])
+        finally:os.close(fd)
+        self.guard_governed_registry(signed)
+
+    def guard_governed_registry(self,signed):
+        runtime=json.loads(self.raw,object_pairs_hook=unique).get('semanticFunctionalRuntime')
+        check(type(runtime)is dict and set(runtime)=={'schema','reviewHash','engine','registryGeneration'}
+            and runtime['schema']=='ouf.semantic-functional-runtime-binding.v1'
+            and runtime['reviewHash']==signed['reviewHash'])
+        engine=runtime['engine'];expected=runtime['registryGeneration'];path=engine['socketPath']
+        check(set(engine)=={'socketPath','socketBinding'}and Path(path).is_absolute()
+            and Path(path).resolve()==Path(path))
+        def guard_socket():
+            s=os.stat(path,follow_symlinks=False)
+            check(stat.S_ISSOCK(s.st_mode)and s.st_uid==0 and
+                [s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode)]==engine['socketBinding'])
+        guard_socket()
+        class Local(http.client.HTTPConnection):
+            def connect(self):
+                self.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+                self.sock.settimeout(5);self.sock.connect(path)
+        conn=Local('localhost',timeout=5)
+        try:
+            cid=expected['containerId'];check(type(cid)is str and len(cid)==64 and all(c in '0123456789abcdef'for c in cid))
+            conn.request('GET','/v1.44/containers/'+quote(cid,safe='')+'/json')
+            response=conn.getresponse();raw=response.read(2097153)
+            check(response.status==200 and len(raw)<=2097152);guard_socket()
+            actual=json.loads(raw,object_pairs_hook=unique);mounts=actual['Mounts']
+            check(actual['State'].get('Running')is True and type(mounts)is list and
+                all(type(m)is dict and type(m.get('Destination'))is str for m in mounts)
+                and len({m['Destination']for m in mounts})==len(mounts))
+            observed={'containerId':actual['Id'],'imageId':actual['Image'],'pid':actual['State']['Pid'],
+                'startedAt':actual['State']['StartedAt'],
+                'mountsHash':fingerprint(sorted(mounts,key=lambda m:m['Destination'])),
+                **{name+'Hash':fingerprint(actual[key])for name,key in
+                    (('config','Config'),('hostConfig','HostConfig'),('networkSettings','NetworkSettings'))}}
+            check(observed==expected)
+        finally:conn.close()
+
     def prepare(self,binding_hash,deadline):
         check(not self.observer);self.guard(binding_hash);self.admission.prepare(deadline);self.guard(binding_hash)
     def admit(self,token,valid_until_monotonic,binding_hash,deadline):
@@ -239,6 +451,32 @@ class InstalledTokenOwner(DomainOwner):
         self.admission.admit(token,valid_until_monotonic,deadline);self.guard(binding_hash)
         if self.observer:check(self.store.read()==before)
         else:self.store.save(before,'ACTIVE',token_hash)
+        return True
+    def admit_mounted(self,token,minimum_remaining,binding_hash,deadline):
+        """Authenticate this published token using its retained grant window.
+
+        The mount's finite read deadline is not token expiry. Both durable
+        clocks, the current admission hash and online IAM must agree. Nothing
+        is published, renewed or extended by this observer operation.
+        """
+        check(self.observer and type(minimum_remaining)is int and 1<=minimum_remaining<=3600
+            and type(deadline)in(int,float)and math.isfinite(deadline))
+        self.guard(binding_hash);row,current=self._verified_state(binding_hash)
+        check(row['state']=='ACTIVE'and current['state']=='ACTIVE')
+        wall,mono=self.admission.clock()
+        check(all(type(row.get(k))in(int,float)and math.isfinite(row[k])for k in
+            ('tokenExpiresWall','tokenExpiresMonotonic','lastWall','lastMonotonic'))
+            and row['lastWall']<=wall and row['lastMonotonic']<=mono<deadline
+            and deadline<=mono+30)
+        required=max(minimum_remaining,self.binding.minimum_remaining)
+        valid_until=min(row['tokenExpiresMonotonic'],mono+row['tokenExpiresWall']-wall)
+        if valid_until-mono<required:raise Permanent('AUTHORITY_EXPIRED')
+        self.admit(token,valid_until,binding_hash,deadline)
+        self.guard(binding_hash);end_wall,end_mono=self.admission.clock()
+        check(wall<=end_wall and mono<=end_mono<deadline
+            and self.journal.read()==row and self.store.read()==current)
+        if min(row['tokenExpiresWall']-end_wall,row['tokenExpiresMonotonic']-end_mono)<required:
+            raise Permanent('AUTHORITY_EXPIRED')
         return True
     def pause(self):
         if not self.observer:

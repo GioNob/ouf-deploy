@@ -1,0 +1,61 @@
+{
+  "schema": "ouf.discovery-contract-reader-qualification.v1",
+  "status": "SOURCE_QUALIFIED_TARGET_READ_PENDING",
+  "operatorReceipt": {
+    "path": "evidence/analysis-discovery-runtime-operator-20261108.json",
+    "sha256": "419fa1ff88ff34a08694d2afedd8660e67cb552b0f34aa3711fac1b49deb316c",
+    "observedAt": "2026-11-08T08:11:33.056933+00:00",
+    "runtimeChanged": false,
+    "oldWritersStoppedAtBothReads": true,
+    "storageReplacementsMatchCapturedConfiguration": true,
+    "semanticProviderEnabledEnv": false,
+    "semanticWorkerEnabledEnv": false,
+    "effectiveSpringConfigurationProven": false
+  },
+  "reader": {
+    "commit": "870b5e0cab438de2ed33936c97da28a6930da263",
+    "path": "scripts/read-discovery-contract-20261108.py",
+    "sha256": "468660ed73a24c7b8a842f5b99a9c268890c99bb4206ca2e4719865326b27277",
+    "helperPath": "scripts/read-analysis-discovery-runtime-20261107.py",
+    "helperSha256": "ef8dc8c4887122f2b2d76c05eaff7a8850c31004fcd661de2b3e49f51d6cc1b4",
+    "sourceReadbackExact": true
+  },
+  "qualification": {
+    "localTestsPassed": 9,
+    "localNativeTestSkipped": 1,
+    "ciRun": 42463068093,
+    "ciJob": 128676349535,
+    "ciTestsPassed": 10,
+    "ciTestsSkipped": 0,
+    "ciConclusion": "success",
+    "ciLogsRead": true,
+    "actualPostgreSQL17": true,
+    "fixtureDatabaseUsersNonAdministrative": true,
+    "readOnlyWriteRejectionVerified": true,
+    "actualTarget": false,
+    "routeAndMountViews": "FIXTURES",
+    "containerReplacementLifecycleTested": false
+  },
+  "plannedRead": {
+    "adminRouteGetsMaximum": 1,
+    "readOnlyDatabaseSessionsMaximum": 2,
+    "providerCredentialContentsRead": false,
+    "providerCalls": 0,
+    "tokenRequests": 0,
+    "serviceStops": 0,
+    "configurationWrites": 0,
+    "migrationsApplied": 0,
+    "grantsChanged": 0,
+    "policyGrantsRead": false
+  },
+  "mcpMigrationReference": {
+    "repository": "GioNob/ouf-mcp-server",
+    "commit": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94",
+    "versions": 14,
+    "checksumsComputedFromExactSource": true
+  },
+  "targetResultPending": true,
+  "liveDiscoveryTested": false,
+  "newColumnMappings": false,
+  "e2eComplete": false
+}

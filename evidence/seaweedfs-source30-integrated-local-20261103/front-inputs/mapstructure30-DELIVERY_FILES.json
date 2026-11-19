@@ -1,0 +1,61 @@
+{
+  "status": "LOCAL_PROPOSAL_NOT_GLOBAL_GENERATION_SEAL",
+  "files": {
+    "docs/OUF_SEAWEEDFS_LDAP_MAPSTRUCTURE_V2_LOCAL_20261103.md": {
+      "bytes": 3034,
+      "sha256": "48ea7d327d8bcff8da1cd19b4ab0e76a22556ea6086db1a0d663c718107d38c7"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103.json": {
+      "bytes": 5432,
+      "sha256": "8ca4598c6253ae4e6e779ae1a46758fcdc755eed0c0a8bab8f9d6c39fc187db9"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/baseline-ldap.jsonl": {
+      "bytes": 53048,
+      "sha256": "199fc3049136185fa0a1d8c4c564c23ff9b92f5fd606e67108faf758eb90cfd0"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/baseline-ldap.stderr": {
+      "bytes": 101,
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/build-info.txt": {
+      "bytes": 25461,
+      "sha256": "fc0f51e7e90bfdbce73487867b757d49de66f488779e1e783814bb7476848f8c"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/build.stderr": {
+      "bytes": 101,
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/build.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/candidate-ldap.jsonl": {
+      "bytes": 53130,
+      "sha256": "85b4e3d1d40283778c16792d80c1188c7ecdb4e9956d229ee5a2dcfb03470d8c"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/candidate-ldap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/module-classification-proposal.patch": {
+      "bytes": 999,
+      "sha256": "00118ed97a7800c33aa8d947a726d4802a1d2e1c8236b83dec5705aa15ab6474"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/production-dependency-summary.json": {
+      "bytes": 610,
+      "sha256": "49126aa6f1f8c6b42cfec1e95be51aea3178ed6815c366bd8ae911f34b7620b5"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/production-deps.txt": {
+      "bytes": 74977,
+      "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a"
+    },
+    "evidence/seaweedfs-452-ldap-mapstructure-v2-local-20261103/production-mapstructure-importers.json": {
+      "bytes": 33870,
+      "sha256": "68468646d39d754462e9089d8794ed553660528e6ca7120f1c3600e1c52447f6"
+    },
+    "patches/seaweedfs/4.52-ldap-mapstructure-v2.patch": {
+      "bytes": 7258,
+      "sha256": "141785f5707cc2ae5dac6d53686c12bc84e13a918c7afd34aca437017ac27948"
+    }
+  }
+}

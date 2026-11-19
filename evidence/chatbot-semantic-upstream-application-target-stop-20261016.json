@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.chatbot-semantic-upstream-application-target-stop.v1",
+  "source": "operator pasted final authority issuance and stop records",
+  "repairAuthorityHash": "e1b672b93ba670849690860c99426683eee06fb88ff6c111f6428fde4ab0f496",
+  "repairAuthorityExpiresAt": 1792148012,
+  "maximumWrites": 15,
+  "runtimeAuthorityIssued": true,
+  "reason": "REPAIR_WRITE_ACK_UNPROVEN_NO_REPLAY",
+  "reconciliationRequired": true,
+  "automaticWriteReplayAllowed": false,
+  "completedRouteWritesProven": 0,
+  "mutationOutcome": "UNKNOWN_FIRST_WRITE_REQUIRES_READBACK",
+  "applicationRuntimeWindowExpiryUnchanged": 1792148226,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "chatbotEndToEndProven": false,
+  "budgetReset": false,
+  "doNotRerunApplicator": true
+}

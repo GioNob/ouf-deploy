@@ -1,0 +1,62 @@
+{
+  "actualOperatorCandidateHash": "9f1d571b1f38ace9ec5b5f52b157ed0c4de20c2e1a4553ccc6ae19f9ae04344a",
+  "actualOperatorResultHash": "ac206493fa3e9e4d7af098fe8d3a8aec9325162c3167858cff37a0dd57cc6a7b",
+  "agentReadTargetPrivateFiles": false,
+  "all235AndFrozen11SourcesUnchanged": true,
+  "completePrivateCustodyProven": false,
+  "controllerVersion": 8,
+  "currentLiveMetadataWitnessContentsRead": 0,
+  "effectiveReadonlyMounts": 25,
+  "effectiveWritableMounts": 4,
+  "expectedPermissionOrContentPolicyEstablished": false,
+  "focused": {
+    "allLogsRead": true,
+    "conclusion": "success",
+    "jobs": [
+      124845745528,
+      124845745765
+    ],
+    "runId": 41305779291,
+    "suites": 5,
+    "tests": 40
+  },
+  "general": {
+    "allLogsRead": true,
+    "conclusion": "success",
+    "jobs": [
+      124845745636,
+      124845745772,
+      124845745859,
+      124845745880,
+      124845746204
+    ],
+    "runId": 41305779380,
+    "suites": 30,
+    "tests": 215
+  },
+  "kernelObserverEngineGets": 0,
+  "liveLeafMetadataNodes": 8,
+  "liveOwnerAuthenticated": false,
+  "nativePositiveAndNegativeControls": {
+    "Docker": "29.8.1",
+    "actualSixthProducerInputUsed": true,
+    "effectiveRwDriftDenied": true,
+    "livePermissionDriftDenied": true,
+    "nestedShadowDenied": true,
+    "normalTokenRotationAndSqliteWalWritesAllowed": true,
+    "processRestartDenied": true,
+    "singleStaticReboundDenied": true,
+    "tenUid10001ScratchProcesses": true
+  },
+  "nativeReads": 28,
+  "noFurtherOperatorCaptureNeeded": true,
+  "operatorPublicReceiptObserved": true,
+  "releaseAcceptance": false,
+  "retainedProcesses": 10,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.retained-view-intake-controller-qualified.v1",
+  "sixScopesConsumedNotReplayable": true,
+  "sourceCommit": "3fac1af582a620cc9be46aa007f42ff6fb5dcb63",
+  "targetApplyAuthorized": false,
+  "typedOwners": 15
+}

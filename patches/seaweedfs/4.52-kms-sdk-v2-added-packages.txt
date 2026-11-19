@@ -1,0 +1,4 @@
+github.com/aws/aws-sdk-go-v2/service/kms
+github.com/aws/aws-sdk-go-v2/service/kms/internal/endpoints
+github.com/aws/aws-sdk-go-v2/service/kms/schemas
+github.com/aws/aws-sdk-go-v2/service/kms/types

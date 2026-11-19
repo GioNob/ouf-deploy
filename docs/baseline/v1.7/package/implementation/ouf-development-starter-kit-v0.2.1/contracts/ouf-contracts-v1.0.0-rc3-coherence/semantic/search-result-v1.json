@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/search-result-v1.json",
+  "title": "OUF Semantic SearchResult v1",
+  "type": "object",
+  "required": [
+    "reference",
+    "score",
+    "reasons"
+  ],
+  "properties": {
+    "reference": {
+      "$ref": "semantic-reference-v1.json"
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "structuralSignals": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes.",
+  "x-ouf-note": "Ranking score supports search; it is not proof of semantic equivalence."
+}

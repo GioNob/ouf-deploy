@@ -1,0 +1,1 @@
+7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a  ../patches/seaweedfs/4.52-iam-module-sdk-v2.patch

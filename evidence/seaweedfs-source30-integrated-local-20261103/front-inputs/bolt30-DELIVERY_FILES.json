@@ -1,0 +1,68 @@
+{
+  "files": {
+    "docs/OUF_SEAWEEDFS_RAFT_BBOLT_ADAPTER_20261103.md": {
+      "sha256": "b754729e4862deb6762308a4dc20f9129d948c657cb89594fe8cdaae0a2a583a",
+      "bytes": 4597
+    },
+    "evidence/seaweedfs-raftstore-baseline29-dns-test-20261103.jsonl": {
+      "sha256": "0b617c6612176bf9982699c1b5fd6a15cd3cfecb8c92fff882d5c1f66b029bf0",
+      "bytes": 1922
+    },
+    "evidence/seaweedfs-raftstore-compatibility-receipt.json": {
+      "sha256": "48495d2f82703f97f4031b3ee89aa6e94820eed126af0f5c41efa1ff915a18ae",
+      "bytes": 920
+    },
+    "evidence/seaweedfs-raftstore-compatibility-tests.jsonl": {
+      "sha256": "5780cd40faf57ebb1ad94b3f72f9267ce9269cb8fffa7629dc13354e53e6c8b2",
+      "bytes": 3162
+    },
+    "evidence/seaweedfs-raftstore-compatibility-tests.jsonl.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "evidence/seaweedfs-raftstore-local-tests-20261103.jsonl": {
+      "sha256": "7fc00559c9642e21de939833d2adea9c81607001cd215e4c7aca215586c9ab51",
+      "bytes": 10167
+    },
+    "evidence/seaweedfs-raftstore-production-deps-20261103.txt": {
+      "sha256": "3c36943eabf103c9d9003d8a8c32abdeaba6bb5e60fa1dc705e697853901d1cc",
+      "bytes": 74969
+    },
+    "evidence/seaweedfs-raftstore-production-deps-delta-20261103.json": {
+      "sha256": "8bcf61a58d12851e9a19633c9f35ec5c6284f7f0f706333443f4653d99ea57ff",
+      "bytes": 503
+    },
+    "evidence/seaweedfs-raftstore-server-raft-tests-20261103.jsonl": {
+      "sha256": "7bc4a99db4b8005e015f14512301018ba4384204764c02ff2e38dfb2388c2ad3",
+      "bytes": 11552
+    },
+    "evidence/seaweedfs-raftstore-server-tests-20261103.jsonl": {
+      "sha256": "d1462cb1435f3b445bf6effe08a7b04573e44c202a9003a8f0053fe64d9e5c8f",
+      "bytes": 185142
+    },
+    "evidence/seaweedfs-raftstore-server-tests-retention-20261103.json": {
+      "sha256": "d50db0386699f2ae88ab16529b1c18b9ab490b2b713267382e8e8316f7fdf18f",
+      "bytes": 317
+    },
+    "patches/seaweedfs/4.52-raft-bbolt-local-store.patch": {
+      "sha256": "09c45629826890ab8dd18aca6c4d9e21adfcc25b2fb3df38a872a025f0bf8db4",
+      "bytes": 40813
+    },
+    "patches/seaweedfs/4.52-raft-bbolt-module-closure.patch": {
+      "sha256": "f6012e8ea73885a4e9238bb25fce103a38dbe8f41f19a1ec11f212e7f711cd1f",
+      "bytes": 3582
+    },
+    "scripts/qualify-seaweedfs-raftstore-compat.py": {
+      "sha256": "fc5cff4471fee8ba0def1754ef0f84c108ae55184b403853ef887a36747cc2e7",
+      "bytes": 4791
+    },
+    "tests/fixtures/seaweedfs-raftstore-compat/compat_test.go": {
+      "sha256": "76f2a6adcc11ed5031cf3ea324af948eae361883f7e9b5d75baa76bf41697c0c",
+      "bytes": 4438
+    },
+    "evidence/seaweedfs-raftstore-local-qualification-20261103.json": {
+      "sha256": "5d54b9daf61f7c658b721a1bc9449119a3a74b2700688e1123b6183ed346d5bd",
+      "bytes": 5827
+    }
+  }
+}

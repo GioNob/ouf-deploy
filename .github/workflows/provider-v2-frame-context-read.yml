@@ -1,10 +1,6 @@
 name: Provider v2 frame context read
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/read_provider_v2_frame_context.py'
-      - '.github/workflows/provider-v2-frame-context-read.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

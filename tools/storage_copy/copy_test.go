@@ -1,0 +1,46 @@
+package storagecopy
+
+import (
+ "context"
+ "errors"
+ "os"
+ "path/filepath"
+ "reflect"
+ "testing"
+ "time"
+)
+type memoryObject struct{ Body []byte; Meta Meta }
+type memoryStore struct{ Name string; Rows map[ID]memoryObject; Credit func()error; Puts int; Calls int; AfterStoreFailure bool; CorruptRead bool; FailReads bool }
+func (m *memoryStore) Identity()string{return m.Name}
+func (m *memoryStore) SetCredit(f func()error){m.Credit=f}
+func (m *memoryStore) call()error{m.Calls++;if m.Credit!=nil{return m.Credit()};return nil}
+func (m *memoryStore) Snapshot(_ context.Context,_ []string)(map[ID]Meta,error){if e:=m.call();e!=nil{return nil,e};if m.FailReads{return nil,Transient{After:time.Hour}};out:=map[ID]Meta{};for id,row:=range m.Rows{out[id]=Meta{Size:row.Meta.Size,ETag:row.Meta.ETag,LastModified:row.Meta.LastModified}};return out,nil}
+func (m *memoryStore) Head(_ context.Context,id ID)(Meta,error){if e:=m.call();e!=nil{return Meta{},e};if row,ok:=m.Rows[id];ok{return row.Meta,nil};return Meta{},ErrMissing}
+func (m *memoryStore) Read(_ context.Context,id ID,etag string)([]byte,error){if e:=m.call();e!=nil{return nil,e};row,ok:=m.Rows[id];if !ok{return nil,ErrMissing};if row.Meta.ETag!=etag{return nil,code("STALE_READ_PRECONDITION")};raw:=append([]byte{},row.Body...);if m.CorruptRead{raw=append(raw,'x')};return raw,nil}
+func (m *memoryStore) PutNew(_ context.Context,id ID,raw []byte,meta Meta)error{if e:=m.call();e!=nil{return e};if _,ok:=m.Rows[id];ok{return code("PRECONDITION_FAILED")};m.Puts++;meta.ETag=hash(raw);meta.LastModified=time.Date(2026,11,2,0,0,1,0,time.UTC);m.Rows[id]=memoryObject{append([]byte{},raw...),meta};if m.AfterStoreFailure{m.AfterStoreFailure=false;return Transient{After:time.Hour}};return nil}
+func memoryFixture()([]Item,*memoryStore,*memoryStore){items:=[]Item{};source:=&memoryStore{Name:"source",Rows:map[ID]memoryObject{}};destination:=&memoryStore{Name:"destination",Rows:map[ID]memoryObject{}}
+ for i,key:=range []string{"alpha","é%2F?+#","without-hash"}{body:=[]byte(key);meta:=Meta{Size:int64(len(body)),ETag:hash(body),Metadata:map[string]string{},Headers:map[string]string{"contentType":"text/plain"},Tags:map[string]string{},LastModified:time.Date(2026,11,1,1,0,0,0,time.UTC)};if i<2{meta.Metadata["ouf-content-hash"]="sha256:"+hash(body)};id:=ID{"lab-bucket",key};source.Rows[id]=memoryObject{body,meta};items=append(items,Item{id,meta})};return items,source,destination}
+func TestUnitCopyAndCompletedDedup(t *testing.T){items,s,d:=memoryFixture();scope:=filepath.Join(t.TempDir(),"copy");engine:=&Engine{Source:s,Destination:d};r,e:=engine.run(context.Background(),items,scope);if e!=nil||r.Verified!=3||r.CopiedThisAttempt!=3||r.MigrationReady||r.RuntimeAuthorityIssued{t.Fatalf("copy: %v %+v",e,r)};if s.Puts!=0{t.Fatal("source mutated")};calls:=s.Calls+d.Calls;r,e=engine.run(context.Background(),items,scope);if e!=nil||r.Status!="ALREADY_VERIFIED_NOT_RERUN"||d.Puts!=3||s.Calls+d.Calls!=calls{t.Fatalf("completed dedup %v %+v",e,r)}
+ for _,it:=range items{if !sameRepresentation(s.Rows[it.ID].Meta,d.Rows[it.ID].Meta){t.Fatal("metadata not preserved")}}
+}
+func TestUnitCrashReconciliation(t *testing.T){for _,point:=range []string{"BEFORE_PUT","AFTER_PUT","BEFORE_CHECKPOINT"}{t.Run(point,func(t *testing.T){items,s,d:=memoryFixture();scope:=filepath.Join(t.TempDir(),"copy");engine:=&Engine{Source:s,Destination:d,Hook:func(stage string)error{if stage==point{return ErrCrash};return nil}};if _,e:=engine.run(context.Background(),items,scope);!errors.Is(e,ErrCrash){t.Fatal(e)};engine.Hook=nil;r,e:=engine.run(context.Background(),items,scope);if e!=nil||r.Verified!=3||d.Puts!=3||r.Attempt!=2{t.Fatalf("resume %v %+v puts%d",e,r,d.Puts)}})}}
+func TestUnitAmbiguous503RetryAfterAndNoDuplicatePut(t *testing.T){items,s,d:=memoryFixture();scope:=filepath.Join(t.TempDir(),"copy");now:=time.Date(2026,11,2,0,0,0,0,time.UTC);d.AfterStoreFailure=true;engine:=&Engine{Source:s,Destination:d,Now:func()time.Time{return now}}
+ r,e:=engine.run(context.Background(),items,scope);var transient Transient;if !errors.As(e,&transient)||r.Status!="PAUSED"||d.Puts!=1{t.Fatalf("pause %v %+v",e,r)}
+ count:=s.Calls+d.Calls;now=now.Add(time.Minute);r,e=engine.run(context.Background(),items,scope);if e!=nil||r.Status!="PAUSED_BEFORE_RETRY_AFTER"||s.Calls+d.Calls!=count||r.Attempt!=1{t.Fatal("Retry-After ignored")}
+ now=now.Add(time.Hour);engine=&Engine{Source:s,Destination:d,Now:func()time.Time{return now}};r,e=engine.run(context.Background(),items,scope);if e!=nil||r.Verified!=3||d.Puts!=3||r.ReconciledThisAttempt!=1{t.Fatalf("ambiguous resume %v %+v puts%d",e,r,d.Puts)}
+}
+func TestUnitSixHourOutageSurvivesRestartsAndBudgetPersists(t *testing.T){items,s,d:=memoryFixture();scope:=filepath.Join(t.TempDir(),"copy");now:=time.Date(2026,11,2,0,0,0,0,time.UTC);s.FailReads=true
+ for i:=0;i<6;i++{r,e:=(&Engine{Source:s,Destination:d,Now:func()time.Time{return now}}).run(context.Background(),items,scope);if e==nil||r.Attempt!=i+1||d.Puts!=0{t.Fatalf("outage attempt %v %+v",e,r)};now=now.Add(time.Hour+time.Second)}
+ s.FailReads=false;r,e:=(&Engine{Source:s,Destination:d,Now:func()time.Time{return now}}).run(context.Background(),items,scope);if e!=nil||r.Attempt!=7||r.Verified!=3{t.Fatalf("recovery %v %+v",e,r)}
+}
+func TestUnitExhausted24HoursDoesNotReset(t *testing.T){items,s,d:=memoryFixture();scope:=filepath.Join(t.TempDir(),"copy");now:=time.Date(2026,11,2,0,0,0,0,time.UTC);s.FailReads=true;engine:=&Engine{Source:s,Destination:d,Now:func()time.Time{return now}};engine.run(context.Background(),items,scope);calls:=s.Calls+d.Calls;now=now.Add(24*time.Hour);if _,e:=engine.run(context.Background(),items,scope);e==nil{t.Fatal("expired budget accepted")};if _,e:=engine.run(context.Background(),items,scope);e==nil||s.Calls+d.Calls!=calls{t.Fatal("expired budget reset")}}
+func TestUnitPermanentIntegrityCasesHoldWithoutAutomaticRetry(t *testing.T){for _,kind:=range []string{"bad-hash","unowned-destination","extra-destination","corrupt-destination"}{t.Run(kind,func(t *testing.T){items,s,d:=memoryFixture();switch kind{case "bad-hash":items[0].Meta.Metadata["ouf-content-hash"]="sha256:bad";case "unowned-destination":d.Rows[items[0].ID]=s.Rows[items[0].ID];case "extra-destination":d.Rows[ID{"lab-bucket","unknown"}]=s.Rows[items[0].ID];case "corrupt-destination":d.CorruptRead=true};scope:=filepath.Join(t.TempDir(),"copy");engine:=&Engine{Source:s,Destination:d};if _,e:=engine.run(context.Background(),items,scope);e==nil{t.Fatal("integrity mismatch accepted")};calls:=s.Calls+d.Calls;if _,e:=engine.run(context.Background(),items,scope);e==nil||s.Calls+d.Calls!=calls{t.Fatal("held operation retried")}})}}
+func TestUnitChangedPlanOrProfileCannotResetBudget(t *testing.T){items,s,d:=memoryFixture();scope:=filepath.Join(t.TempDir(),"copy");engine:=&Engine{Source:s,Destination:d,Hook:func(string)error{return ErrCrash}};engine.run(context.Background(),items,scope);before:=d.Puts;items[0].Meta.Headers["contentType"]="changed";if _,e:=engine.run(context.Background(),items,scope);e==nil||d.Puts!=before{t.Fatal("changed plan admitted")}}
+func TestUnitJournalCustodyChainAndConcurrentLaunch(t *testing.T){scope:=filepath.Join(t.TempDir(),"copy");j,e:=openJournal(scope);if e!=nil{t.Fatal(e)};if e=j.append("operation",Progress{Intent:"fixture",Outcome:"PREPARED"});e!=nil{t.Fatal(e)}
+ if _,e=openJournal(scope);e==nil{t.Fatal("double launch allowed")};j.Close();p:=filepath.Join(scope,"operation");raw,e:=os.ReadFile(p);if e!=nil{t.Fatal(e)};os.WriteFile(p,raw[:len(raw)-1],0600);j,e=openJournal(scope);if e!=nil{t.Fatal(e)};defer j.Close();var state Progress;if e=j.load("operation",&state);e==nil{t.Fatal("torn journal accepted")}
+}
+func TestUnitJournalRequestCreditsAreDurableAndFinite(t *testing.T){scope:=filepath.Join(t.TempDir(),"copy");j,e:=openJournal(scope);if e!=nil{t.Fatal(e)};j.append("operation",Progress{});for i:=0;i<MaxRequests;i++{if e=j.credit();e!=nil{t.Fatal(i,e)}};j.Close();j,e=openJournal(scope);if e!=nil{t.Fatal(e)};defer j.Close();if e=j.credit();e==nil||j.Counts["requests"]!=MaxRequests{t.Fatal("request budget reset")}}
+func TestUnitUnprovenExistingScopeAndSourceIdentity(t *testing.T){root:=t.TempDir();scope:=filepath.Join(root,"scope");os.Mkdir(scope,0700);if _,e:=openJournal(scope);e==nil{t.Fatal("unproven existing scope accepted")};items,s,d:=memoryFixture();d.Name=s.Name;if _,e:=(&Engine{Source:s,Destination:d}).run(context.Background(),items,filepath.Join(root,"other"));e==nil{t.Fatal("same source/destination accepted")}}
+func TestUnitPlanLimitsAndPrivateModes(t *testing.T){items,s,d:=memoryFixture();items[0].Meta.Size=MaxObjectBytes+1;if _,e:=(&Engine{Source:s,Destination:d}).run(context.Background(),items,filepath.Join(t.TempDir(),"copy"));e==nil{t.Fatal("oversized plan")};items,s,d=memoryFixture();scope:=filepath.Join(t.TempDir(),"copy");if _,e:=(&Engine{Source:s,Destination:d}).run(context.Background(),items,scope);e!=nil{t.Fatal(e)};paths,e:=os.ReadDir(scope);if e!=nil{t.Fatal(e)};for _,p:=range paths{info,e:=os.Lstat(filepath.Join(scope,p.Name()));if e!=nil||!privateFile(info){t.Fatal("non-private journal",e)}}}
+var _ Store=(*memoryStore)(nil)
+var _=reflect.DeepEqual

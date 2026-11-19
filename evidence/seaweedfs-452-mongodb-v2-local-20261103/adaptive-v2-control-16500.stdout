@@ -1,0 +1,9 @@
+{"Time":"2026-11-03T21:39:06.368018974+01:00","Action":"start","Package":"ouf.local/mongodb-adaptive-v2-control"}
+{"Time":"2026-11-03T21:39:06.378242975+01:00","Action":"run","Package":"ouf.local/mongodb-adaptive-v2-control","Test":"TestMongoV2AdaptiveRetriesRemainDisabledInProfile"}
+{"Time":"2026-11-03T21:39:06.378355094+01:00","Action":"output","Package":"ouf.local/mongodb-adaptive-v2-control","Test":"TestMongoV2AdaptiveRetriesRemainDisabledInProfile","Output":"=== RUN   TestMongoV2AdaptiveRetriesRemainDisabledInProfile\n","OutputType":"frame"}
+{"Time":"2026-11-03T21:39:06.4664418+01:00","Action":"output","Package":"ouf.local/mongodb-adaptive-v2-control","Test":"TestMongoV2AdaptiveRetriesRemainDisabledInProfile","Output":"    mongodb_options_v2_test.go:235: overload was hidden or retried: \u003cnil\u003e\n","OutputType":"error"}
+{"Time":"2026-11-03T21:39:06.466713369+01:00","Action":"output","Package":"ouf.local/mongodb-adaptive-v2-control","Test":"TestMongoV2AdaptiveRetriesRemainDisabledInProfile","Output":"--- FAIL: TestMongoV2AdaptiveRetriesRemainDisabledInProfile (0.09s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T21:39:06.466725917+01:00","Action":"fail","Package":"ouf.local/mongodb-adaptive-v2-control","Test":"TestMongoV2AdaptiveRetriesRemainDisabledInProfile","Elapsed":0.09}
+{"Time":"2026-11-03T21:39:06.466773088+01:00","Action":"output","Package":"ouf.local/mongodb-adaptive-v2-control","Output":"FAIL\n","OutputType":"frame"}
+{"Time":"2026-11-03T21:39:06.468104362+01:00","Action":"output","Package":"ouf.local/mongodb-adaptive-v2-control","Output":"FAIL\touf.local/mongodb-adaptive-v2-control\t0.100s\n","OutputType":"frame"}
+{"Time":"2026-11-03T21:39:06.468125984+01:00","Action":"fail","Package":"ouf.local/mongodb-adaptive-v2-control","Elapsed":0.1}

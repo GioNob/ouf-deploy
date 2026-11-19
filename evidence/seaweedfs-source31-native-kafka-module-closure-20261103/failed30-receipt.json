@@ -1,0 +1,91 @@
+{
+  "schema": "ouf.generation30-failed-hosted-readback.v1",
+  "status": "FAILED_NESTED_KAFKA_TIDY_NOT_IMAGE_QUALIFIED",
+  "commit": "63ae5b2a71873aad0586c9bb3b5819f054fa7c09",
+  "runId": 41709442499,
+  "jobId": 126173342496,
+  "artifactId": 13267648546,
+  "artifactBytes": 607268,
+  "artifactSha256": "34546382b01a363393e0eba0f72facfa9e9fa79c8a2feb339b2aa117409ac96c",
+  "archiveMembers": 32,
+  "independentlyRecheckedRegressionProfiles": {
+    "main": {
+      "profile": "main",
+      "counts": {
+        "pass_tests": 6371,
+        "pass_packages": 30,
+        "skip_packages": 4,
+        "skip_tests": 5
+      },
+      "logSha256": "c0d87b0db60171e25e5a7819960291aec0979de78081576cca6a1db807a830a3",
+      "terminalTestsSha256": "ac5404abdc4137518911561b1af7f19e69bb805591d1023ddff55423ea135f0e",
+      "terminalPackagesSha256": "0a413b22aaf0ff0bdaa3fd57128d72c38fcdb465d750293130b8ab33960ac972",
+      "environmentConditionalOutcomes": {},
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "server": {
+      "profile": "server",
+      "counts": {
+        "pass_tests": 7,
+        "pass_packages": 1
+      },
+      "logSha256": "dbe35b4a53c3e25ab7df513495f5f1029d19e26cf4c44b5a4b32ebfa33c3726d",
+      "terminalTestsSha256": "284bed3612f12af2a94b6a6c412b2f67f09beffd89a8196331bd2b478bbe3230",
+      "terminalPackagesSha256": "4a9e99d596111f0d7e05a0bc625ee4067ef915dde2b577ed18497cca0e5a4201",
+      "environmentConditionalOutcomes": {},
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "storage": {
+      "profile": "storage",
+      "counts": {
+        "pass_tests": 58,
+        "pass_packages": 1
+      },
+      "logSha256": "70fe597a6acb54fb6d1384951ef82f0aa67dfc28ef9c3ed1135767190c08d2c0",
+      "terminalTestsSha256": "6ad75c5b9bf23def24c0a1891393a5b4ee28d737782bcef9dba46cf5291b2ff3",
+      "terminalPackagesSha256": "211d61f322c3c35d86ec1413455e0d69533c0343227db95bef23f2037cd84c91",
+      "environmentConditionalOutcomes": {
+        "TestSortedFileNeedleMap_HoldsNoDescriptors": "pass",
+        "TestRebuildIdx_UnwritableIdxDirSkipsOnlyThisVolume": "pass"
+      },
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "race": {
+      "profile": "race",
+      "counts": {
+        "pass_tests": 25,
+        "pass_packages": 2
+      },
+      "logSha256": "03ad66dbc1605f728bb88fc7bada1ecd477eeb000963867bcb14b934d17e1d7a",
+      "terminalTestsSha256": "e103b2d1a615669d91637c79ea894c5827c6e35bb4d15b22163ab95819b5c745",
+      "terminalPackagesSha256": "8c9b7d821a314333db697beef89ce06c92c06cb500543c773d2e1232490b7a6f",
+      "environmentConditionalOutcomes": {},
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    }
+  },
+  "additionalRawTerminalEvents": {
+    "root-iam-regressions.jsonl": {
+      "passTestEvents": 24,
+      "passPackages": 2
+    },
+    "nested-iam-regressions.jsonl": {
+      "passTestEvents": 18,
+      "passPackages": 1
+    },
+    "compat-tests.jsonl": {
+      "passTestEvents": 3,
+      "passPackages": 1
+    }
+  },
+  "cause": "The removed Btree import makes one indirect requirement and two checksums unused in the separate native Kafka test module",
+  "tidyDiffSha256": "ba57d05960a785150b9d8a8aa96fd640a463b5b23c10843f78034c1487ba445d",
+  "freshImageBuilt": false,
+  "freshScanOrSpdxProduced": false,
+  "hostedImageQualified": false,
+  "source30PatchAndManifestUnchanged": true,
+  "targetOperations": 0
+}

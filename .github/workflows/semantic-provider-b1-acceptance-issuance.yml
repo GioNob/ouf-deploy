@@ -1,0 +1,25 @@
+name: Semantic provider B1 acceptance issuance
+on:
+  pull_request:
+    paths:
+      - scripts/issue-semantic-provider-b1-acceptance.py
+      - scripts/deliver-semantic-provider-b1-acceptance-issuance.sh
+      - tools/semantic_b1b2_authority/**
+      - tools/semantic_b1_acceptance/**
+      - tools/semantic_runtime_v5/semantic_provider_docker_runtime_v5.py
+      - tools/semantic_runtime_v5/arming_verifier.py
+      - tests/test_semantic_provider_b1_acceptance_issuance.py
+      - .github/workflows/semantic-provider-b1-acceptance-issuance.yml
+      - docs/OUF_SEMANTIC_PROVIDER_B1_ACCEPTANCE_ISSUANCE_20261113.md
+permissions: {contents: read}
+jobs:
+  issuance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Verify issuance with native root custody and real OpenSSL
+        run: sudo -n env OUF_B1_ISSUANCE_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_b1_acceptance_issuance.py -v
+      - name: Check launcher syntax
+        run: bash -n scripts/deliver-semantic-provider-b1-acceptance-issuance.sh

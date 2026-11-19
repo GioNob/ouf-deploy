@@ -1,0 +1,24 @@
+name: Registry owner metadata discovery
+on:
+  pull_request:
+    paths:
+      - scripts/read-registry-token-owner-candidates-20261023.py
+      - tests/test_registry_owner_discovery.py
+      - .github/workflows/registry-owner-discovery.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  readonly-discovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Disposable root metadata and actual kernel flock observation
+        run: |
+          sudo install -d -m 0700 /root/ouf-owner-discovery
+          sudo cp -a . /root/ouf-owner-discovery/repository
+          sudo chown -R root:root /root/ouf-owner-discovery
+          sudo env OUF_NATIVE_LOCKS=1 python3 -I -B -S -m unittest discover -s /root/ouf-owner-discovery/repository/tests -p test_registry_owner_discovery.py -v

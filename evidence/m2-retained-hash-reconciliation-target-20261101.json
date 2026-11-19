@@ -1,0 +1,127 @@
+{
+  "automaticReplayAllowed": false,
+  "evidenceOrigin": "OPERATOR_PASTED_PUBLIC_RESULT",
+  "independentTargetFilesystemRead": false,
+  "interpretation": {
+    "actualCollectorRuntimeProven": false,
+    "actualTokenOwnerAdmissionProven": false,
+    "blanketReadonlyEqualsImmutableAssumptionInvalid": true,
+    "fileTypeUidGidModeLinkCountOrSizeChanged": false,
+    "historicalFailureTraceReconstructed": false,
+    "onlyTwoDynamicDirectoriesChanged": true,
+    "operationalStoreRelativeNameReferenceMatchedPublicContract": true,
+    "tokenRelativeNameReferenceMatchedPublicContract": true
+  },
+  "launcherCommit": "9f8bf3517ec5de1cc75808556877938b4bfaed59",
+  "next": "Source-backed lifecycle classification for all retained mounts; static content candidates only, renewable tokens and live operational SQLite content excluded and separately admitted later. Preserve all consumed scopes; no old hash retry.",
+  "observedDate": "2026-11-01",
+  "privateRecordReadByAgent": false,
+  "publicResultCanonicalSha256": "621124d289f36598cd7ae3675d3853303f5498d1600183a404486ecc633a6143",
+  "receipt": {
+    "allPriorScopesPreserved": true,
+    "automaticReplayAllowed": false,
+    "candidateHash": "050ba14dd8f407749ed5cad912a4d700ede6a69dbae4037be60ccaa7a0a1f1d2",
+    "changedNodes": 4,
+    "comparedNodes": 6,
+    "counts": {
+      "engineGets": 0,
+      "metadataBytes": 638296,
+      "metadataNodes": 6,
+      "metadataReads": 5,
+      "mountedFileContentBytesRead": 0
+    },
+    "cumulativeDirectEngineGets": 22,
+    "currentContainerConfigurationFreshlyObserved": false,
+    "currentDiffIsNotHistoricalFailureTrace": true,
+    "differences": [
+      {
+        "capturedKind": "DIRECTORY",
+        "category": "SIZE_OR_TIME_CHANGED",
+        "changedDuringRead": false,
+        "changedMetadataFields": [
+          "mtimeNs",
+          "ctimeNs"
+        ],
+        "configuredReferenceClass": "UNCLASSIFIED_DECLARED_MOUNT_NODE",
+        "currentKind": "DIRECTORY",
+        "depth": 0,
+        "membership": "PRESENT",
+        "mountBindingHash": "90886c55a26202c75505292a50434d84022b301f3e51d334838df9dc0f4917b9",
+        "mountOrdinal": 0,
+        "observationIncomplete": false,
+        "relativeNodeHash": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+      },
+      {
+        "capturedKind": "REGULAR_FILE",
+        "category": "KIND_OR_CUSTODY_CHANGED",
+        "changedDuringRead": false,
+        "changedMetadataFields": [
+          "inode",
+          "mtimeNs",
+          "ctimeNs"
+        ],
+        "configuredReferenceClass": "UNCLASSIFIED_DECLARED_MOUNT_NODE",
+        "currentKind": "REGULAR_FILE",
+        "depth": 1,
+        "membership": "PRESENT",
+        "mountBindingHash": "90886c55a26202c75505292a50434d84022b301f3e51d334838df9dc0f4917b9",
+        "mountOrdinal": 0,
+        "observationIncomplete": false,
+        "relativeNodeHash": "3d872b2ab22a2475ca9ba197dc3cc954d8c991e44284994557fbcaf873cdb73f"
+      },
+      {
+        "capturedKind": "DIRECTORY",
+        "category": "SIZE_OR_TIME_CHANGED",
+        "changedDuringRead": false,
+        "changedMetadataFields": [
+          "mtimeNs",
+          "ctimeNs"
+        ],
+        "configuredReferenceClass": "UNCLASSIFIED_DECLARED_MOUNT_NODE",
+        "currentKind": "DIRECTORY",
+        "depth": 0,
+        "membership": "PRESENT",
+        "mountBindingHash": "6add88dff9ef2967d16b9a5f271733ad3a44a9a2b2a9e116ee6c69fd884c8758",
+        "mountOrdinal": 3,
+        "observationIncomplete": false,
+        "relativeNodeHash": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+      },
+      {
+        "capturedKind": "REGULAR_FILE",
+        "category": "SIZE_OR_TIME_CHANGED",
+        "changedDuringRead": false,
+        "changedMetadataFields": [
+          "mtimeNs",
+          "ctimeNs"
+        ],
+        "configuredReferenceClass": "UNCLASSIFIED_DECLARED_MOUNT_NODE",
+        "currentKind": "REGULAR_FILE",
+        "depth": 1,
+        "membership": "PRESENT",
+        "mountBindingHash": "6add88dff9ef2967d16b9a5f271733ad3a44a9a2b2a9e116ee6c69fd884c8758",
+        "mountOrdinal": 3,
+        "observationIncomplete": false,
+        "relativeNodeHash": "0a16e95fb5267ab72eede1b8bb873356566e89b849a9bc24744fc09c5b193db2"
+      }
+    ],
+    "differencesTruncated": false,
+    "failedResultHash": "a7a7601c5f78dd55ad43839c588cddaded3a61471517dbf6b7917ffbfd9f4319",
+    "hashPreparationRearmed": false,
+    "permissionOrContentPolicyEstablished": false,
+    "privatePathsNamesOrValuesPrinted": false,
+    "releaseAcceptance": false,
+    "role": "gateway-owner",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.retained-hash-metadata-reconciliation-result.v1",
+    "scope": "/etc/ouf/deploy-snapshots/m2-retained-hash-reconciliation-a7a7601c-20261101-v1",
+    "status": "METADATA_DIFFERENCES_RECORDED_NOT_ADMITTED",
+    "targetApplyAuthorized": false
+  },
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-hash-reconciliation-target.v1",
+  "scopeConsumed": true,
+  "sourceCommit": "0bea0b9c46f8fdd941b43d6f800a179f460456dd",
+  "targetApplyAuthorized": false,
+  "timezone": "Europe/Rome"
+}

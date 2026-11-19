@@ -1,0 +1,43 @@
+{
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "directConnectivityTested": false,
+  "observedAt": "2026-11-07T15:29:56.542639+00:00",
+  "onboarding": {
+    "accessKeyFileConfigured": true,
+    "configurationScope": "DOCKER_ENV_AND_COMMAND_NOT_EFFECTIVE_JVM_SPRING_CONFIGURATION",
+    "customJvmTrustStoreDeclaredInContainerConfig": false,
+    "imageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+    "matchesRetainedImage": true,
+    "networks": [
+      "ouf-backend"
+    ],
+    "running": true,
+    "secretKeyFileConfigured": true,
+    "stagingBucket": "ouf-managed-files",
+    "stagingEndpoint": {
+      "hasUnexpectedUrlParts": false,
+      "host": "ouf-minio",
+      "port": 9000,
+      "scheme": "http"
+    },
+    "toolsAvailable": [
+      "java",
+      "keytool",
+      "curl"
+    ]
+  },
+  "s3Requests": 0,
+  "schema": "ouf.current-storage-bindings.v1",
+  "seaweedfs": {
+    "imageId": "sha256:d23a50eb6cf56dc994ddc10f43590cc9a8a22a20019cab36d4ad00c3ad3b4af2",
+    "networks": [
+      "ouf-seaweedfs-private"
+    ],
+    "publishedPortBindings": false,
+    "running": true
+  },
+  "serviceConfigurationChanged": false,
+  "sharedDockerNetworks": [],
+  "status": "BINDINGS_READ_ONLY"
+}

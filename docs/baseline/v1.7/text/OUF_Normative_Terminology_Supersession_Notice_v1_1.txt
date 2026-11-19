@@ -1,0 +1,44 @@
+OPEN URBAN FRAMEWORK (OUF)
+NORMATIVE TERMINOLOGY & SUPERSESSION NOTICE
+Cross-document terminology authority for the coherence-aligned baseline
+Versione 1.1 — Settembre 2026
+This notice is normative for terminology only. It does not change bounded-context ownership or contract semantics.
+1. Canonical terminology
+Canonical term
+Meaning
+Deprecated/legacy term
+Trusted Human Surface (THS)
+Logical common OUF human trust boundary co-located in the Source Onboarding/Configuration physical deployable.
+Trusted Approval Surface (when used as umbrella term)
+Trusted Approval Workspace
+THS bounded context for HUMAN_REQUIRED authoritative decisions.
+Trusted Approval Surface / TAS
+Protected Operations Workspace
+THS bounded context for protected log/data operations performed only with HUMAN_USER.
+No MCP equivalent; no fourth mcpClass
+MCP Server v1.1
+Governed typed capability boundary for external MCP/AI clients.
+MCP Server / Agent Host; future Agent Host
+External AI Agent / MCP Client
+Consumer-side model/agent runtime outside OUF.
+Internal Agent Host
+OUF-E2E-###
+Canonical cross-module acceptance scenario namespace.
+Blueprint v0.1 E2E-##; E2E v0.1 E2E-## as new evidence IDs
+2. Supersession rules
+Any remaining phrase “Trusted Approval Surface” in older PETs is interpreted as Trusted Approval Workspace when it denotes HUMAN_REQUIRED approval, unless the local historical context explicitly describes the former umbrella label.
+Any remaining “Agent Host” wording is historical/deprecated and does not define an OUF runtime component. MCP Server v1.1 is the only OUF MCP capability-boundary deployable; model/agent runtimes are external consumers.
+Protected Human Operations never become MCP/OUF capabilities and are not represented by a fourth mcpClass.
+New acceptance evidence must use OUF-E2E-### identifiers and the E2E v0.3 mapping for historical references.
+This notice has terminology precedence over older narrative text but never over machine-readable contract field semantics.
+3. Documents affected
+Document family
+Treatment
+UDP/Ingestion/Semantic/Authorization/Gateway Development Ready PETs
+Legacy terminology is superseded by this notice; next editorial revision should normalize wording without semantic change.
+Cross-Module Alignment Matrix v1.3
+Superseded on execution-artifact references by Matrix v1.4; terminology and E2E semantics are unchanged.
+Blueprint v0.2
+Superseded on execution-artifact references by Blueprint v0.3; bounded-context semantics are unchanged.
+Final Readiness Matrix v1.1
+Superseded by v1.2.

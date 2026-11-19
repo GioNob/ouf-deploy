@@ -1,0 +1,26 @@
+{"Time":"2026-11-03T18:16:04.83143608Z","Action":"start","Package":"github.com/seaweedfs/seaweedfs/test/kafka/cmd/setup"}
+{"Time":"2026-11-03T18:16:04.831516651Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/cmd/setup","Output":"?   \tgithub.com/seaweedfs/seaweedfs/test/kafka/cmd/setup\t[no test files]\n"}
+{"Time":"2026-11-03T18:16:04.831531093Z","Action":"skip","Package":"github.com/seaweedfs/seaweedfs/test/kafka/cmd/setup","Elapsed":0}
+{"Time":"2026-11-03T18:16:09.304154398Z","Action":"start","Package":"github.com/seaweedfs/seaweedfs/test/kafka/e2e"}
+{"Time":"2026-11-03T18:16:09.317347263Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/e2e","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-11-03T18:16:09.317422116Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/e2e","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-03T18:16:09.318732184Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/e2e","Output":"ok  \tgithub.com/seaweedfs/seaweedfs/test/kafka/e2e\t0.014s [no tests to run]\n"}
+{"Time":"2026-11-03T18:16:09.319134531Z","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/test/kafka/e2e","Elapsed":0.015}
+{"Time":"2026-11-03T18:16:09.340788741Z","Action":"start","Package":"github.com/seaweedfs/seaweedfs/test/kafka/integration"}
+{"Time":"2026-11-03T18:16:09.340901581Z","Action":"start","Package":"github.com/seaweedfs/seaweedfs/test/kafka/internal/testutil"}
+{"Time":"2026-11-03T18:16:09.340918397Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/internal/testutil","Output":"?   \tgithub.com/seaweedfs/seaweedfs/test/kafka/internal/testutil\t[no test files]\n"}
+{"Time":"2026-11-03T18:16:09.340930245Z","Action":"skip","Package":"github.com/seaweedfs/seaweedfs/test/kafka/internal/testutil","Elapsed":0}
+{"Time":"2026-11-03T18:16:09.340941752Z","Action":"start","Package":"github.com/seaweedfs/seaweedfs/test/kafka/loadtest"}
+{"Time":"2026-11-03T18:16:09.341049895Z","Action":"start","Package":"github.com/seaweedfs/seaweedfs/test/kafka/unit"}
+{"Time":"2026-11-03T18:16:09.34915703Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/loadtest","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-11-03T18:16:09.349260316Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/loadtest","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-03T18:16:09.350034465Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/loadtest","Output":"ok  \tgithub.com/seaweedfs/seaweedfs/test/kafka/loadtest\t0.009s [no tests to run]\n"}
+{"Time":"2026-11-03T18:16:09.350573708Z","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/test/kafka/loadtest","Elapsed":0.01}
+{"Time":"2026-11-03T18:16:09.356687655Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/unit","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-11-03T18:16:09.356735157Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/unit","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-03T18:16:09.35792323Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/integration","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-11-03T18:16:09.357942509Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/integration","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-03T18:16:09.357970491Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/unit","Output":"ok  \tgithub.com/seaweedfs/seaweedfs/test/kafka/unit\t0.017s [no tests to run]\n"}
+{"Time":"2026-11-03T18:16:09.358080132Z","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/kafka/integration","Output":"ok  \tgithub.com/seaweedfs/seaweedfs/test/kafka/integration\t0.017s [no tests to run]\n"}
+{"Time":"2026-11-03T18:16:09.358345567Z","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/test/kafka/unit","Elapsed":0.017}
+{"Time":"2026-11-03T18:16:09.358498784Z","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/test/kafka/integration","Elapsed":0.018}

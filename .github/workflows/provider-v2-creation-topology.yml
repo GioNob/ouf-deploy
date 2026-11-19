@@ -1,10 +1,6 @@
 name: Provider v2 creation topology
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/provider-v2-creation-topology.py'
-      - '.github/workflows/provider-v2-creation-topology.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

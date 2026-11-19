@@ -1,0 +1,68 @@
+{
+  "schema": "ouf.postgres-fixture-adapter-local-qualification.v1",
+  "status": "PROCESS_BOUNDARY_VERIFIED_POSTGRES_EXECUTION_PENDING",
+  "qualifiedAtDate": "2026-11-03",
+  "pythonVersion": "3.12.14",
+  "newTestsPassed": 13,
+  "combinedFoundationTestsPassed": 38,
+  "subprocessPeersAreReal": true,
+  "postgreSqlExecuted": false,
+  "psqlExecuted": false,
+  "sqlExecuted": false,
+  "fenceProtocolImplemented": false,
+  "dumpRestoreOriginVerified": false,
+  "writerFenceEnforced": false,
+  "runtimeHealthyClaimed": false,
+  "pitrQualified": false,
+  "rpoMeasured": false,
+  "rtoMeasured": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "candidateLockChanged": false,
+  "scopeConsumed": 17,
+  "engineGetCumulative": 52,
+  "validatedBoundaries": [
+    "single-attempt deadline and complete process-group termination",
+    "stdout/stderr streaming caps and redacted exceptions",
+    "peer exit failure or diagnostic output rejects otherwise valid JSON",
+    "noninherited PG environment, fixed read-only SQL, Unix socket fixture only",
+    "duplicate JSON fields and trailing frames rejected",
+    "row cardinality overflow sentinel, quiescent-generation and ACK prerequisites",
+    "canonical output feeds existing streamed-body reconciler; changed body rejected"
+  ],
+  "syntaxValidation": {
+    "pythonCompile": true,
+    "pythonAst": true,
+    "workflowYamlParse": true,
+    "workflowBashSyntax": true
+  },
+  "sourceFiles": {
+    "tools/storage_recovery/postgres_fixture.py": {
+      "sha256": "5f38344d93b9e2144688897ad2d2a82702f7aaeed447e994b080b33d2fc6b6f6",
+      "bytes": 10662
+    },
+    "tests/test_storage_recovery_postgres_fixture.py": {
+      "sha256": "a987cb65f7aad7547183d24ad5e94e591a4ce217b75ed542be7b5744c444acb2",
+      "bytes": 10519
+    },
+    "docs/OUF_SEAWEEDFS_POSTGRES_FIXTURE_ADAPTER_20261103.md": {
+      "sha256": "67b34961212077c17dc7bde2845f27ba3588ba70204b47e5de029aff4453f7ee",
+      "bytes": 5174
+    },
+    ".github/workflows/storage-452-recovery-foundation.yml": {
+      "sha256": "2ad66fa9dd2431129eb43e0da53cf73f412108070db7f21effa7b63eac38df2e",
+      "bytes": 3603
+    },
+    "evidence/seaweedfs-postgres-fixture-adapter-local-tests-20261103.txt": {
+      "sha256": "b3ca73536bf6ae6b2ac033311ac5a53090a076db69d7c2d1f5e5bec085a3e721",
+      "bytes": 7233
+    }
+  },
+  "limitations": [
+    "Real PostgreSQL SQL execution, image qualification, restore-origin proof and concurrent transactional writer fencing remain pending.",
+    "Caller-provided dump digest is a reference, not proof that the observed database was restored from it.",
+    "The queried fence row is evidence of declared state, not enforcement by this read-only adapter.",
+    "A synthetic peer proves process/serialization handling, never PostgreSQL compatibility."
+  ]
+}

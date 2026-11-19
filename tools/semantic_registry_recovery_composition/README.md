@@ -1,0 +1,15 @@
+# Registry recovery source descriptor and bounded read-only preflight
+
+Installation-specific diagnostic. `compose.py case.json` reads the retained history dossier, compiles a blocked source compatibility descriptor, and performs six exact Engine GETs within 45 seconds. It saves only a new private `composition.json` (directory0700/file0400), with durable write/readback. It has no apply/step/authority/signer/token-renewal interface.
+
+GET order: pinned Gateway, exact stopped Registry, audited image, same image, same Registry, same Gateway. API v1.44; only two exact container IDs and one exact image ID; 2MiB/response, four-second socket timeout. Any identity/lifecycle/configuration/network/image/declaration/dossier drift or HTTP failure stops without retry, substitution, discovery or fallback. Input case validation occurs before opening retained metadata.
+
+The retained historical image audit is compared with current image inspection using unchanged `image_custody` predicates from source408a0939. The diagnostic checks image ID, linux/amd64, ordered RootFS diff IDs and all eleven execution-config fields, including exact config/native-manifest identity where declared. This reuses historical archive custody; it does not reread archive/layer bytes or inspect a live container OCI/rootfs.
+
+Four readonly bind declarations are compared with independently retained launch sources, database configtree and renewable-token directory declarations. No key/password/token bytes or filesystem contents are opened; no file/mount custody or credential validity is inferred. Only retained metadata JSON and Engine JSON are read.
+
+Successful output is `SOURCE_COMPOSITION_AND_IMAGE_DECLARATIONS_OBSERVED`, not acceptance. All seven current gates remain open. Current service identity, database/token admission, live Gateway routing, application readiness, root cause, native executor qualification and runtime authority remain unproven. No provider recovery, migrations, Gateway changes, OAuth, activation, budget/window reset or replay.
+
+Source map records why the created-only stage adapter and combined unpause/SIGUSR1 release adapter cannot be reused unchanged. Typed attestation, fresh-generation observation and owner admission require a separately implemented and qualified recovery composition. This tool implements none of those runtime paths.
+
+Local validation:18new stdlib fixture tests and69unchanged predecessor tests pass, zero skips. Tests cover six-read order, scope/budget rejection before socket access, original historical contract equality, drift, image config/native-manifest/rootfs, four-mount declarations, historical authority non-adoption, private publication and error redaction. HTTP transport is inherited unchanged apart from the six-GET budget label; full native AF_UNIX/Docker/VPS/CI and future recovery qualification remain pending. The target command is supplied separately with immutable commit and SHA256 checks. Never rerun old readers or alter old claims/directories.

@@ -1,0 +1,6 @@
+testing: warning: no tests to run
+PASS
+ok  	github.com/seaweedfs/seaweedfs/test/s3/policy	0.132s [no tests to run]
+testing: warning: no tests to run
+PASS
+ok  	github.com/seaweedfs/seaweedfs/test/s3/normal	0.110s [no tests to run]

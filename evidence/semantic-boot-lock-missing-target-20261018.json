@@ -1,0 +1,76 @@
+{
+  "schema": "ouf.semantic-boot-lock-target-read.v1",
+  "evidenceSource": "Operator pasted protected diagnostic receipt in current chat",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "readComplete": true,
+  "runtimeMutations": 0,
+  "serviceStarts": 0,
+  "guardExecutions": 0,
+  "runtimeAuthorityIssued": false,
+  "readerSha256": "c63ee1872d4e78c16bead93c80c0c0fefa694814222a89cf93d23e084b4b63fd",
+  "selectionSha256": "36c47400fc3dc7669b04d6bc18e204a70ca7502f3749d8d92a292ddf4bdc0978",
+  "bootProfile": "/etc/ouf/deploy-snapshots/semantic-coordinated-boot-install-v2-e4repg0a/boot-profile.json",
+  "bootProfileSha256": "b247b94ac8d77d3604840e052878fcc12f4dc6f7e7e8df548f6971c227504845",
+  "allEightOwnerSourceHashesMatch": true,
+  "knownBootSource": true,
+  "compilerMatchesProfile": true,
+  "restorerMatchesProfile": true,
+  "nftExecutableMatches": true,
+  "nativeBootValidationPassed": true,
+  "pairedKernelLockExecutableAndSeparateJournalsMatch": true,
+  "nativeOwnerReadConfiguration": {
+    "passed": false,
+    "errorClass": "FileNotFoundError",
+    "frames": [
+      {
+        "file": "run_semantic_coordinated_lease_owner.py",
+        "function": "read_configuration",
+        "line": 91
+      },
+      {
+        "file": "run_semantic_coordinated_lease_owner.py",
+        "function": "private",
+        "line": 32
+      }
+    ]
+  },
+  "ownerJournal": {
+    "readable": true,
+    "state": "QUIESCED",
+    "leaseAuthorized": false,
+    "startAuthorized": false,
+    "leaseAddressCounts": [
+      0,
+      0
+    ]
+  },
+  "bootJournal": {
+    "readable": true,
+    "state": "RUNTIME_EMPTY",
+    "startAuthorized": false
+  },
+  "ownedTableFamilies": [],
+  "dockerState": "inactive",
+  "nativeBootGuardState": "failed",
+  "nativeBootGuardExitStatus": 1,
+  "guardRecoveryProven": false,
+  "inference": "Native line91 reads commonLockFile first and journalFile second; journal is independently readable. Missing common lock is the supported diagnosis, subject to a fresh same-cohort absence/custody check before any write. Its path was not printed by this receipt; volatile placement is not yet proven.",
+  "recovery": {
+    "prepared": true,
+    "targetApplyPerformed": false,
+    "realRebootAfterFixProven": false,
+    "qualification": {
+      "sourceCommit": "396fd1ef61399f0e223c492036a7d7464ce66586",
+      "sourceSha256": "cab86f80059c58f38084d3fc554ea5ae549a993ac8fd7753a47fff698b81ae14",
+      "selectionSha256": "acc0e51e4782f7700a89049085af7b6e435332e48bd1a70220e65569b78aeb8a",
+      "deliveryCommit": "9d0cd41bf1c1d41c828d693fc6fba938bc4c246a",
+      "launcherSha256": "917cf11417c23fdec9d5def1ecc4c0933772d606a5b6186a8ebb56edbd47dba8",
+      "run": 39144183066,
+      "job": 117724546709,
+      "testsPassed": 16,
+      "targetApplyPerformed": false,
+      "realRebootAfterFixProven": false
+    }
+  }
+}

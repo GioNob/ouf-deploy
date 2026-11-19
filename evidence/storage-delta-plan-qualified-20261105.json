@@ -1,0 +1,155 @@
+{
+  "schema": "ouf.storage-delta-planner-qualification.v1",
+  "date": "2026-11-05",
+  "status": "OFFLINE_COMPONENT_LOCAL_AND_HOSTED_PASS_NOT_ADMITTED",
+  "baseDeployCommit": "41431adaac06a85d9deeb31da70c156b3f955141",
+  "sourceOnboardingCommit": "d5155899b09dda298494b68cefa7e1f281167652",
+  "sourceHashes": {
+    "tools/storage_planning/delta_manifest.py": "3bed62f6bdc4d03cb51ac7212bbe97a90f1131285e0b1e0d855e8239031287bd",
+    "tools/storage_planning/inventory_manifest.py": "5aabd44d0df99e08f95cfa7d085e449b05ad1d4fd5c5c581364675d2930baec1",
+    "tests/test_storage_delta_manifest.py": "39705f124e2eea334a9c3afbbcf086e04cf0411c222a894a4a1f4fb9dc29fb0c",
+    ".github/workflows/storage-delta-plan.yml": "3f55e22f87c1c0210a9311510f96e4af858343f7104619e889565206597af178"
+  },
+  "localValidation": {
+    "command": "python -I -B -S -m unittest discover -s ouf-deploy/tests -p 'test_storage_delta_manifest.py' -v",
+    "pythonVersion": "3.12.14",
+    "executed": 22,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "evidence/storage-delta-plan-local-tests-20261105.txt",
+    "logSha256": "9b098fd9c2ddbe78e7aa0f8c12068be4095e9fa912a1abe110d3ee36f03cb75c",
+    "reasonForFinalRun": "Added cross-snapshot file-directory transition denial; exact unchanged Git source bytes normalized before final run."
+  },
+  "newImplementation": {
+    "module": "tools/storage_planning/delta_manifest.py",
+    "kind": "OFFLINE_PRIVATE_DELTA_PLANNER",
+    "reuses": "tools/storage_planning/inventory_manifest.py",
+    "classifications": [
+      "ADD",
+      "REPLACE_BODY",
+      "REPLACE_METADATA",
+      "REMOVE",
+      "SOURCE_OBSERVATION_CHANGED",
+      "UNCHANGED"
+    ],
+    "hashSource": "COMPUTED_FROM_SUPPLIED_LOCAL_BYTES_NOT_ADVERTISED_METADATA",
+    "limitsPerSnapshot": {
+      "objects": 256,
+      "objectBytes": 16777216,
+      "bodyBytes": 67108864,
+      "inventoryBytes": 4194304
+    },
+    "targetExecutorImplemented": false,
+    "sourceCaptureImplemented": false,
+    "destinationObserved": false,
+    "sourceReadProven": false,
+    "pointInTimeSnapshotProven": false,
+    "databaseReconciliationImplemented": false,
+    "automaticReplayAllowed": false
+  },
+  "historicalEvidenceReuse": {
+    "nativeRecoveryRerun": false,
+    "nativeArchiveReadbackRepeated": false,
+    "imageCohortRuntimeReceiptHashesMatchedCurrentPlan": true,
+    "sourceOnboardingCodeChanged": false,
+    "copyNewGoCodeChanged": false,
+    "verifiedReceiptFiles": [
+      {
+        "path": "evidence/seaweedfs-generation33-image-hosted-20261104.json",
+        "sha256": "006ddaad0faf8bc179b8386478b8b24824ec09742d76deb4a5b7c71d456627d0"
+      },
+      {
+        "path": "evidence/seaweedfs-452-generation33-cohort-hosted-20261104.json",
+        "sha256": "6be72f64172037acf65e9935b07e169d960bd2869399d8d3af3fe8551c4ec344"
+      },
+      {
+        "path": "evidence/seaweedfs-generation33-runtime-hosted-20261104.json",
+        "sha256": "00952ebeb5100c8f21a0ce19cddfef13af225ae9cdc727778cff5df658a0216b"
+      }
+    ]
+  },
+  "hostedValidation": {
+    "status": "SUCCESS",
+    "workflow": ".github/workflows/storage-delta-plan.yml",
+    "runId": 42060454823,
+    "jobId": 127360334434,
+    "commit": "747c4772075e8c0c36ad4b906cecacd494d02ab3",
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42060454823",
+    "tests": 22,
+    "artifact": {
+      "id": 13432675036,
+      "bytes": 1948,
+      "sha256": "4024a5cd4798087166b9f7a8b6294bf0715d402e712b1ab33fcdb82a11bcf3ce",
+      "expiresAt": "2027-02-03T15:58:58Z"
+    },
+    "localArchiveReadback": {
+      "status": "PASS",
+      "archiveSha256": "4024a5cd4798087166b9f7a8b6294bf0715d402e712b1ab33fcdb82a11bcf3ce",
+      "archiveBytes": 1948,
+      "members": 4,
+      "checksums": 3,
+      "sourceHashesVerified": {
+        "tools/storage_planning/delta_manifest.py": "3bed62f6bdc4d03cb51ac7212bbe97a90f1131285e0b1e0d855e8239031287bd",
+        "tools/storage_planning/inventory_manifest.py": "5aabd44d0df99e08f95cfa7d085e449b05ad1d4fd5c5c581364675d2930baec1",
+        "tests/test_storage_delta_manifest.py": "39705f124e2eea334a9c3afbbcf086e04cf0411c222a894a4a1f4fb9dc29fb0c",
+        ".github/workflows/storage-delta-plan.yml": "3f55e22f87c1c0210a9311510f96e4af858343f7104619e889565206597af178"
+      },
+      "tests": 22,
+      "sourceCommit": "747c4772075e8c0c36ad4b906cecacd494d02ab3"
+    },
+    "nativeMigrationClaimed": false,
+    "durableArtifactCustodyAdded": false
+  },
+  "acceptance": {
+    "weightedCredits": 18.3,
+    "weightTotal": 46,
+    "creditAdded": 0,
+    "gatesPassed": 0,
+    "gatesTotal": 8,
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestsTotal": 21,
+    "realObjectsCopied": 0,
+    "realObjectBaselineTotal": 120
+  },
+  "effects": {
+    "merge": false,
+    "deploy": false,
+    "targetOperations": 0,
+    "runtimeGrant": false,
+    "runtimeAuthorityIssued": false,
+    "trafficReopened": false,
+    "minioChanged": false,
+    "sourceLockChanged": false
+  },
+  "closureReview": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
+  "handoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
+  "sourceCommit": "747c4772075e8c0c36ad4b906cecacd494d02ab3",
+  "initialIntegrationFailure": {
+    "runId": 42060454629,
+    "jobId": 127360334387,
+    "commit": "747c4772075e8c0c36ad4b906cecacd494d02ab3",
+    "workflow": "Storage current qualification plan",
+    "conclusion": "failure",
+    "reason": "ALL_PRE33_HISTORY_AND_PROGRESS_IMMUTABLE",
+    "cause": "Current next-work/handoff/status fields were changed in the cryptographically frozen historical plan. Its verifier correctly rejects any unrelated change.",
+    "fix": "Restore historical plan exact Git blob; place current next-work/handoff/status in releases/minio-seaweedfs-closure-status-20261105.json. Verifier and safety gate unchanged.",
+    "plannerCodeChanged": false,
+    "originalFailedEvidenceRetained": true,
+    "correctedIntegrationCI": "READ_CHECKS_OF_COMMIT_CONTAINING_EXACT_PLAN_RESTORATION",
+    "localCorrectionCheck": "PASS original restore_generation32_plan/ALL_PRE33_HISTORY_AND_PROGRESS_IMMUTABLE with unchanged verifier"
+  },
+  "initialInfrastructureFailure": {
+    "runId": 42060486582,
+    "jobId": 127360447939,
+    "workflow": "M2 hash only captured readonly regular files",
+    "failedStep": "actions/attest",
+    "observedError": "InternalError: error retrieving identity token",
+    "unitAndSealBeforeAttestation": "SUCCESS",
+    "nativeTenPeers": "SUCCESS",
+    "plannerRelated": false,
+    "testOrAuthorizationGuardChanged": false,
+    "manualRerunRequested": false,
+    "originalFailedEvidenceRetained": true
+  }
+}

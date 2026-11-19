@@ -1,0 +1,23 @@
+{
+  "patch": "patches/seaweedfs/4.52-ouf-standard-kafka-exclusion.patch",
+  "sha256": "14a2df91229fa79ca06e849793dbf0be5afb79273492964bb05a15e49d68ff47",
+  "bytes": 52558,
+  "changedFiles": [
+    "go.mod",
+    "go.sum",
+    "weed/command/ouf_unsupported_kafka_tag.go",
+    "weed/notification/kafka/event_filter.go",
+    "weed/notification/kafka/event_filter_test.go",
+    "weed/notification/kafka/kafka_queue.go",
+    "weed/notification/kafka/kafka_sasl_tls.go",
+    "weed/notification/kafka/kafka_sasl_tls_test.go",
+    "weed/notification/kafka/ouf_profile_test.go",
+    "weed/replication/sub/notification_kafka.go",
+    "weed/replication/sub/notification_kafka_ouf_profile_test.go",
+    "weed/replication/sub/notification_kafka_test.go",
+    "weed/server/filer_server.go",
+    "weed/server/filer_server_ouf_kafka_profile_test.go",
+    "weed/server/filer_server_ouf_profile.go"
+  ],
+  "exactIndexedReplay": "PASS"
+}

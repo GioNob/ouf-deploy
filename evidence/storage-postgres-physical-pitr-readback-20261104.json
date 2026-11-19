@@ -1,0 +1,131 @@
+{
+  "date": "2026-11-04",
+  "engineeringProgressCreditAdded": 0,
+  "independentReadback": {
+    "basebackupFilesRehashed": 1270,
+    "postTargetAcknowledgedRowPreservedButNotRecovered": true,
+    "walFilesRehashed": 5
+  },
+  "internalChecksumsVerified": 100,
+  "jobLog": {
+    "path": "evidence/storage-pitr-tls-readback-20261104/job-126462268200.log",
+    "sha256": "fd172dbb94ce4466cceeecb4df34d621997320ff7a6383d9a692795b4fe8e477"
+  },
+  "nativeReceipt": {
+    "acceptanceTestsPassed": 0,
+    "allStartedProcessesStopped": true,
+    "archivedBytes": 67109195,
+    "archivedFiles": 5,
+    "basebackupArchiveSha256": "55eee98b59dd43eb42389380e1cf3fe11054e738be1e1fc4d0c0f590dabf440d",
+    "basebackupBytes": 46719237,
+    "basebackupFiles": 1270,
+    "boundary": "Selected older synthetic point excludes a later acknowledged row deliberately. This is not zero-loss recovery, a production RPO policy or coordinated S3 recovery.",
+    "coordinatedS3RecoveryQualified": false,
+    "deliberatelyExcludedPostTargetAcknowledgedRows": 1,
+    "expectedRowsAtTarget": 2,
+    "gatesClosed": 0,
+    "missingRequiredWalRejected": true,
+    "namedRecoveryTargetPaused": true,
+    "negativePgCtlStartReturnCode": 0,
+    "observedReplayLsn": "0/40001F0",
+    "physicalBaseBackupVerified": true,
+    "postBaseWalSegmentReplayed": true,
+    "postTargetRowRetainedInSourceEvidence": true,
+    "postgresVersion": "17.11",
+    "releaseAdmitted": false,
+    "restoredSystemIdentifier": "7704224775691779526",
+    "rpoMeasured": false,
+    "rtoMeasured": false,
+    "runtimeAuthorityIssued": false,
+    "sameSystemIdentifierExpectedForPhysicalBackup": true,
+    "schema": "ouf.storage-postgres-physical-pitr-fixture.v1",
+    "separateDataDirectories": true,
+    "sourceRowsAfterTarget": 3,
+    "sourceStoppedBeforeRestore": true,
+    "sourceSystemIdentifier": "7704224775691779526",
+    "status": "NATIVE_SYNTHETIC_PHYSICAL_PITR_PASS",
+    "targetLsn": "0/40001F0",
+    "targetName": "ouf_fixture_before_later_ack",
+    "targetOperations": 0,
+    "targetPitrQualified": false,
+    "targetWalSegment": "000000010000000000000004",
+    "walArchiveSha256": "fab16a82fa45cb6f13b9f291b4b1533e8a5d600dbb5f6ff7c008564b96e4e658",
+    "writerFenceQualified": false,
+    "zeroAcknowledgedLossPolicyQualified": false
+  },
+  "originalArtifact": {
+    "bytes": 5929849,
+    "id": 13305414053,
+    "path": "evidence/artifacts/storage-postgres-physical-pitr-41796664103.zip",
+    "sha256": "87cd6063aa633d566892696c39c9a6b36ee31e06bad3569f88aec3904d395ab7"
+  },
+  "originalManifestSha256": "a70807d0cd1d93b96c7642100c4967f2d463bf1f383b72f51578169164e65133",
+  "preserved": {
+    "acceptanceTestsPassed": 0,
+    "consumedScopes": 17,
+    "cumulativeEngineGets": 52,
+    "gatesClosed": 0,
+    "minioActive": true,
+    "realObjectsCopied": 0,
+    "targetOperations": 0
+  },
+  "publisherSignatureReverifiedLocally": false,
+  "schema": "ouf.storage-hosted-evidence-readback.v1",
+  "sourceBindingsVerifiedAgainstExactGitTree": [
+    {
+      "gitBlobSha": "b13109d2b873ba69563dde55adad76777c7fc40e",
+      "path": ".github/workflows/storage-postgres-physical-pitr.yml",
+      "sha256": "8c1926941a4d9c6216931c05deba6ba0f7929334fe1dd8d14a222d1697f0615a"
+    },
+    {
+      "gitBlobSha": "ed4c1caa0520ea77ae37f4642a2f7e703f038149",
+      "path": "tests/run_storage_postgres_pitr.py",
+      "sha256": "dd53a6f8e5e75ae3d89e7be05a17e301a52107dacedc8192027c796f42e856d1"
+    },
+    {
+      "gitBlobSha": "94737d08763ae284e65e6a960ec040487c2e3862",
+      "path": "tests/storage_pitr_archive.py",
+      "sha256": "7f7b138db7d43d825f501dd48c33a623b1beddf1aa279763533395adc11e9c13"
+    },
+    {
+      "gitBlobSha": "2b530dc4cbb9ef88304ec44446bbe91204ca7630",
+      "path": "tests/test_storage_postgres_pitr.py",
+      "sha256": "ff9b11a3714ca41c861dfc667140ba776d7f143952acf7f3d6fa29b21500e969"
+    },
+    {
+      "gitBlobSha": "dc7a2a6ef9d51ea1805ae551cad706f3409b2069",
+      "path": "tests/run_storage_postgres_fixture_native.py",
+      "sha256": "c730cd625cd3c23bb69881d220135662c2b9b8d570f16a5d9485efb204948780"
+    },
+    {
+      "gitBlobSha": "14f58dffec9734c453319f13227e590c73a2cc5c",
+      "path": "tools/storage_recovery/coordinated.py",
+      "sha256": "5e691c0e51d4e7b986b97cd1f51992d74893bf90f50396ea0033585168c20499"
+    },
+    {
+      "gitBlobSha": "6ec115ff52de5e887dc7269ec2d95f90d2c2860c",
+      "path": "tools/storage_recovery/manifest.py",
+      "sha256": "ca368243e5dfbe5cffde6b9f6130ec17a59ae95a4fcc3c76105ccf41797716d6"
+    },
+    {
+      "gitBlobSha": "f0decf417c1d60d244274b17b3013e914f9dfa38",
+      "path": "tools/storage_recovery/postgres_fixture.py",
+      "sha256": "772a1b93e1acd4ab191d2621766c51ef7ef1fbe0534d3a1553ce076b3b379f5b"
+    },
+    {
+      "gitBlobSha": "9c5bffc8b8ed6d55f835552d61f153d862cf8d94",
+      "path": "tools/storage_recovery/profile.py",
+      "sha256": "bbe1b3015374d1b6ead80bf86d4718c249979dc82cc1add356d96c1f430c187e"
+    },
+    {
+      "gitBlobSha": "0bb23a8ce7cc80e51ab3350728d46f55e5dfe364",
+      "path": "profiles/seaweedfs-452-lab/profile.json",
+      "sha256": "44143abba2540321d778546a2365eab97c7ed3fbe40421baaf4e422b3e6b3f37"
+    }
+  ],
+  "sourceCommit": "9fbe9ef71ba296523e904686d7409b4c9150209f",
+  "workflowConclusion": "success",
+  "workflowJobId": 126462268200,
+  "workflowRunId": 41796664103,
+  "zipMembers": 101
+}

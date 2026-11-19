@@ -1,0 +1,107 @@
+{
+  "schema": "ouf.target-evidence.v1",
+  "source": "owner supplied VPS transcript",
+  "receivedDate": "2026-10-26",
+  "identicalTranscriptOccurrences": 2,
+  "executionsRepresented": 1,
+  "result": {
+    "acquisitionsExecuted": 0,
+    "activatedDescriptors": [
+      "ingestion.contract.read",
+      "ingestion.lineage.read",
+      "urban.object.read",
+      "lineage.object.read",
+      "lineage.property.read"
+    ],
+    "allGrantsPreserved": true,
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "candidateGrantCount": 106,
+    "candidatePolicyHash": "027f626dce41cac0dc2d1dd9338bd2aeb20bc474a438e6e26a68d4214271b46b",
+    "complete": true,
+    "contextPath": "/etc/ouf/deploy-snapshots/acquisition-existing-draft-publish-cb75ddb0-v1/tty-publication-continuation-v1/editable-review-continuation-v1",
+    "counts": {
+      "administrativeWrites": 7,
+      "bytes": 1554476,
+      "ownerGets": 27,
+      "previewPosts": 2
+    },
+    "draftId": "cb75ddb0-bd19-48fb-847f-1c47aff3207a",
+    "draftRevision": 1,
+    "draftsCreated": 0,
+    "engineRequests": 0,
+    "expiredReviewHash": "6ff5fa76c217888e174d760b84a0ce8ad6e6242955546bd9ddcca050e7851ff7",
+    "grantsHash": "25113670d8962ca87ade9f0ef2828ae64d1fa55f81a05800ebbb94178214e201",
+    "historicalIamCounts": {
+      "consumedTtyPublication": {
+        "bytes": 12970,
+        "iamGets": 1,
+        "iamPosts": 8,
+        "ownerGets": 0
+      },
+      "expiredResidualPublication": {
+        "bytes": 12676,
+        "iamGets": 1,
+        "iamPosts": 5,
+        "ownerGets": 0
+      },
+      "lookup": {
+        "bytes": 13166,
+        "iamGets": 1,
+        "iamPosts": 10,
+        "ownerGets": 0
+      },
+      "originalPublication": {
+        "bytes": 12676,
+        "iamGets": 1,
+        "iamPosts": 5,
+        "ownerGets": 0
+      }
+    },
+    "historicalNativeSqlSessions": 1,
+    "humanReviewApproved": true,
+    "iamConfigurationMutations": 0,
+    "iamCounts": {
+      "bytes": 12774,
+      "iamGets": 1,
+      "iamPosts": 6,
+      "ownerGets": 0
+    },
+    "installationSigningKeysRead": false,
+    "lookupResultHash": "8f69ddc401c1da775bfb1d3a76c4ff275b1918aaa353910171e1adf99e10843a",
+    "mcpOAuthScopesVerified": false,
+    "newPreviews": 1,
+    "newReadGrantsGranted": 0,
+    "operatorLogPath": "/etc/ouf/deploy-snapshots/acquisition-existing-draft-publish-cb75ddb0-v1/tty-publication-continuation-v1/editable-review-continuation-v1/operator.log",
+    "originalReviewHash": "5a31ae519ef9ee4e14cf9258f91739ba27aa07a290f5f07b277cb8d3a44de911",
+    "ownerDraftHash": "sha256:1e121ef759475f231a86a8af1662c24dd829b516aeefaa0bcabd9ba7ceb84aec",
+    "policyHash": "b4bed35f9fe591aa828a50f8d2fc7c7d8aeb054b88c320f0a66b9c51f2d50a8e",
+    "policyRef": "ouf-lab-authorization:49",
+    "publishRequests": 1,
+    "registrationsRepeated": 0,
+    "registryWorkerTouched": false,
+    "releaseAcceptance": false,
+    "retainedPreviews": 1,
+    "reviewHash": "e16e816b6ab0c78c7645b22cb72aec357e2730ca133c68f32c0db538be6cbf07",
+    "roleCatalogueMutations": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.existing-descriptor-residual-publication-result.v1",
+    "serviceCredentialFilesRead": 0,
+    "sourceActivations": 0,
+    "sqlSessions": 0,
+    "status": "EXISTING_ACQUISITION_DESCRIPTORS_PUBLISHED_GRANTS_UNCHANGED",
+    "ttyInput": {
+      "enterReceived": true,
+      "receivedBytes": 72,
+      "rejectedLines": 0,
+      "state": "LINE_RECEIVED"
+    }
+  },
+  "exit": 0,
+  "deliveryExit": 0,
+  "deliveryDirectory": "/home/oufadmin/ouf-descriptor-editable-continuation-delivery.kLzve29S",
+  "deliveryLog": "/home/oufadmin/ouf-descriptor-editable-continuation-delivery.kLzve29S/bootstrap.log",
+  "consumed": true,
+  "rerunAllowed": false
+}

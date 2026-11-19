@@ -1,0 +1,207 @@
+diff --git a/weed/s3api/s3api_bucket_handlers.go b/weed/s3api/s3api_bucket_handlers.go
+index b6886c095431f4c9214e8ca64bd3f8d395e83b53..0e4daabbae59d61b82f26943a3f85ec008be6ab5 100644
+--- a/weed/s3api/s3api_bucket_handlers.go
++++ b/weed/s3api/s3api_bucket_handlers.go
+@@ -26,7 +26,6 @@ import (
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+ 	"github.com/aws/aws-sdk-go/service/s3"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+@@ -1397,6 +1396,33 @@ func (s3a *S3ApiServer) GetBucketRequestPaymentHandler(w http.ResponseWriter, r
+ 	writeSuccessResponseXML(w, r, RequestPaymentConfiguration{Payer: "BucketOwner"})
+ }
+ 
++type bucketOwnershipControlsResponse struct {
++	XMLName xml.Name `xml:"http://s3.amazonaws.com/doc/2006-03-01/ OwnershipControls"`
++	Rule    struct {
++		ObjectOwnership string
++	}
++}
++
++type bucketVersioningResponse struct {
++	XMLName xml.Name `xml:"http://s3.amazonaws.com/doc/2006-03-01/ VersioningConfiguration"`
++	VersioningConfiguration
++}
++
++func writeBucketConfigurationXML(w http.ResponseWriter, r *http.Request, value any) {
++	body, err := xml.Marshal(value)
++	if err != nil {
++		s3err.WriteErrorResponse(w, r, s3err.ErrInternalError)
++		return
++	}
++	s3err.WriteResponse(w, r, http.StatusOK, body, s3err.MimeXML)
++}
++
++func writeBucketOwnershipControls(w http.ResponseWriter, r *http.Request, ownership string) {
++	var response bucketOwnershipControlsResponse
++	response.Rule.ObjectOwnership = ownership
++	writeBucketConfigurationXML(w, r, response)
++}
++
+ // PutBucketOwnershipControls https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketOwnershipControls.html
+ func (s3a *S3ApiServer) PutBucketOwnershipControls(w http.ResponseWriter, r *http.Request) {
+ 	bucket, _ := s3_constants.GetBucketAndObject(r)
+@@ -1446,10 +1472,7 @@ func (s3a *S3ApiServer) PutBucketOwnershipControls(w http.ResponseWriter, r *htt
+ 	}
+ 
+ 	if printOwnership {
+-		result := &s3.PutBucketOwnershipControlsInput{
+-			OwnershipControls: &v,
+-		}
+-		s3err.WriteAwsXMLResponse(w, r, http.StatusOK, result)
++		writeBucketOwnershipControls(w, r, ownership)
+ 	} else {
+ 		writeSuccessResponseEmpty(w, r)
+ 	}
+@@ -1476,17 +1499,7 @@ func (s3a *S3ApiServer) GetBucketOwnershipControls(w http.ResponseWriter, r *htt
+ 		return
+ 	}
+ 
+-	result := &s3.PutBucketOwnershipControlsInput{
+-		OwnershipControls: &s3.OwnershipControls{
+-			Rules: []*s3.OwnershipControlsRule{
+-				{
+-					ObjectOwnership: &ownership,
+-				},
+-			},
+-		},
+-	}
+-
+-	s3err.WriteAwsXMLResponse(w, r, http.StatusOK, result)
++	writeBucketOwnershipControls(w, r, ownership)
+ }
+ 
+ // DeleteBucketOwnershipControls https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketOwnershipControls.html
+@@ -1523,10 +1536,7 @@ func (s3a *S3ApiServer) DeleteBucketOwnershipControls(w http.ResponseWriter, r *
+ 		return
+ 	}
+ 
+-	emptyOwnershipControls := &s3.OwnershipControls{
+-		Rules: []*s3.OwnershipControlsRule{},
+-	}
+-	s3err.WriteAwsXMLResponse(w, r, http.StatusOK, emptyOwnershipControls)
++	s3err.WriteResponse(w, r, http.StatusOK, []byte{}, s3err.MimeXML)
+ }
+ 
+ // GetBucketVersioningHandler Get Bucket Versioning status
+@@ -1547,22 +1557,11 @@ func (s3a *S3ApiServer) GetBucketVersioningHandler(w http.ResponseWriter, r *htt
+ 		return
+ 	}
+ 
+-	// AWS S3 behavior: If versioning was never configured, don't return Status field
+-	var response *s3.PutBucketVersioningInput
+-	if versioningStatus == "" {
+-		// No versioning configuration - return empty response (no Status field)
+-		response = &s3.PutBucketVersioningInput{
+-			VersioningConfiguration: &s3.VersioningConfiguration{},
+-		}
+-	} else {
+-		// Versioning was explicitly configured - return the status
+-		response = &s3.PutBucketVersioningInput{
+-			VersioningConfiguration: &s3.VersioningConfiguration{
+-				Status: aws.String(versioningStatus),
+-			},
+-		}
+-	}
+-	s3err.WriteAwsXMLResponse(w, r, http.StatusOK, response)
++	// If versioning was never configured, omit Status from the response.
++	response := bucketVersioningResponse{VersioningConfiguration: VersioningConfiguration{
++		Status: VersioningStatus(versioningStatus),
++	}}
++	writeBucketConfigurationXML(w, r, response)
+ }
+ 
+ // PutBucketVersioningHandler Put bucket Versioning
+diff --git a/weed/s3api/s3api_bucket_wire_response_test.go b/weed/s3api/s3api_bucket_wire_response_test.go
+new file mode 100644
+index 0000000000000000000000000000000000000000..c089e55c6632e1521bf579e4b102ee2281062241
+--- /dev/null
++++ b/weed/s3api/s3api_bucket_wire_response_test.go
+@@ -0,0 +1,55 @@
++package s3api
++
++import (
++	"net/http"
++	"net/http/httptest"
++	"strconv"
++	"testing"
++)
++
++func TestBucketConfigurationXMLWire(t *testing.T) {
++	for _, tc := range []struct {
++		name string
++		send func(http.ResponseWriter, *http.Request)
++		want string
++	}{
++		{
++			name: "ownership controls",
++			send: func(w http.ResponseWriter, r *http.Request) {
++				writeBucketOwnershipControls(w, r, "BucketOwnerPreferred")
++			},
++			want: `<OwnershipControls xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Rule><ObjectOwnership>BucketOwnerPreferred</ObjectOwnership></Rule></OwnershipControls>`,
++		},
++		{
++			name: "versioning never configured",
++			send: func(w http.ResponseWriter, r *http.Request) {
++				writeBucketConfigurationXML(w, r, bucketVersioningResponse{})
++			},
++			want: `<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></VersioningConfiguration>`,
++		},
++		{
++			name: "versioning enabled",
++			send: func(w http.ResponseWriter, r *http.Request) {
++				writeBucketConfigurationXML(w, r, bucketVersioningResponse{
++					VersioningConfiguration: VersioningConfiguration{Status: "Enabled"},
++				})
++			},
++			want: `<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Status>Enabled</Status></VersioningConfiguration>`,
++		},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			req := httptest.NewRequest(http.MethodGet, "/bucket", nil)
++			rec := httptest.NewRecorder()
++			tc.send(rec, req)
++			if rec.Code != http.StatusOK || rec.Body.String() != tc.want {
++				t.Fatalf("got HTTP %d %q, want 200 %q", rec.Code, rec.Body.String(), tc.want)
++			}
++			if got := rec.Header().Get("Content-Type"); got != "application/xml" {
++				t.Fatalf("Content-Type = %q, want application/xml", got)
++			}
++			if got := rec.Header().Get("Content-Length"); got != strconv.Itoa(len(tc.want)) {
++				t.Fatalf("Content-Length = %q, want %d", got, len(tc.want))
++			}
++		})
++	}
++}
+diff --git a/weed/s3api/s3err/error_handler.go b/weed/s3api/s3err/error_handler.go
+index d8f6b745c6675f4e81351c8924ff45144fd62206..b4dac4e137c2830275f886243c5cbe86eeee2303 100644
+--- a/weed/s3api/s3err/error_handler.go
++++ b/weed/s3api/s3err/error_handler.go
+@@ -9,7 +9,6 @@ import (
+ 	"strings"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/util/request_id"
+@@ -24,16 +23,6 @@ const (
+ 	errorResponseBodyDrainTimeout = 30 * time.Second
+ )
+ 
+-func WriteAwsXMLResponse(w http.ResponseWriter, r *http.Request, statusCode int, result interface{}) {
+-	var bytesBuffer bytes.Buffer
+-	err := xmlutil.BuildXML(result, xml.NewEncoder(&bytesBuffer))
+-	if err != nil {
+-		WriteErrorResponse(w, r, ErrInternalError)
+-		return
+-	}
+-	WriteResponse(w, r, statusCode, bytesBuffer.Bytes(), MimeXML)
+-}
+-
+ func WriteXMLResponse(w http.ResponseWriter, r *http.Request, statusCode int, response interface{}) {
+ 	WriteResponse(w, r, statusCode, EncodeXMLResponse(response), MimeXML)
+ }

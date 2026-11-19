@@ -1,10 +1,6 @@
 name: R12 paused or failed service read only
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/read-r12-service-public.py
-      - .github/workflows/r12-public-service-read.yml
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:

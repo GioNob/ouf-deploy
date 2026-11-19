@@ -1,0 +1,81 @@
+{
+  "additions": 3,
+  "adminRequests": 0,
+  "changes": [
+    {
+      "beforeSha256": "3e894b2eaf3b22a18adc3ef7729f7709c3ecb343d19cfafc81c4c2ad4e7a1b08",
+      "desiredSha256": "fb39113031c41b3773a6ed525d8fb0c24ab9686994802091e15d6fa49b5c40e8",
+      "operation": "UPDATE",
+      "uri": "/internal/capabilities/v1/execute/managed.file/preview"
+    },
+    {
+      "beforeSha256": "656b000c5dae1ac7bd63b8735a274d007b3b2238c99811a41ac60c90db78cc85",
+      "desiredSha256": "48229254f6b019a6a49abaf5728f5f59bcf77ab7f9ff1159d3df55fd3dbb92d6",
+      "operation": "UPDATE",
+      "uri": "/internal/capabilities/v1/execute/managed.file/profile"
+    },
+    {
+      "beforeSha256": "0f08e01b2893eff56769328d39168b907cfe7294c4ca3e16c2a5df5493ad25db",
+      "desiredSha256": "48e1134462bd05feb4658bcba7315da5370d551b62790443cda7bf63dbf0bf69",
+      "operation": "UPDATE",
+      "uri": "/internal/capabilities/v1/execute/managed.file/create"
+    },
+    {
+      "beforeSha256": "8b3f3b29f65910e2ffc8b3a12ad9404901c2582ee42d91e344e0f28d744e0e98",
+      "desiredSha256": "c7ec69f67c7753c4f246a75c78785a9512f0977f8b01f51d8bff1155f0737325",
+      "operation": "UPDATE",
+      "uri": "/internal/capabilities/v1/execute/managed.file/review-prepare"
+    },
+    {
+      "beforeSha256": "18e8395d0d343b040cfbbf82ebab0be5af744fc5265567238a645c5ea39d269b",
+      "desiredSha256": "86015e6bd9a1359ab960922751ec0d55805f8ac6b047709c9dca3b96a223abfc",
+      "operation": "UPDATE",
+      "uri": "/mcp"
+    },
+    {
+      "beforeSha256": null,
+      "desiredSha256": "04098beeb098a2730e46d2b1a64ee8d0c8145666e550dcb3b7b2c9b1aa612efe",
+      "operation": "ADD",
+      "uri": "/internal/capabilities/v1/execute/semantic/discovery/request"
+    },
+    {
+      "beforeSha256": null,
+      "desiredSha256": "226e556614b30476041a95155f640c7b70656b2e521778128a1270ab1094e596",
+      "operation": "ADD",
+      "uri": "/internal/capabilities/v1/execute/semantic/discovery/status"
+    },
+    {
+      "beforeSha256": null,
+      "desiredSha256": "f8a112f06b0cf42d3306f36bc172ba62e4db0267f3e4985c770a2e77b0d6c466",
+      "operation": "ADD",
+      "uri": "/internal/capabilities/v1/execute/semantic/discovery/candidates"
+    }
+  ],
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "desiredRouteCount": 87,
+  "gatewayOwnerChanged": false,
+  "observedAt": "2026-11-08T16:32:01.078586+00:00",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/gateway-analysis-proposal-9rj147d5",
+  "proposalSha256": "2876c0c3a892f0dce8accb08f5cbac523cfc541c43a264dfcb5944cd003c8f19",
+  "providerEnableDispatched": false,
+  "providerRequests": 0,
+  "runtimeChanged": false,
+  "schema": "ouf.gateway-analysis-preparation.v1",
+  "semanticDatabaseError": {
+    "causeProven": false,
+    "empty": false,
+    "hints": [
+      "MISSING_COLUMN"
+    ],
+    "knownQueryColumnsReportedMissing": [
+      "recovery_state"
+    ],
+    "rawErrorEmitted": false,
+    "source": "RETAINED_STDERR_ONLY_NO_NEW_QUERY"
+  },
+  "sourceRouteCount": 84,
+  "status": "GATEWAY_DELTA_PREPARED_NOT_APPLIED",
+  "unchangedRoutes": 79,
+  "updates": 5
+}

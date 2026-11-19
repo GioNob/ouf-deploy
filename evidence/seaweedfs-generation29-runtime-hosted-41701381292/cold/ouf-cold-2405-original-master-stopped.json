@@ -1,0 +1,13 @@
+{
+  "Dead": false,
+  "Error": "",
+  "ExitCode": 0,
+  "FinishedAt": "2026-11-03T19:20:25.871657799Z",
+  "OOMKilled": false,
+  "Paused": false,
+  "Pid": 0,
+  "Restarting": false,
+  "Running": false,
+  "StartedAt": "2026-11-03T19:20:07.408313665Z",
+  "Status": "exited"
+}

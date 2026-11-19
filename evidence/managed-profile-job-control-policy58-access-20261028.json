@@ -1,0 +1,252 @@
+{
+  "schema": "ouf.managed-profile-job-control-policy58-access.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "status": "ROLE_PUBLICATION58_VERIFIED_NATIVE_CARD403_REPORTED_MCP_INVALID_ARGUMENT_CAUSES_OPEN",
+  "operatorReportedPolicy": "ouf-lab-authorization:58",
+  "sameProposalProtectedRead": {
+    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-10-28T08:46:00.672722Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "finalPolicyRef": "ouf-lab-authorization:58"
+  },
+  "accountLink": "ouf-admin",
+  "explicitLinkId": "link_6aafef96b4148191b767e9af7b756a07",
+  "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+  "identityProof": "Explicit ouf-admin routing plus protected same-proposer tenant/subject read PUBLISHED; owner contract checks both",
+  "effectiveConnectorIdentityVerifiedBeforeJobRead": true,
+  "browserIdentityVerified": false,
+  "configuredPolicyRef": "ouf-lab-authorization:58",
+  "configuredPolicyHash": "sha256:e8c3401e1d3209f60af55c36bae25d8a1089d822dc129afbef6ae3a13cce6bfe",
+  "configuredSubjectGrants": 137,
+  "nextAfter": null,
+  "configuredIsNotEffectiveAllow": true,
+  "roles": 8,
+  "assignments": 12,
+  "previous7RolesAnd11AssignmentsPreserved": true,
+  "previous134SubjectGrantsPreserved": true,
+  "addedSubjectGrants": [
+    {
+      "grantId": "ouf-role:70b31dab707db032:02be2eeb74f0be1617132173a139d2aae8abffb7dd5cd076d44c7afea689dfc9",
+      "capabilityId": "ouf.onboarding.quarantine.release",
+      "tenantId": "ouf-lab",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "servicePrincipalId": null,
+      "organizationId": null,
+      "validFrom": "2026-10-28T08:29:35.837Z",
+      "validUntil": "2036-09-15T07:13:50.968730Z",
+      "constraints": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": "managed-profile-job",
+        "resourceId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+        "resourceAttributes": {
+          "assetRef": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+          "detailLevel": "TENANT_OPERATIONAL",
+          "jobRef": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+          "module": "ONBOARDING"
+        },
+        "allowedDataLabels": [],
+        "allowedDetailLevels": [
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    },
+    {
+      "grantId": "ouf-role:70b31dab707db032:875222013dac10ec6b36dfa5d25833eebef3fd17a5d4c8d68f06f87f69ed9e95",
+      "capabilityId": "ouf.managed-source.file.profile",
+      "tenantId": "ouf-lab",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "servicePrincipalId": null,
+      "organizationId": null,
+      "validFrom": "2026-10-28T08:29:35.837Z",
+      "validUntil": "2036-09-15T07:13:50.968730Z",
+      "constraints": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": "managed-profile-job",
+        "resourceId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+        "resourceAttributes": {
+          "assetRef": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+          "detailLevel": "TENANT_OPERATIONAL",
+          "jobRef": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+          "module": "ONBOARDING"
+        },
+        "allowedDataLabels": [],
+        "allowedDetailLevels": [
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    },
+    {
+      "grantId": "ouf-role:70b31dab707db032:9aeef191611d2886cf7d855d305392dfb5485c1851f57f7ce7beaa5101792e33",
+      "capabilityId": "ouf.managed-source.preview",
+      "tenantId": "ouf-lab",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "servicePrincipalId": null,
+      "organizationId": null,
+      "validFrom": "2026-10-28T08:29:35.837Z",
+      "validUntil": "2036-09-15T07:13:50.968730Z",
+      "constraints": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": "managed-profile-job",
+        "resourceId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+        "resourceAttributes": {
+          "assetRef": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+          "detailLevel": "TENANT_OPERATIONAL",
+          "jobRef": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+          "module": "ONBOARDING"
+        },
+        "allowedDataLabels": [],
+        "allowedDetailLevels": [
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    }
+  ],
+  "targetRole": {
+    "roleId": "farmacie-profile-control-677480c8-v1",
+    "displayName": "Controllo HUMAN Farmacie — stesso job conservato",
+    "permissions": [
+      {
+        "capabilityId": "ouf.managed-source.preview",
+        "constraints": {
+          "effect": "ALLOW",
+          "externalRoleRef": null,
+          "resourceType": "managed-profile-job",
+          "resourceId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+          "resourceAttributes": {
+            "assetRef": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+            "detailLevel": "TENANT_OPERATIONAL",
+            "jobRef": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+            "module": "ONBOARDING"
+          },
+          "allowedDataLabels": [],
+          "allowedDetailLevels": [
+            "TENANT_OPERATIONAL"
+          ],
+          "requiredAcr": null,
+          "requiredAmr": [],
+          "maxAuthenticationAgeSeconds": null
+        }
+      },
+      {
+        "capabilityId": "ouf.managed-source.file.profile",
+        "constraints": {
+          "effect": "ALLOW",
+          "externalRoleRef": null,
+          "resourceType": "managed-profile-job",
+          "resourceId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+          "resourceAttributes": {
+            "assetRef": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+            "detailLevel": "TENANT_OPERATIONAL",
+            "jobRef": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+            "module": "ONBOARDING"
+          },
+          "allowedDataLabels": [],
+          "allowedDetailLevels": [
+            "TENANT_OPERATIONAL"
+          ],
+          "requiredAcr": null,
+          "requiredAmr": [],
+          "maxAuthenticationAgeSeconds": null
+        }
+      },
+      {
+        "capabilityId": "ouf.onboarding.quarantine.release",
+        "constraints": {
+          "effect": "ALLOW",
+          "externalRoleRef": null,
+          "resourceType": "managed-profile-job",
+          "resourceId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+          "resourceAttributes": {
+            "assetRef": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+            "detailLevel": "TENANT_OPERATIONAL",
+            "jobRef": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+            "module": "ONBOARDING"
+          },
+          "allowedDataLabels": [],
+          "allowedDetailLevels": [
+            "TENANT_OPERATIONAL"
+          ],
+          "requiredAcr": null,
+          "requiredAmr": [],
+          "maxAuthenticationAgeSeconds": null
+        }
+      }
+    ]
+  },
+  "targetAssignment": {
+    "assignmentId": "farmacie-profile-control-677480c8-ouf-admin-policy57-v1",
+    "roleId": "farmacie-profile-control-677480c8-v1",
+    "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+    "externalRoleRef": null,
+    "validFrom": "2026-10-28T08:29:35.837Z",
+    "validUntil": "2036-09-15T07:13:50.968730Z"
+  },
+  "jobRead": {
+    "tool": "source.file.preview",
+    "attempts": 1,
+    "accountLink": "ouf-admin",
+    "arguments": {
+      "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+      "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4"
+    },
+    "result": {
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "retryPerformed": false,
+    "httpStatusObserved": false,
+    "authorizationPhaseObserved": false,
+    "correlationObserved": false,
+    "dispatchToGatewayOrOwnerProven": false,
+    "jobStateObserved": false,
+    "causeProven": false,
+    "inputMatchesInspectedInstalledTwoIdentifierContract": true
+  },
+  "nativeHumanCard": {
+    "url": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/?asset=9c502da5-b5d8-405e-b3f5-60eb31ecb513&job=677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "agentMayAccess": false,
+    "liveVerified": false,
+    "nextAction": "USER_ONLY_INSPECT_SAFE_NATIVE_ERROR_FIELDS_WITHOUT_NEW_LOGIN_OR_MUTATIONS",
+    "liveAttemptReported": true,
+    "httpStatusReported": 403,
+    "followupEvidence": "evidence/managed-profile-native-card-403-20261028.json"
+  },
+  "latestApplicationEvidence": {
+    "status": "FAILED",
+    "cumulativeAttempts": 5,
+    "origin": "PREVIOUS_SUCCESSFUL_INSTALLATION_STATE_FENCE_NOT_NEW_JOB_READ"
+  },
+  "toolCounts": {
+    "sameProposalRead": 1,
+    "exactJobPreviewRead": 1,
+    "rolesRead": 1,
+    "grantsRead": 1
+  },
+  "humanBudgetsGrantedByThisStep": 0,
+  "resumesByThisStep": 0,
+  "newJobs": 0,
+  "uploads": 0,
+  "sourceActivations": 0,
+  "acquisitionsExecuted": 0,
+  "approvalByAgent": false,
+  "duplicatePermissionProposalCreated": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "mcpOAuthScopesVerified": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

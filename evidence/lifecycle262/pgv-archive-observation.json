@@ -1,0 +1,12 @@
+{
+  "schema": "ouf.primary-repository-archive-observation.v1",
+  "repository": "bufbuild/protoc-gen-validate",
+  "module": "github.com/envoyproxy/protoc-gen-validate",
+  "sourceUrl": "https://github.com/bufbuild/protoc-gen-validate",
+  "observedAtDate": "2026-11-03",
+  "archiveDateFromPrimaryPage": "2026-05-27",
+  "boundedExcerpt": "This repository was archived by the owner on May 27, 2026. It is now read-only.",
+  "compiledPackage": "github.com/envoyproxy/protoc-gen-validate/validate",
+  "interpretation": "Generated descriptor and extension definitions are compiled. This alone does not show generator execution or a runtime Validate invocation.",
+  "cveClaimMade": false
+}

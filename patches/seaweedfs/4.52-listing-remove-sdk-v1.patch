@@ -1,0 +1,79 @@
+diff --git a/weed/s3api/s3api_object_handlers_list.go b/weed/s3api/s3api_object_handlers_list.go
+index 080d7321bd59eb5d6c477a3c8a5423aa640fc4a3..00471a843bdb39c9fbdec22f969bc97a5e875432 100644
+--- a/weed/s3api/s3api_object_handlers_list.go
++++ b/weed/s3api/s3api_object_handlers_list.go
+@@ -14,8 +14,6 @@ import (
+ 	"strings"
+ 	"unicode/utf8"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+@@ -25,6 +23,8 @@ import (
+ 	"google.golang.org/protobuf/proto"
+ )
+ 
++const listEncodingTypeURL = "url"
++
+ type OptionalString struct {
+ 	string
+ 	set bool
+@@ -73,8 +73,8 @@ func toListBucketResultV1(in ListBucketResult) listBucketResultV1 {
+ 		Metadata:       in.Metadata,
+ 		Name:           in.Name,
+ 		Prefix:         in.Prefix,
+-		Marker:         encodeMarkerEcho(in.Marker, in.EncodingType == s3.EncodingTypeUrl),
+-		NextMarker:     encodeMarkerEcho(in.NextMarker, in.EncodingType == s3.EncodingTypeUrl),
++		Marker:         encodeMarkerEcho(in.Marker, in.EncodingType == listEncodingTypeURL),
++		NextMarker:     encodeMarkerEcho(in.NextMarker, in.EncodingType == listEncodingTypeURL),
+ 		MaxKeys:        in.MaxKeys,
+ 		Delimiter:      in.Delimiter,
+ 		IsTruncated:    in.IsTruncated,
+@@ -153,7 +153,7 @@ func (s3a *S3ApiServer) ListObjectsV2Handler(w http.ResponseWriter, r *http.Requ
+ 		StartAfter:            startAfter,
+ 	}
+ 	if encodingTypeUrl {
+-		responseV2.EncodingType = s3.EncodingTypeUrl
++		responseV2.EncodingType = listEncodingTypeURL
+ 		responseV2.StartAfter = urlPathEscape(startAfter)
+ 	}
+ 
+@@ -182,7 +182,8 @@ func encodeListContinuationTokenField(value *string) *string {
+ 	if value == nil {
+ 		return nil
+ 	}
+-	return aws.String(encodeListContinuationToken(*value))
++	encoded := encodeListContinuationToken(*value)
++	return &encoded
+ }
+ 
+ // encodeMarkerEcho renders a decoded request marker for the response echo:
+@@ -407,7 +408,7 @@ func (s3a *S3ApiServer) listFilerEntries(ctx context.Context, req listObjectsReq
+ 			CommonPrefixes: commonPrefixes,
+ 		}
+ 		if encodingTypeUrl {
+-			response.EncodingType = s3.EncodingTypeUrl
++			response.EncodingType = listEncodingTypeURL
+ 		}
+ 		return
+ 	}
+@@ -876,7 +877,7 @@ func (s3a *S3ApiServer) listFilerEntries(ctx context.Context, req listObjectsReq
+ 		// URL-encode CommonPrefixes AFTER sorting (if EncodingType=url)
+ 		// This ensures proper sort order (on decoded values) and correct encoding in response
+ 		if encodingTypeUrl {
+-			response.EncodingType = s3.EncodingTypeUrl
++			response.EncodingType = listEncodingTypeURL
+ 			for i := range response.CommonPrefixes {
+ 				response.CommonPrefixes[i].Prefix = urlPathEscape(response.CommonPrefixes[i].Prefix)
+ 			}
+@@ -1540,7 +1541,7 @@ func getListObjectsV2Args(values url.Values) (prefix, startAfter, delimiter stri
+ 	token = OptionalString{set: values.Has("continuation-token"), string: values.Get("continuation-token")}
+ 	startAfter = values.Get("start-after")
+ 	delimiter = values.Get("delimiter")
+-	encodingTypeUrl = values.Get("encoding-type") == s3.EncodingTypeUrl
++	encodingTypeUrl = values.Get("encoding-type") == listEncodingTypeURL
+ 	maxkeys, errCode = parseMaxKeys(values.Get("max-keys"))
+ 	if errCode != s3err.ErrNone {
+ 		return

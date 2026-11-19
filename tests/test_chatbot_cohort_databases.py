@@ -27,6 +27,7 @@ crypto=runtime_fixture.crypto
 def inputs():
     pg,_,_=runtime_fixture.container_fixture('udp')
     pg.update(Id='5'*64,Name='/ouf-postgres')
+    pg['Config']['Env']=['POSTGRES_USER=fixture_admin']
     pg['State'].update(Pid=5555)
     bindings={m:{'database':'fixture_'+m,'user':'postgres'} for m in p.MODULES}
     expected={m:[{'version':'1','script':'V1__base.sql','type':'SQL','checksum':78787420,'success':True},
@@ -79,8 +80,13 @@ class DatabaseCompiler(unittest.TestCase):
         self.assertEqual([r['pendingMigrationCount'] for r in plan['modules']],[1,1,1,0])
         o['udp']['migrations'][0]['checksum']+=1
         with self.assertRaisesRegex(p.PlanDenied,'MUST_MATCH_PACKAGED'):d.compile_database_plan(pg,b,e,o)
-        pg,b,e,o=inputs();e['mcp'].append({'version':2,'checksum':'b'*64})
-        with self.assertRaisesRegex(p.PlanDenied,'MCP_MIGRATION_ROLE'):d.compile_database_plan(pg,b,e,o)
+        pg,b,e,o=inputs();e['mcp'].extend({'version':version,'checksum':str(version)*64}
+                                              for version in (10,11,12))
+        plan=d.compile_database_plan(pg,b,e,o)
+        self.assertEqual(next(r for r in plan['modules'] if r['module']=='mcp')['pendingMigrationCount'],3)
+        self.assertTrue(plan['mcpAuditRoleAdministration']['cleanupRequiredBeforeCohortStart'])
+        o['mcp']['migrations'][0]['checksum']='f'*64
+        with self.assertRaisesRegex(p.PlanDenied,'MUST_MATCH_PACKAGED'):d.compile_database_plan(pg,b,e,o)
         pg,b,e,o=inputs();b['mcp']['database']=b['udp']['database'];o['mcp']['identity']['name']=b['udp']['database']
         with self.assertRaisesRegex(p.PlanDenied,'SHARED_DATABASE'):d.compile_database_plan(pg,b,e,o)
 
@@ -119,12 +125,56 @@ class DatabaseCompiler(unittest.TestCase):
             self.assertIn('"'+d.SCHEMAS[module]+'".'+suffix,queries[idx*2+1])
         self.assertFalse(any('public.' in sql for sql in queries))
 
+    def test_pending_migration_uses_observed_admin_without_default_or_role_promotion(self):
+        pg,b,e,o=inputs();e['mcp'].extend({'version':v,'checksum':str(v)*64} for v in (10,11,12))
+        self.assertEqual(d.compile_database_plan(pg,b,e,o)['mcpAuditRoleAdministration']['admin'],'fixture_admin')
+        pg['Config']['Env']=[]
+        with self.assertRaisesRegex(Exception,'IDENTIFIER'):d.compile_database_plan(pg,b,e,o)
+
+    def test_incident_owner_need_not_be_application_when_admin_and_acl_are_proven(self):
+        calls=[]
+        facts={'serverVersion':170011,'adminSuperuser':True,'adminRoleMatched':True,
+               'applicationRoleExists':True,'auditRoleAbsent':True,
+               'applicationSchemaOwnerAuthority':True,'applicationAuditTableOwnerAuthority':True,
+               'applicationAttemptTableOwnerAuthority':True,'applicationIncidentTableOwnerAuthority':False,
+               'applicationAuditSequenceOwnerAuthority':True,'incidentBinding':incident_binding(False)}
+        class Pg:
+            def __init__(self,cid,user,database,name):calls.append(user)
+            def query(self,sql):return copy.deepcopy(facts)
+            def close(self):pass
+        with patch.object(d,'Psql',Pg):
+            self.assertEqual(d.mcp_admin_preflight('5'*64,'fixture_mcp','fixture_app','fixture_admin'),facts)
+            facts['incidentBinding']=None
+            with self.assertRaisesRegex(p.PlanDenied,'INCIDENT_TABLE'):
+                d.mcp_admin_preflight('5'*64,'fixture_mcp','fixture_app','fixture_admin')
+        self.assertEqual(calls,['fixture_admin','fixture_admin'])
+
+
+def incident_binding(trigger=True):
+    return {'oid':100,'ownerOid':101,'aclHash':'c'*64,'triggerAuthority':trigger,
+            'triggerGrantCount':int(trigger)}
+
 class DatabaseRuntime(unittest.TestCase):
-    def fixture(self):
+    def fixture(self, mcp_pending=False, incident_trigger=True, backup_reader=False):
         fixture=runtime_fixture.CohortRuntime();cohort,native,f,_=fixture.fixture();self.addCleanup(fixture.doCleanups)
         pg,b,e,o=inputs();native.state[pg['Id']]=copy.deepcopy(pg)
+        if mcp_pending:e['mcp'].extend({'version':version,'checksum':str(version)*64}
+                                       for version in (10,11,12))
         dbplan=d.compile_database_plan(pg,b,e,o)
+        if mcp_pending:
+            dbplan['mcpAuditRolePreflight']={'adminSuperuser':True,'auditRoleAbsent':True,
+                                           'incidentBinding':incident_binding(incident_trigger)}
+            dbplan['mcpAuditRoleAdministration']['temporaryIncidentTrigger']=not incident_trigger
+        if backup_reader:
+            facts={'databaseOid':o['mcp']['identity']['oid'],'databaseMatched':True,
+                'roleMatched':True,'superuser':True,'readOnly':True}
+            dbplan=d.compile_mcp_backup_reader(dbplan,facts)
+            preflight=patch.object(d,'mcp_backup_preflight',return_value=facts)
+            preflight.start();self.addCleanup(preflight.stop)
         installation=copy.deepcopy(cohort.plan);installation['databasePlanHash']=p.digest(dbplan)
+        migration=next(r for r in installation['replacements'] if r['module']=='mcp')
+        migration['creationRequest']['Entrypoint']=['/usr/local/bin/ouf-mcp']
+        migration['creationRequest']['Env'].append('MCP_DATABASE_URL=postgres://fixture@ouf-postgres/fixture_mcp')
         raw=json.loads(f.authority);raw['applicationCohortInstallation']=c.installation_scope(installation)
         f.authority=crypto.encoded(raw);f.approval['executionAuthorityHash']=crypto.sha(f.authority)
         f.write(f.mandate,crypto.encoded(f.approval));f.approved=crypto.sha(f.mandate.read_bytes())
@@ -140,10 +190,102 @@ class DatabaseRuntime(unittest.TestCase):
         executable.write_text(code);executable.chmod(0o700)
         owner=d.CohortDatabases(action,native.engine,Journal(journal),installation,dbplan,backup,
             {'path':str(executable),'sha256':hashlib.sha256(executable.read_bytes()).hexdigest()})
+        if mcp_pending:
+            preflight=patch.object(d,'mcp_admin_preflight',return_value=dbplan['mcpAuditRolePreflight'])
+            preflight.start();self.addCleanup(preflight.stop)
+            role={'roleExists':False,'noLogin':False,'schemaCreate':False,
+                  'membershipCount':0,'appMembership':0,'functionOwnerCount':0}
+            incident=incident_binding(incident_trigger)
+            def audit_state(binding,statement=''):
+                if 'CREATE ROLE' in statement:
+                    role.update(roleExists=True,noLogin=True,schemaCreate=True,
+                                membershipCount=1,appMembership=1)
+                    if 'GRANT TRIGGER ON TABLE' in statement:
+                        incident.update(triggerAuthority=True,triggerGrantCount=1)
+                if 'REVOKE' in statement:
+                    role.update(schemaCreate=False,membershipCount=0,appMembership=0)
+                    if 'REVOKE TRIGGER ON TABLE' in statement:
+                        incident.update(triggerAuthority=False,triggerGrantCount=0)
+                role['functionOwnerCount']=2 if o['mcp']['migrations']==e['mcp'] else 0
+                return {'adminSuperuser':True,'adminRoleMatched':True,**role,'incidentBinding':copy.deepcopy(incident)}
+            owner.audit_role_state=audit_state
         observation=patch.object(d,'observe_database',side_effect=lambda cid,u,db,m:copy.deepcopy(o[m]))
         observation.start();self.addCleanup(observation.stop)
         owner.initialize()
         return owner,native,f,o,e,log
+
+    def test_explicit_mcp_reader_is_signed_and_does_not_change_workload_role(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True,backup_reader=True)
+        binding=owner.plan['modules'][-1]
+        self.assertEqual(binding['user'],'postgres')
+        self.assertEqual(d.selected_backup_user(owner.plan,binding),'fixture_admin')
+        for row in owner.plan['modules'][:-1]:self.assertEqual(d.selected_backup_user(owner.plan,row),row['user'])
+        owner.backup_quiesced()
+        self.assertEqual(owner.record()['backups']['mcp']['state'],'COMPLETE')
+        self.assertIsNone(owner.record()['mcpMigration'])
+
+    def test_changed_admin_preflight_denies_before_archive_creation(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True,backup_reader=True)
+        with patch.object(d,'mcp_backup_preflight',return_value={'superuser':False}):
+            with self.assertRaisesRegex(p.PlanDenied,'CURRENT_MCP_BACKUP_READER_DRIFT'):owner.backup_quiesced()
+        self.assertFalse((owner.root/'mcp.dump').exists())
+        self.assertEqual(owner.record()['backups']['mcp']['state'],'CLAIMED')
+
+    def test_no_implicit_privilege_fallback_and_no_old_claim_replay(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True)
+        binding=owner.plan['modules'][-1]
+        self.assertEqual(d.selected_backup_user(owner.plan,binding),binding['user'])
+        previous=owner.record();following=copy.deepcopy(previous);following['version']+=1
+        following['backups']['mcp']={'state':'CLAIMED','scopeHash':p.digest(binding)}
+        owner.journal.compare_and_save(previous,following)
+        with self.assertRaisesRegex(p.PlanDenied,'NOT_REPLAY'):owner.backup_quiesced()
+
+    def test_reader_field_tampering_and_wrong_preflight_are_denied(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True,backup_reader=True)
+        for key,value in [('user','unreviewed'),('database','other'),('databaseOid',99),
+                          ('sourceDatabasePlanHash','0'*64),('automaticFallbackAllowed',True)]:
+            changed=copy.deepcopy(owner.plan);changed['mcpBackupReader'][key]=value
+            with self.assertRaises(p.PlanDenied):d.selected_backup_user(changed,changed['modules'][-1])
+        prior=copy.deepcopy(owner.plan);prior.pop('mcpBackupReader')
+        facts=copy.deepcopy(owner.plan['mcpBackupReader']['preflight']);facts['superuser']=False
+        with self.assertRaises(p.PlanDenied):d.compile_mcp_backup_reader(prior,facts)
+
+    def test_dump_error_categories_are_closed_and_bounded(self):
+        self.assertEqual(d.dump_failure_reason(b'permission denied for table SECRET'),
+            'COHORT_DATABASE_DUMP_INSUFFICIENT_PRIVILEGE')
+        self.assertEqual(d.dump_failure_reason(b'unknown SECRET'), 'COHORT_DATABASE_DUMP_FAILED')
+        owner,_,_,_,_,log=self.fixture()
+        binary=Path(owner.docker['path'])
+        binary.write_text('#!/usr/bin/python3\nimport sys\nsys.stderr.write("permission denied for table SECRET\\n");sys.exit(1)\n')
+        owner.docker['sha256']=hashlib.sha256(binary.read_bytes()).hexdigest()
+        with self.assertRaisesRegex(p.PlanDenied,'DUMP_INSUFFICIENT_PRIVILEGE')as caught:owner.backup_quiesced()
+        self.assertNotIn('SECRET',str(caught.exception));self.assertEqual(owner.record()['backups']['udp']['state'],'CLAIMED')
+
+    def test_temporary_trigger_grant_is_scoped_and_cleanup_preserves_prior_acl(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True,incident_trigger=False)
+        owner.backup_quiesced();binding=owner.plan['modules'][-1]
+        statements=[];channel=owner.audit_role_state
+        def capture(binding,statement=''):
+            if statement:statements.append(statement)
+            return channel(binding,statement)
+        owner.audit_role_state=capture
+        owner.prepare_mcp_audit_role(binding)
+        prior=owner.record();following=copy.deepcopy(prior);following['version']+=1
+        following['mcpMigration']={'state':'COMPLETE'};owner.journal.compare_and_save(prior,following)
+        # The existing runtime fixture reports both packaged function owners
+        # only once its migration history is at the reviewed expected suffix.
+        channel_state=owner.audit_role_state
+        def completed(binding,statement=''):
+            value=channel_state(binding,statement);value['functionOwnerCount']=2;return value
+        owner.audit_role_state=completed
+        owner.clean_mcp_audit_role(binding)
+        self.assertEqual(owner.record()['mcpAuditRole']['state'],'CLEAN')
+        self.assertIn('GRANT TRIGGER ON TABLE ouf_mcp.security_incident TO "postgres";',statements[0])
+        self.assertIn('REVOKE TRIGGER ON TABLE ouf_mcp.security_incident FROM "postgres";',statements[1])
+        self.assertFalse(any('ALTER TABLE' in sql or 'OWNER TO' in sql for sql in statements))
+        state={'incidentBinding':incident_binding(False)};owner.incident_state(state,False)
+        state['incidentBinding']['aclHash']='f'*64
+        with self.assertRaisesRegex(p.PlanDenied,'PRIVILEGES_DRIFT'):owner.incident_state(state,False)
 
     def test_native_private_capture_reconciles_complete_archives_without_replay_or_restore(self):
         owner,native,_,current,expected,log=self.fixture()
@@ -186,6 +328,63 @@ class DatabaseRuntime(unittest.TestCase):
                 else:native.find('5'*64)['State']['Pid']+=1
                 with self.assertRaises(Exception):owner.backup_quiesced()
                 self.assertEqual(owner.record()['backups'],{});self.assertFalse(log.exists())
+
+    def test_separate_mcp_role_applies_pending_history_once_after_backup(self):
+        owner,native,_,current,expected,_=self.fixture(mcp_pending=True)
+        owner.backup_quiesced(); original=owner.engine.request; migrator={};effects=[]
+        def transport(method,path,body=None):
+            if path.startswith('/v1.44/containers/ouf-mcp-migrate-fixture/json'):
+                return (200,copy.deepcopy(migrator)) if migrator else (404,None)
+            if path.startswith('/v1.44/containers/create?name=ouf-mcp-migrate-fixture'):
+                effects.append('create')
+                migrator.update(Id='e'*64,Name='/ouf-mcp-migrate-fixture',Image=body['Image'],
+                    Config={k:copy.deepcopy(v) for k,v in body.items() if k not in ('HostConfig','NetworkingConfig')},
+                    HostConfig={**copy.deepcopy(body['HostConfig']),'Privileged':False},Mounts=[],RestartCount=0,
+                    NetworkSettings={'Networks':{'ouf-backend':{'NetworkID':body['NetworkingConfig']['EndpointsConfig']['ouf-backend']['NetworkID']}}},
+                    State={'Status':'created','Running':False,'Pid':0})
+                return 201,{'Id':migrator['Id']}
+            if path == '/v1.44/containers/'+'e'*64+'/start':
+                effects.append('start');migrator['State'].update(Status='exited',ExitCode=0)
+                current['mcp']['migrations']=copy.deepcopy(expected['mcp'])
+                return 204,None
+            return original(method,path,body)
+        owner.engine.request=transport;self.addCleanup(setattr,owner.engine,'request',original)
+        proof=owner.migrate_mcp();self.assertEqual(proof['pendingMigrationCount'],3)
+        self.assertEqual(effects,['create','start'])
+        owner.migrate_mcp();self.assertEqual(effects,['create','start'])
+        self.assertEqual(owner.record()['mcpMigration']['state'],'COMPLETE')
+        self.assertEqual(owner.record()['mcpAuditRole']['state'],'CLEAN')
+
+    def test_ambiguous_mcp_creation_does_not_replay_effect(self):
+        owner,native,_,_,_,_=self.fixture(mcp_pending=True)
+        owner.backup_quiesced(); original=owner.engine.request;effects=[]
+        def transport(method,path,body=None):
+            if path.startswith('/v1.44/containers/ouf-mcp-migrate-fixture/json'):
+                return 404,None
+            if path.startswith('/v1.44/containers/create?name=ouf-mcp-migrate-fixture'):
+                effects.append('create');return 500,None
+            return original(method,path,body)
+        owner.engine.request=transport;self.addCleanup(setattr,owner.engine,'request',original)
+        with self.assertRaisesRegex(p.PlanDenied,'RECONCILIATION'):owner.migrate_mcp()
+        self.assertEqual(owner.record()['mcpMigration']['state'],'CLAIMED')
+        with self.assertRaisesRegex(p.PlanDenied,'RECONCILIATION'):owner.migrate_mcp()
+        self.assertEqual(effects,['create'])
+
+    def test_ambiguous_administrator_bootstrap_never_replays_role_grant(self):
+        owner,native,_,_,_,_=self.fixture(mcp_pending=True)
+        owner.backup_quiesced();statements=[]
+        def lost_ack(binding,statement=''):
+            if statement:
+                statements.append(statement)
+                raise RuntimeError('administrator ACK lost')
+            return {'adminSuperuser':True,'roleExists':False,'noLogin':False,
+                    'schemaCreate':False,'membershipCount':0,'appMembership':0,
+                    'functionOwnerCount':0}
+        owner.audit_role_state=lost_ack
+        with self.assertRaisesRegex(RuntimeError,'ACK lost'):owner.migrate_mcp()
+        self.assertEqual(owner.record()['mcpAuditRole']['state'],'BOOTSTRAP_CLAIMED')
+        with self.assertRaisesRegex(p.PlanDenied,'RECONCILIATION'):owner.migrate_mcp()
+        self.assertEqual(len(statements),1);self.assertEqual(native.calls,[])
 
     def test_capture_size_bound_leaves_consumed_claim_and_private_partial(self):
         owner,native,_,_,_,log=self.fixture()

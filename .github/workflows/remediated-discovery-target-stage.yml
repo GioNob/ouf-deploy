@@ -1,9 +1,6 @@
 name: OUF fresh remediated discovery target stage
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [.github/workflows/remediated-discovery-target-stage.yml, scripts/stage-remediated-discovery.py]
 permissions:
   contents: read
 concurrency:

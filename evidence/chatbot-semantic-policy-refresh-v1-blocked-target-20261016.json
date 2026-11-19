@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.chatbot-semantic-policy-refresh-v1-blocked-target.v1",
+  "source": "OPERATOR_SUPPLIED_OUTPUT",
+  "readerCommit": "943d9d1cb544c8859b5e7203ae1dbaedca7915a0",
+  "reason": "SELECTED_AUTHORIZATION_HTTPS_ORIGIN_REQUIRED",
+  "complete": false,
+  "readOnly": true,
+  "credentialFilesRead": 0,
+  "policyGets": 0,
+  "credentialReadNotReached": true,
+  "policyGetNotReached": true,
+  "exactFailedUrlPredicateProven": false,
+  "diagnosticDefect": "API_PREFIX_ASSUMPTION_EXCLUDES_PUBLISHED_INTERNAL_GATEWAY_CONTRACT",
+  "runtimeRefreshFailureProven": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "acceptanceGranted": false,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "serviceMutations": 0,
+  "runtimeAuthorityIssued": false
+}

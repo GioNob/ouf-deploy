@@ -1,0 +1,58 @@
+{
+  "schema": "ouf.semantic-mcp-scoped-execution-qualification.v1",
+  "date": "2026-10-17",
+  "observedVia": "GITHUB_ACTIONS_NATIVE_FIXTURES",
+  "sourceCommit": "c651d4d6d404facc96d8455180a95103c8059152",
+  "launcherCommit": "517bb3b39ad71cc6ea193b1c4215cec84e1b2d8c",
+  "launcherSha256": "f65beb40eda3cab111e6e81b13b0b4978db04035ddee85e417574a9b589cc99a",
+  "packageCommit": "a7ab4891cfc43fd68654e7506659b5c9a42fa805",
+  "packageSha256": "55f21ed168145cf08e6f6f6d87b79867b38696ce5e150f114341e845ce821915",
+  "runId": 39004051839,
+  "jobId": 117312759000,
+  "conclusion": "success",
+  "suites": {
+    "scopedAuthority": 4,
+    "permitIssuanceIncludingFourInheritedAuthorityTests": 7,
+    "privatePlan": 5,
+    "sealedBootstrap": 3,
+    "nativeTokenComposition": 2,
+    "launcherByteCustody": 5
+  },
+  "claims": {
+    "existingTwoRoleSignaturesVerified": true,
+    "actualPythonStdlibCustodyVerified": true,
+    "completeSealedSourceGraphQualified": true,
+    "nativeRootUidGidFixture": true,
+    "policyTokenTlsRequestExecutedInFixture": true,
+    "priorWorkerRecordsPreservedInFixture": true,
+    "successorOneUseFenceTransferQualified": true,
+    "terminalAndHumanBoundariesSynthetic": true,
+    "launcherTamperSymlinkHardlinkRejected": true
+  },
+  "supportingRuns": {
+    "successorSession": 39002084854,
+    "legacyOwnerComposition": 39002084736,
+    "realMcpBootstrap": 39003402771,
+    "sourceBackupReader": 39003696503,
+    "sourceScopedComposition": 39003696449
+  },
+  "target": {
+    "effectsFromThisQualification": false,
+    "humanApprovalGranted": false,
+    "runtimeAuthorityIssued": false,
+    "completedTechnicalPhases": 8,
+    "functionalMilestonesProven": 0,
+    "controlledCumulativeGrantAttempts": 128,
+    "remainingWorkerAttemptsMaximum": 69,
+    "maximumCumulativeGrantAttempts": 197,
+    "humanOAuthAttempts": 49,
+    "remainingOAuthAttempts": 79,
+    "maximumCumulativeOAuthAttempts": 128
+  },
+  "limits": [
+    "CI HUMAN and terminal consent are explicit fixtures, not VPS approval.",
+    "Actual target MCP update, semantic receipt, semantic dispatch and CSV milestones remain unproven.",
+    "Live policy recovery and a fresh independent owner receipt read are required before a separately reviewed permit and MCP update.",
+    "Historical unknown request counts remain unknown; no counter reset or automatic session renewal."
+  ]
+}

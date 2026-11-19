@@ -1,0 +1,11 @@
+{
+  "schema": "ouf.source-revision-private-boot-read-selection.v1",
+  "privateParent": "/etc/ouf/deploy-snapshots",
+  "systemctl": "/usr/bin/systemctl",
+  "guardUnit": "ouf-semantic-boot-guard.service",
+  "dockerUnit": "docker.service",
+  "unitFiles": [
+    "/etc/systemd/system/ouf-semantic-boot-guard.service",
+    "/etc/systemd/system/docker.service.d/90-ouf-semantic-boot-guard.conf"
+  ]
+}

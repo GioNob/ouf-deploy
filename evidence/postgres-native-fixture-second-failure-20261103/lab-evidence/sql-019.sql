@@ -1,0 +1,1 @@
+BEGIN; UPDATE ouf_recovery_fixture.generation SET generation='postgres-native-fixture-0002'; UPDATE ouf_recovery_fixture.objects SET generation='postgres-native-fixture-0002'; COMMIT

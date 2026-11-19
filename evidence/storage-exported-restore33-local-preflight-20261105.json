@@ -1,0 +1,22 @@
+{
+  "components": {
+    "basebackup": {
+      "bytes": 46885503,
+      "files": 1282
+    },
+    "cold-backup": {
+      "bytes": 22305,
+      "files": 104
+    },
+    "wal-archive": {
+      "bytes": 67109203,
+      "files": 5
+    }
+  },
+  "localNewUnitTestsPassed": 9,
+  "localPhysicalCutTestsPassed": 15,
+  "nativeRestoreExecuted": false,
+  "originalSha256": "33b5a7124d3990dce5c0049ff0a33653fec2d6fb29f07edb767a9680b8a441e3",
+  "partialCheckoutSuiteLimitation": "common-cut 10 PASS / 1 missing vendor-profile error; PITR test absent in partial checkout, 0 executed; complete 44-test suite required in hosted checkout",
+  "status": "LOCAL_ORIGINAL_EXPORT_EXTRACTION_PASS"
+}

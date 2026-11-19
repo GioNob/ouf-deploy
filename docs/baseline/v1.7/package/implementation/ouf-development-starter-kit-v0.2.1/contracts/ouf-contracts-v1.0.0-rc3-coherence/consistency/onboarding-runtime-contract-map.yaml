@@ -1,0 +1,135 @@
+version: '0.6'
+scope: All currently source-supported cross-module contracts from Onboarding to Ingestion/Gateway
+  runtime boundary
+artifacts:
+- name: PublishedConfigurationBundle
+  owner: Onboarding
+  consumers:
+  - Ingestion
+  - Gateway runtime publication
+  path: onboarding/published-configuration-bundle-v1.json
+- name: ExtractionProfile
+  owner: Onboarding
+  consumers:
+  - Source Sync/Ingestion
+  - Gateway southbound
+  path: onboarding/extraction-profile-v1.json
+- name: SyncProfile
+  owner: Onboarding
+  consumers:
+  - Source Sync/Ingestion
+  path: onboarding/sync-profile-v1.json
+- name: SourceObjectIdentityPolicy
+  owner: Onboarding
+  consumers:
+  - Ingestion
+  - UDP evidence downstream
+  path: onboarding/source-object-identity-policy-v1.json
+- name: TemporalMapping
+  owner: Onboarding
+  consumers:
+  - Ingestion
+  - UDP evidence downstream
+  path: onboarding/temporal-mapping-v1.json
+- name: ChangeRepresentationProfile
+  owner: Onboarding
+  consumers:
+  - Ingestion
+  path: onboarding/change-representation-profile-v1.json
+- name: DeltaPatchContract
+  owner: Onboarding
+  consumers:
+  - Ingestion
+  path: onboarding/delta-patch-contract-v1.json
+- name: SemanticMapping
+  owner: Onboarding
+  consumers:
+  - Ingestion ETL/Semantic Processing
+  path: onboarding/semantic-mapping-v1.json
+- name: RelationshipMapping
+  owner: Onboarding
+  consumers:
+  - Ingestion candidate builder
+  - UDP/Object Resolution
+  path: onboarding/relationship-mapping-v1.json
+- name: AuthorityPolicyDescriptor
+  owner: Onboarding
+  consumers:
+  - Ingestion evidence
+  - UDP/Object Resolution
+  path: onboarding/authority-policy-ref-v1.json
+- name: DataAccessPolicy
+  owner: Onboarding
+  consumers:
+  - Ingestion propagation
+  - Authorization/UDP enforcement
+  path: onboarding/data-access-policy-v1.json
+- name: SourceRuntimeProfile
+  owner: Onboarding publication / Gateway runtime view
+  consumers:
+  - Gateway
+  path: gateway/source-runtime-profile-v1.json
+- name: SourceSchemaBinding
+  owner: Onboarding/API contract
+  consumers:
+  - Gateway
+  - Connector
+  path: gateway/source-schema-binding-v1.json
+- name: RouteBinding
+  owner: Gateway derived configuration
+  consumers:
+  - Gateway runtime
+  path: gateway/route-binding-v1.json
+invariants:
+- id: ONB-X01
+  rule: Bundle immutable; runtime does not reconstruct from internal Onboarding tables.
+- id: ONB-X02
+  rule: ACTIVE pointer changes atomically; historical bundles remain immutable/resolvable.
+- id: ONB-X03
+  rule: Every PULL bundle resolves binding/sourceRuntimeProfile + extractionProfile.
+- id: ONB-X04
+  rule: Gateway runtime artifacts contain technical projection only, never ontology/classification
+    rationale.
+- id: ONB-X05
+  rule: Secrets are references only; no credential material in bundle/runtime manifests.
+- id: ONB-X06
+  rule: Extraction profile sourceId must match bundle source.sourceId and Gateway
+    sourceRuntimeProfile sourceId.
+- id: ONB-X07
+  rule: RouteBinding sourceId/extractionProfileRef must resolve to the same approved
+    source/profile.
+- id: ONB-X08
+  rule: Schema binding/ref used by Gateway/Connector must identify the same exact
+    source schema version pinned in bundle objectTypes.
+- id: ONB-X09
+  rule: SemanticMapping sourceType must match bundle source/type; semantic refs are
+    exact published references.
+- id: ONB-X10
+  rule: RelationshipMapping refs in bundle resolve to immutable approved mappings;
+    Gateway does not interpret them.
+- id: ONB-X11
+  rule: ChangeRepresentationProfile missing in legacy bundle means FULL_SNAPSHOT only;
+    no other silent defaults.
+- id: ONB-X12
+  rule: DELTA_PATCH requires DeltaPatchContract with direct sourcePath mapping and
+    base reference semantics.
+- id: ONB-X13
+  rule: SourceObjectIdentityPolicy never yields UrbanObjectId; runtime/UDP owns canonical
+    resolution.
+- id: ONB-X14
+  rule: TemporalMapping does not invent validity; derived values require explicit
+    approved rule.
+- id: ONB-X15
+  rule: Authority/data-access metadata is propagated; final authority competition
+    and access enforcement remain downstream.
+explicitlyExcluded:
+- Onboarding workflow/approval DTOs
+- Trusted Human Surface contracts
+- AuthorizationPolicyBundle
+- Semantic Registry API contracts
+- Managed file upload/profiling contracts
+- SchemaSurveillanceNotice / SchemaDriftIssue
+- Gateway Client/Credential Binding owned by IAM/Secret Management
+- Gateway Health State operations contract
+- supplier vertical API contracts
+- MCP Server changes

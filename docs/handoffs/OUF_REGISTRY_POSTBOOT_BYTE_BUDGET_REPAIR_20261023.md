@@ -1,0 +1,20 @@
+# CURRENT — byte-budget repair source/component qualification and immutable delivery
+
+Source7793835ddd05af28577b4ff299222194b6397b94: 39980550789 components197postboot+14/16/17/10/8/5/11 PASS; loader20eachPython3.12/3.13, originalTLS11each, nativeprefix8 PASS. Native Registry JVM composition running at generation time. Main39980550856 all3PASS (368/6/3/4/4/6 component tests); configured transport39980550790 bothPASS (13/10/11each), direct logs read. Target-sized duplicate-read regression PASS with MAX_BYTES160MiB unchanged, metadata/hash/bound/finalverify refusals retained. FulltargetCLI and continuousrenewal still unqualified.
+
+Artifactbccabde9a16d370d76e6cd2b941d6a09ea0b5d70: capsule660288bytes SHAf6ab800de6ca9452258cf967dd0e194b81b620a35dff0ef357f7fdf93f45f02c, declarationc0d3bedb36ab56d4f116a4a264e49a1310b366d0ec9aadbd5a6d715331c6bdc8, closure4fb611d8ffcf4446aeb25df7777dfb66fefb964c63f375863471072b8d7d2f27. All137sourceGitblobs+loader/generator/case match complete exact-source GitHubtree, deterministic and independentAST/gzip verification PASS; all4artifactfilesreadbackexact. Local isolated137preloadwithoutentry,6artifactaudit/54wrappertests/BashsyntaxPASS. Newwrapper SHA1b5f72f4315865488e65fdfe0ea91fd9494729964951c567ce11535fdbee88ad permits prepare-review/review only; no authority/effects. FinaldeliveryCIpendingatgeneration; actualsource/finalstatusesinPR50.
+
+Nexttargetactiononlynewbyteprepare-reviewonce aftersourceJVMqualification. PreserveSTOPandallclaims; nooldlauncherreplay. PriorEngine/Admin/frozen/resolver/TLSintent42/5/3/8/5,cumulative54/6/4/10/6. Metadata320newcaseonly (256+3*17additionalproofreads), byte160MiB/time90sunchanged. Authority independentlyrehashesexecutables and finalverify rereadsall; duplicatesizeprofile reuse requires heldsameinode/metadata/ancestry/hash/bound. SERVICE319/max1newgrant<=900sunchanged. Networkvaluesfromverifiedconfiguration. Target502OPEN; priority502/E2E/Supervisor. Alllowerheadershistorical.
+
+---
+
+# CURRENT — byte-budget stop observed; remove duplicate executable read, preserve all guards
+
+Target byte observer reports 12 Engine attempt markers, Admin/TLS/frozen markers, frozen-response25320bytes, source directory; no prepared/review. Confirms frozen validation/source-copy phase passed by pinned source order, not full final resource-read completion. Docker47253935/Python6832784/OpenSSL1103304bytes (size-only, not current hash attestation). Existing schedule seals Docker at DB, again at authority, again finalverify; other two twice:157633981bytes before metadata. Failed exact read remains unknown; 160MiB aggregate budget exhausted. Preserve fifth consumed preparation VhaPF4P9 and observation ypkfWBdC.
+
+Fix Files.executable_profile reuses only an identical previously sealed held FD profile/metadata/ancestry and matching expectedhash/bound. Authority immediately still independently rehashes via governance.executable; final Files.verify still hashes every observed input. No caching bytes or dropping final verification. Uncached programs still sealed. MAX_BYTES160MiB unchanged. Local actual target-sized executable IO reproduces old-budget failure with bounded metadata and passes with duplicate removed, plus mutation/hash/bound/final-recheck refusals. Five new tests PASS.
+
+New fileBudgetRecovery case reconciles all previous wire chain plus fifth claim/12Engine/Admin/TLS/frozen/response/source-dir/no prepared/review. New stable incident/boot/purpose root independent source changes; old roots untouched. Prior42Engine/5Admin/3frozen/8resolver/5TLSintent, new12/1/1/2/1, cumulative54/6/4/10/6; no token attempt budget reset, SERVICE319/max1newgrant<=900s unchanged. Metadata-read cap320 only newcase: old256+3passes of17additionalproof reads<=307, rounded320; bytes/time bounds unchanged. No endpoint literals; all networkvalues configured. New source CI, complete capsule Git membership and pinned wrapper pending; no target command until qualified. Old wire capsule immutable/historical. Target502OPEN; fulltargetCLI/continuousrenewalunqualified. All lowerheaders historical.
+
+---
+

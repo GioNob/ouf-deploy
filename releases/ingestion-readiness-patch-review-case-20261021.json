@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.readiness-patch-review-case.v1",
+  "purpose": "EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT",
+  "inputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+  "inputCaseHash": "3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+  "snapshotRoot": "/etc/ouf/deploy-snapshots",
+  "oldIngestionId": "ca24aa3dc8d740f648db03ef6ff37a5a5adfec6dbe9dd091b087944fac6c30ad",
+  "baselineSourceCommit": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+  "candidateSourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+  "candidateImageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsAllowed": 0,
+  "oauthRequestsAllowed": 0,
+  "existingCumulativeOAuthAttempts": 292,
+  "existingMaximumCumulativeOAuthAttempts": 292,
+  "automaticReplayAllowed": false,
+  "releaseAcceptance": false
+}

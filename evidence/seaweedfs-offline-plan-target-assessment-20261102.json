@@ -1,0 +1,141 @@
+{
+  "schema": "ouf.storage-offline-plan-target-assessment.v1",
+  "date": "2026-11-02",
+  "receipt": "evidence/seaweedfs-offline-plan-target-20261102.json",
+  "status": "PRIVATE_COPY_PLAN_CAPTURED_NOT_ADMITTED",
+  "control": 17,
+  "cumulativeEngineGets": 52,
+  "privatePlanSha256": "debed37f949b00f008eae77feecd103c8d4834e105c0d6c727b188e6aafbb501",
+  "sourceInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+  "scopeConsumed": true,
+  "newDockerGets": 0,
+  "newS3Requests": 0,
+  "credentialFilesOpened": 0,
+  "privateMetadataFilesOpened": 4,
+  "privateMetadataBytesRead": 93238,
+  "records": 120,
+  "logicalBytes": 203743,
+  "verifiedBodies": 0,
+  "bodiesRequiringVerification": 120,
+  "missingAdvertisedHashes": 10,
+  "invalidAdvertisedHashFormats": 0,
+  "bucketFeatureStatusCounts": {
+    "acl": {
+      "ABSENT": 0,
+      "PRESENT": 2,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "cors": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "encryption": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "lifecycle": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "notification": {
+      "ABSENT": 0,
+      "PRESENT": 2,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "objectLock": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "policy": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "publicAccessBlock": {
+      "ABSENT": 0,
+      "PRESENT": 0,
+      "UNSUPPORTED": 2,
+      "configured": 0
+    },
+    "replication": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "versioning": {
+      "ABSENT": 0,
+      "PRESENT": 2,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    }
+  },
+  "unsupportedFeatureTypes": [
+    "publicAccessBlock"
+  ],
+  "aclAccessClassification": "PENDING_PRIVATE_REVIEW_NOT_PROVEN_BY_PRESENT_OR_CONFIGURED_ZERO",
+  "objectAttributeCounts": {
+    "encryptedObjects": 0,
+    "objectsWithCacheControl": 0,
+    "objectsWithContentEncoding": 0,
+    "objectsWithKmsKeyReference": 0,
+    "objectsWithLegalHold": 0,
+    "objectsWithRetentionDate": 0,
+    "objectsWithTags": 0
+  },
+  "storageBindingRolesAtControl14": [
+    "onboarding",
+    "udp",
+    "udp-evidence-read"
+  ],
+  "writerInventoryComplete": false,
+  "externalConsumersProvenAbsent": false,
+  "pointInTimeSnapshotProven": false,
+  "capacityAndMemoryReobserved": false,
+  "historyCopyOrderProven": false,
+  "policyDocumentsToTranslate": 0,
+  "releaseAcceptance": false,
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "migrationReady": false,
+  "migrationPerformed": false,
+  "copyEngine": {
+    "status": "SYNTHETIC_PROTOTYPE_LAB_QUALIFIED_NOT_TARGET",
+    "productionEntrypoint": false,
+    "scope": "unversioned bounded objects in declared buckets only",
+    "remaining": [
+      "versioned history and multipart copy",
+      "complete-instance reconciliation",
+      "current writer fencing and DB reconciliation",
+      "governed production admission and independent destination profile"
+    ],
+    "dossier": "evidence/seaweedfs-copy-core-qualified-20261102.json"
+  },
+  "security": {
+    "rawServerGate": "HELD_ONE_UNKNOWN",
+    "advisory": "GO-2026-5932",
+    "officialAdvisoryUrl": "https://vuln.go.dev/ID/GO-2026-5932.json",
+    "advisoryPublished": "2026-07-07T22:15:29Z",
+    "advisoryModified": "2026-07-07T22:15:29Z",
+    "knownFixedVersion": null,
+    "compiledOpenPgpImported": false,
+    "ignoreAdded": false,
+    "formalApplicabilityAccepted": false
+  },
+  "allEightGates": "OPEN",
+  "all21AcceptanceTests": "OPEN",
+  "m2Accepted": false,
+  "teatriAndSameFarmaciePreserved": true,
+  "newTargetOperationsSinceReceipt17": 0
+}

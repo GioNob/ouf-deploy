@@ -1,0 +1,47 @@
+{
+  "schema": "ouf.managed-csv-recovery-peer-map-stop.v1",
+  "date": "2026-10-27",
+  "timezone": "Europe/Rome",
+  "origin": "OPERATOR_SUPPLIED_COMPLETE_CAPTURE_OUTPUT",
+  "status": "STOP_RECONCILE",
+  "reasonCode": "EXACT_RETAINED_COHORT_REQUIRED",
+  "complete": false,
+  "protectedCodeRoot": "/usr/local/lib/ouf-managed-csv-recovery-inputs-5c390ebcb75857ef",
+  "allThreeRoot400ChecksumsPassed": true,
+  "consumedScope": "/etc/ouf/deploy-snapshots/managed-csv-recovery-control-inputs-20261027-v1",
+  "scopeConsumed": true,
+  "counts": {
+    "bytes": 483676,
+    "engineGets": 0,
+    "privateMetadataReads": 3
+  },
+  "containerWrites": 0,
+  "runtimeAuthorityIssued": false,
+  "exit": 2,
+  "deliveryExit": 2,
+  "deliveryDirectory": "/home/oufadmin/ouf-managed-csv-recovery-inputs-delivery.220AH2Nk",
+  "deliveryLog": "/home/oufadmin/ouf-managed-csv-recovery-inputs-delivery.220AH2Nk/bootstrap.log",
+  "cause": "Consumer expected semantic key mcp; installed producer Context.current emits peer-<containerId prefix>. Previous test fixture incorrectly used semantic keys.",
+  "causeSource": {
+    "commit": "e5410467a410188a3b7ee7ae3264c7b0782f7b4a",
+    "path": "tools/onboarding_profile_recovery_update/context.py",
+    "method": "Context.current"
+  },
+  "correction": "Exact complete thirteen-member peer map; canonical peer keys from retained container IDs; unique MCP match using the full prior native binding hash plus expected native image. No count or identity guard relaxed.",
+  "followup": "New child-scope reconciliation must authenticate original claim/result and retain original3metadata/0Engine counts. Old capture wrapper/command is consumed, not to be repeated. New delivery must be qualified before operator use.",
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "lastVerifiedFarmacie": {
+    "state": "FAILED",
+    "cumulativeAttempts": 5
+  },
+  "newGrants": 0,
+  "humanBudgets": 0,
+  "resumes": 0,
+  "newJobs": 0,
+  "uploads": 0,
+  "acquisitions": 0,
+  "registryWorkerTouched": false
+}

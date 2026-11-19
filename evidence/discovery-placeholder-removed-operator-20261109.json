@@ -1,0 +1,94 @@
+{
+  "automaticReplayAllowed": false,
+  "businessRequestsIssued": 0,
+  "containerFramesUnchanged": true,
+  "containerdMetadataDeleted": false,
+  "coordinationState": "BLOCKED",
+  "credentialFileContentsRead": 0,
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "historicalAuthorityReused": false,
+  "leaseStateChanged": false,
+  "namespacePlaceholderRemoved": true,
+  "namespaceUnmounts": 0,
+  "nativeReadCommands": [
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "runc"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "runc"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "runc"
+    },
+    {
+      "exitCode": 0,
+      "kind": "runc"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    }
+  ],
+  "newGenerationAdmitted": false,
+  "nftWrites": 0,
+  "observedAt": "2026-11-09T08:06:55.475222+00:00",
+  "phase": "COMPLETE",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-placeholder-cksr_p4w",
+  "providerLeaseSetsEmptyAtLockedRead": true,
+  "providerReady": false,
+  "providerRequests": 0,
+  "retainedRuntimeJournalsUnchanged": true,
+  "runtimeJournalWrites": 0,
+  "s3Requests": 0,
+  "schema": "ouf.discovery-placeholder-reconciliation.v1",
+  "serviceConfigurationChanged": false,
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "status": "SOUTHBOUND_UNMOUNTED_PLACEHOLDER_REMOVED",
+  "tokenRequests": 0,
+  "unlinkAttempted": true
+}

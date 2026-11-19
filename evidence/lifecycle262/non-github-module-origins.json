@@ -1,0 +1,782 @@
+[
+  {
+    "module": "cel.dev/expr",
+    "version": "v0.25.3",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cel.dev/expr/@v/v0.25.3.info",
+    "cacheInfo": {
+      "Version": "v0.25.3",
+      "Time": "2026-07-29T19:55:59Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/cel-expr/cel-spec",
+        "Hash": "ba58ae5007845f3a1279b488cdeb79645ce958bb",
+        "Ref": "refs/tags/v0.25.3"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go",
+    "version": "v0.123.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/@v/v0.123.0.info",
+    "cacheInfo": {
+      "Version": "v0.123.0",
+      "Time": "2025-09-22T16:26:20Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Hash": "4e8373586a5e48c18fbfd4bb0a3e259184e49a91",
+        "Ref": "refs/tags/v0.123.0"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/auth",
+    "version": "v0.23.2",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/auth/@v/v0.23.2.info",
+    "cacheInfo": {
+      "Version": "v0.23.2",
+      "Time": "2026-08-20T18:56:12Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "auth",
+        "Hash": "85eac2b8baf0d783313f7d70b6036d5cb0c570ec",
+        "Ref": "refs/tags/auth/v0.23.2"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/auth/oauth2adapt",
+    "version": "v0.2.8",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/auth/oauth2adapt/@v/v0.2.8.info",
+    "cacheInfo": {
+      "Version": "v0.2.8",
+      "Time": "2025-03-20T15:18:21Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "auth/oauth2adapt",
+        "Hash": "7e600b964c1cae3ba47fc7d1d340a536723d18cb",
+        "Ref": "refs/tags/auth/oauth2adapt/v0.2.8"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/compute/metadata",
+    "version": "v0.10.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/compute/metadata/@v/v0.10.0.info",
+    "cacheInfo": {
+      "Version": "v0.10.0",
+      "Time": "2026-09-24T19:36:54Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "compute/metadata",
+        "Hash": "8a17bee208939e0166936a59675414439c47e341",
+        "Ref": "refs/tags/compute/metadata/v0.10.0"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/iam",
+    "version": "v1.13.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/iam/@v/v1.13.0.info",
+    "cacheInfo": {
+      "Version": "v1.13.0",
+      "Time": "2026-08-07T16:49:39Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "iam",
+        "Hash": "743257eee41a20b038436080320f3b356e9eed2a",
+        "Ref": "refs/tags/iam/v1.13.0"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/kms",
+    "version": "v1.35.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/kms/@v/v1.35.0.info",
+    "cacheInfo": {
+      "Version": "v1.35.0",
+      "Time": "2026-09-24T19:36:54Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "kms",
+        "Hash": "8a17bee208939e0166936a59675414439c47e341",
+        "Ref": "refs/tags/kms/v1.35.0"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/longrunning",
+    "version": "v1.2.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/longrunning/@v/v1.2.0.info",
+    "cacheInfo": {
+      "Version": "v1.2.0",
+      "Time": "2026-07-08T18:05:14Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "longrunning",
+        "Hash": "ca4c48c5f2729a9650ce08b06ef487c8038e69c7",
+        "Ref": "refs/tags/longrunning/v1.2.0"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/monitoring",
+    "version": "v1.30.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/monitoring/@v/v1.30.0.info",
+    "cacheInfo": {
+      "Version": "v1.30.0",
+      "Time": "2026-07-13T21:14:48Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "monitoring",
+        "Hash": "4ee97974cedd9df05fd9b48bf0363f2e04eb029b",
+        "Ref": "refs/tags/monitoring/v1.30.0"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/pubsub",
+    "version": "v1.51.1",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/pubsub/@v/v1.51.1.info",
+    "cacheInfo": {
+      "Version": "v1.51.1",
+      "Time": "2026-08-20T18:55:27Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "pubsub",
+        "Hash": "f059575f4169f72cd07f5057ce11e7b8ea278e6f",
+        "Ref": "refs/tags/pubsub/v1.51.1"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/pubsub/v2",
+    "version": "v2.7.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/pubsub/v2/@v/v2.7.0.info",
+    "cacheInfo": {
+      "Version": "v2.7.0",
+      "Time": "2026-08-27T17:12:14Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "pubsub",
+        "Hash": "78017361caf0da206af1b7ece31471e698b89008",
+        "Ref": "refs/tags/pubsub/v2.7.0"
+      }
+    }
+  },
+  {
+    "module": "cloud.google.com/go/storage",
+    "version": "v1.67.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/cloud.google.com/go/storage/@v/v1.67.0.info",
+    "cacheInfo": {
+      "Version": "v1.67.0",
+      "Time": "2026-09-03T17:37:56Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-cloud-go",
+        "Subdir": "storage",
+        "Hash": "63fbe39a375b9cdc79d788e64e043e434808b6b5",
+        "Ref": "refs/tags/storage/v1.67.0"
+      }
+    }
+  },
+  {
+    "module": "filippo.io/edwards25519",
+    "version": "v1.2.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/filippo.io/edwards25519/@v/v1.2.0.info",
+    "cacheInfo": {
+      "Version": "v1.2.0",
+      "Time": "2026-02-17T17:23:26Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/FiloSottile/edwards25519",
+        "Hash": "b182a6575cfd9f4fbb1d1d4e487a6b00a3ec06f7",
+        "Ref": "refs/tags/v1.2.0"
+      }
+    }
+  },
+  {
+    "module": "go.etcd.io/bbolt",
+    "version": "v1.5.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.etcd.io/bbolt/@v/v1.5.0.info",
+    "cacheInfo": {
+      "Version": "v1.5.0",
+      "Time": "2026-06-03T16:37:36Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/etcd-io/bbolt",
+        "Hash": "e7a8b2dd498494a3766ba24dd94d3509e5588485",
+        "Ref": "refs/tags/v1.5.0"
+      }
+    }
+  },
+  {
+    "module": "go.etcd.io/etcd/api/v3",
+    "version": "v3.7.1",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.etcd.io/etcd/api/v3/@v/v3.7.1.info",
+    "cacheInfo": {
+      "Version": "v3.7.1",
+      "Time": "2026-07-23T19:30:42Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/etcd-io/etcd",
+        "Subdir": "api",
+        "Hash": "5e7fd0de9a57db03ecc11794dc40403a734c07bb",
+        "Ref": "refs/tags/api/v3.7.1"
+      }
+    }
+  },
+  {
+    "module": "go.etcd.io/etcd/client/pkg/v3",
+    "version": "v3.7.1",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.etcd.io/etcd/client/pkg/v3/@v/v3.7.1.info",
+    "cacheInfo": {
+      "Version": "v3.7.1",
+      "Time": "2026-07-23T19:30:42Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/etcd-io/etcd",
+        "Subdir": "client/pkg",
+        "Hash": "5e7fd0de9a57db03ecc11794dc40403a734c07bb",
+        "Ref": "refs/tags/client/pkg/v3.7.1"
+      }
+    }
+  },
+  {
+    "module": "go.etcd.io/etcd/client/v3",
+    "version": "v3.7.1",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.etcd.io/etcd/client/v3/@v/v3.7.1.info",
+    "cacheInfo": {
+      "Version": "v3.7.1",
+      "Time": "2026-07-23T19:30:42Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/etcd-io/etcd",
+        "Subdir": "client",
+        "Hash": "5e7fd0de9a57db03ecc11794dc40403a734c07bb",
+        "Ref": "refs/tags/client/v3.7.1"
+      }
+    }
+  },
+  {
+    "module": "go.mongodb.org/mongo-driver",
+    "version": "v1.17.9",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.mongodb.org/mongo-driver/@v/v1.17.9.info",
+    "cacheInfo": {
+      "Version": "v1.17.9",
+      "Time": "2026-02-06T20:03:44Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/mongodb/mongo-go-driver.git",
+        "Hash": "3b10ae6d48140a7a672e64bace1e6132d61586f0",
+        "Ref": "refs/tags/v1.17.9"
+      }
+    }
+  },
+  {
+    "module": "go.opencensus.io",
+    "version": "v0.24.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opencensus.io/@v/v0.24.0.info",
+    "cacheInfo": {
+      "Version": "v0.24.0",
+      "Time": "2022-11-03T20:13:50Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/census-instrumentation/opencensus-go",
+        "Hash": "b1a01ee95db0e690d91d7193d037447816fae4c5",
+        "Ref": "refs/tags/v0.24.0"
+      }
+    }
+  },
+  {
+    "module": "go.opentelemetry.io/auto/sdk",
+    "version": "v1.2.1",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opentelemetry.io/auto/sdk/@v/v1.2.1.info",
+    "cacheInfo": {
+      "Version": "v1.2.1",
+      "Time": "2025-09-15T16:53:44Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/open-telemetry/opentelemetry-go-instrumentation",
+        "Subdir": "sdk",
+        "Hash": "715f58ce2f17e2176b8e53b871e47531a259cc1d",
+        "Ref": "refs/tags/sdk/v1.2.1"
+      }
+    }
+  },
+  {
+    "module": "go.opentelemetry.io/contrib/detectors/gcp",
+    "version": "v1.46.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opentelemetry.io/contrib/detectors/gcp/@v/v1.46.0.info",
+    "cacheInfo": {
+      "Version": "v1.46.0",
+      "Time": "2026-08-26T09:59:02Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/open-telemetry/opentelemetry-go-contrib",
+        "Subdir": "detectors/gcp",
+        "Hash": "c4c6248ec2289133b6a51f554ca9367ece1de8e7",
+        "Ref": "refs/tags/detectors/gcp/v1.46.0"
+      }
+    }
+  },
+  {
+    "module": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+    "version": "v0.71.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc/@v/v0.71.0.info",
+    "cacheInfo": {
+      "Version": "v0.71.0",
+      "Time": "2026-08-26T09:59:02Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/open-telemetry/opentelemetry-go-contrib",
+        "Subdir": "instrumentation/google.golang.org/grpc/otelgrpc",
+        "Hash": "c4c6248ec2289133b6a51f554ca9367ece1de8e7",
+        "Ref": "refs/tags/instrumentation/google.golang.org/grpc/otelgrpc/v0.71.0"
+      }
+    }
+  },
+  {
+    "module": "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp",
+    "version": "v0.71.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/@v/v0.71.0.info",
+    "cacheInfo": {
+      "Version": "v0.71.0",
+      "Time": "2026-08-26T09:59:02Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/open-telemetry/opentelemetry-go-contrib",
+        "Subdir": "instrumentation/net/http/otelhttp",
+        "Hash": "c4c6248ec2289133b6a51f554ca9367ece1de8e7",
+        "Ref": "refs/tags/instrumentation/net/http/otelhttp/v0.71.0"
+      }
+    }
+  },
+  {
+    "module": "go.opentelemetry.io/otel",
+    "version": "v1.46.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opentelemetry.io/otel/@v/v1.46.0.info",
+    "cacheInfo": {
+      "Version": "v1.46.0",
+      "Time": "2026-08-25T16:52:31Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/open-telemetry/opentelemetry-go",
+        "Hash": "58db4c898f5b5594f8ba78f156475bf48486e2f2",
+        "Ref": "refs/tags/v1.46.0"
+      }
+    }
+  },
+  {
+    "module": "go.opentelemetry.io/otel/metric",
+    "version": "v1.46.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opentelemetry.io/otel/metric/@v/v1.46.0.info",
+    "cacheInfo": {
+      "Version": "v1.46.0",
+      "Time": "2026-08-25T16:52:31Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/open-telemetry/opentelemetry-go",
+        "Subdir": "metric",
+        "Hash": "58db4c898f5b5594f8ba78f156475bf48486e2f2",
+        "Ref": "refs/tags/metric/v1.46.0"
+      }
+    }
+  },
+  {
+    "module": "go.opentelemetry.io/otel/sdk",
+    "version": "v1.46.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opentelemetry.io/otel/sdk/@v/v1.46.0.info",
+    "cacheInfo": {
+      "Version": "v1.46.0",
+      "Time": "2026-08-25T16:52:31Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/open-telemetry/opentelemetry-go",
+        "Subdir": "sdk",
+        "Hash": "58db4c898f5b5594f8ba78f156475bf48486e2f2",
+        "Ref": "refs/tags/sdk/v1.46.0"
+      }
+    }
+  },
+  {
+    "module": "go.opentelemetry.io/otel/sdk/metric",
+    "version": "v1.46.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opentelemetry.io/otel/sdk/metric/@v/v1.46.0.info",
+    "cacheInfo": {
+      "Version": "v1.46.0",
+      "Time": "2026-08-25T16:52:31Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/open-telemetry/opentelemetry-go",
+        "Subdir": "sdk/metric",
+        "Hash": "58db4c898f5b5594f8ba78f156475bf48486e2f2",
+        "Ref": "refs/tags/sdk/metric/v1.46.0"
+      }
+    }
+  },
+  {
+    "module": "go.opentelemetry.io/otel/trace",
+    "version": "v1.46.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.opentelemetry.io/otel/trace/@v/v1.46.0.info",
+    "cacheInfo": {
+      "Version": "v1.46.0",
+      "Time": "2026-08-25T16:52:31Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/open-telemetry/opentelemetry-go",
+        "Subdir": "trace",
+        "Hash": "58db4c898f5b5594f8ba78f156475bf48486e2f2",
+        "Ref": "refs/tags/trace/v1.46.0"
+      }
+    }
+  },
+  {
+    "module": "go.uber.org/atomic",
+    "version": "v1.12.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.uber.org/atomic/@v/v1.12.0.info",
+    "cacheInfo": {
+      "Version": "v1.12.0",
+      "Time": "2026-09-17T21:29:09Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/uber-go/atomic",
+        "Hash": "786022ac59d00afe247630b7a419ccb224d4cd21",
+        "Ref": "refs/tags/v1.12.0"
+      }
+    }
+  },
+  {
+    "module": "go.uber.org/multierr",
+    "version": "v1.11.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.uber.org/multierr/@v/v1.11.0.info",
+    "cacheInfo": {
+      "Version": "v1.11.0",
+      "Time": "2023-03-29T23:00:37Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/uber-go/multierr",
+        "Hash": "de75ae527b39a27afcb50a84427ec7b84021d5f4",
+        "Ref": "refs/tags/v1.11.0"
+      }
+    }
+  },
+  {
+    "module": "go.uber.org/zap",
+    "version": "v1.28.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.uber.org/zap/@v/v1.28.0.info",
+    "cacheInfo": {
+      "Version": "v1.28.0",
+      "Time": "2026-04-28T02:13:09Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/uber-go/zap",
+        "Hash": "5b81b37b81b8e2ed447a6f57991e372ee4fa5c8f",
+        "Ref": "refs/tags/v1.28.0"
+      }
+    }
+  },
+  {
+    "module": "go.yaml.in/yaml/v3",
+    "version": "v3.0.5",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/go.yaml.in/yaml/v3/@v/v3.0.5.info",
+    "cacheInfo": {
+      "Version": "v3.0.5",
+      "Time": "2026-07-26T14:51:55Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/yaml/go-yaml",
+        "Hash": "e16c7af9361b241fa02d91582fb59ce4954d8afc",
+        "Ref": "refs/tags/v3.0.5"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/crypto",
+    "version": "v0.58.1-0.20261009181718-2f1f834330b2",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/crypto/@v/v0.58.1-0.20261009181718-2f1f834330b2.info",
+    "cacheInfo": {
+      "Version": "v0.58.1-0.20261009181718-2f1f834330b2",
+      "Time": "2026-10-09T18:17:18Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/crypto",
+        "Hash": "2f1f834330b2d36ab3db8bfb33aaa1ac16794588"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/exp",
+    "version": "v0.0.0-20260813180055-c1d0aacb2297",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/exp/@v/v0.0.0-20260813180055-c1d0aacb2297.info",
+    "cacheInfo": {
+      "Version": "v0.0.0-20260813180055-c1d0aacb2297",
+      "Time": "2026-08-13T18:00:55Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/exp",
+        "Hash": "c1d0aacb22970709b06315c25ea93c5683101786"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/image",
+    "version": "v0.46.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/image/@v/v0.46.0.info",
+    "cacheInfo": {
+      "Version": "v0.46.0",
+      "Time": "2026-09-08T18:04:13Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/image",
+        "Hash": "b06f1de3f4900ff828b8f114c37eb9ea10dfed90",
+        "Ref": "refs/tags/v0.46.0"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/net",
+    "version": "v0.62.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/net/@v/v0.62.0.info",
+    "cacheInfo": {
+      "Version": "v0.62.0",
+      "Time": "2026-10-27T19:00:16Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/net",
+        "Hash": "3de643db506517b3e652a13cc0b56034cea6b8e6",
+        "Ref": "refs/tags/v0.62.0"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/oauth2",
+    "version": "v0.37.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/oauth2/@v/v0.37.0.info",
+    "cacheInfo": {
+      "Version": "v0.37.0",
+      "Time": "2026-08-25T21:41:43Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/oauth2",
+        "Hash": "c624b89dadc3221560b7345c090bbe69e90808ee",
+        "Ref": "refs/tags/v0.37.0"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/sync",
+    "version": "v0.24.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/sync/@v/v0.24.0.info",
+    "cacheInfo": {
+      "Version": "v0.24.0",
+      "Time": "2026-09-23T16:28:17Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/sync",
+        "Hash": "36f2d70ecde9857dc4e363242a1369c7645d6770",
+        "Ref": "refs/tags/v0.24.0"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/sys",
+    "version": "v0.49.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/sys/@v/v0.49.0.info",
+    "cacheInfo": {
+      "Version": "v0.49.0",
+      "Time": "2026-10-06T18:35:47Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/sys",
+        "Hash": "b6b8557e8e2974925aec7a136ba0e323eedc5f43",
+        "Ref": "refs/tags/v0.49.0"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/term",
+    "version": "v0.47.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/term/@v/v0.47.0.info",
+    "cacheInfo": {
+      "Version": "v0.47.0",
+      "Time": "2026-10-09T15:22:17Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/term",
+        "Hash": "0851034afad912733699827b3bb94436f059797f",
+        "Ref": "refs/tags/v0.47.0"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/text",
+    "version": "v0.43.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/text/@v/v0.43.0.info",
+    "cacheInfo": {
+      "Version": "v0.43.0",
+      "Time": "2026-10-09T15:18:32Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/text",
+        "Hash": "ac40b0f06c159afb5bfca4d1860f8b4b60dbc160",
+        "Ref": "refs/tags/v0.43.0"
+      }
+    }
+  },
+  {
+    "module": "golang.org/x/time",
+    "version": "v0.16.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/golang.org/x/time/@v/v0.16.0.info",
+    "cacheInfo": {
+      "Version": "v0.16.0",
+      "Time": "2026-08-19T17:16:18Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/time",
+        "Hash": "fb013b3d305a26f5ef5350a6eaffc7c87a200383",
+        "Ref": "refs/tags/v0.16.0"
+      }
+    }
+  },
+  {
+    "module": "google.golang.org/api",
+    "version": "v0.297.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/google.golang.org/api/@v/v0.297.0.info",
+    "cacheInfo": {
+      "Version": "v0.297.0",
+      "Time": "2026-09-02T00:17:06Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/google-api-go-client",
+        "Hash": "dfa9e13aa3e07a6283a6497f744ba5c4785a54fc",
+        "Ref": "refs/tags/v0.297.0"
+      }
+    }
+  },
+  {
+    "module": "google.golang.org/genproto",
+    "version": "v0.0.0-20260904194346-d0f1323225a4",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/google.golang.org/genproto/@v/v0.0.0-20260904194346-d0f1323225a4.info",
+    "cacheInfo": {
+      "Version": "v0.0.0-20260904194346-d0f1323225a4",
+      "Time": "2026-09-04T19:43:46Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/go-genproto",
+        "Hash": "d0f1323225a46c6b583cd8437a34facf09048d57"
+      }
+    }
+  },
+  {
+    "module": "google.golang.org/genproto/googleapis/api",
+    "version": "v0.0.0-20260921155816-b14227669459",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/google.golang.org/genproto/googleapis/api/@v/v0.0.0-20260921155816-b14227669459.info",
+    "cacheInfo": {
+      "Version": "v0.0.0-20260921155816-b14227669459",
+      "Time": "2026-09-21T15:58:16Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/go-genproto",
+        "Subdir": "googleapis/api",
+        "Hash": "b142276694597493de576aabd7bbe728f18f3564"
+      }
+    }
+  },
+  {
+    "module": "google.golang.org/genproto/googleapis/rpc",
+    "version": "v0.0.0-20260921155816-b14227669459",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/google.golang.org/genproto/googleapis/rpc/@v/v0.0.0-20260921155816-b14227669459.info",
+    "cacheInfo": {
+      "Version": "v0.0.0-20260921155816-b14227669459",
+      "Time": "2026-09-21T15:58:16Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/googleapis/go-genproto",
+        "Subdir": "googleapis/rpc",
+        "Hash": "b142276694597493de576aabd7bbe728f18f3564"
+      }
+    }
+  },
+  {
+    "module": "google.golang.org/grpc",
+    "version": "v1.86.0-dev.0.20261027044109-d619b5d02089",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/google.golang.org/grpc/@v/v1.86.0-dev.0.20261027044109-d619b5d02089.info",
+    "cacheInfo": {
+      "Version": "v1.86.0-dev.0.20261027044109-d619b5d02089",
+      "Time": "2026-10-27T04:41:09Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/grpc/grpc-go",
+        "Hash": "d619b5d0208981a4c74c418fe03f486ad6595862"
+      }
+    }
+  },
+  {
+    "module": "google.golang.org/grpc/security/advancedtls",
+    "version": "v1.0.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/google.golang.org/grpc/security/advancedtls/@v/v1.0.0.info",
+    "cacheInfo": {
+      "Version": "v1.0.0",
+      "Time": "2024-06-28T17:31:02Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/grpc/grpc-go",
+        "Subdir": "security/advancedtls",
+        "Hash": "f199062ef31ddda54152e1ca5e3d15fb63903dc3",
+        "Ref": "refs/tags/security/advancedtls/v1.0.0"
+      }
+    }
+  },
+  {
+    "module": "google.golang.org/protobuf",
+    "version": "v1.36.12",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/google.golang.org/protobuf/@v/v1.36.12.info",
+    "cacheInfo": {
+      "Version": "v1.36.12",
+      "Time": "2026-08-10T13:29:45Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://go.googlesource.com/protobuf",
+        "Hash": "cdd4c5f7406e82462949c7a65defa9f3029c162d",
+        "Ref": "refs/tags/v1.36.12"
+      }
+    }
+  },
+  {
+    "module": "gopkg.in/inf.v0",
+    "version": "v0.9.1",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/gopkg.in/inf.v0/@v/v0.9.1.info",
+    "cacheInfo": {
+      "Version": "v0.9.1",
+      "Time": "2018-03-26T17:23:32Z"
+    }
+  },
+  {
+    "module": "gopkg.in/yaml.v3",
+    "version": "v3.0.1",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/gopkg.in/yaml.v3/@v/v3.0.1.info",
+    "cacheInfo": {
+      "Version": "v3.0.1",
+      "Time": "2022-05-27T08:35:30Z"
+    }
+  },
+  {
+    "module": "modernc.org/b",
+    "version": "v1.0.0",
+    "cacheInfoPath": "gopath/pkg/mod/cache/download/modernc.org/b/@v/v1.0.0.info",
+    "cacheInfo": {
+      "Version": "v1.0.0",
+      "Time": "2018-11-06T17:46:42Z"
+    }
+  }
+]

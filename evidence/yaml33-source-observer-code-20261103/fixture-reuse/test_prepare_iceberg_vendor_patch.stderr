@@ -1,0 +1,13 @@
+test_arbitrary_sibling_change_rejected_before_config_write (__main__.VendorPatchGuardTests.test_arbitrary_sibling_change_rejected_before_config_write) ... ok
+test_base_config_pin_independently_enforced (__main__.VendorPatchGuardTests.test_base_config_pin_independently_enforced) ... ok
+test_changed_archive_rejected_before_write (__main__.VendorPatchGuardTests.test_changed_archive_rejected_before_write) ... ok
+test_exact_patch_preserves_licenses_and_changes_only_config (__main__.VendorPatchGuardTests.test_exact_patch_preserves_licenses_and_changes_only_config) ... ok
+test_license_pin_independently_enforced (__main__.VendorPatchGuardTests.test_license_pin_independently_enforced) ... ok
+test_module_version_drift_rejected (__main__.VendorPatchGuardTests.test_module_version_drift_rejected) ... ok
+test_vendor_symlink_rejected (__main__.VendorPatchGuardTests.test_vendor_symlink_rejected) ... ok
+test_wrong_result_digest_rejected_before_write (__main__.VendorPatchGuardTests.test_wrong_result_digest_rejected_before_write) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.083s
+
+OK

@@ -1,0 +1,42 @@
+{
+  "schema": "ouf.semantic-registry-jvm-residue-target-evidence.v1",
+  "source": "user supplied target receipt",
+  "retainedDirectory": "/home/oufadmin/ouf-historical-jvm-proof.aIT4E12k",
+  "status": "JVM_RESIDUE_PROOF_RETAINED",
+  "complete": true,
+  "expectedSealRestoredByRemovingOnlySixDirectories": true,
+  "matchingDirectoryLinkRules": [
+    "unchanged"
+  ],
+  "selectedDirectoryCount": 6,
+  "remainingEntryCount": 9302,
+  "fileContentBytesChanged": 0,
+  "nativeExpectedSealUnchanged": true,
+  "cleanupPlanPrepared": true,
+  "privateCleanupPlanHash": "f745bebba740e28d675d14277b04f51ed4340bce59f1c9659520390b15772d9c",
+  "privateProofHash": "c046c4a7274f6021b15be5e9db0e875e9c5eb52252b1f17175f74c8cac3f36cc",
+  "privatePlanRoot": "/etc/ouf/deploy-snapshots/semantic-registry-jvm-residue-aaa525bab7d23982bcd72bf3f29d687a9aa105af78f53add858a1254c452824d",
+  "selectionCounts": {
+    "allHsperfRoots": 2,
+    "allTomcatRoots": 1,
+    "reviewedUserHsperfRoots": 1,
+    "reviewedUserTomcatRoots": 1
+  },
+  "historicalPortMatchesConfigured": true,
+  "priorDirectoryMetadataIsCurrentEmptyDirectoryProof": false,
+  "currentContainerStateObserved": false,
+  "liveRootfsContentsRead": false,
+  "metadataReads": 13,
+  "metadataBytesRead": 3733545,
+  "engineGets": 0,
+  "priorDiagnosticEngineGets": 4,
+  "retainedControlledGrantAttempts": 320,
+  "oauthRequests": 0,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "serviceReadinessEstablished": false,
+  "releaseAcceptance": false
+}

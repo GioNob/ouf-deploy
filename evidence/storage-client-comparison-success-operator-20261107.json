@@ -1,0 +1,57 @@
+{
+  "applicationDatabaseTouched": false,
+  "applicationHttpUploadTested": false,
+  "bothClientsPassed": true,
+  "bucket": "ouf-managed-files",
+  "clientNetwork": "ouf-seaweedfs-private",
+  "curlGet": {
+    "bodyMatches": true,
+    "exitCode": 0,
+    "httpStatus": 200,
+    "providerCode": null
+  },
+  "curlPut": {
+    "bodyMatches": false,
+    "exitCode": 0,
+    "httpStatus": 200,
+    "providerCode": null
+  },
+  "curlRegion": "us-east-1",
+  "diagnosticObjectKey": "managed-files/e78fce5f-5563-4b31-ae35-e302324dd672",
+  "diagnosticObjectMayExist": true,
+  "endpoint": "https://ouf-seaweedfs-stage:9002",
+  "existingApplicationBindingsChanged": false,
+  "javaPreflight": {
+    "adapterClassSha256": "a136afe1291ebf0b1e26e9be08ae45bfc3737060673f3076ae492cc863657764",
+    "exitCode": 0,
+    "javaVersion": "21.0.12.1",
+    "minioVersion": "8.6.0",
+    "status": "JAVA_CLIENT_READY"
+  },
+  "javaRegion": "INSTALLED_ADAPTER_DEFAULT",
+  "javaTransfer": {
+    "bodyMatches": true,
+    "bodySha256": "5db4b698f1b4107f9914e5cf76159c563639ea599251403ab1e3b8fba7fc0f28",
+    "exitCode": 0,
+    "putAcknowledged": true,
+    "status": "PUT_GET_MATCH"
+  },
+  "onboardingImage": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+  "originalApplicationNetwork": [
+    "ouf-backend"
+  ],
+  "originalApplicationStillRunningUnchangedImage": true,
+  "payloadBytes": 29,
+  "payloadSha256": "5db4b698f1b4107f9914e5cf76159c563639ea599251403ab1e3b8fba7fc0f28",
+  "phase": "COMPLETE",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/client-compare-rg5vmsv6",
+  "sameClientContainerNetwork": true,
+  "sameIdentityEndpointPayloadAndKey": true,
+  "schema": "ouf.seaweedfs-client-comparison.v1",
+  "seaweedfsImage": "sha256:d23a50eb6cf56dc994ddc10f43590cc9a8a22a20019cab36d4ad00c3ad3b4af2",
+  "secretsEmitted": false,
+  "status": "COMPARISON_COMPLETE",
+  "temporaryContainerRemoved": true,
+  "temporaryContainerStarted": true,
+  "temporaryCredentialCopiesRemoved": true
+}

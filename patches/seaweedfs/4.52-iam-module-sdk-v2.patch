@@ -1,0 +1,3106 @@
+diff --git a/test/s3/iam/Makefile b/test/s3/iam/Makefile
+index 70f8972..97abad8 100644
+--- a/test/s3/iam/Makefile
++++ b/test/s3/iam/Makefile
+@@ -221,10 +221,7 @@ watch: ## Watch for file changes and re-run tests
+ 
+ install-deps: ## Install test dependencies
+ 	@echo "📦 Installing test dependencies..."
+-	go mod tidy
+-	go get -u github.com/stretchr/testify
+-	go get -u github.com/aws/aws-sdk-go
+-	go get -u github.com/golang-jwt/jwt/v5
++	go mod download
+ 
+ # Docker support
+ docker-test-legacy: ## Run tests in Docker container (legacy)
+diff --git a/test/s3/iam/README.md b/test/s3/iam/README.md
+index f6ebbda..0d76042 100644
+--- a/test/s3/iam/README.md
++++ b/test/s3/iam/README.md
+@@ -87,10 +87,10 @@ The S3 IAM integration tests validate the complete end-to-end functionality of:
+ 2. **SeaweedFS Binary** (`weed`) built with IAM support
+ 3. **Test Dependencies**:
+    ```bash
+-   go get github.com/stretchr/testify
+-   go get github.com/aws/aws-sdk-go
+-   go get github.com/golang-jwt/jwt/v5
++   go mod download
+    ```
++   The checked-in module pins maintained AWS SDK Go v2 S3/IAM clients and the
++   other test dependencies. Dependency upgrades require a separate tested change.
+ 
+ ### Running Tests
+ 
+diff --git a/test/s3/iam/framework_clients_v2.go b/test/s3/iam/framework_clients_v2.go
+new file mode 100644
+index 0000000..0a0734b
+--- /dev/null
++++ b/test/s3/iam/framework_clients_v2.go
+@@ -0,0 +1,69 @@
++package iam
++
++import (
++	"context"
++	"errors"
++	"net/http"
++	"time"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/smithy-go"
++)
++
++func fixtureStaticCredentials(access, secret, token string) aws.CredentialsProvider {
++	return aws.CredentialsProviderFunc(func(context.Context) (aws.Credentials, error) {
++		if access == "" || secret == "" {
++			return aws.Credentials{}, errors.New("fixture static credentials require both access key and secret key")
++		}
++		return aws.Credentials{AccessKeyID: access, SecretAccessKey: secret, SessionToken: token}, nil
++	})
++}
++
++func iamFrameworkConfig(creds aws.CredentialsProvider, httpClient *http.Client) aws.Config {
++	if httpClient == nil {
++		httpClient = &http.Client{Timeout: 30 * time.Second}
++	} else if httpClient.Timeout == 0 {
++		// Preserve the selected BearerTokenTransport without sharing mutable client configuration.
++		copy := *httpClient
++		copy.Timeout = 30 * time.Second
++		httpClient = &copy
++	}
++	return aws.Config{
++		Region: TestRegion, Credentials: creds, HTTPClient: httpClient,
++		Retryer:                    func() aws.Retryer { return aws.NopRetryer{} },
++		RequestChecksumCalculation: aws.RequestChecksumCalculationWhenSupported,
++		ResponseChecksumValidation: aws.ResponseChecksumValidationWhenSupported,
++	}
++}
++
++func newIAMFrameworkS3(creds aws.CredentialsProvider, httpClient *http.Client) *s3.Client {
++	return s3.NewFromConfig(iamFrameworkConfig(creds, httpClient), func(o *s3.Options) {
++		o.BaseEndpoint = aws.String(TestS3Endpoint)
++		o.UsePathStyle = true
++	})
++}
++
++func newIAMFrameworkIAM(creds aws.CredentialsProvider, httpClient *http.Client) *iam.Client {
++	return iam.NewFromConfig(iamFrameworkConfig(creds, httpClient), func(o *iam.Options) {
++		o.BaseEndpoint = aws.String(TestS3Endpoint)
++	})
++}
++
++func iamAPIError(err error) (smithy.APIError, bool) {
++	var apiErr smithy.APIError
++	ok := errors.As(err, &apiErr)
++	return apiErr, ok
++}
++
++func waitIAMFixture(ctx context.Context, duration time.Duration) error {
++	timer := time.NewTimer(duration)
++	defer timer.Stop()
++	select {
++	case <-ctx.Done():
++		return ctx.Err()
++	case <-timer.C:
++		return nil
++	}
++}
+diff --git a/test/s3/iam/framework_clients_v2_test.go b/test/s3/iam/framework_clients_v2_test.go
+new file mode 100644
+index 0000000..a060ce3
+--- /dev/null
++++ b/test/s3/iam/framework_clients_v2_test.go
+@@ -0,0 +1,155 @@
++package iam
++
++import (
++	"context"
++	"errors"
++	"fmt"
++	"io"
++	"net/http"
++	"net/url"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	iamclient "github.com/aws/aws-sdk-go-v2/service/iam"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/stretchr/testify/require"
++)
++
++func TestIAMFrameworkV2StaticQueryAndToken(t *testing.T) {
++	f := &S3IAMTestFramework{t: t, ctx: t.Context()}
++	client, err := f.CreateIAMClientWithJWT("fixture-user", "TestAdminRole")
++	require.NoError(t, err)
++	o := client.Options()
++	require.Equal(t, TestRegion, o.Region)
++	require.Equal(t, TestS3Endpoint, aws.ToString(o.BaseEndpoint))
++	require.Equal(t, 1, o.Retryer.MaxAttempts())
++	require.Equal(t, 30*time.Second, o.HTTPClient.(*http.Client).Timeout)
++	creds, err := o.Credentials.Retrieve(t.Context())
++	require.NoError(t, err)
++	require.True(t, strings.HasPrefix(creds.AccessKeyID, "ASIA"))
++	require.NotEmpty(t, creds.SessionToken)
++	calls := 0
++	o.HTTPClient = &http.Client{Transport: iamFixtureTransport(func(r *http.Request) (*http.Response, error) {
++		calls++
++		require.Equal(t, "POST", r.Method)
++		require.Equal(t, TestS3Endpoint+"/", r.URL.String())
++		require.Contains(t, r.Header.Get("Authorization"), "/us-west-2/iam/aws4_request")
++		require.Equal(t, creds.SessionToken, r.Header.Get("X-Amz-Security-Token"))
++		body, err := io.ReadAll(r.Body)
++		require.NoError(t, err)
++		form, err := url.ParseQuery(string(body))
++		require.NoError(t, err)
++		require.Equal(t, "CreateUser", form.Get("Action"))
++		require.Equal(t, "2010-05-08", form.Get("Version"))
++		require.Equal(t, "fixture+user", form.Get("UserName"))
++		return fixtureResponse(r, http.StatusOK, `<CreateUserResponse xmlns="https://iam.amazonaws.com/doc/2010-05-08/"><CreateUserResult><User><UserName>fixture+user</UserName><UserId>fixture-id</UserId><Arn>arn:aws:iam::123456789012:user/fixture+user</Arn></User></CreateUserResult></CreateUserResponse>`), nil
++	})}
++	out, err := iamclient.New(o).CreateUser(t.Context(), &iamclient.CreateUserInput{UserName: aws.String("fixture+user")})
++	require.NoError(t, err)
++	require.Equal(t, "fixture+user", aws.ToString(out.User.UserName))
++	require.Equal(t, 1, calls)
++}
++
++func TestIAMFrameworkV2S3RegionAndChecksum(t *testing.T) {
++	f := &S3IAMTestFramework{t: t, ctx: t.Context()}
++	client, err := f.CreateS3ClientWithSessionToken("fixture-session")
++	require.NoError(t, err)
++	o := client.Options()
++	require.Equal(t, TestRegion, o.Region)
++	require.True(t, o.UsePathStyle)
++	require.Equal(t, aws.RequestChecksumCalculationWhenSupported, o.RequestChecksumCalculation)
++	require.Equal(t, aws.ResponseChecksumValidationWhenSupported, o.ResponseChecksumValidation)
++	o.HTTPClient = &http.Client{Transport: iamFixtureTransport(func(r *http.Request) (*http.Response, error) {
++		require.Equal(t, "/fixture-bucket/a%20b.txt", r.URL.EscapedPath())
++		require.Contains(t, r.Header.Get("Authorization"), "/us-west-2/s3/aws4_request")
++		require.Equal(t, "fixture-session", r.Header.Get("X-Amz-Security-Token"))
++		require.Equal(t, "2zEPiw==", r.Header.Get("X-Amz-Checksum-Crc32"))
++		body, err := io.ReadAll(r.Body)
++		require.NoError(t, err)
++		require.Equal(t, "fixture-body", string(body))
++		return fixtureResponse(r, http.StatusOK, ""), nil
++	})}
++	_, err = s3.New(o).PutObject(t.Context(), &s3.PutObjectInput{Bucket: aws.String("fixture-bucket"), Key: aws.String("a b.txt"), Body: strings.NewReader("fixture-body")})
++	require.NoError(t, err)
++}
++
++func TestIAMFrameworkV2BearerIdentity(t *testing.T) {
++	for _, service := range []string{"iam", "s3"} {
++		t.Run(service, func(t *testing.T) {
++			calls := 0
++			transport := &BearerTokenTransport{Token: "fixture.invalid.jwt", Transport: iamFixtureTransport(func(r *http.Request) (*http.Response, error) {
++				calls++
++				require.Equal(t, "Bearer fixture.invalid.jwt", r.Header.Get("Authorization"))
++				require.Empty(t, r.Header.Get("X-Amz-Security-Token"))
++				require.Empty(t, r.Header.Get("X-Amz-Date"))
++				return fixtureResponse(r, http.StatusForbidden, `<ErrorResponse><Error><Type>Sender</Type><Code>AccessDenied</Code><Message>fixture denied</Message></Error></ErrorResponse>`), nil
++			})}
++			httpClient := &http.Client{Transport: transport}
++			if service == "iam" {
++				client := newIAMFrameworkIAM(aws.AnonymousCredentials{}, httpClient)
++				require.Equal(t, 30*time.Second, client.Options().HTTPClient.(*http.Client).Timeout)
++				_, err := client.ListUsers(t.Context(), &iamclient.ListUsersInput{})
++				require.Error(t, err)
++			} else {
++				client := newIAMFrameworkS3(aws.AnonymousCredentials{}, httpClient)
++				_, err := client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
++				require.Error(t, err)
++			}
++			require.Zero(t, httpClient.Timeout, "constructor must not mutate caller's client")
++			require.Equal(t, 1, calls)
++		})
++	}
++}
++
++func TestIAMFrameworkV2ErrorsAndBoundedRetry(t *testing.T) {
++	calls := 0
++	client := newIAMFrameworkIAM(fixtureStaticCredentials("key", "secret", ""), &http.Client{Transport: iamFixtureTransport(func(r *http.Request) (*http.Response, error) {
++		calls++
++		return fixtureResponse(r, http.StatusServiceUnavailable, `<ErrorResponse><Error><Type>Sender</Type><Code>AccessDenied</Code><Message>fixture denied</Message></Error></ErrorResponse>`), nil
++	})})
++	_, err := client.ListUsers(t.Context(), &iamclient.ListUsersInput{})
++	require.Error(t, err)
++	apiErr, ok := iamAPIError(fmt.Errorf("wrapped fixture: %w", err))
++	require.True(t, ok)
++	require.Equal(t, "AccessDenied", apiErr.ErrorCode())
++	require.True(t, isAccessDenied(err))
++	require.False(t, isAccessDenied(errors.New("transport failure")))
++	require.Equal(t, 1, calls)
++}
++
++func TestIAMFrameworkV2CancellationAndPartialCredentials(t *testing.T) {
++	ctx, cancel := context.WithCancel(t.Context())
++	cancel()
++	transport := &http.Client{Transport: iamFixtureTransport(func(r *http.Request) (*http.Response, error) {
++		t.Fatal("cancelled or incomplete identity must not reach transport")
++		return nil, errors.New("unexpected request")
++	})}
++	_, err := newIAMFrameworkIAM(fixtureStaticCredentials("key", "secret", ""), transport).ListUsers(ctx, &iamclient.ListUsersInput{})
++	require.ErrorIs(t, err, context.Canceled)
++	_, err = newIAMFrameworkIAM(fixtureStaticCredentials("key", "", ""), transport).ListUsers(t.Context(), &iamclient.ListUsersInput{})
++	require.Error(t, err)
++	require.Contains(t, err.Error(), "require both access key and secret key")
++	require.ErrorIs(t, waitIAMFixture(ctx, time.Hour), context.Canceled)
++}
++
++func TestIAMFrameworkV2RawExtensionSigning(t *testing.T) {
++	original := http.DefaultTransport
++	t.Cleanup(func() { http.DefaultTransport = original })
++	calls := 0
++	http.DefaultTransport = iamFixtureTransport(func(r *http.Request) (*http.Response, error) {
++		calls++
++		require.Contains(t, r.Header.Get("Authorization"), "/us-west-2/iam/aws4_request")
++		require.NotEmpty(t, r.Header.Get("X-Amz-Security-Token"))
++		body, err := io.ReadAll(r.Body)
++		require.NoError(t, err)
++		require.Equal(t, "Action=UpdateGroup&Disabled=true&GroupName=fixture", string(body))
++		return fixtureResponse(r, http.StatusOK, "<UpdateGroupResponse/>"), nil
++	})
++	f := &S3IAMTestFramework{t: t, ctx: t.Context()}
++	resp, err := callIAMAPIAuthenticated(t, f, "UpdateGroup", url.Values{"Disabled": {"true"}, "GroupName": {"fixture"}})
++	require.NoError(t, err)
++	defer resp.Body.Close()
++	require.Equal(t, 1, calls)
++}
+diff --git a/test/s3/iam/go.mod b/test/s3/iam/go.mod
+index 80d186e..fe9bf98 100644
+--- a/test/s3/iam/go.mod
++++ b/test/s3/iam/go.mod
+@@ -4,8 +4,8 @@ go 1.24
+ 
+ require (
+ 	github.com/aws/aws-sdk-go-v2 v1.47.5
++	github.com/aws/aws-sdk-go-v2/service/iam v1.64.6
+ 	github.com/aws/aws-sdk-go-v2/service/s3 v1.114.1
+-	github.com/aws/aws-sdk-go v1.44.0
+ 	github.com/golang-jwt/jwt/v5 v5.3.0
+ 	github.com/stretchr/testify v1.8.4
+ )
+@@ -21,7 +21,6 @@ require (
+ 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.20.4 // indirect
+ 	github.com/aws/smithy-go v1.28.7
+ 	github.com/davecgh/go-spew v1.1.1 // indirect
+-	github.com/jmespath/go-jmespath v0.4.0 // indirect
+ 	github.com/pmezard/go-difflib v1.0.0 // indirect
+ 	gopkg.in/yaml.v3 v3.0.1 // indirect
+ )
+diff --git a/test/s3/iam/go.sum b/test/s3/iam/go.sum
+index 4ba8190..92dd474 100644
+--- a/test/s3/iam/go.sum
++++ b/test/s3/iam/go.sum
+@@ -1,5 +1,3 @@
+-github.com/aws/aws-sdk-go v1.44.0 h1:jwtHuNqfnJxL4DKHBUVUmQlfueQqBW7oXP6yebZR/R0=
+-github.com/aws/aws-sdk-go v1.44.0/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
+ github.com/aws/aws-sdk-go-v2 v1.47.5 h1:5yA+A+BiXbDq1ZLbYwPViwhEGDMdR0MEhL8Jh2LnLS4=
+ github.com/aws/aws-sdk-go-v2 v1.47.5/go.mod h1:iNIkogrRvFwm+1OQIUOP2lPBtlXZboOIUWiCa+pHEMw=
+ github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.20 h1:GPRlPwz40I2B2VrBEASOA3Bi77NyeqejNLkifosX0rs=
+@@ -10,6 +8,8 @@ github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.8 h1:PWv+vG8aCLS8qd+HPdY
+ github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.8/go.mod h1:xxPZEpflYHJA12366ZGyq66z9dHPCoeCIu99Jck+MPw=
+ github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.4 h1:7Wo47d/xn/7KttCSBd8EGYeZ7ULRFRkUHr6vkZPBzVQ=
+ github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.4/go.mod h1:tDB2IVC1xC3vX8o+6uRlzhTxP3g1b77CZXFX/oD2FnQ=
++github.com/aws/aws-sdk-go-v2/service/iam v1.64.6 h1:6tqE3gHbHFEvARPvlLHgRK1dXoD96ecolfPEurpYXyc=
++github.com/aws/aws-sdk-go-v2/service/iam v1.64.6/go.mod h1:lV0r+RVSkXRA6WhiaxW55qn8n60ObMwQShxaqrs9UeY=
+ github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19 h1:bAdDl/HkGCcGPoe25ToSHEw23VIxt6CT5fLcg111BKg=
+ github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19/go.mod h1:KaUzbLxv4CeSxh6ZCl9B4m7CuFenS8kUEaDs+f/DQr4=
+ github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.11.5 h1:/TYsZXdA8UTa+WCtCYSAJIr1vwl0+eho6TUgJGwFFO8=
+@@ -22,32 +22,15 @@ github.com/aws/aws-sdk-go-v2/service/s3 v1.114.1 h1:9T6eO8/WXhij4PQaa2WaYsdekSCm
+ github.com/aws/aws-sdk-go-v2/service/s3 v1.114.1/go.mod h1:9APRWGLFITKD+xzWSIyT9V7QV4bNlEuIieWlzXgGFlI=
+ github.com/aws/smithy-go v1.28.7 h1:h/n1SHrwVtaDYLz8mR1/Kq4Xh4RaFbFW7bOYckg9mfE=
+ github.com/aws/smithy-go v1.28.7/go.mod h1:YE2RhdIuDbA5E5bTdciG9KrW3+TiEONeUWCqxX9i1Fc=
+-github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
+ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+ github.com/golang-jwt/jwt/v5 v5.3.0 h1:pv4AsKCKKZuqlgs5sUmn4x8UlGa0kEVt/puTpKx9vvo=
+ github.com/golang-jwt/jwt/v5 v5.3.0/go.mod h1:fxCRLWMO43lRc8nhHWY6LGqRcf+1gQWArsqaEUEa5bE=
+-github.com/jmespath/go-jmespath v0.4.0 h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=
+-github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=
+-github.com/jmespath/go-jmespath/internal/testify v1.5.1 h1:shLQSRRSCCPj3f2gpwzGwWFoC7ycTf1rcQZHOlsJ6N8=
+-github.com/jmespath/go-jmespath/internal/testify v1.5.1/go.mod h1:L3OGu8Wl2/fWfCI6z80xFu9LTZmf1ZRjMHUOPmWr69U=
+-github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
+ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+-github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
+ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
+ github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+-golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd h1:O7DYs+zxREGLKzKoMQrtrEacpb0ZVXA5rIwylE2Xchk=
+-golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd/go.mod h1:CfG3xpIq0wQ8r1q4Su4UZFWDARRcnwPjda9FqA0JpMk=
+-golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+-golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+-golang.org/x/term v0.0.0-20210927222741-03fcf44c2211/go.mod h1:jbD1KX2456YbFQfuXm/mYQcufACuNUgVhRMnK/tPxf8=
+-golang.org/x/text v0.3.7 h1:olpwvP2KacW1ZWvsR7uQhoyTYvKAupfQrRGBFM352Gk=
+-golang.org/x/text v0.3.7/go.mod h1:u+2+/6zg+i71rQMx5EYifcz6MCKuco9NR6JIITiCfzQ=
+-golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
+ gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
+ gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+-gopkg.in/yaml.v2 v2.2.8 h1:obN1ZagJSUGI0Ek/LBmuj4SNLPfIny3KsKFopxRdj10=
+-gopkg.in/yaml.v2 v2.2.8/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
+ gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
+ gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+diff --git a/test/s3/iam/s3_iam_admin_test.go b/test/s3/iam/s3_iam_admin_test.go
+index 70906dd..2ca8e6d 100644
+--- a/test/s3/iam/s3_iam_admin_test.go
++++ b/test/s3/iam/s3_iam_admin_test.go
+@@ -3,9 +3,8 @@ package iam
+ import (
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/service/iam"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -23,21 +22,21 @@ func TestIAMUserManagement(t *testing.T) {
+ 		userName := "test-user-mgm"
+ 
+ 		// Create user
+-		createResp, err := iamClient.CreateUser(&iam.CreateUserInput{
++		createResp, err := iamClient.CreateUser(t.Context(), &iam.CreateUserInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+ 		assert.Equal(t, userName, *createResp.User.UserName)
+ 
+ 		// Get user
+-		getResp, err := iamClient.GetUser(&iam.GetUserInput{
++		getResp, err := iamClient.GetUser(t.Context(), &iam.GetUserInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+ 		assert.Equal(t, userName, *getResp.User.UserName)
+ 
+ 		// List users to verify existence
+-		listResp, err := iamClient.ListUsers(&iam.ListUsersInput{})
++		listResp, err := iamClient.ListUsers(t.Context(), &iam.ListUsersInput{})
+ 		require.NoError(t, err)
+ 		found := false
+ 		for _, user := range listResp.Users {
+@@ -49,7 +48,7 @@ func TestIAMUserManagement(t *testing.T) {
+ 		assert.True(t, found, "Created user should be listed")
+ 
+ 		// Clean up
+-		_, err = iamClient.DeleteUser(&iam.DeleteUserInput{
++		_, err = iamClient.DeleteUser(t.Context(), &iam.DeleteUserInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+@@ -60,32 +59,32 @@ func TestIAMUserManagement(t *testing.T) {
+ 		newUserName := "user-updated"
+ 
+ 		// Create user
+-		_, err := iamClient.CreateUser(&iam.CreateUserInput{
++		_, err := iamClient.CreateUser(t.Context(), &iam.CreateUserInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+ 		defer func() {
+ 			// Try to delete both just in case
+-			iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)})
+-			iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(newUserName)})
++			iamClient.DeleteUser(t.Context(), &iam.DeleteUserInput{UserName: aws.String(userName)})
++			iamClient.DeleteUser(t.Context(), &iam.DeleteUserInput{UserName: aws.String(newUserName)})
+ 		}()
+ 
+ 		// Update user name
+-		_, err = iamClient.UpdateUser(&iam.UpdateUserInput{
++		_, err = iamClient.UpdateUser(t.Context(), &iam.UpdateUserInput{
+ 			UserName:    aws.String(userName),
+ 			NewUserName: aws.String(newUserName),
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Verify update (GetUser with NEW name should work)
+-		getResp, err := iamClient.GetUser(&iam.GetUserInput{
++		getResp, err := iamClient.GetUser(t.Context(), &iam.GetUserInput{
+ 			UserName: aws.String(newUserName),
+ 		})
+ 		require.NoError(t, err)
+ 		assert.Equal(t, newUserName, *getResp.User.UserName)
+ 
+ 		// GetUser with OLD name should fail
+-		_, err = iamClient.GetUser(&iam.GetUserInput{
++		_, err = iamClient.GetUser(t.Context(), &iam.GetUserInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.Error(t, err)
+@@ -101,24 +100,24 @@ func TestIAMAccessKeyManagement(t *testing.T) {
+ 	require.NoError(t, err)
+ 
+ 	userName := "test-user-keys"
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+-	defer iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)})
++	defer iamClient.DeleteUser(t.Context(), &iam.DeleteUserInput{UserName: aws.String(userName)})
+ 
+ 	t.Run("create_list_delete_access_key", func(t *testing.T) {
+ 		// Create access key
+-		createResp, err := iamClient.CreateAccessKey(&iam.CreateAccessKeyInput{
++		createResp, err := iamClient.CreateAccessKey(t.Context(), &iam.CreateAccessKeyInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+ 		assert.NotEmpty(t, *createResp.AccessKey.AccessKeyId)
+ 		assert.NotEmpty(t, *createResp.AccessKey.SecretAccessKey)
+-		assert.Equal(t, "Active", *createResp.AccessKey.Status)
++		assert.Equal(t, "Active", string(createResp.AccessKey.Status))
+ 
+ 		// List access keys
+-		listResp, err := iamClient.ListAccessKeys(&iam.ListAccessKeysInput{
++		listResp, err := iamClient.ListAccessKeys(t.Context(), &iam.ListAccessKeysInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+@@ -126,14 +125,14 @@ func TestIAMAccessKeyManagement(t *testing.T) {
+ 		assert.Equal(t, *createResp.AccessKey.AccessKeyId, *listResp.AccessKeyMetadata[0].AccessKeyId)
+ 
+ 		// Delete access key
+-		_, err = iamClient.DeleteAccessKey(&iam.DeleteAccessKeyInput{
++		_, err = iamClient.DeleteAccessKey(t.Context(), &iam.DeleteAccessKeyInput{
+ 			UserName:    aws.String(userName),
+ 			AccessKeyId: createResp.AccessKey.AccessKeyId,
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Verify deletion
+-		listResp, err = iamClient.ListAccessKeys(&iam.ListAccessKeysInput{
++		listResp, err = iamClient.ListAccessKeys(t.Context(), &iam.ListAccessKeysInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+@@ -142,32 +141,32 @@ func TestIAMAccessKeyManagement(t *testing.T) {
+ 
+ 	t.Run("update_access_key_status", func(t *testing.T) {
+ 		// Create access key
+-		createResp, err := iamClient.CreateAccessKey(&iam.CreateAccessKeyInput{
++		createResp, err := iamClient.CreateAccessKey(t.Context(), &iam.CreateAccessKeyInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+-		defer iamClient.DeleteAccessKey(&iam.DeleteAccessKeyInput{
++		defer iamClient.DeleteAccessKey(t.Context(), &iam.DeleteAccessKeyInput{
+ 			UserName:    aws.String(userName),
+ 			AccessKeyId: createResp.AccessKey.AccessKeyId,
+ 		})
+ 
+ 		// Update to Inactive
+-		_, err = iamClient.UpdateAccessKey(&iam.UpdateAccessKeyInput{
++		_, err = iamClient.UpdateAccessKey(t.Context(), &iam.UpdateAccessKeyInput{
+ 			UserName:    aws.String(userName),
+ 			AccessKeyId: createResp.AccessKey.AccessKeyId,
+-			Status:      aws.String("Inactive"),
++			Status:      "Inactive",
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Verify update in ListAccessKeys
+-		listResp, err := iamClient.ListAccessKeys(&iam.ListAccessKeysInput{
++		listResp, err := iamClient.ListAccessKeys(t.Context(), &iam.ListAccessKeysInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+ 		found := false
+ 		for _, key := range listResp.AccessKeyMetadata {
+ 			if *key.AccessKeyId == *createResp.AccessKey.AccessKeyId {
+-				assert.Equal(t, "Inactive", *key.Status)
++				assert.Equal(t, "Inactive", string(key.Status))
+ 				found = true
+ 				break
+ 			}
+@@ -188,7 +187,7 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 		policyName := "test-managed-policy"
+ 		policyDoc := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:ListBucket","Resource":"*"}]}`
+ 
+-		createResp, err := iamClient.CreatePolicy(&iam.CreatePolicyInput{
++		createResp, err := iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(policyDoc),
+ 		})
+@@ -197,7 +196,9 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 		assert.NotEmpty(t, *createResp.Policy.Arn)
+ 
+ 		t.Cleanup(func() {
+-			_, _ = iamClient.DeletePolicy(&iam.DeletePolicyInput{
++			cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++			defer cleanupCancel()
++			_, _ = iamClient.DeletePolicy(cleanupCtx, &iam.DeletePolicyInput{
+ 				PolicyArn: createResp.Policy.Arn,
+ 			})
+ 		})
+@@ -209,7 +210,7 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 		policyNames := []string{"test-managed-policy-lifecycle-a", "test-managed-policy-lifecycle-b"}
+ 		policyArns := make([]*string, 0, len(policyNames))
+ 		for _, policyName := range policyNames {
+-			createResp, err := iamClient.CreatePolicy(&iam.CreatePolicyInput{
++			createResp, err := iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 				PolicyName:     aws.String(policyName),
+ 				PolicyDocument: aws.String(policyDoc),
+ 			})
+@@ -218,12 +219,14 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 		}
+ 
+ 		t.Cleanup(func() {
++			cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++			defer cleanupCancel()
+ 			for _, policyArn := range policyArns {
+-				_, _ = iamClient.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: policyArn})
++				_, _ = iamClient.DeletePolicy(cleanupCtx, &iam.DeletePolicyInput{PolicyArn: policyArn})
+ 			}
+ 		})
+ 
+-		listResp, err := iamClient.ListPolicies(&iam.ListPoliciesInput{})
++		listResp, err := iamClient.ListPolicies(t.Context(), &iam.ListPoliciesInput{})
+ 		require.NoError(t, err)
+ 
+ 		foundByName := map[string]bool{}
+@@ -236,22 +239,22 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 			assert.True(t, foundByName[policyName], "policy %s should be listed", policyName)
+ 		}
+ 
+-		getResp, err := iamClient.GetPolicy(&iam.GetPolicyInput{PolicyArn: policyArns[0]})
++		getResp, err := iamClient.GetPolicy(t.Context(), &iam.GetPolicyInput{PolicyArn: policyArns[0]})
+ 		require.NoError(t, err)
+ 		require.NotNil(t, getResp.Policy)
+-		assert.Equal(t, policyNames[0], aws.StringValue(getResp.Policy.PolicyName))
+-		assert.Equal(t, aws.StringValue(policyArns[0]), aws.StringValue(getResp.Policy.Arn))
++		assert.Equal(t, policyNames[0], aws.ToString(getResp.Policy.PolicyName))
++		assert.Equal(t, aws.ToString(policyArns[0]), aws.ToString(getResp.Policy.Arn))
+ 
+-		_, err = iamClient.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: policyArns[0]})
++		_, err = iamClient.DeletePolicy(t.Context(), &iam.DeletePolicyInput{PolicyArn: policyArns[0]})
+ 		require.NoError(t, err)
+ 
+-		_, err = iamClient.GetPolicy(&iam.GetPolicyInput{PolicyArn: policyArns[0]})
++		_, err = iamClient.GetPolicy(t.Context(), &iam.GetPolicyInput{PolicyArn: policyArns[0]})
+ 		require.Error(t, err)
+-		awsErr, ok := err.(awserr.Error)
++		awsErr, ok := iamAPIError(err)
+ 		require.True(t, ok)
+-		assert.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		assert.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 
+-		listAfterDeleteResp, err := iamClient.ListPolicies(&iam.ListPoliciesInput{})
++		listAfterDeleteResp, err := iamClient.ListPolicies(t.Context(), &iam.ListPoliciesInput{})
+ 		require.NoError(t, err)
+ 		deletedPolicyFound := false
+ 		remainingPolicyFound := false
+@@ -276,53 +279,55 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 		policyName := "test-managed-policy-version"
+ 		policyDoc := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:ListBucket","Resource":"*"}]}`
+ 
+-		createResp, err := iamClient.CreatePolicy(&iam.CreatePolicyInput{
++		createResp, err := iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(policyDoc),
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		t.Cleanup(func() {
+-			_, _ = iamClient.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: createResp.Policy.Arn})
++			cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++			defer cleanupCancel()
++			_, _ = iamClient.DeletePolicy(cleanupCtx, &iam.DeletePolicyInput{PolicyArn: createResp.Policy.Arn})
+ 		})
+ 
+-		listVersionsResp, err := iamClient.ListPolicyVersions(&iam.ListPolicyVersionsInput{
++		listVersionsResp, err := iamClient.ListPolicyVersions(t.Context(), &iam.ListPolicyVersionsInput{
+ 			PolicyArn: createResp.Policy.Arn,
+ 		})
+ 		require.NoError(t, err)
+ 		require.NotEmpty(t, listVersionsResp.Versions)
+-		assert.Equal(t, "v1", aws.StringValue(listVersionsResp.Versions[0].VersionId))
+-		assert.Equal(t, true, aws.BoolValue(listVersionsResp.Versions[0].IsDefaultVersion))
++		assert.Equal(t, "v1", aws.ToString(listVersionsResp.Versions[0].VersionId))
++		assert.Equal(t, true, listVersionsResp.Versions[0].IsDefaultVersion)
+ 
+-		getVersionResp, err := iamClient.GetPolicyVersion(&iam.GetPolicyVersionInput{
++		getVersionResp, err := iamClient.GetPolicyVersion(t.Context(), &iam.GetPolicyVersionInput{
+ 			PolicyArn: createResp.Policy.Arn,
+ 			VersionId: aws.String("v1"),
+ 		})
+ 		require.NoError(t, err)
+ 		require.NotNil(t, getVersionResp.PolicyVersion)
+-		assert.Equal(t, "v1", aws.StringValue(getVersionResp.PolicyVersion.VersionId))
+-		assert.Contains(t, aws.StringValue(getVersionResp.PolicyVersion.Document), "s3:ListBucket")
++		assert.Equal(t, "v1", aws.ToString(getVersionResp.PolicyVersion.VersionId))
++		assert.Contains(t, aws.ToString(getVersionResp.PolicyVersion.Document), "s3:ListBucket")
+ 
+-		_, err = iamClient.GetPolicyVersion(&iam.GetPolicyVersionInput{
++		_, err = iamClient.GetPolicyVersion(t.Context(), &iam.GetPolicyVersionInput{
+ 			PolicyArn: createResp.Policy.Arn,
+ 			VersionId: aws.String("v2"),
+ 		})
+ 		require.Error(t, err)
+-		awsErr, ok := err.(awserr.Error)
++		awsErr, ok := iamAPIError(err)
+ 		require.True(t, ok)
+-		assert.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		assert.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 	})
+ 
+ 	t.Run("user_inline_policy", func(t *testing.T) {
+ 		userName := "test-user-policy"
+-		_, err := iamClient.CreateUser(&iam.CreateUserInput{
++		_, err := iamClient.CreateUser(t.Context(), &iam.CreateUserInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+-		defer iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)})
++		defer iamClient.DeleteUser(t.Context(), &iam.DeleteUserInput{UserName: aws.String(userName)})
+ 
+ 		// List user policies before any inline policy is attached
+-		listResp, err := iamClient.ListUserPolicies(&iam.ListUserPoliciesInput{
++		listResp, err := iamClient.ListUserPolicies(t.Context(), &iam.ListUserPoliciesInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+@@ -332,7 +337,7 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 		policyDoc := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:GetObject","Resource":"arn:aws:s3:::*"}]}`
+ 
+ 		// Put user policy
+-		_, err = iamClient.PutUserPolicy(&iam.PutUserPolicyInput{
++		_, err = iamClient.PutUserPolicy(t.Context(), &iam.PutUserPolicyInput{
+ 			UserName:       aws.String(userName),
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(policyDoc),
+@@ -340,15 +345,15 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 		require.NoError(t, err)
+ 
+ 		// List user policies after attaching inline policy
+-		listResp, err = iamClient.ListUserPolicies(&iam.ListUserPoliciesInput{
++		listResp, err = iamClient.ListUserPolicies(t.Context(), &iam.ListUserPoliciesInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+ 		assert.NotEmpty(t, listResp.PolicyNames, "User should have inline policies after PutUserPolicy")
+-		assert.False(t, *listResp.IsTruncated)
++		assert.False(t, listResp.IsTruncated)
+ 
+ 		// Get user policy
+-		getResp, err := iamClient.GetUserPolicy(&iam.GetUserPolicyInput{
++		getResp, err := iamClient.GetUserPolicy(t.Context(), &iam.GetUserPolicyInput{
+ 			UserName:   aws.String(userName),
+ 			PolicyName: aws.String(policyName),
+ 		})
+@@ -358,14 +363,14 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 		assert.Contains(t, *getResp.PolicyDocument, "s3:Get")
+ 
+ 		// Delete user policy
+-		_, err = iamClient.DeleteUserPolicy(&iam.DeleteUserPolicyInput{
++		_, err = iamClient.DeleteUserPolicy(t.Context(), &iam.DeleteUserPolicyInput{
+ 			UserName:   aws.String(userName),
+ 			PolicyName: aws.String(policyName),
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// List user policies after deletion
+-		listResp, err = iamClient.ListUserPolicies(&iam.ListUserPoliciesInput{
++		listResp, err = iamClient.ListUserPolicies(t.Context(), &iam.ListUserPoliciesInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+@@ -373,12 +378,12 @@ func TestIAMPolicyManagement(t *testing.T) {
+ 	})
+ 
+ 	t.Run("list_user_policies_nonexistent_user", func(t *testing.T) {
+-		_, err := iamClient.ListUserPolicies(&iam.ListUserPoliciesInput{
++		_, err := iamClient.ListUserPolicies(t.Context(), &iam.ListUserPoliciesInput{
+ 			UserName: aws.String("nonexistent-user-for-list-policies"),
+ 		})
+ 		require.Error(t, err)
+-		awsErr, ok := err.(awserr.Error)
++		awsErr, ok := iamAPIError(err)
+ 		require.True(t, ok, "Expected AWS error type")
+-		assert.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		assert.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 	})
+ }
+diff --git a/test/s3/iam/s3_iam_distributed_test.go b/test/s3/iam/s3_iam_distributed_test.go
+index 7452858..fa2e775 100644
+--- a/test/s3/iam/s3_iam_distributed_test.go
++++ b/test/s3/iam/s3_iam_distributed_test.go
+@@ -8,8 +8,8 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -46,7 +46,7 @@ func TestS3IAMDistributedTests(t *testing.T) {
+ 		// Retry logic for eventually consistent storage
+ 		var found bool
+ 		for i := 0; i < 20; i++ {
+-			listResult, err := client2.ListBuckets(&s3.ListBucketsInput{})
++			listResult, err := client2.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 			require.NoError(t, err)
+ 
+ 			found = false
+@@ -64,7 +64,7 @@ func TestS3IAMDistributedTests(t *testing.T) {
+ 		assert.True(t, found, "Bucket should be visible across distributed instances")
+ 
+ 		// Cleanup
+-		_, err = client1.DeleteBucket(&s3.DeleteBucketInput{
++		_, err = client1.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.NoError(t, err)
+@@ -104,7 +104,7 @@ func TestS3IAMDistributedTests(t *testing.T) {
+ 		// Cleanup
+ 		err = framework.DeleteTestObject(adminClient, bucketName, objectKey)
+ 		require.NoError(t, err)
+-		_, err = adminClient.DeleteBucket(&s3.DeleteBucketInput{
++		_, err = adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.NoError(t, err)
+@@ -224,7 +224,7 @@ func TestS3IAMDistributedTests(t *testing.T) {
+ 
+ 					// 5. Always attempt bucket cleanup, even if previous operations failed
+ 					if err := executeWithRetry(func() error {
+-						_, err := client.DeleteBucket(&s3.DeleteBucketInput{
++						_, err := client.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 							Bucket: aws.String(bucketName),
+ 						})
+ 						return err
+@@ -298,7 +298,7 @@ func TestS3IAMPerformanceTests(t *testing.T) {
+ 		err = framework.CreateBucket(client, bucketName)
+ 		require.NoError(t, err)
+ 		defer func() {
+-			_, err := client.DeleteBucket(&s3.DeleteBucketInput{
++			_, err := client.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 				Bucket: aws.String(bucketName),
+ 			})
+ 			require.NoError(t, err)
+@@ -307,7 +307,7 @@ func TestS3IAMPerformanceTests(t *testing.T) {
+ 		start := time.Now()
+ 
+ 		for i := 0; i < numRequests; i++ {
+-			_, err := client.ListBuckets(&s3.ListBucketsInput{})
++			_, err := client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 			require.NoError(t, err)
+ 		}
+ 
+@@ -333,7 +333,7 @@ func TestS3IAMPerformanceTests(t *testing.T) {
+ 		err = framework.CreateBucket(client, bucketName)
+ 		require.NoError(t, err)
+ 		defer func() {
+-			_, err := client.DeleteBucket(&s3.DeleteBucketInput{
++			_, err := client.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 				Bucket: aws.String(bucketName),
+ 			})
+ 			require.NoError(t, err)
+@@ -371,7 +371,7 @@ func BenchmarkS3IAMAuthentication(b *testing.B) {
+ 		b.Skip("Performance tests not enabled. Set ENABLE_PERFORMANCE_TESTS=true")
+ 	}
+ 
+-	framework := NewS3IAMTestFramework(&testing.T{})
++	framework := NewS3IAMTestFramework(b)
+ 	defer framework.Cleanup()
+ 
+ 	client, err := framework.CreateS3ClientWithJWT("bench-user", "TestAdminRole")
+@@ -381,7 +381,7 @@ func BenchmarkS3IAMAuthentication(b *testing.B) {
+ 	err = framework.CreateBucket(client, bucketName)
+ 	require.NoError(b, err)
+ 	defer func() {
+-		_, err := client.DeleteBucket(&s3.DeleteBucketInput{
++		_, err := client.DeleteBucket(b.Context(), &s3.DeleteBucketInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.NoError(b, err)
+@@ -390,7 +390,7 @@ func BenchmarkS3IAMAuthentication(b *testing.B) {
+ 	b.ResetTimer()
+ 	b.RunParallel(func(pb *testing.PB) {
+ 		for pb.Next() {
+-			_, err := client.ListBuckets(&s3.ListBucketsInput{})
++			_, err := client.ListBuckets(b.Context(), &s3.ListBucketsInput{})
+ 			if err != nil {
+ 				b.Error(err)
+ 			}
+@@ -404,7 +404,7 @@ func BenchmarkS3IAMAuthorization(b *testing.B) {
+ 		b.Skip("Performance tests not enabled. Set ENABLE_PERFORMANCE_TESTS=true")
+ 	}
+ 
+-	framework := NewS3IAMTestFramework(&testing.T{})
++	framework := NewS3IAMTestFramework(b)
+ 	defer framework.Cleanup()
+ 
+ 	client, err := framework.CreateS3ClientWithJWT("bench-user", "TestAdminRole")
+@@ -414,7 +414,7 @@ func BenchmarkS3IAMAuthorization(b *testing.B) {
+ 	err = framework.CreateBucket(client, bucketName)
+ 	require.NoError(b, err)
+ 	defer func() {
+-		_, err := client.DeleteBucket(&s3.DeleteBucketInput{
++		_, err := client.DeleteBucket(b.Context(), &s3.DeleteBucketInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.NoError(b, err)
+diff --git a/test/s3/iam/s3_iam_framework.go b/test/s3/iam/s3_iam_framework.go
+index 87659c3..dc40f5e 100644
+--- a/test/s3/iam/s3_iam_framework.go
++++ b/test/s3/iam/s3_iam_framework.go
+@@ -20,12 +20,9 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/iam"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/golang-jwt/jwt/v5"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -43,7 +40,7 @@ const (
+ 
+ // S3IAMTestFramework provides utilities for S3+IAM integration testing
+ type S3IAMTestFramework struct {
+-	t              *testing.T
++	t              testing.TB
+ 	mockOIDC       *httptest.Server
+ 	privateKey     *rsa.PrivateKey
+ 	publicKey      *rsa.PublicKey
+@@ -72,10 +69,10 @@ type KeycloakTokenResponse struct {
+ }
+ 
+ // NewS3IAMTestFramework creates a new test framework instance
+-func NewS3IAMTestFramework(t *testing.T) *S3IAMTestFramework {
++func NewS3IAMTestFramework(t testing.TB) *S3IAMTestFramework {
+ 	framework := &S3IAMTestFramework{
+ 		t:              t,
+-		ctx:            context.Background(),
++		ctx:            t.Context(),
+ 		createdBuckets: make([]string, 0),
+ 	}
+ 
+@@ -357,7 +354,7 @@ func (t *BearerTokenTransport) extractPrincipalFromJWT(tokenString string) strin
+ }
+ 
+ // generateSTSSessionToken creates a session token using the actual STS service for proper validation
+-func (f *S3IAMTestFramework) generateSTSSessionToken(username, roleName string, validDuration time.Duration, account string, customClaims map[string]interface{}) (string, *credentials.Credentials, error) {
++func (f *S3IAMTestFramework) generateSTSSessionToken(username, roleName string, validDuration time.Duration, account string, customClaims map[string]interface{}) (string, aws.CredentialsProvider, error) {
+ 	now := time.Now()
+ 	signingKeyB64 := "dGVzdC1zaWduaW5nLWtleS0zMi1jaGFyYWN0ZXJzLWxvbmc="
+ 	signingKey, err := base64.StdEncoding.DecodeString(signingKeyB64)
+@@ -413,7 +410,7 @@ func (f *S3IAMTestFramework) generateSTSSessionToken(username, roleName string,
+ 	accessKeyHash := sha256.Sum256([]byte("access-key:" + sessionId))
+ 	mac := hmac.New(sha256.New, signingKey)
+ 	mac.Write([]byte("secret-key:" + sessionId))
+-	creds := credentials.NewStaticCredentials(
++	creds := fixtureStaticCredentials(
+ 		"ASIA"+hex.EncodeToString(accessKeyHash[:8]),
+ 		base64.StdEncoding.EncodeToString(mac.Sum(nil)),
+ 		tokenString,
+@@ -423,14 +420,14 @@ func (f *S3IAMTestFramework) generateSTSSessionToken(username, roleName string,
+ }
+ 
+ // CreateS3ClientWithJWT creates an S3 client authenticated with a JWT token for the specified role
+-func (f *S3IAMTestFramework) CreateS3ClientWithJWT(username, roleName string) (*s3.S3, error) {
++func (f *S3IAMTestFramework) CreateS3ClientWithJWT(username, roleName string) (*s3.Client, error) {
+ 	return f.CreateS3ClientWithCustomClaims(username, roleName, "", nil)
+ }
+ 
+ // CreateS3ClientWithCustomClaims creates an S3 client with specific account ID and custom claims
+-func (f *S3IAMTestFramework) CreateS3ClientWithCustomClaims(username, roleName, account string, claims map[string]interface{}) (*s3.S3, error) {
++func (f *S3IAMTestFramework) CreateS3ClientWithCustomClaims(username, roleName, account string, claims map[string]interface{}) (*s3.Client, error) {
+ 	var httpClient *http.Client
+-	creds := credentials.AnonymousCredentials
++	var creds aws.CredentialsProvider = aws.AnonymousCredentials{}
+ 
+ 	if f.useKeycloak && claims == nil && account == "" {
+ 		// Use real Keycloak authentication if no custom requirements
+@@ -452,23 +449,11 @@ func (f *S3IAMTestFramework) CreateS3ClientWithCustomClaims(username, roleName,
+ 		}
+ 	}
+ 
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:           aws.String(TestRegion),
+-		Endpoint:         aws.String(TestS3Endpoint),
+-		HTTPClient:       httpClient,
+-		Credentials:      creds,
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-	})
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+-	}
+-
+-	return s3.New(sess), nil
++	return newIAMFrameworkS3(creds, httpClient), nil
+ }
+ 
+ // CreateS3ClientWithInvalidJWT creates an S3 client with an invalid JWT token
+-func (f *S3IAMTestFramework) CreateS3ClientWithInvalidJWT() (*s3.S3, error) {
++func (f *S3IAMTestFramework) CreateS3ClientWithInvalidJWT() (*s3.Client, error) {
+ 	invalidToken := "invalid.jwt.token"
+ 
+ 	// Create custom HTTP client with Bearer token transport
+@@ -478,24 +463,11 @@ func (f *S3IAMTestFramework) CreateS3ClientWithInvalidJWT() (*s3.S3, error) {
+ 		},
+ 	}
+ 
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:     aws.String(TestRegion),
+-		Endpoint:   aws.String(TestS3Endpoint),
+-		HTTPClient: httpClient,
+-		// Use anonymous credentials to avoid AWS signature generation
+-		Credentials:      credentials.AnonymousCredentials,
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-	})
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+-	}
+-
+-	return s3.New(sess), nil
++	return newIAMFrameworkS3(aws.AnonymousCredentials{}, httpClient), nil
+ }
+ 
+ // CreateS3ClientWithExpiredJWT creates an S3 client with an expired JWT token
+-func (f *S3IAMTestFramework) CreateS3ClientWithExpiredJWT(username, roleName string) (*s3.S3, error) {
++func (f *S3IAMTestFramework) CreateS3ClientWithExpiredJWT(username, roleName string) (*s3.Client, error) {
+ 	// Generate expired STS session token (expired 1 hour ago)
+ 	token, _, err := f.generateSTSSessionToken(username, roleName, -time.Hour, "", nil)
+ 	if err != nil {
+@@ -509,44 +481,16 @@ func (f *S3IAMTestFramework) CreateS3ClientWithExpiredJWT(username, roleName str
+ 		},
+ 	}
+ 
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:     aws.String(TestRegion),
+-		Endpoint:   aws.String(TestS3Endpoint),
+-		HTTPClient: httpClient,
+-		// Use anonymous credentials to avoid AWS signature generation
+-		Credentials:      credentials.AnonymousCredentials,
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-	})
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+-	}
+-
+-	return s3.New(sess), nil
++	return newIAMFrameworkS3(aws.AnonymousCredentials{}, httpClient), nil
+ }
+ 
+ // CreateS3ClientWithSessionToken creates an S3 client with a session token
+-func (f *S3IAMTestFramework) CreateS3ClientWithSessionToken(sessionToken string) (*s3.S3, error) {
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:   aws.String(TestRegion),
+-		Endpoint: aws.String(TestS3Endpoint),
+-		Credentials: credentials.NewStaticCredentials(
+-			"session-access-key",
+-			"session-secret-key",
+-			sessionToken,
+-		),
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-	})
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+-	}
+-
+-	return s3.New(sess), nil
++func (f *S3IAMTestFramework) CreateS3ClientWithSessionToken(sessionToken string) (*s3.Client, error) {
++	return newIAMFrameworkS3(fixtureStaticCredentials("session-access-key", "session-secret-key", sessionToken), nil), nil
+ }
+ 
+ // CreateS3ClientWithKeycloakToken creates an S3 client using a Keycloak JWT token
+-func (f *S3IAMTestFramework) CreateS3ClientWithKeycloakToken(keycloakToken string) (*s3.S3, error) {
++func (f *S3IAMTestFramework) CreateS3ClientWithKeycloakToken(keycloakToken string) (*s3.Client, error) {
+ 	// Determine response header timeout based on environment
+ 	responseHeaderTimeout := 10 * time.Second
+ 	overallTimeout := 30 * time.Second
+@@ -576,20 +520,7 @@ func (f *S3IAMTestFramework) CreateS3ClientWithKeycloakToken(keycloakToken strin
+ 		},
+ 	}
+ 
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:           aws.String(TestRegion),
+-		Endpoint:         aws.String(TestS3Endpoint),
+-		Credentials:      credentials.AnonymousCredentials,
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-		HTTPClient:       httpClient,
+-		MaxRetries:       aws.Int(0), // No retries to avoid delays
+-	})
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+-	}
+-
+-	return s3.New(sess), nil
++	return newIAMFrameworkS3(aws.AnonymousCredentials{}, httpClient), nil
+ }
+ 
+ // TestKeycloakTokenDirectly tests a Keycloak token with direct HTTP request (bypassing AWS SDK)
+@@ -705,8 +636,8 @@ func (f *S3IAMTestFramework) GenerateUniqueBucketName(prefix string) string {
+ }
+ 
+ // CreateBucket creates a bucket and tracks it for cleanup
+-func (f *S3IAMTestFramework) CreateBucket(s3Client *s3.S3, bucketName string) error {
+-	_, err := s3Client.CreateBucket(&s3.CreateBucketInput{
++func (f *S3IAMTestFramework) CreateBucket(s3Client *s3.Client, bucketName string) error {
++	_, err := s3Client.CreateBucket(f.ctx, &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	if err != nil {
+@@ -719,20 +650,20 @@ func (f *S3IAMTestFramework) CreateBucket(s3Client *s3.S3, bucketName string) er
+ }
+ 
+ // CreateBucketWithCleanup creates a bucket, cleaning up any existing bucket first
+-func (f *S3IAMTestFramework) CreateBucketWithCleanup(s3Client *s3.S3, bucketName string) error {
++func (f *S3IAMTestFramework) CreateBucketWithCleanup(s3Client *s3.Client, bucketName string) error {
+ 	// First try to create the bucket normally
+-	_, err := s3Client.CreateBucket(&s3.CreateBucketInput{
++	_, err := s3Client.CreateBucket(f.ctx, &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 
+ 	if err != nil {
+ 		// If bucket already exists, clean it up first
+-		if awsErr, ok := err.(awserr.Error); ok && (awsErr.Code() == "BucketAlreadyExists" || awsErr.Code() == "BucketAlreadyOwnedByYou") {
++		if awsErr, ok := iamAPIError(err); ok && (awsErr.ErrorCode() == "BucketAlreadyExists" || awsErr.ErrorCode() == "BucketAlreadyOwnedByYou") {
+ 			f.t.Logf("Bucket %s already exists, cleaning up first", bucketName)
+ 
+ 			// First try to delete the bucket completely
+ 			f.emptyBucket(s3Client, bucketName)
+-			_, deleteErr := s3Client.DeleteBucket(&s3.DeleteBucketInput{
++			_, deleteErr := s3Client.DeleteBucket(f.ctx, &s3.DeleteBucketInput{
+ 				Bucket: aws.String(bucketName),
+ 			})
+ 			if deleteErr != nil {
+@@ -740,16 +671,18 @@ func (f *S3IAMTestFramework) CreateBucketWithCleanup(s3Client *s3.S3, bucketName
+ 			}
+ 
+ 			// Add a small delay to allow deletion to propagate
+-			time.Sleep(100 * time.Millisecond)
++			if err := waitIAMFixture(f.ctx, 100*time.Millisecond); err != nil {
++				return err
++			}
+ 
+ 			// Now create it fresh
+-			_, err = s3Client.CreateBucket(&s3.CreateBucketInput{
++			_, err = s3Client.CreateBucket(f.ctx, &s3.CreateBucketInput{
+ 				Bucket: aws.String(bucketName),
+ 			})
+ 			if err != nil {
+ 				// If it still says bucket exists after cleanup, it might be in an inconsistent state
+ 				// In this case, just use the existing bucket since we emptied it
+-				if awsErr, ok := err.(awserr.Error); ok && (awsErr.Code() == "BucketAlreadyExists" || awsErr.Code() == "BucketAlreadyOwnedByYou") {
++				if awsErr, ok := iamAPIError(err); ok && (awsErr.ErrorCode() == "BucketAlreadyExists" || awsErr.ErrorCode() == "BucketAlreadyOwnedByYou") {
+ 					f.t.Logf("Bucket %s still exists after cleanup, reusing it", bucketName)
+ 					// Bucket exists and is empty, so we can proceed
+ 				} else {
+@@ -767,14 +700,14 @@ func (f *S3IAMTestFramework) CreateBucketWithCleanup(s3Client *s3.S3, bucketName
+ }
+ 
+ // emptyBucket removes all objects from a bucket
+-func (f *S3IAMTestFramework) emptyBucket(s3Client *s3.S3, bucketName string) {
++func (f *S3IAMTestFramework) emptyBucket(s3Client *s3.Client, bucketName string) {
+ 	// Delete all objects
+-	listResult, err := s3Client.ListObjects(&s3.ListObjectsInput{
++	listResult, err := s3Client.ListObjects(f.ctx, &s3.ListObjectsInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	if err == nil {
+ 		for _, obj := range listResult.Contents {
+-			_, err := s3Client.DeleteObject(&s3.DeleteObjectInput{
++			_, err := s3Client.DeleteObject(f.ctx, &s3.DeleteObjectInput{
+ 				Bucket: aws.String(bucketName),
+ 				Key:    obj.Key,
+ 			})
+@@ -787,6 +720,8 @@ func (f *S3IAMTestFramework) emptyBucket(s3Client *s3.S3, bucketName string) {
+ 
+ // Cleanup cleans up test resources
+ func (f *S3IAMTestFramework) Cleanup() {
++	ctx, cancel := iamFixtureCleanupContext()
++	defer cancel()
+ 	// Clean up buckets (best effort)
+ 	if len(f.createdBuckets) > 0 {
+ 		// Create admin client for cleanup
+@@ -794,12 +729,12 @@ func (f *S3IAMTestFramework) Cleanup() {
+ 		if err == nil {
+ 			for _, bucket := range f.createdBuckets {
+ 				// Try to empty bucket first
+-				listResult, err := adminClient.ListObjects(&s3.ListObjectsInput{
++				listResult, err := adminClient.ListObjects(ctx, &s3.ListObjectsInput{
+ 					Bucket: aws.String(bucket),
+ 				})
+ 				if err == nil {
+ 					for _, obj := range listResult.Contents {
+-						adminClient.DeleteObject(&s3.DeleteObjectInput{
++						adminClient.DeleteObject(ctx, &s3.DeleteObjectInput{
+ 							Bucket: aws.String(bucket),
+ 							Key:    obj.Key,
+ 						})
+@@ -807,7 +742,7 @@ func (f *S3IAMTestFramework) Cleanup() {
+ 				}
+ 
+ 				// Delete bucket
+-				adminClient.DeleteBucket(&s3.DeleteBucketInput{
++				adminClient.DeleteBucket(ctx, &s3.DeleteBucketInput{
+ 					Bucket: aws.String(bucket),
+ 				})
+ 			}
+@@ -823,30 +758,14 @@ func (f *S3IAMTestFramework) Cleanup() {
+ // WaitForS3Service waits for the S3 service to be available and checks for IAM write permissions
+ func (f *S3IAMTestFramework) WaitForS3Service() error {
+ 	// Create a basic S3 client
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:   aws.String(TestRegion),
+-		Endpoint: aws.String(TestS3Endpoint),
+-		Credentials: credentials.NewStaticCredentials(
+-			"test-access-key",
+-			"test-secret-key",
+-			"",
+-		),
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-	})
+-	if err != nil {
+-		return fmt.Errorf("failed to create AWS session: %v", err)
+-	}
+-
+-	s3Client := s3.New(sess)
+-
+-	// Create IAM client for write permission check
+-	iamClient := iam.New(sess)
++	creds := fixtureStaticCredentials("test-access-key", "test-secret-key", "")
++	s3Client := newIAMFrameworkS3(creds, nil)
++	iamClient := newIAMFrameworkIAM(creds, nil)
+ 
+ 	// Try to list buckets to check if S3 service is available
+ 	maxRetries := 30
+ 	for i := 0; i < maxRetries; i++ {
+-		_, err := s3Client.ListBuckets(&s3.ListBucketsInput{})
++		_, err := s3Client.ListBuckets(f.ctx, &s3.ListBucketsInput{})
+ 		if err == nil {
+ 			// S3 is up, now check if IAM is writable
+ 			// We try to create a dummy user. If it fails with "AccessDenied: IAM write operations are disabled",
+@@ -856,35 +775,39 @@ func (f *S3IAMTestFramework) WaitForS3Service() error {
+ 
+ 			// Note: We use a random name to avoid conflicts if it actually succeeds
+ 			dummyUser := fmt.Sprintf("check-writable-%d", time.Now().UnixNano())
+-			_, iamErr := iamClient.CreateUser(&iam.CreateUserInput{
++			_, iamErr := iamClient.CreateUser(f.ctx, &iam.CreateUserInput{
+ 				UserName: aws.String(dummyUser),
+ 			})
+ 
+ 			if iamErr != nil {
+-				if reqErr, ok := iamErr.(awserr.RequestFailure); ok {
+-					if reqErr.Code() == "AccessDenied" && strings.Contains(reqErr.Message(), "IAM write operations are disabled") {
++				if reqErr, ok := iamAPIError(iamErr); ok {
++					if reqErr.ErrorCode() == "AccessDenied" && strings.Contains(reqErr.ErrorMessage(), "IAM write operations are disabled") {
+ 						f.t.Logf("Waiting for IAM to become writable... (attempt %d/%d)", i+1, maxRetries)
+-						time.Sleep(1 * time.Second)
++						if err := waitIAMFixture(f.ctx, time.Second); err != nil {
++							return err
++						}
+ 						continue
+ 					}
+ 				}
+ 				// Ignore other errors (like auth errors), we just want to ensure we aren't explicitly blocked by read-only mode
+ 			} else {
+ 				// Cleanup if it actually succeeded
+-				iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(dummyUser)})
++				iamClient.DeleteUser(f.ctx, &iam.DeleteUserInput{UserName: aws.String(dummyUser)})
+ 			}
+ 
+ 			return nil
+ 		}
+-		time.Sleep(1 * time.Second)
++		if err := waitIAMFixture(f.ctx, time.Second); err != nil {
++			return err
++		}
+ 	}
+ 
+ 	return fmt.Errorf("S3 service not available or not writable after %d retries", maxRetries)
+ }
+ 
+ // PutTestObject puts a test object in the specified bucket
+-func (f *S3IAMTestFramework) PutTestObject(client *s3.S3, bucket, key, content string) error {
+-	_, err := client.PutObject(&s3.PutObjectInput{
++func (f *S3IAMTestFramework) PutTestObject(client *s3.Client, bucket, key, content string) error {
++	_, err := client.PutObject(f.ctx, &s3.PutObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(key),
+ 		Body:   strings.NewReader(content),
+@@ -893,8 +816,8 @@ func (f *S3IAMTestFramework) PutTestObject(client *s3.S3, bucket, key, content s
+ }
+ 
+ // GetTestObject retrieves a test object from the specified bucket
+-func (f *S3IAMTestFramework) GetTestObject(client *s3.S3, bucket, key string) (string, error) {
+-	result, err := client.GetObject(&s3.GetObjectInput{
++func (f *S3IAMTestFramework) GetTestObject(client *s3.Client, bucket, key string) (string, error) {
++	result, err := client.GetObject(f.ctx, &s3.GetObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(key),
+ 	})
+@@ -913,8 +836,8 @@ func (f *S3IAMTestFramework) GetTestObject(client *s3.S3, bucket, key string) (s
+ }
+ 
+ // ListTestObjects lists objects in the specified bucket
+-func (f *S3IAMTestFramework) ListTestObjects(client *s3.S3, bucket string) ([]string, error) {
+-	result, err := client.ListObjects(&s3.ListObjectsInput{
++func (f *S3IAMTestFramework) ListTestObjects(client *s3.Client, bucket string) ([]string, error) {
++	result, err := client.ListObjects(f.ctx, &s3.ListObjectsInput{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	if err != nil {
+@@ -930,8 +853,8 @@ func (f *S3IAMTestFramework) ListTestObjects(client *s3.S3, bucket string) ([]st
+ }
+ 
+ // DeleteTestObject deletes a test object from the specified bucket
+-func (f *S3IAMTestFramework) DeleteTestObject(client *s3.S3, bucket, key string) error {
+-	_, err := client.DeleteObject(&s3.DeleteObjectInput{
++func (f *S3IAMTestFramework) DeleteTestObject(client *s3.Client, bucket, key string) error {
++	_, err := client.DeleteObject(f.ctx, &s3.DeleteObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(key),
+ 	})
+@@ -946,14 +869,14 @@ func (f *S3IAMTestFramework) WaitForS3ServiceSimple() error {
+ }
+ 
+ // CreateIAMClientWithJWT creates an IAM client authenticated with a JWT token for the specified role
+-func (f *S3IAMTestFramework) CreateIAMClientWithJWT(username, roleName string) (*iam.IAM, error) {
++func (f *S3IAMTestFramework) CreateIAMClientWithJWT(username, roleName string) (*iam.Client, error) {
+ 	return f.CreateIAMClientWithCustomClaims(username, roleName, "", nil)
+ }
+ 
+ // CreateIAMClientWithCustomClaims creates an IAM client with specific account ID and custom claims
+-func (f *S3IAMTestFramework) CreateIAMClientWithCustomClaims(username, roleName, account string, claims map[string]interface{}) (*iam.IAM, error) {
++func (f *S3IAMTestFramework) CreateIAMClientWithCustomClaims(username, roleName, account string, claims map[string]interface{}) (*iam.Client, error) {
+ 	var httpClient *http.Client
+-	creds := credentials.AnonymousCredentials
++	var creds aws.CredentialsProvider = aws.AnonymousCredentials{}
+ 
+ 	if f.useKeycloak && claims == nil && account == "" {
+ 		// Use real Keycloak authentication if no custom requirements
+@@ -975,16 +898,5 @@ func (f *S3IAMTestFramework) CreateIAMClientWithCustomClaims(username, roleName,
+ 		}
+ 	}
+ 
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:      aws.String(TestRegion),
+-		Endpoint:    aws.String(TestS3Endpoint),
+-		HTTPClient:  httpClient,
+-		Credentials: creds,
+-		DisableSSL:  aws.Bool(true),
+-	})
+-	if err != nil {
+-		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+-	}
+-
+-	return iam.New(sess), nil
++	return newIAMFrameworkIAM(creds, httpClient), nil
+ }
+diff --git a/test/s3/iam/s3_iam_group_test.go b/test/s3/iam/s3_iam_group_test.go
+index e71121a..020c965 100644
+--- a/test/s3/iam/s3_iam_group_test.go
++++ b/test/s3/iam/s3_iam_group_test.go
+@@ -9,13 +9,9 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	v4 "github.com/aws/aws-sdk-go/aws/signer/v4"
+-	"github.com/aws/aws-sdk-go/service/iam"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -32,7 +28,7 @@ func TestIAMGroupLifecycle(t *testing.T) {
+ 	groupName := "test-group-lifecycle"
+ 
+ 	t.Run("create_group", func(t *testing.T) {
+-		resp, err := iamClient.CreateGroup(&iam.CreateGroupInput{
++		resp, err := iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+@@ -40,7 +36,7 @@ func TestIAMGroupLifecycle(t *testing.T) {
+ 	})
+ 
+ 	t.Run("get_group", func(t *testing.T) {
+-		resp, err := iamClient.GetGroup(&iam.GetGroupInput{
++		resp, err := iamClient.GetGroup(t.Context(), &iam.GetGroupInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+@@ -48,7 +44,7 @@ func TestIAMGroupLifecycle(t *testing.T) {
+ 	})
+ 
+ 	t.Run("list_groups_contains_created", func(t *testing.T) {
+-		resp, err := iamClient.ListGroups(&iam.ListGroupsInput{})
++		resp, err := iamClient.ListGroups(t.Context(), &iam.ListGroupsInput{})
+ 		require.NoError(t, err)
+ 		found := false
+ 		for _, g := range resp.Groups {
+@@ -61,20 +57,20 @@ func TestIAMGroupLifecycle(t *testing.T) {
+ 	})
+ 
+ 	t.Run("create_duplicate_group_fails", func(t *testing.T) {
+-		_, err := iamClient.CreateGroup(&iam.CreateGroupInput{
++		_, err := iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		assert.Error(t, err, "Creating a duplicate group should fail")
+ 	})
+ 
+ 	t.Run("delete_group", func(t *testing.T) {
+-		_, err := iamClient.DeleteGroup(&iam.DeleteGroupInput{
++		_, err := iamClient.DeleteGroup(t.Context(), &iam.DeleteGroupInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Verify it's gone
+-		resp, err := iamClient.ListGroups(&iam.ListGroupsInput{})
++		resp, err := iamClient.ListGroups(t.Context(), &iam.ListGroupsInput{})
+ 		require.NoError(t, err)
+ 		for _, g := range resp.Groups {
+ 			assert.NotEqual(t, groupName, *g.GroupName,
+@@ -83,7 +79,7 @@ func TestIAMGroupLifecycle(t *testing.T) {
+ 	})
+ 
+ 	t.Run("delete_nonexistent_group_fails", func(t *testing.T) {
+-		_, err := iamClient.DeleteGroup(&iam.DeleteGroupInput{
++		_, err := iamClient.DeleteGroup(t.Context(), &iam.DeleteGroupInput{
+ 			GroupName: aws.String("nonexistent-group-xyz"),
+ 		})
+ 		assert.Error(t, err)
+@@ -102,20 +98,20 @@ func TestIAMGroupMembership(t *testing.T) {
+ 	userName := "test-user-for-group"
+ 
+ 	// Setup: create group and user
+-	_, err = iamClient.CreateGroup(&iam.CreateGroupInput{
++	_, err = iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{
+ 		GroupName: aws.String(groupName),
+ 	})
+ 	require.NoError(t, err)
+-	defer iamClient.DeleteGroup(&iam.DeleteGroupInput{GroupName: aws.String(groupName)})
++	defer iamClient.DeleteGroup(t.Context(), &iam.DeleteGroupInput{GroupName: aws.String(groupName)})
+ 
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+-	defer iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)})
++	defer iamClient.DeleteUser(t.Context(), &iam.DeleteUserInput{UserName: aws.String(userName)})
+ 
+ 	t.Run("add_user_to_group", func(t *testing.T) {
+-		_, err := iamClient.AddUserToGroup(&iam.AddUserToGroupInput{
++		_, err := iamClient.AddUserToGroup(t.Context(), &iam.AddUserToGroupInput{
+ 			GroupName: aws.String(groupName),
+ 			UserName:  aws.String(userName),
+ 		})
+@@ -123,7 +119,7 @@ func TestIAMGroupMembership(t *testing.T) {
+ 	})
+ 
+ 	t.Run("get_group_shows_member", func(t *testing.T) {
+-		resp, err := iamClient.GetGroup(&iam.GetGroupInput{
++		resp, err := iamClient.GetGroup(t.Context(), &iam.GetGroupInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+@@ -138,7 +134,7 @@ func TestIAMGroupMembership(t *testing.T) {
+ 	})
+ 
+ 	t.Run("list_groups_for_user", func(t *testing.T) {
+-		resp, err := iamClient.ListGroupsForUser(&iam.ListGroupsForUserInput{
++		resp, err := iamClient.ListGroupsForUser(t.Context(), &iam.ListGroupsForUserInput{
+ 			UserName: aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+@@ -153,7 +149,7 @@ func TestIAMGroupMembership(t *testing.T) {
+ 	})
+ 
+ 	t.Run("add_duplicate_member_is_idempotent", func(t *testing.T) {
+-		_, err := iamClient.AddUserToGroup(&iam.AddUserToGroupInput{
++		_, err := iamClient.AddUserToGroup(t.Context(), &iam.AddUserToGroupInput{
+ 			GroupName: aws.String(groupName),
+ 			UserName:  aws.String(userName),
+ 		})
+@@ -163,14 +159,14 @@ func TestIAMGroupMembership(t *testing.T) {
+ 	})
+ 
+ 	t.Run("remove_user_from_group", func(t *testing.T) {
+-		_, err := iamClient.RemoveUserFromGroup(&iam.RemoveUserFromGroupInput{
++		_, err := iamClient.RemoveUserFromGroup(t.Context(), &iam.RemoveUserFromGroupInput{
+ 			GroupName: aws.String(groupName),
+ 			UserName:  aws.String(userName),
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Verify removal
+-		resp, err := iamClient.GetGroup(&iam.GetGroupInput{
++		resp, err := iamClient.GetGroup(t.Context(), &iam.GetGroupInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+@@ -194,12 +190,12 @@ func TestIAMGroupPolicyAttachment(t *testing.T) {
+ 	policyDoc := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:ListBucket","Resource":"*"}]}`
+ 
+ 	// Setup: create group and policy
+-	_, err = iamClient.CreateGroup(&iam.CreateGroupInput{
++	_, err = iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{
+ 		GroupName: aws.String(groupName),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	createPolicyResp, err := iamClient.CreatePolicy(&iam.CreatePolicyInput{
++	createPolicyResp, err := iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 		PolicyName:     aws.String(policyName),
+ 		PolicyDocument: aws.String(policyDoc),
+ 	})
+@@ -208,22 +204,24 @@ func TestIAMGroupPolicyAttachment(t *testing.T) {
+ 
+ 	// Cleanup in correct order: detach policy, delete group, delete policy
+ 	t.Cleanup(func() {
+-		if _, err := iamClient.DetachGroupPolicy(&iam.DetachGroupPolicyInput{
++		cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++		defer cleanupCancel()
++		if _, err := iamClient.DetachGroupPolicy(cleanupCtx, &iam.DetachGroupPolicyInput{
+ 			GroupName: aws.String(groupName),
+ 			PolicyArn: policyArn,
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to detach group policy: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteGroup(&iam.DeleteGroupInput{GroupName: aws.String(groupName)}); err != nil {
++		if _, err := iamClient.DeleteGroup(cleanupCtx, &iam.DeleteGroupInput{GroupName: aws.String(groupName)}); err != nil {
+ 			t.Logf("cleanup: failed to delete group: %v", err)
+ 		}
+-		if _, err := iamClient.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: policyArn}); err != nil {
++		if _, err := iamClient.DeletePolicy(cleanupCtx, &iam.DeletePolicyInput{PolicyArn: policyArn}); err != nil {
+ 			t.Logf("cleanup: failed to delete policy: %v", err)
+ 		}
+ 	})
+ 
+ 	t.Run("attach_group_policy", func(t *testing.T) {
+-		_, err := iamClient.AttachGroupPolicy(&iam.AttachGroupPolicyInput{
++		_, err := iamClient.AttachGroupPolicy(t.Context(), &iam.AttachGroupPolicyInput{
+ 			GroupName: aws.String(groupName),
+ 			PolicyArn: policyArn,
+ 		})
+@@ -231,7 +229,7 @@ func TestIAMGroupPolicyAttachment(t *testing.T) {
+ 	})
+ 
+ 	t.Run("list_attached_group_policies", func(t *testing.T) {
+-		resp, err := iamClient.ListAttachedGroupPolicies(&iam.ListAttachedGroupPoliciesInput{
++		resp, err := iamClient.ListAttachedGroupPolicies(t.Context(), &iam.ListAttachedGroupPoliciesInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+@@ -246,14 +244,14 @@ func TestIAMGroupPolicyAttachment(t *testing.T) {
+ 	})
+ 
+ 	t.Run("detach_group_policy", func(t *testing.T) {
+-		_, err := iamClient.DetachGroupPolicy(&iam.DetachGroupPolicyInput{
++		_, err := iamClient.DetachGroupPolicy(t.Context(), &iam.DetachGroupPolicyInput{
+ 			GroupName: aws.String(groupName),
+ 			PolicyArn: policyArn,
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Verify detachment
+-		resp, err := iamClient.ListAttachedGroupPolicies(&iam.ListAttachedGroupPoliciesInput{
++		resp, err := iamClient.ListAttachedGroupPolicies(t.Context(), &iam.ListAttachedGroupPoliciesInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+@@ -281,13 +279,13 @@ func TestIAMGroupPolicyEnforcement(t *testing.T) {
+ 	policyDoc := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:*"],"Resource":["arn:aws:s3:::` + bucketName + `","arn:aws:s3:::` + bucketName + `/*"]}]}`
+ 
+ 	// Create user
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+ 
+ 	// Create access key for the user
+-	keyResp, err := iamClient.CreateAccessKey(&iam.CreateAccessKeyInput{
++	keyResp, err := iamClient.CreateAccessKey(t.Context(), &iam.CreateAccessKeyInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+@@ -299,13 +297,13 @@ func TestIAMGroupPolicyEnforcement(t *testing.T) {
+ 	userS3Client := createS3Client(t, accessKeyId, secretKey)
+ 
+ 	// Create group
+-	_, err = iamClient.CreateGroup(&iam.CreateGroupInput{
++	_, err = iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{
+ 		GroupName: aws.String(groupName),
+ 	})
+ 	require.NoError(t, err)
+ 
+ 	// Create policy
+-	createPolicyResp, err := iamClient.CreatePolicy(&iam.CreatePolicyInput{
++	createPolicyResp, err := iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 		PolicyName:     aws.String(policyName),
+ 		PolicyDocument: aws.String(policyDoc),
+ 	})
+@@ -315,31 +313,33 @@ func TestIAMGroupPolicyEnforcement(t *testing.T) {
+ 	// Cleanup in correct order: remove user from group, detach policy,
+ 	// delete access key, delete user, delete group, delete policy
+ 	t.Cleanup(func() {
+-		if _, err := iamClient.RemoveUserFromGroup(&iam.RemoveUserFromGroupInput{
++		cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++		defer cleanupCancel()
++		if _, err := iamClient.RemoveUserFromGroup(cleanupCtx, &iam.RemoveUserFromGroupInput{
+ 			GroupName: aws.String(groupName),
+ 			UserName:  aws.String(userName),
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to remove user from group: %v", err)
+ 		}
+-		if _, err := iamClient.DetachGroupPolicy(&iam.DetachGroupPolicyInput{
++		if _, err := iamClient.DetachGroupPolicy(cleanupCtx, &iam.DetachGroupPolicyInput{
+ 			GroupName: aws.String(groupName),
+ 			PolicyArn: policyArn,
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to detach group policy: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteAccessKey(&iam.DeleteAccessKeyInput{
++		if _, err := iamClient.DeleteAccessKey(cleanupCtx, &iam.DeleteAccessKeyInput{
+ 			UserName:    aws.String(userName),
+ 			AccessKeyId: keyResp.AccessKey.AccessKeyId,
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to delete access key: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)}); err != nil {
++		if _, err := iamClient.DeleteUser(cleanupCtx, &iam.DeleteUserInput{UserName: aws.String(userName)}); err != nil {
+ 			t.Logf("cleanup: failed to delete user: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteGroup(&iam.DeleteGroupInput{GroupName: aws.String(groupName)}); err != nil {
++		if _, err := iamClient.DeleteGroup(cleanupCtx, &iam.DeleteGroupInput{GroupName: aws.String(groupName)}); err != nil {
+ 			t.Logf("cleanup: failed to delete group: %v", err)
+ 		}
+-		if _, err := iamClient.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: policyArn}); err != nil {
++		if _, err := iamClient.DeletePolicy(cleanupCtx, &iam.DeletePolicyInput{PolicyArn: policyArn}); err != nil {
+ 			t.Logf("cleanup: failed to delete policy: %v", err)
+ 		}
+ 	})
+@@ -349,38 +349,40 @@ func TestIAMGroupPolicyEnforcement(t *testing.T) {
+ 	adminS3, err := framework.CreateS3ClientWithJWT("admin-user", "TestAdminRole")
+ 	require.NoError(t, err)
+ 	t.Cleanup(func() {
+-		if _, err := adminS3.DeleteObject(&s3.DeleteObjectInput{
++		cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++		defer cleanupCancel()
++		if _, err := adminS3.DeleteObject(cleanupCtx, &s3.DeleteObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String("test-key"),
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to delete object: %v", err)
+ 		}
+-		if _, err := adminS3.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)}); err != nil {
++		if _, err := adminS3.DeleteBucket(cleanupCtx, &s3.DeleteBucketInput{Bucket: aws.String(bucketName)}); err != nil {
+ 			t.Logf("cleanup: failed to delete bucket: %v", err)
+ 		}
+ 	})
+ 
+ 	t.Run("user_without_group_denied", func(t *testing.T) {
+ 		// User has no policies and is not in any group — should be denied
+-		_, err := userS3Client.CreateBucket(&s3.CreateBucketInput{
++		_, err := userS3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.Error(t, err, "User without any policies should be denied")
+-		awsErr, ok := err.(awserr.Error)
++		awsErr, ok := iamAPIError(err)
+ 		require.True(t, ok, "Expected awserr.Error")
+-		assert.Equal(t, "AccessDenied", awsErr.Code())
++		assert.Equal(t, "AccessDenied", awsErr.ErrorCode())
+ 	})
+ 
+ 	t.Run("user_with_group_policy_allowed", func(t *testing.T) {
+ 		// Attach policy to group
+-		_, err := iamClient.AttachGroupPolicy(&iam.AttachGroupPolicyInput{
++		_, err := iamClient.AttachGroupPolicy(t.Context(), &iam.AttachGroupPolicyInput{
+ 			GroupName: aws.String(groupName),
+ 			PolicyArn: policyArn,
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Add user to group
+-		_, err = iamClient.AddUserToGroup(&iam.AddUserToGroupInput{
++		_, err = iamClient.AddUserToGroup(t.Context(), &iam.AddUserToGroupInput{
+ 			GroupName: aws.String(groupName),
+ 			UserName:  aws.String(userName),
+ 		})
+@@ -388,24 +390,24 @@ func TestIAMGroupPolicyEnforcement(t *testing.T) {
+ 
+ 		// Wait for policy propagation, then create bucket
+ 		require.Eventually(t, func() bool {
+-			_, err = userS3Client.CreateBucket(&s3.CreateBucketInput{
++			_, err = userS3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 				Bucket: aws.String(bucketName),
+ 			})
+ 			return err == nil
+ 		}, 10*time.Second, 500*time.Millisecond, "User with group policy should be allowed")
+ 
+ 		// Should also be able to put/get objects
+-		_, err = userS3Client.PutObject(&s3.PutObjectInput{
++		_, err = userS3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String("test-key"),
+-			Body:   aws.ReadSeekCloser(strings.NewReader("test-data")),
++			Body:   strings.NewReader("test-data"),
+ 		})
+ 		require.NoError(t, err, "User should be able to put objects through group policy")
+ 	})
+ 
+ 	t.Run("user_removed_from_group_denied", func(t *testing.T) {
+ 		// Remove user from group
+-		_, err := iamClient.RemoveUserFromGroup(&iam.RemoveUserFromGroupInput{
++		_, err := iamClient.RemoveUserFromGroup(t.Context(), &iam.RemoveUserFromGroupInput{
+ 			GroupName: aws.String(groupName),
+ 			UserName:  aws.String(userName),
+ 		})
+@@ -414,14 +416,14 @@ func TestIAMGroupPolicyEnforcement(t *testing.T) {
+ 		// Wait for policy propagation — user should now be denied
+ 		var lastErr error
+ 		require.Eventually(t, func() bool {
+-			_, lastErr = userS3Client.ListObjects(&s3.ListObjectsInput{
++			_, lastErr = userS3Client.ListObjects(t.Context(), &s3.ListObjectsInput{
+ 				Bucket: aws.String(bucketName),
+ 			})
+ 			return lastErr != nil
+ 		}, 10*time.Second, 500*time.Millisecond, "User removed from group should be denied")
+-		awsErr, ok := lastErr.(awserr.Error)
++		awsErr, ok := iamAPIError(lastErr)
+ 		require.True(t, ok, "Expected awserr.Error")
+-		assert.Equal(t, "AccessDenied", awsErr.Code())
++		assert.Equal(t, "AccessDenied", awsErr.ErrorCode())
+ 	})
+ }
+ 
+@@ -448,16 +450,16 @@ func TestIAMGroupDisabledPolicyEnforcement(t *testing.T) {
+ 	policyDoc := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:*"],"Resource":["arn:aws:s3:::` + bucketName + `","arn:aws:s3:::` + bucketName + `/*"]}]}`
+ 
+ 	// Create user, group, policy
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
+ 	require.NoError(t, err)
+ 
+-	keyResp, err := iamClient.CreateAccessKey(&iam.CreateAccessKeyInput{UserName: aws.String(userName)})
++	keyResp, err := iamClient.CreateAccessKey(t.Context(), &iam.CreateAccessKeyInput{UserName: aws.String(userName)})
+ 	require.NoError(t, err)
+ 
+-	_, err = iamClient.CreateGroup(&iam.CreateGroupInput{GroupName: aws.String(groupName)})
++	_, err = iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{GroupName: aws.String(groupName)})
+ 	require.NoError(t, err)
+ 
+-	createPolicyResp, err := iamClient.CreatePolicy(&iam.CreatePolicyInput{
++	createPolicyResp, err := iamClient.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 		PolicyName: aws.String(policyName), PolicyDocument: aws.String(policyDoc),
+ 	})
+ 	require.NoError(t, err)
+@@ -465,40 +467,42 @@ func TestIAMGroupDisabledPolicyEnforcement(t *testing.T) {
+ 	// Cleanup in correct order: remove user from group, detach policy,
+ 	// delete access key, delete user, delete group, delete policy
+ 	t.Cleanup(func() {
+-		if _, err := iamClient.RemoveUserFromGroup(&iam.RemoveUserFromGroupInput{
++		cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++		defer cleanupCancel()
++		if _, err := iamClient.RemoveUserFromGroup(cleanupCtx, &iam.RemoveUserFromGroupInput{
+ 			GroupName: aws.String(groupName), UserName: aws.String(userName),
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to remove user from group: %v", err)
+ 		}
+-		if _, err := iamClient.DetachGroupPolicy(&iam.DetachGroupPolicyInput{
++		if _, err := iamClient.DetachGroupPolicy(cleanupCtx, &iam.DetachGroupPolicyInput{
+ 			GroupName: aws.String(groupName),
+ 			PolicyArn: aws.String("arn:aws:iam:::policy/" + policyName),
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to detach group policy: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteAccessKey(&iam.DeleteAccessKeyInput{
++		if _, err := iamClient.DeleteAccessKey(cleanupCtx, &iam.DeleteAccessKeyInput{
+ 			UserName: aws.String(userName), AccessKeyId: keyResp.AccessKey.AccessKeyId,
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to delete access key: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)}); err != nil {
++		if _, err := iamClient.DeleteUser(cleanupCtx, &iam.DeleteUserInput{UserName: aws.String(userName)}); err != nil {
+ 			t.Logf("cleanup: failed to delete user: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteGroup(&iam.DeleteGroupInput{GroupName: aws.String(groupName)}); err != nil {
++		if _, err := iamClient.DeleteGroup(cleanupCtx, &iam.DeleteGroupInput{GroupName: aws.String(groupName)}); err != nil {
+ 			t.Logf("cleanup: failed to delete group: %v", err)
+ 		}
+-		if _, err := iamClient.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: createPolicyResp.Policy.Arn}); err != nil {
++		if _, err := iamClient.DeletePolicy(cleanupCtx, &iam.DeletePolicyInput{PolicyArn: createPolicyResp.Policy.Arn}); err != nil {
+ 			t.Logf("cleanup: failed to delete policy: %v", err)
+ 		}
+ 	})
+ 
+ 	// Setup: attach policy, add user, create bucket with admin
+-	_, err = iamClient.AttachGroupPolicy(&iam.AttachGroupPolicyInput{
++	_, err = iamClient.AttachGroupPolicy(t.Context(), &iam.AttachGroupPolicyInput{
+ 		GroupName: aws.String(groupName), PolicyArn: createPolicyResp.Policy.Arn,
+ 	})
+ 	require.NoError(t, err)
+ 
+-	_, err = iamClient.AddUserToGroup(&iam.AddUserToGroupInput{
++	_, err = iamClient.AddUserToGroup(t.Context(), &iam.AddUserToGroupInput{
+ 		GroupName: aws.String(groupName), UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+@@ -508,13 +512,13 @@ func TestIAMGroupDisabledPolicyEnforcement(t *testing.T) {
+ 	// Create bucket using admin first so we can test listing
+ 	adminS3, err := framework.CreateS3ClientWithJWT("admin-user", "TestAdminRole")
+ 	require.NoError(t, err)
+-	_, err = adminS3.CreateBucket(&s3.CreateBucketInput{Bucket: aws.String(bucketName)})
++	_, err = adminS3.CreateBucket(t.Context(), &s3.CreateBucketInput{Bucket: aws.String(bucketName)})
+ 	require.NoError(t, err)
+-	defer adminS3.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
++	defer adminS3.DeleteBucket(t.Context(), &s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
+ 
+ 	t.Run("enabled_group_allows_access", func(t *testing.T) {
+ 		require.Eventually(t, func() bool {
+-			_, err := userS3Client.ListObjects(&s3.ListObjectsInput{
++			_, err := userS3Client.ListObjects(t.Context(), &s3.ListObjectsInput{
+ 				Bucket: aws.String(bucketName),
+ 			})
+ 			return err == nil
+@@ -534,14 +538,14 @@ func TestIAMGroupDisabledPolicyEnforcement(t *testing.T) {
+ 		// Wait for propagation — user should be denied
+ 		var lastErr error
+ 		require.Eventually(t, func() bool {
+-			_, lastErr = userS3Client.ListObjects(&s3.ListObjectsInput{
++			_, lastErr = userS3Client.ListObjects(t.Context(), &s3.ListObjectsInput{
+ 				Bucket: aws.String(bucketName),
+ 			})
+ 			return lastErr != nil
+ 		}, 10*time.Second, 500*time.Millisecond, "User in disabled group should be denied access")
+-		awsErr, ok := lastErr.(awserr.Error)
++		awsErr, ok := iamAPIError(lastErr)
+ 		require.True(t, ok, "Expected awserr.Error")
+-		assert.Equal(t, "AccessDenied", awsErr.Code())
++		assert.Equal(t, "AccessDenied", awsErr.ErrorCode())
+ 	})
+ 
+ 	t.Run("re_enabled_group_restores_access", func(t *testing.T) {
+@@ -556,7 +560,7 @@ func TestIAMGroupDisabledPolicyEnforcement(t *testing.T) {
+ 
+ 		// Wait for propagation — user should have access again
+ 		require.Eventually(t, func() bool {
+-			_, err = userS3Client.ListObjects(&s3.ListObjectsInput{
++			_, err = userS3Client.ListObjects(t.Context(), &s3.ListObjectsInput{
+ 				Bucket: aws.String(bucketName),
+ 			})
+ 			return err == nil
+@@ -576,35 +580,37 @@ func TestIAMGroupUserDeletionSideEffect(t *testing.T) {
+ 	userName := "test-deletion-user"
+ 
+ 	// Create group and user
+-	_, err = iamClient.CreateGroup(&iam.CreateGroupInput{GroupName: aws.String(groupName)})
++	_, err = iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{GroupName: aws.String(groupName)})
+ 	require.NoError(t, err)
+-	defer iamClient.DeleteGroup(&iam.DeleteGroupInput{GroupName: aws.String(groupName)})
++	defer iamClient.DeleteGroup(t.Context(), &iam.DeleteGroupInput{GroupName: aws.String(groupName)})
+ 
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
+ 	require.NoError(t, err)
+ 	t.Cleanup(func() {
++		cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++		defer cleanupCancel()
+ 		// Best-effort: user may already be deleted by the test
+-		iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)})
++		iamClient.DeleteUser(cleanupCtx, &iam.DeleteUserInput{UserName: aws.String(userName)})
+ 	})
+ 
+ 	// Add user to group
+-	_, err = iamClient.AddUserToGroup(&iam.AddUserToGroupInput{
++	_, err = iamClient.AddUserToGroup(t.Context(), &iam.AddUserToGroupInput{
+ 		GroupName: aws.String(groupName),
+ 		UserName:  aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+ 
+ 	// Verify user is in group
+-	getResp, err := iamClient.GetGroup(&iam.GetGroupInput{GroupName: aws.String(groupName)})
++	getResp, err := iamClient.GetGroup(t.Context(), &iam.GetGroupInput{GroupName: aws.String(groupName)})
+ 	require.NoError(t, err)
+ 	assert.Len(t, getResp.Users, 1, "Group should have 1 member before deletion")
+ 
+ 	// Delete the user
+-	_, err = iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)})
++	_, err = iamClient.DeleteUser(t.Context(), &iam.DeleteUserInput{UserName: aws.String(userName)})
+ 	require.NoError(t, err)
+ 
+ 	// Verify user was removed from the group
+-	getResp, err = iamClient.GetGroup(&iam.GetGroupInput{GroupName: aws.String(groupName)})
++	getResp, err = iamClient.GetGroup(t.Context(), &iam.GetGroupInput{GroupName: aws.String(groupName)})
+ 	require.NoError(t, err)
+ 	assert.Empty(t, getResp.Users, "Group should have no members after user deletion")
+ }
+@@ -623,40 +629,40 @@ func TestIAMGroupMultipleGroups(t *testing.T) {
+ 	userName := "test-multi-group-user"
+ 
+ 	// Create two groups
+-	_, err = iamClient.CreateGroup(&iam.CreateGroupInput{GroupName: aws.String(group1)})
++	_, err = iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{GroupName: aws.String(group1)})
+ 	require.NoError(t, err)
+-	defer iamClient.DeleteGroup(&iam.DeleteGroupInput{GroupName: aws.String(group1)})
++	defer iamClient.DeleteGroup(t.Context(), &iam.DeleteGroupInput{GroupName: aws.String(group1)})
+ 
+-	_, err = iamClient.CreateGroup(&iam.CreateGroupInput{GroupName: aws.String(group2)})
++	_, err = iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{GroupName: aws.String(group2)})
+ 	require.NoError(t, err)
+-	defer iamClient.DeleteGroup(&iam.DeleteGroupInput{GroupName: aws.String(group2)})
++	defer iamClient.DeleteGroup(t.Context(), &iam.DeleteGroupInput{GroupName: aws.String(group2)})
+ 
+ 	// Create user
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
+ 	require.NoError(t, err)
+ 	defer func() {
+-		iamClient.RemoveUserFromGroup(&iam.RemoveUserFromGroupInput{
++		iamClient.RemoveUserFromGroup(t.Context(), &iam.RemoveUserFromGroupInput{
+ 			GroupName: aws.String(group1), UserName: aws.String(userName),
+ 		})
+-		iamClient.RemoveUserFromGroup(&iam.RemoveUserFromGroupInput{
++		iamClient.RemoveUserFromGroup(t.Context(), &iam.RemoveUserFromGroupInput{
+ 			GroupName: aws.String(group2), UserName: aws.String(userName),
+ 		})
+-		iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)})
++		iamClient.DeleteUser(t.Context(), &iam.DeleteUserInput{UserName: aws.String(userName)})
+ 	}()
+ 
+ 	// Add user to both groups
+-	_, err = iamClient.AddUserToGroup(&iam.AddUserToGroupInput{
++	_, err = iamClient.AddUserToGroup(t.Context(), &iam.AddUserToGroupInput{
+ 		GroupName: aws.String(group1), UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	_, err = iamClient.AddUserToGroup(&iam.AddUserToGroupInput{
++	_, err = iamClient.AddUserToGroup(t.Context(), &iam.AddUserToGroupInput{
+ 		GroupName: aws.String(group2), UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+ 
+ 	// Verify user appears in both groups
+-	resp, err := iamClient.ListGroupsForUser(&iam.ListGroupsForUserInput{
++	resp, err := iamClient.ListGroupsForUser(t.Context(), &iam.ListGroupsForUserInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+@@ -691,11 +697,11 @@ type ListGroupsResponse struct {
+ // callIAMAPIAuthenticated sends an authenticated raw IAM API request using the
+ // framework's JWT token. This is needed for custom extensions not in the AWS SDK
+ // (like UpdateGroup with Disabled parameter).
+-func callIAMAPIAuthenticated(_ *testing.T, framework *S3IAMTestFramework, action string, params url.Values) (*http.Response, error) {
++func callIAMAPIAuthenticated(t *testing.T, framework *S3IAMTestFramework, action string, params url.Values) (*http.Response, error) {
+ 	params.Set("Action", action)
+ 
+ 	body := params.Encode()
+-	req, err := http.NewRequest(http.MethodPost, TestIAMEndpoint+"/",
++	req, err := http.NewRequestWithContext(t.Context(), http.MethodPost, TestIAMEndpoint+"/",
+ 		strings.NewReader(body))
+ 	if err != nil {
+ 		return nil, err
+@@ -708,7 +714,11 @@ func callIAMAPIAuthenticated(_ *testing.T, framework *S3IAMTestFramework, action
+ 		return nil, err
+ 	}
+ 
+-	if _, err := v4.NewSigner(creds).Sign(req, strings.NewReader(body), "iam", TestRegion, time.Now()); err != nil {
++	resolved, err := creds.Retrieve(req.Context())
++	if err != nil {
++		return nil, err
++	}
++	if err := signSigV4Request(req.Context(), req, []byte(body), sigV4Credentials{AccessKeyID: resolved.AccessKeyID, SecretKey: resolved.SecretAccessKey, SessionToken: resolved.SessionToken}, "iam", TestRegion, time.Now()); err != nil {
+ 		return nil, err
+ 	}
+ 
+@@ -791,9 +801,9 @@ func TestIAMGroupInlinePolicy(t *testing.T) {
+ 	require.NoError(t, err)
+ 
+ 	// Skip if running against embedded IAM (which returns NotImplemented for group inline policies)
+-	_, probeErr := iamClient.ListGroupPolicies(&iam.ListGroupPoliciesInput{GroupName: aws.String("probe-group-inline-support")})
++	_, probeErr := iamClient.ListGroupPolicies(t.Context(), &iam.ListGroupPoliciesInput{GroupName: aws.String("probe-group-inline-support")})
+ 	if probeErr != nil {
+-		if awsErr, ok := probeErr.(awserr.Error); ok && awsErr.Code() == "NotImplemented" {
++		if awsErr, ok := iamAPIError(probeErr); ok && awsErr.ErrorCode() == "NotImplemented" {
+ 			t.Skip("Skipping: group inline policies not supported in embedded IAM mode")
+ 		}
+ 	}
+@@ -801,32 +811,32 @@ func TestIAMGroupInlinePolicy(t *testing.T) {
+ 
+ 	groupName := "test-group-inline-policy"
+ 	policyName := "TestInlinePolicy"
+-	_, err = iamClient.CreateGroup(&iam.CreateGroupInput{
++	_, err = iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{
+ 		GroupName: aws.String(groupName),
+ 	})
+ 	require.NoError(t, err)
+ 	defer func() {
+ 		// Clean up inline policies before deleting the group
+-		iamClient.DeleteGroupPolicy(&iam.DeleteGroupPolicyInput{
++		iamClient.DeleteGroupPolicy(t.Context(), &iam.DeleteGroupPolicyInput{
+ 			GroupName:  aws.String(groupName),
+ 			PolicyName: aws.String(policyName),
+ 		})
+-		iamClient.DeleteGroup(&iam.DeleteGroupInput{GroupName: aws.String(groupName)})
++		iamClient.DeleteGroup(t.Context(), &iam.DeleteGroupInput{GroupName: aws.String(groupName)})
+ 	}()
+ 
+ 	t.Run("list_empty", func(t *testing.T) {
+-		resp, err := iamClient.ListGroupPolicies(&iam.ListGroupPoliciesInput{
++		resp, err := iamClient.ListGroupPolicies(t.Context(), &iam.ListGroupPoliciesInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+ 		assert.Empty(t, resp.PolicyNames)
+-		assert.False(t, *resp.IsTruncated)
++		assert.False(t, resp.IsTruncated)
+ 	})
+ 
+ 	policyDoc := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:GetObject","Resource":"arn:aws:s3:::test-bucket/*"}]}`
+ 
+ 	t.Run("put_group_policy", func(t *testing.T) {
+-		_, err := iamClient.PutGroupPolicy(&iam.PutGroupPolicyInput{
++		_, err := iamClient.PutGroupPolicy(t.Context(), &iam.PutGroupPolicyInput{
+ 			GroupName:      aws.String(groupName),
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(policyDoc),
+@@ -835,7 +845,7 @@ func TestIAMGroupInlinePolicy(t *testing.T) {
+ 	})
+ 
+ 	t.Run("list_after_put", func(t *testing.T) {
+-		resp, err := iamClient.ListGroupPolicies(&iam.ListGroupPoliciesInput{
++		resp, err := iamClient.ListGroupPolicies(t.Context(), &iam.ListGroupPoliciesInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+@@ -843,7 +853,7 @@ func TestIAMGroupInlinePolicy(t *testing.T) {
+ 	})
+ 
+ 	t.Run("get_group_policy", func(t *testing.T) {
+-		resp, err := iamClient.GetGroupPolicy(&iam.GetGroupPolicyInput{
++		resp, err := iamClient.GetGroupPolicy(t.Context(), &iam.GetGroupPolicyInput{
+ 			GroupName:  aws.String(groupName),
+ 			PolicyName: aws.String(policyName),
+ 		})
+@@ -854,7 +864,7 @@ func TestIAMGroupInlinePolicy(t *testing.T) {
+ 	})
+ 
+ 	t.Run("delete_group_policy", func(t *testing.T) {
+-		_, err := iamClient.DeleteGroupPolicy(&iam.DeleteGroupPolicyInput{
++		_, err := iamClient.DeleteGroupPolicy(t.Context(), &iam.DeleteGroupPolicyInput{
+ 			GroupName:  aws.String(groupName),
+ 			PolicyName: aws.String(policyName),
+ 		})
+@@ -862,7 +872,7 @@ func TestIAMGroupInlinePolicy(t *testing.T) {
+ 	})
+ 
+ 	t.Run("list_after_delete", func(t *testing.T) {
+-		resp, err := iamClient.ListGroupPolicies(&iam.ListGroupPoliciesInput{
++		resp, err := iamClient.ListGroupPolicies(t.Context(), &iam.ListGroupPoliciesInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+@@ -870,25 +880,18 @@ func TestIAMGroupInlinePolicy(t *testing.T) {
+ 	})
+ 
+ 	t.Run("nonexistent_group", func(t *testing.T) {
+-		_, err := iamClient.ListGroupPolicies(&iam.ListGroupPoliciesInput{
++		_, err := iamClient.ListGroupPolicies(t.Context(), &iam.ListGroupPoliciesInput{
+ 			GroupName: aws.String("nonexistent-group-for-policies"),
+ 		})
+ 		require.Error(t, err)
+-		awsErr, ok := err.(awserr.Error)
++		awsErr, ok := iamAPIError(err)
+ 		require.True(t, ok, "Expected AWS error type")
+-		assert.Equal(t, iam.ErrCodeNoSuchEntityException, awsErr.Code())
++		assert.Equal(t, "NoSuchEntity", awsErr.ErrorCode())
+ 	})
+ }
+ 
+ // createS3Client creates an S3 client with static credentials
+-func createS3Client(t *testing.T, accessKey, secretKey string) *s3.S3 {
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:           aws.String("us-east-1"),
+-		Endpoint:         aws.String(TestS3Endpoint),
+-		Credentials:      credentials.NewStaticCredentials(accessKey, secretKey, ""),
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-	})
+-	require.NoError(t, err)
+-	return s3.New(sess)
++func createS3Client(t *testing.T, accessKey, secretKey string) *s3.Client {
++	t.Helper()
++	return newIAMFixtureS3Client(TestS3Endpoint, accessKey, secretKey, "")
+ }
+diff --git a/test/s3/iam/s3_iam_inline_policy_condition_test.go b/test/s3/iam/s3_iam_inline_policy_condition_test.go
+index ba54ef1..78f85cc 100644
+--- a/test/s3/iam/s3_iam_inline_policy_condition_test.go
++++ b/test/s3/iam/s3_iam_inline_policy_condition_test.go
+@@ -7,10 +7,9 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/service/iam"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -33,8 +32,8 @@ func isAccessDenied(err error) bool {
+ 	if err == nil {
+ 		return false
+ 	}
+-	awsErr, ok := err.(awserr.Error)
+-	return ok && awsErr.Code() == "AccessDenied"
++	awsErr, ok := iamAPIError(err)
++	return ok && awsErr.ErrorCode() == "AccessDenied"
+ }
+ 
+ // localSourceAllowCIDRs lists every address a loopback-targeted test client may
+@@ -86,10 +85,10 @@ func TestIAMUserInlinePolicySourceIpCondition(t *testing.T) {
+ 	policyName := "policy-" + suffix
+ 	bucketName := "bucket-" + suffix
+ 
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
+ 	require.NoError(t, err)
+ 
+-	keyResp, err := iamClient.CreateAccessKey(&iam.CreateAccessKeyInput{
++	keyResp, err := iamClient.CreateAccessKey(t.Context(), &iam.CreateAccessKeyInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+@@ -103,19 +102,21 @@ func TestIAMUserInlinePolicySourceIpCondition(t *testing.T) {
+ 	require.NoError(t, framework.CreateBucketWithCleanup(adminS3, bucketName))
+ 
+ 	t.Cleanup(func() {
+-		if _, err := iamClient.DeleteUserPolicy(&iam.DeleteUserPolicyInput{
++		cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++		defer cleanupCancel()
++		if _, err := iamClient.DeleteUserPolicy(cleanupCtx, &iam.DeleteUserPolicyInput{
+ 			UserName:   aws.String(userName),
+ 			PolicyName: aws.String(policyName),
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to delete user policy: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteAccessKey(&iam.DeleteAccessKeyInput{
++		if _, err := iamClient.DeleteAccessKey(cleanupCtx, &iam.DeleteAccessKeyInput{
+ 			UserName:    aws.String(userName),
+ 			AccessKeyId: keyResp.AccessKey.AccessKeyId,
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to delete access key: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)}); err != nil {
++		if _, err := iamClient.DeleteUser(cleanupCtx, &iam.DeleteUserInput{UserName: aws.String(userName)}); err != nil {
+ 			t.Logf("cleanup: failed to delete user: %v", err)
+ 		}
+ 	})
+@@ -123,7 +124,7 @@ func TestIAMUserInlinePolicySourceIpCondition(t *testing.T) {
+ 	t.Run("denies_when_source_ip_does_not_match", func(t *testing.T) {
+ 		// SourceIp 198.51.100.0/24 is RFC5737 TEST-NET-2; the test client is on
+ 		// the local host, so the condition must fail and the action be denied.
+-		_, err = iamClient.PutUserPolicy(&iam.PutUserPolicyInput{
++		_, err = iamClient.PutUserPolicy(t.Context(), &iam.PutUserPolicyInput{
+ 			UserName:       aws.String(userName),
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(sourceIpAllowPolicy(bucketName, "198.51.100.0/24")),
+@@ -132,10 +133,10 @@ func TestIAMUserInlinePolicySourceIpCondition(t *testing.T) {
+ 
+ 		var lastErr error
+ 		require.Eventually(t, func() bool {
+-			_, lastErr = userS3.PutObject(&s3.PutObjectInput{
++			_, lastErr = userS3.PutObject(t.Context(), &s3.PutObjectInput{
+ 				Bucket: aws.String(bucketName),
+ 				Key:    aws.String("denied.txt"),
+-				Body:   aws.ReadSeekCloser(strings.NewReader("nope")),
++				Body:   strings.NewReader("nope"),
+ 			})
+ 			return isAccessDenied(lastErr)
+ 		}, 10*time.Second, 500*time.Millisecond,
+@@ -143,7 +144,7 @@ func TestIAMUserInlinePolicySourceIpCondition(t *testing.T) {
+ 	})
+ 
+ 	t.Run("allows_when_source_ip_matches", func(t *testing.T) {
+-		_, err = iamClient.PutUserPolicy(&iam.PutUserPolicyInput{
++		_, err = iamClient.PutUserPolicy(t.Context(), &iam.PutUserPolicyInput{
+ 			UserName:       aws.String(userName),
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(sourceIpAllowPolicy(bucketName, localSourceAllowCIDRs...)),
+@@ -151,10 +152,10 @@ func TestIAMUserInlinePolicySourceIpCondition(t *testing.T) {
+ 		require.NoError(t, err)
+ 
+ 		require.Eventually(t, func() bool {
+-			_, putErr := userS3.PutObject(&s3.PutObjectInput{
++			_, putErr := userS3.PutObject(t.Context(), &s3.PutObjectInput{
+ 				Bucket: aws.String(bucketName),
+ 				Key:    aws.String("allowed.txt"),
+-				Body:   aws.ReadSeekCloser(strings.NewReader("ok")),
++				Body:   strings.NewReader("ok"),
+ 			})
+ 			if putErr != nil {
+ 				t.Logf("allow attempt denied (source IP not in %v?): %v", localSourceAllowCIDRs, putErr)
+@@ -181,18 +182,18 @@ func TestIAMGroupInlinePolicyEnforcement(t *testing.T) {
+ 	policyName := "policy-" + suffix
+ 	bucketName := "bucket-" + suffix
+ 
+-	_, err = iamClient.CreateUser(&iam.CreateUserInput{UserName: aws.String(userName)})
++	_, err = iamClient.CreateUser(t.Context(), &iam.CreateUserInput{UserName: aws.String(userName)})
+ 	require.NoError(t, err)
+ 
+-	keyResp, err := iamClient.CreateAccessKey(&iam.CreateAccessKeyInput{
++	keyResp, err := iamClient.CreateAccessKey(t.Context(), &iam.CreateAccessKeyInput{
+ 		UserName: aws.String(userName),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	_, err = iamClient.CreateGroup(&iam.CreateGroupInput{GroupName: aws.String(groupName)})
++	_, err = iamClient.CreateGroup(t.Context(), &iam.CreateGroupInput{GroupName: aws.String(groupName)})
+ 	require.NoError(t, err)
+ 
+-	_, err = iamClient.AddUserToGroup(&iam.AddUserToGroupInput{
++	_, err = iamClient.AddUserToGroup(t.Context(), &iam.AddUserToGroupInput{
+ 		GroupName: aws.String(groupName),
+ 		UserName:  aws.String(userName),
+ 	})
+@@ -205,28 +206,30 @@ func TestIAMGroupInlinePolicyEnforcement(t *testing.T) {
+ 	require.NoError(t, framework.CreateBucketWithCleanup(adminS3, bucketName))
+ 
+ 	t.Cleanup(func() {
+-		if _, err := iamClient.DeleteGroupPolicy(&iam.DeleteGroupPolicyInput{
++		cleanupCtx, cleanupCancel := iamFixtureCleanupContext()
++		defer cleanupCancel()
++		if _, err := iamClient.DeleteGroupPolicy(cleanupCtx, &iam.DeleteGroupPolicyInput{
+ 			GroupName:  aws.String(groupName),
+ 			PolicyName: aws.String(policyName),
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to delete group policy: %v", err)
+ 		}
+-		if _, err := iamClient.RemoveUserFromGroup(&iam.RemoveUserFromGroupInput{
++		if _, err := iamClient.RemoveUserFromGroup(cleanupCtx, &iam.RemoveUserFromGroupInput{
+ 			GroupName: aws.String(groupName),
+ 			UserName:  aws.String(userName),
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to remove user from group: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteAccessKey(&iam.DeleteAccessKeyInput{
++		if _, err := iamClient.DeleteAccessKey(cleanupCtx, &iam.DeleteAccessKeyInput{
+ 			UserName:    aws.String(userName),
+ 			AccessKeyId: keyResp.AccessKey.AccessKeyId,
+ 		}); err != nil {
+ 			t.Logf("cleanup: failed to delete access key: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteUser(&iam.DeleteUserInput{UserName: aws.String(userName)}); err != nil {
++		if _, err := iamClient.DeleteUser(cleanupCtx, &iam.DeleteUserInput{UserName: aws.String(userName)}); err != nil {
+ 			t.Logf("cleanup: failed to delete user: %v", err)
+ 		}
+-		if _, err := iamClient.DeleteGroup(&iam.DeleteGroupInput{GroupName: aws.String(groupName)}); err != nil {
++		if _, err := iamClient.DeleteGroup(cleanupCtx, &iam.DeleteGroupInput{GroupName: aws.String(groupName)}); err != nil {
+ 			t.Logf("cleanup: failed to delete group: %v", err)
+ 		}
+ 	})
+@@ -235,27 +238,27 @@ func TestIAMGroupInlinePolicyEnforcement(t *testing.T) {
+ 	denyDoc := sourceIpAllowPolicy(bucketName, "198.51.100.0/24")
+ 
+ 	t.Run("crud_round_trip", func(t *testing.T) {
+-		_, err := iamClient.PutGroupPolicy(&iam.PutGroupPolicyInput{
++		_, err := iamClient.PutGroupPolicy(t.Context(), &iam.PutGroupPolicyInput{
+ 			GroupName:      aws.String(groupName),
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(allowDoc),
+ 		})
+ 		require.NoError(t, err, "PutGroupPolicy must succeed (no longer NotImplemented)")
+ 
+-		listResp, err := iamClient.ListGroupPolicies(&iam.ListGroupPoliciesInput{
++		listResp, err := iamClient.ListGroupPolicies(t.Context(), &iam.ListGroupPoliciesInput{
+ 			GroupName: aws.String(groupName),
+ 		})
+ 		require.NoError(t, err)
+ 		found := false
+ 		for _, name := range listResp.PolicyNames {
+-			if name != nil && *name == policyName {
++			if name == policyName {
+ 				found = true
+ 				break
+ 			}
+ 		}
+ 		assert.True(t, found, "ListGroupPolicies must return the freshly added policy")
+ 
+-		getResp, err := iamClient.GetGroupPolicy(&iam.GetGroupPolicyInput{
++		getResp, err := iamClient.GetGroupPolicy(t.Context(), &iam.GetGroupPolicyInput{
+ 			GroupName:  aws.String(groupName),
+ 			PolicyName: aws.String(policyName),
+ 		})
+@@ -266,7 +269,7 @@ func TestIAMGroupInlinePolicyEnforcement(t *testing.T) {
+ 	})
+ 
+ 	t.Run("enforces_allow_when_condition_matches", func(t *testing.T) {
+-		_, err := iamClient.PutGroupPolicy(&iam.PutGroupPolicyInput{
++		_, err := iamClient.PutGroupPolicy(t.Context(), &iam.PutGroupPolicyInput{
+ 			GroupName:      aws.String(groupName),
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(allowDoc),
+@@ -274,10 +277,10 @@ func TestIAMGroupInlinePolicyEnforcement(t *testing.T) {
+ 		require.NoError(t, err)
+ 
+ 		require.Eventually(t, func() bool {
+-			_, putErr := userS3.PutObject(&s3.PutObjectInput{
++			_, putErr := userS3.PutObject(t.Context(), &s3.PutObjectInput{
+ 				Bucket: aws.String(bucketName),
+ 				Key:    aws.String("group-allowed.txt"),
+-				Body:   aws.ReadSeekCloser(strings.NewReader("ok")),
++				Body:   strings.NewReader("ok"),
+ 			})
+ 			if putErr != nil {
+ 				t.Logf("allow attempt denied (source IP not in %v?): %v", localSourceAllowCIDRs, putErr)
+@@ -288,7 +291,7 @@ func TestIAMGroupInlinePolicyEnforcement(t *testing.T) {
+ 	})
+ 
+ 	t.Run("enforces_deny_when_condition_does_not_match", func(t *testing.T) {
+-		_, err := iamClient.PutGroupPolicy(&iam.PutGroupPolicyInput{
++		_, err := iamClient.PutGroupPolicy(t.Context(), &iam.PutGroupPolicyInput{
+ 			GroupName:      aws.String(groupName),
+ 			PolicyName:     aws.String(policyName),
+ 			PolicyDocument: aws.String(denyDoc),
+@@ -297,10 +300,10 @@ func TestIAMGroupInlinePolicyEnforcement(t *testing.T) {
+ 
+ 		var lastErr error
+ 		require.Eventually(t, func() bool {
+-			_, lastErr = userS3.PutObject(&s3.PutObjectInput{
++			_, lastErr = userS3.PutObject(t.Context(), &s3.PutObjectInput{
+ 				Bucket: aws.String(bucketName),
+ 				Key:    aws.String("group-denied.txt"),
+-				Body:   aws.ReadSeekCloser(strings.NewReader("nope")),
++				Body:   strings.NewReader("nope"),
+ 			})
+ 			return isAccessDenied(lastErr)
+ 		}, 10*time.Second, 500*time.Millisecond,
+diff --git a/test/s3/iam/s3_iam_integration_test.go b/test/s3/iam/s3_iam_integration_test.go
+index 1b85d40..cde0a72 100644
+--- a/test/s3/iam/s3_iam_integration_test.go
++++ b/test/s3/iam/s3_iam_integration_test.go
+@@ -6,9 +6,9 @@ import (
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -36,7 +36,7 @@ func TestS3IAMAuthentication(t *testing.T) {
+ 		require.NoError(t, err)
+ 
+ 		// Verify bucket exists
+-		buckets, err := s3Client.ListBuckets(&s3.ListBucketsInput{})
++		buckets, err := s3Client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 		require.NoError(t, err)
+ 
+ 		found := false
+@@ -59,8 +59,8 @@ func TestS3IAMAuthentication(t *testing.T) {
+ 		require.Error(t, err)
+ 
+ 		// Verify it's an access denied error
+-		if awsErr, ok := err.(awserr.Error); ok {
+-			assert.Equal(t, "AccessDenied", awsErr.Code())
++		if awsErr, ok := iamAPIError(err); ok {
++			assert.Equal(t, "AccessDenied", awsErr.ErrorCode())
+ 		} else {
+ 			t.Error("Expected AWS error with AccessDenied code")
+ 		}
+@@ -76,8 +76,8 @@ func TestS3IAMAuthentication(t *testing.T) {
+ 		require.Error(t, err)
+ 
+ 		// Verify it's an access denied error
+-		if awsErr, ok := err.(awserr.Error); ok {
+-			assert.Equal(t, "AccessDenied", awsErr.Code())
++		if awsErr, ok := iamAPIError(err); ok {
++			assert.Equal(t, "AccessDenied", awsErr.ErrorCode())
+ 		} else {
+ 			t.Error("Expected AWS error with AccessDenied code")
+ 		}
+@@ -119,15 +119,15 @@ func TestS3IAMSessionExpiration(t *testing.T) {
+ 		// Now operations should fail with expired token
+ 		err = framework.CreateBucket(expiredClient, testBucket+"-session-expired")
+ 		require.Error(t, err)
+-		if awsErr, ok := err.(awserr.Error); ok {
+-			assert.Equal(t, "AccessDenied", awsErr.Code())
++		if awsErr, ok := iamAPIError(err); ok {
++			assert.Equal(t, "AccessDenied", awsErr.ErrorCode())
+ 		}
+ 
+ 		// Cleanup the successful bucket
+ 		adminClient, err := framework.CreateS3ClientWithJWT("admin-user", "TestAdminRole")
+ 		require.NoError(t, err)
+ 
+-		_, err = adminClient.DeleteBucket(&s3.DeleteBucketInput{
++		_, err = adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 			Bucket: aws.String(testBucket + "-session"),
+ 		})
+ 		require.NoError(t, err)
+@@ -165,7 +165,7 @@ func TestS3IAMMultipartUploadPolicyEnforcement(t *testing.T) {
+ 		]
+ 	}`, testBucket, testBucket, testBucket)
+ 
+-	_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++	_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 		Bucket: aws.String(testBucket),
+ 		Policy: aws.String(bucketPolicy),
+ 	})
+@@ -177,7 +177,7 @@ func TestS3IAMMultipartUploadPolicyEnforcement(t *testing.T) {
+ 
+ 		// Initiate multipart upload
+ 		multipartKey := "large-test-file.txt"
+-		initResult, err := s3Client.CreateMultipartUpload(&s3.CreateMultipartUploadInput{
++		initResult, err := s3Client.CreateMultipartUpload(t.Context(), &s3.CreateMultipartUploadInput{
+ 			Bucket: aws.String(testBucket),
+ 			Key:    aws.String(multipartKey),
+ 		})
+@@ -189,25 +189,25 @@ func TestS3IAMMultipartUploadPolicyEnforcement(t *testing.T) {
+ 		partNumber := int64(1)
+ 		partData := strings.Repeat("Test data for multipart upload. ", 1000) // ~30KB
+ 
+-		uploadResult, err := s3Client.UploadPart(&s3.UploadPartInput{
++		uploadResult, err := s3Client.UploadPart(t.Context(), &s3.UploadPartInput{
+ 			Bucket:     aws.String(testBucket),
+ 			Key:        aws.String(multipartKey),
+-			PartNumber: aws.Int64(partNumber),
++			PartNumber: aws.Int32(int32(partNumber)),
+ 			UploadId:   uploadId,
+ 			Body:       strings.NewReader(partData),
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Complete multipart upload
+-		_, err = s3Client.CompleteMultipartUpload(&s3.CompleteMultipartUploadInput{
++		_, err = s3Client.CompleteMultipartUpload(t.Context(), &s3.CompleteMultipartUploadInput{
+ 			Bucket:   aws.String(testBucket),
+ 			Key:      aws.String(multipartKey),
+ 			UploadId: uploadId,
+-			MultipartUpload: &s3.CompletedMultipartUpload{
+-				Parts: []*s3.CompletedPart{
++			MultipartUpload: &types.CompletedMultipartUpload{
++				Parts: []types.CompletedPart{
+ 					{
+ 						ETag:       uploadResult.ETag,
+-						PartNumber: aws.Int64(partNumber),
++						PartNumber: aws.Int32(int32(partNumber)),
+ 					},
+ 				},
+ 			},
+@@ -215,7 +215,7 @@ func TestS3IAMMultipartUploadPolicyEnforcement(t *testing.T) {
+ 		require.NoError(t, err)
+ 
+ 		// Verify object was created
+-		result, err := s3Client.GetObject(&s3.GetObjectInput{
++		result, err := s3Client.GetObject(t.Context(), &s3.GetObjectInput{
+ 			Bucket: aws.String(testBucket),
+ 			Key:    aws.String(multipartKey),
+ 		})
+@@ -227,7 +227,7 @@ func TestS3IAMMultipartUploadPolicyEnforcement(t *testing.T) {
+ 		result.Body.Close()
+ 
+ 		// Cleanup
+-		_, err = s3Client.DeleteObject(&s3.DeleteObjectInput{
++		_, err = s3Client.DeleteObject(t.Context(), &s3.DeleteObjectInput{
+ 			Bucket: aws.String(testBucket),
+ 			Key:    aws.String(multipartKey),
+ 		})
+@@ -241,18 +241,18 @@ func TestS3IAMMultipartUploadPolicyEnforcement(t *testing.T) {
+ 
+ 		// Attempt to initiate multipart upload - should fail due to bucket policy
+ 		multipartKey := "denied-multipart-file.txt"
+-		_, err = readOnlyClient.CreateMultipartUpload(&s3.CreateMultipartUploadInput{
++		_, err = readOnlyClient.CreateMultipartUpload(t.Context(), &s3.CreateMultipartUploadInput{
+ 			Bucket: aws.String(testBucket),
+ 			Key:    aws.String(multipartKey),
+ 		})
+ 		require.Error(t, err)
+-		if awsErr, ok := err.(awserr.Error); ok {
+-			assert.Equal(t, "AccessDenied", awsErr.Code())
++		if awsErr, ok := iamAPIError(err); ok {
++			assert.Equal(t, "AccessDenied", awsErr.ErrorCode())
+ 		}
+ 	})
+ 
+ 	// Cleanup
+-	_, err = adminClient.DeleteBucket(&s3.DeleteBucketInput{
++	_, err = adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 		Bucket: aws.String(testBucket),
+ 	})
+ 	require.NoError(t, err)
+@@ -271,7 +271,7 @@ func TestS3IAMBucketPolicyIntegration(t *testing.T) {
+ 	bucketName := framework.GenerateUniqueBucketName("test-iam-bucket-policy")
+ 	err = framework.CreateBucket(adminClient, bucketName)
+ 	require.NoError(t, err)
+-	defer adminClient.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
++	defer adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
+ 
+ 	t.Run("bucket_policy_allows_public_read", func(t *testing.T) {
+ 		testObjectKey := "test-object.txt"
+@@ -291,14 +291,14 @@ func TestS3IAMBucketPolicyIntegration(t *testing.T) {
+ 			]
+ 		}`, bucketName)
+ 
+-		_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++		_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 			Bucket: aws.String(bucketName),
+ 			Policy: aws.String(bucketPolicy),
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Put test object
+-		_, err = adminClient.PutObject(&s3.PutObjectInput{
++		_, err = adminClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String(testObjectKey),
+ 			Body:   strings.NewReader(testObjectData),
+@@ -309,7 +309,7 @@ func TestS3IAMBucketPolicyIntegration(t *testing.T) {
+ 		readOnlyClient, err := framework.CreateS3ClientWithJWT("read-user", "TestReadOnlyRole")
+ 		require.NoError(t, err)
+ 
+-		result, err := readOnlyClient.GetObject(&s3.GetObjectInput{
++		result, err := readOnlyClient.GetObject(t.Context(), &s3.GetObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String(testObjectKey),
+ 		})
+@@ -321,13 +321,13 @@ func TestS3IAMBucketPolicyIntegration(t *testing.T) {
+ 		result.Body.Close()
+ 
+ 		// Clean up object and bucket policy after this test
+-		_, err = adminClient.DeleteObject(&s3.DeleteObjectInput{
++		_, err = adminClient.DeleteObject(t.Context(), &s3.DeleteObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String(testObjectKey),
+ 		})
+ 		require.NoError(t, err)
+ 
+-		_, err = adminClient.DeleteBucketPolicy(&s3.DeleteBucketPolicyInput{
++		_, err = adminClient.DeleteBucketPolicy(t.Context(), &s3.DeleteBucketPolicyInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.NoError(t, err)
+@@ -348,14 +348,14 @@ func TestS3IAMBucketPolicyIntegration(t *testing.T) {
+ 			]
+ 		}`, bucketName)
+ 
+-		_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++		_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 			Bucket: aws.String(bucketName),
+ 			Policy: aws.String(bucketPolicy),
+ 		})
+ 		require.NoError(t, err)
+ 
+ 		// Verify that the bucket policy was stored successfully by retrieving it
+-		policyResult, err := adminClient.GetBucketPolicy(&s3.GetBucketPolicyInput{
++		policyResult, err := adminClient.GetBucketPolicy(t.Context(), &s3.GetBucketPolicyInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.NoError(t, err)
+@@ -373,17 +373,17 @@ func TestS3IAMBucketPolicyIntegration(t *testing.T) {
+ 		// specific S3 action strings throughout the S3 API handlers.
+ 		// See: weed/s3api/s3api_bucket_policy_engine.go lines 135-146
+ 		//
+-		// _, err = adminClient.DeleteObject(&s3.DeleteObjectInput{
++		// _, err = adminClient.DeleteObject(t.Context(), &s3.DeleteObjectInput{
+ 		// 	Bucket: aws.String(bucketName),
+ 		// 	Key:    aws.String(testObjectKey),
+ 		// })
+ 		// require.Error(t, err, "DeleteObject should be denied by the bucket policy")
+-		// awsErr, ok := err.(awserr.Error)
++		// awsErr, ok := iamAPIError(err)
+ 		// require.True(t, ok, "Error should be an awserr.Error")
+-		// assert.Equal(t, "AccessDenied", awsErr.Code(), "Expected AccessDenied error code")
++		// assert.Equal(t, "AccessDenied", awsErr.ErrorCode(), "Expected AccessDenied error code")
+ 
+ 		// Clean up bucket policy after this test
+-		_, err = adminClient.DeleteBucketPolicy(&s3.DeleteBucketPolicyInput{
++		_, err = adminClient.DeleteBucketPolicy(t.Context(), &s3.DeleteBucketPolicyInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.NoError(t, err)
+@@ -433,7 +433,7 @@ func TestS3IAMPresignedURLIntegration(t *testing.T) {
+ 	require.NoError(t, err)
+ 
+ 	// Put test object
+-	_, err = adminClient.PutObject(&s3.PutObjectInput{
++	_, err = adminClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(testObjectKey),
+ 		Body:   strings.NewReader(testObjectData),
+@@ -455,7 +455,7 @@ func TestS3IAMPresignedURLIntegration(t *testing.T) {
+ 		// with Bearer tokens rather than presigned URLs.
+ 
+ 		// Test direct object access with JWT Bearer token (recommended approach)
+-		_, err := adminClient.GetObject(&s3.GetObjectInput{
++		_, err := adminClient.GetObject(t.Context(), &s3.GetObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String(testObjectKey),
+ 		})
+@@ -466,13 +466,13 @@ func TestS3IAMPresignedURLIntegration(t *testing.T) {
+ 	})
+ 
+ 	// Cleanup
+-	_, err = adminClient.DeleteObject(&s3.DeleteObjectInput{
++	_, err = adminClient.DeleteObject(t.Context(), &s3.DeleteObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(testObjectKey),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	_, err = adminClient.DeleteBucket(&s3.DeleteBucketInput{
++	_, err = adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+diff --git a/test/s3/iam/s3_keycloak_integration_test.go b/test/s3/iam/s3_keycloak_integration_test.go
+index 0bb8716..f2a18c4 100644
+--- a/test/s3/iam/s3_keycloak_integration_test.go
++++ b/test/s3/iam/s3_keycloak_integration_test.go
+@@ -7,7 +7,7 @@ import (
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -55,7 +55,7 @@ func TestKeycloakAuthentication(t *testing.T) {
+ 		assert.NoError(t, err, "Admin user should be able to create buckets")
+ 
+ 		// Verify bucket exists
+-		buckets, err := s3Client.ListBuckets(&s3.ListBucketsInput{})
++		buckets, err := s3Client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 		require.NoError(t, err)
+ 
+ 		found := false
+@@ -100,7 +100,7 @@ func TestKeycloakAuthentication(t *testing.T) {
+ 
+ 		// Test that read-only user can list buckets
+ 		t.Logf("Testing ListBuckets with AWS SDK...")
+-		_, err = s3Client.ListBuckets(&s3.ListBucketsInput{})
++		_, err = s3Client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 		assert.NoError(t, err, "Read-only user should be able to list buckets")
+ 
+ 		// Test that read-only user cannot create buckets
+@@ -142,7 +142,7 @@ func TestKeycloakTokenExpiration(t *testing.T) {
+ 	s3Client, err := framework.CreateS3ClientWithKeycloakToken(token)
+ 	require.NoError(t, err)
+ 
+-	_, err = s3Client.ListBuckets(&s3.ListBucketsInput{})
++	_, err = s3Client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 	assert.NoError(t, err, "Fresh token should work for S3 operations")
+ }
+ 
+@@ -196,7 +196,7 @@ func TestKeycloakRoleMapping(t *testing.T) {
+ 			require.NoError(t, err, tc.description)
+ 
+ 			// Test list buckets permission
+-			_, err = s3Client.ListBuckets(&s3.ListBucketsInput{})
++			_, err = s3Client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 			if tc.canListBuckets {
+ 				assert.NoError(t, err, "%s should be able to list buckets", tc.username)
+ 			} else {
+@@ -239,7 +239,7 @@ func TestKeycloakS3Operations(t *testing.T) {
+ 		require.NoError(t, err, "Should be able to create bucket")
+ 
+ 		// Verify bucket exists
+-		buckets, err := s3Client.ListBuckets(&s3.ListBucketsInput{})
++		buckets, err := s3Client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 		require.NoError(t, err)
+ 
+ 		found := false
+@@ -302,6 +302,6 @@ func TestKeycloakFailover(t *testing.T) {
+ 	require.NoError(t, err, "Should be able to create S3 client with mock authentication")
+ 
+ 	// Basic operation should work
+-	_, err = s3Client.ListBuckets(&s3.ListBucketsInput{})
++	_, err = s3Client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 	// Note: This may still fail due to session store issues, but the client creation should work
+ }
+diff --git a/test/s3/iam/s3_policy_variables_test.go b/test/s3/iam/s3_policy_variables_test.go
+index 6665752..977468d 100644
+--- a/test/s3/iam/s3_policy_variables_test.go
++++ b/test/s3/iam/s3_policy_variables_test.go
+@@ -6,8 +6,8 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -23,7 +23,7 @@ func TestS3PolicyVariablesUsernameInResource(t *testing.T) {
+ 	bucketName := framework.GenerateUniqueBucketName("test-policy-vars")
+ 	err = framework.CreateBucket(adminClient, bucketName)
+ 	require.NoError(t, err)
+-	defer adminClient.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
++	defer adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
+ 
+ 	// Policy with ${aws:username} in resource
+ 	bucketPolicy := fmt.Sprintf(`{
+@@ -42,14 +42,14 @@ func TestS3PolicyVariablesUsernameInResource(t *testing.T) {
+ 		}]
+ 	}`, bucketName, bucketName)
+ 
+-	_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++	_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 		Policy: aws.String(bucketPolicy),
+ 	})
+ 	require.NoError(t, err)
+ 
+ 	// Verify policy contains variable
+-	policyResult, err := adminClient.GetBucketPolicy(&s3.GetBucketPolicyInput{
++	policyResult, err := adminClient.GetBucketPolicy(t.Context(), &s3.GetBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -59,7 +59,7 @@ func TestS3PolicyVariablesUsernameInResource(t *testing.T) {
+ 	aliceClient, err := framework.CreateS3ClientWithJWT("alice", "TestReadOnlyRole")
+ 	require.NoError(t, err)
+ 
+-	_, err = aliceClient.PutObject(&s3.PutObjectInput{
++	_, err = aliceClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("alice/file.txt"),
+ 		Body:   nil, // Empty body is fine for this test
+@@ -67,7 +67,7 @@ func TestS3PolicyVariablesUsernameInResource(t *testing.T) {
+ 	assert.NoError(t, err, "Alice should be allowed to put to alice/file.txt")
+ 
+ 	// Test Enforcement: Alice should NOT be able to write to bob's folder
+-	_, err = aliceClient.PutObject(&s3.PutObjectInput{
++	_, err = aliceClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("bob/file.txt"),
+ 		Body:   nil,
+@@ -87,7 +87,7 @@ func TestS3PolicyVariablesUsernameInResourcePath(t *testing.T) {
+ 	bucketName := framework.GenerateUniqueBucketName("test-policy-resource")
+ 	err = framework.CreateBucket(adminClient, bucketName)
+ 	require.NoError(t, err)
+-	defer adminClient.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
++	defer adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
+ 
+ 	// Policy with variable in resource ARN
+ 	bucketPolicy := fmt.Sprintf(`{
+@@ -106,13 +106,13 @@ func TestS3PolicyVariablesUsernameInResourcePath(t *testing.T) {
+ 		}]
+ 	}`, bucketName, bucketName)
+ 
+-	_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++	_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 		Policy: aws.String(bucketPolicy),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	policyResult, err := adminClient.GetBucketPolicy(&s3.GetBucketPolicyInput{
++	policyResult, err := adminClient.GetBucketPolicy(t.Context(), &s3.GetBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -122,7 +122,7 @@ func TestS3PolicyVariablesUsernameInResourcePath(t *testing.T) {
+ 	aliceClient, err := framework.CreateS3ClientWithJWT("alice", "TestReadOnlyRole")
+ 	require.NoError(t, err)
+ 
+-	_, err = aliceClient.PutObject(&s3.PutObjectInput{
++	_, err = aliceClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("alice/file.txt"),
+ 		Body:   nil, // Empty body is fine for this test
+@@ -130,7 +130,7 @@ func TestS3PolicyVariablesUsernameInResourcePath(t *testing.T) {
+ 	assert.NoError(t, err, "Alice should be allowed to put to alice/file.txt")
+ 
+ 	// Test Enforcement: Alice should NOT be able to write to bob's folder
+-	_, err = aliceClient.PutObject(&s3.PutObjectInput{
++	_, err = aliceClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("bob/file.txt"),
+ 		Body:   nil,
+@@ -149,7 +149,7 @@ func TestS3PolicyVariablesJWTClaims(t *testing.T) {
+ 	bucketName := framework.GenerateUniqueBucketName("test-policy-jwt")
+ 	err = framework.CreateBucket(adminClient, bucketName)
+ 	require.NoError(t, err)
+-	defer adminClient.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
++	defer adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
+ 
+ 	// Policy with JWT claim variable
+ 	bucketPolicy := fmt.Sprintf(`{
+@@ -162,13 +162,13 @@ func TestS3PolicyVariablesJWTClaims(t *testing.T) {
+ 		}]
+ 	}`, bucketName)
+ 
+-	_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++	_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 		Policy: aws.String(bucketPolicy),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	policyResult, err := adminClient.GetBucketPolicy(&s3.GetBucketPolicyInput{
++	policyResult, err := adminClient.GetBucketPolicy(t.Context(), &s3.GetBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -185,7 +185,7 @@ func TestS3PolicyVariablesUsernameIsolation(t *testing.T) {
+ 	bucketName := framework.GenerateUniqueBucketName("test-isolation")
+ 	err = framework.CreateBucket(adminClient, bucketName)
+ 	require.NoError(t, err)
+-	defer adminClient.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
++	defer adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
+ 
+ 	bucketPolicy := fmt.Sprintf(`{
+ 		"Version": "2012-10-17",
+@@ -226,7 +226,7 @@ func TestS3PolicyVariablesUsernameIsolation(t *testing.T) {
+ 		}]
+ 	}`, bucketName, bucketName, bucketName, bucketName)
+ 
+-	_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++	_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 		Policy: aws.String(bucketPolicy),
+ 	})
+@@ -241,41 +241,41 @@ func TestS3PolicyVariablesUsernameIsolation(t *testing.T) {
+ 	bobClient, err := framework.CreateS3ClientWithJWT("bob", "TestReadOnlyRole")
+ 	require.NoError(t, err)
+ 
+-	_, err = aliceClient.PutObject(&s3.PutObjectInput{
++	_, err = aliceClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("alice/data.txt"),
+ 		Body:   strings.NewReader("Alice Private Data"),
+ 	})
+ 	assert.NoError(t, err, "Alice should be able to upload to her own folder")
+ 
+-	_, err = aliceClient.PutObject(&s3.PutObjectInput{
++	_, err = aliceClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("bob/data.txt"),
+ 		Body:   strings.NewReader("Alice Intrusion"),
+ 	})
+ 	assert.Error(t, err, "Alice should be denied access to Bob's folder")
+ 
+-	_, err = bobClient.PutObject(&s3.PutObjectInput{
++	_, err = bobClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("bob/data.txt"),
+ 		Body:   strings.NewReader("Bob Private Data"),
+ 	})
+ 	assert.NoError(t, err, "Bob should be able to upload to his own folder")
+ 
+-	_, err = bobClient.GetObject(&s3.GetObjectInput{
++	_, err = bobClient.GetObject(t.Context(), &s3.GetObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("alice/data.txt"),
+ 	})
+ 	assert.Error(t, err, "Bob should be denied access to Alice's folder")
+ 
+-	listAlice, err := aliceClient.ListObjects(&s3.ListObjectsInput{
++	listAlice, err := aliceClient.ListObjects(t.Context(), &s3.ListObjectsInput{
+ 		Bucket: aws.String(bucketName),
+ 		Prefix: aws.String("alice/"),
+ 	})
+ 	assert.NoError(t, err)
+ 	assert.Equal(t, 1, len(listAlice.Contents))
+ 
+-	_, err = aliceClient.ListObjects(&s3.ListObjectsInput{
++	_, err = aliceClient.ListObjects(t.Context(), &s3.ListObjectsInput{
+ 		Bucket: aws.String(bucketName),
+ 		Prefix: aws.String("bob/"),
+ 	})
+@@ -292,7 +292,7 @@ func TestS3PolicyVariablesAccountEnforcement(t *testing.T) {
+ 	bucketName := framework.GenerateUniqueBucketName("test-account")
+ 	err = framework.CreateBucket(adminClient, bucketName)
+ 	require.NoError(t, err)
+-	defer adminClient.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
++	defer adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
+ 
+ 	bucketPolicy := fmt.Sprintf(`{
+ 		"Version": "2012-10-17",
+@@ -314,7 +314,7 @@ func TestS3PolicyVariablesAccountEnforcement(t *testing.T) {
+ 		}]
+ 	}`, bucketName, bucketName)
+ 
+-	_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++	_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 		Policy: aws.String(bucketPolicy),
+ 	})
+@@ -326,14 +326,14 @@ func TestS3PolicyVariablesAccountEnforcement(t *testing.T) {
+ 	unauthorizedClient, err := framework.CreateS3ClientWithCustomClaims("user2", "TestAdminRole", "111122223333", nil)
+ 	require.NoError(t, err)
+ 
+-	_, err = authorizedClient.PutObject(&s3.PutObjectInput{
++	_, err = authorizedClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("test.txt"),
+ 		Body:   strings.NewReader("Authorized Data"),
+ 	})
+ 	assert.NoError(t, err, "Authorized account should be able to upload")
+ 
+-	_, err = unauthorizedClient.PutObject(&s3.PutObjectInput{
++	_, err = unauthorizedClient.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("fail.txt"),
+ 		Body:   strings.NewReader("Unauthorized Data"),
+@@ -351,7 +351,7 @@ func TestS3PolicyVariablesJWTPreferredUsername(t *testing.T) {
+ 	bucketName := framework.GenerateUniqueBucketName("test-jwt-claim")
+ 	err = framework.CreateBucket(adminClient, bucketName)
+ 	require.NoError(t, err)
+-	defer adminClient.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
++	defer adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
+ 
+ 	bucketPolicy := fmt.Sprintf(`{
+ 		"Version": "2012-10-17",
+@@ -370,7 +370,7 @@ func TestS3PolicyVariablesJWTPreferredUsername(t *testing.T) {
+ 		}]
+ 	}`, bucketName, bucketName)
+ 
+-	_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++	_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 		Policy: aws.String(bucketPolicy),
+ 	})
+@@ -382,14 +382,14 @@ func TestS3PolicyVariablesJWTPreferredUsername(t *testing.T) {
+ 	client, err := framework.CreateS3ClientWithCustomClaims("jdoe", "TestReadOnlyRole", "", claims)
+ 	require.NoError(t, err)
+ 
+-	_, err = client.PutObject(&s3.PutObjectInput{
++	_, err = client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("jdoe/file.txt"),
+ 		Body:   strings.NewReader("JWT Claim Data"),
+ 	})
+ 	assert.NoError(t, err, "Should allow access based on jwt:preferred_username")
+ 
+-	_, err = client.PutObject(&s3.PutObjectInput{
++	_, err = client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("other/file.txt"),
+ 		Body:   strings.NewReader("JWT Claim Data"),
+@@ -407,7 +407,7 @@ func TestS3PolicyVariablesLDAPClaims(t *testing.T) {
+ 	bucketName := framework.GenerateUniqueBucketName("test-ldap-claim")
+ 	err = framework.CreateBucket(adminClient, bucketName)
+ 	require.NoError(t, err)
+-	defer adminClient.DeleteBucket(&s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
++	defer adminClient.DeleteBucket(t.Context(), &s3.DeleteBucketInput{Bucket: aws.String(bucketName)})
+ 
+ 	bucketPolicy := fmt.Sprintf(`{
+ 		"Version": "2012-10-17",
+@@ -429,7 +429,7 @@ func TestS3PolicyVariablesLDAPClaims(t *testing.T) {
+ 		}]
+ 	}`, bucketName, bucketName)
+ 
+-	_, err = adminClient.PutBucketPolicy(&s3.PutBucketPolicyInput{
++	_, err = adminClient.PutBucketPolicy(t.Context(), &s3.PutBucketPolicyInput{
+ 		Bucket: aws.String(bucketName),
+ 		Policy: aws.String(bucketPolicy),
+ 	})
+@@ -442,14 +442,14 @@ func TestS3PolicyVariablesLDAPClaims(t *testing.T) {
+ 	client, err := framework.CreateS3ClientWithCustomClaims("manager", "TestReadOnlyRole", "", claims)
+ 	require.NoError(t, err)
+ 
+-	_, err = client.PutObject(&s3.PutObjectInput{
++	_, err = client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("manager/data.txt"),
+ 		Body:   strings.NewReader("LDAP Upload"),
+ 	})
+ 	assert.NoError(t, err)
+ 
+-	_, err = client.GetObject(&s3.GetObjectInput{
++	_, err = client.GetObject(t.Context(), &s3.GetObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("manager/data.txt"),
+ 	})
+diff --git a/test/s3/iam/s3_sts_web_identity_api_test.go b/test/s3/iam/s3_sts_web_identity_api_test.go
+index 87e3719..9d14043 100644
+--- a/test/s3/iam/s3_sts_web_identity_api_test.go
++++ b/test/s3/iam/s3_sts_web_identity_api_test.go
+@@ -15,11 +15,9 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/iam"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/iam"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/golang-jwt/jwt/v5"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+@@ -105,7 +103,7 @@ func trustPolicyFor(issuerURL, sub string) string {
+ }
+ 
+ // assumeWithWebIdentity returns session credentials, or nil and the error body.
+-func assumeWithWebIdentity(t *testing.T, roleArn, token string) (*credentials.Credentials, string) {
++func assumeWithWebIdentity(t *testing.T, roleArn, token string) (aws.CredentialsProvider, string) {
+ 	t.Helper()
+ 	resp, err := callSTSAPI(t, url.Values{
+ 		"Action": {"AssumeRoleWithWebIdentity"}, "Version": {"2011-06-15"},
+@@ -121,17 +119,12 @@ func assumeWithWebIdentity(t *testing.T, roleArn, token string) (*credentials.Cr
+ 	var out AssumeRoleWithWebIdentityTestResponse
+ 	require.NoError(t, xml.Unmarshal(body, &out), "body: %s", body)
+ 	c := out.Result.Credentials
+-	return credentials.NewStaticCredentials(c.AccessKeyId, c.SecretAccessKey, c.SessionToken), ""
++	return fixtureStaticCredentials(c.AccessKeyId, c.SecretAccessKey, c.SessionToken), ""
+ }
+ 
+-func s3ClientWith(t *testing.T, creds *credentials.Credentials) *s3.S3 {
++func s3ClientWith(t *testing.T, creds aws.CredentialsProvider) *s3.Client {
+ 	t.Helper()
+-	sess, err := session.NewSession(&aws.Config{
+-		Region: aws.String(TestRegion), Endpoint: aws.String(TestS3Endpoint),
+-		Credentials: creds, S3ForcePathStyle: aws.Bool(true), DisableSSL: aws.Bool(true),
+-	})
+-	require.NoError(t, err)
+-	return s3.New(sess)
++	return newIAMFrameworkS3(creds, nil)
+ }
+ 
+ // TestWebIdentityWithProviderAndRoleManagedThroughIAMAPI configures STS
+@@ -158,46 +151,46 @@ func TestWebIdentityWithProviderAndRoleManagedThroughIAMAPI(t *testing.T) {
+ 	bucket := framework.GenerateUniqueBucketName("web-identity")
+ 	require.NoError(t, framework.CreateBucketWithCleanup(adminS3, bucket))
+ 
+-	provider, err := admin.CreateOpenIDConnectProvider(&iam.CreateOpenIDConnectProviderInput{
++	provider, err := admin.CreateOpenIDConnectProvider(t.Context(), &iam.CreateOpenIDConnectProviderInput{
+ 		Url:          aws.String(issuer.server.URL),
+-		ClientIDList: []*string{aws.String(webIdentityAudience)},
++		ClientIDList: []string{webIdentityAudience},
+ 		// Required by this SDK version; pinning only applies to a TLS issuer,
+ 		// and the test issuer is plain HTTP.
+-		ThumbprintList: []*string{aws.String("0000000000000000000000000000000000000000")},
++		ThumbprintList: []string{"0000000000000000000000000000000000000000"},
+ 	})
+ 	require.NoError(t, err)
+-	defer admin.DeleteOpenIDConnectProvider(&iam.DeleteOpenIDConnectProviderInput{OpenIDConnectProviderArn: provider.OpenIDConnectProviderArn})
++	defer admin.DeleteOpenIDConnectProvider(t.Context(), &iam.DeleteOpenIDConnectProviderInput{OpenIDConnectProviderArn: provider.OpenIDConnectProviderArn})
+ 
+ 	policyDoc, _ := json.Marshal(map[string]any{"Version": "2012-10-17", "Statement": []any{map[string]any{
+ 		"Effect": "Allow", "Action": []string{"s3:*"},
+ 		"Resource": []string{"arn:aws:s3:::" + bucket, "arn:aws:s3:::" + bucket + "/*"},
+ 	}}})
+-	policy, err := admin.CreatePolicy(&iam.CreatePolicyInput{
++	policy, err := admin.CreatePolicy(t.Context(), &iam.CreatePolicyInput{
+ 		PolicyName: aws.String(bucket + "-rw"), PolicyDocument: aws.String(string(policyDoc)),
+ 	})
+ 	require.NoError(t, err)
+-	defer admin.DeletePolicy(&iam.DeletePolicyInput{PolicyArn: policy.Policy.Arn})
++	defer admin.DeletePolicy(t.Context(), &iam.DeletePolicyInput{PolicyArn: policy.Policy.Arn})
+ 
+ 	// Role names are at most 64 characters; the bucket name is longer.
+ 	roleName := "web-identity-" + strconv.FormatInt(time.Now().UnixNano(), 36)
+-	role, err := admin.CreateRole(&iam.CreateRoleInput{
++	role, err := admin.CreateRole(t.Context(), &iam.CreateRoleInput{
+ 		RoleName:                 aws.String(roleName),
+ 		AssumeRolePolicyDocument: aws.String(trustPolicyFor(issuer.server.URL, webIdentitySubject)),
+ 	})
+ 	require.NoError(t, err)
+-	defer admin.DeleteRole(&iam.DeleteRoleInput{RoleName: aws.String(roleName)})
+-	_, err = admin.AttachRolePolicy(&iam.AttachRolePolicyInput{RoleName: aws.String(roleName), PolicyArn: policy.Policy.Arn})
++	defer admin.DeleteRole(t.Context(), &iam.DeleteRoleInput{RoleName: aws.String(roleName)})
++	_, err = admin.AttachRolePolicy(t.Context(), &iam.AttachRolePolicyInput{RoleName: aws.String(roleName), PolicyArn: policy.Policy.Arn})
+ 	require.NoError(t, err)
+-	defer admin.DetachRolePolicy(&iam.DetachRolePolicyInput{RoleName: aws.String(roleName), PolicyArn: policy.Policy.Arn})
+-	roleArn := aws.StringValue(role.Role.Arn)
++	defer admin.DetachRolePolicy(t.Context(), &iam.DetachRolePolicyInput{RoleName: aws.String(roleName), PolicyArn: policy.Policy.Arn})
++	roleArn := aws.ToString(role.Role.Arn)
+ 
+ 	t.Run("the trusted subject gets credentials scoped to the attached policy", func(t *testing.T) {
+ 		creds, failure := assumeWithWebIdentity(t, roleArn, issuer.token(t, webIdentitySubject, issuer.key))
+ 		require.NotNil(t, creds, "AssumeRoleWithWebIdentity refused the trusted subject: %s", failure)
+ 		client := s3ClientWith(t, creds)
+-		_, err := client.PutObject(&s3.PutObjectInput{Bucket: aws.String(bucket), Key: aws.String("federated.txt")})
++		_, err := client.PutObject(t.Context(), &s3.PutObjectInput{Bucket: aws.String(bucket), Key: aws.String("federated.txt")})
+ 		assert.NoError(t, err, "the session cannot write the bucket its policy grants")
+-		_, err = client.CreateBucket(&s3.CreateBucketInput{Bucket: aws.String(bucket + "-other")})
++		_, err = client.CreateBucket(t.Context(), &s3.CreateBucketInput{Bucket: aws.String(bucket + "-other")})
+ 		assert.Error(t, err, "the session created a bucket its policy does not grant")
+ 	})
+ 
+@@ -221,7 +214,7 @@ func TestWebIdentityWithProviderAndRoleManagedThroughIAMAPI(t *testing.T) {
+ 
+ 	t.Run("an updated trust policy takes effect", func(t *testing.T) {
+ 		moved := "spiffe://example.org/ns/app/sa/moved"
+-		_, err := admin.UpdateAssumeRolePolicy(&iam.UpdateAssumeRolePolicyInput{
++		_, err := admin.UpdateAssumeRolePolicy(t.Context(), &iam.UpdateAssumeRolePolicyInput{
+ 			RoleName: aws.String(roleName), PolicyDocument: aws.String(trustPolicyFor(issuer.server.URL, moved)),
+ 		})
+ 		require.NoError(t, err)
+@@ -233,26 +226,26 @@ func TestWebIdentityWithProviderAndRoleManagedThroughIAMAPI(t *testing.T) {
+ 
+ 	t.Run("a session does not survive its role being deleted and created again", func(t *testing.T) {
+ 		trust := trustPolicyFor(issuer.server.URL, webIdentitySubject)
+-		_, err := admin.UpdateAssumeRolePolicy(&iam.UpdateAssumeRolePolicyInput{RoleName: aws.String(roleName), PolicyDocument: aws.String(trust)})
++		_, err := admin.UpdateAssumeRolePolicy(t.Context(), &iam.UpdateAssumeRolePolicyInput{RoleName: aws.String(roleName), PolicyDocument: aws.String(trust)})
+ 		require.NoError(t, err)
+ 		before, failure := assumeWithWebIdentity(t, roleArn, issuer.token(t, webIdentitySubject, issuer.key))
+ 		require.NotNil(t, before, "precondition: %s", failure)
+ 
+-		_, err = admin.DetachRolePolicy(&iam.DetachRolePolicyInput{RoleName: aws.String(roleName), PolicyArn: policy.Policy.Arn})
++		_, err = admin.DetachRolePolicy(t.Context(), &iam.DetachRolePolicyInput{RoleName: aws.String(roleName), PolicyArn: policy.Policy.Arn})
+ 		require.NoError(t, err)
+-		_, err = admin.DeleteRole(&iam.DeleteRoleInput{RoleName: aws.String(roleName)})
++		_, err = admin.DeleteRole(t.Context(), &iam.DeleteRoleInput{RoleName: aws.String(roleName)})
+ 		require.NoError(t, err)
+-		recreated, err := admin.CreateRole(&iam.CreateRoleInput{RoleName: aws.String(roleName), AssumeRolePolicyDocument: aws.String(trust)})
++		recreated, err := admin.CreateRole(t.Context(), &iam.CreateRoleInput{RoleName: aws.String(roleName), AssumeRolePolicyDocument: aws.String(trust)})
+ 		require.NoError(t, err)
+-		_, err = admin.AttachRolePolicy(&iam.AttachRolePolicyInput{RoleName: aws.String(roleName), PolicyArn: policy.Policy.Arn})
++		_, err = admin.AttachRolePolicy(t.Context(), &iam.AttachRolePolicyInput{RoleName: aws.String(roleName), PolicyArn: policy.Policy.Arn})
+ 		require.NoError(t, err)
+-		assert.NotEqual(t, aws.StringValue(role.Role.RoleId), aws.StringValue(recreated.Role.RoleId), "the recreated role reuses the deleted role's ID")
++		assert.NotEqual(t, aws.ToString(role.Role.RoleId), aws.ToString(recreated.Role.RoleId), "the recreated role reuses the deleted role's ID")
+ 
+-		_, err = s3ClientWith(t, before).PutObject(&s3.PutObjectInput{Bucket: aws.String(bucket), Key: aws.String("revived.txt")})
++		_, err = s3ClientWith(t, before).PutObject(t.Context(), &s3.PutObjectInput{Bucket: aws.String(bucket), Key: aws.String("revived.txt")})
+ 		assert.Error(t, err, "a session of the deleted role works again under the new role of the same name")
+ 		after, failure := assumeWithWebIdentity(t, roleArn, issuer.token(t, webIdentitySubject, issuer.key))
+ 		require.NotNil(t, after, "the new role refuses its trusted subject: %s", failure)
+-		_, err = s3ClientWith(t, after).PutObject(&s3.PutObjectInput{Bucket: aws.String(bucket), Key: aws.String("fresh.txt")})
++		_, err = s3ClientWith(t, after).PutObject(t.Context(), &s3.PutObjectInput{Bucket: aws.String(bucket), Key: aws.String("fresh.txt")})
+ 		assert.NoError(t, err, "a session of the new role cannot use its policy")
+ 	})
+ }

@@ -1,0 +1,992 @@
+[
+  {
+    "AppArmorProfile": "docker-default",
+    "Args": [
+      "-logtostderr=true",
+      "master",
+      "-ip=127.0.0.1",
+      "-ip.bind=127.0.0.1",
+      "-port=19333",
+      "-port.grpc=29333",
+      "-mdir=/data",
+      "-peers=none",
+      "-telemetry=false",
+      "-volumeSizeLimitMB=32",
+      "-defaultReplication=000"
+    ],
+    "Config": {
+      "AttachStderr": false,
+      "AttachStdin": false,
+      "AttachStdout": false,
+      "Cmd": [
+        "-logtostderr=true",
+        "master",
+        "-ip=127.0.0.1",
+        "-ip.bind=127.0.0.1",
+        "-port=19333",
+        "-port.grpc=29333",
+        "-mdir=/data",
+        "-peers=none",
+        "-telemetry=false",
+        "-volumeSizeLimitMB=32",
+        "-defaultReplication=000"
+      ],
+      "Domainname": "",
+      "Entrypoint": [
+        "/usr/local/bin/weed"
+      ],
+      "Env": null,
+      "Hostname": "862fbc9f3f7d",
+      "Image": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+      "Labels": {
+        "org.opencontainers.image.licenses": "Apache-2.0",
+        "org.opencontainers.image.revision": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+        "org.opencontainers.image.source": "https://github.com/seaweedfs/seaweedfs",
+        "org.ouf.binary.sha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+        "org.ouf.release-admitted": "false"
+      },
+      "OnBuild": null,
+      "OpenStdin": false,
+      "StdinOnce": false,
+      "Tty": false,
+      "User": "65532:65532",
+      "Volumes": null,
+      "WorkingDir": "/data"
+    },
+    "Created": "2026-11-03T19:20:26.141495109Z",
+    "Driver": "overlay2",
+    "ExecIDs": null,
+    "GraphDriver": {
+      "Data": {
+        "ID": "862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a",
+        "LowerDir": "/var/lib/docker/overlay2/b17b83130a823cc6ff7cad6b135af6b719560be422c1c8d70edf6c106ffbeb85-init/diff:/var/lib/docker/overlay2/4e2f650a932f26ccfbf6e62a00d26b4a991daf817a4918e2a40a5170d148c9cb/diff",
+        "MergedDir": "/var/lib/docker/overlay2/b17b83130a823cc6ff7cad6b135af6b719560be422c1c8d70edf6c106ffbeb85/merged",
+        "UpperDir": "/var/lib/docker/overlay2/b17b83130a823cc6ff7cad6b135af6b719560be422c1c8d70edf6c106ffbeb85/diff",
+        "WorkDir": "/var/lib/docker/overlay2/b17b83130a823cc6ff7cad6b135af6b719560be422c1c8d70edf6c106ffbeb85/work"
+      },
+      "Name": "overlay2"
+    },
+    "HostConfig": {
+      "AutoRemove": false,
+      "Binds": null,
+      "BlkioDeviceReadBps": [],
+      "BlkioDeviceReadIOps": [],
+      "BlkioDeviceWriteBps": [],
+      "BlkioDeviceWriteIOps": [],
+      "BlkioWeight": 0,
+      "BlkioWeightDevice": [],
+      "CapAdd": null,
+      "CapDrop": [
+        "ALL"
+      ],
+      "Cgroup": "",
+      "CgroupParent": "",
+      "CgroupnsMode": "private",
+      "ConsoleSize": [
+        0,
+        0
+      ],
+      "ContainerIDFile": "",
+      "CpuCount": 0,
+      "CpuPercent": 0,
+      "CpuPeriod": 0,
+      "CpuQuota": 0,
+      "CpuRealtimePeriod": 0,
+      "CpuRealtimeRuntime": 0,
+      "CpuShares": 0,
+      "CpusetCpus": "",
+      "CpusetMems": "",
+      "DeviceCgroupRules": null,
+      "DeviceRequests": null,
+      "Devices": [],
+      "Dns": [],
+      "DnsOptions": [],
+      "DnsSearch": [],
+      "ExtraHosts": null,
+      "GroupAdd": null,
+      "IOMaximumBandwidth": 0,
+      "IOMaximumIOps": 0,
+      "IpcMode": "private",
+      "Isolation": "",
+      "Links": null,
+      "LogConfig": {
+        "Config": {
+          "max-size": "8m"
+        },
+        "Type": "json-file"
+      },
+      "MaskedPaths": [
+        "/proc/asound",
+        "/proc/acpi",
+        "/proc/interrupts",
+        "/proc/kcore",
+        "/proc/keys",
+        "/proc/latency_stats",
+        "/proc/timer_list",
+        "/proc/timer_stats",
+        "/proc/sched_debug",
+        "/proc/scsi",
+        "/sys/firmware",
+        "/sys/devices/virtual/powercap"
+      ],
+      "Memory": 536870912,
+      "MemoryReservation": 0,
+      "MemorySwap": 1073741824,
+      "MemorySwappiness": null,
+      "Mounts": [
+        {
+          "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/master",
+          "Target": "/data",
+          "Type": "bind"
+        },
+        {
+          "ReadOnly": true,
+          "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/config",
+          "Target": "/config",
+          "Type": "bind"
+        }
+      ],
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "OomKillDisable": null,
+      "OomScoreAdj": 0,
+      "PidMode": "",
+      "PidsLimit": 128,
+      "PortBindings": {},
+      "Privileged": false,
+      "PublishAllPorts": false,
+      "ReadonlyPaths": [
+        "/proc/bus",
+        "/proc/fs",
+        "/proc/irq",
+        "/proc/sys",
+        "/proc/sysrq-trigger"
+      ],
+      "ReadonlyRootfs": true,
+      "RestartPolicy": {
+        "MaximumRetryCount": 0,
+        "Name": "no"
+      },
+      "Runtime": "runc",
+      "SecurityOpt": [
+        "no-new-privileges"
+      ],
+      "ShmSize": 67108864,
+      "Tmpfs": {
+        "/tmp": "rw,noexec,nosuid,size=67108864,mode=1777"
+      },
+      "UTSMode": "",
+      "Ulimits": [],
+      "UsernsMode": "",
+      "VolumeDriver": "",
+      "VolumesFrom": null
+    },
+    "HostnamePath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/hostname",
+    "HostsPath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/hosts",
+    "Id": "862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a",
+    "Image": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "LogPath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a-json.log",
+    "MountLabel": "",
+    "Mounts": [
+      {
+        "Destination": "/data",
+        "Mode": "",
+        "Propagation": "rprivate",
+        "RW": true,
+        "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/master",
+        "Type": "bind"
+      },
+      {
+        "Destination": "/config",
+        "Mode": "",
+        "Propagation": "rprivate",
+        "RW": false,
+        "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/config",
+        "Type": "bind"
+      }
+    ],
+    "Name": "/ouf-cold-2405-restored-master",
+    "NetworkSettings": {
+      "Bridge": "",
+      "EndpointID": "",
+      "Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "HairpinMode": false,
+      "IPAddress": "",
+      "IPPrefixLen": 0,
+      "IPv6Gateway": "",
+      "LinkLocalIPv6Address": "",
+      "LinkLocalIPv6PrefixLen": 0,
+      "MacAddress": "",
+      "Networks": {
+        "none": {
+          "Aliases": null,
+          "DNSNames": null,
+          "DriverOpts": null,
+          "EndpointID": "cce7d5759a25e2fb57e6c187b89e98fe941bdd1538073aac607fd5094433b060",
+          "Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "",
+          "NetworkID": "e70f13bb53d6bd87e3ca6095e085ae90e8b530fcdf97b39768cc2ac079be2ca4"
+        }
+      },
+      "Ports": {},
+      "SandboxID": "ac72020deac4710470fcff06072eb7975465f3e730990cb0e34e90c67bcd1038",
+      "SandboxKey": "/var/run/docker/netns/ac72020deac4",
+      "SecondaryIPAddresses": null,
+      "SecondaryIPv6Addresses": null
+    },
+    "Path": "/usr/local/bin/weed",
+    "Platform": "linux",
+    "ProcessLabel": "",
+    "ResolvConfPath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/resolv.conf",
+    "RestartCount": 0,
+    "State": {
+      "Dead": false,
+      "Error": "",
+      "ExitCode": 0,
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "OOMKilled": false,
+      "Paused": false,
+      "Pid": 3177,
+      "Restarting": false,
+      "Running": true,
+      "StartedAt": "2026-11-03T19:20:26.17151987Z",
+      "Status": "running"
+    }
+  },
+  {
+    "AppArmorProfile": "docker-default",
+    "Args": [
+      "-logtostderr=true",
+      "volume",
+      "-ip=127.0.0.1",
+      "-ip.bind=127.0.0.1",
+      "-port=18080",
+      "-port.grpc=28080",
+      "-master=127.0.0.1:19333",
+      "-dir=/data",
+      "-max=24",
+      "-preStopSeconds=1"
+    ],
+    "Config": {
+      "AttachStderr": false,
+      "AttachStdin": false,
+      "AttachStdout": false,
+      "Cmd": [
+        "-logtostderr=true",
+        "volume",
+        "-ip=127.0.0.1",
+        "-ip.bind=127.0.0.1",
+        "-port=18080",
+        "-port.grpc=28080",
+        "-master=127.0.0.1:19333",
+        "-dir=/data",
+        "-max=24",
+        "-preStopSeconds=1"
+      ],
+      "Domainname": "",
+      "Entrypoint": [
+        "/usr/local/bin/weed"
+      ],
+      "Env": null,
+      "Hostname": "862fbc9f3f7d",
+      "Image": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+      "Labels": {
+        "org.opencontainers.image.licenses": "Apache-2.0",
+        "org.opencontainers.image.revision": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+        "org.opencontainers.image.source": "https://github.com/seaweedfs/seaweedfs",
+        "org.ouf.binary.sha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+        "org.ouf.release-admitted": "false"
+      },
+      "OnBuild": null,
+      "OpenStdin": false,
+      "StdinOnce": false,
+      "Tty": false,
+      "User": "65532:65532",
+      "Volumes": null,
+      "WorkingDir": "/data"
+    },
+    "Created": "2026-11-03T19:20:26.279253478Z",
+    "Driver": "overlay2",
+    "ExecIDs": null,
+    "GraphDriver": {
+      "Data": {
+        "ID": "62297b52e6713969552187de0af869f10814b88a0060ae729a20eee3d4d919b9",
+        "LowerDir": "/var/lib/docker/overlay2/34a849da4471bdb6dc34b073afa239b8797eb9859005b1e261315172643f8520-init/diff:/var/lib/docker/overlay2/4e2f650a932f26ccfbf6e62a00d26b4a991daf817a4918e2a40a5170d148c9cb/diff",
+        "MergedDir": "/var/lib/docker/overlay2/34a849da4471bdb6dc34b073afa239b8797eb9859005b1e261315172643f8520/merged",
+        "UpperDir": "/var/lib/docker/overlay2/34a849da4471bdb6dc34b073afa239b8797eb9859005b1e261315172643f8520/diff",
+        "WorkDir": "/var/lib/docker/overlay2/34a849da4471bdb6dc34b073afa239b8797eb9859005b1e261315172643f8520/work"
+      },
+      "Name": "overlay2"
+    },
+    "HostConfig": {
+      "AutoRemove": false,
+      "Binds": null,
+      "BlkioDeviceReadBps": [],
+      "BlkioDeviceReadIOps": [],
+      "BlkioDeviceWriteBps": [],
+      "BlkioDeviceWriteIOps": [],
+      "BlkioWeight": 0,
+      "BlkioWeightDevice": [],
+      "CapAdd": null,
+      "CapDrop": [
+        "ALL"
+      ],
+      "Cgroup": "",
+      "CgroupParent": "",
+      "CgroupnsMode": "private",
+      "ConsoleSize": [
+        0,
+        0
+      ],
+      "ContainerIDFile": "",
+      "CpuCount": 0,
+      "CpuPercent": 0,
+      "CpuPeriod": 0,
+      "CpuQuota": 0,
+      "CpuRealtimePeriod": 0,
+      "CpuRealtimeRuntime": 0,
+      "CpuShares": 0,
+      "CpusetCpus": "",
+      "CpusetMems": "",
+      "DeviceCgroupRules": null,
+      "DeviceRequests": null,
+      "Devices": [],
+      "Dns": [],
+      "DnsOptions": [],
+      "DnsSearch": [],
+      "ExtraHosts": null,
+      "GroupAdd": null,
+      "IOMaximumBandwidth": 0,
+      "IOMaximumIOps": 0,
+      "IpcMode": "private",
+      "Isolation": "",
+      "Links": null,
+      "LogConfig": {
+        "Config": {
+          "max-size": "8m"
+        },
+        "Type": "json-file"
+      },
+      "MaskedPaths": [
+        "/proc/asound",
+        "/proc/acpi",
+        "/proc/interrupts",
+        "/proc/kcore",
+        "/proc/keys",
+        "/proc/latency_stats",
+        "/proc/timer_list",
+        "/proc/timer_stats",
+        "/proc/sched_debug",
+        "/proc/scsi",
+        "/sys/firmware",
+        "/sys/devices/virtual/powercap"
+      ],
+      "Memory": 536870912,
+      "MemoryReservation": 0,
+      "MemorySwap": 1073741824,
+      "MemorySwappiness": null,
+      "Mounts": [
+        {
+          "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/volume",
+          "Target": "/data",
+          "Type": "bind"
+        },
+        {
+          "ReadOnly": true,
+          "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/config",
+          "Target": "/config",
+          "Type": "bind"
+        }
+      ],
+      "NanoCpus": 1000000000,
+      "NetworkMode": "container:862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a",
+      "OomKillDisable": null,
+      "OomScoreAdj": 0,
+      "PidMode": "",
+      "PidsLimit": 128,
+      "PortBindings": {},
+      "Privileged": false,
+      "PublishAllPorts": false,
+      "ReadonlyPaths": [
+        "/proc/bus",
+        "/proc/fs",
+        "/proc/irq",
+        "/proc/sys",
+        "/proc/sysrq-trigger"
+      ],
+      "ReadonlyRootfs": true,
+      "RestartPolicy": {
+        "MaximumRetryCount": 0,
+        "Name": "no"
+      },
+      "Runtime": "runc",
+      "SecurityOpt": [
+        "no-new-privileges"
+      ],
+      "ShmSize": 67108864,
+      "Tmpfs": {
+        "/tmp": "rw,noexec,nosuid,size=67108864,mode=1777"
+      },
+      "UTSMode": "",
+      "Ulimits": [],
+      "UsernsMode": "",
+      "VolumeDriver": "",
+      "VolumesFrom": null
+    },
+    "HostnamePath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/hostname",
+    "HostsPath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/hosts",
+    "Id": "62297b52e6713969552187de0af869f10814b88a0060ae729a20eee3d4d919b9",
+    "Image": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "LogPath": "/var/lib/docker/containers/62297b52e6713969552187de0af869f10814b88a0060ae729a20eee3d4d919b9/62297b52e6713969552187de0af869f10814b88a0060ae729a20eee3d4d919b9-json.log",
+    "MountLabel": "",
+    "Mounts": [
+      {
+        "Destination": "/config",
+        "Mode": "",
+        "Propagation": "rprivate",
+        "RW": false,
+        "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/config",
+        "Type": "bind"
+      },
+      {
+        "Destination": "/data",
+        "Mode": "",
+        "Propagation": "rprivate",
+        "RW": true,
+        "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/volume",
+        "Type": "bind"
+      }
+    ],
+    "Name": "/ouf-cold-2405-restored-volume",
+    "NetworkSettings": {
+      "Bridge": "",
+      "EndpointID": "",
+      "Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "HairpinMode": false,
+      "IPAddress": "",
+      "IPPrefixLen": 0,
+      "IPv6Gateway": "",
+      "LinkLocalIPv6Address": "",
+      "LinkLocalIPv6PrefixLen": 0,
+      "MacAddress": "",
+      "Networks": {},
+      "Ports": {},
+      "SandboxID": "",
+      "SandboxKey": "",
+      "SecondaryIPAddresses": null,
+      "SecondaryIPv6Addresses": null
+    },
+    "Path": "/usr/local/bin/weed",
+    "Platform": "linux",
+    "ProcessLabel": "",
+    "ResolvConfPath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/resolv.conf",
+    "RestartCount": 0,
+    "State": {
+      "Dead": false,
+      "Error": "",
+      "ExitCode": 0,
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "OOMKilled": false,
+      "Paused": false,
+      "Pid": 3234,
+      "Restarting": false,
+      "Running": true,
+      "StartedAt": "2026-11-03T19:20:26.295775005Z",
+      "Status": "running"
+    }
+  },
+  {
+    "AppArmorProfile": "docker-default",
+    "Args": [
+      "-logtostderr=true",
+      "filer",
+      "-ip=127.0.0.1",
+      "-ip.bind=127.0.0.1",
+      "-port=18888",
+      "-port.grpc=28888",
+      "-master=127.0.0.1:19333",
+      "-defaultStoreDir=/data"
+    ],
+    "Config": {
+      "AttachStderr": false,
+      "AttachStdin": false,
+      "AttachStdout": false,
+      "Cmd": [
+        "-logtostderr=true",
+        "filer",
+        "-ip=127.0.0.1",
+        "-ip.bind=127.0.0.1",
+        "-port=18888",
+        "-port.grpc=28888",
+        "-master=127.0.0.1:19333",
+        "-defaultStoreDir=/data"
+      ],
+      "Domainname": "",
+      "Entrypoint": [
+        "/usr/local/bin/weed"
+      ],
+      "Env": null,
+      "Hostname": "862fbc9f3f7d",
+      "Image": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+      "Labels": {
+        "org.opencontainers.image.licenses": "Apache-2.0",
+        "org.opencontainers.image.revision": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+        "org.opencontainers.image.source": "https://github.com/seaweedfs/seaweedfs",
+        "org.ouf.binary.sha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+        "org.ouf.release-admitted": "false"
+      },
+      "OnBuild": null,
+      "OpenStdin": false,
+      "StdinOnce": false,
+      "Tty": false,
+      "User": "65532:65532",
+      "Volumes": null,
+      "WorkingDir": "/data"
+    },
+    "Created": "2026-11-03T19:20:26.405935019Z",
+    "Driver": "overlay2",
+    "ExecIDs": null,
+    "GraphDriver": {
+      "Data": {
+        "ID": "e42379064eb30b3ea4b08847aada0bdf9894c49a30b90e2a123fc9694d0e2fe6",
+        "LowerDir": "/var/lib/docker/overlay2/9b17151f46d400c22a37f32163b39bc65a1270798e343e29a30df5b00969ee90-init/diff:/var/lib/docker/overlay2/4e2f650a932f26ccfbf6e62a00d26b4a991daf817a4918e2a40a5170d148c9cb/diff",
+        "MergedDir": "/var/lib/docker/overlay2/9b17151f46d400c22a37f32163b39bc65a1270798e343e29a30df5b00969ee90/merged",
+        "UpperDir": "/var/lib/docker/overlay2/9b17151f46d400c22a37f32163b39bc65a1270798e343e29a30df5b00969ee90/diff",
+        "WorkDir": "/var/lib/docker/overlay2/9b17151f46d400c22a37f32163b39bc65a1270798e343e29a30df5b00969ee90/work"
+      },
+      "Name": "overlay2"
+    },
+    "HostConfig": {
+      "AutoRemove": false,
+      "Binds": null,
+      "BlkioDeviceReadBps": [],
+      "BlkioDeviceReadIOps": [],
+      "BlkioDeviceWriteBps": [],
+      "BlkioDeviceWriteIOps": [],
+      "BlkioWeight": 0,
+      "BlkioWeightDevice": [],
+      "CapAdd": null,
+      "CapDrop": [
+        "ALL"
+      ],
+      "Cgroup": "",
+      "CgroupParent": "",
+      "CgroupnsMode": "private",
+      "ConsoleSize": [
+        0,
+        0
+      ],
+      "ContainerIDFile": "",
+      "CpuCount": 0,
+      "CpuPercent": 0,
+      "CpuPeriod": 0,
+      "CpuQuota": 0,
+      "CpuRealtimePeriod": 0,
+      "CpuRealtimeRuntime": 0,
+      "CpuShares": 0,
+      "CpusetCpus": "",
+      "CpusetMems": "",
+      "DeviceCgroupRules": null,
+      "DeviceRequests": null,
+      "Devices": [],
+      "Dns": [],
+      "DnsOptions": [],
+      "DnsSearch": [],
+      "ExtraHosts": null,
+      "GroupAdd": null,
+      "IOMaximumBandwidth": 0,
+      "IOMaximumIOps": 0,
+      "IpcMode": "private",
+      "Isolation": "",
+      "Links": null,
+      "LogConfig": {
+        "Config": {
+          "max-size": "8m"
+        },
+        "Type": "json-file"
+      },
+      "MaskedPaths": [
+        "/proc/asound",
+        "/proc/acpi",
+        "/proc/interrupts",
+        "/proc/kcore",
+        "/proc/keys",
+        "/proc/latency_stats",
+        "/proc/timer_list",
+        "/proc/timer_stats",
+        "/proc/sched_debug",
+        "/proc/scsi",
+        "/sys/firmware",
+        "/sys/devices/virtual/powercap"
+      ],
+      "Memory": 536870912,
+      "MemoryReservation": 0,
+      "MemorySwap": 1073741824,
+      "MemorySwappiness": null,
+      "Mounts": [
+        {
+          "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/filer",
+          "Target": "/data",
+          "Type": "bind"
+        },
+        {
+          "ReadOnly": true,
+          "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/config",
+          "Target": "/config",
+          "Type": "bind"
+        }
+      ],
+      "NanoCpus": 1000000000,
+      "NetworkMode": "container:862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a",
+      "OomKillDisable": null,
+      "OomScoreAdj": 0,
+      "PidMode": "",
+      "PidsLimit": 128,
+      "PortBindings": {},
+      "Privileged": false,
+      "PublishAllPorts": false,
+      "ReadonlyPaths": [
+        "/proc/bus",
+        "/proc/fs",
+        "/proc/irq",
+        "/proc/sys",
+        "/proc/sysrq-trigger"
+      ],
+      "ReadonlyRootfs": true,
+      "RestartPolicy": {
+        "MaximumRetryCount": 0,
+        "Name": "no"
+      },
+      "Runtime": "runc",
+      "SecurityOpt": [
+        "no-new-privileges"
+      ],
+      "ShmSize": 67108864,
+      "Tmpfs": {
+        "/tmp": "rw,noexec,nosuid,size=67108864,mode=1777"
+      },
+      "UTSMode": "",
+      "Ulimits": [],
+      "UsernsMode": "",
+      "VolumeDriver": "",
+      "VolumesFrom": null
+    },
+    "HostnamePath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/hostname",
+    "HostsPath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/hosts",
+    "Id": "e42379064eb30b3ea4b08847aada0bdf9894c49a30b90e2a123fc9694d0e2fe6",
+    "Image": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "LogPath": "/var/lib/docker/containers/e42379064eb30b3ea4b08847aada0bdf9894c49a30b90e2a123fc9694d0e2fe6/e42379064eb30b3ea4b08847aada0bdf9894c49a30b90e2a123fc9694d0e2fe6-json.log",
+    "MountLabel": "",
+    "Mounts": [
+      {
+        "Destination": "/data",
+        "Mode": "",
+        "Propagation": "rprivate",
+        "RW": true,
+        "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/filer",
+        "Type": "bind"
+      },
+      {
+        "Destination": "/config",
+        "Mode": "",
+        "Propagation": "rprivate",
+        "RW": false,
+        "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/config",
+        "Type": "bind"
+      }
+    ],
+    "Name": "/ouf-cold-2405-restored-filer",
+    "NetworkSettings": {
+      "Bridge": "",
+      "EndpointID": "",
+      "Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "HairpinMode": false,
+      "IPAddress": "",
+      "IPPrefixLen": 0,
+      "IPv6Gateway": "",
+      "LinkLocalIPv6Address": "",
+      "LinkLocalIPv6PrefixLen": 0,
+      "MacAddress": "",
+      "Networks": {},
+      "Ports": {},
+      "SandboxID": "",
+      "SandboxKey": "",
+      "SecondaryIPAddresses": null,
+      "SecondaryIPv6Addresses": null
+    },
+    "Path": "/usr/local/bin/weed",
+    "Platform": "linux",
+    "ProcessLabel": "",
+    "ResolvConfPath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/resolv.conf",
+    "RestartCount": 0,
+    "State": {
+      "Dead": false,
+      "Error": "",
+      "ExitCode": 0,
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "OOMKilled": false,
+      "Paused": false,
+      "Pid": 3300,
+      "Restarting": false,
+      "Running": true,
+      "StartedAt": "2026-11-03T19:20:26.425422642Z",
+      "Status": "running"
+    }
+  },
+  {
+    "AppArmorProfile": "docker-default",
+    "Args": [
+      "-logtostderr=true",
+      "s3",
+      "-ip=127.0.0.1",
+      "-ip.bind=127.0.0.1",
+      "-port=18333",
+      "-port.iceberg=0",
+      "-port.lance=0",
+      "-filer=127.0.0.1:18888",
+      "-config=/config/s3.json"
+    ],
+    "Config": {
+      "AttachStderr": false,
+      "AttachStdin": false,
+      "AttachStdout": false,
+      "Cmd": [
+        "-logtostderr=true",
+        "s3",
+        "-ip=127.0.0.1",
+        "-ip.bind=127.0.0.1",
+        "-port=18333",
+        "-port.iceberg=0",
+        "-port.lance=0",
+        "-filer=127.0.0.1:18888",
+        "-config=/config/s3.json"
+      ],
+      "Domainname": "",
+      "Entrypoint": [
+        "/usr/local/bin/weed"
+      ],
+      "Env": null,
+      "Hostname": "862fbc9f3f7d",
+      "Image": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+      "Labels": {
+        "org.opencontainers.image.licenses": "Apache-2.0",
+        "org.opencontainers.image.revision": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+        "org.opencontainers.image.source": "https://github.com/seaweedfs/seaweedfs",
+        "org.ouf.binary.sha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+        "org.ouf.release-admitted": "false"
+      },
+      "OnBuild": null,
+      "OpenStdin": false,
+      "StdinOnce": false,
+      "Tty": false,
+      "User": "65532:65532",
+      "Volumes": null,
+      "WorkingDir": "/data"
+    },
+    "Created": "2026-11-03T19:20:26.530495492Z",
+    "Driver": "overlay2",
+    "ExecIDs": null,
+    "GraphDriver": {
+      "Data": {
+        "ID": "4d005f570b5c83d75064511891d25b070b8464612ecf26ab7eeec6bc72c2d816",
+        "LowerDir": "/var/lib/docker/overlay2/f43810110039e79a41efcb30f18709fde285b7450de29a34101ec29098d88f09-init/diff:/var/lib/docker/overlay2/4e2f650a932f26ccfbf6e62a00d26b4a991daf817a4918e2a40a5170d148c9cb/diff",
+        "MergedDir": "/var/lib/docker/overlay2/f43810110039e79a41efcb30f18709fde285b7450de29a34101ec29098d88f09/merged",
+        "UpperDir": "/var/lib/docker/overlay2/f43810110039e79a41efcb30f18709fde285b7450de29a34101ec29098d88f09/diff",
+        "WorkDir": "/var/lib/docker/overlay2/f43810110039e79a41efcb30f18709fde285b7450de29a34101ec29098d88f09/work"
+      },
+      "Name": "overlay2"
+    },
+    "HostConfig": {
+      "AutoRemove": false,
+      "Binds": null,
+      "BlkioDeviceReadBps": [],
+      "BlkioDeviceReadIOps": [],
+      "BlkioDeviceWriteBps": [],
+      "BlkioDeviceWriteIOps": [],
+      "BlkioWeight": 0,
+      "BlkioWeightDevice": [],
+      "CapAdd": null,
+      "CapDrop": [
+        "ALL"
+      ],
+      "Cgroup": "",
+      "CgroupParent": "",
+      "CgroupnsMode": "private",
+      "ConsoleSize": [
+        0,
+        0
+      ],
+      "ContainerIDFile": "",
+      "CpuCount": 0,
+      "CpuPercent": 0,
+      "CpuPeriod": 0,
+      "CpuQuota": 0,
+      "CpuRealtimePeriod": 0,
+      "CpuRealtimeRuntime": 0,
+      "CpuShares": 0,
+      "CpusetCpus": "",
+      "CpusetMems": "",
+      "DeviceCgroupRules": null,
+      "DeviceRequests": null,
+      "Devices": [],
+      "Dns": [],
+      "DnsOptions": [],
+      "DnsSearch": [],
+      "ExtraHosts": null,
+      "GroupAdd": null,
+      "IOMaximumBandwidth": 0,
+      "IOMaximumIOps": 0,
+      "IpcMode": "private",
+      "Isolation": "",
+      "Links": null,
+      "LogConfig": {
+        "Config": {
+          "max-size": "8m"
+        },
+        "Type": "json-file"
+      },
+      "MaskedPaths": [
+        "/proc/asound",
+        "/proc/acpi",
+        "/proc/interrupts",
+        "/proc/kcore",
+        "/proc/keys",
+        "/proc/latency_stats",
+        "/proc/timer_list",
+        "/proc/timer_stats",
+        "/proc/sched_debug",
+        "/proc/scsi",
+        "/sys/firmware",
+        "/sys/devices/virtual/powercap"
+      ],
+      "Memory": 536870912,
+      "MemoryReservation": 0,
+      "MemorySwap": 1073741824,
+      "MemorySwappiness": null,
+      "Mounts": [
+        {
+          "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/s3",
+          "Target": "/data",
+          "Type": "bind"
+        },
+        {
+          "ReadOnly": true,
+          "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/config",
+          "Target": "/config",
+          "Type": "bind"
+        }
+      ],
+      "NanoCpus": 1000000000,
+      "NetworkMode": "container:862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a",
+      "OomKillDisable": null,
+      "OomScoreAdj": 0,
+      "PidMode": "",
+      "PidsLimit": 128,
+      "PortBindings": {},
+      "Privileged": false,
+      "PublishAllPorts": false,
+      "ReadonlyPaths": [
+        "/proc/bus",
+        "/proc/fs",
+        "/proc/irq",
+        "/proc/sys",
+        "/proc/sysrq-trigger"
+      ],
+      "ReadonlyRootfs": true,
+      "RestartPolicy": {
+        "MaximumRetryCount": 0,
+        "Name": "no"
+      },
+      "Runtime": "runc",
+      "SecurityOpt": [
+        "no-new-privileges"
+      ],
+      "ShmSize": 67108864,
+      "Tmpfs": {
+        "/tmp": "rw,noexec,nosuid,size=67108864,mode=1777"
+      },
+      "UTSMode": "",
+      "Ulimits": [],
+      "UsernsMode": "",
+      "VolumeDriver": "",
+      "VolumesFrom": null
+    },
+    "HostnamePath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/hostname",
+    "HostsPath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/hosts",
+    "Id": "4d005f570b5c83d75064511891d25b070b8464612ecf26ab7eeec6bc72c2d816",
+    "Image": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "LogPath": "/var/lib/docker/containers/4d005f570b5c83d75064511891d25b070b8464612ecf26ab7eeec6bc72c2d816/4d005f570b5c83d75064511891d25b070b8464612ecf26ab7eeec6bc72c2d816-json.log",
+    "MountLabel": "",
+    "Mounts": [
+      {
+        "Destination": "/data",
+        "Mode": "",
+        "Propagation": "rprivate",
+        "RW": true,
+        "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/s3",
+        "Type": "bind"
+      },
+      {
+        "Destination": "/config",
+        "Mode": "",
+        "Propagation": "rprivate",
+        "RW": false,
+        "Source": "/home/runner/work/_temp/generation29-runtime/cold/restored/config",
+        "Type": "bind"
+      }
+    ],
+    "Name": "/ouf-cold-2405-restored-s3",
+    "NetworkSettings": {
+      "Bridge": "",
+      "EndpointID": "",
+      "Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "HairpinMode": false,
+      "IPAddress": "",
+      "IPPrefixLen": 0,
+      "IPv6Gateway": "",
+      "LinkLocalIPv6Address": "",
+      "LinkLocalIPv6PrefixLen": 0,
+      "MacAddress": "",
+      "Networks": {},
+      "Ports": {},
+      "SandboxID": "",
+      "SandboxKey": "",
+      "SecondaryIPAddresses": null,
+      "SecondaryIPv6Addresses": null
+    },
+    "Path": "/usr/local/bin/weed",
+    "Platform": "linux",
+    "ProcessLabel": "",
+    "ResolvConfPath": "/var/lib/docker/containers/862fbc9f3f7dcc9629b33509a8f4ae0c690b56b4abd73c46ae05c4d9bcab1d2a/resolv.conf",
+    "RestartCount": 0,
+    "State": {
+      "Dead": false,
+      "Error": "",
+      "ExitCode": 0,
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "OOMKilled": false,
+      "Paused": false,
+      "Pid": 3365,
+      "Restarting": false,
+      "Running": true,
+      "StartedAt": "2026-11-03T19:20:26.551476286Z",
+      "Status": "running"
+    }
+  }
+]

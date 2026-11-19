@@ -1,0 +1,21 @@
+{
+  "status": "SOURCE_INTEGRATION_PARITY_PASS_BINARY_AND_TESTS_PENDING",
+  "componentRuntimeTestFilesByteIdentical": 36,
+  "changedFiles": 38,
+  "overlapOnly": [
+    "go.mod",
+    "go.sum"
+  ],
+  "retainedRequirementPinChanges": 0,
+  "retainedH1Changes": 0,
+  "removedRequirements": 16,
+  "addedRequirements": {
+    "go.mongodb.org/mongo-driver/v2": "v2.9.2"
+  },
+  "goModSha256": "eb6b1c7d7871c857fae8da9e9cb6f282c2812bb988a29b76a6fbab5b9441bdc8",
+  "goSumSha256": "5bf04778982209263172e76833a9800eb7b2470d8613b4ad50934570544297a4",
+  "compiledBinaryObservedByReviewer": false,
+  "testsExecutedByReviewer": false,
+  "targetOperations": 0,
+  "releaseAdmitted": false
+}

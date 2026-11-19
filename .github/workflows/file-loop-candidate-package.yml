@@ -1,11 +1,6 @@
+# Qualificazione storica (2026-10-10): solo manuale, D-055
 name: Unsigned file-loop candidate packages
 on:
-  push:
-    branches: [codex/file-loop-cohort-package-20261010]
-    paths:
-      - .github/workflows/file-loop-candidate-package.yml
-      - scripts/package-file-loop-candidate.py
-      - releases/file-loop-qualified-cohort-20261010.json
   workflow_dispatch:
 permissions:
   contents: read

@@ -1,0 +1,5 @@
+{
+  "status": "DELIVERY_INCOMPLETE",
+  "reason": "GITHUB_CLI_OR_LOCAL_CANDIDATE_ZIP_REQUIRED",
+  "serviceChanges": false
+}

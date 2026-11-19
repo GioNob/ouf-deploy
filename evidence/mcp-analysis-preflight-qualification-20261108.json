@@ -1,0 +1,44 @@
+{
+  "schema": "ouf.mcp-analysis-preflight-qualification.v1",
+  "status": "QUALIFIED_READER_TARGET_AWAITED",
+  "sourceCommit": "fd55b2735601d147905a51eca4d0dd243454bea5",
+  "script": "scripts/read-mcp-analysis-preflight-20261108.py",
+  "scriptSha256": "bf27b875fbc0fd90beb7cf5866835762faddaaa9df9dd353b1bc22c0e32d964a",
+  "runId": 42513291665,
+  "jobId": 128830770569,
+  "conclusion": "success",
+  "logsRead": true,
+  "newReaderTests": {
+    "total": 6,
+    "passed": 6,
+    "skipped": 0,
+    "nativePostgresQuery": 1,
+    "scope": "Five pure/redaction checks plus exact read-only SQL against PostgreSQL17 under SET ROLE to non-superuser fixture. Does not execute migration14 or candidate server."
+  },
+  "existingHelperTests": {
+    "total": 10,
+    "passed": 9,
+    "skipped": 1,
+    "skipReason": "Existing Docker-based native test not selected in this job; historical dedicated helper CI remains separate."
+  },
+  "localTests": {
+    "passed": 5,
+    "nativePostgresSkipped": 1
+  },
+  "credentialFileContentsRead": 0,
+  "publicReprocessingMetadataReadPossible": true,
+  "signatureVerifiedByReader": false,
+  "readOnlyDatabaseSessionsMaximum": 1,
+  "readDeadlineSeconds": 55,
+  "serviceChanges": false,
+  "serviceStops": 0,
+  "gatewayWrites": 0,
+  "tokenRequests": 0,
+  "providerRequests": 0,
+  "targetExecuted": false,
+  "limitations": [
+    "Metadata is not proof of actual migration execution or candidate startup.",
+    "Reprocessing metadata expiry/hash summary grants no authority and resets no budget.",
+    "No Docker lifecycle changes or native replacement tests in this reader."
+  ]
+}

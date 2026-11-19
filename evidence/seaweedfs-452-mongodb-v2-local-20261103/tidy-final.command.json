@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "mod",
+    "tidy"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.2533731460571289
+}

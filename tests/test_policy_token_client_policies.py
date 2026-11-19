@@ -59,7 +59,8 @@ class ClientPolicyTest(unittest.TestCase):
         self.assertEqual(len(self.calls),1);self.assertIn('SESSION_AUTH_FAILURE_TEXT_OBSERVED',self.report['diagnosticCategories'])
         self.assertNotIn('PRIVATE_TOKEN',json.dumps(self.report))
     def test_existing_portable_gh_and_hash_checked_root_delivery(self):
-        raw=(ROOT/'tools/semantic_policy_token_owner/iam_binding_candidate.py').read_bytes()
+        # The consumed delivery's source hash is historical; behavior tests above use the current compiler.
+        raw=(ROOT/'tests/fixtures/policy_token_iam_binding_bcd20f30085.source').read_bytes()
         self.assertEqual(hashlib.sha256(raw).hexdigest(),delivery.GUARD_SHA)
         with tempfile.TemporaryDirectory(dir=ROOT)as temp:
             home=Path(temp);gh=home/'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh';gh.parent.mkdir(parents=True)

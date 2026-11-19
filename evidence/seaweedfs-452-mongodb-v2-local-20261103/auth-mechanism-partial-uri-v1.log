@@ -1,0 +1,2 @@
+validation=error validating uri: username required for SCRAM-SHA-256 authMechanism= authSource=
+failed to start telemetry sidecar: os.Executable: readlink /proc/self/exe: no such file or directory

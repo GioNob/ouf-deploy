@@ -1,0 +1,225 @@
+{
+  "applicationIdentityPolicy": "GetObject/PutObject staging/* and prefix-conditioned ListBucket",
+  "cases": [
+    {
+      "attempts": 1,
+      "case": "bootstrap-create-ouf-identity-fixture",
+      "errorCode": null,
+      "method": "PUT",
+      "path": "/ouf-identity-fixture",
+      "status": 200
+    },
+    {
+      "attempts": 1,
+      "case": "bootstrap-protected-ouf-identity-fixture",
+      "errorCode": null,
+      "method": "PUT",
+      "path": "/ouf-identity-fixture/protected.txt",
+      "status": 200
+    },
+    {
+      "attempts": 1,
+      "case": "bootstrap-create-ouf-identity-other",
+      "errorCode": null,
+      "method": "PUT",
+      "path": "/ouf-identity-other",
+      "status": 200
+    },
+    {
+      "attempts": 1,
+      "case": "bootstrap-protected-ouf-identity-other",
+      "errorCode": null,
+      "method": "PUT",
+      "path": "/ouf-identity-other/protected.txt",
+      "status": 200
+    },
+    {
+      "attempts": 1,
+      "case": "prefix-put",
+      "errorCode": null,
+      "method": "PUT",
+      "path": "/ouf-identity-fixture/staging/fixture.bin",
+      "status": 200
+    },
+    {
+      "attempts": 1,
+      "case": "prefix-get",
+      "errorCode": null,
+      "method": "GET",
+      "path": "/ouf-identity-fixture/staging/fixture.bin",
+      "status": 200
+    },
+    {
+      "attempts": 1,
+      "case": "prefix-list",
+      "errorCode": null,
+      "method": "GET",
+      "path": "/ouf-identity-fixture",
+      "status": 200
+    },
+    {
+      "attempts": 1,
+      "case": "outside-prefix-get",
+      "errorCode": "AccessDenied",
+      "method": "GET",
+      "path": "/ouf-identity-fixture/protected.txt",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "outside-prefix-put",
+      "errorCode": "AccessDenied",
+      "method": "PUT",
+      "path": "/ouf-identity-fixture/outside.bin",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "other-bucket-get",
+      "errorCode": "AccessDenied",
+      "method": "GET",
+      "path": "/ouf-identity-other/protected.txt",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "other-bucket-put",
+      "errorCode": "AccessDenied",
+      "method": "PUT",
+      "path": "/ouf-identity-other/staging/no.bin",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "prefix-delete-not-granted",
+      "errorCode": "AccessDenied",
+      "method": "DELETE",
+      "path": "/ouf-identity-fixture/staging/fixture.bin",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "unscoped-list",
+      "errorCode": "AccessDenied",
+      "method": "GET",
+      "path": "/ouf-identity-fixture",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "outside-list",
+      "errorCode": "AccessDenied",
+      "method": "GET",
+      "path": "/ouf-identity-fixture",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "bucket-versioning-prefix-escalation",
+      "errorCode": "AccessDenied",
+      "method": "PUT",
+      "path": "/ouf-identity-fixture",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "bucket-policy-admin",
+      "errorCode": "AccessDenied",
+      "method": "GET",
+      "path": "/ouf-identity-fixture",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "anonymous",
+      "errorCode": "AccessDenied",
+      "method": "GET",
+      "path": "/ouf-identity-fixture/staging/fixture.bin",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "unknown-access-key",
+      "errorCode": "InvalidAccessKeyId",
+      "method": "GET",
+      "path": "/ouf-identity-fixture/staging/fixture.bin",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "wrong-signature",
+      "errorCode": "SignatureDoesNotMatch",
+      "method": "GET",
+      "path": "/ouf-identity-fixture/staging/fixture.bin",
+      "status": 403
+    },
+    {
+      "attempts": 1,
+      "case": "denied-delete-preserved-object",
+      "errorCode": null,
+      "method": "GET",
+      "path": "/ouf-identity-fixture/staging/fixture.bin",
+      "status": 200
+    },
+    {
+      "attempts": 1,
+      "case": "protected-object-preserved",
+      "errorCode": null,
+      "method": "GET",
+      "path": "/ouf-identity-fixture/protected.txt",
+      "status": 200
+    },
+    {
+      "attempts": 1,
+      "case": "denied-outside-put-created-no-object",
+      "errorCode": "NoSuchKey",
+      "method": "GET",
+      "path": "/ouf-identity-fixture/outside.bin",
+      "status": 404
+    },
+    {
+      "attempts": 1,
+      "case": "denied-other-bucket-put-created-no-object",
+      "errorCode": "NoSuchKey",
+      "method": "GET",
+      "path": "/ouf-identity-other/staging/no.bin",
+      "status": 404
+    }
+  ],
+  "egress": [
+    {
+      "attempts": 1,
+      "destination": "192.0.2.1",
+      "errno": 101,
+      "errnoName": "ENETUNREACH",
+      "port": 443,
+      "transport": "TCP"
+    },
+    {
+      "attempts": 1,
+      "destination": "192.0.2.1",
+      "errno": 101,
+      "errnoName": "ENETUNREACH",
+      "port": 53,
+      "transport": "UDP"
+    }
+  ],
+  "mutatingRequestRetries": 0,
+  "syntheticBodySha256": "983dec1ea2d6314a1316f918234769e50cb2d793a8bd35b162f5baa68fb186ae",
+  "tlsNegatives": [
+    {
+      "ca": "ca.pem",
+      "host": "127.0.0.1",
+      "verificationRejected": true,
+      "verifyCode": 64,
+      "verifyMessage": "IP address mismatch, certificate is not valid for '127.0.0.1'."
+    },
+    {
+      "ca": "wrong-ca.pem",
+      "host": "localhost",
+      "verificationRejected": true,
+      "verifyCode": 20,
+      "verifyMessage": "unable to get local issuer certificate"
+    }
+  ]
+}

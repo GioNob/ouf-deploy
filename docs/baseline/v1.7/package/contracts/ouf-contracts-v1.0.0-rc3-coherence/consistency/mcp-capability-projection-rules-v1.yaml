@@ -1,0 +1,119 @@
+version: '1.0'
+status: FROZEN_FOR_CONTRACT_REPOSITORY
+purpose: Deterministic source-of-truth and projection rules for generating/validating
+  MCP Canonical Capability Manifest from existing OUF capability metadata.
+sources:
+  functionalOwner:
+    authority: Module capability owner
+    fields:
+    - capabilityId
+    - capabilityVersion
+    - owner
+    - operationClass
+    - inputSchemaRef
+    - outputSchemaRef
+  authorization:
+    authority: Authorization capability/policy metadata
+    fields:
+    - requiredAuthorizationCapability
+    - actorTypes
+    - humanRequired
+  gateway:
+    authority: Gateway binding governance
+    fields:
+    - gatewayBindingRef
+    - toolEligible
+    - coarse scope/audience binding
+  mcp:
+    authority: MCP Server capability governance
+    fields:
+    - toolName
+    - mcpClass
+    - publicationState
+    - baseCostEnvelope
+    - conditionalOutcomeCost
+    - purpose
+    - useWhen
+    - doNotUseWhen
+    - preferredAlternatives
+    - operationalLimits
+    - resultSemantics
+    - securityNotes
+precedenceRules:
+- id: MCP-P01
+  field: capabilityId
+  source: Module capability owner
+  rule: Canonical immutable capability identifier. Gateway, Authorization and MCP
+    projections MUST match exactly.
+- id: MCP-P02
+  field: capabilityVersion
+  source: Module capability owner
+  rule: Must match the semantic version of the capability contract exposed to Gateway/MCP.
+- id: MCP-P03
+  field: owner
+  source: Module capability owner
+  rule: MCP may normalize casing/display only; semantic owner cannot be overridden
+    by Gateway or MCP.
+- id: MCP-P04
+  field: operationClass
+  source: Module capability owner
+  rule: Derived deterministically from owner operation type using enum map read->READ,
+    compute->COMPUTE, propose->PROPOSE, command->COMMAND.
+- id: MCP-P05
+  field: requiredAuthorizationCapability
+  source: Authorization binding for canonical capability
+  rule: Defaults only to identical capabilityId when Authorization explicitly defines
+    same capability; never inferred by semantic similarity.
+- id: MCP-P06
+  field: actorTypes
+  source: Authorization eligibility metadata
+  rule: Allowed actor set is the intersection of published capability eligibility
+    and authorization actor constraints. HUMAN_REQUIRED excludes AI_AGENT, MCP_SERVER
+    and SERVICE_IDENTITY from confirmation.
+- id: MCP-P07
+  field: toolEligible
+  source: Gateway/MCP exposure policy
+  rule: Effective value is false if any governing projection sets false. true never
+    implies authorization.
+- id: MCP-P08
+  field: gatewayBindingRef
+  source: Gateway governed capability binding
+  rule: Logical reference only; physical URL/host/port is forbidden.
+- id: MCP-P09
+  field: mcpClass
+  source: MCP capability governance
+  rule: MCP_TOOL for executable tools, MCP_PROPOSAL_ONLY for proposal-only tools,
+    TRUSTED_HUMAN_ONLY for domain capability descriptors that require trusted human
+    direct path. Protected Human Operations are excluded entirely.
+- id: MCP-P10
+  field: publicationState
+  source: MCP manifest publication pipeline
+  rule: ACTIVE/CANDIDATE/RETIRED reflects MCP descriptor publication, not backend
+    business state.
+- id: MCP-P11
+  field: baseCostEnvelope
+  source: MCP orchestration governance
+  rule: Owned by MCP because it governs MCP orchestration budget, not UDP query complexity.
+- id: MCP-P12
+  field: conditionalOutcomeCost
+  source: MCP orchestration governance
+  rule: Owned by MCP RetryLoopGuard/conditional admission semantics; not derived from
+    Gateway or UDP.
+- id: MCP-P13
+  field: inputSchemaRef/outputSchemaRef
+  source: Module capability owner
+  rule: Must resolve the same typed contract used by Gateway/backend. MCP cannot substitute
+    a semantically different local DTO without explicit versioned adapter contract.
+failClosedRules:
+- Missing authoritative source for a required field => descriptor invalid, not published.
+- Conflicting capabilityId/version/authorization requirement => CI/startup failure.
+- toolEligible=false or publicationState!=ACTIVE => not registered in active tools/list.
+- TRUSTED_HUMAN_ONLY with toolEligible=true => invalid.
+- Protected Human Operation represented as MCP tool/resource/prompt => CI/startup
+  failure.
+scopeControl:
+- No new runtime registry/service.
+- No change to MCP protocol.
+- No change to Gateway or Authorization ownership.
+- No change to THS direct-human path.
+- No change to MCP Server v1.1 behavior.

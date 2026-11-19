@@ -1,0 +1,2443 @@
+{
+  "schema": "ouf.csv-e2e-completion-plan.v1",
+  "documentId": "OUF-MP-CSV-E2E",
+  "version": "1.1",
+  "createdDate": "2026-10-20",
+  "timezone": "Europe/Rome",
+  "document": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md",
+  "planIsRuntimeAuthority": false,
+  "planIsExecutableLauncher": false,
+  "technicalProgress": {
+    "completed": 8,
+    "total": 8
+  },
+  "functionalProgress": {
+    "proven": 4,
+    "total": 6
+  },
+  "executionMode": {
+    "subagentsAllowed": false,
+    "scheduledAutomationsAllowed": false,
+    "automaticLoginAllowed": false,
+    "automaticRefreshAllowed": false,
+    "automaticBudgetResetAllowed": false,
+    "automaticReplayAllowed": false
+  },
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "Retained CSV F5/F6",
+      "requires": [
+        "G4"
+      ],
+      "status": "OPEN",
+      "activeAssistedHours": [
+        18,
+        30
+      ]
+    },
+    {
+      "id": "M2",
+      "title": "General repeatable CSV end-to-end",
+      "requires": [
+        "G4",
+        "G5",
+        "G6",
+        "G7"
+      ],
+      "status": "OPEN",
+      "activeAssistedHoursIncludingM1": [
+        40,
+        70
+      ]
+    }
+  ],
+  "workPackages": [
+    {
+      "id": "WP0",
+      "title": "Fissare il punto di ripartenza",
+      "owner": [
+        "Deploy",
+        "Project owner"
+      ],
+      "dependencies": [],
+      "hours": [
+        0,
+        0
+      ],
+      "hoursIncludedIn": "WP1",
+      "exitGate": "G0",
+      "deliverables": [
+        "baseline ledger",
+        "retained claims/contexts ledger",
+        "selected source/image/contract refs"
+      ],
+      "status": "COMPLETE",
+      "entryAuthorizationGranted": false,
+      "acceptanceTestRefs": [],
+      "completionObservedAt": "2026-10-20T09:16:46.603Z"
+    },
+    {
+      "id": "WP1",
+      "title": "Qualificare la coorte e correggere i tre risultati CI",
+      "owner": [
+        "Ingestion",
+        "MCP",
+        "Deploy"
+      ],
+      "dependencies": [
+        "WP0"
+      ],
+      "hours": [
+        2,
+        4
+      ],
+      "exitGate": "G1",
+      "deliverables": [
+        "CI diagnosis and targeted corrections",
+        "cohort pins",
+        "impact-based regression list"
+      ],
+      "status": "COMPLETE",
+      "entryAuthorizationGranted": false,
+      "acceptanceTestRefs": [],
+      "actualStartedAt": null,
+      "startTimeBounds": {
+        "earliest": "2026-10-20T11:07:49+02:00",
+        "latest": "2026-10-20T09:16:46.603Z"
+      },
+      "completedAt": "2026-10-20T09:53:01.026Z",
+      "gateEvidence": {
+        "gate": "G1",
+        "status": "PASS",
+        "dependencyCompletedAt": "2026-10-20T09:51:37Z",
+        "decisionObservedAt": "2026-10-20T09:53:01.026Z",
+        "runIds": [
+          39399340219,
+          39399343702,
+          39399647915,
+          39401717480
+        ],
+        "nativeTargetAuthority": false
+      }
+    },
+    {
+      "id": "WP2",
+      "title": "Completare e qualificare l'executor nativo",
+      "owner": [
+        "Deploy"
+      ],
+      "dependencies": [
+        "WP1"
+      ],
+      "hours": [
+        8,
+        14
+      ],
+      "exitGate": "G2",
+      "deliverables": [
+        "NativePorts",
+        "current guards and transports",
+        "scope issuer and immutable executable closure",
+        "native no-replay qualification"
+      ],
+      "status": "COMPLETE",
+      "entryAuthorizationGranted": false,
+      "acceptanceTestRefs": [
+        "CSV-AT-21",
+        "CSV-AT-22"
+      ],
+      "preparationStatus": "LIFECYCLE_AND_GATEWAY_COMPONENTS_QUALIFIED_NOT_G2",
+      "componentEvidence": {
+        "signedCoreLifecycleGatewayTests": 38,
+        "skipped": 0,
+        "gatewayCommit": "c3042a0696875f538a6476df5866f507d414b667",
+        "gatewayRunId": 39403673060,
+        "localDatabasePolicyTests": 9,
+        "fullExecutorQualified": false,
+        "databasePolicyRunId": 39404688204,
+        "qualifiedComponentTests": 99,
+        "localOwnerReadTests": 10,
+        "localDatabaseReadTests": 8,
+        "currentReadRunId": 39405867174,
+        "currentReadCommit": "d321d7a90606e7e797c9ad83bd16f6b532be6948",
+        "localImageImportTests": 11,
+        "imageImportRunId": 39406640241,
+        "imageImportCommit": "92e7007fcc5ad5e916e05909d13c9e4aef042e31",
+        "localRuntimeGuardTests": 7,
+        "localRunnerCompositionTests": 8,
+        "localReadinessProfileTests": 3,
+        "pendingLinuxReadinessCases": 5,
+        "compositionRunId": 39408488591,
+        "compositionCommit": "45aa4071070e85c42a34afa6a1e9934e50a6e672",
+        "localRetainedGatewayBoundaryTests": 4
+      },
+      "startedAt": null,
+      "startBounds": {
+        "earliest": "2026-10-20T11:07:49+02:00",
+        "latest": "2026-10-20T09:35:14Z"
+      },
+      "gateEvidence": {
+        "gate": "G2",
+        "status": "PASS",
+        "evidenceRef": "docs/CSV_E2E_G2_NATIVE_EXECUTOR_QUALIFICATION_20261020.md"
+      }
+    },
+    {
+      "id": "WP3",
+      "title": "Ammissione rollout e pubblicazione del profilo",
+      "owner": [
+        "Deploy",
+        "Onboarding/THS",
+        "Ingestion",
+        "Gateway"
+      ],
+      "dependencies": [
+        "WP1",
+        "WP2"
+      ],
+      "externalGates": [
+        "explicit current runtime authority",
+        "qualified target executor availability",
+        "fresh owner/database/generation admission"
+      ],
+      "hours": [
+        4,
+        6
+      ],
+      "exitGate": "G3",
+      "deliverables": [
+        "governed rollout receipt",
+        "current DB/readiness evidence",
+        "native profile publication receipt"
+      ],
+      "status": "COMPLETE",
+      "entryAuthorizationGranted": false,
+      "acceptanceTestRefs": [
+        "CSV-AT-07",
+        "CSV-AT-08",
+        "CSV-AT-23"
+      ],
+      "gateEvidence": {
+        "gate": "G3",
+        "status": "PASS",
+        "evidenceRef": "evidence/csv-native-source-activation-owner-20261025.json"
+      }
+    },
+    {
+      "id": "WP4",
+      "title": "Chiudere F5 e F6 sul caso conservato",
+      "owner": [
+        "Ingestion",
+        "UDP",
+        "MCP",
+        "HUMAN acceptance"
+      ],
+      "dependencies": [
+        "WP3"
+      ],
+      "hours": [
+        4,
+        6
+      ],
+      "exitGate": "G4",
+      "milestone": "M1",
+      "deliverables": [
+        "F5 second acquisition evidence",
+        "F6 two-run ACK/commit/lineage and preservation evidence"
+      ],
+      "status": "IN_PROGRESS",
+      "entryAuthorizationGranted": false,
+      "acceptanceTestRefs": [
+        "CSV-AT-14",
+        "CSV-AT-16"
+      ],
+      "currentBlocker": "OWNER_DETAIL_REDACTION",
+      "evidenceRef": "evidence/acquisition-post-oauth-owner-redaction-20261026.json"
+    },
+    {
+      "id": "WP5",
+      "title": "Completare il delta semantico CSV generale",
+      "owner": [
+        "Onboarding",
+        "Ingestion",
+        "Semantic Registry",
+        "UDP"
+      ],
+      "dependencies": [
+        "WP0",
+        "WP1"
+      ],
+      "hours": [
+        8,
+        14
+      ],
+      "exitGate": "G5",
+      "deliverables": [
+        "vocabulary value mapping",
+        "declared typed/temporal transforms",
+        "governed relation composition",
+        "backward compatible contract/tests"
+      ],
+      "status": "IN_PROGRESS",
+      "entryAuthorizationGranted": false,
+      "acceptanceTestRefs": [
+        "CSV-AT-03",
+        "CSV-AT-04",
+        "CSV-AT-05",
+        "CSV-AT-06",
+        "CSV-AT-09",
+        "CSV-AT-12",
+        "CSV-AT-13"
+      ],
+      "exitGatePassed": false,
+      "progressNote": "Typed module deltas qualified historically; vocabulary/relation composition and G5 not closed."
+    },
+    {
+      "id": "WP6",
+      "title": "Percorso conversazionale e ripresa",
+      "owner": [
+        "MCP",
+        "Gateway",
+        "Onboarding",
+        "UDP",
+        "THS"
+      ],
+      "dependencies": [
+        "WP0",
+        "WP1"
+      ],
+      "finalQualificationDependencies": [
+        "WP5"
+      ],
+      "hours": [
+        8,
+        14
+      ],
+      "exitGate": "G6",
+      "deliverables": [
+        "review package delta reconciled",
+        "owner-derived outcomes",
+        "durable resume",
+        "two-client qualification"
+      ],
+      "status": "IN_PROGRESS",
+      "entryAuthorizationGranted": false,
+      "acceptanceTestRefs": [
+        "CSV-AT-01",
+        "CSV-AT-02",
+        "CSV-AT-14",
+        "CSV-AT-18",
+        "CSV-AT-19",
+        "CSV-AT-20"
+      ],
+      "exitGatePassed": false,
+      "progressNote": "Governed owner acquisition READ surfaces installed/reached; detailed redaction and real two-client qualification remain open."
+    },
+    {
+      "id": "WP7",
+      "title": "Collaudo finale e rilascio del miniprogetto",
+      "owner": [
+        "Cross-module",
+        "HUMAN acceptance"
+      ],
+      "dependencies": [
+        "WP4",
+        "WP5",
+        "WP6"
+      ],
+      "hours": [
+        6,
+        12
+      ],
+      "exitGate": "G7",
+      "milestone": "M2",
+      "deliverables": [
+        "governed deployment of final WP5/WP6 delta with fresh appropriate authority, no WP3 replay",
+        "final pinned cohort",
+        "all mandatory local acceptance evidence",
+        "canonical applicable scenarios evidence",
+        "user guide",
+        "operator reconciliation runbook"
+      ],
+      "status": "PLANNED",
+      "entryAuthorizationGranted": false,
+      "acceptanceTestRefs": [
+        "CSV-AT-01",
+        "CSV-AT-02",
+        "CSV-AT-03",
+        "CSV-AT-04",
+        "CSV-AT-05",
+        "CSV-AT-06",
+        "CSV-AT-07",
+        "CSV-AT-08",
+        "CSV-AT-09",
+        "CSV-AT-10",
+        "CSV-AT-11",
+        "CSV-AT-12",
+        "CSV-AT-13",
+        "CSV-AT-14",
+        "CSV-AT-15",
+        "CSV-AT-16",
+        "CSV-AT-17",
+        "CSV-AT-18",
+        "CSV-AT-19",
+        "CSV-AT-20",
+        "CSV-AT-21",
+        "CSV-AT-22",
+        "CSV-AT-23",
+        "CSV-AT-24"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "CSV-R01",
+      "requirement": "Discovery/tool e chiamate devono riflettere le autorizzazioni correnti del principal; una capability visibile non conferisce grant",
+      "owner": "MCP/Gateway/Authorization",
+      "testRefs": [
+        "CSV-AT-01",
+        "CSV-AT-18"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R02",
+      "requirement": "Upload deve usare picker/trasporto OUF governato, asset owner, hash e limiti; nessun URL arbitrario assunto come allegato affidabile",
+      "owner": "Onboarding",
+      "testRefs": [
+        "CSV-AT-02",
+        "CSV-AT-03"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R03",
+      "requirement": "Il parser deve gestire il profilo CSV dichiarato; input incompatibili devono produrre diagnosi senza alterare l'originale",
+      "owner": "Onboarding/Ingestion",
+      "testRefs": [
+        "CSV-AT-03"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R04",
+      "requirement": "Ogni riga deve avere sourceObjectId deterministico secondo policy approvata; riordino e duplicati di chiave devono avere esito esplicito",
+      "owner": "Onboarding/Ingestion",
+      "testRefs": [
+        "CSV-AT-04"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R05",
+      "requirement": "Classi/proprietà/vocabolari devono essere riferimenti pubblicati e versionati; nessuna equivalenza inventata da etichette",
+      "owner": "Registry/Onboarding",
+      "testRefs": [
+        "CSV-AT-05",
+        "CSV-AT-06"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R06",
+      "requirement": "Mapping codice→concetto deve conservare codice originale, concetto/versione e regola; valore sconosciuto gestito esplicitamente",
+      "owner": "Onboarding/Ingestion",
+      "testRefs": [
+        "CSV-AT-05"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R07",
+      "requirement": "Tipi, normalizzazioni e temporalità devono essere dichiarati; nessuna data/validità o cancellazione inferita implicitamente",
+      "owner": "Onboarding/Ingestion/UDP",
+      "testRefs": [
+        "CSV-AT-05",
+        "CSV-AT-12"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R08",
+      "requirement": "Approvazione/attivazione devono avvenire in THS con identità HUMAN e stato/hash/versione attuali",
+      "owner": "THS/owner",
+      "testRefs": [
+        "CSV-AT-07",
+        "CSV-AT-18"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R09",
+      "requirement": "Pubblicare una nuova versione e ammettere una nuova acquisizione devono avere effetti dichiarati; una proposta non esegue acquisizione",
+      "owner": "Onboarding/Ingestion",
+      "testRefs": [
+        "CSV-AT-08"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R10",
+      "requirement": "Run, bundle, schema e pubblicazione semantica devono restare fissati anche durante cambi ACTIVE o ripresa",
+      "owner": "Ingestion/Registry",
+      "testRefs": [
+        "CSV-AT-09"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R11",
+      "requirement": "Nessun committed watermark deve avanzare senza ACK durevole; esiti ambigui si riconciliano con la stessa identità",
+      "owner": "Ingestion/UDP",
+      "testRefs": [
+        "CSV-AT-10",
+        "CSV-AT-17"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R12",
+      "requirement": "Il resoconto deve distinguere consegna/ACK da materializzazione e mostrare l'esito terminale per riga ammessa",
+      "owner": "UDP/MCP",
+      "testRefs": [
+        "CSV-AT-10",
+        "CSV-AT-14"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R13",
+      "requirement": "UDP deve decidere MATCH/NEW/REVIEW; Onboarding/Ingestion non assegnano urbanObjectId",
+      "owner": "UDP",
+      "testRefs": [
+        "CSV-AT-11"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R14",
+      "requirement": "Proprietà complementari, autorità, conflitti, null/vuoti, multivalore e cancellazioni devono rispettare il profilo approvato",
+      "owner": "UDP",
+      "testRefs": [
+        "CSV-AT-12"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R15",
+      "requirement": "Provenienza e storia devono consentire risalita fino a fonte/riga/run/bundle/pubblicazione semantica",
+      "owner": "Ingestion/UDP",
+      "testRefs": [
+        "CSV-AT-12",
+        "CSV-AT-14"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R16",
+      "requirement": "Una relazione dichiarata nel profilo deve usare semantica e risoluzione governate; target assente/ambiguo non genera edge arbitrari",
+      "owner": "Registry/Onboarding/UDP",
+      "testRefs": [
+        "CSV-AT-13"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R17",
+      "requirement": "Retry tecnico e seconda acquisizione deliberata devono avere identità ed effetti distinti; nessun duplicato canonico o revisione gratuita",
+      "owner": "Ingestion/UDP",
+      "testRefs": [
+        "CSV-AT-15",
+        "CSV-AT-16"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R18",
+      "requirement": "Interruzione, revoca e restart devono conservare contesto, claim, budget e storia; nessun replay automatico dopo STOP",
+      "owner": "Tutti",
+      "testRefs": [
+        "CSV-AT-17",
+        "CSV-AT-18"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R19",
+      "requirement": "Una nuova chat/client deve recuperare il lavoro dagli owner, senza dipendere dalla memoria del modello",
+      "owner": "MCP/Onboarding",
+      "testRefs": [
+        "CSV-AT-19"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R20",
+      "requirement": "Dati/contatori/edge riservati devono essere filtrati dall'owner prima della serializzazione, anche per tenant diverso",
+      "owner": "Authorization/UDP/MCP",
+      "testRefs": [
+        "CSV-AT-18"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R21",
+      "requirement": "Il percorso deve riuscire su due client MCP indipendenti, almeno uno con soli tool e collegamenti web OUF",
+      "owner": "MCP/THS",
+      "testRefs": [
+        "CSV-AT-20"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R22",
+      "requirement": "Ogni valore specifico dell'Ente deve provenire dal profilo validato; MAC endpoint distinti dai MAC fisici host",
+      "owner": "Deploy/tutti",
+      "testRefs": [
+        "CSV-AT-21"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R23",
+      "requirement": "Rollout deve essere finito, con effetti claimed-once, prove di generazione e riconciliazione degli esiti incerti",
+      "owner": "Deploy",
+      "testRefs": [
+        "CSV-AT-22",
+        "CSV-AT-23"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    },
+    {
+      "id": "CSV-R24",
+      "requirement": "Fonti/oggetti/claim storici e baseline8Cinema devono essere conservati; il dossier deve separare CI, target e accettazione",
+      "owner": "Deploy/UDP",
+      "testRefs": [
+        "CSV-AT-16",
+        "CSV-AT-24"
+      ],
+      "status": "NOT_ACCEPTED_FOR_FINAL_COHORT"
+    }
+  ],
+  "acceptanceTests": [
+    {
+      "id": "CSV-AT-01",
+      "procedureAndExpected": "Discovery e chiamata con principal autorizzato/negato; capability,owner,scope,versione e route coerenti; negato senza dispatch improprio",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "OUF-E2E-022",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R01"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-02",
+      "procedureAndExpected": "Upload OUF, profiling e risposta persa; asset/hash/owner unici, stesso comando riconciliato senza nuovo asset/fonte involontario",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "Locale; supporta017",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R02"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-03",
+      "procedureAndExpected": "BOM/delimitatore/quoting/newline; file/cella/righe al limite e oltre; header/forma errati; diagnosi e originale preservati",
+      "requiredLevel": "I",
+      "canonicalTraceability": "Locale; variante schema001 solo se scenario completo",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R02",
+        "CSV-R03"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-04",
+      "procedureAndExpected": "Riordinare righe con chiavi approvate e provare chiave duplicata; sourceObjectId stabili o errore esplicito",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "OUF-E2E-020",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R04"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-05",
+      "procedureAndExpected": "DS3: codici→concetti e tipi dichiarati; originali/versioni preservati; unknown e valore invalido non materializzati come validi",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "Locale; supporta017,019",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R05",
+        "CSV-R06",
+        "CSV-R07"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-06",
+      "procedureAndExpected": "Gap semantico: proposta DRAFT, validazione/review/pubblicazione HUMAN, ripresa sulla stessa fonte; nessuna attivazione con riferimento non ammesso",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "Locale; supporta017",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R05"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-07",
+      "procedureAndExpected": "Confermare versione corrente e tentare hash/ETag obsoleto; corrente accettato, obsoleto rifiutato; MCP non approva/attiva",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "THS-A pertinente; supporta017,022",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R08"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-08",
+      "procedureAndExpected": "Preparazione non pubblica/acquisisce; nuova pubblicazione mostra effetto; una intenzione governata ammette la sola acquisizione prevista, anche dopo poll/restart",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "OUF-E2E-017",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R09"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-09",
+      "procedureAndExpected": "Cambiare ACTIVE semantico durante run isolata e riprendere; run resta sulla pubblicazione fissata, nessun fallback latest",
+      "requiredLevel": "I",
+      "canonicalTraceability": "OUF-E2E-019",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R10"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-10",
+      "procedureAndExpected": "Fault prima della persistenza/ACK e risposta ACK persa; watermark non anticipato, idempotenza; commit UDP verificato separatamente",
+      "requiredLevel": "I+T readback",
+      "canonicalTraceability": "OUF-E2E-002",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R11",
+        "CSV-R12"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-11",
+      "procedureAndExpected": "DS1 e variante ambigua; due match,un nuovo ID; ambiguità inreview; decisione HUMAN consumata una volta",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "OUF-E2E-006,020",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R13"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-12",
+      "procedureAndExpected": "Complementi/null/vuoto/equivalenza/priorità/conflitto/multivalore/delete esplicito; proprietà corrette, contributi e storia conservati, no perdita collaterale",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "Locale; supporta006",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R07",
+        "CSV-R14",
+        "CSV-R15"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-13",
+      "procedureAndExpected": "Relazione dichiarata: target presente/assente/ambiguo, retry; solo edge ammesso, deduplicato e con provenance",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "Locale, suite UDP relazioni",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R16"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-14",
+      "procedureAndExpected": "Riepilogo di tutte le righe; collegamenti riga→run→handoff→ACK→job→oggetto/revisione; parzialità/attese/errore distinti",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "OUF-E2E-017,025",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R12",
+        "CSV-R15"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-15",
+      "procedureAndExpected": "DS1R invariato con nuova run e retry separato della stessa richiesta;4 oggetti e nessuna revisione canonica gratuita; lineage nuova run presente",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "OUF-E2E-003",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R17"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-16",
+      "procedureAndExpected": "DS0: seconda acquisizione effettiva distinta dalla prima;13 identità/20 proprietà, ACK/provenienza di entrambe,8 Cinema invariati, zero replay decisioni",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "F5/F6;003 solo nel caso contratti/contenuto invariati",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R17",
+        "CSV-R24"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-17",
+      "procedureAndExpected": "Pause/restart/risposta persa, budget esaurito e claim incerto; contatori/storia preservati, solo riconciliazione, nessun effetto doppio",
+      "requiredLevel": "I",
+      "canonicalTraceability": "OUF-E2E-002;009/010 solo con tutte le loro condizioni",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R11",
+        "CSV-R18"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-18",
+      "procedureAndExpected": "Revoca/scadenza, tenant errato e dato protetto; stop prima di nuovi effetti e owner deny prima della serializzazione; log/capability protetti non raggiungibili daMCP",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "OUF-E2E-018,022;016 boundary, non intera suiteTHS",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R01",
+        "CSV-R08",
+        "CSV-R18",
+        "CSV-R20"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-19",
+      "procedureAndExpected": "Interrompere chat dopo upload/review/run; riaprire con stesso utente autorizzato e riferimenti durevoli; riprendere senza nuovo job implicito",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "Locale, MCP acceptance",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R19"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-20",
+      "procedureAndExpected": "ClientA eB indipendenti eseguono il percorso nuovo CSV; almenoB senza UI incorporata; rientro daTHS e lettura esiti senza terminale",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "017,022 e suiteMCP/THS applicabili",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R21"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-21",
+      "procedureAndExpected": "ProfiliENV-A/B: endpoint/indirizzi/MAC/path differenti, due reti; stesso codice, nessun default storico; input non validi rifiutati",
+      "requiredLevel": "I",
+      "canonicalTraceability": "021 per identità se precondizioni complete; ambiente locale",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R22"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-22",
+      "procedureAndExpected": "Executor: key/image/lifecycle/route con fault prima/dopo effetto; CID/PID/StartedAt/namespace nuovi verificati, predecessore conservato, no replay",
+      "requiredLevel": "I",
+      "canonicalTraceability": "Locale, gate operativo",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R23"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-23",
+      "procedureAndExpected": "Gate correnti DB/HUMAN/Owner e readiness; assenza/drift/revoca blocca; due route attese e altre80preservate, policy startup effettiva provata",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "024 solo se intero scenario LKG eseguito",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R23"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    },
+    {
+      "id": "CSV-AT-24",
+      "procedureAndExpected": "Verifica finale coorte/contratti/evidenze/baseline e guida; tutti i requisiti coperti, nessun obbligatorio SKIPPED/BLOCKED, accettazione HUMAN",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "Blueprint0.3§9",
+      "status": "NOT_RUN_FOR_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R24"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true
+    }
+  ],
+  "minimumCompleteCanonicalScenarios": [
+    "OUF-E2E-002",
+    "OUF-E2E-003",
+    "OUF-E2E-006",
+    "OUF-E2E-017",
+    "OUF-E2E-018",
+    "OUF-E2E-019",
+    "OUF-E2E-020",
+    "OUF-E2E-022",
+    "OUF-E2E-025"
+  ],
+  "canonicalEvidenceRule": "A local PASS is not a canonical scenario PASS unless all original scenario preconditions/steps/assertions are exercised. Use original evidence-record-v1 for canonical records.",
+  "requiredFinalEvidenceFields": [
+    "requirement/test",
+    "source commit",
+    "environment",
+    "installation profile/version/hash",
+    "actual module image digests",
+    "contract freeze",
+    "input fixture/hash",
+    "assertion outcomes",
+    "artifact refs",
+    "correlation ids",
+    "authority decision ref without credentials",
+    "limitations"
+  ],
+  "initialOpenCiFindings": [
+    {
+      "repository": "ouf-ingestion-runtime",
+      "runId": 39380500855,
+      "description": "185 tests, 2 failures, 1 error, 2 skipped; RunControl fixture/schedule interference hypothesis requires verification"
+    },
+    {
+      "repository": "ouf-mcp-server",
+      "runId": 39232083000,
+      "description": "Budget Reserve p95 performance gate failed, same-head push passed"
+    },
+    {
+      "repository": "ouf-deploy",
+      "runId": 39392193693,
+      "description": "Historical capsule/package pin mismatch for human_session.py"
+    }
+  ],
+  "retainedCase": {
+    "contextPath": "/etc/ouf/deploy-snapshots/ingestion-frame-mac-reconcile-qfcpqd9f",
+    "packetPlanSha256": "ad1bdb240483f85785b989f28cd895a72394ea964baabd85ad3062b10180fe5c",
+    "verifiedInputsSha256": "c556d7ea44bc7f7e1f337358e166e2cde11c90e6459a76cc703c178218bd9907",
+    "completedOwner7Replayed": false,
+    "completedProjection7Replayed": false,
+    "humanHistoricalOnly": {
+      "attempts": 278,
+      "max": 288,
+      "remaining": 10,
+      "windowExpiresAt": 1792450664,
+      "currentAuthorityProven": false
+    }
+  },
+  "effort": {
+    "unit": "active technical hours already assuming advanced-agent assistance",
+    "m1": [
+      18,
+      30
+    ],
+    "m2Total": [
+      40,
+      70
+    ],
+    "additionalHumanActiveHours": [
+      3,
+      6
+    ],
+    "externalWaitDurationEstimated": false,
+    "measuredProductivityMultiplier": null,
+    "reestimateAfter": [
+      "WP1",
+      "WP2",
+      "WP5/WP6"
+    ],
+    "centralM1": 24,
+    "centralM2Total": 55,
+    "accountingTotalIncludingSeparateHuman": [
+      43,
+      76
+    ]
+  },
+  "firstNextAction": "Continue WP2 complete native current HUMAN/Owner/DB guards, image import, issuer/closure/entrypoint and representative isolated native qualification. G1 PASS; G2 OPEN; no target operations.",
+  "outOfScope": [
+    "Additional file formats",
+    "API verticals",
+    "Dynamic streaming GIS",
+    "New proximity/affinity search modes",
+    "General multi-host installer qualification",
+    "Merge of two pre-existing canonical objects as a separate governed operation"
+  ],
+  "updatedDate": "2026-10-26",
+  "previousPlan": {
+    "version": "1.0",
+    "document": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_0_20261020.md",
+    "commit": "a49d5e3025c646256b19bd8466c15948f5c3becf"
+  },
+  "schedule": {
+    "version": "1.0",
+    "timeBasis": "cumulative active assisted technical effort hours, not wall-clock time",
+    "clockOrigin": "Start of WP0 in next implementation session; prior completed audit/planning excluded",
+    "referenceSequence": "WP0/WP1 -> WP2 -> WP3 -> WP4 -> WP5 -> WP6 -> WP7, one agent, no parallel delegation",
+    "scenarios": [
+      "lean",
+      "central",
+      "prudent"
+    ],
+    "phaseWindows": [
+      {
+        "group": "WP0+WP1",
+        "workPackages": [
+          "WP0",
+          "WP1"
+        ],
+        "title": "Baseline, diagnosi CI e coorte",
+        "hours": {
+          "lean": 2,
+          "central": 3,
+          "prudent": 4
+        },
+        "start": {
+          "lean": 0,
+          "central": 0,
+          "prudent": 0
+        },
+        "end": {
+          "lean": 2,
+          "central": 3,
+          "prudent": 4
+        },
+        "additionalHumanHours": [
+          0.25,
+          0.5
+        ],
+        "exitGate": "G1",
+        "milestone": null
+      },
+      {
+        "group": "WP2",
+        "workPackages": [
+          "WP2"
+        ],
+        "title": "Executor completo qualificato",
+        "hours": {
+          "lean": 8,
+          "central": 11,
+          "prudent": 14
+        },
+        "start": {
+          "lean": 2,
+          "central": 3,
+          "prudent": 4
+        },
+        "end": {
+          "lean": 10,
+          "central": 14,
+          "prudent": 18
+        },
+        "additionalHumanHours": [
+          0.25,
+          0.5
+        ],
+        "exitGate": "G2",
+        "milestone": null
+      },
+      {
+        "group": "WP3",
+        "workPackages": [
+          "WP3"
+        ],
+        "title": "Ammissione, rollout e profilo pubblicato",
+        "hours": {
+          "lean": 4,
+          "central": 5,
+          "prudent": 6
+        },
+        "start": {
+          "lean": 10,
+          "central": 14,
+          "prudent": 18
+        },
+        "end": {
+          "lean": 14,
+          "central": 19,
+          "prudent": 24
+        },
+        "additionalHumanHours": [
+          1,
+          2
+        ],
+        "exitGate": "G3",
+        "milestone": null
+      },
+      {
+        "group": "WP4",
+        "workPackages": [
+          "WP4"
+        ],
+        "title": "Seconda acquisizione e verifica completa",
+        "hours": {
+          "lean": 4,
+          "central": 5,
+          "prudent": 6
+        },
+        "start": {
+          "lean": 14,
+          "central": 19,
+          "prudent": 24
+        },
+        "end": {
+          "lean": 18,
+          "central": 24,
+          "prudent": 30
+        },
+        "additionalHumanHours": [
+          0.25,
+          0.5
+        ],
+        "exitGate": "G4",
+        "milestone": "M1"
+      },
+      {
+        "group": "WP5",
+        "workPackages": [
+          "WP5"
+        ],
+        "title": "Semantica, tipi e relazioni CSV",
+        "hours": {
+          "lean": 8,
+          "central": 11,
+          "prudent": 14
+        },
+        "start": {
+          "lean": 18,
+          "central": 24,
+          "prudent": 30
+        },
+        "end": {
+          "lean": 26,
+          "central": 35,
+          "prudent": 44
+        },
+        "additionalHumanHours": [
+          0.5,
+          1
+        ],
+        "exitGate": "G5",
+        "milestone": null
+      },
+      {
+        "group": "WP6",
+        "workPackages": [
+          "WP6"
+        ],
+        "title": "Percorso chat, ripresa e client",
+        "hours": {
+          "lean": 8,
+          "central": 11,
+          "prudent": 14
+        },
+        "start": {
+          "lean": 26,
+          "central": 35,
+          "prudent": 44
+        },
+        "end": {
+          "lean": 34,
+          "central": 46,
+          "prudent": 58
+        },
+        "additionalHumanHours": [
+          0.25,
+          0.5
+        ],
+        "exitGate": "G6",
+        "milestone": null
+      },
+      {
+        "group": "WP7",
+        "workPackages": [
+          "WP7"
+        ],
+        "title": "Rilascio finale e accettazione E2E",
+        "hours": {
+          "lean": 6,
+          "central": 9,
+          "prudent": 12
+        },
+        "start": {
+          "lean": 34,
+          "central": 46,
+          "prudent": 58
+        },
+        "end": {
+          "lean": 40,
+          "central": 55,
+          "prudent": 70
+        },
+        "additionalHumanHours": [
+          0.5,
+          1
+        ],
+        "exitGate": "G7",
+        "milestone": "M2"
+      }
+    ],
+    "centralActivities": [
+      {
+        "id": "CSV-H-01",
+        "workPackage": "WP0",
+        "nominalHours": 0.5,
+        "startHour": 0,
+        "endHour": 0.5,
+        "activity": "Fissare baseline, contesti e selezione",
+        "output": "Ledger iniziale; G0",
+        "status": "COMPLETE",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": [],
+        "completionObservedAt": "2026-10-20T09:16:46.603Z"
+      },
+      {
+        "id": "CSV-H-02",
+        "workPackage": "WP1",
+        "nominalHours": 0.75,
+        "startHour": 0.5,
+        "endHour": 1.25,
+        "activity": "Diagnosticare e correggere CI Ingestion",
+        "output": "Causa dimostrata e correzione mirata",
+        "status": "IN_PROGRESS",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": [],
+        "actualStartedAt": null,
+        "startTimeBounds": {
+          "earliest": "2026-10-20T11:07:49+02:00",
+          "latest": "2026-10-20T09:16:46.603Z"
+        }
+      },
+      {
+        "id": "CSV-H-03",
+        "workPackage": "WP1",
+        "nominalHours": 0.5,
+        "startHour": 1.25,
+        "endHour": 1.75,
+        "activity": "Diagnosticare il gate prestazionale MCP",
+        "output": "Profilo/risultato spiegati e verifica pertinente",
+        "status": "IN_PROGRESS",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": [],
+        "actualStartedAt": null,
+        "startTimeBounds": {
+          "earliest": "2026-10-20T11:07:49+02:00",
+          "latest": "2026-10-20T09:16:46.603Z"
+        }
+      },
+      {
+        "id": "CSV-H-04",
+        "workPackage": "WP1",
+        "nominalHours": 0.75,
+        "startHour": 1.75,
+        "endHour": 2.5,
+        "activity": "Riconciliare i pin storici Deploy",
+        "output": "Binding pacchetto/capsule corretto senza alterare claim consumati",
+        "status": "IN_PROGRESS",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": [],
+        "actualStartedAt": null,
+        "startTimeBounds": {
+          "earliest": "2026-10-20T11:07:49+02:00",
+          "latest": "2026-10-20T09:16:46.603Z"
+        }
+      },
+      {
+        "id": "CSV-H-05",
+        "workPackage": "WP1",
+        "nominalHours": 0.5,
+        "startHour": 2.5,
+        "endHour": 3,
+        "activity": "Fissare coorte e chiudere le regressioni pertinenti",
+        "output": "G1; checkpoint di ristima",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-06",
+        "workPackage": "WP2",
+        "nominalHours": 3,
+        "startHour": 3,
+        "endHour": 6,
+        "activity": "Integrare effetti NativePorts e persistenza delle identità",
+        "output": "Effetti claimed-once e riconciliazione",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-07",
+        "workPackage": "WP2",
+        "nominalHours": 2,
+        "startHour": 6,
+        "endHour": 8,
+        "activity": "Integrare guard HUMAN/Owner/DB e generazioni",
+        "output": "Controlli correnti, failure e scadenza verificati in fixture",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-08",
+        "workPackage": "WP2",
+        "nominalHours": 2,
+        "startHour": 8,
+        "endHour": 10,
+        "activity": "Integrare nuovo namespace e trasporto Gateway",
+        "output": "Route e generazione nuova verificabili",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-09",
+        "workPackage": "WP2",
+        "nominalHours": 1.5,
+        "startHour": 10,
+        "endHour": 11.5,
+        "activity": "Comporre issuer, scope, closure ed entrypoint",
+        "output": "Pacchetto eseguibile qualificabile",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-10",
+        "workPackage": "WP2",
+        "nominalHours": 2.5,
+        "startHour": 11.5,
+        "endHour": 14,
+        "activity": "Qualificare executor nativo e casi avversariali",
+        "output": "G2; checkpoint di ristima",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-11",
+        "workPackage": "WP3",
+        "nominalHours": 1.5,
+        "startHour": 14,
+        "endHour": 15.5,
+        "activity": "Preparare review concreta e verificare ammissione corrente",
+        "output": "Prerequisiti per i nuovi effetti; solo con authority pertinente",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-23"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-12",
+        "workPackage": "WP3",
+        "nominalHours": 2,
+        "startHour": 15.5,
+        "endHour": 17.5,
+        "activity": "Eseguire rollout governato e verificare readiness/route",
+        "output": "Ricevuta e postcondizioni native",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-23"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-13",
+        "workPackage": "WP3",
+        "nominalHours": 1.5,
+        "startHour": 17.5,
+        "endHour": 19,
+        "activity": "Pubblicare il profilo attraverso THS e verificare i consumer",
+        "output": "G3; profilo nativo attivo esatto",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-23"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-14",
+        "workPackage": "WP4",
+        "nominalHours": 2,
+        "startHour": 19,
+        "endHour": 21,
+        "activity": "Ammettere e seguire la seconda acquisizione deliberata",
+        "output": "Nuova run della stessa fonte/CSV e stato owner",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R17",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-14",
+          "CSV-AT-16"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-15",
+        "workPackage": "WP4",
+        "nominalHours": 1,
+        "startHour": 21,
+        "endHour": 22,
+        "activity": "Verificare esiti delle13 righe e identità/proprietà",
+        "output": "F5 provata, se tutte le asserzioni sono soddisfatte",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R17",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-14",
+          "CSV-AT-16"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-16",
+        "workPackage": "WP4",
+        "nominalHours": 2,
+        "startHour": 22,
+        "endHour": 24,
+        "activity": "Confrontare entrambe le acquisizioni e preservare8 Cinema",
+        "output": "F6 + G4/M1; ACK, commit e provenienza completi",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R17",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-14",
+          "CSV-AT-16"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-17",
+        "workPackage": "WP5",
+        "nominalHours": 2,
+        "startHour": 24,
+        "endHour": 26,
+        "activity": "Fissare contratti/fixture di vocabolari, tipi e temporalità",
+        "output": "Delta compatibile con gli owner e gli storici",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R10",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-09",
+          "CSV-AT-12",
+          "CSV-AT-13"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-18",
+        "workPackage": "WP5",
+        "nominalHours": 3,
+        "startHour": 26,
+        "endHour": 29,
+        "activity": "Estendere proposta, compilazione e validazione",
+        "output": "Configurazione dichiarata accettata dal consumer",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R10",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-09",
+          "CSV-AT-12",
+          "CSV-AT-13"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-19",
+        "workPackage": "WP5",
+        "nominalHours": 3,
+        "startHour": 29,
+        "endHour": 32,
+        "activity": "Integrare mapping valori e tipi nella pipeline",
+        "output": "Originali, concetti/versioni e tipi deterministici",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R10",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-09",
+          "CSV-AT-12",
+          "CSV-AT-13"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-20",
+        "workPackage": "WP5",
+        "nominalHours": 3,
+        "startHour": 32,
+        "endHour": 35,
+        "activity": "Comporre relazioni e completare prove/compatibilità",
+        "output": "G5; fixture positiva e casi di rifiuto",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R10",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-09",
+          "CSV-AT-12",
+          "CSV-AT-13"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-21",
+        "workPackage": "WP6",
+        "nominalHours": 3,
+        "startHour": 35,
+        "endHour": 38,
+        "activity": "Raccordare review package e binding MCP/Gateway",
+        "output": "Review accessibile nel percorso governato",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R08",
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-14",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-22",
+        "workPackage": "WP6",
+        "nominalHours": 3,
+        "startHour": 38,
+        "endHour": 41,
+        "activity": "Completare riepilogo per riga, esiti e lineage",
+        "output": "Stati owner e parzialità distinguibili",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R08",
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-14",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-23",
+        "workPackage": "WP6",
+        "nominalHours": 3,
+        "startHour": 41,
+        "endHour": 44,
+        "activity": "Qualificare recupero dopo nuova chat o interruzione",
+        "output": "Riferimenti durevoli, nessuna fonte/run implicita",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R08",
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-14",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-24",
+        "workPackage": "WP6",
+        "nominalHours": 2,
+        "startHour": 44,
+        "endHour": 46,
+        "activity": "Qualificare superfici su due client e confini THS",
+        "output": "G6; checkpoint di ristima, E2E completo ancora WP7",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R08",
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-14",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-25",
+        "workPackage": "WP7",
+        "nominalHours": 1.5,
+        "startHour": 46,
+        "endHour": 47.5,
+        "activity": "Comporre coorte finale, CI e piano di rilascio del delta",
+        "output": "Pin finali e regressioni giustificate",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-26",
+        "workPackage": "WP7",
+        "nominalHours": 1.5,
+        "startHour": 47.5,
+        "endHour": 49,
+        "activity": "Distribuire governatamente il solo delta finale",
+        "output": "Immagini collaudate, nessun replay WP3",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-27",
+        "workPackage": "WP7",
+        "nominalHours": 2,
+        "startHour": 49,
+        "endHour": 51,
+        "activity": "Eseguire nuovo CSV e reimport invariato sui client",
+        "output": "DS1/DS1R, identità e revisioni coerenti",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-28",
+        "workPackage": "WP7",
+        "nominalHours": 2,
+        "startHour": 51,
+        "endHour": 53,
+        "activity": "Completare fault/revoca e secondo profilo Ente",
+        "output": "Casi negativi e ENV-A/B nel livello previsto",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-29",
+        "workPackage": "WP7",
+        "nominalHours": 1.5,
+        "startHour": 53,
+        "endHour": 54.5,
+        "activity": "Consolidare dossier, guida utente e runbook",
+        "output": "Prove per ogni requisito e limiti espliciti",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-30",
+        "workPackage": "WP7",
+        "nominalHours": 0.5,
+        "startHour": 54.5,
+        "endHour": 55,
+        "activity": "Registrare esito dell'accettazione e chiudere il miniprogetto",
+        "output": "G7/M2 solo dopo accettazione HUMAN",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      }
+    ],
+    "gateForecasts": [
+      {
+        "gate": "G0",
+        "centralHour": 0.5,
+        "includedIn": "WP0+WP1",
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G1",
+        "leanHour": 2,
+        "centralHour": 3,
+        "prudentHour": 4,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G2",
+        "leanHour": 10,
+        "centralHour": 14,
+        "prudentHour": 18,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G3",
+        "leanHour": 14,
+        "centralHour": 19,
+        "prudentHour": 24,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G4",
+        "leanHour": 18,
+        "centralHour": 24,
+        "prudentHour": 30,
+        "milestone": "M1",
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G5",
+        "leanHour": 26,
+        "centralHour": 35,
+        "prudentHour": 44,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G6",
+        "leanHour": 34,
+        "centralHour": 46,
+        "prudentHour": 58,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G7",
+        "leanHour": 40,
+        "centralHour": 55,
+        "prudentHour": 70,
+        "milestone": "M2",
+        "status": "PLANNED"
+      }
+    ],
+    "functionalForecasts": [
+      {
+        "milestone": "F5",
+        "centralHour": 22,
+        "requires": "All retained second-acquisition assertions; elapsed effort alone does not prove F5"
+      },
+      {
+        "milestone": "F6",
+        "centralHour": 24,
+        "requires": "Both-acquisition ACK/commit/provenance and baseline preservation evidence"
+      }
+    ],
+    "totals": {
+      "technical": {
+        "lean": 40,
+        "central": 55,
+        "prudent": 70
+      },
+      "m1Technical": {
+        "lean": 18,
+        "central": 24,
+        "prudent": 30
+      },
+      "additionalHuman": {
+        "min": 3,
+        "central": 4.5,
+        "max": 6
+      },
+      "accountingSumNotCalendar": {
+        "min": 43,
+        "central": 59.5,
+        "max": 76
+      }
+    },
+    "dailyCapacityExamples": [
+      {
+        "technicalHoursPerDay": 4,
+        "m1DaysRoundedUp": 6,
+        "m2DaysRoundedUp": 14
+      },
+      {
+        "technicalHoursPerDay": 6,
+        "m1DaysRoundedUp": 4,
+        "m2DaysRoundedUp": 10
+      },
+      {
+        "technicalHoursPerDay": 8,
+        "m1DaysRoundedUp": 3,
+        "m2DaysRoundedUp": 7
+      }
+    ],
+    "rules": [
+      "Gate closure requires evidence, never elapsed time alone",
+      "WP0 half-hour allocation is inside WP0/WP1 central 3 hours, not additional",
+      "Passive waits do not consume active effort; active diagnosis does",
+      "Additional HUMAN effort is separate from technical effort and from wait",
+      "Runtime budgets and TTLs are unchanged; these are project tracking counters only",
+      "During HUMAN waits, independent WP5/WP6 may advance sequentially; recalculate milestone offsets without double counting",
+      "Final WP5/WP6 governed delta rollout is included in WP7",
+      "No automatic login, refresh, budget reset, replay, subagent or scheduled automation",
+      "Forecast equals actual active technical effort plus revised remaining effort",
+      "Reforecast after G1, G2, G5/G6, or when a package exceeds its upper estimate"
+    ],
+    "actualTracking": {
+      "implementationStarted": true,
+      "executionRequestedAt": "2026-10-20T11:07:49+02:00",
+      "dedicatedTrackingStartedAt": "2026-10-20T09:16:46.603Z",
+      "timelineRef": "evidence/csv-e2e-execution-timeline-20261020.json",
+      "activeTechnicalHours": null,
+      "additionalHumanHours": null,
+      "initialWindowPreciselySegmented": false,
+      "waitingIntervals": [],
+      "runtimeBudgetsUnchanged": true,
+      "executionBranch": "feat/csv-e2e-native-completion-20261020",
+      "lastObservedAt": "2026-10-26T13:36:14Z",
+      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 9.450502026944442,
+      "initialUnsegmentedHours": 0.14933416666666666,
+      "perPackageAllocationPrecise": false,
+      "currentOpenIntervalStartedAt": "2026-10-20T10:42:11.142Z",
+      "unverifiedIntervals": [
+        {
+          "id": "CSV-UNCERTAIN-0001",
+          "startedAt": "2026-10-20T10:34:57.040Z",
+          "endedAt": "2026-10-20T10:42:11.142Z",
+          "seconds": 434.102,
+          "classification": "UNVERIFIED_EXECUTION_CONTINUITY",
+          "includedInMeasuredEffort": false,
+          "reason": "User reports chat connection interrupted; do not infer technical effort or passive/HUMAN wait from the unverified interval."
+        }
+      ],
+      "actualEffortCoverageComplete": false,
+      "measurementNote": "Closed explicitly measured intervals only. Historical work after21October is incompletely segmented; do not treat this subtotal as full effort spent or percent complete. Original baseline hours unchanged."
+    }
+  },
+  "currentHandoff": "docs/handoffs/OUF_M1_REDACTION_DIAGNOSTICS_READY_20261026.md"
+}

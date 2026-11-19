@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.storage.repository-qualification-checkpoint.v1",
+  "head": "20bded511e42c844c8aa122bf3906b8200dc6b16",
+  "ci": {
+    "total": 54,
+    "success": 53,
+    "failure": 1
+  },
+  "image32": {
+    "runId": 41724851743,
+    "successfulJobs": 4,
+    "ociManifestDigest": "sha256:5531868a8acc4ac8b1581339e5cae79c7a6211402c936eb74f2bcfcd070831f6",
+    "runtimeCohortQualified": false
+  },
+  "postgres": {
+    "runId": 41724851796,
+    "artifactId": 13274020540,
+    "sha256": "3474e304f965b015c8739fe5e41b6441307c9b6f2ac6b71771b0b474d9d2fbb9",
+    "checksumMembersVerified": 91,
+    "testsPassed": 7,
+    "testsSkipped": 0,
+    "pitrQualified": false
+  },
+  "yaml33": {
+    "runId": 41724851908,
+    "artifactId": 13273956283,
+    "sha256": "a55ee84927ba33e3a2f8d8dae4299ffbe03303474a09033a7b1a86f595fa6474",
+    "checksumMembersVerified": 93,
+    "failure": "EXACT_VENDOR_MODULE_HEADERS_REQUIRED",
+    "originalVendorModulesTxtRetained": false,
+    "diagnosis": "Pinned upstream unused wildcard go-bip39 replace can produce terminal metadata; observed module graph has no go-bip39. Corrected run must confirm actual manifest.",
+    "observerTestsPassed": 12,
+    "fullObservation": "PENDING"
+  },
+  "targetOperations": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false
+}

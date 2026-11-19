@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.storage-plan-generation29-phase-a-local.v1",
+  "status": "LOCAL_PASS_NOT_ADMITTED",
+  "testsPassed": 32,
+  "workflowYamlParsed": true,
+  "shellBlocksSyntaxChecked": 2,
+  "currentQualification15Unchanged": true,
+  "sourceClosure27Unchanged": true,
+  "generation29ImageReceiptSha256": "9b6ff3d19e18d9c20d1577c32744a3a4e4b2ae0a66a5d0940ca713f9a17057c8",
+  "cold15ReceiptSha256": "2cb1ae3c6ca67f58bac1ac5b48a7c2db934f26ee033098d3cf82571de313fa6c",
+  "reportedProgressPercent": 38,
+  "weightedCredits": 17.5,
+  "originalWeightTotal": 46,
+  "progressIsNotAcceptance": true,
+  "gatesPassed": 0,
+  "acceptanceTestsPassed": 0,
+  "targetOperations": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "files": {
+    "AGENTS.md": {
+      "bytes": 16009,
+      "sha256": "be1f7b8d270a930c269218f3e5abe542140acbb9d282bf7cb6f40cfa427076b6"
+    },
+    "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md": {
+      "bytes": 107643,
+      "sha256": "7a19e14e6f0ad59223ebd4893092b8a179cf0570f33fcf0c9adca1fdc968d5ff"
+    },
+    "releases/minio-seaweedfs-plan-20261102.json": {
+      "bytes": 34469,
+      "sha256": "25a713cf6ce67e8d1a09b8c5b7427db2e268b0f7d1264b8c93d581380b80481d"
+    },
+    "scripts/verify-minio-seaweedfs-plan-current.py": {
+      "bytes": 45892,
+      "sha256": "d09613f3c5d22a6a38c3e0907b66baccab25ef42bb734b53cc125ac40644012a"
+    },
+    "tests/test_minio_seaweedfs_plan_current.py": {
+      "bytes": 30512,
+      "sha256": "f2fc13b738075b0a4d4a21b51db89b9dca716a58f69e36b09840521b820658b9"
+    },
+    ".github/workflows/storage-plan-current.yml": {
+      "bytes": 5632,
+      "sha256": "ee42970c59b3de4aed75998b184d74e8b6fc3501863b2011781394f2fa71d0ea"
+    },
+    "evidence/storage-plan29-phase-a-local-20261103/tests.txt": {
+      "bytes": 5785,
+      "sha256": "786cf50c386d7759fb668ed3aea8308836f760f5c2de59cd834ba426d278ea4e"
+    },
+    "evidence/storage-plan29-phase-a-local-20261103/verification.json": {
+      "bytes": 1268,
+      "sha256": "eba0a2784c1c85277a27e7af529127a38da84e5af27fa383ecf071026eb03fe6"
+    }
+  }
+}

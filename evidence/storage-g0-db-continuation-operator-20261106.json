@@ -1,0 +1,73 @@
+{
+  "schema": "ouf.storage-g0-db-continuation-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "sourceCommit": "bd779aa8c21fbdea07772f7554c90b4e2252df90",
+  "sourceSha256": "22e18096f4dfbebee8555795c6dad8d49eb9b7449dbe591adfba39debc5fa0f7",
+  "reportedResult": {
+    "acceptanceCreditAdded": 0,
+    "allFourConnectionDraftsPresent": true,
+    "automaticReplayAllowed": false,
+    "collectionScopeCreated": false,
+    "commandLinesRead": 3,
+    "configurationBytesRead": 2429,
+    "configurationFileReadsAttempted": 2,
+    "configurationFilesRead": 2,
+    "connectionDraftsPrepared": [
+      "onboarding",
+      "udp",
+      "ingestion"
+    ],
+    "credentialFileWritesAttempted": 3,
+    "credentialFilesWritten": 3,
+    "credentialsMayBePresentInDraft": true,
+    "g0Complete": false,
+    "missingInputs": [
+      "CURRENT_DOCKER_ROLE_IMAGE_AND_MOUNT_REVIEW",
+      "EFFECTIVE_APPLICATION_CONFIGURATION_REVIEW",
+      "ONBOARDING_RETAINED_PROFILE_REVIEW",
+      "SOURCE_AND_PROPOSED_CAPACITY_PATH_CUSTODY_REVIEW",
+      "OPERATOR_ACCESS_WRITERS_CAPACITY_CUSTODY_WINDOW",
+      "SEPARATE_COLLECTION_DECISION"
+    ],
+    "originalPreparationChanged": false,
+    "processEnvironmentsRead": 3,
+    "providerRequests": 0,
+    "roles": {
+      "ingestion": {
+        "additionalConfigurationChecked": true,
+        "applicationJsonChecked": false,
+        "effectiveConfigurationProven": false,
+        "sourceCustodyAdmitted": false
+      },
+      "onboarding": {
+        "additionalConfigurationChecked": true,
+        "applicationJsonChecked": true,
+        "effectiveConfigurationProven": false,
+        "sourceCustodyAdmitted": false
+      },
+      "udp": {
+        "additionalConfigurationChecked": false,
+        "applicationJsonChecked": true,
+        "effectiveConfigurationProven": false,
+        "sourceCustodyAdmitted": false
+      }
+    },
+    "runtimeAuthorityIssued": false,
+    "s3CredentialFilesRead": 0,
+    "s3DraftReusedWithoutCredentialRead": true,
+    "schema": "ouf.storage-g0-db-continuation-result.v1",
+    "status": "DATABASE_CONNECTION_DRAFTS_PREPARED_REVIEW_REQUIRED",
+    "targetInputCheckPassed": false
+  },
+  "interpretation": {
+    "allFourConnectionDraftsReported": true,
+    "threeBroadOverlayPreparationHoldsResolved": true,
+    "combinedPackagePreflightExecuted": false,
+    "effectiveSpringConfigurationProven": false,
+    "sourceCustodyAdmitted": false,
+    "providerAuthenticationProven": false,
+    "g0Complete": false,
+    "acceptanceCreditAdded": 0
+  }
+}

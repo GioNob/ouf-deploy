@@ -1,0 +1,51 @@
+{
+  "schema": "ouf.ingestion-readiness-projection-custody-fix.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 1,
+  "operatorStop": "ROOT_INPUT_ANCESTRY_REQUIRED",
+  "cause": "Private preparer required root ownership for every ancestor of the previously selected Gateway projection, ignoring qualified named custody.",
+  "fixCommit": "8ce9ce52e691caa5567bb4684fe74e63f0527c61",
+  "deliveryCommit": "bf2c6ed7e6e6f6832c1dcdaef8c4af3ed18d0af8",
+  "qualification": {
+    "workflowRun": 39014022708,
+    "conclusion": "success",
+    "rootSelectedNonrootParentFixture": "passed",
+    "privatePreparationRootTests": 6,
+    "governedOwnerComposedTests": 6,
+    "explicitTestBudgetNativeTests": 7,
+    "mcpWorkflowRun": 39014022717,
+    "mcpConclusion": "success"
+  },
+  "verifiedPublishedBytes": [
+    {
+      "path": "scripts/launch-ingestion-readiness-private-review-20261017.sh",
+      "ref": "bf2c6ed7e6e6f6832c1dcdaef8c4af3ed18d0af8"
+    },
+    {
+      "path": "scripts/prepare-ingestion-readiness-update-review-20261017.py",
+      "ref": "8ce9ce52e691caa5567bb4684fe74e63f0527c61"
+    },
+    {
+      "path": "releases/ingestion-readiness-private-selection-20261017.json",
+      "ref": "a16860a78811da6da60a645680a64df3d3ac08a0"
+    },
+    {
+      "path": "tools/semantic_application_cutover/image_custody.py",
+      "ref": "0c91f31465064819805e417bd9e2f4e10a4aee23"
+    },
+    {
+      "path": "tools/chatbot_file_cohort/gateway.py",
+      "ref": "0c91f31465064819805e417bd9e2f4e10a4aee23"
+    }
+  ],
+  "targetEffects": {
+    "serviceMutations": 0,
+    "gatewayWrites": 0,
+    "databaseCalls": 0,
+    "grantRequests": 0,
+    "credentialFilesRead": 0,
+    "ownershipChanges": 0
+  },
+  "executionReady": false,
+  "next": "Operator runs corrected private preparer with cached candidate; native scoped rollout executor remains to be qualified."
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "ouf.onboarding-compatibility-blocked-human-login-evidence.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 1,
+  "executorSourceCommit": "91738314175dc1f5c912a3f4a760a76b0b736476",
+  "manifestCommit": "7e72b854366970d54b9bd41f1c144683415cc9f5",
+  "manifestSha256": "6aa5285e71afe06a986cc8b382713964150f5b6a2c4f54240c7d0d12f8dbd506",
+  "launcherSha256": "6ef642a3481be972825030801ebba9693da136ca79248a92924a014cd055389b",
+  "candidateSourceCommit": "34488428ac8eee6b919cb1b5982cf9ba62361292",
+  "candidateRunId": 39020189836,
+  "qualification": {
+    "runId": 39023344933,
+    "jobId": 117369373038,
+    "tests": 41,
+    "skipped": 0,
+    "conclusion": "success",
+    "realRootCustody": true,
+    "realSignatures": true,
+    "realDocker": true,
+    "liveIssuerUsed": false,
+    "targetAcceptanceProven": false
+  },
+  "observedStop": {
+    "contextPath": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-fz4p79t2",
+    "state": "BLOCKED",
+    "operation": "REFRESH",
+    "reason": "HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN",
+    "attempts": 81,
+    "remainingOAuthAttempts": 47,
+    "authorityArtifactsAbsent": true,
+    "specificRevocationCauseProven": false
+  },
+  "successor": {
+    "requiresExplicitLocalLoginConsent": true,
+    "requiresFreshIssuerAuthentication": true,
+    "oldRefreshReplayAllowed": false,
+    "oldCredentialCopyAllowed": false,
+    "oldBlockedJournalPreserved": true,
+    "transportAmbiguousRequestsExcluded": true,
+    "priorOAuthAttempts": 81,
+    "maximumCumulativeOAuthAttempts": 128,
+    "automaticRenewalAllowed": false,
+    "budgetReset": false
+  },
+  "worker": {
+    "priorControlledGrantAttempts": 248,
+    "maximumNewAttempts": 68,
+    "maximumCumulativeAttempts": 316,
+    "requiresSeparateAuthenticatedApproval": true
+  },
+  "rollout": {
+    "module": "onboarding",
+    "requiresSeparateAuthenticatedApproval": true,
+    "semanticDispatchPerformed": false,
+    "sourceActivationProven": false,
+    "targetExecutionPerformedByThisPublication": false
+  }
+}

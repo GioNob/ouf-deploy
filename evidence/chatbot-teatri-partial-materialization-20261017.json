@@ -1,0 +1,61 @@
+{
+  "schema": "ouf.teatri-acquisition-partial-materialization-readback.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "observedVia": "Operator output from pinned reader 7fb7dade825ac496d4bd19a7090fda53ea2d2a00f04d47840e718b71e62aa135",
+  "contextPath": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-ybmis4le",
+  "reviewSha256": "b258d70a9ec1e6257be8508bdce62b69b60e7b78a671356dd5defb8490796ca3",
+  "journalVersion": 29,
+  "ingestion": {
+    "databaseOid": 21554,
+    "runId": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+    "state": "SUCCEEDED",
+    "phase": "MANAGED_ONCE",
+    "attempts": 13,
+    "failedAttempts": 0,
+    "lineageCount": 13,
+    "ackedHandoffs": 13,
+    "ackedReceipts": 13,
+    "quarantineCount": 0,
+    "health": "HEALTHY",
+    "scheduleState": "DISABLED",
+    "triggerOnce": true,
+    "consumedPublicationId": "996d58ca-43d6-42f5-a42a-311940e742f9"
+  },
+  "udp": {
+    "databaseOid": 21556,
+    "processedHandoffs": 1,
+    "durableUnprocessedHandoffs": 12,
+    "succeededJobs": 1,
+    "quarantinedJobs": 12,
+    "sourceBindings": 1,
+    "distinctBoundObjects": 1,
+    "materializationObservations": 1,
+    "boundObjectsWithRevision": 1,
+    "propertyContributions": 20,
+    "resolutionIssues": {
+      "state": "OPEN",
+      "reason": "UNRESOLVED_IDENTITY",
+      "count": 12
+    }
+  },
+  "cinema": {
+    "queriedType": "https://schema.org/MovieTheater",
+    "count": 0,
+    "baselineTypeReconciled": false,
+    "baselineLossProven": false
+  },
+  "diagnosis": {
+    "sourceRepository": "GioNob/ouf-udp-object-resolution",
+    "sourceRef": "b49c0d6f50c574c11684361ce4e8040e9cbddee2",
+    "sourceLevelFinding": "GovernedIdentityEngine considers a candidate distinct only when every shared comparable signal disagrees; mixed agreement/disagreement is REVIEW_REQUIRED. Retrieval unions hits across all comparable fields. This is consistent with observed reason, not a read of target per-signal evidence.",
+    "existingHumanSurface": "/trusted-human/resolution/",
+    "existingAction": "CREATE_NEW",
+    "autoLinkSingleCandidateUnsafe": true,
+    "operatorActionPending": "Open existing HUMAN surface; inspect count/options before confirmation."
+  },
+  "semanticDispatchPerformed": false,
+  "newImportPerformed": false,
+  "newWorkerStarted": false,
+  "databaseMutations": 0
+}

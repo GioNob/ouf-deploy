@@ -1,0 +1,9 @@
+66851357
+go.mongodb.org/mongo-driver/v2 v2.9.2 h1:OCAdjI37pC/SVxucz/9CM8zD4jCdegtsY5QcKzYFCgE=
+go.mongodb.org/mongo-driver/v2 v2.9.2/go.mod h1:SHKN0IWkKmEVGHLjXnni6s4wPKX4v86FTgOeJJFuXcA=
+
+go.sum database tree
+70740397
+V04k+R+Dt0cHxXvhRVx+wStCXAhC1qvPI+3oEZJWHxU=
+
+— sum.golang.org Az3grshUFo4cOTE46E5VXdwiYcncobjXgl3r5kFn5XBTT25cpDFBAxIUi426xDBNz7ZnumGZC2ffMxN8nsPdGvDPkAU=

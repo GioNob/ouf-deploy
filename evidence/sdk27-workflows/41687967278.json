@@ -1,0 +1,117 @@
+{
+  "name": "storage-iam-module-sdk-v2",
+  "workflowPath": ".github/workflows/storage-iam-module-sdk-v2.yml",
+  "runId": 41687967278,
+  "jobId": 126098659932,
+  "conclusion": "success",
+  "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967278",
+  "artifact": {
+    "id": 13256586071,
+    "name": "storage-iam-module-sdk-v2-41687967278",
+    "sha256": "37cb21571731a26da01075d83a734c3130bbb56d21c96a03d5736ff3e5704a2a",
+    "sizeInBytes": 6518,
+    "downloadVerified": true,
+    "expiresAt": "2027-02-01T17:49:39Z"
+  },
+  "manifestSha256": "fa0bfd26cfd524ab8077bf689d90e9a8ea288061c5430ea4d48766ba98b9cec3",
+  "manifestEntriesVerified": 12,
+  "fileManifest": [
+    {
+      "file": "module-pins-before-tidy.txt",
+      "sha256": "16c242fae7ba1feba2e979626707a571d85b29247b20f226a312e1bc47f019bb",
+      "size": 146
+    },
+    {
+      "file": "patch-sha256.txt",
+      "sha256": "2c5780f2f8bfa62672ee87d693e842033223c31fb314033a1a9e0c72d159c760",
+      "size": 116
+    },
+    {
+      "file": "test.log",
+      "sha256": "38f363672272e739f72f520a9e44fc1b33f118ce3734afecf0eda33ea8781a32",
+      "size": 1990
+    },
+    {
+      "file": "upstream-source-sha.txt",
+      "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+      "size": 41
+    },
+    {
+      "file": "iam-test-deps.txt",
+      "sha256": "4e52f7a8e438d0d3f4f3b97afcc0d14a1fe3f9b5d48b88298cd124371f59f5cd",
+      "size": 7780
+    },
+    {
+      "file": "iam-modules.txt",
+      "sha256": "63d5c4fad3549649d4c05629c9837a46acb32296c7343cf0622c89fd5e271d44",
+      "size": 955
+    },
+    {
+      "file": "compile.log",
+      "sha256": "ae7a42c72b1a09eea4e1420fd76883c5eefeca59fd02a63372bcf6d041bec463",
+      "size": 73
+    },
+    {
+      "file": "tidy-idempotence.log",
+      "sha256": "bae31ee1d4a44c2809bb8967ec8ab1952bc42a13c74e34545b0bbf13fd0aee10",
+      "size": 22
+    },
+    {
+      "file": "patch-stat.txt",
+      "sha256": "bc3cc6b51dbb16330d5dd39b90ef17a4820b4a8703287f953354c4c3e02e8913",
+      "size": 6395
+    },
+    {
+      "file": "remaining-direct-importers.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "remaining-iam-v1-module-entries.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "unsupported-module-findings.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "tests": {
+    "topLevelPass": 14,
+    "subcasesPass": 4,
+    "names": [
+      "TestIAMFrameworkV2StaticQueryAndToken",
+      "TestIAMFrameworkV2S3RegionAndChecksum",
+      "TestIAMFrameworkV2BearerIdentity",
+      "TestIAMFrameworkV2ErrorsAndBoundedRetry",
+      "TestIAMFrameworkV2CancellationAndPartialCredentials",
+      "TestIAMFrameworkV2RawExtensionSigning",
+      "TestIAMFixtureS3V2Contract",
+      "TestIAMFixtureS3V2FailureBudget",
+      "TestIAMFixtureS3V2Cancellation",
+      "TestIAMFixtureS3V2CleanupDeadline",
+      "TestIAMFixtureS3V2RejectsPartialCredentials",
+      "TestIAMFixtureRawQueryV2Signing",
+      "TestSignSigV4RequestUsesStableSTSScopeAndBody",
+      "TestSignSigV4RequestIncludesTemporaryCredentialToken"
+    ],
+    "subcases": [
+      "TestIAMFrameworkV2BearerIdentity/iam",
+      "TestIAMFrameworkV2BearerIdentity/s3",
+      "TestIAMFixtureS3V2FailureBudget/Forbidden",
+      "TestIAMFixtureS3V2FailureBudget/Service_Unavailable"
+    ],
+    "liveIntegrationRun": false
+  },
+  "dependencyGraphs": [
+    {
+      "file": "iam-test-deps.txt",
+      "packageCount": 303,
+      "sdkV1Packages": 0,
+      "sha256": "4e52f7a8e438d0d3f4f3b97afcc0d14a1fe3f9b5d48b88298cd124371f59f5cd"
+    }
+  ],
+  "directImporters": 0
+}

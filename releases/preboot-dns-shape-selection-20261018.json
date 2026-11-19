@@ -1,0 +1,8 @@
+{
+  "schema": "ouf.preboot-dns-shape-selection.v1",
+  "applications": {
+    "mcp": "c2c2893f1b2f03a7a5216a3b21601c5c639ab5f4f7b193d5a960271ba19b0696",
+    "onboarding": "8dc539b0756beb40cee0d45b2b223a18eee1a53d8cdb4389d7d914dbda66aad9",
+    "udp": "946fd69972ada2e310c32f72da27f19a04e7a2043dc330f116e8ba1c507e6e3b"
+  }
+}

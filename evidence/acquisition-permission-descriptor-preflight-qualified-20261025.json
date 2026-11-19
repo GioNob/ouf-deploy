@@ -1,0 +1,64 @@
+{
+  "schema": "ouf.acquisition-permission-descriptor-preflight-qualified.v1",
+  "codeCommit": "d2e80980f7575ce1e71627632eeba515441d84be",
+  "codeSHA256": "062b1e201904b9fd7a10efcad371de17d4c0fbc3411710c310186aa7381c5cad",
+  "deliveryCommit": "077065def9e06e743556c5e86f051238284b5a0d",
+  "wrapper": "releases/read-acquisition-permission-descriptors-20261025.sh",
+  "wrapperSHA256": "5af3e992228a0fe57adf6db4a568d61624543ea00429e7f2463b5b2836276314",
+  "claim": "/home/oufadmin/ouf-acquisition-permission-descriptor-read-20261025",
+  "protectedCode": "/usr/local/lib/ouf-acquisition-permission-descriptor-read-062b1e201904b9fd/read.py",
+  "codeOwnerMode": "root:0444",
+  "codeDirectoryOwnerMode": "root:0555",
+  "qualification": {
+    "syntheticUnitTests": {
+      "tests": 15,
+      "skips": 0,
+      "pushRun": 40221093919,
+      "pushJob": 121252624265,
+      "prRun": 40221182197,
+      "prJob": 121252893726,
+      "passed": true,
+      "directLogsRead": true
+    },
+    "realDelivery": {
+      "pushRun": 40221177505,
+      "pushJob": 121252878796,
+      "prRun": 40221182156,
+      "prJob": 121252893341,
+      "passed": true,
+      "directLogsRead": true,
+      "actualPinnedDownload": true,
+      "checksum": true,
+      "protectedRootCopy": true,
+      "noTtyStopsBeforeLogin": true,
+      "noTargetScopeCreated": true,
+      "noOwnerNetworkRequests": true
+    },
+    "retainedInitialFailures": {
+      "runs": [
+        40221093920,
+        40221098244
+      ],
+      "cause": "CI matcher rg unavailable AFTER correct checksum/protected code and expected non-TTY STOP; replaced matcher with grep -F; not a target execution",
+      "deliveredToTarget": false
+    }
+  },
+  "limits": {
+    "elapsedSeconds": 600,
+    "iamMetadataGets": 1,
+    "iamPosts": 121,
+    "ownerGets": 52,
+    "responseBytes": 2000000,
+    "cumulativeBytes": 16000000
+  },
+  "targetExecuted": false,
+  "normalHumanLoginRequired": true,
+  "automaticLoginNotStarted": true,
+  "administrativeWrites": 0,
+  "sourceActivations": 0,
+  "acquisitionsExecuted": 0,
+  "registryWorkerTouched": false,
+  "runtimeAuthorityIssued": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

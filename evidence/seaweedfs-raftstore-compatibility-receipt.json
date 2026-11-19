@@ -1,0 +1,21 @@
+{
+  "schema": "ouf.raftstore-local-compatibility.v1",
+  "status": "LOCAL_DB_FILE_COMPATIBILITY_VERIFIED_NOT_RUNTIME_ACCEPTANCE",
+  "testsPassed": [
+    "TestLocalFileReadByOldV2AndReadOnlyLocalDoesNotChangeBytes",
+    "TestLogStoreMonotonicInterfaceRemainsUnclaimed",
+    "TestOldV2FileReadAndWriteWithLocalThenReopenOldV2"
+  ],
+  "candidateModuleFilesUnchanged": {
+    "go.mod": "b7344b21bf262d6120fa343b62825a19b2e8bed99eb67e06c183c6ee3562fc45",
+    "go.sum": "c5f9c6044e9110b116d1685317a3b2958be2622a78e6de85934370e7a0be1c04"
+  },
+  "candidateRequirementPinsUnchanged": true,
+  "oracle": "github.com/hashicorp/raft-boltdb/v2@v2.4.2",
+  "oracleContainsArchivedBoltOutsideCandidateOnly": true,
+  "fixtureSha256": "76f2a6adcc11ed5031cf3ea324af948eae361883f7e9b5d75baa76bf41697c0c",
+  "dbFormatMigrationPerformed": false,
+  "crashOrPowerLossQualified": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0
+}

@@ -1,0 +1,222 @@
+diff --git a/test/s3/sse/s3_volume_encryption_test.go b/test/s3/sse/s3_volume_encryption_test.go
+index cc7849a8d..29a7b4652 100644
+--- a/test/s3/sse/s3_volume_encryption_test.go
++++ b/test/s3/sse/s3_volume_encryption_test.go
+@@ -11,10 +11,9 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ )
+ 
+ // TestS3VolumeEncryptionRoundtrip tests that data uploaded with encryptVolumeData
+@@ -29,7 +28,7 @@ func TestS3VolumeEncryptionRoundtrip(t *testing.T) {
+ 	bucket := fmt.Sprintf("volume-encryption-test-%d", time.Now().Unix())
+ 
+ 	// Create bucket
+-	_, err := svc.CreateBucket(&s3.CreateBucketInput{
++	_, err := svc.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	if err != nil {
+@@ -93,7 +92,7 @@ func TestS3VolumeEncryptionRoundtrip(t *testing.T) {
+ 				expectedData = []byte(tc.content)
+ 			}
+ 
+-			_, err := svc.PutObject(&s3.PutObjectInput{
++			_, err := svc.PutObject(t.Context(), &s3.PutObjectInput{
+ 				Bucket: aws.String(bucket),
+ 				Key:    aws.String(tc.key),
+ 				Body:   uploadBody,
+@@ -111,7 +110,7 @@ func TestS3VolumeEncryptionRoundtrip(t *testing.T) {
+ 				getInput.Range = aws.String(tc.rangeReq)
+ 			}
+ 
+-			result, err := svc.GetObject(getInput)
++			result, err := svc.GetObject(t.Context(), getInput)
+ 			if err != nil {
+ 				t.Fatalf("GetObject failed: %v", err)
+ 			}
+@@ -145,7 +144,7 @@ func TestS3VolumeEncryptionMultiChunk(t *testing.T) {
+ 	bucket := fmt.Sprintf("volume-encryption-multichunk-%d", time.Now().Unix())
+ 
+ 	// Create bucket
+-	_, err := svc.CreateBucket(&s3.CreateBucketInput{
++	_, err := svc.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	if err != nil {
+@@ -163,7 +162,7 @@ func TestS3VolumeEncryptionMultiChunk(t *testing.T) {
+ 	key := "large-file.bin"
+ 
+ 	// Upload
+-	_, err = svc.PutObject(&s3.PutObjectInput{
++	_, err = svc.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(key),
+ 		Body:   bytes.NewReader(largeContent),
+@@ -173,7 +172,7 @@ func TestS3VolumeEncryptionMultiChunk(t *testing.T) {
+ 	}
+ 
+ 	// Download full file
+-	result, err := svc.GetObject(&s3.GetObjectInput{
++	result, err := svc.GetObject(t.Context(), &s3.GetObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(key),
+ 	})
+@@ -207,7 +206,7 @@ func TestS3VolumeEncryptionMultiChunk(t *testing.T) {
+ 	// Test range request spanning chunk boundary (around 8MB)
+ 	rangeStart := int64(8*1024*1024 - 1000)
+ 	rangeEnd := int64(8*1024*1024 + 1000)
+-	rangeResult, err := svc.GetObject(&s3.GetObjectInput{
++	rangeResult, err := svc.GetObject(t.Context(), &s3.GetObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(key),
+ 		Range:  aws.String(fmt.Sprintf("bytes=%d-%d", rangeStart, rangeEnd)),
+@@ -241,7 +240,7 @@ func TestS3VolumeEncryptionMultiChunkRangeRead(t *testing.T) {
+ 	bucket := fmt.Sprintf("volume-encryption-multirange-%d", time.Now().Unix())
+ 
+ 	// Create bucket
+-	_, err := svc.CreateBucket(&s3.CreateBucketInput{
++	_, err := svc.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	if err != nil {
+@@ -263,7 +262,7 @@ func TestS3VolumeEncryptionMultiChunkRangeRead(t *testing.T) {
+ 	key := "multi-chunk-range-test.bin"
+ 
+ 	// Upload
+-	_, err = svc.PutObject(&s3.PutObjectInput{
++	_, err = svc.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(key),
+ 		Body:   bytes.NewReader(largeContent),
+@@ -318,7 +317,7 @@ func TestS3VolumeEncryptionMultiChunkRangeRead(t *testing.T) {
+ 			t.Logf("Test: %s", tc.desc)
+ 			t.Logf("Range: bytes=%d-%d (spanning bytes at offsets across chunk boundaries)", tc.rangeStart, tc.rangeEnd)
+ 
+-			result, err := svc.GetObject(&s3.GetObjectInput{
++			result, err := svc.GetObject(t.Context(), &s3.GetObjectInput{
+ 				Bucket: aws.String(bucket),
+ 				Key:    aws.String(key),
+ 				Range:  aws.String(fmt.Sprintf("bytes=%d-%d", tc.rangeStart, tc.rangeEnd)),
+@@ -365,7 +364,7 @@ func TestS3VolumeEncryptionCopy(t *testing.T) {
+ 	bucket := fmt.Sprintf("volume-encryption-copy-%d", time.Now().Unix())
+ 
+ 	// Create bucket
+-	_, err := svc.CreateBucket(&s3.CreateBucketInput{
++	_, err := svc.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	if err != nil {
+@@ -378,7 +377,7 @@ func TestS3VolumeEncryptionCopy(t *testing.T) {
+ 	content := "Content to be copied with volume-level encryption"
+ 
+ 	// Upload source
+-	_, err = svc.PutObject(&s3.PutObjectInput{
++	_, err = svc.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(srcKey),
+ 		Body:   strings.NewReader(content),
+@@ -388,7 +387,7 @@ func TestS3VolumeEncryptionCopy(t *testing.T) {
+ 	}
+ 
+ 	// Copy object
+-	_, err = svc.CopyObject(&s3.CopyObjectInput{
++	_, err = svc.CopyObject(t.Context(), &s3.CopyObjectInput{
+ 		Bucket:     aws.String(bucket),
+ 		Key:        aws.String(dstKey),
+ 		CopySource: aws.String(fmt.Sprintf("%s/%s", bucket, srcKey)),
+@@ -398,7 +397,7 @@ func TestS3VolumeEncryptionCopy(t *testing.T) {
+ 	}
+ 
+ 	// Read copied object
+-	result, err := svc.GetObject(&s3.GetObjectInput{
++	result, err := svc.GetObject(t.Context(), &s3.GetObjectInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String(dstKey),
+ 	})
+@@ -421,29 +420,45 @@ func TestS3VolumeEncryptionCopy(t *testing.T) {
+ 
+ // Helper functions
+ 
+-func getS3Client(t *testing.T) *s3.S3 {
++func getS3Client(t *testing.T) *s3.Client {
++	t.Helper()
+ 	// Use credentials that match the Makefile configuration
+ 	// ACCESS_KEY ?= some_access_key1
+ 	// SECRET_KEY ?= some_secret_key1
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:           aws.String("us-east-1"),
+-		Endpoint:         aws.String("http://localhost:8333"),
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-		Credentials:      credentials.NewStaticCredentials("some_access_key1", "some_secret_key1", ""),
++	cfg := aws.Config{
++		Region:           "us-east-1",
++		Credentials:      credentials.NewStaticCredentialsProvider("some_access_key1", "some_secret_key1", ""),
++		RetryMaxAttempts: 1,
++	}
++	return s3.NewFromConfig(cfg, func(options *s3.Options) {
++		options.BaseEndpoint = aws.String("http://localhost:8333")
++		options.UsePathStyle = true
+ 	})
+-	if err != nil {
+-		t.Fatalf("Failed to create session: %v", err)
++}
++
++func TestGetS3ClientUsesBoundedLocalConfiguration(t *testing.T) {
++	options := getS3Client(t).Options()
++
++	if options.Region != "us-east-1" {
++		t.Fatalf("region = %q, want us-east-1", options.Region)
++	}
++	if got := aws.ToString(options.BaseEndpoint); got != "http://localhost:8333" {
++		t.Fatalf("base endpoint = %q, want http://localhost:8333", got)
++	}
++	if !options.UsePathStyle {
++		t.Fatal("path-style addressing is disabled")
++	}
++	if options.RetryMaxAttempts != 1 {
++		t.Fatalf("retry max attempts = %d, want 1", options.RetryMaxAttempts)
+ 	}
+-	return s3.New(sess)
+ }
+ 
+-func cleanupBucket(t *testing.T, svc *s3.S3, bucket string) {
+-	ctx := context.Background()
+-	_ = ctx
++func cleanupBucket(t *testing.T, svc *s3.Client, bucket string) {
++	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
++	defer cancel()
+ 
+ 	// List and delete all objects
+-	listResult, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{
++	listResult, err := svc.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	if err != nil {
+@@ -452,7 +467,7 @@ func cleanupBucket(t *testing.T, svc *s3.S3, bucket string) {
+ 	}
+ 
+ 	for _, obj := range listResult.Contents {
+-		_, err := svc.DeleteObject(&s3.DeleteObjectInput{
++		_, err := svc.DeleteObject(ctx, &s3.DeleteObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    obj.Key,
+ 		})
+@@ -462,7 +477,7 @@ func cleanupBucket(t *testing.T, svc *s3.S3, bucket string) {
+ 	}
+ 
+ 	// Delete bucket
+-	_, err = svc.DeleteBucket(&s3.DeleteBucketInput{
++	_, err = svc.DeleteBucket(ctx, &s3.DeleteBucketInput{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	if err != nil {

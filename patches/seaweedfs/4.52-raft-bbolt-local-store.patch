@@ -1,0 +1,1274 @@
+diff --git a/weed/server/raft_hashicorp.go b/weed/server/raft_hashicorp.go
+--- a/weed/server/raft_hashicorp.go
++++ b/weed/server/raft_hashicorp.go
+@@ -17,11 +17,11 @@
+ 	"github.com/armon/go-metrics/prometheus"
+ 	"github.com/hashicorp/raft"
+ 	hashicorpRaft "github.com/hashicorp/raft"
+-	boltdb "github.com/hashicorp/raft-boltdb/v2"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/stats"
+ 	"github.com/seaweedfs/seaweedfs/weed/topology"
++	boltdb "github.com/seaweedfs/seaweedfs/weed/util/raftstore"
+ 	"google.golang.org/grpc"
+ )
+ 
+diff --git a/weed/util/raftstore/LICENSE b/weed/util/raftstore/LICENSE
+new file mode 100644
+--- /dev/null
++++ b/weed/util/raftstore/LICENSE
+@@ -0,0 +1,364 @@
++Copyright IBM Corp. 2015, 2025
++
++Mozilla Public License, version 2.0
++
++1. Definitions
++
++1.1. "Contributor"
++
++     means each individual or legal entity that creates, contributes to the
++     creation of, or owns Covered Software.
++
++1.2. "Contributor Version"
++
++     means the combination of the Contributions of others (if any) used by a
++     Contributor and that particular Contributor's Contribution.
++
++1.3. "Contribution"
++
++     means Covered Software of a particular Contributor.
++
++1.4. "Covered Software"
++
++     means Source Code Form to which the initial Contributor has attached the
++     notice in Exhibit A, the Executable Form of such Source Code Form, and
++     Modifications of such Source Code Form, in each case including portions
++     thereof.
++
++1.5. "Incompatible With Secondary Licenses"
++     means
++
++     a. that the initial Contributor has attached the notice described in
++        Exhibit B to the Covered Software; or
++
++     b. that the Covered Software was made available under the terms of
++        version 1.1 or earlier of the License, but not also under the terms of
++        a Secondary License.
++
++1.6. "Executable Form"
++
++     means any form of the work other than Source Code Form.
++
++1.7. "Larger Work"
++
++     means a work that combines Covered Software with other material, in a
++     separate file or files, that is not Covered Software.
++
++1.8. "License"
++
++     means this document.
++
++1.9. "Licensable"
++
++     means having the right to grant, to the maximum extent possible, whether
++     at the time of the initial grant or subsequently, any and all of the
++     rights conveyed by this License.
++
++1.10. "Modifications"
++
++     means any of the following:
++
++     a. any file in Source Code Form that results from an addition to,
++        deletion from, or modification of the contents of Covered Software; or
++
++     b. any new file in Source Code Form that contains any Covered Software.
++
++1.11. "Patent Claims" of a Contributor
++
++      means any patent claim(s), including without limitation, method,
++      process, and apparatus claims, in any patent Licensable by such
++      Contributor that would be infringed, but for the grant of the License,
++      by the making, using, selling, offering for sale, having made, import,
++      or transfer of either its Contributions or its Contributor Version.
++
++1.12. "Secondary License"
++
++      means either the GNU General Public License, Version 2.0, the GNU Lesser
++      General Public License, Version 2.1, the GNU Affero General Public
++      License, Version 3.0, or any later versions of those licenses.
++
++1.13. "Source Code Form"
++
++      means the form of the work preferred for making modifications.
++
++1.14. "You" (or "Your")
++
++      means an individual or a legal entity exercising rights under this
++      License. For legal entities, "You" includes any entity that controls, is
++      controlled by, or is under common control with You. For purposes of this
++      definition, "control" means (a) the power, direct or indirect, to cause
++      the direction or management of such entity, whether by contract or
++      otherwise, or (b) ownership of more than fifty percent (50%) of the
++      outstanding shares or beneficial ownership of such entity.
++
++
++2. License Grants and Conditions
++
++2.1. Grants
++
++     Each Contributor hereby grants You a world-wide, royalty-free,
++     non-exclusive license:
++
++     a. under intellectual property rights (other than patent or trademark)
++        Licensable by such Contributor to use, reproduce, make available,
++        modify, display, perform, distribute, and otherwise exploit its
++        Contributions, either on an unmodified basis, with Modifications, or
++        as part of a Larger Work; and
++
++     b. under Patent Claims of such Contributor to make, use, sell, offer for
++        sale, have made, import, and otherwise transfer either its
++        Contributions or its Contributor Version.
++
++2.2. Effective Date
++
++     The licenses granted in Section 2.1 with respect to any Contribution
++     become effective for each Contribution on the date the Contributor first
++     distributes such Contribution.
++
++2.3. Limitations on Grant Scope
++
++     The licenses granted in this Section 2 are the only rights granted under
++     this License. No additional rights or licenses will be implied from the
++     distribution or licensing of Covered Software under this License.
++     Notwithstanding Section 2.1(b) above, no patent license is granted by a
++     Contributor:
++
++     a. for any code that a Contributor has removed from Covered Software; or
++
++     b. for infringements caused by: (i) Your and any other third party's
++        modifications of Covered Software, or (ii) the combination of its
++        Contributions with other software (except as part of its Contributor
++        Version); or
++
++     c. under Patent Claims infringed by Covered Software in the absence of
++        its Contributions.
++
++     This License does not grant any rights in the trademarks, service marks,
++     or logos of any Contributor (except as may be necessary to comply with
++     the notice requirements in Section 3.4).
++
++2.4. Subsequent Licenses
++
++     No Contributor makes additional grants as a result of Your choice to
++     distribute the Covered Software under a subsequent version of this
++     License (see Section 10.2) or under the terms of a Secondary License (if
++     permitted under the terms of Section 3.3).
++
++2.5. Representation
++
++     Each Contributor represents that the Contributor believes its
++     Contributions are its original creation(s) or it has sufficient rights to
++     grant the rights to its Contributions conveyed by this License.
++
++2.6. Fair Use
++
++     This License is not intended to limit any rights You have under
++     applicable copyright doctrines of fair use, fair dealing, or other
++     equivalents.
++
++2.7. Conditions
++
++     Sections 3.1, 3.2, 3.3, and 3.4 are conditions of the licenses granted in
++     Section 2.1.
++
++
++3. Responsibilities
++
++3.1. Distribution of Source Form
++
++     All distribution of Covered Software in Source Code Form, including any
++     Modifications that You create or to which You contribute, must be under
++     the terms of this License. You must inform recipients that the Source
++     Code Form of the Covered Software is governed by the terms of this
++     License, and how they can obtain a copy of this License. You may not
++     attempt to alter or restrict the recipients' rights in the Source Code
++     Form.
++
++3.2. Distribution of Executable Form
++
++     If You distribute Covered Software in Executable Form then:
++
++     a. such Covered Software must also be made available in Source Code Form,
++        as described in Section 3.1, and You must inform recipients of the
++        Executable Form how they can obtain a copy of such Source Code Form by
++        reasonable means in a timely manner, at a charge no more than the cost
++        of distribution to the recipient; and
++
++     b. You may distribute such Executable Form under the terms of this
++        License, or sublicense it under different terms, provided that the
++        license for the Executable Form does not attempt to limit or alter the
++        recipients' rights in the Source Code Form under this License.
++
++3.3. Distribution of a Larger Work
++
++     You may create and distribute a Larger Work under terms of Your choice,
++     provided that You also comply with the requirements of this License for
++     the Covered Software. If the Larger Work is a combination of Covered
++     Software with a work governed by one or more Secondary Licenses, and the
++     Covered Software is not Incompatible With Secondary Licenses, this
++     License permits You to additionally distribute such Covered Software
++     under the terms of such Secondary License(s), so that the recipient of
++     the Larger Work may, at their option, further distribute the Covered
++     Software under the terms of either this License or such Secondary
++     License(s).
++
++3.4. Notices
++
++     You may not remove or alter the substance of any license notices
++     (including copyright notices, patent notices, disclaimers of warranty, or
++     limitations of liability) contained within the Source Code Form of the
++     Covered Software, except that You may alter any license notices to the
++     extent required to remedy known factual inaccuracies.
++
++3.5. Application of Additional Terms
++
++     You may choose to offer, and to charge a fee for, warranty, support,
++     indemnity or liability obligations to one or more recipients of Covered
++     Software. However, You may do so only on Your own behalf, and not on
++     behalf of any Contributor. You must make it absolutely clear that any
++     such warranty, support, indemnity, or liability obligation is offered by
++     You alone, and You hereby agree to indemnify every Contributor for any
++     liability incurred by such Contributor as a result of warranty, support,
++     indemnity or liability terms You offer. You may include additional
++     disclaimers of warranty and limitations of liability specific to any
++     jurisdiction.
++
++4. Inability to Comply Due to Statute or Regulation
++
++   If it is impossible for You to comply with any of the terms of this License
++   with respect to some or all of the Covered Software due to statute,
++   judicial order, or regulation then You must: (a) comply with the terms of
++   this License to the maximum extent possible; and (b) describe the
++   limitations and the code they affect. Such description must be placed in a
++   text file included with all distributions of the Covered Software under
++   this License. Except to the extent prohibited by statute or regulation,
++   such description must be sufficiently detailed for a recipient of ordinary
++   skill to be able to understand it.
++
++5. Termination
++
++5.1. The rights granted under this License will terminate automatically if You
++     fail to comply with any of its terms. However, if You become compliant,
++     then the rights granted under this License from a particular Contributor
++     are reinstated (a) provisionally, unless and until such Contributor
++     explicitly and finally terminates Your grants, and (b) on an ongoing
++     basis, if such Contributor fails to notify You of the non-compliance by
++     some reasonable means prior to 60 days after You have come back into
++     compliance. Moreover, Your grants from a particular Contributor are
++     reinstated on an ongoing basis if such Contributor notifies You of the
++     non-compliance by some reasonable means, this is the first time You have
++     received notice of non-compliance with this License from such
++     Contributor, and You become compliant prior to 30 days after Your receipt
++     of the notice.
++
++5.2. If You initiate litigation against any entity by asserting a patent
++     infringement claim (excluding declaratory judgment actions,
++     counter-claims, and cross-claims) alleging that a Contributor Version
++     directly or indirectly infringes any patent, then the rights granted to
++     You by any and all Contributors for the Covered Software under Section
++     2.1 of this License shall terminate.
++
++5.3. In the event of termination under Sections 5.1 or 5.2 above, all end user
++     license agreements (excluding distributors and resellers) which have been
++     validly granted by You or Your distributors under this License prior to
++     termination shall survive termination.
++
++6. Disclaimer of Warranty
++
++   Covered Software is provided under this License on an "as is" basis,
++   without warranty of any kind, either expressed, implied, or statutory,
++   including, without limitation, warranties that the Covered Software is free
++   of defects, merchantable, fit for a particular purpose or non-infringing.
++   The entire risk as to the quality and performance of the Covered Software
++   is with You. Should any Covered Software prove defective in any respect,
++   You (not any Contributor) assume the cost of any necessary servicing,
++   repair, or correction. This disclaimer of warranty constitutes an essential
++   part of this License. No use of  any Covered Software is authorized under
++   this License except under this disclaimer.
++
++7. Limitation of Liability
++
++   Under no circumstances and under no legal theory, whether tort (including
++   negligence), contract, or otherwise, shall any Contributor, or anyone who
++   distributes Covered Software as permitted above, be liable to You for any
++   direct, indirect, special, incidental, or consequential damages of any
++   character including, without limitation, damages for lost profits, loss of
++   goodwill, work stoppage, computer failure or malfunction, or any and all
++   other commercial damages or losses, even if such party shall have been
++   informed of the possibility of such damages. This limitation of liability
++   shall not apply to liability for death or personal injury resulting from
++   such party's negligence to the extent applicable law prohibits such
++   limitation. Some jurisdictions do not allow the exclusion or limitation of
++   incidental or consequential damages, so this exclusion and limitation may
++   not apply to You.
++
++8. Litigation
++
++   Any litigation relating to this License may be brought only in the courts
++   of a jurisdiction where the defendant maintains its principal place of
++   business and such litigation shall be governed by laws of that
++   jurisdiction, without reference to its conflict-of-law provisions. Nothing
++   in this Section shall prevent a party's ability to bring cross-claims or
++   counter-claims.
++
++9. Miscellaneous
++
++   This License represents the complete agreement concerning the subject
++   matter hereof. If any provision of this License is held to be
++   unenforceable, such provision shall be reformed only to the extent
++   necessary to make it enforceable. Any law or regulation which provides that
++   the language of a contract shall be construed against the drafter shall not
++   be used to construe this License against a Contributor.
++
++
++10. Versions of the License
++
++10.1. New Versions
++
++      Mozilla Foundation is the license steward. Except as provided in Section
++      10.3, no one other than the license steward has the right to modify or
++      publish new versions of this License. Each version will be given a
++      distinguishing version number.
++
++10.2. Effect of New Versions
++
++      You may distribute the Covered Software under the terms of the version
++      of the License under which You originally received the Covered Software,
++      or under the terms of any subsequent version published by the license
++      steward.
++
++10.3. Modified Versions
++
++      If you create software not governed by this License, and you want to
++      create a new license for such software, you may create and use a
++      modified version of this License if you rename the license and remove
++      any references to the name of the license steward (except to note that
++      such modified license differs from this License).
++
++10.4. Distributing Source Code Form that is Incompatible With Secondary
++      Licenses If You choose to distribute Source Code Form that is
++      Incompatible With Secondary Licenses under the terms of this version of
++      the License, the notice described in Exhibit B of this License must be
++      attached.
++
++Exhibit A - Source Code Form License Notice
++
++      This Source Code Form is subject to the
++      terms of the Mozilla Public License, v.
++      2.0. If a copy of the MPL was not
++      distributed with this file, You can
++      obtain one at
++      http://mozilla.org/MPL/2.0/.
++
++If it is not possible or desirable to put the notice in a particular file,
++then You may include the notice in a location (such as a LICENSE file in a
++relevant directory) where a recipient would be likely to look for such a
++notice.
++
++You may add additional accurate notices of copyright ownership.
++
++Exhibit B - "Incompatible With Secondary Licenses" Notice
++
++      This Source Code Form is "Incompatible
++      With Secondary Licenses", as defined by
++      the Mozilla Public License, v. 2.0.
+\ No newline at end of file
+diff --git a/weed/util/raftstore/UPSTREAM.md b/weed/util/raftstore/UPSTREAM.md
+new file mode 100644
+--- /dev/null
++++ b/weed/util/raftstore/UPSTREAM.md
+@@ -0,0 +1,21 @@
++# OUF local Raft bbolt adapter
++
++Derived from github.com/hashicorp/raft-boltdb/v2 v2.4.2.
++Copyright and MPL-2.0 source-file notices and LICENSE are retained.
++
++Active store operations, bucket names, MessagePack encoding, fsync defaults,
++metrics and log/stable-store interfaces are unchanged from that release.
++Only the unused MigrateToV2 helper and its archived boltdb/bolt import, and
++that helper's upstream test, are omitted. SeaweedFS already uses the bbolt
++backend. No database format migration or conversion is performed here.
++
++OUF owns review and maintenance of this local adaptation. Upstream changes
++must be evaluated against these exact source inputs; this is not an upstream
++release or an assertion that all SeaweedFS dependencies are maintained.
++
++Upstream input SHA256:
++- bolt_store.go: 49831a1fc1141f12e97d83fc617fcb82e5b187cf4f1f43e26eba8496c9a7a089
++- metrics.go: 2eb9d3dba67f37ba2962233ecb88aeb2ef167439ef5038161dde3d1f99008998
++- util.go: bc8fb0b8f9a51ab655babbade157ffcec84ee5a65aecae33c24dd5630c31ed48
++- bolt_store_test.go: 59c4ae46cbd747bc36a59d30d04994739443690541f6497e8370333ad596af4d
++- LICENSE: 977d08f671b26f63c6e8b9783aa1dc91ba8a01afe1aa10549281a9d388749857
+diff --git a/weed/util/raftstore/bolt_store.go b/weed/util/raftstore/bolt_store.go
+new file mode 100644
+--- /dev/null
++++ b/weed/util/raftstore/bolt_store.go
+@@ -0,0 +1,308 @@
++// Copyright IBM Corp. 2015, 2026
++// SPDX-License-Identifier: MPL-2.0
++
++package raftboltdb
++
++import (
++	"errors"
++	"time"
++
++	metrics "github.com/hashicorp/go-metrics"
++	"github.com/hashicorp/raft"
++	"go.etcd.io/bbolt"
++)
++
++const (
++	// Permissions to use on the db file. This is only used if the
++	// database file does not exist and needs to be created.
++	dbFileMode = 0600
++)
++
++var (
++	// Bucket names we perform transactions in
++	dbLogs = []byte("logs")
++	dbConf = []byte("conf")
++
++	// An error indicating a given key does not exist
++	ErrKeyNotFound = errors.New("not found")
++)
++
++// BoltStore provides access to Bbolt for Raft to store and retrieve
++// log entries. It also provides key/value storage, and can be used as
++// a LogStore and StableStore.
++type BoltStore struct {
++	// conn is the underlying handle to the db.
++	conn *bbolt.DB
++
++	// The path to the Bolt database file
++	path string
++
++	msgpackUseNewTimeFormat bool
++}
++
++// Options contains all the configuration used to open the Bbolt
++type Options struct {
++	// Path is the file path to the Bbolt to use
++	Path string
++
++	// BoltOptions contains any specific Bbolt options you might
++	// want to specify [e.g. open timeout]
++	BoltOptions *bbolt.Options
++
++	// NoSync causes the database to skip fsync calls after each
++	// write to the log. This is unsafe, so it should be used
++	// with caution.
++	NoSync bool
++
++	// MsgpackUseNewTimeFormat when set to true, force the underlying msgpack
++	// codec to use the new format of time.Time when encoding (used in
++	// go-msgpack v1.1.5 by default). Decoding is not affected, as all
++	// go-msgpack v2.1.0+ decoders know how to decode both formats.
++	MsgpackUseNewTimeFormat bool
++}
++
++// readOnly returns true if the contained bolt options say to open
++// the DB in readOnly mode [this can be useful to tools that want
++// to examine the log]
++func (o *Options) readOnly() bool {
++	return o != nil && o.BoltOptions != nil && o.BoltOptions.ReadOnly
++}
++
++// NewBoltStore takes a file path and returns a connected Raft backend.
++func NewBoltStore(path string) (*BoltStore, error) {
++	return New(Options{Path: path})
++}
++
++// New uses the supplied options to open the Bbolt and prepare it for use as a raft backend.
++func New(options Options) (*BoltStore, error) {
++	// Try to connect
++	handle, err := bbolt.Open(options.Path, dbFileMode, options.BoltOptions)
++	if err != nil {
++		return nil, err
++	}
++	handle.NoSync = options.NoSync
++
++	// Create the new store
++	store := &BoltStore{
++		conn:                    handle,
++		path:                    options.Path,
++		msgpackUseNewTimeFormat: options.MsgpackUseNewTimeFormat,
++	}
++
++	// If the store was opened read-only, don't try and create buckets
++	if !options.readOnly() {
++		// Set up our buckets
++		if err := store.initialize(); err != nil {
++			store.Close()
++			return nil, err
++		}
++	}
++	return store, nil
++}
++
++// initialize is used to set up all of the buckets.
++func (b *BoltStore) initialize() error {
++	tx, err := b.conn.Begin(true)
++	if err != nil {
++		return err
++	}
++	defer tx.Rollback()
++
++	// Create all the buckets
++	if _, err := tx.CreateBucketIfNotExists(dbLogs); err != nil {
++		return err
++	}
++	if _, err := tx.CreateBucketIfNotExists(dbConf); err != nil {
++		return err
++	}
++
++	return tx.Commit()
++}
++
++func (b *BoltStore) Stats() bbolt.Stats {
++	return b.conn.Stats()
++}
++
++// Close is used to gracefully close the DB connection.
++func (b *BoltStore) Close() error {
++	return b.conn.Close()
++}
++
++// FirstIndex returns the first known index from the Raft log.
++func (b *BoltStore) FirstIndex() (uint64, error) {
++	tx, err := b.conn.Begin(false)
++	if err != nil {
++		return 0, err
++	}
++	defer tx.Rollback()
++
++	curs := tx.Bucket(dbLogs).Cursor()
++	if first, _ := curs.First(); first == nil {
++		return 0, nil
++	} else {
++		return bytesToUint64(first), nil
++	}
++}
++
++// LastIndex returns the last known index from the Raft log.
++func (b *BoltStore) LastIndex() (uint64, error) {
++	tx, err := b.conn.Begin(false)
++	if err != nil {
++		return 0, err
++	}
++	defer tx.Rollback()
++
++	curs := tx.Bucket(dbLogs).Cursor()
++	if last, _ := curs.Last(); last == nil {
++		return 0, nil
++	} else {
++		return bytesToUint64(last), nil
++	}
++}
++
++// GetLog is used to retrieve a log from Bbolt at a given index.
++func (b *BoltStore) GetLog(idx uint64, log *raft.Log) error {
++	defer metrics.MeasureSince([]string{"raft", "boltdb", "getLog"}, time.Now())
++
++	tx, err := b.conn.Begin(false)
++	if err != nil {
++		return err
++	}
++	defer tx.Rollback()
++
++	bucket := tx.Bucket(dbLogs)
++	val := bucket.Get(uint64ToBytes(idx))
++
++	if val == nil {
++		return raft.ErrLogNotFound
++	}
++	return decodeMsgPack(val, log)
++}
++
++// StoreLog is used to store a single raft log
++func (b *BoltStore) StoreLog(log *raft.Log) error {
++	return b.StoreLogs([]*raft.Log{log})
++}
++
++// StoreLogs is used to store a set of raft logs
++func (b *BoltStore) StoreLogs(logs []*raft.Log) error {
++	now := time.Now()
++
++	tx, err := b.conn.Begin(true)
++	if err != nil {
++		return err
++	}
++	defer tx.Rollback()
++
++	batchSize := 0
++	for _, log := range logs {
++		key := uint64ToBytes(log.Index)
++		val, err := encodeMsgPack(log, b.msgpackUseNewTimeFormat)
++		if err != nil {
++			return err
++		}
++
++		logLen := val.Len()
++		bucket := tx.Bucket(dbLogs)
++		if err := bucket.Put(key, val.Bytes()); err != nil {
++			return err
++		}
++		batchSize += logLen
++		metrics.AddSample([]string{"raft", "boltdb", "logSize"}, float32(logLen))
++	}
++
++	metrics.AddSample([]string{"raft", "boltdb", "logsPerBatch"}, float32(len(logs)))
++	metrics.AddSample([]string{"raft", "boltdb", "logBatchSize"}, float32(batchSize))
++	// Both the deferral and the inline function are important for this metrics
++	// accuracy. Deferral allows us to calculate the metric after the tx.Commit
++	// has finished and thus account for all the processing of the operation.
++	// The inlined function ensures that we do not calculate the time.Since(now)
++	// at the time of deferral but rather when the go runtime executes the
++	// deferred function.
++	defer func() {
++		metrics.AddSample([]string{"raft", "boltdb", "writeCapacity"}, (float32(1_000_000_000)/float32(time.Since(now).Nanoseconds()))*float32(len(logs)))
++		metrics.MeasureSince([]string{"raft", "boltdb", "storeLogs"}, now)
++	}()
++
++	return tx.Commit()
++}
++
++// DeleteRange is used to delete logs within a given range inclusively.
++func (b *BoltStore) DeleteRange(min, max uint64) error {
++	minKey := uint64ToBytes(min)
++
++	tx, err := b.conn.Begin(true)
++	if err != nil {
++		return err
++	}
++	defer tx.Rollback()
++
++	curs := tx.Bucket(dbLogs).Cursor()
++	for k, _ := curs.Seek(minKey); k != nil; k, _ = curs.Next() {
++		// Handle out-of-range log index
++		if bytesToUint64(k) > max {
++			break
++		}
++
++		// Delete in-range log index
++		if err := curs.Delete(); err != nil {
++			return err
++		}
++	}
++
++	return tx.Commit()
++}
++
++// Set is used to set a key/value set outside of the raft log
++func (b *BoltStore) Set(k, v []byte) error {
++	tx, err := b.conn.Begin(true)
++	if err != nil {
++		return err
++	}
++	defer tx.Rollback()
++
++	bucket := tx.Bucket(dbConf)
++	if err := bucket.Put(k, v); err != nil {
++		return err
++	}
++
++	return tx.Commit()
++}
++
++// Get is used to retrieve a value from the k/v store by key
++func (b *BoltStore) Get(k []byte) ([]byte, error) {
++	tx, err := b.conn.Begin(false)
++	if err != nil {
++		return nil, err
++	}
++	defer tx.Rollback()
++
++	bucket := tx.Bucket(dbConf)
++	val := bucket.Get(k)
++
++	if val == nil {
++		return nil, ErrKeyNotFound
++	}
++	return append([]byte(nil), val...), nil
++}
++
++// SetUint64 is like Set, but handles uint64 values
++func (b *BoltStore) SetUint64(key []byte, val uint64) error {
++	return b.Set(key, uint64ToBytes(val))
++}
++
++// GetUint64 is like Get, but handles uint64 values
++func (b *BoltStore) GetUint64(key []byte) (uint64, error) {
++	val, err := b.Get(key)
++	if err != nil {
++		return 0, err
++	}
++	return bytesToUint64(val), nil
++}
++
++// Sync performs an fsync on the database file handle. This is not necessary
++// under normal operation unless NoSync is enabled, in which this forces the
++// database file to sync against the disk.
++func (b *BoltStore) Sync() error {
++	return b.conn.Sync()
++}
+diff --git a/weed/util/raftstore/bolt_store_test.go b/weed/util/raftstore/bolt_store_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/util/raftstore/bolt_store_test.go
+@@ -0,0 +1,419 @@
++// Copyright IBM Corp. 2015, 2025
++// SPDX-License-Identifier: MPL-2.0
++
++package raftboltdb
++
++import (
++	"bytes"
++	"io/ioutil"
++	"os"
++	"reflect"
++	"testing"
++	"time"
++
++	"github.com/hashicorp/raft"
++	"go.etcd.io/bbolt"
++)
++
++func testBoltStore(t testing.TB) *BoltStore {
++	fh, err := ioutil.TempFile("", "bolt")
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	os.Remove(fh.Name())
++
++	// Successfully creates and returns a store
++	store, err := NewBoltStore(fh.Name())
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	return store
++}
++
++func testRaftLog(idx uint64, data string) *raft.Log {
++	return &raft.Log{
++		Data:  []byte(data),
++		Index: idx,
++	}
++}
++
++func TestBoltStore_Implements(t *testing.T) {
++	var store interface{} = &BoltStore{}
++	if _, ok := store.(raft.StableStore); !ok {
++		t.Fatalf("BoltStore does not implement raft.StableStore")
++	}
++	if _, ok := store.(raft.LogStore); !ok {
++		t.Fatalf("BoltStore does not implement raft.LogStore")
++	}
++}
++
++func TestBoltOptionsTimeout(t *testing.T) {
++	fh, err := ioutil.TempFile("", "bolt")
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	os.Remove(fh.Name())
++	defer os.Remove(fh.Name())
++	options := Options{
++		Path: fh.Name(),
++		BoltOptions: &bbolt.Options{
++			Timeout: time.Second / 10,
++		},
++	}
++	store, err := New(options)
++	if err != nil {
++		t.Fatalf("err: %v", err)
++	}
++	defer store.Close()
++	// trying to open it again should timeout
++	doneCh := make(chan error, 1)
++	go func() {
++		_, err := New(options)
++		doneCh <- err
++	}()
++	select {
++	case err := <-doneCh:
++		if err == nil || err.Error() != "timeout" {
++			t.Errorf("Expected timeout error but got %v", err)
++		}
++	case <-time.After(5 * time.Second):
++		t.Errorf("Gave up waiting for timeout response")
++	}
++}
++
++func TestBoltOptionsReadOnly(t *testing.T) {
++	fh, err := ioutil.TempFile("", "bolt")
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	defer os.Remove(fh.Name())
++	store, err := NewBoltStore(fh.Name())
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	// Create the log
++	log := &raft.Log{
++		Data:  []byte("log1"),
++		Index: 1,
++	}
++	// Attempt to store the log
++	if err := store.StoreLog(log); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	store.Close()
++	options := Options{
++		Path: fh.Name(),
++		BoltOptions: &bbolt.Options{
++			Timeout:  time.Second / 10,
++			ReadOnly: true,
++		},
++	}
++	roStore, err := New(options)
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	defer roStore.Close()
++	result := new(raft.Log)
++	if err := roStore.GetLog(1, result); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Ensure the log comes back the same
++	if !reflect.DeepEqual(log, result) {
++		t.Errorf("bad: %v", result)
++	}
++	// Attempt to store the log, should fail on a read-only store
++	err = roStore.StoreLog(log)
++	if err != bbolt.ErrDatabaseReadOnly {
++		t.Errorf("expecting error %v, but got %v", bbolt.ErrDatabaseReadOnly, err)
++	}
++}
++
++func TestNewBoltStore(t *testing.T) {
++	fh, err := ioutil.TempFile("", "bolt")
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	os.Remove(fh.Name())
++	defer os.Remove(fh.Name())
++
++	// Successfully creates and returns a store
++	store, err := NewBoltStore(fh.Name())
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Ensure the file was created
++	if store.path != fh.Name() {
++		t.Fatalf("unexpected file path %q", store.path)
++	}
++	if _, err := os.Stat(fh.Name()); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Close the store so we can open again
++	if err := store.Close(); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Ensure our tables were created
++	db, err := bbolt.Open(fh.Name(), dbFileMode, nil)
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	tx, err := db.Begin(true)
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if _, err := tx.CreateBucket([]byte(dbLogs)); err != bbolt.ErrBucketExists {
++		t.Fatalf("bad: %v", err)
++	}
++	if _, err := tx.CreateBucket([]byte(dbConf)); err != bbolt.ErrBucketExists {
++		t.Fatalf("bad: %v", err)
++	}
++}
++
++func TestBoltStore_FirstIndex(t *testing.T) {
++	store := testBoltStore(t)
++	defer store.Close()
++	defer os.Remove(store.path)
++
++	// Should get 0 index on empty log
++	idx, err := store.FirstIndex()
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if idx != 0 {
++		t.Fatalf("bad: %v", idx)
++	}
++
++	// Set a mock raft log
++	logs := []*raft.Log{
++		testRaftLog(1, "log1"),
++		testRaftLog(2, "log2"),
++		testRaftLog(3, "log3"),
++	}
++	if err := store.StoreLogs(logs); err != nil {
++		t.Fatalf("bad: %s", err)
++	}
++
++	// Fetch the first Raft index
++	idx, err = store.FirstIndex()
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if idx != 1 {
++		t.Fatalf("bad: %d", idx)
++	}
++}
++
++func TestBoltStore_LastIndex(t *testing.T) {
++	store := testBoltStore(t)
++	defer store.Close()
++	defer os.Remove(store.path)
++
++	// Should get 0 index on empty log
++	idx, err := store.LastIndex()
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if idx != 0 {
++		t.Fatalf("bad: %v", idx)
++	}
++
++	// Set a mock raft log
++	logs := []*raft.Log{
++		testRaftLog(1, "log1"),
++		testRaftLog(2, "log2"),
++		testRaftLog(3, "log3"),
++	}
++	if err := store.StoreLogs(logs); err != nil {
++		t.Fatalf("bad: %s", err)
++	}
++
++	// Fetch the last Raft index
++	idx, err = store.LastIndex()
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if idx != 3 {
++		t.Fatalf("bad: %d", idx)
++	}
++}
++
++func TestBoltStore_GetLog(t *testing.T) {
++	store := testBoltStore(t)
++	defer store.Close()
++	defer os.Remove(store.path)
++
++	log := new(raft.Log)
++
++	// Should return an error on non-existent log
++	if err := store.GetLog(1, log); err != raft.ErrLogNotFound {
++		t.Fatalf("expected raft log not found error, got: %v", err)
++	}
++
++	// Set a mock raft log
++	logs := []*raft.Log{
++		testRaftLog(1, "log1"),
++		testRaftLog(2, "log2"),
++		testRaftLog(3, "log3"),
++	}
++	if err := store.StoreLogs(logs); err != nil {
++		t.Fatalf("bad: %s", err)
++	}
++
++	// Should return the proper log
++	if err := store.GetLog(2, log); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if !reflect.DeepEqual(log, logs[1]) {
++		t.Fatalf("bad: %#v", log)
++	}
++}
++
++func TestBoltStore_SetLog(t *testing.T) {
++	store := testBoltStore(t)
++	defer store.Close()
++	defer os.Remove(store.path)
++
++	// Create the log
++	log := &raft.Log{
++		Data:  []byte("log1"),
++		Index: 1,
++	}
++
++	// Attempt to store the log
++	if err := store.StoreLog(log); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Retrieve the log again
++	result := new(raft.Log)
++	if err := store.GetLog(1, result); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Ensure the log comes back the same
++	if !reflect.DeepEqual(log, result) {
++		t.Fatalf("bad: %v", result)
++	}
++}
++
++func TestBoltStore_SetLogs(t *testing.T) {
++	store := testBoltStore(t)
++	defer store.Close()
++	defer os.Remove(store.path)
++
++	// Create a set of logs
++	logs := []*raft.Log{
++		testRaftLog(1, "log1"),
++		testRaftLog(2, "log2"),
++	}
++
++	// Attempt to store the logs
++	if err := store.StoreLogs(logs); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Ensure we stored them all
++	result1, result2 := new(raft.Log), new(raft.Log)
++	if err := store.GetLog(1, result1); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if !reflect.DeepEqual(logs[0], result1) {
++		t.Fatalf("bad: %#v", result1)
++	}
++	if err := store.GetLog(2, result2); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if !reflect.DeepEqual(logs[1], result2) {
++		t.Fatalf("bad: %#v", result2)
++	}
++}
++
++func TestBoltStore_DeleteRange(t *testing.T) {
++	store := testBoltStore(t)
++	defer store.Close()
++	defer os.Remove(store.path)
++
++	// Create a set of logs
++	log1 := testRaftLog(1, "log1")
++	log2 := testRaftLog(2, "log2")
++	log3 := testRaftLog(3, "log3")
++	logs := []*raft.Log{log1, log2, log3}
++
++	// Attempt to store the logs
++	if err := store.StoreLogs(logs); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Attempt to delete a range of logs
++	if err := store.DeleteRange(1, 2); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Ensure the logs were deleted
++	if err := store.GetLog(1, new(raft.Log)); err != raft.ErrLogNotFound {
++		t.Fatalf("should have deleted log1")
++	}
++	if err := store.GetLog(2, new(raft.Log)); err != raft.ErrLogNotFound {
++		t.Fatalf("should have deleted log2")
++	}
++}
++
++func TestBoltStore_Set_Get(t *testing.T) {
++	store := testBoltStore(t)
++	defer store.Close()
++	defer os.Remove(store.path)
++
++	// Returns error on non-existent key
++	if _, err := store.Get([]byte("bad")); err != ErrKeyNotFound {
++		t.Fatalf("expected not found error, got: %q", err)
++	}
++
++	k, v := []byte("hello"), []byte("world")
++
++	// Try to set a k/v pair
++	if err := store.Set(k, v); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Try to read it back
++	val, err := store.Get(k)
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if !bytes.Equal(val, v) {
++		t.Fatalf("bad: %v", val)
++	}
++}
++
++func TestBoltStore_SetUint64_GetUint64(t *testing.T) {
++	store := testBoltStore(t)
++	defer store.Close()
++	defer os.Remove(store.path)
++
++	// Returns error on non-existent key
++	if _, err := store.GetUint64([]byte("bad")); err != ErrKeyNotFound {
++		t.Fatalf("expected not found error, got: %q", err)
++	}
++
++	k, v := []byte("abc"), uint64(123)
++
++	// Attempt to set the k/v pair
++	if err := store.SetUint64(k, v); err != nil {
++		t.Fatalf("err: %s", err)
++	}
++
++	// Read back the value
++	val, err := store.GetUint64(k)
++	if err != nil {
++		t.Fatalf("err: %s", err)
++	}
++	if val != v {
++		t.Fatalf("bad: %v", val)
++	}
++}
+diff --git a/weed/util/raftstore/metrics.go b/weed/util/raftstore/metrics.go
+new file mode 100644
+--- /dev/null
++++ b/weed/util/raftstore/metrics.go
+@@ -0,0 +1,71 @@
++// Copyright IBM Corp. 2015, 2026
++// SPDX-License-Identifier: MPL-2.0
++
++package raftboltdb
++
++import (
++	"context"
++	"time"
++
++	metrics "github.com/hashicorp/go-metrics"
++	"go.etcd.io/bbolt"
++)
++
++const (
++	defaultMetricsInterval = 5 * time.Second
++)
++
++// RunMetrics should be executed in a go routine and will periodically emit
++// metrics on the given interval until the context has been cancelled.
++func (b *BoltStore) RunMetrics(ctx context.Context, interval time.Duration) {
++	if interval == 0 {
++		interval = defaultMetricsInterval
++	}
++
++	tick := time.NewTicker(interval)
++	defer tick.Stop()
++
++	stats := b.emitMetrics(nil)
++	for {
++		select {
++		case <-ctx.Done():
++			return
++		case <-tick.C:
++			stats = b.emitMetrics(stats)
++		}
++	}
++}
++
++func (b *BoltStore) emitMetrics(prev *bbolt.Stats) *bbolt.Stats {
++	newStats := b.conn.Stats()
++
++	stats := newStats
++	if prev != nil {
++		stats = newStats.Sub(prev)
++	}
++
++	// freelist metrics
++	metrics.SetGauge([]string{"raft", "boltdb", "numFreePages"}, float32(newStats.FreePageN))
++	metrics.SetGauge([]string{"raft", "boltdb", "numPendingPages"}, float32(newStats.PendingPageN))
++	metrics.SetGauge([]string{"raft", "boltdb", "freePageBytes"}, float32(newStats.FreeAlloc))
++	metrics.SetGauge([]string{"raft", "boltdb", "freelistBytes"}, float32(newStats.FreelistInuse))
++
++	// txn metrics
++	metrics.IncrCounter([]string{"raft", "boltdb", "totalReadTxn"}, float32(stats.TxN))
++	metrics.SetGauge([]string{"raft", "boltdb", "openReadTxn"}, float32(newStats.OpenTxN))
++
++	// tx stats
++	metrics.SetGauge([]string{"raft", "boltdb", "txstats", "pageCount"}, float32(newStats.TxStats.PageCount))
++	metrics.SetGauge([]string{"raft", "boltdb", "txstats", "pageAlloc"}, float32(newStats.TxStats.PageAlloc))
++	metrics.IncrCounter([]string{"raft", "boltdb", "txstats", "cursorCount"}, float32(stats.TxStats.CursorCount))
++	metrics.IncrCounter([]string{"raft", "boltdb", "txstats", "nodeCount"}, float32(stats.TxStats.NodeCount))
++	metrics.IncrCounter([]string{"raft", "boltdb", "txstats", "nodeDeref"}, float32(stats.TxStats.NodeDeref))
++	metrics.IncrCounter([]string{"raft", "boltdb", "txstats", "rebalance"}, float32(stats.TxStats.Rebalance))
++	metrics.AddSample([]string{"raft", "boltdb", "txstats", "rebalanceTime"}, float32(stats.TxStats.RebalanceTime.Nanoseconds())/1000000)
++	metrics.IncrCounter([]string{"raft", "boltdb", "txstats", "split"}, float32(stats.TxStats.Split))
++	metrics.IncrCounter([]string{"raft", "boltdb", "txstats", "spill"}, float32(stats.TxStats.Spill))
++	metrics.AddSample([]string{"raft", "boltdb", "txstats", "spillTime"}, float32(stats.TxStats.SpillTime.Nanoseconds())/1000000)
++	metrics.IncrCounter([]string{"raft", "boltdb", "txstats", "write"}, float32(stats.TxStats.Write))
++	metrics.AddSample([]string{"raft", "boltdb", "txstats", "writeTime"}, float32(stats.TxStats.WriteTime.Nanoseconds())/1000000)
++	return &newStats
++}
+diff --git a/weed/util/raftstore/util.go b/weed/util/raftstore/util.go
+new file mode 100644
+--- /dev/null
++++ b/weed/util/raftstore/util.go
+@@ -0,0 +1,44 @@
++// Copyright IBM Corp. 2015, 2025
++// SPDX-License-Identifier: MPL-2.0
++
++package raftboltdb
++
++import (
++	"bytes"
++	"encoding/binary"
++
++	"github.com/hashicorp/go-msgpack/v2/codec"
++)
++
++// Decode reverses the encode operation on a byte slice input
++func decodeMsgPack(buf []byte, out interface{}) error {
++	r := bytes.NewBuffer(buf)
++	hd := codec.MsgpackHandle{}
++	dec := codec.NewDecoder(r, &hd)
++	return dec.Decode(out)
++}
++
++// Encode writes an encoded object to a new bytes buffer
++func encodeMsgPack(in interface{}, useNewTimeFormat bool) (*bytes.Buffer, error) {
++	buf := bytes.NewBuffer(nil)
++	hd := codec.MsgpackHandle{
++		BasicHandle: codec.BasicHandle{
++			TimeNotBuiltin: !useNewTimeFormat,
++		},
++	}
++	enc := codec.NewEncoder(buf, &hd)
++	err := enc.Encode(in)
++	return buf, err
++}
++
++// Converts bytes to an integer
++func bytesToUint64(b []byte) uint64 {
++	return binary.BigEndian.Uint64(b)
++}
++
++// Converts a uint to a byte slice
++func uint64ToBytes(u uint64) []byte {
++	buf := make([]byte, 8)
++	binary.BigEndian.PutUint64(buf, u)
++	return buf
++}

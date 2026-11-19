@@ -1,0 +1,8 @@
+{
+  "suites": {
+    "test_prepare_iceberg_vendor_patch.py": 8,
+    "test_vendor_module_origins.py": 8,
+    "test_vendor_yaml_source_profile.py": 25
+  },
+  "testsPassed": 41
+}

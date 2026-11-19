@@ -1,4 +1,5 @@
 import base64
+import hashlib
 import importlib.util
 import json
 import os
@@ -23,10 +24,16 @@ class GovernanceDeliveryTest(unittest.TestCase):
                     self.assertEqual(len(calls),4)
                     payload=json.loads(kwargs['input']);self.assertEqual(payload['sourceCommit'],delivery.COMMIT)
                     self.assertEqual(set(payload['sources']),set(delivery.HASHES))
+                    self.assertEqual({n:hashlib.sha256(base64.b64decode(raw)).hexdigest()
+                        for n,raw in payload['sources'].items()},delivery.HASHES)
                     return subprocess.CompletedProcess(args,0)
                 self.assertEqual(args[0],str(gh));self.assertIn('?ref='+delivery.COMMIT,args[2])
                 name=next(n for n in delivery.HASHES if '/'+n+'.py?' in args[2])
-                raw=(ROOT/'tools/semantic_policy_token_owner'/(name+'.py')).read_bytes()
+                # The historical three-source command pins the original
+                # binding compiler; current behavior has separate tests.
+                path=(ROOT/'tests/fixtures/policy_token_iam_binding_bcd20f30085.source' if name=='iam_binding_candidate'
+                    else ROOT/'tools/semantic_policy_token_owner'/(name+'.py'))
+                raw=path.read_bytes();self.assertEqual(hashlib.sha256(raw).hexdigest(),delivery.HASHES[name])
                 return subprocess.CompletedProcess(args,0,stdout=base64.b64encode(raw))
             with patch.object(delivery.Path,'home',return_value=home),patch.object(delivery.shutil,'which',return_value=None),patch.object(delivery.subprocess,'run',side_effect=run):
                 self.assertEqual(delivery.main(),0)

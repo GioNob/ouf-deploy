@@ -1,0 +1,132 @@
+{
+  "gatewayCapability": {
+    "capabilityId": "urban.object.read",
+    "version": "1.0",
+    "owner": "udp",
+    "operationType": "read",
+    "riskLevel": "low",
+    "input": {
+      "schemaRef": "schemas/urban-object-read-1.0.json"
+    },
+    "output": {
+      "schemaRef": "schemas/urban-object-view-1.0.json"
+    },
+    "authorization": {
+      "coarseScope": "ouf.read.objects",
+      "audience": "ouf-udp",
+      "backendCapabilityId": "urban.object.read"
+    },
+    "bindings": {
+      "rest": {
+        "method": "GET",
+        "path": "/api/urban/v1/objects/{id}"
+      }
+    },
+    "mcp": {
+      "toolEligible": true,
+      "purpose": "Recupera un Urban Object",
+      "useWhen": "Serve il dettaglio canonico di un oggetto",
+      "doNotUseWhen": "Serve raw/history/export",
+      "preferredAlternatives": [
+        "urban.object.search"
+      ]
+    }
+  },
+  "authorizationCapability": {
+    "capabilityId": "urban.object.read",
+    "version": "1.0",
+    "owner": "udp",
+    "operationType": "read",
+    "riskClass": "READ",
+    "humanRequired": false,
+    "toolEligibility": true,
+    "resourceTypes": [
+      "URBAN_OBJECT"
+    ]
+  },
+  "routeBinding": {
+    "routeId": "urban.object.read",
+    "capabilityId": "urban.object.read",
+    "sourceId": "udp",
+    "dataset": "urban-objects",
+    "direction": "northbound",
+    "backendBinding": {
+      "service": "udp-data-service",
+      "operation": "read",
+      "timeout": "3s"
+    },
+    "status": "ACTIVE"
+  },
+  "gatewayAuthorizationContext": {
+    "correlationId": "corr-mcp-01",
+    "principal": "agent-client-123",
+    "actorType": "AI_AGENT",
+    "capabilityId": "urban.object.search",
+    "policyVersion": "1.3.0",
+    "requestId": "req-mcp-01"
+  },
+  "mcpDescriptor": {
+    "toolName": "urban.object.get",
+    "capabilityId": "urban.object.history",
+    "capabilityVersion": "1.0",
+    "owner": "udp",
+    "operationClass": "READ",
+    "mcpClass": "MCP_TOOL",
+    "publicationState": "ACTIVE",
+    "toolEligible": false,
+    "requiredAuthorizationCapability": "urban.object.raw",
+    "gatewayBindingRef": "capability://urban.object.read",
+    "inputSchemaRef": "schemas/wrong-input.json",
+    "outputSchemaRef": "schemas/urban-object-view-1.0.json",
+    "actorTypes": [
+      "HUMAN_USER",
+      "AI_AGENT"
+    ],
+    "baseCostEnvelope": {
+      "hardMaxToolCalls": 1,
+      "hardMaxGraphCalls": 0,
+      "hardMaxDistinctObjects": 1,
+      "hardMaxResultBytes": 1048576,
+      "hardMaxElapsedMs": 3000
+    },
+    "conditionalOutcomeCost": {
+      "mismatchCalls": 1,
+      "equivalentRetryCalls": 1
+    }
+  },
+  "semanticReference": {
+    "semanticId": "https://example.ouf/onto/UrbanObject",
+    "artifactId": "art-uo",
+    "revisionId": "rev-uo-1",
+    "artifactType": "CLASS",
+    "semanticVersion": "1.0.0",
+    "status": "ACTIVE",
+    "canonicalUri": "https://example.ouf/onto/UrbanObject",
+    "namespace": "https://example.ouf/onto/",
+    "localName": "UrbanObject",
+    "label": {
+      "it": "Oggetto urbano"
+    },
+    "publicationSetId": "latest"
+  },
+  "problemDetails": {
+    "type": "https://ouf.trieste.it/errors/query-capability-mismatch",
+    "title": "Capability mismatch",
+    "status": 422,
+    "code": "QUERY_CAPABILITY_MISMATCH",
+    "correlationId": "corr-mcp-01",
+    "detail": "Requested operation does not match selected capability",
+    "retryable": false,
+    "remediation": {
+      "preferredAlternatives": [
+        "urban.object.search"
+      ]
+    }
+  },
+  "trustedApproval": {
+    "trustedApprovalRef": "tar-opaque-01",
+    "isBearerCredential": true,
+    "confirmViaMcp": true,
+    "protectedOperationsDiscoverable": false
+  }
+}

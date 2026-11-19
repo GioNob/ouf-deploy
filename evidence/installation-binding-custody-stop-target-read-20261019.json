@@ -1,0 +1,127 @@
+{
+  "activeOwnerGenerationRetained": 6,
+  "activeOwnerRevisionRetained": 6,
+  "authorityFilesOpened": false,
+  "authorityIssuedByDiagnostic": false,
+  "automaticReplayAllowed": false,
+  "bearerFilesOpened": 0,
+  "budgetReset": false,
+  "complete": true,
+  "completedInstallationReadbackReplayed": false,
+  "completedTechnicalPhases": 8,
+  "contextPath": "/etc/ouf/deploy-snapshots/installation-binding-apply-execution-7x21g1fg",
+  "credentialHashesPrinted": false,
+  "credentialValuesPrinted": false,
+  "currentHumanStateRequeried": false,
+  "databaseCalls": 0,
+  "engineCalls": 0,
+  "functionalMilestonesProven": 4,
+  "gatewayWrites": 0,
+  "humanCredentialJournalsRead": 0,
+  "journalWrites": 0,
+  "lastReportedOAuthAttempts": 255,
+  "liveGatewayRoutesRequeried": false,
+  "maximumCumulativeOAuthAttempts": 256,
+  "newHumanLoginAllowed": false,
+  "noGatewayDispatchByThisActionProven": true,
+  "oauthRequests": 0,
+  "ownerActivationProvenAsFiles": true,
+  "ownerActiveRequeried": false,
+  "ownerContextPath": "/etc/ouf/deploy-snapshots/installation-binding-apply-execution-46iexg9c",
+  "ownerRequests": 0,
+  "ownerScope": {
+    "effects": [
+      {
+        "stage": "VERIFY_INPUTS",
+        "state": "APPLIED"
+      },
+      {
+        "stage": "CREATE_REVISION",
+        "state": "APPLIED"
+      },
+      {
+        "stage": "VALIDATE_ENVIRONMENT",
+        "state": "APPLIED"
+      },
+      {
+        "stage": "ACTIVATE_EXPECTED",
+        "state": "APPLIED"
+      },
+      {
+        "stage": "EXPORT_ACTIVE",
+        "state": "APPLIED"
+      },
+      {
+        "stage": "VERIFY_FINAL",
+        "state": "APPLIED"
+      }
+    ],
+    "expiresAt": 1792429270,
+    "gatewayStageClaims": 0,
+    "incidentState": "RECOVERED",
+    "logicalActionClaimPresent": true,
+    "nextStage": 6,
+    "version": 13
+  },
+  "packageHash": "de440e91d204e30bd99daea42e4a19c9affee97e3044cf6ae2fa8bf613592efc",
+  "privateKeyFilesOpened": 0,
+  "profile": {
+    "ancestry": [
+      {
+        "approvedCustodyPasses": true,
+        "legacyRootOnlyPasses": true,
+        "mode": "0o700",
+        "rootOwned": true
+      },
+      {
+        "approvedCustodyPasses": true,
+        "legacyRootOnlyPasses": false,
+        "mode": "0o750",
+        "rootOwned": false
+      },
+      {
+        "approvedCustodyPasses": true,
+        "legacyRootOnlyPasses": true,
+        "mode": "0o755",
+        "rootOwned": true
+      },
+      {
+        "approvedCustodyPasses": true,
+        "legacyRootOnlyPasses": true,
+        "mode": "0o755",
+        "rootOwned": true
+      }
+    ],
+    "approvedCustodyPassed": true,
+    "currentSha256": "10b378c05f6ce38d46b8ba9d66a0fa1f9d5ceb0383975ca6c43ba604e9bf599d",
+    "expectedNewSha256": "10b378c05f6ce38d46b8ba9d66a0fa1f9d5ceb0383975ca6c43ba604e9bf599d",
+    "legacyRootOnlyAncestryPassed": false,
+    "publicationStageState": "CLAIMED",
+    "state": "APPROVED_NEW_EXPORT"
+  },
+  "projectionRouteScope": {
+    "effects": [
+      {
+        "stage": "VERIFY_INPUTS",
+        "state": "APPLIED"
+      },
+      {
+        "stage": "PUBLISH_ACTIVE_PROJECTION",
+        "state": "CLAIMED"
+      }
+    ],
+    "expiresAt": 1792429299,
+    "gatewayStageClaims": 0,
+    "incidentState": "OPEN",
+    "logicalActionClaimPresent": true,
+    "nextStage": 1,
+    "version": 3
+  },
+  "publicationBytesPresentButJournalUnreconciled": true,
+  "readOnly": true,
+  "runtimeCompletionProven": false,
+  "runtimeMainCalled": false,
+  "schema": "ouf.installation-binding-custody-stop-read.v1",
+  "sourceClosureHash": "2fb31db4ffd6188bcdd0bb7b8cc71aaf284b0f5581413ca3a05081624442e56d",
+  "sourceModuleCount": 219
+}

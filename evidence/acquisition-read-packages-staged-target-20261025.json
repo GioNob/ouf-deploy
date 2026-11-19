@@ -1,0 +1,82 @@
+{
+  "applicationE2EProven": false,
+  "applicationReadinessProven": false,
+  "artifacts": {
+    "gateway": {
+      "artifactId": 12590580438,
+      "fileHashes": {
+        "SHA256SUMS": "3b02fcc5f9cdd7172c6cd4169ad1c165cd85dbba0417e2ebdd5bc62b15ef01a2",
+        "source-commit.txt": "efed866805c01b920ba2ef29f830a2eaed268813332cca10a9f6e6810d1afac2",
+        "source.tar.gz": "1b39c631890b0384c8d1c39b54bb8a3110466628bcc66dd350219d760cb1eceb"
+      },
+      "imageId": null,
+      "sourceCommit": "efe71dd9bef9d5ee70c0ef2acb11ea4169649baa",
+      "zipSha256": "dfcf3426786b5f371346ea5f4c5c64d8f1e47409000b784d23ccb47028c6e01d"
+    },
+    "ingestion": {
+      "artifactId": 12590122027,
+      "fileHashes": {
+        "SHA256SUMS": "be5d9ed238b1a901d716d537a55c85962dcfd8086cac6c3560161e2f0fef3d73",
+        "acquisition-image-config.json": "9b9e4b60dda207612c386b243c430862d32a756fb3cc246b02c6f4632e53d3a8",
+        "image-id.txt": "1fbc90269c634ff84952d9c1e445ed3cb9e3ffb144df248fb722aba29830e0b0",
+        "image.tar.gz": "c664babe151349f6b75493ab812d8d3d08ac0837cc8bac87775789b64b4a193a",
+        "source-commit.txt": "3c49133ff8cb2422abab627cb4edd95ca75a215e84f2068a7182675b20eb2379"
+      },
+      "imageId": "sha256:3ae64b05d4fe93c8409605177444fb4f8edbfa4dd847d0de6247a7cd6cd35539",
+      "sourceCommit": "3ab998feb55ba0681d30635cdac35fac0f78e5db",
+      "zipSha256": "db1db79a1d4f5efd37004bc9ddb84789269b361a8278f991a21ddabdbc331ac9"
+    },
+    "mcp": {
+      "artifactId": 12589824695,
+      "fileHashes": {
+        "SHA256SUMS": "67a1e5d1473df87a435bdcdace01d2fbc95a0ccc1e63ff4584aa2bb5b13d9546",
+        "capabilities.json": "2a455145e41f0d0664e4fa68ad6f6bdfc54e3d95b1f6d4a66f684b75836e93c3",
+        "image-config.json": "f275147c4203c7c6477e23339c16b963c8cae6acf1c5a98823330c157084b8cc",
+        "image-id.txt": "90e3a55d12958c2ca803c167f610ee5fbf05189c11e0d00dad1c54981f03c838",
+        "image.tar.gz": "dd63ba8508949451f7c50f5d8913b1b35cf59650f199b78576fc2bcd1173c9cb",
+        "source-commit.txt": "713a340672e157cf5c1497b63452a5112287f0dba3eb67b11b58637b57c68764"
+      },
+      "imageId": "sha256:20bbbe2968b01bc18bf053985e7e5ca3f7ea7265e7467439f5275af2753f26f3",
+      "sourceCommit": "bd60ccd092b51557b280e533c8db6b3f98842f9e",
+      "zipSha256": "9a4d629d729f30853ca9902e40c9c2474f6e9ea538fcb306eb3b955db106e860"
+    },
+    "udp": {
+      "artifactId": 12589789326,
+      "fileHashes": {
+        "SHA256SUMS": "6d327dfe0b9db767a9c191274d73d5421c52638069f79d63c27e21956865c2bc",
+        "acquisition-image-config.json": "35cac1f0e533a93c83688ca829684a8474756244874a95a547987d4949a7ace7",
+        "image-id.txt": "e4216d84d6aba4e007aec33ef94c04306cf7e3aebe4eb7d9c450c68be1b7ca70",
+        "image.tar.gz": "863a5d7588f844c55c286ba8c56af27ce54898fd1ce55021f63a035364c2fb36",
+        "source-commit.txt": "c4c31b6a33f6fb7bfb56a683797095c7f479e17f4b67e97b523688543638793c"
+      },
+      "imageId": "sha256:97b67ccfd19764e19ce2bc690775696582c5256ddac5bc5182972d857c362878",
+      "sourceCommit": "b6a9f36a4f98ae8a2aab3bd055e5703bd84a8fb7",
+      "zipSha256": "c38246d7bc5a6fdb16482b06fc19521f1c58ca652dac1f7ea69fe29f513c2412"
+    }
+  },
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "capturedInputsBound": true,
+  "capturedInputsHash": "c40ba6dc86e8be72ddcda2eaef65fe3eb8aa9f24b8ec4b0d5758b0bfeacf1da6",
+  "caseHash": "2f9a2336572e1bbc57215bc6fc7b4f3a5f9bc5fa74e160be751cc0f57dcb8a80",
+  "complete": true,
+  "containerWrites": 0,
+  "currentRuntimeRevalidated": false,
+  "databaseMigrations": 0,
+  "engineGetAttempts": 0,
+  "humanBudgetsGranted": 0,
+  "imageImports": 0,
+  "oauthRequests": 0,
+  "packagePath": "/etc/ouf/deploy-snapshots/acquisition-read-packages-2f9a2336572e1bbc",
+  "privateSigningKeysRead": 0,
+  "releaseAcceptance": false,
+  "rootProtected": true,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "schema": "ouf.acquisition-read-packages-staged.v1",
+  "serviceCredentialFilesOpened": 0,
+  "sourceActivations": 0,
+  "sqlSessions": 0,
+  "status": "ACQUISITION_READ_PACKAGES_STAGED_NOT_APPLIED",
+  "targetApplyAuthorized": false
+}

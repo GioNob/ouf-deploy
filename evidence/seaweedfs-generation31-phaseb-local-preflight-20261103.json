@@ -1,0 +1,104 @@
+{
+  "schema": "ouf.seaweedfs-generation31-phaseb-preflight.v1",
+  "status": "SCAFFOLD_AND_LOCAL_LEGAL_RECHECK_PASSED_A31_HOSTED_PENDING",
+  "generation": 31,
+  "manifestSha256": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719",
+  "patchedSourceTree": "c2b7d4bd32316af277a76fb21c09894004c24b4b",
+  "candidateLockCreated": false,
+  "hostedQualificationPerformed": false,
+  "runtimeLabPerformed": false,
+  "phaseBUnitTestsPassed": 46,
+  "phaseAUnitTestsPassed": 38,
+  "combinedTestsPassed": 84,
+  "syntax": {
+    "status": "PASS",
+    "pythonFiles": 6,
+    "shellBlocks": 14,
+    "inlinePython": 4,
+    "pinnedActions": 9,
+    "workflows": 2
+  },
+  "legalPreflightSha256": "6c5efb0d6ba16b9deae4f92599cfba297b50ba3ef0ac652a021853b442d6c6e1",
+  "legalPreflightSummary": {
+    "thirdPartyModules": 234,
+    "thirdPartyLegalTexts": 324,
+    "sourceArchivesRehashedBytes": 387899941,
+    "mplSourceArchivesReverified": 7,
+    "rootSourceLegalTexts": [
+      {
+        "path": "LICENSE",
+        "sha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613"
+      },
+      {
+        "path": "seaweed-volume/vendor/reed-solomon-erasure/LICENSE",
+        "sha256": "590944b7d6584b19e089020fb61305d2ac45c83e1bff7cdea9831bc1ec435e5d"
+      },
+      {
+        "path": "weed/admin/static/licenses/bootstrap-icons-LICENSE.txt",
+        "sha256": "0fb3e11bd57e896c5a512afd64864d28a37de45d19835016c87ca1ad19ead969"
+      },
+      {
+        "path": "weed/admin/static_gz/licenses/bootstrap-icons-LICENSE.txt.gz",
+        "sha256": "518cff9d74416ebe27c6f5ba1acc026ea68b1f621af21dfcfad126b19c7a3fe1"
+      },
+      {
+        "path": "weed/glog/LICENSE",
+        "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68"
+      },
+      {
+        "path": "weed/iam/wire/LICENSE",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "weed/iam/wire/NOTICE",
+        "sha256": "a6e830174d62dafad3a718384772ea1f4c0e27989f050932dc442a5e3ddad080"
+      },
+      {
+        "path": "weed/s3api/wire/LICENSE",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "weed/s3api/wire/NOTICE",
+        "sha256": "a6e830174d62dafad3a718384772ea1f4c0e27989f050932dc442a5e3ddad080"
+      },
+      {
+        "bytes": 15952,
+        "path": "weed/util/raftstore/LICENSE",
+        "sha256": "977d08f671b26f63c6e8b9783aa1dc91ba8a01afe1aa10549281a9d388749857",
+        "source": "modified-local-raftstore-MPL"
+      }
+    ],
+    "licenceReview": "OPEN",
+    "redistributionAccepted": false
+  },
+  "modifiedMplSourceArchiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+  "pendingRealFacts": [
+    "A31 successful run/attempt and producer commit",
+    "candidate/readback artifact IDs, bytes, digest, expiry",
+    "fresh scan and SPDX hashes and all severity counts",
+    "publisher signature verification record",
+    "cohort licence receipt binding to actual A31 artifact identities",
+    "new B31 hosted cohort and runtime outcomes"
+  ],
+  "dependencyMaintenance": {
+    "status": "OPEN",
+    "allDependenciesMaintained": false
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "proofFiles": {
+    "evidence/seaweedfs-generation31-phaseb-preflight-20261103/boundary-tests.txt": {
+      "sha256": "6b736a5d26bbdc40c2f198413ad83447f54ea3001cdf9061cf38cd2716a631b4",
+      "bytes": 14683
+    },
+    "evidence/seaweedfs-generation31-phaseb-preflight-20261103/legal-preflight-actual.json": {
+      "sha256": "6c5efb0d6ba16b9deae4f92599cfba297b50ba3ef0ac652a021853b442d6c6e1",
+      "bytes": 188505
+    },
+    "evidence/seaweedfs-generation31-phaseb-preflight-20261103/syntax.json": {
+      "sha256": "9b3c4e871366a828cbdf559bdb905c1bc6124aec1fc1c7d312951379d73ad102",
+      "bytes": 125
+    }
+  }
+}

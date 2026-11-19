@@ -1,11 +1,6 @@
 name: Provider offline image rootfs
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tools/semantic_image_rootfs/**'
-      - 'tools/semantic_cohort_admission/cohort-draft/**'
-      - '.github/workflows/provider-v2-image-rootfs.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

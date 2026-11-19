@@ -1,0 +1,52 @@
+[
+  {
+    "url": "https://api.github.com/repos/mitchellh/colorstring",
+    "value": {
+      "archived": true,
+      "pushed_at": "2020-03-27T09:13:22Z"
+    }
+  },
+  {
+    "url": "https://api.github.com/repos/yaml/go-yaml",
+    "value": {
+      "archived": false,
+      "pushed_at": "2026-11-02T17:15:06Z"
+    }
+  },
+  {
+    "url": "https://api.github.com/repos/yaml/go-yaml/git/ref/tags/v3.0.5",
+    "value": {
+      "object": {
+        "sha": "e16c7af9361b241fa02d91582fb59ce4954d8afc",
+        "type": "commit",
+        "url": "https://api.github.com/repos/yaml/go-yaml/git/commits/e16c7af9361b241fa02d91582fb59ce4954d8afc"
+      }
+    }
+  },
+  {
+    "url": "https://api.github.com/repos/yaml/go-yaml/contents/README.md?ref=v3.0.5",
+    "value": {
+      "content": "go.yaml.in/yaml\n===============\n\nYAML Support for the Go Language\n\n\n## Introduction\n\nThe `yaml` package enables [Go](https://go.dev/) programs to comfortably encode\nand decode [YAML](https://yaml.org/) values.\n\nIt was originally developed within [Canonical](https://www.canonical.com) as\npart of the [juju](https://juju.ubuntu.com) project, and is based on a pure Go\nport of the well-known [libyaml](http://pyyaml.org/wiki/LibYAML) C library to\nparse and generate YAML data quickly and reliably.\n\n\n## Project Status\n\nThis project started as a fork of the extremely popular [go-yaml](\nhttps://github.com/go-yaml/yaml/)\nproject, and is being maintained by the official [YAML organization](\nhttps://github.com/yaml/).\n\nThe YAML team took over ongoing maintenance and development of the project after\ndiscussion with go-yaml's author, @niemeyer, following his decision to\n[label the project repository as \"unmaintained\"](\nhttps://github.com/go-yaml/yaml/blob/944c86a7d2/README.md) in April 2025.\n\nWe have put together a team of dedicated maintainers including representatives\nof go-yaml's most important downstream projects.\n\nWe will strive to earn the trust of the various go-yaml forks to switch back to\nthis repository as their upstream.\n\nPlease [contact us](https://cloud-native.slack.com/archives/C08PPAT8PS7) if you\nwould like to contribute or be involved.\n\n\n## Compatibility\n\nThe `yaml` package supports most of YAML 1.2, but preserves some behavior from\n1.1 for backwards compatibility.\n\nSpecifically, v3 of the `yaml` package:\n\n* Supports YAML 1.1 bools (`yes`/`no`, `on`/`off`) as long as they are being\n  decoded into a typed bool value.\n  Otherwise they behave as a string.\n  Booleans in YAML 1.2 are `true`/`false` only.\n* Supports octals encoded and decoded as `0777` per YAML 1.1, rather than\n  `0o777` as specified in YAML 1.2, because most parsers still use the old\n  format.\n  Octals in the `0o777` format are supported though, so new files work.\n* Does not support base-60 floats.\n  These are gone from YAML 1.2, and were actually never supported by this\n  package as it's clearly a poor choice.\n\n\n## Installation and Usage\n\nThe import path for the package is *go.yaml.in/yaml/v3*.\n\nTo install it, run:\n\n```bash\ngo get go.yaml.in/yaml/v3\n```\n\n\n## API Documentation\n\nSee: <https://pkg.go.dev/go.yaml.in/yaml/v3>\n\n\n## API Stability\n\nThe package API for yaml v3 will remain stable as described in [gopkg.in](\nhttps://gopkg.in).\n\n\n## Example\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"log\"\n\n\t\"go.yaml.in/yaml/v3\"\n)\n\nvar data = `\na: Easy!\nb:\n  c: 2\n  d: [3, 4]\n`\n\n// Note: struct fields must be public in order for unmarshal to\n// correctly populate the data.\ntype T struct {\n\tA string\n\tB struct {\n\t\tRenamedC int   `yaml:\"c\"`\n\t\tD\t[]int `yaml:\",flow\"`\n\t}\n}\n\nfunc main() {\n\tt := T{}\n\n\terr := yaml.Unmarshal([]byte(data), &t)\n\tif err != nil {\n\t\tlog.Fatalf(\"error: %v\", err)\n\t}\n\tfmt.Printf(\"--- t:\\n%v\\n\\n\", t)\n\n\td, err := yaml.Marshal(&t)\n\tif err != nil {\n\t\tlog.Fatalf(\"error: %v\", err)\n\t}\n\tfmt.Printf(\"--- t dump:\\n%s\\n\\n\", string(d))\n\n\tm := make(map[interface{}]interface{})\n\n\terr = yaml.Unmarshal([]byte(data), &m)\n\tif err != nil {\n\t\tlog.Fatalf(\"error: %v\", err)\n\t}\n\tfmt.Printf(\"--- m:\\n%v\\n\\n\", m)\n\n\td, err = yaml.Marshal(&m)\n\tif err != nil {\n\t\tlog.Fatalf(\"error: %v\", err)\n\t}\n\tfmt.Printf(\"--- m dump:\\n%s\\n\\n\", string(d))\n}\n```\n\nThis example will generate the following output:\n\n```\n--- t:\n{Easy! {2 [3 4]}}\n\n--- t dump:\na: Easy!\nb:\n  c: 2\n  d: [3, 4]\n\n\n--- m:\nmap[a:Easy! b:map[c:2 d:[3 4]]]\n\n--- m dump:\na: Easy!\nb:\n  c: 2\n  d:\n  - 3\n  - 4\n```\n\n\n## License\n\nThe yaml package is licensed under the MIT and Apache License 2.0 licenses.\nPlease see the LICENSE file for details.\n"
+    }
+  },
+  {
+    "url": "https://api.github.com/repos/apache/iceberg-go/releases/latest",
+    "value": {
+      "tag_name": "v0.7.0",
+      "published_at": "2026-10-01T16:07:24Z"
+    }
+  },
+  {
+    "url": "https://api.github.com/repos/schollz/progressbar/releases/latest",
+    "value": {
+      "tag_name": "v3.19.1",
+      "published_at": "2026-06-30T18:23:08Z"
+    }
+  },
+  {
+    "url": "https://api.github.com/repos/apache/iceberg-go/contents/config/config.go?ref=main",
+    "value": {
+      "content": "// Licensed to the Apache Software Foundation (ASF) under one\n// or more contributor license agreements.  See the NOTICE file\n// distributed with this work for additional information\n// regarding copyright ownership.  The ASF licenses this file\n// to you under the Apache License, Version 2.0 (the\n// \"License\"); you may not use this file except in compliance\n// with the License.  You may obtain a copy of the License at\n//\n//   http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing,\n// software distributed under the License is distributed on an\n// \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n// KIND, either express or implied.  See the License for the\n// specific language governing permissions and limitations\n// under the License.\n\npackage config\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\n\t\"gopkg.in/yaml.v3\"\n)\n\nconst (\n\tcfgFile           = \".iceberg-go.yaml\"\n\tdefaultMaxWorkers = 5\n)\n\ntype Config struct {\n\tDefaultCatalog string                   `yaml:\"default-catalog\"`\n\tCatalogs       map[string]CatalogConfig `yaml:\"catalog\"`\n\tMaxWorkers     int                      `yaml:\"max-workers\"`\n}\n\ntype RestOptions struct {\n\tSigV4Enabled  bool   `yaml:\"sigv4-enabled\"`\n\tSigningName   string `yaml:\"signing-name\"`\n\tSigningRegion string `yaml:\"signing-region\"`\n}\n\ntype CatalogConfig struct {\n\tCatalogType string       `yaml:\"type\"`\n\tURI         string       `yaml:\"uri\"`\n\tOutput      string       `yaml:\"output\"`\n\tCredential  string       `yaml:\"credential\"`\n\tWarehouse   string       `yaml:\"warehouse\"`\n\tAWSProfile  string       `yaml:\"aws-profile\"`\n\tSQLDriver   string       `yaml:\"sql-driver\"`\n\tSQLDialect  string       `yaml:\"sql-dialect\"`\n\tRestOptions *RestOptions `yaml:\"rest,omitempty\"`\n}\n\n// LoadConfig reads configuration data and reports path and read failures.\n// An empty configPath selects ~/.iceberg-go.yaml. A missing implicit\n// home-directory configuration is not an error; LoadConfig returns nil data.\n// Unlike [EnvConfig], it ignores GOICEBERG_HOME. Use [ParseConfig] to decode\n// the YAML and select a catalog.\nfunc LoadConfig(configPath string) ([]byte, error) {\n\timplicit := configPath == \"\"\n\tvar path string\n\tif !implicit {\n\t\tpath = configPath\n\t} else {\n\t\thomeDir, err := os.UserHomeDir()\n\t\tif err != nil {\n\t\t\treturn nil, fmt.Errorf(\"resolve home directory for config: %w\", err)\n\t\t}\n\t\tpath = filepath.Join(homeDir, cfgFile)\n\t}\n\n\tpath, err := filepath.Abs(path)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"resolve config path %q: %w\", path, err)\n\t}\n\n\tfile, err := os.ReadFile(path)\n\tif err != nil {\n\t\tif implicit && errors.Is(err, os.ErrNotExist) {\n\t\t\treturn nil, nil\n\t\t}\n\n\t\treturn nil, fmt.Errorf(\"read config file %s: %w\", path, err)\n\t}\n\n\treturn file, nil\n}\n\n// ParseConfig unmarshals the config file once and resolves the catalog to use.\n// When catalogName is empty, it falls back to the file's default-catalog field and\n// then to the built-in \"default\" name. It returns the matching CatalogConfig, or\n// nil/nil if no such catalog is defined in the file. A non-nil error means the\n// file could not be parsed and should be surfaced to the user.\nfunc ParseConfig(file []byte, catalogName string) (*CatalogConfig, error) {\n\tif len(file) == 0 {\n\t\treturn nil, nil\n\t}\n\tvar config Config\n\tif err := yaml.Unmarshal(file, &config); err != nil {\n\t\treturn nil, err\n\t}\n\n\tif catalogName == \"\" {\n\t\tcatalogName = config.DefaultCatalog\n\t}\n\tif catalogName == \"\" {\n\t\tcatalogName = \"default\"\n\t}\n\n\tres, ok := config.Catalogs[catalogName]\n\tif !ok {\n\t\treturn nil, nil\n\t}\n\n\treturn &res, nil\n}\n\nfunc fromConfigFiles() Config {\n\tdir := os.Getenv(\"GOICEBERG_HOME\")\n\tif dir != \"\" {\n\t\tdir = filepath.Join(dir, cfgFile)\n\t}\n\n\tvar cfg Config\n\t// EnvConfig keeps its historical best-effort initialization behavior.\n\t// Callers reading an explicit file should handle errors from LoadConfig.\n\tdata, _ := LoadConfig(dir)\n\tif err := yaml.Unmarshal(data, &cfg); err != nil {\n\t\treturn cfg\n\t}\n\n\tif cfg.DefaultCatalog == \"\" {\n\t\tcfg.DefaultCatalog = \"default\"\n\t}\n\tif cfg.MaxWorkers <= 0 {\n\t\tcfg.MaxWorkers = defaultMaxWorkers\n\t}\n\n\treturn cfg\n}\n\nvar EnvConfig = fromConfigFiles()\n"
+    }
+  }
+]

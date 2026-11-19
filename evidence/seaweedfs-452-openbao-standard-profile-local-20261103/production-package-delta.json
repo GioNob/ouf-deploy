@@ -1,0 +1,27 @@
+{
+  "before": 1811,
+  "after": 1791,
+  "removed": [
+    "github.com/go-jose/go-jose/v4/jwt",
+    "github.com/hashicorp/go-cleanhttp",
+    "github.com/hashicorp/go-retryablehttp",
+    "github.com/hashicorp/go-rootcerts",
+    "github.com/hashicorp/go-secure-stdlib/parseutil",
+    "github.com/hashicorp/go-secure-stdlib/strutil",
+    "github.com/hashicorp/go-sockaddr",
+    "github.com/hashicorp/hcl",
+    "github.com/hashicorp/hcl/hcl/ast",
+    "github.com/hashicorp/hcl/hcl/parser",
+    "github.com/hashicorp/hcl/hcl/scanner",
+    "github.com/hashicorp/hcl/hcl/strconv",
+    "github.com/hashicorp/hcl/hcl/token",
+    "github.com/hashicorp/hcl/json/parser",
+    "github.com/hashicorp/hcl/json/scanner",
+    "github.com/hashicorp/hcl/json/token",
+    "github.com/hashicorp/vault/api",
+    "github.com/mitchellh/mapstructure",
+    "github.com/ryanuber/go-glob",
+    "github.com/seaweedfs/seaweedfs/weed/kms/openbao"
+  ],
+  "added": []
+}

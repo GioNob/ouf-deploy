@@ -1,0 +1,27 @@
+{
+  "schema": "ouf.preboot-application-difference-qualification.v1",
+  "sourceCommit": "5091b02579123ba1232b53bb1debecfb5133679e",
+  "deliveryCommit": "4eb0ea7f2c5afaaf3a3e15034b362d1a91806eac",
+  "launcherSha256": "c86b306703e0e38cc3bb345f9be2dd922ed607efc8f1e52238559d9dafa68ca9",
+  "diagnosticSha256": "83cc3d0a67f91bc4b37b7aa28f75198f84dc0e48c4f91e0ec661adbb2322e775",
+  "qualificationRun": 39151634206,
+  "qualificationJob": 117746306601,
+  "testsPassed": 10,
+  "exactPayloads": 9,
+  "targetExecuted": false,
+  "applicationRoles": [
+    "udp",
+    "mcp",
+    "onboarding"
+  ],
+  "maximumContainerReads": 9,
+  "maximumSeconds": 120,
+  "runtimeMutations": 0,
+  "baselineAdopted": false,
+  "credentialValuesPrinted": false,
+  "unknownFieldNamesPrinted": false,
+  "providerMutations": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "previousCorrectionRetired": true
+}
