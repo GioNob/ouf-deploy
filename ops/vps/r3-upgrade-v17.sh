@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=ae21c25e6cb2da7315853632de9269e13b34cca0
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -133,7 +133,7 @@ delivery() {
   fetch tools/semantic_provider_operation/supersede_gate.py d27e874ceef9e2a1f34f2543d4f79dcdd5b76bdf4db72c10156bc33665cc0ef5
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
   fetch tools/semantic_provider_r3/adapter_v16.py 1af794ea243bfa1d2caa8cfa702017bd5a378c49d27e6c753f52ab4f1890825a
-  fetch tools/semantic_provider_r3/compose.py 916dc73f82aa6bf1f0bdd693a7ea3beca60f0dbbf5fd0beacc95e79c096705d1
+  fetch tools/semantic_provider_r3/compose.py 7de0c12495184cec2e08494234fc9f0637c84cd3f6ba6747b9b4b079957e9b2f
   fetch tools/semantic_provider_r3/driver_budget_v17.py 086b695267ac94ce50053fe1c8f6c8bcec6f702d36e6d350fe74c319741a4f02
   fetch tools/semantic_provider_r3/driver_denial_overlay_v16.py cc2393eb2bea4b299cd8b0a8cdecb7b6e67b8c83f7e8d3d15bd09d915e3b2009
   fetch tools/semantic_provider_r3/egress_v15.py 03552b9750a551fb227917ac5756667995362e3f9e9acbaf91d717ded4422f82
@@ -147,6 +147,7 @@ delivery() {
   fetch tools/semantic_provider_r3/read_adapter_v16.py 66b1dd83d4543e4454036489ff64433d16a9a30bb63127b4310431271064de77
   fetch tools/semantic_provider_r3/read_identity_provider_v13.py 7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7
   fetch tools/semantic_provider_r3/read_routes_v15.py e3e62ea885e0a54fb74de591e49891d1b209fae7756296ad74ae2a958506390e
+  fetch tools/semantic_provider_r3/runtime_absent_overlay_v19.py 81e9da05d14906ebbf8efe4c9adec66987177f4adb357f9ad6e9b93b48c46bf9
   fetch tools/semantic_provider_r3/upgrade.py bc18eee17996d2cb0533d132ec40789c43244187d2edb2d2ca59f48ff850c754
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
   fetch tools/semantic_provider_routes/custody.py 2ab7177f21fb5b330473895798c141282cdabc85c245142f96511fa13e848db3
@@ -261,7 +262,7 @@ if 17 >= 12:
                         # R-022: lease renewal/recovery parameters as an installation input (delivered, pinned).
                         files["leaseRenewal"] = str(D / "ops/vps/r3-lease-renewal.json")
                         PINS["leaseRenewal"] = "c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f"
-                        assert set(files) == C.DATA_INPUTS_V18, "R3_INPUT_SET_DRIFT"
+                        assert set(files) == (C.DATA_INPUTS_V19 if 17 >= 19 else C.DATA_INPUTS_V18), "R3_INPUT_SET_DRIFT"
                     else:
                         assert set(files) == C.DATA_INPUTS_V17, "R3_INPUT_SET_DRIFT"
                 else:
@@ -282,7 +283,7 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = (C.SOURCE_INPUTS_V18 if 17 >= 18 else C.SOURCE_INPUTS_V17 if 17 >= 17 else C.SOURCE_INPUTS_V16 if 17 >= 16 else C.SOURCE_INPUTS_V15 if 17 >= 15 else C.SOURCE_INPUTS_V13 if 17 >= 13 else C.SOURCE_INPUTS_V12 if 17 >= 12 else C.SOURCE_INPUTS_V11 if 17 >= 11
+SOURCE_SET = (C.SOURCE_INPUTS_V19 if 17 >= 19 else C.SOURCE_INPUTS_V18 if 17 >= 18 else C.SOURCE_INPUTS_V17 if 17 >= 17 else C.SOURCE_INPUTS_V16 if 17 >= 16 else C.SOURCE_INPUTS_V15 if 17 >= 15 else C.SOURCE_INPUTS_V13 if 17 >= 13 else C.SOURCE_INPUTS_V12 if 17 >= 12 else C.SOURCE_INPUTS_V11 if 17 >= 11
               else C.SOURCE_INPUTS_V6 if 17 >= 6 else C.SOURCE_INPUTS)
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},

@@ -59,6 +59,8 @@ CLOSURE = {
     "tools/semantic_provider_r3/lease_observability_overlay_v18.py", "ops/vps/r3-lease-renewal.json",
     # R-031 (task-81): supersession gate imported by the issuer.
     "tools/semantic_provider_operation/supersede_gate.py",
+    # R-031 (task-82): v19 runtime overlay (kill/delete passthrough on proven-absent terminal epochs).
+    "tools/semantic_provider_r3/runtime_absent_overlay_v19.py",
     *("tools/semantic_lease_kernel_migration/" + n for n in (
         "__init__.py", "boot_dispatcher.py", "boot_runner_v2.py", "cli.py", "migration.py", "native.py")),
     "tools/semantic_provider_r3/upgrade.py", "scripts/upgrade-semantic-provider-r3.py",
@@ -100,7 +102,7 @@ class R3Runbooks(unittest.TestCase):
         self.assertEqual(paths, CLOSURE | set(C.SOURCE_INPUTS) | set(C.SOURCE_INPUTS_V6) | set(C.SOURCE_INPUTS_V11)
                          | set(C.SOURCE_INPUTS_V12) | set(C.SOURCE_INPUTS_V13)
                          | set(C.SOURCE_INPUTS_V15) | set(C.SOURCE_INPUTS_V16)
-                         | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18))
+                         | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18) | set(C.SOURCE_INPUTS_V19))
 
     def test_sealed_hashes_are_lf_blobs_at_head(self):
         for path, digest in self.deliveries[0]:
