@@ -2,6 +2,7 @@
 import ast
 from contextlib import redirect_stderr, redirect_stdout
 import copy
+from functools import cache
 import hashlib
 import io
 import json
@@ -17,9 +18,20 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tools.semantic_provider_r3 import autostart as A
+from test_r3_runbooks import PIN, blob
 
 ROOT = Path(__file__).resolve().parents[1]
 BOOT = "11111111-2222-3333-4444-555555555555"
+
+
+@cache
+def delivery_blob(path):
+    """The sealed autostart extends the delivery selected by its operate runbook."""
+    operate = (ROOT / "ops/vps/r3-operate.sh").read_text()
+    revision = PIN.search(operate).group(1)
+    if revision == "0" * 40:
+        return (ROOT / path).read_bytes().replace(b'\r\n', b'\n')
+    return blob(revision, path)
 
 
 def configuration(output="/etc/ouf/deploy-snapshots"):
@@ -305,11 +317,11 @@ class ConfigAndDeliveryTests(unittest.TestCase):
         self.assertEqual(set(manifest), set(expected) | {"tools/semantic_provider_r3/autostart.py",
                                                        "scripts/autostart-semantic-provider-r3.py"})
         for path, digest in manifest.items():
-            raw = (ROOT / path).read_bytes().replace(b'\r\n', b'\n')
+            raw = delivery_blob(path)
             self.assertEqual(hashlib.sha256(raw).hexdigest(), digest, path)
             if path in expected:
                 self.assertEqual(expected[path], digest)
-        unit = (ROOT / "ops/vps/systemd/ouf-semantic-r3-autostart.service").read_bytes().replace(b'\r\n', b'\n')
+        unit = delivery_blob("ops/vps/systemd/ouf-semantic-r3-autostart.service")
         self.assertEqual(values["UNIT_SHA"], hashlib.sha256(unit).hexdigest())
         self.assertRegex(text, r"(?m)^C=0{40}$")
         self.assertIn("require(REQUESTED == digest", text)
@@ -355,8 +367,7 @@ class InstallerTests(unittest.TestCase):
         source = self.base / "checkout"
         source.mkdir()
         self.ns.update(SOURCE=source, DEST=self.base / "installed", UNIT=self.base / "autostart.service")
-        self.payload = {name: (ROOT / name).read_bytes().replace(b'\r\n', b'\n')
-                        for name in [*self.ns["MANIFEST"], self.ns["UNIT_SOURCE"]]}
+        self.payload = {name: delivery_blob(name) for name in [*self.ns["MANIFEST"], self.ns["UNIT_SOURCE"]]}
         for name, raw in self.payload.items():
             target = source / name
             target.parent.mkdir(parents=True, exist_ok=True)

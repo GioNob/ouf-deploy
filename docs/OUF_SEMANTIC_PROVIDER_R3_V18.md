@@ -1,0 +1,109 @@
+# R3 v18 — Rinnovo e recupero del lease (D-054, R-022)
+
+La v18 calcola l’avvio del rinnovo dal residuo nft verificato nelle famiglie
+`inet` e `bridge`. Usa il minore dei TTL e lo ancora all’inizio della lettura.
+Il rinnovo parte solo con il margine minimo configurato. Lo scheduler anticipa
+il risveglio di un ulteriore secondo quando il residuo lo permette.
+
+## Input e valori proposti
+
+`leaseRenewal` è un oggetto JSON canonico a campi chiusi. Il file di consegna
+è `ops/vps/r3-lease-renewal.json` ed entra in composizione dalla v18.
+
+| Campo | Valore | Vincolo e motivazione |
+| --- | ---: | --- |
+| `renewalMarginSeconds` | 22 | Residuo minimo all’avvio del rinnovo. Intero da 1 a 300, ulteriormente vincolato dai budget e dalla durata effettiva. |
+| `lockWaitSeconds` | 6 | Tetto per acquisizione nel percorso di rinnovo. Intero da 1 a 20. Il tentativo smette di attendere prima di esaurire la finestra se la contesa persiste. |
+| `fastRetryCount` | 1 | Intero da 0 a 3. Una seconda raccolta DNS può assorbire un transitorio breve entro la stessa scadenza assoluta. |
+| `fastRetryDelaysSeconds` | `[1]` | Un ritardo per retry, in ordine crescente o uguale, con valori interi da 1 a 5 s. Si rispetta anche l’eventuale `retry_after`. |
+| `healthyResetSeconds` | 300 | Intero da 1 a 86.400. Cinque minuti di rinnovi sani abbassano il gradino dopo una sequenza di errori. |
+
+La composizione riserva il maggiore fra `DNS + attesa lock` e budget del driver,
+più 1 s di applicazione/readback, 2 s di soglia `denyOnly`, 1 s per il commit
+e 1 s per i controlli. Con DNS a 10 s, lock a 6 s e driver a 12 s, la somma è
+21 s e il valore proposto offre 1 s in più. Il driver conserva i suoi 12 s.
+Se il driver occupa il lock per più di 6 s, il rinnovo può proseguire soltanto
+se il percorso di retry riesce a riprovare il lease entro la finestra residua.
+
+Il limite autorizzato resta 30 s. La composizione verifica il minore fra la
+durata DNS al netto dell’applicazione e i `providerFlows[].leaseSeconds`,
+lasciando margine per il TTL letto in secondi interi. Verifica inoltre il
+limite di 30 s per tentativo e che i ritardi della corsia rapida possano
+rientrare nella finestra disponibile. Un DNS lento o un TTL breve può ridurre
+il lease effettivo e portare alla pausa. La corsia rapida richiede tempo
+sufficiente per una nuova raccolta DNS e per pubblicare entro la scadenza
+originaria. L’input viene rivalidato all’avvio contro il coordinatore sigillato.
+
+## Deadline e percorsi di chiusura
+
+Il rinnovo acquisisce il lock comune fino al primo di questi tre limiti.
+
+1. Ora monotona più `lockWaitSeconds`.
+2. Deadline del tentativo meno 1 s per il commit.
+3. Prima scadenza dell’evidenza DNS meno `applyBudgetSeconds + 2 s`.
+
+Dopo l’acquisizione ricontrolla subito la deadline e verifica sotto lock
+autorità, generazione, ownership, journal e membership esatta del lease in
+entrambe le famiglie. Ricompila con le stesse scadenze DNS assolute.
+L’applicazione e il readback condividono il limite più stretto fra quello del
+tentativo e `mustApplyByMonotonic`. `LEASE_READY` richiede readback e verifica
+finale entro la finestra.
+
+La corsia rapida ammette solo errori esplicitamente classificati prima della
+prima mutazione. Prima e dopo il ritardo riprova il lease precedente sotto
+lock. Il contatore del retry è persistito prima dell’attesa, la nuova query usa
+evidenza fresca e la sua deadline può solo accorciarsi. Il budget cumulativo
+conta l’intervallo di retry e il tetto di 128 tentativi comprende anche questi
+tentativi. Il semplice flag storico `no_effect` da solo è insufficiente.
+
+Scadenza nft a zero, perdita di prova e pubblicazione ambigua fanno scattare
+la revoca. La revoca avviata dall’adapter dispone di 40 s indipendenti
+dall’ammissione, con il tetto storico di 20 s per acquisizione e il budget
+nft per comando. Il journal di recupero registra `BLOCKED / SAFE_PAUSE_UNPROVEN`
+quando la revoca resta indimostrata. In quel caso vale la scadenza finita
+già programmata nel kernel.
+
+Il backoff dopo revoca usa `(5, 15, 60, 300, 900)` s con il jitter storico.
+Dopo 300 s continui osservati su entrambi i clock, un rinnovo riuscito
+riporta al primo gradino. Una pausa o un retry rapido interrompe il periodo
+sano. I tetti di 128 tentativi, 86.400 s cumulativi per scope, 30 s per tentativo
+e sei aperture in un’ora continuano a valere.
+
+## Consegna da fissare nei runbook
+
+Per issue e upgrade v18 aggiungere `files["leaseRenewal"]` con il percorso
+privato della copia di `ops/vps/r3-lease-renewal.json`, il digest in
+`PINS["leaseRenewal"]` e selezionare `C.DATA_INPUTS_V18` /
+`C.SOURCE_INPUTS_V18` per `inputs.json`. L’insieme dei sorgenti aggiunge solo
+`tools/semantic_provider_r3/lease_renewal_v18.py`. Il compositore richiede
+anche il modulo host `lease_renewal_overlay_v18.py`.
+
+| File della consegna | SHA-256 dei byte LF |
+| --- | --- |
+| `ops/vps/r3-lease-renewal.json` | `c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f` |
+| `tools/semantic_provider_r3/compose.py` | `6c243d70ee412ad426f7c270d3d3988e1b4c63ba472286d7f75faa21e06d4b0d` |
+| `tools/semantic_provider_r3/lease_renewal_v18.py` | `c6fefa170903a92bcb706a061c91a3bfd5af560b51447f08dd0ac3135a5a7ecd` |
+| `tools/semantic_provider_r3/lease_renewal_overlay_v18.py` | `07e03401a828241aaa8215a70b1c171aa612ed7ef06293b845b5ef9b132c16d3` |
+
+Fissare `C` al commit approvato e ricalcolare questi hash dai blob Git della
+consegna. Sincronizzare il manifest `operate` e quello di autostart se
+rigenerati sulla stessa consegna. I pin dei sorgenti base continuano a
+identificare i blob storici. La composizione aggiorna invece i `PINS` interni
+del supervisore sui byte emessi. Il bootstrap v3 emesso verifica la chiusura
+nuova, incluso `tools/semantic_lease_recovery/lease_renewal_v18.py`, sotto
+lo schema `ouf.semantic-provider-lease-supervisor.v2`. Il piano di upgrade
+vincola configurazione, unità e manifest ai relativi byte emessi.
+
+## Upgrade e qualifica
+
+1. Verificare l’autorizzazione `OPERATE` v17, i due CID fermi con epoche assenti
+   o terminali e il coordinatore `QUIESCED` con lease e start a `false`.
+2. Eseguire issue plan/apply con `--supersede`. Verificare `sequence=18` e
+   `supersedes` pari al digest dell’autorizzazione v17. Usare gli stessi CID,
+   coordinatore, kernel g2, ricette B1 v4, acceptance g7 e budget driver.
+3. Eseguire upgrade plan/apply sulla stessa collezione di input. Verificare
+   `SEMANTIC_PROVIDER_R3_UPGRADED_WAITING`, wrapper e unità verso `versions/18`
+   e hash della configurazione supervisor. [Procedura di upgrade](OUF_SEMANTIC_PROVIDER_R3_UPGRADE.md).
+4. Con il nuovo wrapper, usare `operate start` plan/apply e osservare i rinnovi
+   e il recupero. Le prove offline usano clock e I/O controllati, incluse le
+   decisioni di revoca. L’esecuzione sul VPS resta da qualificare.

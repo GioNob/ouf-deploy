@@ -79,6 +79,10 @@ SOURCE_INPUTS_V16 = frozenset(SOURCE_MAP_V16.values()) | {KERNEL_V1}
 # V17 overlays the same sealed blobs at their existing installed paths.
 SOURCE_MAP_V17 = dict(SOURCE_MAP_V16)
 SOURCE_INPUTS_V17 = frozenset(SOURCE_MAP_V17.values()) | {KERNEL_V1}
+LEASE_RENEWAL_SOURCE = 'tools/semantic_provider_r3/lease_renewal_v18.py'
+LEASE_RENEWAL_TARGET = 'tools/semantic_lease_recovery/lease_renewal_v18.py'
+SOURCE_MAP_V18 = {**SOURCE_MAP_V17, LEASE_RENEWAL_TARGET: LEASE_RENEWAL_SOURCE}
+SOURCE_INPUTS_V18 = frozenset(SOURCE_MAP_V18.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -91,6 +95,7 @@ DATA_INPUTS_V13 = DATA_INPUTS_V12 | {'identityProviderPeer'}
 DATA_INPUTS_V15 = DATA_INPUTS_V13 | {'southbound/routesProjection'}
 DATA_INPUTS_V16 = DATA_INPUTS_V15 | {'adapter/configProjection', 'installationProfile'}
 DATA_INPUTS_V17 = DATA_INPUTS_V16 | {'driverBudget'}
+DATA_INPUTS_V18 = DATA_INPUTS_V17 | {'leaseRenewal'}
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -105,7 +110,8 @@ def input_set(files, sources):
             (set(files) == DATA_INPUTS_V13 and set(sources) == SOURCE_INPUTS_V13) or
             (set(files) == DATA_INPUTS_V15 and set(sources) == SOURCE_INPUTS_V15) or
             (set(files) == DATA_INPUTS_V16 and set(sources) == SOURCE_INPUTS_V16) or
-            (set(files) == DATA_INPUTS_V17 and set(sources) == SOURCE_INPUTS_V17))
+            (set(files) == DATA_INPUTS_V17 and set(sources) == SOURCE_INPUTS_V17) or
+            (set(files) == DATA_INPUTS_V18 and set(sources) == SOURCE_INPUTS_V18))
 
 
 def migration_bindings(files):
@@ -279,6 +285,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     files, sources = inputs["files"], inputs["sources"]
     if version >= 17:
         from . import driver_budget_v17
+    if version >= 18:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V18, SOURCE_INPUTS_V18, DATA_INPUTS_V18
+    elif version >= 17:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V17, SOURCE_INPUTS_V17, DATA_INPUTS_V17
     elif version >= 16:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V16, SOURCE_INPUTS_V16, DATA_INPUTS_V16
@@ -298,6 +307,7 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     if version >= 17:
         driver_budget = driver_budget_v17.seconds(document(files['driverBudget'], driver_budget_v17.INVALID))
     data = {k: document(v, "RECIPE_POLICY_NOT_CANONICAL_PLUS_LF" if k.endswith("/policy")
+                        else "R3_LEASE_RENEWAL_INVALID" if version >= 18 and k == "leaseRenewal"
                         else "INPUT_NOT_CANONICAL_PLUS_LF") for k, v in files.items() if k != 'driverBudget'}
     for role in ROLES:
         require(files[role + "/policy"] == canonical(data[role + "/policy"]) + b"\n",
@@ -371,6 +381,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         emitted = sources_v16(emitted, selected_map)
     if version >= 17:
         emitted = driver_budget_v17.sources_v17(emitted, selected_map)
+    if version >= 18:
+        from .lease_renewal_overlay_v18 import sources_v18
+        emitted = sources_v18(emitted, selected_map, sha, contract_module)
     if version >= 12:
         contract_module(emitted[KERNEL_V2], 'kernel_g2').materialize(owner['kernel'], empty_provider_sets=True)
     docs = {"source/" + target: emitted[original] for target, original in source_map.items()}
@@ -386,6 +399,12 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     common = {"authorizationRoot": root + "/authorization", "anchorBinding": s["anchorBinding"],
               "mandateRoot": s["mandateRoot"], "opensslBinding": s["opensslBinding"], "mandatesModule": source(MANDATES)}
     dns_profile = {**owner["dns"], "timeoutSeconds": 10} if version >= 11 else owner["dns"]
+    if version >= 18:
+        renewal = contract_module(emitted[LEASE_RENEWAL_SOURCE], "lease_renewal_v18")
+        try:
+            renewal.budgets(data["leaseRenewal"], dns_profile, owner["kernel"]["providerFlows"], driver_budget)
+        except ValueError as error:
+            raise A.OperationDenied(str(error)) from None
     rows, policies, templates = {}, {}, {}
     for role in ROLES:
         recipe = {k: data[role + "/" + k] for k in ACCEPT.RECIPE_PARTS}
@@ -533,6 +552,10 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
             "nftBinding": {"path": owner["nftPath"], "sha256": owner["nftSha256"]}},
         "recoveryJournalRoot": root + "/supervisor/state/recovery", "statusPath": root + "/supervisor/state/status.json",
         "limits": s["supervisorLimits"]}
+    if version >= 18:
+        supervisor.update(schema=renewal.SCHEMA, leaseRenewal=data["leaseRenewal"],
+                          driverBudgetSeconds=driver_budget)
+        supervisor["sourceHashes"][LEASE_RENEWAL_TARGET] = hashes[LEASE_RENEWAL_TARGET]
     sup = put("supervisor/configuration.json", supervisor)
     contract_module(emitted[selected_map[SUPERVISOR]], "supervisor").validate(docs["supervisor/configuration.json"])
     runtime = {"schema": "ouf.semantic-docker-runtime-adapter.v5.2", "sourceHash": hashes[RUNTIME],

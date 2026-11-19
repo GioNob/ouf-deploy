@@ -23,6 +23,7 @@ on:
       - ops/vps/config-publish.sh
       - ops/vps/b1-recipes-v4.sh
       - ops/vps/acceptance-v51-g7.sh
+      - ops/vps/r3-lease-renewal.json
       - tests/test_semantic_provider_r3*.py
       - tests/test_frame_observer_v2.py
       - tests/test_semantic_provider_operation*.py
@@ -44,6 +45,7 @@ on:
       - docs/OUF_SEMANTIC_PROVIDER_R3_V15.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V16_ADAPTER.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V16_DRIVER_DENIAL.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V18.md
       - tests/test_semantic_b1_acceptance.py
       - tests/test_runtime_v52_epochs.py
       - .github/workflows/semantic-provider-r3-integration.yml
@@ -62,6 +64,8 @@ jobs:
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_lease_kernel_v2.py -v
       - name: D-053 v16 adapter, configuration publication, B1 v4 and acceptance g7 (portable)
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v16_adapter.py -v
+      - name: D-054 R3 v18 renewal, recovery and frozen v17 composition (portable)
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v18.py -v
       - name: D-050 native dependencies and explicit root gate
         run: |
           test "$(sudo -n id -u)" = 0

@@ -298,16 +298,23 @@ class NativeBindingsAndUpgrade(unittest.TestCase):
             issuer.observe(args, lambda: 0)
 
     @contextmanager
-    def observation_fixture(self):
-        inputs, old, _, _ = fixture(); r = composed(inputs, old)
+    def observation_fixture(self, case=None, *, version=12):
+        if case is None:
+            inputs, old, _, _ = fixture()
+            r = composed(inputs, old)
+        else:
+            inputs, old, r = case
         files, settings = inputs['files'], C.document(inputs['files']['settings'])
-        root = PurePosixPath(settings['installRoot']); before = root / 'versions/11'
-        old_cfg = C.document(old['documents']['versions/11/runtime-configuration.json'])
-        old_sup_raw = old['documents']['versions/11/supervisor/configuration.json']
-        head = {'sequence': 12, 'decision': 'OPERATE', 'sha256': C.sha(r['authorization']), 'authorization': C.document(r['authorization'])}
+        root = PurePosixPath(settings['installRoot'])
+        before = root / f'versions/{version - 1}'
+        old_cfg = C.document(old['documents'][f'versions/{version - 1}/runtime-configuration.json'])
+        old_sup_raw = old['documents'][f'versions/{version - 1}/supervisor/configuration.json']
+        head = {'sequence': version, 'decision': 'OPERATE', 'sha256': C.sha(r['authorization']),
+                'authorization': C.document(r['authorization'])}
         wrapper = I.wrapper_bytes(old_cfg['pythonPath'], before)
         with patch.object(I, 'Path', PurePosixPath): unit = I.unit_bytes(root, old_cfg, C.document(old_sup_raw), before)
-        disk = {str(root / 'authorization/11.json'): old['authorization'], str(root / 'authorization/12.json'): r['authorization'],
+        disk = {str(root / f'authorization/{version - 1}.json'): old['authorization'],
+                str(root / f'authorization/{version}.json'): r['authorization'],
                 str(I.UNIT_PATH): unit, '/wrapper': wrapper}
         args = types.SimpleNamespace(install_root=str(root), output_directory='/claim', current_wrapper_sha256=C.sha(wrapper),
             wrapper='/wrapper', lock='/guard', systemctl='/systemctl', systemctl_sha256='a' * 64,
