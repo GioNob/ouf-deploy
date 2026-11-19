@@ -151,6 +151,46 @@ def frame(doc):
     return dict(inventory.frame(doc), Name=doc['Name'], RestartCount=doc['RestartCount'])
 
 
+class RestoredFrameChanged(RuntimeError):
+    def __init__(self, differences):
+        super().__init__('RESTORED_FRAME_CHANGED')
+        self.differences = differences
+
+
+def verify_restored_frame(old, gated):
+    """Compare the restarted predecessor to its own recorded configuration."""
+    differences = {}
+
+    def describe(path, before, after, key):
+        change = {'before': type(before[key]).__name__ if key in before else 'absent',
+                  'after': type(after[key]).__name__ if key in after else 'absent'}
+        if isinstance(before.get(key), list) and isinstance(after.get(key), list):
+            change['orderOnly'] = sorted(map(mac.encoded, before[key])) == sorted(map(mac.encoded, after[key]))
+        differences[path] = change
+
+    for key in ('Id', 'Image', 'Name', 'Path', 'Args', 'Config', 'HostConfig'):
+        if old[key] == gated[key]:
+            continue
+        if key in ('Config', 'HostConfig'):
+            # These direct keys belong to the Engine schema. Stop before
+            # user-controlled maps (labels, driver options, ports, etc.).
+            for field in inventory.changes(old[key], gated[key]):
+                describe(key + '.' + field, old[key], gated[key], field)
+        else:
+            describe(key, old, gated, key)
+    if differences:
+        if 'Config.MacAddress' in differences:
+            differences['Config.MacAddress'].update(beforeProfile=inventory.mac_shape(old),
+                                                    afterProfile=inventory.mac_shape(gated))
+        if 'HostConfig.NetworkMode' in differences:
+            name, endpoint_before = next(iter(old['NetworkSettings']['Networks'].items()))
+            for side, doc in [('before', old), ('after', gated)]:
+                mode = doc['HostConfig'].get('NetworkMode')
+                differences['HostConfig.NetworkMode'][side + 'MatchesName'] = mode == name
+                differences['HostConfig.NetworkMode'][side + 'MatchesId'] = mode == endpoint_before['NetworkID']
+        raise RestoredFrameChanged(differences)
+
+
 class Runtime(lifecycle.Engine):
     def store(self):
         info = self.api('GET', '/info')
@@ -401,6 +441,7 @@ def apply(rt, state, inputs, archive, defaults, approved):
     verify_new(old, req, gated, True)
     put(journal / 'gated.private.json', gated)
     live = release(rt, journal, gated, c['binarySha256'], fresh)
+    need(frame(live) == frame(gated), 'CANDIDATE_FRAME_CHANGED_AFTER_RELEASE')
     verify_new(old, req, live, True)
     retained(old, rt.inspect(cid), body['retainedName'])
     receipt = {'status': 'READY', 'planSha256': approved, 'candidate': c, 'cid': new, 'imageId': live['Image'],
@@ -477,8 +518,7 @@ def rollback(rt, journal, approved):
                {'Container': cid, 'EndpointConfig': req['NetworkingConfig']['EndpointsConfig'][net]})
     effect(rt, rb, 'start', '/containers/' + cid + '/start')
     gated = rt.inspect(cid)
-    for key in ('Id', 'Image', 'Name', 'Path', 'Args', 'Config', 'HostConfig'):
-        need(gated[key] == old[key], 'RESTORED_FRAME_CHANGED')
+    verify_restored_frame(old, gated)
     need(lifecycle.mounts(gated) == lifecycle.mounts(old) and set(gated['NetworkSettings']['Networks']) == {net},
          'RESTORED_BINDINGS_CHANGED')
     endpoint(old, req, gated)

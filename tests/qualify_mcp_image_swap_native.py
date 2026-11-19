@@ -50,7 +50,14 @@ class NativeSwap(fixture.Native):
             fixture.cmd(*fixture.D, 'cp', live['Id'] + ':' + swap.APP[0], str(binary_path))
             self.assertEqual(swap.lifecycle.file_sha(binary_path), self.candidate['binarySha256'])
             self.assertEqual(fixture.cmd('go', 'version', '-m', str(binary_path)).splitlines()[0].split()[-1], b'go1.27.4')
-            restored = swap.rollback(self.runtime, journal, approved)
+            try:
+                restored = swap.rollback(self.runtime, journal, approved)
+            except swap.RestoredFrameChanged as exc:
+                print(json.dumps({'phase': 'rollback.after-start.before-usr1',
+                                  'profile': 'explicit' if explicit else 'endpoint-only',
+                                  'store': os.environ['EXPECTED_STORE'],
+                                  'reason': str(exc), 'differences': exc.differences}, sort_keys=True), flush=True)
+                raise
             self.assertEqual((restored['cid'], restored['imageId'], restored['binarySha256'], restored['readyHttp']),
                              (old['Id'], self.image, photo['binarySha256'], 204))
             self.assertEqual(self.runtime.inspect(receipt['cid'])['NetworkSettings']['Networks'], {})

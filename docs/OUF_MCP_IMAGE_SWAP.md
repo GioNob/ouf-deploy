@@ -6,7 +6,7 @@ Il candidato è il commit `fccdd375fac37991737a4f60aea4ca21ce0a9b23` di `GioNob/
 
 Claude identifica il run riuscito di `ci.yml` sul candidato e l’artefatto `acquisition-mcp-image-<runId>`. Registra repository, run, artifact ID, commit del publisher in `source-commit.txt`, alberi Git del publisher e del candidato. Per una build del merge di prova deve risultare lo stesso albero. Conserva i digest dello ZIP originale, di `image.tar.gz`, del manifest delle capacità e del binario estratto, oltre ai digest OCI del config e del manifest immagine. Confronta col rilascio precedente il manifest delle capacità e i layer del runtime, inclusi Alpine e pacchetti di sistema, e documenta le differenze attribuibili alla build.
 
-Nel workflow [MCP archived analysis application upgrade](../.github/workflows/mcp-analysis-upgrade.yml) lanciare il dispatch GitHub-hosted con `candidate` (oggetto JSON descritto sotto con image ID containerd), `classic_image_id` (digest OCI del config, prefisso `sha256:`) e `govulncheck_version` (versione fissata del modulo `golang.org/x/vuln`). Il workflow verifica il legame run/artefatto/commit, usa lo ZIP selezionato su entrambi gli store e verifica `go version -m` e `govulncheck -mode=binary` sull’eseguibile copiato dal candidato. Conservare i log dei due backend e l’esito per R-033.
+Nel workflow [MCP image swap (R-033)](../.github/workflows/mcp-image-swap.yml) lanciare il dispatch GitHub-hosted con `candidate` (oggetto JSON descritto sotto con image ID containerd), `classic_image_id` (digest OCI del config, prefisso `sha256:`) e `govulncheck_version` (versione fissata del modulo `golang.org/x/vuln`). Il workflow verifica il legame run/artefatto/commit, usa lo ZIP selezionato su entrambi gli store e verifica `go version -m` e `govulncheck -mode=binary` sull’eseguibile copiato dal candidato. Conservare i log dei due backend e l’esito per R-033.
 
 La fixture usa PostgreSQL con le 14 migrazioni già registrate, binding e credenziali sintetici, Docker 29.8.1 e API 1.44. Il predecessore sintetico deriva dalla stessa build con una label diversa e ha un image ID distinto. Entrambi i profili di creazione, legacy esplicito e MAC sul solo endpoint, devono mostrare la MAC legacy iniziale, il distacco, il trasferimento dell’endpoint e il ripristino del CID originario. Leggere gli esiti senza skip prima di qualificare la consegna VPS. [Regola MAC](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md)
 
@@ -72,6 +72,18 @@ sudo bash mcp-image-swap.sh rollback "$PLAN_SHA256" > r033-rollback.json
 ```
 
 Il rollback usa il journal del plan approvato e i file già consegnati. Controlla la storia SQL e il frame del predecessore prima di isolare il candidato registrato, fermandolo, scollegandolo e rinominandolo. Ripristina il nome e il binding di rete sul vecchio CID, lo riavvia, verifica il suo gate, binario e binding, invia USR1 e attende la readiness 204. Il tag di custodia e i container restano disponibili per la riconciliazione. Una CREATE con risposta persa, una generazione ambigua o un rollback interrotto richiedono review del journal e dello stato vivo. Conservare ogni tentativo; evitare replay e pulizie durante la diagnosi. Il ritorno al predecessore riapre R-033.
+
+## Confronto del frame per fase (API 1.44)
+
+| Fase | Confronto richiesto |
+|---|---|
+| Predecessore fermo e scollegato | Sul vecchio CID, `retained_mac.verify_detached` richiede zero endpoint e l'assenza di `Config.MacAddress`. La MAC legacy originale deve essere valida e coerente con l'endpoint. |
+| Apply, candidato avviato al gate | Image ID, Config e HostConfig corrispondono alla CREATE approvata, comprese ENV, bind e label di provenienza. Per `OomKillDisable` il guard ammette la transizione già qualificata da `false` nella CREATE a `null` dopo start se il predecessore aveva il default nullo. La MAC legacy running deve coincidere con quella del predecessore. |
+| Rollback, predecessore riavviato al gate | Uguaglianza con la cattura originale di `Id`, `Image`, `Name`, `Path`, `Args`, `Config` e `HostConfig`, comprese le liste nel loro ordine. Il confronto avviene prima di USR1. |
+| Binding al gate, entrambi i percorsi | Mount confrontati per destinazione, una sola rete, stesso network ID, porte, IP e MAC dell'endpoint. Gli alias richiesti e l'alias breve del CID attivo sono confrontati come insieme. Il PID, lo StartedAt e l'EndpointID appartengono alla rispettiva generazione. |
+| Dal gate alla readiness 204 | Per candidato e predecessore ripristinato il frame della stessa generazione deve restare identico, inclusi `State` osservato, `RestartCount` e `NetworkSettings`. Sono verificati anche processo, binario, binding dei file e storia SQL. |
+
+Nel run `44598561958` entrambi i profili su entrambi gli store si sono fermati al confronto dei sette campi del predecessore riavviato. Il log storico riporta solo `RESTORED_FRAME_CHANGED`. Per identificare il delta, ripetere il dispatch sulla revisione con la diagnostica e con gli stessi tre input. In caso di errore leggere il JSON della fase `rollback.after-start.before-usr1` per ogni coppia store/profilo. `differences` riporta i campi Engine variati, i tipi prima e dopo e, per le liste, se cambia solo l'ordine. Per la MAC legacy riporta anche la corrispondenza con gli endpoint e per `NetworkMode` la corrispondenza con nome e ID della rete originale. I valori di ENV, label e bind restano privati. Il confronto continua a rifiutare ogni delta sui sette campi.
 
 ## Accettazione in esercizio
 

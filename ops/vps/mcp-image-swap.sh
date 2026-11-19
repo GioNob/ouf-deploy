@@ -64,7 +64,7 @@ if [[ $mode == snapshot || $mode == plan ]]; then
 fi
 trusted "$D/scripts"
 trusted "$D/tools/acquisition_read_native"
-fetch scripts/swap-mcp-image.py dbc1df537d85ee1b24f8fd6003b563030edc3a9fc44372692c467e2306a4f4e0
+fetch scripts/swap-mcp-image.py 3022a7cacbdaf9f092043e471db2a72a2df0721b63873d794e00ee1a650b1be8
 fetch scripts/upgrade-mcp-analysis-20261108.py 5f6739852c1a0d4318d6427c229409882a0f66ab1ad7110ed3c599300fa24758
 fetch scripts/upgrade-semantic-application-20261108.py 2e7e7e42367b3329f6ebd441bba665f974ea43871049d863415524610138efb1
 fetch scripts/read-discovery-contract-20261108.py 468660ed73a24c7b8a842f5b99a9c268890c99bb4206ca2e4719865326b27277

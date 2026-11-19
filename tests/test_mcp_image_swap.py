@@ -249,6 +249,64 @@ class Swap(unittest.TestCase):
         self.assertEqual({}, self.rt.docs[NEW]['NetworkSettings']['Networks'])
         self.assertEqual(MAC, self.rt.inspect('ouf-mcp')['Config']['MacAddress'])
 
+    def test_restored_frame_diff_is_redacted_and_prevents_usr1(self):
+        self.apply()
+        original = self.rt.api
+
+        def drift_at_restore(method, path, body=None):
+            result = original(method, path, body)
+            if path == '/containers/' + OLD + '/start':
+                config = self.rt.docs[OLD]['Config']
+                config.pop('MacAddress')
+                config['Env'] = ['FAKE_SECRET=synthetic-only']
+                config['Labels']['sensitive-label-name'] = 'synthetic-only'
+                self.rt.docs[OLD]['HostConfig']['Binds'] = ['/private-source:/private-target:ro']
+                self.rt.docs[OLD]['HostConfig']['NetworkMode'] = NET
+            return result
+
+        with patch.object(self.rt, 'api', side_effect=drift_at_restore), self.assertRaises(swap.RestoredFrameChanged) as held:
+            swap.rollback(self.rt, self.journal, self.approved)
+        diff = held.exception.differences
+        self.assertEqual(set(diff), {'Config.MacAddress', 'Config.Env', 'Config.Labels',
+                                     'HostConfig.Binds', 'HostConfig.NetworkMode'})
+        self.assertEqual(diff['Config.Env'], {'before': 'list', 'after': 'list', 'orderOnly': False})
+        self.assertEqual(diff['HostConfig.Binds'], {'before': 'absent', 'after': 'list'})
+        self.assertEqual(diff['Config.MacAddress']['beforeProfile']['matchingEndpointCount'], 1)
+        self.assertEqual(diff['Config.MacAddress']['afterProfile']['kind'], 'ABSENT')
+        self.assertTrue(diff['HostConfig.NetworkMode']['beforeMatchesName'])
+        self.assertTrue(diff['HostConfig.NetworkMode']['afterMatchesId'])
+        for private in ('synthetic-only', 'FAKE_SECRET', 'sensitive-label-name', 'private', MAC, NET):
+            self.assertNotIn(private, json.dumps(diff))
+        self.assertFalse((self.journal / 'rollback/release.intent').exists())
+        self.assertFalse((self.journal / 'rollback/receipt.json').exists())
+
+    def test_list_order_is_reported_and_still_rejected(self):
+        old = self.rt.inspect(OLD)
+        old['HostConfig']['Binds'] = ['a', 'a', 'b']
+        for binds, order_only in [(['b', 'a', 'a'], True), (['a', 'b', 'b'], False)]:
+            gated = copy.deepcopy(old)
+            gated['HostConfig']['Binds'] = binds
+            with self.subTest(binds=binds), self.assertRaises(swap.RestoredFrameChanged) as held:
+                swap.verify_restored_frame(old, gated)
+            self.assertEqual(held.exception.differences['HostConfig.Binds']['orderOnly'], order_only)
+
+    def test_generation_frame_drift_after_usr1_fails_apply_and_rollback(self):
+        original = self.rt.api
+
+        def drift_after_release(method, path, body=None):
+            result = original(method, path, body)
+            if path.endswith('/kill?signal=USR1'):
+                self.rt.docs[path.split('/')[2]]['RestartCount'] += 1
+            return result
+
+        with patch.object(self.rt, 'api', side_effect=drift_after_release):
+            with self.assertRaisesRegex(RuntimeError, 'CANDIDATE_FRAME_CHANGED_AFTER_RELEASE'):
+                self.apply()
+            with self.assertRaisesRegex(RuntimeError, 'RESTORED_FRAME_CHANGED_AFTER_RELEASE'):
+                swap.rollback(self.rt, self.journal, self.approved)
+        self.assertFalse((self.journal / 'receipt.json').exists())
+        self.assertFalse((self.journal / 'rollback/receipt.json').exists())
+
 
 if __name__ == '__main__':
     unittest.main()
