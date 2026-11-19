@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-10-10): solo manuale, D-055
 name: R10 immutable operator delivery
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'releases/provider-finite-r10-approved-20261010.sh'
-      - 'tools/semantic_lease_recovery/test_r10_delivery.py'
-      - '.github/workflows/finite-r10-delivery.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

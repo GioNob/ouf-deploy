@@ -1,16 +1,6 @@
+# Qualificazione storica (2026-10-10): solo manuale, D-055
 name: File-loop target read delivery
 on:
-  push:
-    branches: [main]
-    paths:
-      - tools/file_loop_package/**
-      - releases/file-loop-provenance-trust-r9-read-20261010.sh
-      - .github/workflows/file-loop-target-read-delivery.yml
-  pull_request:
-    paths:
-      - tools/file_loop_package/**
-      - releases/file-loop-provenance-trust-r9-read-20261010.sh
-      - .github/workflows/file-loop-target-read-delivery.yml
   workflow_dispatch:
 permissions:
   contents: read

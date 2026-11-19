@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-18): solo manuale, D-055
 name: Retained cohort capsule immutability
 on:
-  push:
-    branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['tests/test_chatbot_cohort_delivery_launcher.py', 'tests/fixtures/historical-cohort/**', '.github/workflows/source-revision-legacy-capsule.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   immutable-capsule:

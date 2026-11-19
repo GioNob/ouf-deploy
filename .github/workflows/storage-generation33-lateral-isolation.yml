@@ -1,42 +1,8 @@
+# Qualificazione storica (2026-11-04): solo manuale, D-055
 name: Storage generation33 native lateral network isolation
 
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-generation33-lateral-isolation.yml
-      - scripts/run-storage-generation33-lateral-isolation.py
-      - tests/test_storage_lateral_isolation_generation33.py
-      - tests/test_storage_volume_crash_generation33.py
-      - tests/test_storage_filer_crash_generation33.py
-      - tests/test_storage_master_crash_generation33.py
-      - tests/test_storage_all_crash_generation33.py
-      - tests/test_storage_stream_interruption_generation33.py
-      - scripts/storage-generation33-stream-interruption.py
-      - scripts/storage-generation33-orphan-cleanup.py
-      - scripts/storage-generation33-compaction.py
-      - tests/test_storage_compaction_generation33.py
-      - tests/test_storage_compaction_restart_generation33.py
-      - scripts/storage-generation33-compaction-crash.py
-      - scripts/storage-generation33-commit-crash.py
-      - scripts/storage-generation33-interrename-crash.py
-      - tests/test_storage_interrename_crash_generation33.py
-      - scripts/storage-generation33-markeronly-crash.py
-      - tests/test_storage_markeronly_crash_generation33.py
-      - tests/test_storage_commit_crash_generation33.py
-      - scripts/bind-storage-generation33-compaction-source.py
-      - tests/test_storage_compaction_crash_generation33.py
-      - scripts/storage-generation33-relocation.py
-      - tests/test_storage_relocation_generation33.py
-      - tests/test_storage_orphan_cleanup_generation33.py
-      - scripts/run-storage-generation33-credential-rotation.py
-      - tests/test_storage_credential_rotation_generation33.py
-      - tests/fixtures/storage-recovery/network-gate.c
-      - scripts/run-storage-generation33-tls-rotation.py
-      - tests/test_storage_tls_rotation_generation33.py
-      - releases/seaweedfs-452-generation33-candidate-lock-20261104.json
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read

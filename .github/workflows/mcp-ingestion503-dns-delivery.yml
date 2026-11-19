@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: MCP Ingestion503 immutable DNS diagnostic delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-mcp-ingestion503-dns-read-20261019.sh'
-      - 'tests/test_mcp_ingestion503_dns_delivery.py'
-      - '.github/workflows/mcp-ingestion503-dns-delivery.yml'
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

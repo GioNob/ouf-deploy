@@ -1,24 +1,8 @@
+# Qualificazione storica (2026-11-03): solo manuale, D-055
 name: Storage 4.52 generation32 image qualification
 
 on:
-  push:
-    branches:
-      - feat/m2-discovery-complete-profile-20261029
-    paths:
-      - .github/workflows/storage-452-generation32-image.yml
-      - patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch
-      - scripts/qualify-seaweedfs-452-generation32-image.py
-      - scripts/readback-seaweedfs-452-generation32-image.py
-      - tools/storage_security/generation_image_v3.py
-      - tools/storage_security/generation_readback_v1.py
-      - scripts/qualify-seaweedfs-raftstore-compat.py
-      - tests/fixtures/seaweedfs-raftstore-compat/compat_test.go
-      - tests/test_seaweedfs_452_generation32_image.py
-      - scripts/replay-seaweedfs-source-tree.py
-      - tests/test_replay_seaweedfs_source_tree.py
-      - releases/seaweedfs-452-generation32-build-manifest-20261103.json
   workflow_dispatch:
-
 permissions:
   contents: read
   id-token: write

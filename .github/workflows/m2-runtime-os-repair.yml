@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 unselected original runtime OS repair candidates
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths: ['scripts/prepare-m2-runtime-os-repair.py','releases/m2-original-runtime-os-repair-case-20261101.json','tests/test_m2_runtime_os_repair.py','.github/workflows/m2-runtime-os-repair.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read, id-token: write, attestations: write}
 jobs:
   repair:

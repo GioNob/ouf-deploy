@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-11-08): solo manuale, D-055
 name: Archive exact UDP wide candidate
 on:
-  pull_request:
-    paths:
-      - tools/udp_wide_20261108/archive.py
-      - .github/workflows/udp-wide-archive.yml
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   archive:

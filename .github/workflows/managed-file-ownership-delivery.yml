@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-28): solo manuale, D-055
 name: Managed-file ownership immutable delivery
 on:
-  push:
-    paths: ['releases/read-managed-file-ownership-20261028.sh','tests/qualify_managed_file_ownership_delivery.py','.github/workflows/managed-file-ownership-delivery.yml']
-  pull_request:
-    paths: ['releases/read-managed-file-ownership-20261028.sh','tests/qualify_managed_file_ownership_delivery.py','.github/workflows/managed-file-ownership-delivery.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   actual-https-nonroot-sudo-custody:

@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-10-07): solo manuale, D-055
 name: OUF discovery candidate verification
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/discovery-candidate-verification.yml
-      - scripts/scan-discovery-candidate.py
 permissions:
   contents: read
   actions: read

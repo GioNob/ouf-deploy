@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: MCP Ingestion503 immutable diagnostic delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-mcp-ingestion503-topology-read-20261019.sh'
-      - 'tests/test_mcp_ingestion503_topology_delivery.py'
-      - '.github/workflows/mcp-ingestion503-topology-delivery.yml'
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

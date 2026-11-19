@@ -1,20 +1,8 @@
+# Qualificazione storica (2026-11-03): solo manuale, D-055
 name: Storage candidate cohort readback
 
 on:
-  push:
-    branches:
-      - feat/m2-discovery-complete-profile-20261029
-    paths:
-      - .github/workflows/storage-candidate-cohort.yml
-      - scripts/verify-seaweedfs-452-cohort.py
-      - scripts/readback-seaweedfs-452-image.py
-      - scripts/qualify-seaweedfs-452-image.py
-      - tests/test_seaweedfs_452_cohort.py
-      - releases/seaweedfs-452-candidate-lock-20261103.json
-      - evidence/artifacts/seaweedfs-452-patch15-licence-delta.zip
-      - evidence/artifacts/storage-licences-native-41541625141.zip
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read

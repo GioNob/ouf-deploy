@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-11-08): solo manuale, D-055
 name: Semantic discovery key repair on migrated V12
 on:
-  pull_request:
-    paths:
-      - scripts/repair-semantic-discovery-key-20261108.py
-      - tests/test_semantic_discovery_key_repair_native.py
-      - tests/test_semantic_discovery_key_repair.py
-      - .github/workflows/semantic-discovery-key-repair.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   native:

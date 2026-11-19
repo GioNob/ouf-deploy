@@ -1,18 +1,7 @@
+# Qualificazione storica (2026-10-16): solo manuale, D-055
 name: Finite single MCP update owner qualification
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths:
-      - tools/semantic_mcp_update/**
-      - tests/test_semantic_mcp_single_update_owner.py
-      - scripts/qualify-semantic-mcp-single-update-native.py
-      - .github/workflows/semantic-mcp-single-update.yml
-  pull_request:
-    paths:
-      - tools/semantic_mcp_update/**
-      - tests/test_semantic_mcp_single_update_owner.py
-      - scripts/qualify-semantic-mcp-single-update-native.py
-      - .github/workflows/semantic-mcp-single-update.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   signed-owner-and-native-docker:

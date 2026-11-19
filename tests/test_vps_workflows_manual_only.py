@@ -1,5 +1,6 @@
-"""R-032: only a manual dispatch may assign work to the VPS runner."""
+"""R-032 / D-055: keep VPS operations and historical qualifications manual."""
 
+import re
 import unittest
 from pathlib import Path
 
@@ -7,6 +8,12 @@ import yaml
 
 
 WORKFLOWS = Path(__file__).resolve().parents[1] / ".github" / "workflows"
+INVENTORY = WORKFLOWS.parents[1] / "docs" / "OUF_HISTORICAL_WORKFLOWS_MANUAL_ONLY.md"
+HISTORICAL_HEADER = re.compile(r"# Qualificazione storica \(\d{4}-\d{2}-\d{2}\): solo manuale, D-055")
+# These four jobs receive the preceding job's artifact ID and digest via inputs.
+COHORT_LABS = {
+    f"storage-452-generation{generation}-runtime-labs.yml" for generation in (29, 31, 32, 33)
+}
 # Literal GitHub-hosted labels reviewed for this repository. An expression,
 # private label or runner group must be treated as potentially self-hosted.
 HOSTED_LABELS = {"ubuntu-latest", "ubuntu-24.04", "windows-2022"}
@@ -36,21 +43,46 @@ def event_names(workflow):
     return []
 
 
+def calls_cohort_lab(job):
+    target = job.get("uses", "").split("@", 1)[0].lower()
+    directory, _, name = target.rpartition("/")
+    return directory in {"./.github/workflows", "gionob/ouf-deploy/.github/workflows"} and name in COHORT_LABS
+
+
 class ManualVpsWorkflows(unittest.TestCase):
     def test_repository_workflows(self):
         files = sorted([*WORKFLOWS.glob("*.yml"), *WORKFLOWS.glob("*.yaml")])
         self.assertTrue(files, f"No workflows under {WORKFLOWS}")
         local_workflows = {f"./.github/workflows/{path.name}" for path in files}
+        # Cross-check the inventory so deleting only a header cannot unprotect a workflow.
+        historical = set(re.findall(r"^\| \[([^\]]+)\]\([^)]+\) \| QUALIFICAZIONE STORICA \|",
+                                    INVENTORY.read_text(encoding="utf-8"), re.MULTILINE))
+        self.assertTrue(historical, "Missing historical workflow inventory")
+        self.assertFalse(historical.difference(path.name for path in files), "Obsolete historical inventory entry")
         for path in files:
             with self.subTest(workflow=path.name):
-                workflow = yaml.safe_load(path.read_text(encoding="utf-8-sig"))
+                source = path.read_text(encoding="utf-8-sig")
+                workflow = yaml.safe_load(source)
+                marked = HISTORICAL_HEADER.fullmatch(source.splitlines()[0]) is not None
+                self.assertEqual(marked, path.name in historical, f"{path.name}: check historical header and inventory")
+                events = event_names(workflow)
+                if marked:
+                    expected = "workflow_call" if path.name in COHORT_LABS else "workflow_dispatch"
+                    self.assertEqual(events, [expected], f"{path.name}: expected only {expected}")
                 guarded = [
                     name for name, job in workflow["jobs"].items()
-                    if needs_manual_dispatch(job, local_workflows)
+                    if needs_manual_dispatch(job, local_workflows) or calls_cohort_lab(job)
                 ]
                 if guarded:
-                    self.assertEqual(event_names(workflow), ["workflow_dispatch"],
+                    self.assertEqual(events, ["workflow_dispatch"],
                                      f"{path.name}: jobs {guarded} require workflow_dispatch only")
+
+    def test_cohort_lab_callers(self):
+        lab = "storage-452-generation33-runtime-labs.yml"
+        self.assertTrue(calls_cohort_lab({"uses": f"./.github/workflows/{lab}"}))
+        self.assertTrue(calls_cohort_lab({"uses": f"GioNob/ouf-deploy/.github/workflows/{lab}@main"}))
+        self.assertFalse(calls_cohort_lab({"uses": "./.github/workflows/other.yml"}))
+        self.assertFalse(calls_cohort_lab({"runs-on": "ubuntu-latest"}))
 
     def test_event_syntax(self):
         for key in ["on", '"on"']:

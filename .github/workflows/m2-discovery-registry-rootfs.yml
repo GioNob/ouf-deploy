@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-10-29): solo manuale, D-055
 name: M2 exact Registry discovery rootfs
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths: ['tests/qualify_m2_discovery_frame_native.py','tests/qualify_m2_discovery_registry_rootfs.py','.github/workflows/m2-discovery-registry-rootfs.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read, attestations: write, id-token: write}
 jobs:
   exact-registry:

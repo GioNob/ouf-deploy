@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-28): solo manuale, D-055
 name: Managed-file owner V38 exact image and conditional plan
 on:
-  push:
-    paths: ['tools/managed_file_owner_recovery/image_plan.py','scripts/stage_managed_file_owner_image.py','scripts/prepare-managed-file-owner-image-plan.py','scripts/download-managed-file-owner-image.py','tests/*managed_file_owner_image_plan*','releases/managed-file-owner-v38-image-*.json','evidence/managed-file-owner-inputs-target-20261028.json','.github/workflows/managed-file-owner-image-plan.yml']
-  pull_request:
-    paths: ['tools/managed_file_owner_recovery/image_plan.py','scripts/stage_managed_file_owner_image.py','scripts/prepare-managed-file-owner-image-plan.py','scripts/download-managed-file-owner-image.py','tests/*managed_file_owner_image_plan*','releases/managed-file-owner-v38-image-*.json','evidence/managed-file-owner-inputs-target-20261028.json','.github/workflows/managed-file-owner-image-plan.yml']
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   original-ci-archive-and-protected-plan:

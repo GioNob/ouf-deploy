@@ -1,15 +1,8 @@
+# Qualificazione storica (2026-11-03): solo manuale, D-055
 name: Storage 4.52 generation29 cohort and legal text rebinding
 
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-452-generation29-cohort.yml
-      - scripts/verify-seaweedfs-452-generation29-cohort.py
-      - tests/test_seaweedfs_452_generation29_cohort.py
-      - releases/seaweedfs-452-generation29-candidate-lock-20261103.json
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read

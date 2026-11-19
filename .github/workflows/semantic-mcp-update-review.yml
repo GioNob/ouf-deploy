@@ -1,19 +1,7 @@
+# Qualificazione storica (2026-10-16): solo manuale, D-055
 name: Private MCP update review qualification
 on:
-  push:
-    branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths:
-      - scripts/prepare-chatbot-semantic-mcp-update-review-20261016.py
-      - scripts/qualify-semantic-mcp-update-image.py
-      - scripts/read-chatbot-semantic-mcp-reprocessing-preflight-20261016.py
-      - tests/test_semantic_mcp_update_review.py
-      - .github/workflows/semantic-mcp-update-review.yml
-  pull_request:
-    paths:
-      - scripts/prepare-chatbot-semantic-mcp-update-review-20261016.py
-      - scripts/qualify-semantic-mcp-update-image.py
-      - tests/test_semantic_mcp_update_review.py
-      - .github/workflows/semantic-mcp-update-review.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   private-plan-and-real-image:

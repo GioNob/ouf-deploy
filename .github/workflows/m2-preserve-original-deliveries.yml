@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 preserve original MCP UDP deliveries
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths: ['scripts/preserve-original-mcp-udp.py','scripts/qualify-original-mcp-udp-native.py', '.github/workflows/m2-preserve-original-deliveries.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   preserve:

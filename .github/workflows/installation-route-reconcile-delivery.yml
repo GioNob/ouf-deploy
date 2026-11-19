@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: Installation route reconciliation authenticated eleven-file delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-installation-route-reconcile-20261019.sh'
-      - 'tests/test_installation_route_reconcile_delivery.py'
-      - 'evidence/installation-route-reconcile-delivery-pins-20261019.json'
-      - '.github/workflows/installation-route-reconcile-delivery.yml'
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

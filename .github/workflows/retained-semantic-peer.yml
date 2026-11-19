@@ -1,20 +1,7 @@
+# Qualificazione storica (2026-11-09): solo manuale, D-055
 name: Retained Semantic peer recipe
 on:
-  push:
-    branches: [docs/storage-functional-reset-20261107]
-    paths:
-      - tools/semantic_frame_compiler/compile_retained_semantic_peer.py
-      - scripts/read-retained-semantic-peer-20261109.py
-      - tests/test_retained_semantic_peer.py
-      - tests/qualify_retained_semantic_peer_native.py
-      - .github/workflows/retained-semantic-peer.yml
-  pull_request:
-    paths:
-      - tools/semantic_frame_compiler/compile_retained_semantic_peer.py
-      - scripts/read-retained-semantic-peer-20261109.py
-      - tests/test_retained_semantic_peer.py
-      - tests/qualify_retained_semantic_peer_native.py
-      - .github/workflows/retained-semantic-peer.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   native:

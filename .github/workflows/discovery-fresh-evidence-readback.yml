@@ -1,8 +1,6 @@
+# Qualificazione storica (2026-10-09): solo manuale, D-055
 name: Discovery fresh signed evidence independent readback
 on:
-  push:
-    paths:
-      - '.github/workflows/discovery-fresh-evidence-readback.yml'
   workflow_dispatch:
 permissions:
   contents: read

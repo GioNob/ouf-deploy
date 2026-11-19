@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: MCP82 distinct HUMAN immutable delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-mcp82-human-continuation-20261019.sh'
-      - 'tests/test_mcp82_human_continuation_delivery.py'
-      - '.github/workflows/mcp82-human-continuation-delivery.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

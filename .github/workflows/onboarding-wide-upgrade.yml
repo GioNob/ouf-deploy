@@ -1,12 +1,7 @@
+# Qualificazione storica (2026-11-08): solo manuale, D-055
 name: Onboarding archived wide candidate upgrade
 on:
-  pull_request:
-    paths:
-      - scripts/upgrade-onboarding-wide-20261108.py
-      - tests/test_onboarding_wide_upgrade.py
-      - tests/test_onboarding_wide_upgrade_native.py
-      - tools/onboarding_wide_20261108/**
-      - .github/workflows/onboarding-wide-upgrade.yml
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   native:

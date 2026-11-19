@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-10-19): solo manuale, D-055
 name: Installation binding apply authenticated ten-file delivery
 on:
-  push:
-    paths:
-      - 'scripts/launch-installation-binding-apply-20261019.sh'
-      - 'tests/test_installation_binding_apply_delivery.py'
-      - 'evidence/installation-binding-apply-delivery-pins-20261019.json'
-      - '.github/workflows/installation-binding-apply-delivery.yml'
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   delivery:

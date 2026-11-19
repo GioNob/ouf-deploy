@@ -1,8 +1,7 @@
+# Qualificazione storica (2026-11-01): solo manuale, D-055
 name: M2 current original core image contracts
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths: ['scripts/stage-m2-current-core-origin.py','releases/m2-current-core-artifact-origins-20261101.json','releases/m2-current-core-source-lock-20261101.json','tests/test_m2_current_core_origins.py','.github/workflows/m2-current-core-artifacts.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   origin:

@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-27): solo manuale, D-055
 name: Reviewed retained two-owner CSV control update
 on:
-  push:
-    paths: ["tools/managed_csv_control_update/**", "scripts/apply-managed-csv-control-update-20261027.py", "tests/test_managed_csv_control_update*", "tests/qualify_managed_csv_control_update_engine.py", "tests/qualify_managed_csv_control_update_real_image.py", "tests/qualify_managed_csv_control_update_terminal.py", "tests/fixtures/managed_csv_control_update_terminal_probe.py", ".github/workflows/managed-csv-control-update.yml"]
-  pull_request:
-    paths: ["tools/managed_csv_control_update/**", "scripts/apply-managed-csv-control-update-20261027.py", "tests/test_managed_csv_control_update*", "tests/qualify_managed_csv_control_update_engine.py", "tests/qualify_managed_csv_control_update_real_image.py", "tests/qualify_managed_csv_control_update_terminal.py", "tests/fixtures/managed_csv_control_update_terminal_probe.py", ".github/workflows/managed-csv-control-update.yml"]
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   root-crypto-state-and-journal:

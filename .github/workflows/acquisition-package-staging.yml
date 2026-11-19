@@ -1,10 +1,6 @@
+# Qualificazione storica (2026-10-25): solo manuale, D-055
 name: Exact acquisition read artifact staging
 on:
-  push:
-    branches: [fix/registry-bound-owner-lineage-20261023]
-    paths: ['scripts/stage-acquisition-read-packages-20261025.py','tests/test_acquisition_package_staging.py','tests/qualify_acquisition_package_artifacts.py','releases/acquisition-read-package-case-20261025.json','.github/workflows/acquisition-package-staging.yml']
-  pull_request:
-    paths: ['scripts/stage-acquisition-read-packages-20261025.py','tests/test_acquisition_package_staging.py','tests/qualify_acquisition_package_artifacts.py','releases/acquisition-read-package-case-20261025.json','.github/workflows/acquisition-package-staging.yml']
   workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:

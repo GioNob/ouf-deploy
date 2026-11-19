@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-26): solo manuale, D-055
 name: Exact two READ diagnostic images and native plan
 on:
-  push:
-    branches: [fix/registry-bound-owner-lineage-20261023]
-    paths: ['scripts/prepare-acquisition-redaction-image-plan-20261026.py','tests/test_acquisition_redaction_image_plan.py','tests/qualify_acquisition_redaction_image_plan.py','.github/workflows/acquisition-redaction-image-plan.yml']
-  pull_request:
-    paths: ['scripts/prepare-acquisition-redaction-image-plan-20261026.py','tests/test_acquisition_redaction_image_plan.py','tests/qualify_acquisition_redaction_image_plan.py','.github/workflows/acquisition-redaction-image-plan.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   two-read-native-image-plan:

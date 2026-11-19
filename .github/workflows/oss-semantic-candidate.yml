@@ -1,9 +1,7 @@
+# Qualificazione storica (2026-10-07): solo manuale, D-055
 name: OUF OSS Semantic candidate
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [.github/workflows/oss-semantic-candidate.yml]
 permissions:
   contents: read
 concurrency:

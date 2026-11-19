@@ -1,10 +1,6 @@
+# Qualificazione storica (2026-10-10): solo manuale, D-055
 name: Retained file-loop package publisher provenance
 on:
-  push:
-    branches: [codex/file-loop-package-provenance-20261010]
-    paths:
-      - .github/workflows/file-loop-package-provenance.yml
-      - scripts/verify-retained-file-loop-package.py
   workflow_dispatch:
 permissions:
   contents: read

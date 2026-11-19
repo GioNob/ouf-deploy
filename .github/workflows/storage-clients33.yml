@@ -1,11 +1,6 @@
+# Qualificazione storica (2026-11-05): solo manuale, D-055
 name: Storage exact OCI33 current Onboarding and UDP contracts
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-clients33.yml
-      - scripts/run-storage-clients33.py
-      - tests/fixtures/storage-clients33/**
   workflow_dispatch:
 permissions:
   contents: read

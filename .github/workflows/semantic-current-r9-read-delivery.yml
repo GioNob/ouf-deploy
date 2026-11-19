@@ -1,11 +1,7 @@
+# Qualificazione storica (2026-10-10): solo manuale, D-055
 name: OUF current R9 read delivery qualification
 on:
-  push:
-    branches: [main]
-    paths:
-      - releases/current-r9-lease-diagnostics-20261010.sh
-      - tools/semantic_target_review/test_current_r9_delivery.py
-      - .github/workflows/semantic-current-r9-read-delivery.yml
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

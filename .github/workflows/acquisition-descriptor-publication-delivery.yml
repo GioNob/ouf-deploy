@@ -1,13 +1,7 @@
+# Qualificazione storica (2026-10-25): solo manuale, D-055
 name: Acquisition descriptor publication pinned delivery
 on:
-  push:
-    paths:
-      - releases/publish-acquisition-read-descriptors-20261025.sh
-      - .github/workflows/acquisition-descriptor-publication-delivery.yml
-  pull_request:
-    paths:
-      - releases/publish-acquisition-read-descriptors-20261025.sh
-      - .github/workflows/acquisition-descriptor-publication-delivery.yml
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   pinned-download-no-tty:

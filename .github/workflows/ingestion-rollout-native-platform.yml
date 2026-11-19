@@ -1,7 +1,7 @@
+# Qualificazione storica (2026-10-20): solo manuale, D-055
 name: Ingestion rollout native PostgreSQL channel qualification
 on:
-  pull_request:
-    paths: ['tools/ingestion_rollout_execution/**', 'tests/test_ingestion_rollout_native*platform.py', 'tests/fixtures/ingestion-rollout/**', '.github/workflows/ingestion-rollout-native-platform.yml']
+  workflow_dispatch:
 permissions: {contents: read, actions: read}
 jobs:
   postgres17-native:

@@ -1,8 +1,6 @@
+# Qualificazione storica (2026-10-17): solo manuale, D-055
 name: Linked property reconciliation candidates
 on:
-  push:
-    branches: [feat/linked-property-release-20261017]
-    paths: ['.github/workflows/linked-property-candidates.yml', 'scripts/package-linked-property-candidate.py', 'releases/linked-property-candidate-20261017.json']
   workflow_dispatch:
 permissions: {contents: read}
 jobs:

@@ -1,9 +1,6 @@
+# Qualificazione storica (2026-10-09): solo manuale, D-055
 name: Provider existing SBOM fresh evidence
 on:
-  push:
-    paths:
-      - 'tools/semantic_target_review/refresh_existing_provider_sbom.py'
-      - '.github/workflows/provider-v2-fresh-existing-sbom.yml'
   workflow_dispatch:
 permissions:
   contents: read

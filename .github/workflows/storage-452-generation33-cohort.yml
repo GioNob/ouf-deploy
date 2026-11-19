@@ -1,28 +1,8 @@
+# Qualificazione storica (2026-11-04): solo manuale, D-055
 name: Storage 4.52 generation33 cohort and legal text rebinding
 
 on:
-  push:
-    branches: [feat/m2-discovery-complete-profile-20261029]
-    paths:
-      - .github/workflows/storage-452-generation33-cohort.yml
-      - .github/workflows/storage-452-generation33-runtime-labs.yml
-      - scripts/verify-seaweedfs-452-generation33-cohort.py
-      - scripts/run-seaweedfs-452-generation33-labs.py
-      - scripts/storage-generation33-lab-binding.py
-      - tests/test_seaweedfs_452_generation33_cohort.py
-      - tests/test_storage_generation33_*.py
-      - releases/seaweedfs-452-generation33-candidate-lock-20261104.json
-      - evidence/seaweedfs-452-generation33-licence-rebinding-local-20261104.json
-      - evidence/seaweedfs-452-generation32-mongodb-v2-legal-delta-20261104.json
-      - evidence/seaweedfs-452-generation32-mongodb-v2-legal-texts/**
-      - evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source-manifest.json
-      - evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source.tar.gz
-      - evidence/seaweedfs-generation33-modified-iceberg-source-20261104/**
-      - config/seaweedfs-generation33-vendor-source-profile.json
-      - releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json
-      - patches/iceberg-go/0.7.0-maintained-yaml-vendor.patch
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read

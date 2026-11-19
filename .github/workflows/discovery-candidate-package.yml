@@ -1,10 +1,7 @@
+# Qualificazione storica (2026-10-07): solo manuale, D-055
 name: OUF discovery candidate package
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/discovery-candidate-package.yml
 permissions:
   contents: read
 concurrency:
