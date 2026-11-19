@@ -41,6 +41,7 @@ download() {
     [[ $1 == https://* && ( $mode == snapshot || $mode == plan ) ]] || return 1
     tmp=$(mktemp "$state/download.XXXXXXXX")
     # Root opens the private output. Only the unprivileged curl accesses the network.
+    # shellcheck disable=SC2024  # intentional: the redirect must run as root, curl must not
     sudo -H -u "#$SUDO_UID" -- /usr/bin/curl -q --fail --silent --show-error --location \
       --proto '=https' --proto-redir '=https' --tlsv1.2 --connect-timeout 12 --max-time 180 \
       --max-filesize "$limit" "$url" > "$tmp"
