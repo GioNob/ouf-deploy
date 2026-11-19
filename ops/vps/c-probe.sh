@@ -13,7 +13,7 @@ case "$mode" in
   *) echo 'uso: plan | apply <planSha256>' >&2; exit 2 ;;
 esac
 # Claude fissa il commit dopo review e commit D-001.
-C=95e4c0b518fcdee1cc2711873b703b7879204868
+C=d454a96624e89d53af9261be978a55e743245381
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] || {
   echo 'runbook non ancora fissato a un commit' >&2; exit 2;
 }
@@ -135,7 +135,7 @@ delivery() {
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_operation/lease_supervisor_v2.py 06f7fb2744a1ac3d4b94ef20aa04801e9625f9ca920dfe8fcd421e11456d0de4
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py 1aa51046466517aa93e7f3028867d64242357dedbd27a2fe17bb7c13cc836ae7
+  fetch tools/semantic_provider_r3/compose.py 0f1d56a4165d447d339decefad77e85ed2ff7563e3ddc3b68c39bd99a80e85d9
   fetch tools/semantic_provider_r3/driver_denial_overlay_v16.py cc2393eb2bea4b299cd8b0a8cdecb7b6e67b8c83f7e8d3d15bd09d915e3b2009
   fetch tools/semantic_provider_r3/runtime_absent_overlay_v19.py 6fe53b0f9c8e37431bb1c1537d47b8eb450a303b5ef31322eda949963ce58826
   fetch tools/semantic_provider_r3/install_common.py 7f06c92bb6d824fec2bdf952aa6a71ff597b545dacd76db44b30ea1086927597

@@ -87,6 +87,10 @@ SOURCE_MAP_V19 = dict(SOURCE_MAP_V18)
 SOURCE_INPUTS_V19 = frozenset(SOURCE_MAP_V19.values()) | {KERNEL_V1}
 SOURCE_MAP_V20 = dict(SOURCE_MAP_V19)
 SOURCE_INPUTS_V20 = frozenset(SOURCE_MAP_V20.values()) | {KERNEL_V1}
+SOURCE_MAP_V21 = dict(SOURCE_MAP_V20)
+SOURCE_INPUTS_V21 = SOURCE_INPUTS_V20
+SOURCE_MAP_V22 = dict(SOURCE_MAP_V21)
+SOURCE_INPUTS_V22 = frozenset(SOURCE_MAP_V22.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -102,6 +106,8 @@ DATA_INPUTS_V17 = DATA_INPUTS_V16 | {'driverBudget'}
 DATA_INPUTS_V18 = DATA_INPUTS_V17 | {'leaseRenewal'}
 DATA_INPUTS_V19 = set(DATA_INPUTS_V18)
 DATA_INPUTS_V20 = set(DATA_INPUTS_V19)
+DATA_INPUTS_V21 = set(DATA_INPUTS_V20)
+DATA_INPUTS_V22 = set(DATA_INPUTS_V21)  # New version of the leaseRenewal document.
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
@@ -292,7 +298,11 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     files, sources = inputs["files"], inputs["sources"]
     if version >= 17:
         from . import driver_budget_v17
-    if version >= 20:
+    if version >= 22:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V22, SOURCE_INPUTS_V22, DATA_INPUTS_V22
+    elif version >= 21:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V21, SOURCE_INPUTS_V21, DATA_INPUTS_V21
+    elif version >= 20:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V20, SOURCE_INPUTS_V20, DATA_INPUTS_V20
     elif version >= 19:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V19, SOURCE_INPUTS_V19, DATA_INPUTS_V19
@@ -403,6 +413,12 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         if version >= 20:
             from . import dns_retransmit_overlay_v20
             emitted = dns_retransmit_overlay_v20.sources_v20(emitted, selected_map)
+        if version >= 21:
+            from .lease_timing_overlay_v21 import sources_v21
+            emitted = sources_v21(emitted, selected_map)
+        if version >= 22:
+            from .renewal_overlay_v22 import sources_v22
+            emitted = sources_v22(emitted, selected_map)
         emitted, hashes = seal_v18(sources, emitted, source_map, RECOVERY, sha)
     else:
         hashes = {target: sha(emitted[original]) for target, original in source_map.items()}
@@ -419,11 +435,18 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
 
     common = {"authorizationRoot": root + "/authorization", "anchorBinding": s["anchorBinding"],
               "mandateRoot": s["mandateRoot"], "opensslBinding": s["opensslBinding"], "mandatesModule": source(MANDATES)}
-    dns_profile = {**owner["dns"], "timeoutSeconds": 10} if version >= 11 else owner["dns"]
+    if version >= 18:
+        renewal = contract_module(emitted[LEASE_RENEWAL_SOURCE], "lease_renewal_v18")
+    if version >= 22:
+        try:
+            dns_profile = renewal.dns_profile(owner, data["leaseRenewal"])
+        except ValueError as error:
+            raise A.OperationDenied(str(error)) from None
+    else:
+        dns_profile = {**owner["dns"], "timeoutSeconds": 10} if version >= 11 else owner["dns"]
     if version >= 20:
         dns_retransmit_overlay_v20.check_budget(dns_profile["timeoutSeconds"])
     if version >= 18:
-        renewal = contract_module(emitted[LEASE_RENEWAL_SOURCE], "lease_renewal_v18")
         try:
             renewal.budgets(data["leaseRenewal"], dns_profile, owner["kernel"]["providerFlows"], driver_budget)
         except ValueError as error:

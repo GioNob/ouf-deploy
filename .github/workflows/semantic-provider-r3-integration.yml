@@ -24,7 +24,12 @@ on:
       - ops/vps/config-publish.sh
       - ops/vps/b1-recipes-v4.sh
       - ops/vps/acceptance-v51-g7.sh
+      - ops/vps/r3-lease-renewal-v22.json
       - ops/vps/r3-lease-renewal.json
+      - ops/vps/readers/r3_common.py
+      - ops/vps/readers/r3-status.py
+      - ops/vps/r3-readers-install.sh
+      - tests/test_r3_readers.py
       - ops/vps/r3-reconcile.sh
       - tests/test_semantic_provider_r3*.py
       - tests/test_frame_observer_v2.py
@@ -50,6 +55,8 @@ on:
       - docs/OUF_SEMANTIC_PROVIDER_R3_V18.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V19.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V20.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V22.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V21.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_RECONCILE.md
       - tests/test_semantic_b1_acceptance.py
       - tests/test_runtime_v52_epochs.py
@@ -75,6 +82,12 @@ jobs:
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v19.py -v
       - name: D-054 R3 v20 DNS retransmission, lease renewal and v19 upgrade (portable)
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v20.py -v
+      - name: R-022 R3 v21 renewal timing and v20 upgrade (portable)
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v21.py -v
+      - name: R-022 R3 v22 renewal band, bounded parallel DNS and v21 upgrade
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v22.py -v
+      - name: R3 scoped checkpoint projection and reader delivery
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_r3_readers.py -v
       - name: R-012 prepared-epoch reconciliation and pinned runbook
         run: |
           bash -n ops/vps/r3-reconcile.sh

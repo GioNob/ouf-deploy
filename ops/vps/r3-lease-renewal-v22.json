@@ -1,0 +1,1 @@
+{"dnsTimeoutSeconds":6,"fastRetryCount":1,"fastRetryDelaysSeconds":[1],"healthyResetSeconds":300,"immediateMinimumSeconds":19,"lockWaitSeconds":3,"renewalMarginSeconds":22}

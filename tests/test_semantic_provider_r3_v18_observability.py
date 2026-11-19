@@ -260,7 +260,7 @@ class Observability(unittest.TestCase):
         complete = incident | {'resumedAt': clock.wall}
         self.assertEqual(resumed['lastIncident'], complete)
         projection = reader('r3_common.py')['recovery_incident']
-        self.assertEqual(projection(resumed['lastIncident'], 'a' * 64), complete)
+        self.assertEqual(projection(resumed['lastIncident'], 'a' * 64), {**complete, 'timing': None})
         clock.advance(5)
         renewed = self.renew(supervisor, resumed)
         self.assertEqual(renewed['reason'], 'RENEWED')
