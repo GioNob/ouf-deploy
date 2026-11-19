@@ -140,12 +140,45 @@ class Docker:
                 doc['Name'] = '/' + action.split('=')[1]
             elif action == 'start':
                 doc['State'].update(Running=True, Pid=12, StartedAt='t1')
-                doc['Config']['MacAddress'] = doc['NetworkSettings']['Networks']['backend']['MacAddress']
+                if cid == NEW:
+                    doc['Config']['MacAddress'] = doc['NetworkSettings']['Networks']['backend']['MacAddress']
                 doc['HostConfig']['OomKillDisable'] = None
                 self.gated.add(cid)
             else:
                 assert action == 'kill?signal=USR1'
                 self.gated.remove(cid)
+
+
+def check_restored_rejections(case, controller, old, restored):
+    """Change one field on a copy of the restored inspect, including in hosted qualification."""
+    net, endpoint = next(iter(old['NetworkSettings']['Networks'].items()))
+    binding = ('NetworkSettings', 'Networks', net)
+    # Flip a bit in the last octet to keep the negative case valid and unicast.
+    other_mac = endpoint['MacAddress'][:-2] + format(int(endpoint['MacAddress'][-2:], 16) ^ 1, '02x')
+    case.assertNotIn('MacAddress', restored['Config'])
+    for path, value in [
+        (('Config', 'MacAddress'), None), (('Config', 'MacAddress'), ''),
+        (('Config', 'MacAddress'), other_mac), (('Config', 'MacAddress'), old['Config']['MacAddress']),
+        (binding + ('MacAddress',), other_mac), (binding + ('IPAddress',), '192.0.2.99'),
+        (binding + ('Aliases',), []), (binding + ('NetworkID',), '0' * 64),
+        (('NetworkSettings', 'Networks'), {}), (('Config', 'Env'), []), (('Config', 'Labels'), None),
+        (('Id',), '1' * 64), (('Image',), 'sha256:' + '2' * 64), (('Name',), '/changed'),
+        (('Path',), '/changed'), (('Args',), []), (('HostConfig', 'NetworkMode'), 'none'),
+        (('Mounts',), [{'Destination': '/changed'}]),
+    ]:
+        with case.subTest(field=path[-1], value_type=type(value).__name__):
+            changed = copy.deepcopy(restored)
+            target = changed
+            for key in path[:-1]:
+                target = target[key]
+            target[path[-1]] = value
+            with case.assertRaisesRegex(controller.RestoredFrameChanged, '^RESTORED_FRAME_CHANGED$') as held:
+                controller.verify_restored_frame(old, changed, reconnected=True)
+            endpoint_matches = path not in (binding + ('MacAddress',), ('NetworkSettings', 'Networks'))
+            case.assertEqual(held.exception.differences['NetworkSettings.MacAddress'],
+                             {'matchesOriginal': endpoint_matches})
+            case.assertNotIn(endpoint['MacAddress'], json.dumps(held.exception.differences))
+            case.assertNotIn(other_mac, json.dumps(held.exception.differences))
 
 
 class Swap(unittest.TestCase):
@@ -247,7 +280,67 @@ class Swap(unittest.TestCase):
                          (result['cid'], result['imageId'], result['binarySha256'], result['readyHttp']))
         self.assertFalse(self.rt.docs[NEW]['State']['Running'])
         self.assertEqual({}, self.rt.docs[NEW]['NetworkSettings']['Networks'])
-        self.assertEqual(MAC, self.rt.inspect('ouf-mcp')['Config']['MacAddress'])
+        restored = self.rt.inspect('ouf-mcp')
+        self.assertNotIn('MacAddress', restored['Config'])
+        self.assertEqual(MAC, restored['NetworkSettings']['Networks']['backend']['MacAddress'])
+
+    def test_restored_predecessor_matrix(self):
+        old = self.rt.inspect(OLD)
+        self.apply()
+        swap.rollback(self.rt, self.journal, self.approved)
+        check_restored_rejections(self, swap, old, self.rt.inspect(OLD))
+
+    def test_invalid_original_legacy_cannot_qualify_a_transition(self):
+        old = self.rt.inspect(OLD)
+        restored = copy.deepcopy(old)
+        del restored['Config']['MacAddress']
+        for value in (None, '', 'invalid', '01:00:00:00:00:01', '00:00:00:00:00:00', '02:00:00:00:00:01'):
+            old['Config']['MacAddress'] = value
+            with self.subTest(value=value), self.assertRaises(swap.RestoredFrameChanged):
+                swap.verify_restored_frame(old, restored, reconnected=True)
+
+    def test_absent_original_requires_exact_config(self):
+        old = self.rt.inspect(OLD)
+        del old['Config']['MacAddress']
+        restored = copy.deepcopy(old)
+        swap.verify_restored_frame(old, restored, reconnected=True)
+        for key, value in [('MacAddress', None), ('MacAddress', ''), ('MacAddress', MAC), ('Env', [])]:
+            changed = copy.deepcopy(restored)
+            changed['Config'][key] = value
+            with self.subTest(key=key, value=value), self.assertRaises(swap.RestoredFrameChanged):
+                swap.verify_restored_frame(old, changed, reconnected=True)
+
+    def test_legacy_absence_requires_predecessor_reconnect(self):
+        original = self.rt.api
+
+        def fail_before_detach(method, path, body=None):
+            if path == '/networks/' + NET + '/disconnect':
+                raise RuntimeError('DISCONNECT_FAILED')
+            result = original(method, path, body)
+            if path == '/containers/' + OLD + '/start':
+                del self.rt.docs[OLD]['Config']['MacAddress']
+            return result
+
+        with patch.object(self.rt, 'api', side_effect=fail_before_detach):
+            with self.assertRaisesRegex(RuntimeError, 'DISCONNECT_FAILED'):
+                self.apply()
+            with self.assertRaises(swap.RestoredFrameChanged):
+                swap.rollback(self.rt, self.journal, self.approved)
+        self.assertFalse((self.journal / 'rollback/release.intent').exists())
+
+    def test_running_candidate_still_requires_legacy_mac(self):
+        original = self.rt.api
+
+        def omit_candidate_legacy(method, path, body=None):
+            result = original(method, path, body)
+            if path == '/containers/' + NEW + '/start':
+                del self.rt.docs[NEW]['Config']['MacAddress']
+            return result
+
+        with patch.object(self.rt, 'api', side_effect=omit_candidate_legacy):
+            with self.assertRaisesRegex(RuntimeError, 'RUNNING_LEGACY_MAC_CHANGED'):
+                self.apply()
+        self.assertFalse((self.journal / 'release.intent').exists())
 
     def test_restored_frame_diff_is_redacted_and_prevents_usr1(self):
         self.apply()
@@ -257,7 +350,6 @@ class Swap(unittest.TestCase):
             result = original(method, path, body)
             if path == '/containers/' + OLD + '/start':
                 config = self.rt.docs[OLD]['Config']
-                config.pop('MacAddress')
                 config['Env'] = ['FAKE_SECRET=synthetic-only']
                 config['Labels']['sensitive-label-name'] = 'synthetic-only'
                 self.rt.docs[OLD]['HostConfig']['Binds'] = ['/private-source:/private-target:ro']
@@ -268,7 +360,8 @@ class Swap(unittest.TestCase):
             swap.rollback(self.rt, self.journal, self.approved)
         diff = held.exception.differences
         self.assertEqual(set(diff), {'Config.MacAddress', 'Config.Env', 'Config.Labels',
-                                     'HostConfig.Binds', 'HostConfig.NetworkMode'})
+                                     'HostConfig.Binds', 'HostConfig.NetworkMode', 'NetworkSettings.MacAddress'})
+        self.assertEqual(diff['NetworkSettings.MacAddress'], {'matchesOriginal': True})
         self.assertEqual(diff['Config.Env'], {'before': 'list', 'after': 'list', 'orderOnly': False})
         self.assertEqual(diff['HostConfig.Binds'], {'before': 'absent', 'after': 'list'})
         self.assertEqual(diff['Config.MacAddress']['beforeProfile']['matchingEndpointCount'], 1)
@@ -287,7 +380,7 @@ class Swap(unittest.TestCase):
             gated = copy.deepcopy(old)
             gated['HostConfig']['Binds'] = binds
             with self.subTest(binds=binds), self.assertRaises(swap.RestoredFrameChanged) as held:
-                swap.verify_restored_frame(old, gated)
+                swap.verify_restored_frame(old, gated, reconnected=False)
             self.assertEqual(held.exception.differences['HostConfig.Binds']['orderOnly'], order_only)
 
     def test_generation_frame_drift_after_usr1_fails_apply_and_rollback(self):

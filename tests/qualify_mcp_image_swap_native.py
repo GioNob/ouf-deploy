@@ -10,6 +10,7 @@ spec = importlib.util.spec_from_file_location('fixture', ROOT / 'tests/test_mcp_
 fixture = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(fixture)
 swap = fixture.mod('swap', ROOT / 'scripts/swap-mcp-image.py')
+protocol = fixture.mod('protocol', ROOT / 'tests/test_mcp_image_swap.py')
 
 
 class NativeSwap(fixture.Native):
@@ -60,6 +61,11 @@ class NativeSwap(fixture.Native):
                 raise
             self.assertEqual((restored['cid'], restored['imageId'], restored['binarySha256'], restored['readyHttp']),
                              (old['Id'], self.image, photo['binarySha256'], 204))
+            restored_frame = self.runtime.inspect(old['Id'])
+            self.assertNotIn('MacAddress', restored_frame['Config'])
+            self.assertTrue(restored_frame['NetworkSettings']['Networks'][self.tag]['MacAddress'] ==
+                            old['Config']['MacAddress'])
+            protocol.check_restored_rejections(self, swap, old, restored_frame)
             self.assertEqual(self.runtime.inspect(receipt['cid'])['NetworkSettings']['Networks'], {})
             self.assertEqual(self.calls['business'], 0)
             print(json.dumps({'profile': 'explicit' if explicit else 'endpoint-only',

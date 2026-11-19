@@ -35,6 +35,7 @@ mac = helper('mac', 'tools/acquisition_read_native/retained_mac.py')
 APP = mcp.APP
 ENTRY = mcp.ENTRY
 SERVICE = '/ouf-mcp'
+RESTORED_PROFILE = 'RESTORED_PREDECESSOR_LEGACY_MAC_ABSENT_V1'
 REVISION = 'org.opencontainers.image.revision'
 SOURCE = 'ouf.mcp.analysis-source'
 HEX = '[0-9a-f]{64}'
@@ -157,8 +158,8 @@ class RestoredFrameChanged(RuntimeError):
         self.differences = differences
 
 
-def verify_restored_frame(old, gated):
-    """Compare the restarted predecessor to its own recorded configuration."""
+def verify_restored_frame(old, gated, *, reconnected=False):
+    """Verify the original bindings and the Config expected for this rollback path."""
     differences = {}
 
     def describe(path, before, after, key):
@@ -168,17 +169,42 @@ def verify_restored_frame(old, gated):
             change['orderOnly'] = sorted(map(mac.encoded, before[key])) == sorted(map(mac.encoded, after[key]))
         differences[path] = change
 
+    expected_config = old['Config']
+    if reconnected and 'MacAddress' in expected_config:
+        # rollback verified the detached predecessor and reconnected that CID.
+        try:
+            expected_config = mac.detached_config(old)
+        except mac.MacTransitionDenied:
+            describe('Config.MacAddress', old['Config'], gated['Config'], 'MacAddress')
+
     for key in ('Id', 'Image', 'Name', 'Path', 'Args', 'Config', 'HostConfig'):
-        if old[key] == gated[key]:
+        expected = expected_config if key == 'Config' else old[key]
+        actual = gated[key]
+        if mac.encoded(expected) == mac.encoded(actual):
             continue
         if key in ('Config', 'HostConfig'):
             # These direct keys belong to the Engine schema. Stop before
             # user-controlled maps (labels, driver options, ports, etc.).
-            for field in inventory.changes(old[key], gated[key]):
-                describe(key + '.' + field, old[key], gated[key], field)
+            for field in sorted(expected.keys() | actual.keys()):
+                if (field not in expected or field not in actual or
+                        mac.encoded(expected[field]) != mac.encoded(actual[field])):
+                    describe(key + '.' + field, old[key], actual, field)
         else:
             describe(key, old, gated, key)
+    if mac.encoded(lifecycle.mounts(old)) != mac.encoded(lifecycle.mounts(gated)):
+        describe('Mounts', old, gated, 'Mounts')
+
+    bindings = endpoint_matches(old, gated)
+    for field, matches in bindings.items():
+        if not matches:
+            differences['NetworkSettings.' + field] = {'matchesOriginal': False}
+
     if differences:
+        # Preserve the observed before/after transition in the diagnostic even when
+        # the policy admitted that field and a different binding failed.
+        if 'MacAddress' in old['Config'] and 'MacAddress' not in gated['Config']:
+            describe('Config.MacAddress', old['Config'], gated['Config'], 'MacAddress')
+        differences['NetworkSettings.MacAddress'] = {'matchesOriginal': bindings['MacAddress']}
         if 'Config.MacAddress' in differences:
             differences['Config.MacAddress'].update(beforeProfile=inventory.mac_shape(old),
                                                     afterProfile=inventory.mac_shape(gated))
@@ -301,7 +327,7 @@ def plan(rt, inputs, defaults):
     need(all(not ipam.get(key) or ipam[key] == ep[field] for key, field in
              [('IPv4Address', 'IPAddress'), ('IPv6Address', 'GlobalIPv6Address')]), 'ENDPOINT_IPAM_CHANGED')
     body = {'version': 1, 'api': '1.44', 'inputs': inputs, 'requestSha256': digest(req),
-            'controllerSha256': lifecycle.file_sha(__file__),
+            'controllerSha256': lifecycle.file_sha(__file__), 'restoredPredecessorProfile': RESTORED_PROFILE,
             'oldSectionSha256': {k: digest(old[k]) for k in ('Config', 'HostConfig', 'Mounts', 'NetworkSettings')},
             'custodyTag': 'ouf-mcp-r033-custody:' + old['Id'],
             'retainedName': SERVICE + '-before-r033-' + old['Id'][:12],
@@ -331,17 +357,22 @@ def stopped(old, doc):
          'STOPPED_BINDINGS_CHANGED')
 
 
-def endpoint(old, req, doc):
-    net, wanted = next(iter(req['NetworkingConfig']['EndpointsConfig'].items()))
-    actual = doc['NetworkSettings']['Networks'][net]
-    prior = old['NetworkSettings']['Networks'][net]
-    need(doc['NetworkSettings'].get('Ports') == old['NetworkSettings'].get('Ports')
-         and actual['NetworkID'] == prior['NetworkID'] and actual['IPAddress'] == prior['IPAddress']
-         and actual['MacAddress'] == prior['MacAddress']
-         and set(actual.get('Aliases') or []) == set(wanted['Aliases']) | {doc['Id'][:12]}
-         and all(actual.get(k) == prior.get(k) for k in
-                 ('GlobalIPv6Address', 'GlobalIPv6PrefixLen', 'IPPrefixLen', 'Gateway', 'IPv6Gateway',
-                  'Links', 'DriverOpts', 'GwPriority')), 'ENDPOINT_BINDINGS_CHANGED')
+def endpoint_matches(old, doc):
+    net, prior = next(iter(old['NetworkSettings']['Networks'].items()))
+    networks = doc['NetworkSettings']['Networks']
+    actual = networks.get(net, {})
+    matches = {
+        'Networks': set(networks) == {net},
+        'Ports': doc['NetworkSettings'].get('Ports') == old['NetworkSettings'].get('Ports'),
+        'NetworkID': actual.get('NetworkID') == prior['NetworkID'],
+        'IPAddress': actual.get('IPAddress') == prior['IPAddress'],
+        'MacAddress': mac.valid(prior['MacAddress']) and actual.get('MacAddress') == prior['MacAddress'],
+        'Aliases': set(actual.get('Aliases') or []) == set(prior.get('Aliases') or []) | {doc['Id'][:12]},
+    }
+    for field in ('GlobalIPv6Address', 'GlobalIPv6PrefixLen', 'IPPrefixLen', 'Gateway', 'IPv6Gateway',
+                  'Links', 'DriverOpts', 'GwPriority'):
+        matches[field] = actual.get(field) == prior.get(field)
+    return matches
 
 
 def verify_new(old, req, doc, started):
@@ -349,7 +380,7 @@ def verify_new(old, req, doc, started):
     lifecycle.verify_replacement(old, req, doc, started)
     if started:
         need(doc['Config'].get('MacAddress') == old['Config']['MacAddress'], 'RUNNING_LEGACY_MAC_CHANGED')
-        endpoint(old, req, doc)
+        need(all(endpoint_matches(old, doc).values()), 'ENDPOINT_BINDINGS_CHANGED')
 
 
 def put(path, value):
@@ -518,10 +549,7 @@ def rollback(rt, journal, approved):
                {'Container': cid, 'EndpointConfig': req['NetworkingConfig']['EndpointsConfig'][net]})
     effect(rt, rb, 'start', '/containers/' + cid + '/start')
     gated = rt.inspect(cid)
-    verify_restored_frame(old, gated)
-    need(lifecycle.mounts(gated) == lifecycle.mounts(old) and set(gated['NetworkSettings']['Networks']) == {net},
-         'RESTORED_BINDINGS_CHANGED')
-    endpoint(old, req, gated)
+    verify_restored_frame(old, gated, reconnected=not attached)
     live = release(rt, rb, gated, photo['binarySha256'], photo)
     need(frame(live) == frame(gated), 'RESTORED_FRAME_CHANGED_AFTER_RELEASE')
     receipt = {'status': 'ROLLED_BACK', 'planSha256': approved, 'cid': cid, 'imageId': live['Image'],
