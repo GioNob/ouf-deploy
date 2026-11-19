@@ -13,7 +13,7 @@ case "$mode" in
   *) echo 'uso: plan | apply <planSha256>' >&2; exit 2 ;;
 esac
 # Claude fissa il commit dopo review e commit D-001.
-C=14cc586b71591a657a36b265162cc74bc8a546b9
+C=ae21c25e6cb2da7315853632de9269e13b34cca0
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] || {
   echo 'runbook non ancora fissato a un commit' >&2; exit 2;
 }
@@ -62,7 +62,7 @@ delivery() {
   # BEGIN DELIVERY
   fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
-  fetch scripts/issue-semantic-provider-operation-authorization.py 21bc0e9819fe11c78ef87ff76823e7a19ee23dd5cb1c00454ba844a0c9501f41
+  fetch scripts/issue-semantic-provider-operation-authorization.py e5f14e218efdc73fa9a592ef6dd9a2f7fafeb997ed22c785bc72951c82080197
   fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
   fetch scripts/prepare-semantic-provider-b1-rootfs-v3.py 29899e5ee25aa9e772f21fb62fb473706cdf2b8f921034efeccb3b284d350397
   fetch scripts/prepare-semantic-provider-b1-rootfs.py 8107d055fe0bfd8fe363506f39ffa006f157a292a54bbcbf4de11b011816178d
