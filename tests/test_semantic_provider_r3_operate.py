@@ -520,7 +520,8 @@ class PortableTests(unittest.TestCase):
                 installed = overlay
                 self.assertEqual(O.observe(args), result)
                 self.assertEqual(load.call_args.args[3], O.sha(overlay))
-                self.assertEqual(O.I.installed_runtime_hashes(), {O.sha(base), O.sha(overlay)})
+                self.assertTrue({O.sha(base), O.sha(overlay)} < O.I.installed_runtime_hashes())
+                self.assertEqual(len(O.I.installed_runtime_hashes()), 3)
                 installed += b'\n# altered\n'
                 load.reset_mock()
                 with self.assertRaisesRegex(O.A.OperationDenied, '^R3_SOURCE_HASH_DRIFT$'):

@@ -38,6 +38,17 @@ class CompositionV19(unittest.TestCase):
             'authorization': '10bffbf8c2163694c441d6bca073c7ce3520d2abd1e41abdf943ef06e5c228b9',
         })
 
+    def test_operate_and_probe_trust_the_emitted_v19_runtime(self):
+        # R-031: operate/probe check the installed runtime against a closed hash set.
+        from tools.semantic_provider_r3 import install_common as I
+        if b'\r\n' in (I.ROOT / C.RUNTIME).read_bytes():
+            self.skipTest('CRLF working tree: delivered bytes are LF (checked on Linux CI)')
+        trusted = I.installed_runtime_hashes()
+        for result, version in ((self.old, 18), (self.result, 19)):
+            raw = result['documents'][f'versions/{version}/source/' + C.RUNTIME]
+            self.assertIn(C.sha(raw), trusted, version)
+        self.assertEqual(len(trusted), 3)
+
     def test_issuance_and_final_source_seal(self):
         inputs, old, new = self.inputs, self.old, self.result
         self.assertEqual(C.SOURCE_MAP_V19, C.SOURCE_MAP_V18)

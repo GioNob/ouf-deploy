@@ -22,11 +22,14 @@ def sources_v19(sources, source_map):
     path = source_map[RUNTIME]
     raw = sources[path]
 
+    # Keep the source's own line endings (a CRLF working tree must not change the anchors).
+    eol = b'\r\n' if b'\r\n' in raw else b'\n'
+
     def edit(old, new):
         nonlocal raw
-        before = old.encode('utf-8')
+        before = old.encode('utf-8').replace(b'\n', eol)
         require(raw.count(before) == 1, 'R3_V19_SOURCE_CONTRACT_DRIFT')
-        raw = raw.replace(before, new.encode('utf-8'))
+        raw = raw.replace(before, new.encode('utf-8').replace(b'\n', eol))
 
     edit("""def inactive(config, cid, operation, root, argv):
     require(operation in ('state','delete'), 'RUNTIME_PHASE_INACTIVE')
