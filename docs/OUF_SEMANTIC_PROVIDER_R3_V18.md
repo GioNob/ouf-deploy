@@ -69,6 +69,22 @@ riporta al primo gradino. Una pausa o un retry rapido interrompe il periodo
 sano. I tetti di 128 tentativi, 86.400 s cumulativi per scope, 30 s per tentativo
 e sei aperture in un’ora continuano a valere.
 
+## Integrazione con l’osservabilità
+
+La composizione applica prima il rinnovo e poi i marcatori di osservabilità
+sugli stessi sorgenti emessi. Al termine sigilla una sola volta la chiusura
+v18. I `PINS` del supervisore, la configurazione verificata dal bootstrap v3
+e gli hash di consegna condividono i digest dei byte finali. Il bootstrap
+verifica anche il proprio digest prima di eseguire i moduli.
+
+L’ammissione al retry rapido registra `lastIncident` nello stesso checkpoint
+che conta il tentativo. Il lease resta attivo durante l’attesa. Se il retry
+pubblica `LEASE_READY`, il checkpoint di rinnovo valorizza `resumedAt` e
+`pausedAt` resta nullo. Se segue una revoca, `pausedAt` viene valorizzato
+solo dopo la verifica della quiescenza entro il budget separato di 40 s.
+L’incidente conserva fase e codice del guasto iniziale. [Contratto di
+osservabilità e proiezione in r3-status](OUF_SEMANTIC_PROVIDER_R3_V18_LEASE_OBSERVABILITY.md).
+
 ## Consegna da fissare nei runbook
 
 Per issue e upgrade v18 aggiungere `files["leaseRenewal"]` con il percorso
@@ -76,18 +92,18 @@ privato della copia di `ops/vps/r3-lease-renewal.json`, il digest in
 `PINS["leaseRenewal"]` e selezionare `C.DATA_INPUTS_V18` /
 `C.SOURCE_INPUTS_V18` per `inputs.json`. L’insieme dei sorgenti aggiunge solo
 `tools/semantic_provider_r3/lease_renewal_v18.py`. Il compositore richiede
-anche il modulo host `lease_renewal_overlay_v18.py`.
+anche i moduli host `lease_renewal_overlay_v18.py` e
+`lease_observability_overlay_v18.py`.
 
 | File della consegna | SHA-256 dei byte LF |
 | --- | --- |
 | `ops/vps/r3-lease-renewal.json` | `c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f` |
-| `tools/semantic_provider_r3/compose.py` | `6c243d70ee412ad426f7c270d3d3988e1b4c63ba472286d7f75faa21e06d4b0d` |
 | `tools/semantic_provider_r3/lease_renewal_v18.py` | `c6fefa170903a92bcb706a061c91a3bfd5af560b51447f08dd0ac3135a5a7ecd` |
-| `tools/semantic_provider_r3/lease_renewal_overlay_v18.py` | `07e03401a828241aaa8215a70b1c171aa612ed7ef06293b845b5ef9b132c16d3` |
 
-Fissare `C` al commit approvato e ricalcolare questi hash dai blob Git della
-consegna. Sincronizzare il manifest `operate` e quello di autostart se
-rigenerati sulla stessa consegna. I pin dei sorgenti base continuano a
+Fissare `C` al commit approvato e calcolare dai blob Git della consegna anche
+gli hash di `compose.py` e dei due overlay. Allineare la consegna di
+`r3-operate.sh` e il `MANIFEST` di `r3-autostart-install.sh` allo stesso
+commit quando passano alla v18. I pin dei sorgenti base continuano a
 identificare i blob storici. La composizione aggiorna invece i `PINS` interni
 del supervisore sui byte emessi. Il bootstrap v3 emesso verifica la chiusura
 nuova, incluso `tools/semantic_lease_recovery/lease_renewal_v18.py`, sotto

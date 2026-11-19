@@ -1,4 +1,5 @@
 """Version-local edits to the reviewed v17 lease closure."""
+import re
 from textwrap import dedent, indent
 
 from tools.semantic_provider_operation.authorization import require
@@ -7,47 +8,71 @@ from tools.semantic_provider_operation.authorization import require
 RECOVERY = 'tools/semantic_lease_recovery/'
 SUPERVISOR = 'tools/semantic_provider_operation/lease_supervisor.py'
 BOOTSTRAP = 'scripts/semantic-provider-lease-supervisor-v2.py'
-POLICY_SOURCE = 'tools/semantic_provider_r3/lease_renewal_v18.py'
+POLICY_MODULE = 'lease_renewal_v18'
 SCHEMA_V1 = 'ouf.semantic-provider-lease-supervisor.v1'
 SCHEMA_V2 = 'ouf.semantic-provider-lease-supervisor.v2'
 DRIFT = 'R3_V18_SOURCE_CONTRACT_DRIFT'
 
 
-def sources_v18(sources, source_map, sha, contract_module):
+def seal_v18(base_sources, sources, source_map, recovery_modules, sha):
+    """Seal the composed closure and share its digests with sourceHashes."""
     out = dict(sources)
-
-    def editor(target):
-        path = source_map[target]
-
-        def edit(old, new):
-            before, after = old.encode('utf-8'), new.encode('utf-8')
-            require(out[path].count(before) == 1, DRIFT)
-            out[path] = out[path].replace(before, after)
-
-        def section(start, end, replacement):
-            raw = out[path].decode('utf-8')
-            require(raw.count(start) == raw.count(end) == 1, DRIFT)
-            first, last = raw.index(start), raw.index(end)
-            require(first < last, DRIFT)
-            old = raw[first:last]
-            edit(old, replacement(old) if callable(replacement) else replacement)
-
-        return edit, section
-
-    edit, _ = editor(BOOTSTRAP)
+    edit, _ = _editor(out, source_map[BOOTSTRAP])
     edit(SCHEMA_V1, SCHEMA_V2)
-    edit('RECOVERY_MODULES = ("activation_core",', 'RECOVERY_MODULES = ("lease_renewal_v18", "activation_core",')
+    edit('RECOVERY_MODULES = ("activation_core",',
+         f'RECOVERY_MODULES = ("{POLICY_MODULE}", "activation_core",')
 
-    changed = ('bounded_recovery', 'lease_recovery_budget', 'resilient_lease_adapter',
-               'adaptive_supervisor', 'continuous_supervisor')
-    for name, update in zip(changed, (_bounded, _budget, _adapter, _adaptive, _continuous)):
-        update(*editor(RECOVERY + name + '.py'))
-    pinned = contract_module(out[source_map[SUPERVISOR]], 'v18_previous_pins').PINS
-    edit, _ = editor(SUPERVISOR)
+    recovery_paths = {name: source_map[RECOVERY + name + '.py']
+                      for name in (POLICY_MODULE, *recovery_modules)}
+    digests = {path: sha(out[path]) for path in dict.fromkeys(recovery_paths.values())}
+
+    def format_pins(entries):
+        return 'PINS = {\n' + ''.join(f'    "{name}": "{pin}",\n' for name, pin in entries) + '}'
+
+    def final_pins(block):
+        entries = re.findall(r'    "([a-z0-9_]+)": "([0-9a-f]{64})",\n', block)
+        require(tuple(name for name, _ in entries) == recovery_modules
+                and block == format_pins(entries), DRIFT)
+        for name, pin in entries:
+            path = recovery_paths[name]
+            if out[path] == base_sources[path]:
+                require(digests[path] == pin, DRIFT)
+        return format_pins((name, digests[path]) for name, path in recovery_paths.items())
+
+    edit, section = _editor(out, source_map[SUPERVISOR])
     edit(SCHEMA_V1, SCHEMA_V2)
-    for name in changed:
-        edit(pinned[name], sha(out[source_map[RECOVERY + name + '.py']]))
-    edit('PINS = {\n', 'PINS = {\n    "lease_renewal_v18": "' + sha(out[POLICY_SOURCE]) + '",\n')
+    section('PINS = {\n', '\nSELF = ', final_pins)
+    for path in sorted(set(source_map.values()) - digests.keys()):
+        digests[path] = sha(out[path])
+    return out, {target: digests[original] for target, original in source_map.items()}
+
+
+def _editor(out, path):
+    def edit(old, new):
+        before, after = old.encode('utf-8'), new.encode('utf-8')
+        require(out[path].count(before) == 1, DRIFT)
+        out[path] = out[path].replace(before, after)
+
+    def section(start, end, replacement):
+        raw = out[path].decode('utf-8')
+        require(raw.count(start) == raw.count(end) == 1, DRIFT)
+        first, last = raw.index(start), raw.index(end)
+        require(first < last, DRIFT)
+        old = raw[first:last]
+        edit(old, replacement(old) if callable(replacement) else replacement)
+
+    return edit, section
+
+
+def sources_v18(sources, source_map):
+    out = dict(sources)
+    for name, update in (
+        ('bounded_recovery', _bounded), ('lease_recovery_budget', _budget),
+        ('resilient_lease_adapter', _adapter), ('adaptive_supervisor', _adaptive),
+        ('continuous_supervisor', _continuous),
+    ):
+        update(*_editor(out, source_map[RECOVERY + name + '.py']))
+    edit, _ = _editor(out, source_map[SUPERVISOR])
     _supervisor(edit)
     return out
 
@@ -151,7 +176,6 @@ def _adaptive(edit, section):
 
 def _continuous(edit, section):
     edit('from bounded_recovery import Permanent, Temporary, fingerprint\nfrom adaptive_supervisor import window',
-         'from contextlib import ExitStack\n'
          'from bounded_recovery import BeforeLeaseMutation, Permanent, Temporary, fingerprint\n'
          'from adaptive_supervisor import sample_locked, window\n'
          'from lease_renewal_v18 import COMMIT_SECONDS, REVOCATION_SECONDS, compiler_margin, retry_reserve')

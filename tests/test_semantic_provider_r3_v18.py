@@ -86,9 +86,10 @@ class CompositionV18(unittest.TestCase):
             self.assertEqual(template['budgetSeconds'], 12)
             self.assertEqual(template['kernel']['generation'], 2)
         for target, digest in cfg['sourceHashes'].items():
-            raw = docs[PREFIX + 'source/' + target]
-            self.assertEqual(C.sha(raw), digest)
-            compile(raw, target, 'exec')
+            path = PREFIX + 'source/' + target
+            self.assertEqual(C.sha(docs[path]), digest)
+            self.assertEqual(result['hashes'][path], digest)
+            compile(docs[path], target, 'exec')
 
     def test_denies_wrong_version_shape_and_incompatible_budgets(self):
         inputs = self.inputs
@@ -142,6 +143,13 @@ class CompositionV18(unittest.TestCase):
             with self.subTest(replacement=replacement), self.assertRaisesRegex(RuntimeError, 'R3_V18_SOURCE_CONTRACT_DRIFT'):
                 self.compose(self.inputs | {'sources': self.inputs['sources'] | {
                     path: original.replace(anchor, replacement)}})
+
+    def test_final_seal_rejects_drift_in_unmodified_recovery_source(self):
+        path = 'tools/semantic_lease_recovery/deadline_backend.py'
+        inputs = self.inputs | {'sources': self.inputs['sources'] | {
+            path: self.inputs['sources'][path] + b'\n# Changed before composition.\n'}}
+        with self.assertRaisesRegex(C.A.OperationDenied, '^R3_V18_SOURCE_CONTRACT_DRIFT$'):
+            self.compose(inputs)
 
     def test_governed_upgrade_plans_unit_and_wrapper_for_version_18(self):
         result = self.compose(self.inputs)
@@ -290,8 +298,10 @@ class RenewalRuntime(unittest.TestCase):
         self.dns.observe_many = self.query
         self.adapter = continuous.RenewingLeaseAdapter(self.c, self.dns, sys.modules['readback_margin_compiler'],
                                                        self.guard, lambda: None, self.clock)
+        self.adapter.incident = sys.modules['recovery_journal'].Incident(
+            18, {'adapter': 7, 'southbound': 9}, lambda: self.wall, self.clock)
         self.journal = Journal()
-        self.r = sys.modules['lease_recovery_budget'].LeaseRecovery(
+        self.r = sys.modules['lease_recovery_budget'].ObservedRecovery(
             self.journal, self.adapter, self.bounded.Policy(), 'a' * 64, 'b' * 64,
             lambda: (self.wall, self.mono), lambda: .5)
         self.journal.compare_and_save(None, self.r.initial())
@@ -429,6 +439,11 @@ class RenewalRuntime(unittest.TestCase):
         self.assertEqual(row['fastRenewalRetries'], 0)
         self.assertEqual(self.commands[0][1], start + 12 + policy.REVOCATION_SECONDS)
         self.assert_closed()
+        incident = row['lastIncident']
+        self.assertEqual((incident['phase'], incident['code'], incident['revocation']),
+                         ('LOCK_ACQUIRE', 'COMMON_LOCK_TIMEOUT', 'VERIFIED'))
+        self.assertGreater(incident['pausedAt'], incident['failedAt'])
+        self.assertEqual(incident['nextRetryAt'], row['nextWall'])
 
     def test_dns_expiry_limits_lock_and_retry_uses_fresh_dns(self):
         start = self.clock()
@@ -442,8 +457,9 @@ class RenewalRuntime(unittest.TestCase):
         self.assertLessEqual(self.queries[1][1], self.queries[0][1])
         self.assertEqual(self.lease_states, ['LEASE_UPDATING', 'LEASE_READY'])
 
-    def test_dns_transient_keeps_lease_and_charges_bounded_retry(self):
+    def test_composed_fast_retry_keeps_lease_and_records_incident(self):
         before = self.r.remaining(self.journal.read())
+        failed_at = self.wall
         self.query_outcomes[:] = ['DNS_UNAVAILABLE', 30]
 
         def during_wait():
@@ -454,6 +470,12 @@ class RenewalRuntime(unittest.TestCase):
             self.assertEqual(len(self.queries), 1)
             self.assertEqual(self.coordination, self.scheduled['leaseJournal'])
             self.assertTrue(all(expiry > self.clock() for members in self.elements.values() for expiry in members.values()))
+            incident = row['lastIncident']
+            self.assertEqual((incident['phase'], incident['code'], incident['stateAtFailure']),
+                             ('DNS', 'DNS_UNAVAILABLE', 'ACTIVE'))
+            self.assertEqual((incident['failedAt'], incident['nextRetryAt']), (failed_at, failed_at + 1))
+            self.assertIsNone(incident['pausedAt'])
+            self.assertIsNone(incident['resumedAt'])
 
         self.after_wait = during_wait
         row = self.renew()
@@ -463,6 +485,9 @@ class RenewalRuntime(unittest.TestCase):
         self.assertEqual([when for when, _ in self.queries], [100., 101.])
         self.assertEqual(self.lease_states, ['LEASE_UPDATING', 'LEASE_READY'])
         self.assertEqual({family for family, _ in self.elements}, {'inet', 'bridge'})
+        pending, renewed = self.journal.history[-2:]
+        self.assertEqual(renewed['lastIncident'], pending['lastIncident'] | {'resumedAt': self.wall})
+        self.assertEqual(renewed['lastIncident']['revocation'], 'UNPROVEN')
 
     def test_insufficient_time_for_early_retry_revokes(self):
         old_query = self.dns.observe_many
@@ -511,6 +536,24 @@ class RenewalRuntime(unittest.TestCase):
         self.assertEqual(len(self.queries), 1)
         self.assertEqual(self.lease_states, ['QUIESCING', 'QUIESCED'])
         self.assert_closed()
+        incident = row['lastIncident']
+        self.assertEqual((incident['phase'], incident['code'], incident['revocation']),
+                         ('DNS', 'DNS_UNAVAILABLE', 'VERIFIED'))
+        self.assertEqual(incident['pausedAt'], self.wall)
+
+    def test_cancelled_fast_retry_records_verified_pause(self):
+        self.query_outcomes[:] = ['DNS_UNAVAILABLE']
+
+        def cancel():
+            self.stopped = True
+
+        self.after_wait = cancel
+        row = self.renew()
+        self.assertEqual((row['state'], row['reason']), ('CANCELLED', 'CANCELLED_BY_OWNER'))
+        self.assertEqual(len(self.queries), 1)
+        self.assert_closed()
+        pending = self.journal.history[-2]['lastIncident']
+        self.assertEqual(row['lastIncident'], pending | {'revocation': 'VERIFIED', 'pausedAt': self.wall})
 
     def test_revocation_unproven_has_distinct_result(self):
         self.query_outcomes[:] = ['DNS_UNAVAILABLE']
@@ -525,6 +568,8 @@ class RenewalRuntime(unittest.TestCase):
         self.assertEqual(self.commands, [])
         self.assertEqual(len(self.queries), 1)
         self.assertTrue(self.elements)  # only the original finite kernel TTL remains
+        self.assertEqual(row['lastIncident']['revocation'], 'UNPROVEN')
+        self.assertIsNone(row['lastIncident']['pausedAt'])
 
     def test_expires_zero_revokes_without_retaining_lease(self):
         self.elements['bridge', 0]['1.1.1.1'] = self.clock() + .5

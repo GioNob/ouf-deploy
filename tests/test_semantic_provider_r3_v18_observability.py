@@ -10,9 +10,7 @@ import unittest
 from unittest.mock import patch
 
 from test_r3_readers import load as reader
-import test_semantic_provider_r3_v16_adapter as v17
-
-C = v17.C
+from test_semantic_provider_r3_v18 import C, CONFIG, PREFIX, fixture
 
 
 class Clock:
@@ -61,8 +59,9 @@ class Lease:
 
     MISSING = {'DNS_MISSING'}
 
-    def __init__(self, clock):
+    def __init__(self, clock, renewal, lock_failure):
         self.clock = clock
+        self.renewal, self.lock_failure = renewal, lock_failure
         self.configuration = {'providerFlows': [dict(
             endpoint='provider.invalid', endpointRef='synthetic', source='192.0.2.10',
             allowedPrivateAddresses=[self.address], resolutionEvidenceRef='fixture', leaseSeconds=30)]}
@@ -72,20 +71,24 @@ class Lease:
         self.row = dict(state='QUIESCED', leaseAuthorized=False, startAuthorized=False, leaseAddresses=[[]])
 
     @contextmanager
-    def hold_lock(self):
+    def hold_lock(self, failure=TimeoutError):
         self.clock.advance(self.lock_wait)
         if self.lock_timeout:
             self.lock_timeout = False
-            raise TimeoutError('COMMON_LOCK_TIMEOUT')
+            raise failure('COMMON_LOCK_TIMEOUT')
         yield
+
+    def hold_until(self, deadline):
+        return self.hold_lock(self.lock_failure)
 
     @contextmanager
     def within(self, deadline):
+        previous = self.active_deadline
         self.active_deadline = deadline
         try:
             yield
         finally:
-            self.active_deadline = None
+            self.active_deadline = previous
 
     def journal(self):
         return copy.deepcopy(self.row)
@@ -136,11 +139,14 @@ class Lease:
 class Observability(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        v17.DriverBudget.setUpClass()
-        cls.inputs = v17.DriverBudget.inputs
-        previous = v17.DriverBudget.v16
-        cls.old = C.compose(cls.inputs, 17, sequence=17, supersedes=C.sha(previous['authorization']))
-        cls.result = C.compose(cls.inputs, 18, sequence=18, supersedes=C.sha(cls.old['authorization']))
+        inputs, cls.old = fixture()
+        renewal = C.document(inputs['files']['leaseRenewal'])
+        # Isolate the pause and backoff path. The default fast lane is
+        # exercised with the real emitted runtime in the renewal suite.
+        inputs['files']['leaseRenewal'] = C.canonical(renewal | {
+            'fastRetryCount': 0, 'fastRetryDelaysSeconds': [],
+        })
+        cls.result = C.compose(inputs, 18, sequence=18, supersedes=C.sha(cls.old['authorization']))
 
     def test_v17_golden(self):
         # Captured on clean 514679b9 before adding the v18 overlay.
@@ -200,14 +206,15 @@ class Observability(unittest.TestCase):
             # The in-memory checkpoint exercises CAS on Windows.
             sys.modules['fcntl'] = types.ModuleType('fcntl')
         loaded = {}
-        for name in ('bounded_recovery', 'recovery_journal', 'lease_recovery_budget',
+        for name in ('lease_renewal_v18', 'bounded_recovery', 'recovery_journal', 'lease_recovery_budget',
                      'resilient_lease_adapter', 'adaptive_supervisor', 'continuous_supervisor'):
             path = f'versions/18/source/tools/semantic_lease_recovery/{name}.py'
             module = types.ModuleType(name)
             sys.modules[name] = loaded[name] = module
             exec(compile(self.result['documents'][path], path, 'exec'), module.__dict__)
         clock = Clock()
-        lease = Lease(clock)
+        cfg = C.document(self.result['documents'][PREFIX + CONFIG])
+        lease = Lease(clock, cfg['leaseRenewal'], loaded['bounded_recovery'].BeforeLeaseMutation)
         continuous = loaded['continuous_supervisor']
         adapter = continuous.RenewingLeaseAdapter(lease, lease, lease, lambda: None, lambda: None,
                                                   lambda: clock.mono)
@@ -224,12 +231,16 @@ class Observability(unittest.TestCase):
         self.assertIsNone(first['lastIncident'])
         return clock, lease, supervisor, first
 
+    def renew(self, supervisor, scheduled):
+        stop = types.SimpleNamespace(is_set=lambda: False, wait=lambda _: self.fail('unexpected fast retry'))
+        return supervisor.renew(scheduled, stop)
+
     def test_pause_resume_and_renew_preserve_the_incident(self):
         clock, lease, supervisor, first = self.fixture()
         clock.advance(5)
         lease.error = 'DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE'
         failed_at = clock.wall
-        pause = supervisor.renew(first)
+        pause = self.renew(supervisor, first)
         incident = pause['lastIncident']
         self.assertEqual(pause['state'], 'RETRY_WAIT')
         self.assertEqual(lease.row['state'], 'QUIESCED')
@@ -251,7 +262,7 @@ class Observability(unittest.TestCase):
         projection = reader('r3_common.py')['recovery_incident']
         self.assertEqual(projection(resumed['lastIncident'], 'a' * 64), complete)
         clock.advance(5)
-        renewed = supervisor.renew(resumed)
+        renewed = self.renew(supervisor, resumed)
         self.assertEqual(renewed['reason'], 'RENEWED')
         self.assertEqual(renewed['lastIncident'], complete)
 
@@ -259,7 +270,7 @@ class Observability(unittest.TestCase):
         _, lease, supervisor, first = self.fixture()
         lease.pause_failed = True
         lease.error = 'DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE'
-        blocked = supervisor.renew(first)
+        blocked = self.renew(supervisor, first)
         self.assertEqual(blocked['reason'], 'SAFE_PAUSE_UNPROVEN')
         incident = blocked['lastIncident']
         self.assertEqual((incident['revocation'], incident['phase'], incident['code']),
@@ -271,7 +282,7 @@ class Observability(unittest.TestCase):
     def test_next_episode_replaces_incident_and_increments_count(self):
         clock, lease, supervisor, active = self.fixture()
         lease.error = 'DNS_MISSING'
-        first = supervisor.renew(active)
+        first = self.renew(supervisor, active)
         clock.advance(first['nextMonotonic'] - clock.mono)
         repeated = supervisor.tick()
         self.assertEqual(repeated['lastIncident'],
@@ -280,7 +291,7 @@ class Observability(unittest.TestCase):
         clock.advance(repeated['nextMonotonic'] - clock.mono)
         active = supervisor.tick()
         lease.deny_only = True
-        second = supervisor.renew(active)['lastIncident']
+        second = self.renew(supervisor, active)['lastIncident']
         self.assertEqual((second['incidentCount'], second['phase'], second['code']),
                          (2, 'COMPILE', 'DNS_WINDOW_TOO_SHORT'))
         self.assertGreater(second['failedAt'], first['lastIncident']['failedAt'])
@@ -299,7 +310,7 @@ class Observability(unittest.TestCase):
                 lease.lock_wait = .25
                 setattr(lease, problem, True)
                 clock.advance(2)
-                incident = supervisor.renew(active)['lastIncident']
+                incident = self.renew(supervisor, active)['lastIncident']
                 self.assertEqual((incident['phase'], incident['code']), (phase, code))
                 self.assertEqual(incident['lockWaitMs'], 250)
                 self.assertIsNone(incident['resumedAt'])

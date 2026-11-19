@@ -168,7 +168,7 @@ def migration_bindings(files):
         'bootPointer': '/etc/ouf/coordinated-boot-installation.json'}.items()}
 
 
-def sources_v12(sources):
+def sources_v12(sources, *, defer_supervisor_pins=False):
     """Version-local sealed aliases; historical source blobs remain untouched."""
     out = dict(sources)
     def replace(path, old, new):
@@ -197,11 +197,12 @@ def sources_v12(sources):
             sys.modules['tools.' + alias] = module
             setattr(package, alias, module)
             modules[alias] = module""")
-    sup = REPLACEMENTS_V11[SUPERVISOR]
-    # Retain every other reviewed pin and the exact loader source-set contract.
-    module = contract_module(sources[sup], 'v12_pins')
-    for name, path in (('activation_core', core), ('readback_margin_compiler', REFRESH_V2)):
-        replace(sup, module.PINS[name].encode(), sha(out[path]).encode())
+    if not defer_supervisor_pins:
+        sup = REPLACEMENTS_V11[SUPERVISOR]
+        # Retain every other reviewed pin and the exact loader source-set contract.
+        module = contract_module(sources[sup], 'v12_pins')
+        for name, path in (('activation_core', core), ('readback_margin_compiler', REFRESH_V2)):
+            replace(sup, module.PINS[name].encode(), sha(out[path]).encode())
     return out
 
 
@@ -372,7 +373,7 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     require(rootfs["aSuccessors"]["sha256"] == sha(files["successors"]), "ROOTFS_A2_DRIFT")
     source_map = {target: original for target, original in selected_map.items() if original in sources}
     broker_sources = B.SOURCES & source_map.keys()
-    emitted = sources_v12(sources) if version >= 12 else sources
+    emitted = sources_v12(sources, defer_supervisor_pins=version >= 18) if version >= 12 else sources
     if version >= 13:
         from .identity_overlay_v13 import sources_v13
         emitted = sources_v13(emitted, SOURCE_MAP, IDENTITY_SOURCE, driver_check=version < 14)
@@ -382,14 +383,16 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     if version >= 17:
         emitted = driver_budget_v17.sources_v17(emitted, selected_map)
     if version >= 18:
-        from .lease_renewal_overlay_v18 import sources_v18
-        emitted = sources_v18(emitted, selected_map, sha, contract_module)
         from .lease_observability_overlay_v18 import sources_v18_observability
+        from .lease_renewal_overlay_v18 import seal_v18, sources_v18
+        emitted = sources_v18(emitted, selected_map)
         emitted = sources_v18_observability(emitted, selected_map)
+        emitted, hashes = seal_v18(sources, emitted, source_map, RECOVERY, sha)
+    else:
+        hashes = {target: sha(emitted[original]) for target, original in source_map.items()}
     if version >= 12:
         contract_module(emitted[KERNEL_V2], 'kernel_g2').materialize(owner['kernel'], empty_provider_sets=True)
     docs = {"source/" + target: emitted[original] for target, original in source_map.items()}
-    hashes = {target: sha(emitted[original]) for target, original in source_map.items()}
 
     def put(path, value):
         docs[path] = canonical(value)
@@ -593,8 +596,13 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
             docs[cid_root + "/operation.lock"] = b""
     for path in docs:
         directories.update(str(p) for p in PurePosixPath(path).parents if str(p) != ".")
+    source_prefix = version_prefix + "source/"
+    document_hashes = {
+        p: hashes[p.removeprefix(source_prefix)] if version >= 18 and p.startswith(source_prefix) else sha(raw)
+        for p, raw in sorted(docs.items())
+    }
     return {"documents": docs, "authorization": payload,
-        "hashes": {**{p: sha(raw) for p, raw in sorted(docs.items())}, f"authorization/{sequence}.json": sha(payload)},
+        "hashes": {**document_hashes, f"authorization/{sequence}.json": sha(payload)},
         "inputHashes": {**{k: sha(v) for k, v in sorted(files.items())},
                         **{"repository/" + k: sha(v) for k, v in sorted(sources.items())}},
         "audit": audit, "layout": {"installRoot": root, "directories0700": sorted(directories),

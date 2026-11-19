@@ -1,8 +1,9 @@
 # R3 v18 — Osservabilità del recupero del lease
 
 D-054, R-022, task-77. Il journal CAS di ciascuno scope conserva il checkpoint
-corrente e l'ultimo incidente. L'overlay si applica dalla v18 agli stessi
-percorsi sigillati e aggiorna i pin interni dei moduli emessi.
+corrente e l'ultimo incidente. L'overlay si applica dopo il rinnovo sugli
+stessi percorsi. La composizione sigilla la chiusura dopo entrambi gli overlay.
+[Integrazione v18](OUF_SEMANTIC_PROVIDER_R3_V18.md#integrazione-con-losservabilità).
 
 ## Checkpoint e cronologia dell'incidente
 
@@ -13,6 +14,14 @@ pianificato. La successiva pubblicazione verificata di `LEASE_READY` chiude
 l'incidente. I rinnovi sani lo conservano e un nuovo episodio nello stesso
 scope lo sostituisce, incrementando `incidentCount`. Un nuovo scope ha un
 riferimento distinto e un contatore proprio.
+
+Il checkpoint `ACTIVE / RENEWAL_RETRY_PENDING` apre un incidente e registra
+il retry rapido in `lastIncident.nextRetryAt`. Durante il retry il lease
+resta attivo. Il valore `UNPROVEN` indica l'assenza di una verifica di revoca
+e copre anche il retry riuscito con lease mantenuto. In quel caso `pausedAt`
+resta `null` e `resumedAt` segna il completamento del rinnovo verificato.
+Se il percorso passa alla revoca, l'incidente conserva la causa iniziale e
+registra `VERIFIED` e `pausedAt` dopo la verifica della quiescenza.
 
 Il record ha schema `ouf.semantic-lease-recovery-incident.v1`. `scopeRef` è il
 riferimento opaco del checkpoint. `authorizationSequence` ed `epochs` sono
