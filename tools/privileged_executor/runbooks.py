@@ -1,7 +1,10 @@
 """Invoke only the reviewed runbook for a protocol role, with a private HOME."""
 import hashlib
 import json
+import os
+from pathlib import Path
 import re
+import stat
 import subprocess
 import time
 import uuid
@@ -12,6 +15,54 @@ from store import bound, read, save, trusted
 SUCCESS = {"stop": "SEMANTIC_PROVIDER_R3_STOPPED", "start": "SEMANTIC_PROVIDER_R3_STARTED",
            "issue": "SEMANTIC_PROVIDER_OPERATION_AUTHORIZATION_ISSUED",
            "upgrade": "SEMANTIC_PROVIDER_R3_UPGRADED_WAITING", "probe": "C_PROBE_PASSED"}
+
+
+def issued_probe_inputs(home, install_root, version):
+    """Mirror the C probe's issuance pointer when supplying explicit inputs."""
+    pointer = home / f".ouf-r3-v{version}-state"
+    flags = os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW
+    try:
+        fd = os.open(pointer, flags)
+    except FileNotFoundError:
+        return {}
+    try:
+        info = os.fstat(fd)
+        need(stat.S_ISREG(info.st_mode) and info.st_size <= 512, "C_R3_ISSUANCE_UNPROVEN")
+        raw = os.read(fd, 513)
+        need(len(raw) == info.st_size, "C_R3_ISSUANCE_UNPROVEN")
+    finally:
+        os.close(fd)
+    match = re.fullmatch(rb"(/etc/ouf/deploy-snapshots/semantic-provider-r3-source\.[A-Za-z0-9]{8}) ([0-9]{1,20})\n?", raw)
+    need(match, "C_R3_ISSUANCE_UNPROVEN")
+    head = read(Path(install_root) / "authorization" / f"{version}.json")
+    need(head["sequence"] == version and head["issuedAt"] == int(match[2]), "C_R3_ISSUANCE_UNPROVEN")
+    path = match[1].decode("ascii") + "/inputs.json"
+    return {"C_R3_INPUTS": path, "C_R3_INPUTS_SHA256": issued_inputs_sha256(path)}
+
+
+def issued_inputs_sha256(path):
+    path = Path(path)
+    for parent in path.parents:
+        info = parent.lstat()
+        need(stat.S_ISDIR(info.st_mode) and info.st_uid == info.st_gid == 0
+             and not info.st_mode & 0o022, "C_R3_INPUTS_UNPROVEN")
+    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+    try:
+        info = os.fstat(fd)
+        need(stat.S_ISREG(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o600
+             and info.st_uid == info.st_gid == 0 and info.st_nlink == 1
+             and 0 < info.st_size <= 131072, "C_R3_INPUTS_UNPROVEN")
+        raw = os.read(fd, 131073)
+
+        def identity(s):
+            return (s.st_dev, s.st_ino, s.st_uid, s.st_gid, s.st_mode, s.st_nlink,
+                    s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+
+        need(len(raw) == info.st_size and identity(info) == identity(os.fstat(fd)) == identity(path.lstat()),
+             "C_R3_INPUTS_UNPROVEN")
+    finally:
+        os.close(fd)
+    return hashlib.sha256(raw).hexdigest()
 
 
 class Books:
@@ -37,6 +88,8 @@ class Books:
             for key in ("C_R3_INPUTS", "C_R3_INPUTS_SHA256", "C_INSTALLATION_PROFILE",
                         "C_INSTALLATION_PROFILE_SHA256"):
                 env[key] = self.cfg["probe"][key]
+            env.update(issued_probe_inputs(self.home, self.cfg["installRoot"], version))
+            env["C_PROBE_STATE"] = str(self.home / f".ouf-c-probe-v{version}-state")
         need(approved is None or hex64(approved), "RUNBOOK_DIGEST")
         argv = ["apply", approved] if approved else ["plan"]
         result = subprocess.run(["/bin/bash", str(path), *argv], cwd=self.home, env=env,
@@ -68,6 +121,8 @@ class Books:
             obs = row["lastObservation"]
             need(obs["authorization"]["sequence"] == version and obs["authorization"]["decision"] == "OPERATE",
                  "R3_HEAD_DRIFT")
+        if op == "probe" and approved is None:
+            need(row["observation"]["r3"]["authorization"]["sequence"] == version, "R3_HEAD_DRIFT")
         if op == "issue" and approved:
             need(row["sequence"] == version and row["signaturesIssued"] == 1
                  and row["decision"] == "OPERATE", "SIGNATURE_READBACK")
