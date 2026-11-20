@@ -57,6 +57,30 @@ def read(path):
     return json.loads(trusted(path, private=True).read_bytes())
 
 
+def begin_plan(directory):
+    """Reserve a fresh run under the entrypoint lock without consuming a review."""
+    need(not directory.exists(), "PHASE_ALREADY_AUTHORIZED")
+    Journal(directory)
+    save(directory / "approvals", [])
+
+
+def consume_approval(directory, phase, index):
+    """Called under the entrypoint lock, before dispatching any phase effect."""
+    ledger = directory / "approvals"
+    existing = directory.exists()
+    phases = []
+    if existing:
+        need(ledger.is_file(), "APPROVAL_JOURNAL_MISSING")
+        phases = read(ledger)
+        need(isinstance(phases, list) and all(isinstance(item, str) for item in phases)
+             and len(set(phases)) == len(phases), "APPROVAL_JOURNAL_INVALID")
+    need(phase not in phases, "PHASE_ALREADY_AUTHORIZED")
+    need(index == len(phases) + 1, "EXACT_HUMAN_REVIEW_REQUIRED")
+    if not existing:
+        Journal(directory)
+    save(ledger, [*phases, phase], replace=existing)
+
+
 class Journal:
     def __init__(self, directory):
         self.path = directory

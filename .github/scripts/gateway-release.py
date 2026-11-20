@@ -1,4 +1,4 @@
-"""Unprivileged workflow client. Prints review comments and public counts only."""
+"""Unprivileged workflow client. Summarizes the job to approve and public release counts."""
 import json
 import os
 from pathlib import Path
@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools/privileged_executor"))
-from mandate import challenge, hex64, intent, validate
+from mandate import hex64, intent, validate
 
 
 def main():
@@ -50,7 +50,9 @@ def main():
         if status == "APPLIED":
             summary.append(f"Return inputs: releaseRun `{req['run']}`, receipt `{stamp}`.")
     if phase:
-        summary.append("Approval comment `" + challenge(dict(req, phase=phase, digest=stamp)) + "`")
+        summary.append(f"Job `{phase} {stamp}`")
+        if phase != "plan":
+            summary.append("Approvare il job (nessun commento richiesto)")
     with open(env["GITHUB_STEP_SUMMARY"], "a") as stream:
         print(*summary, sep="\n\n", file=stream)
     with open(env["GITHUB_OUTPUT"], "a") as stream:

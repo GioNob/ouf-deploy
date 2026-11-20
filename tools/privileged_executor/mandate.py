@@ -61,16 +61,6 @@ def intent(req):
     return digest({k: v for k, v in req.items() if k not in ("phase", "digest")})
 
 
-def challenge(req):
-    if req.get("operation") == "gateway-release":
-        return " ".join(req[k] for k in ("operation", "run", "attempt", "commit", "phase", "digest"))
-    if req.get("operation") == "module-release":
-        return " ".join([req["operation"], req["run"], req["attempt"], req["commit"], req["module"],
-                         req["phase"], req["digest"]])
-    return " ".join(["A2", req["run"], req["attempt"], req["commit"], req["direction"],
-                     req["queue"], req["phase"], req["digest"]])
-
-
 def github_reader(repo, token):
     need(re.fullmatch(r"[\w.-]+/[\w.-]+", repo) and re.fullmatch(r"[A-Za-z0-9_.-]{1,4095}", token),
          "API_CREDENTIAL")
@@ -91,7 +81,9 @@ def github_reader(repo, token):
     return get
 
 
-def authorize(req, policy, get):
+def authorize(req, policy, get, state):
+    from store import begin_plan, consume_approval
+
     validate(req, policy)
     path = "/actions/runs/" + req["run"]
     run = get(path)
@@ -108,11 +100,18 @@ def authorize(req, policy, get):
     need(branch["protected"] is True and branch["commit"]["sha"] == req["commit"], "PROTECTED_REF_DRIFT")
     env = get("/environments/" + quote(policy["environment"], safe=""))
     rules = [r for r in env["protection_rules"] if r["type"] == "required_reviewers"]
-    need(env["id"] == policy["environmentId"] and len(rules) == 1, "ENVIRONMENT_UNPROTECTED")
+    need(env["id"] == policy["environmentId"] and env["name"] == policy["environment"]
+         and len(rules) == 1, "ENVIRONMENT_UNPROTECTED")
     reviewers = {r["reviewer"]["id"] for r in rules[0]["reviewers"] if r["type"] == "User"}
-    matches = [r for r in get(path + "/approvals") if r.get("state") == "approved"
-               and r.get("comment") == challenge(req) and r["user"]["type"] == "User"
-               and r["user"]["id"] in reviewers.intersection(policy["reviewerIds"])
-               and any(e["id"] == env["id"] and e["name"] == env["name"] for e in r["environments"])]
-    need(len(matches) == 1, "EXACT_HUMAN_REVIEW_REQUIRED")
-    return digest({"mandate": req, "environmentId": env["id"], "reviewerId": matches[0]["user"]["id"]})
+    allowed = reviewers.intersection(policy["reviewerIds"])
+    if req["phase"] == "plan":
+        need(allowed, "ENVIRONMENT_UNPROTECTED")
+        begin_plan(state / req["run"])
+        return digest({"mandate": req, "environmentId": env["id"], "approval": "none"})
+    approvals = [r["user"]["id"] for r in get(path + "/approvals") if r.get("state") == "approved"
+                 and r["user"]["type"] == "User" and r["user"]["id"] in allowed
+                 and any(e["id"] == env["id"] and e["name"] == env["name"] for e in r["environments"])]
+    index = len(approvals)
+    consume_approval(state / req["run"], req["phase"], index)
+    return digest({"mandate": req, "environmentId": env["id"], "approvalIndex": index,
+                   "reviewerIds": sorted(set(approvals))})

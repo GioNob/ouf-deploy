@@ -37,8 +37,8 @@ def frame():
 
 class Review(unittest.TestCase):
     def setUp(self):
-        self.req = dict(run="123", commit="a"*40, attempt="1", phase="apply", direction="forward",
-                        queue="empty", digest="c"*64)
+        self.req = dict(run="123", commit="a"*40, attempt="1", phase="plan", direction="forward", queue="empty")
+        self.req["digest"] = mandate.intent(self.req)
         self.cfg = dict(repositoryId=17, environment="private", environmentId=4, reviewerIds=[8],
                         commit=self.req["commit"], branch="protected")
         self.run = dict(id=123, run_attempt=1, event="workflow_dispatch", status="in_progress",
@@ -46,35 +46,122 @@ class Review(unittest.TestCase):
                         repository={"id":17}, head_repository={"id":17})
         self.env = dict(id=4, name="private", protection_rules=[dict(type="required_reviewers",
             reviewers=[dict(type="User", reviewer={"id":8})])])
-        self.reviews = [dict(state="approved", comment=mandate.challenge(self.req), user={"id":8,"type":"User"},
+        self.reviews = [dict(state="approved", comment="", user={"id":8,"type":"User"},
                              environments=[{"id":4,"name":"private"}])]
+        self.state = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.enterContext(patch.object(store, "trusted", side_effect=lambda path, **_: path))
+        self.enterContext(patch.object(store, "sync_dir"))
         self.effects = Mock()
 
     def invoke(self, req):
         docs = [self.run, {"protected":True,"commit":{"sha":self.req["commit"]}}, self.env, self.reviews]
-        review = mandate.authorize(req, self.cfg, Mock(side_effect=docs))
+        get = Mock(side_effect=docs)
+        review = mandate.authorize(req, self.cfg, get, self.state)
+        if req["phase"] == "plan":
+            self.assertEqual([call.args[0] for call in get.call_args_list], [
+                "/actions/runs/" + req["run"], "/branches/protected", "/environments/private"])
         self.effects(review)
+        return review
 
-    def test_exact(self):
-        self.invoke(self.req)
-        self.effects.assert_called_once()
+    def test_blank_comment_and_cumulative_reviewer_set(self):
+        apply = dict(self.req, phase="apply")
+        first = self.invoke(apply)
+        self.assertEqual(first, mandate.digest(dict(mandate=apply, environmentId=4,
+                                                    approvalIndex=1, reviewerIds=[8])))
+        self.cfg["reviewerIds"].append(7)
+        self.env["protection_rules"][0]["reviewers"].append(dict(type="User", reviewer={"id": 7}))
+        self.reviews.insert(0, dict(self.reviews[0], user={"type": "User", "id": 7}, comment="Va bene"))
+        migrate = dict(self.req, phase="migrate", digest="b" * 64)
+        self.assertEqual(self.invoke(migrate), mandate.digest(dict(mandate=migrate, environmentId=4,
+                                                               approvalIndex=2, reviewerIds=[7, 8])))
+
+    def test_counts_and_phase_replay(self):
+        approved = self.reviews[0]
+        self.reviews = []
+        self.assertEqual(self.invoke(self.req), mandate.digest({
+            "mandate": self.req, "environmentId": 4, "approval": "none"}))
+        ledger = self.state / "123" / "approvals"
+        self.assertEqual(store.read(ledger), [])
+        apply = dict(self.req, phase="apply")
+        for count in (0, 2):
+            self.reviews = [approved] * count
+            with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
+                self.invoke(apply)
+        self.reviews = [approved]
+        self.invoke(apply)
+        self.reviews.append(approved)
+        with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
+            self.invoke(self.req)
+        with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
+            self.invoke(apply)
+        self.assertEqual(store.read(ledger), ["apply"])
+        self.assertEqual(self.effects.call_count, 2)
+
+    def test_runs_consume_independently(self):
+        self.invoke(dict(self.req, phase="apply"))
+        self.run["id"] = 456
+        req = dict(self.req, run="456", phase="apply")
+        self.invoke(req)
+        self.assertEqual(self.effects.call_count, 2)
+
+    def test_failed_publication_prevents_dispatch(self):
+        req = dict(self.req, phase="apply")
+        with patch.object(store, "save", side_effect=OSError), self.assertRaises(OSError):
+            self.invoke(req)
+        self.effects.assert_not_called()
+        with self.assertRaisesRegex(mandate.Held, "APPROVAL_JOURNAL_MISSING"):
+            self.invoke(req)
+
+    def test_directory_fsync_failure_after_publication_prevents_effect_and_reuse(self):
+        run_dir = self.state / self.req["run"]
+
+        def sync(path):
+            if path == run_dir:
+                raise OSError("fixture fsync failure")
+
+        with patch.object(store, "sync_dir", side_effect=sync), self.assertRaises(OSError):
+            self.invoke(dict(self.req, phase="apply"))
+        with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
+            self.invoke(dict(self.req, phase="apply"))
+        self.effects.assert_not_called()
 
     def test_drift_before_dispatch(self):
-        for key, value in (("digest", "d"*64), ("commit", "b"*40), ("phase", "sign"), ("run", "456"),
+        for key, value in (("digest", "d"*64), ("commit", "b"*40), ("phase", "unknown"), ("run", "456"),
                            ("attempt", "2"), ("direction", "return"), ("queue", "inventory")):
             with self.subTest(key=key), self.assertRaises(mandate.Held):
                 self.invoke({**self.req, key:value})
         self.effects.assert_not_called()
 
+    def test_plan_requires_authorized_run_ref_and_protected_environment(self):
+        branch = {"protected": True, "commit": {"sha": self.req["commit"]}}
+        for update in ({"id": 321}, {"run_attempt": 2}, {"event": "push"}, {"status": "completed"},
+                       {"path": "other.yml"}, {"head_sha": "b"*40}, {"head_branch": "other"},
+                       {"head_repository": {"id": 42}}):
+            with self.subTest(update=update), self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
+                mandate.authorize(self.req, self.cfg, Mock(side_effect=[dict(self.run, **update)]), self.state)
+        for update in ({"protected": False}, {"commit": {"sha": "b"*40}}):
+            with self.subTest(update=update), self.assertRaisesRegex(mandate.Held, "PROTECTED_REF_DRIFT"):
+                mandate.authorize(self.req, self.cfg, Mock(side_effect=[self.run, dict(branch, **update)]), self.state)
+        for update in ({"id": 42}, {"name": "other"}, {"protection_rules": []},
+                       {"protection_rules": [{"type": "required_reviewers", "reviewers": []}]}):
+            with self.subTest(update=update), self.assertRaisesRegex(mandate.Held, "ENVIRONMENT_UNPROTECTED"):
+                get = Mock(side_effect=[self.run, branch, dict(self.env, **update)])
+                mandate.authorize(self.req, self.cfg, get, self.state)
+        self.assertFalse((self.state / self.req["run"]).exists())
+
     def test_missing_unverifiable_or_other_reviewer(self):
+        self.cfg["reviewerIds"].append(9)
+        self.env["protection_rules"][0]["reviewers"].append(dict(type="User", reviewer={"id": 10}))
         for row in ([], [{**self.reviews[0], "user":{"type":"User","id":9}}],
+                    [{**self.reviews[0], "user":{"type":"User","id":10}}],
+                    [{**self.reviews[0], "user":{"type":"Bot","id":8}}],
                     [{**self.reviews[0], "state":"rejected"}],
                     [{**self.reviews[0], "environments":[{"id":5,"name":"private"}]}]):
             self.reviews = row
             with self.assertRaises(mandate.Held):
-                self.invoke(self.req)
+                self.invoke(dict(self.req, phase="apply"))
         with self.assertRaises(OSError):
-            mandate.authorize(self.req, self.cfg, Mock(side_effect=OSError))
+            mandate.authorize(self.req, self.cfg, Mock(side_effect=OSError), self.state)
         self.effects.assert_not_called()
 
 
@@ -294,7 +381,10 @@ class Protocol(unittest.TestCase):
         self.assertEqual(jobs["sign"]["needs"], ["apply", "migrate"])
         for phase in mandate.PHASES:
             job = jobs[phase]
-            self.assertEqual(job["environment"], "ouf-vps-privileged")
+            if phase == "plan":
+                self.assertNotIn("environment", job)
+            else:
+                self.assertEqual(job["environment"], "ouf-vps-privileged")
             script = job["steps"][0]["run"]
             self.assertEqual(script.count("/usr/bin/sudo"), 1)
             self.assertNotIn("checkout", script)
@@ -308,7 +398,9 @@ class Protocol(unittest.TestCase):
                 exec(compile(code,"intent","exec"),{})
             req = dict(run="123",attempt="1",commit="c"*40,direction="forward",queue="empty",phase="plan")
             req["digest"] = mandate.intent(req)
-            self.assertIn(mandate.challenge(req),Path(d,"summary").read_text())
+            summary = Path(d, "summary").read_text()
+            self.assertNotIn("Approvare", summary)
+            self.assertIn(req["digest"], summary)
 
 
 class RoundTrip(unittest.TestCase):

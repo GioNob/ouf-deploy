@@ -103,7 +103,7 @@ class Contract(unittest.TestCase):
                 with self.assertRaisesRegex(mandate.Held, "^GATEWAY_RESOURCE_PATH$"):
                     admin.get(dict(target, id=ident))
 
-    def test_workflow_challenge_and_deploy_mandate_agree(self):
+    def test_workflow_summary_and_deploy_mandate_agree(self):
         cfg = dict(repositoryId=5, branch="main", commit=REQ["commit"], environmentId=6,
                    environment="ouf-vps-privileged", reviewerIds=[7], gateway={})
         inputs = {k: REQ[k] for k in ("sourceRun", "sourcePr", "sourceCommit", "artifact")}
@@ -114,7 +114,8 @@ class Contract(unittest.TestCase):
                        GITHUB_STEP_SUMMARY=str(summary), GITHUB_OUTPUT=str(output))
             with patch.dict(os.environ, env, clear=True), patch.object(sys, "argv", ["client", "intent"]):
                 runpy.run_path(str(ROOT/".github/scripts/gateway-release.py"), run_name="__main__")
-            self.assertIn(mandate.challenge(REQ), summary.read_text())
+            self.assertNotIn("Approvare", summary.read_text())
+            self.assertIn(REQ["digest"], summary.read_text())
             self.assertIn("digest=" + REQ["digest"], output.read_text())
         workflow = ".github/workflows/gateway-release.yml"
         run = dict(id=70, run_attempt=1, status="in_progress", event="workflow_dispatch", path=workflow,
@@ -122,10 +123,13 @@ class Contract(unittest.TestCase):
         branch = {"protected": True, "commit": {"sha": REQ["commit"]}}
         environment = dict(id=6, name=cfg["environment"], protection_rules=[dict(type="required_reviewers",
                            reviewers=[{"type": "User", "reviewer": {"id": 7}}])])
-        review = dict(state="approved", comment=mandate.challenge(REQ), user={"id":7,"type":"User"},
+        review = dict(state="approved", user={"id":7,"type":"User"},
                       environments=[{"id":6,"name":cfg["environment"]}])
-        def authorize(request, source=run):
-            return mandate.authorize(request, cfg, Mock(side_effect=[source, branch, environment, [review]]))
+        state = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.enterContext(patch.object(store, "trusted", side_effect=lambda path, **_: path))
+        self.enterContext(patch.object(store, "sync_dir"))
+        def authorize(request, source=run, reviews=()):
+            return mandate.authorize(request, cfg, Mock(side_effect=[source, branch, environment, reviews]), state)
         self.assertTrue(mandate.hex64(authorize(REQ)))
         with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
             authorize(REQ, dict(run, path=mandate.WORKFLOW))
@@ -133,6 +137,11 @@ class Contract(unittest.TestCase):
             authorize(dict(REQ, phase="apply"))
         with self.assertRaisesRegex(mandate.Held, "PLAN_INTENT_DRIFT"):
             authorize(dict(REQ, sourcePr="8"))
+        rollback = dict(operation="gateway-release", run="71", attempt="1", commit=REQ["commit"],
+                        phase="return", digest="c" * 64, releaseRun=REQ["run"])
+        with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
+            authorize(rollback, dict(run, id=71))
+        self.assertTrue(mandate.hex64(authorize(rollback, dict(run, id=71), [review])))
 
     def test_contract_and_recursive_substitution(self):
         rows = deepcopy(ROWS)

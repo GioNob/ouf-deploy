@@ -47,15 +47,15 @@ jobs:
       - id: intent
         run: /usr/bin/python3 -I -B .github/scripts/gateway-release.py intent
 
-  plan-or-return:
+  plan:
     needs: intent
-    name: ${{ needs.intent.outputs.phase }} ${{ needs.intent.outputs.digest }}
+    if: needs.intent.outputs.phase == 'plan'
+    name: plan ${{ needs.intent.outputs.digest }}
     runs-on: &vps [self-hosted, Linux, X64, ouf-vps-test]
-    environment: ouf-vps-privileged
     timeout-minutes: 40
     permissions: &review {contents: read, actions: read, deployments: read}
     env:
-      PHASE: ${{ needs.intent.outputs.phase }}
+      PHASE: plan
       DIGEST: ${{ needs.intent.outputs.digest }}
     outputs:
       digest: ${{ steps.call.outputs.digest }}
@@ -68,17 +68,32 @@ jobs:
           REVIEW_TOKEN: ${{ github.token }}
         run: /usr/bin/python3 -I -B .github/scripts/gateway-release.py invoke
 
+  return:
+    needs: intent
+    if: needs.intent.outputs.phase == 'return'
+    name: return ${{ needs.intent.outputs.digest }}
+    runs-on: *vps
+    environment: ouf-vps-privileged
+    permissions: *review
+    timeout-minutes: 40
+    env:
+      PHASE: return
+      DIGEST: ${{ needs.intent.outputs.digest }}
+    steps:
+      - *checkout
+      - *invoke
+
   apply:
-    needs: plan-or-return
-    if: needs.plan-or-return.outputs.phase == 'apply'
-    name: apply ${{ needs.plan-or-return.outputs.digest }}
+    needs: plan
+    if: needs.plan.outputs.phase == 'apply'
+    name: apply ${{ needs.plan.outputs.digest }}
     runs-on: *vps
     environment: ouf-vps-privileged
     permissions: *review
     timeout-minutes: 40
     env:
       PHASE: apply
-      DIGEST: ${{ needs.plan-or-return.outputs.digest }}
+      DIGEST: ${{ needs.plan.outputs.digest }}
     steps:
       - *checkout
       - *invoke

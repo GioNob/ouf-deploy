@@ -26,9 +26,8 @@ jobs:
           scope = dict(run=e["GITHUB_RUN_ID"], attempt=e["GITHUB_RUN_ATTEMPT"], commit=e["GITHUB_SHA"],
                        operation="module-release", module=e["MODULE"])
           digest = hashlib.sha256(json.dumps(scope, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-          comment = " ".join([scope["operation"], scope["run"], scope["attempt"], scope["commit"], scope["module"], "plan", digest])
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
-              print("Commento di approvazione del plan", chr(10), chr(10), "`" + comment + "`", file=f)
+              print(f"Job `plan {digest}`", file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + digest, file=f)
           PY
@@ -37,7 +36,6 @@ jobs:
     name: plan ${{ needs.intent.outputs.digest }}
     needs: intent
     runs-on: *vps
-    environment: ouf-vps-privileged
     permissions: {contents: read, actions: read, deployments: read}
     timeout-minutes: 40
     env:
@@ -69,9 +67,8 @@ jobs:
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
               print("Onboarding", status, file=f)
               if next_phase:
-                  comment = " ".join([req["operation"], req["run"], req["attempt"], req["commit"],
-                                      req["module"], next_phase, stamp])
-                  print("Commento di approvazione", chr(10), chr(10), chr(96) + comment + chr(96), file=f)
+                  print(f"Job `{next_phase} {stamp}`", file=f)
+                  print("Approvare il job (nessun commento richiesto)", file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + stamp, "status=" + status, sep=chr(10), file=f)
           PY
