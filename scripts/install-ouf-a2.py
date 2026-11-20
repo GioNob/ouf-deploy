@@ -1,23 +1,22 @@
 #!/usr/bin/python3 -I
 """One-time bootstrap from a private root-owned checkout of the reviewed commit."""
 import argparse
-import fcntl
 import hashlib
 import json
 import os
 from pathlib import Path
-import pwd
 import re
 import stat
 import subprocess
 import sys
 import tempfile
+import types
 
 ROOT = Path("/opt/ouf-a2")
 ENTRY = Path("/usr/local/sbin/ouf-a2")
 RULE = Path("/etc/sudoers.d/ouf-a2")
 REPO = Path(__file__).resolve().parents[1]
-LIB = ("mandate", "store", "queue_inventory", "runbooks", "semantic", "ingress", "pipeline")
+LIB = ("mandate", "store", "queue_inventory", "runbooks", "semantic", "ingress", "pipeline", "module_operation")
 MODELS = ("transition_journal", "gated_creation_plan", "gated_process_observation")
 
 
@@ -44,26 +43,29 @@ def inspect(profile):
     cfg = json.loads(raw)
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
-                "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue"}
+                "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
     check(set(cfg) == required and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
           and type(cfg["readinessPort"]) is int and 0 < cfg["readinessPort"] < 65536, "INSTALL_PROFILE_FIELDS")
     check(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", cfg["repository"]) and cfg["branch"]
           and all(Path(cfg[k]).is_absolute() for k in ("installRoot","leaseJournal","socket")),
           "INSTALL_PROFILE_BINDINGS")
     queue = cfg["queue"]
-    check(set(queue) == {"serviceFile", "service", "database", "subjectTenants", "proof", "proofWaitSeconds"}
-          and set(queue["serviceFile"]) == {"path","sha256"} and queue["service"] and queue["database"]
-          and type(queue["proofWaitSeconds"]) is int and queue["proofWaitSeconds"] > 0
-          and isinstance(queue["subjectTenants"], dict), "QUEUE_PROFILE")
-    proof = queue["proof"]
-    check(set(proof) == {"subject","keyHash","fingerprint","provider","uri"} and proof["subject"] in queue["subjectTenants"]
-          and all(isinstance(v,str) and v for v in proof.values())
-          and all(re.fullmatch("[0-9a-f]{64}", proof[k]) for k in ("keyHash","fingerprint")), "WORKER_PROOF_PROFILE")
-    service_file = Path(queue["serviceFile"]["path"])
-    safe(service_file)
-    check(sha(service_file.read_bytes()) == queue["serviceFile"]["sha256"], "QUEUE_SERVICE_DRIFT")
+    required_queue = {"container", "socket", "role", "database", "subjectTenants"}
+    check(set(queue) in (required_queue, required_queue | {"proof", "proofWaitSeconds"})
+          and all(re.fullmatch(r"[a-zA-Z0-9_][a-zA-Z0-9_.-]*", queue[k]) for k in ("container", "role", "database"))
+          and re.fullmatch(r"/[A-Za-z0-9_./-]+", queue["socket"]) and ".." not in Path(queue["socket"]).parts
+          and isinstance(queue["subjectTenants"], dict)
+          and all(isinstance(v, str) and v for v in queue["subjectTenants"].values()), "QUEUE_PROFILE")
+    if "proof" in queue:
+        proof = queue["proof"]
+        check(type(queue["proofWaitSeconds"]) is int and queue["proofWaitSeconds"] > 0
+              and set(proof) == {"subject","keyHash","fingerprint","provider","uri"}
+              and proof["subject"] in queue["subjectTenants"] and all(isinstance(v,str) and v for v in proof.values())
+              and all(re.fullmatch("[0-9a-f]{64}", proof[k]) for k in ("keyHash","fingerprint")),
+              "WORKER_PROOF_PROFILE")
     check(set(cfg["probe"]) == {"C_R3_INPUTS","C_R3_INPUTS_SHA256","C_INSTALLATION_PROFILE",
                                 "C_INSTALLATION_PROFILE_SHA256"}, "PROBE_BINDINGS")
+    import pwd
     user = cfg["runner"]
     check(re.fullmatch("[a-z_][a-z0-9_-]{0,30}", user) and pwd.getpwnam(user).pw_uid != 0, "RUNNER_ACCOUNT")
     check(cfg["environment"] == "ouf-vps-privileged" and isinstance(cfg["reviewerIds"], list)
@@ -104,6 +106,26 @@ def inspect(profile):
     for module, directory in [(n, "privileged_executor") for n in LIB] + [
             (n, "semantic_application_cutover") for n in MODELS] + [("semantic_identity_v25", "semantic_provider_r3")]:
         files[ROOT / "lib" / (module + ".py")] = (blob(f"tools/{directory}/{module}.py"), 0o600)
+    sql = "discovery-queue.sql"
+    files[ROOT / "lib" / sql] = (blob("tools/privileged_executor/" + sql), 0o600)
+    package = ROOT / "lib/module_release"
+    for module in ("__init__", "contract", "docker", "frame", "operation"):
+        files[package / (module + ".py")] = (blob(f"tools/module_release/{module}.py"), 0o600)
+    # Use the same validated commit bytes that the installed executor will import.
+    contract = types.ModuleType("release_contract")
+    exec(compile(files[package / "contract.py"][0], "contract.py", "exec"), contract.__dict__)
+    check(isinstance(cfg["modules"], dict) and "onboarding" in cfg["modules"], "MODULE_PROFILE_REQUIRED")
+    for name, module_profile in cfg["modules"].items():
+        contract.validate(module_profile)
+        check(module_profile["module"] == name, "MODULE_ID_DRIFT")
+        journal = Path(module_profile["journal"])
+        safe(journal.parent)
+        check(journal != Path(module_profile["inbox"]) and not journal.is_relative_to(Path(module_profile["inbox"])),
+              "PRIVATE_MODULE_JOURNAL")
+        if os.path.lexists(journal):
+            safe(journal)
+            check(journal.is_dir() and stat.S_IMODE(journal.stat().st_mode) == 0o700, "PRIVATE_MODULE_JOURNAL")
+        safe(Path(module_profile["nsenter"]))
     check(len({cfg["retainedName"], cfg["failedName"], cfg["originalProfile"]["containerName"]}) == 3
           and len(set(cfg["roleCids"])) == len(set(cfg["roleTables"])) == 2, "INSTALLATION_IDENTITIES")
     for path, (data, mode) in files.items():
@@ -152,8 +174,7 @@ def main():
     args = parser.parse_args()
     check(os.geteuid() == 0 and sys.flags.isolated, "ROOT_ISOLATED_REQUIRED")
     os.umask(0o077)
-    import psycopg  # System package used by the isolated executor.
-    check(hasattr(psycopg, "connect"), "POSTGRES_DRIVER_REQUIRED")
+    import fcntl
     files = inspect(args.profile)
     spec = manifest(files)
     stamp = sha(json.dumps(spec, sort_keys=True, separators=(",", ":")).encode())
@@ -167,7 +188,9 @@ def main():
         fcntl.flock(fd, fcntl.LOCK_EX)
         check(manifest(inspect(args.profile)) == spec, "INSTALL_PLAN_DRIFT")
         subprocess.run(["/usr/sbin/visudo", "-c"], check=True, stdout=subprocess.DEVNULL)
-        for p in (ROOT, ROOT / "lib", ROOT / "books", ROOT / "state"):
+        installed_cfg = json.loads(files[ROOT / "profile.json"][0])
+        journals = [Path(module["journal"]) for module in installed_cfg["modules"].values()]
+        for p in (*journals, ROOT, ROOT / "lib", ROOT / "lib/module_release", ROOT / "books", ROOT / "state"):
             p.mkdir(exist_ok=True, mode=0o700)
             safe(p)
             check(stat.S_IMODE(p.stat().st_mode) == 0o700, "PRIVATE_DIRECTORY_REQUIRED")

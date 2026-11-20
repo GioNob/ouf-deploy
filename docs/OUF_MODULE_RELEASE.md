@@ -10,23 +10,15 @@ La pipeline di deploy approva il profilo di un modulo e sostituisce l'immagine s
 4. Completare `oldImage`, nome di servizio, nomi liberi per predecessore e candidato ritirato, tutte le reti, IPv4, alias funzionali, comando applicativo completo con gli argomenti nell'ordine effettivo e contratto HTTP. Le destinazioni di bind e le opzioni provengono dall'inspect del predecessore, vincolato al plan. I percorsi assoluti di inbox, journal, socket Docker ed eseguibile nsenter appartengono al profilo dell'ente. Usare una directory di journal privata del custode, separata dall'inbox scrivibile dal trasporto.
 5. Qualificare la compatibilità del predecessore con lo schema e gli effetti di avvio del candidato esatto. Solo dopo questa verifica il custode può impostare `migration.rollbackCompatible` a `true`. Con `false`, plan e apply restituiscono `HELD / MIGRATION_ROLLBACK_BLOCKED` prima del caricamento o del fermo. Nel profilo pubblico i pin di esercizio e la compatibilità restano da compilare.
 
-## Aggancio al task-17b
+## Rilascio tramite esecutore
 
-L'operazione tipizzata è `module-release`. Installare il package da una revisione approvata insieme al codice dell'esecutore, in un percorso controllato da root. L'esecutore risolve internamente l'identificativo del modulo nel suo profilo privato. Il runner passa identificativo, fase e, per apply, l'impronta già approvata. Comandi, percorsi, oggetti Docker e profili arbitrari forniti dal workflow sono fuori dal contratto.
+Il bootstrap A2 installa anche `module-release` dai blob dello stesso commit. Compilare `modules.onboarding` nel profilo privato. L’esecutore risolve ogni modulo dalla mappa installata e verifica il workflow dedicato `.github/workflows/<modulo>-module-release.yml`. Predisporre una directory padre di root per il journal, l’inbox del trasporto e l’eseguibile nsenter in custodia root. L’artefatto ZIP viene verificato al plan e di nuovo all’apply. [Profilo completo](privileged-executor.example.json) · [Bootstrap comune](OUF_PRIVILEGED_PIPELINE.md)
 
-```python
-from tools.module_release.operation import apply, plan
+1. Avviare il workflow manuale sul branch predefinito protetto. Il job `intent` stampa il commento della prima review. Il formato è `module-release <run> <attempt> <commit> onboarding <fase> <digest>`.
+2. Approvare `plan` e leggere la sua impronta. Approvare `apply` con il commento del plan. L’entrypoint di root verifica workflow, repository, ref, run, reviewer, fase e digest e ricalcola il piano sotto lock. Entrambi i workflow invocano `sudo -n -- /usr/local/sbin/ouf-a2` e condividono il lock dell’installazione.
+3. Con migrazione `dedicated` o `spring-flyway`, l’apply lascia il successore al cancello. La ricevuta `GATED` identifica CID, generazione, modalità di migrazione, piano e profilo. Il job `migrate` richiede una review con l’impronta di questa preparazione. Dopo la verifica della generazione esegue la migrazione dedicata oppure rilascia Spring, poi attesta la readiness. Con modalità `none` l’apply arriva direttamente a `READY`. [Workflow di rilascio](../.github/workflows/onboarding-module-release.yml)
 
-# Dopo la verifica 17b dell'approvazione della fase plan.
-proposal = plan(installed_profile)
-
-# In una seconda invocazione, dopo la verifica dell'approvazione apply.
-receipt = apply(installed_profile, approved_plan_sha256)
-```
-
-L'esecutore autentica deployment dell'environment, ref, commit di deploy, run, tentativo, fase e digest. Serializza le operazioni privilegiate sulla stessa installazione anche rispetto agli altri owner. Il modulo gestisce inoltre esclusione per modulo e consumo durevole del singolo piano. Il parametro opzionale `runtime` serve a iniettare il driver nei test portabili.
-
-Il workflow di esempio espone due job manualmente approvati in `ouf-vps-privileged`. Il plan pubblicherà l'output `plan_sha256` solo per `PLANNED`. Il nome del job apply mostra l'impronta all'approvatore. I due segnaposto terminano in errore fino al collegamento dell'esecutore. Configurare nell'environment revisore richiesto e ref protetto. [Workflow di rilascio](../.github/workflows/onboarding-module-release.yml)
+Durante l’attesa della terza review il predecessore è fermo e conservato. Una review rifiutata, una generazione diversa o un’interruzione lasciano il journal all’owner per la riconciliazione. Il bootstrap conserva la regola sudoers unica per l’entrypoint senza argomenti.
 
 ## Contratto del plan e dell'apply
 
@@ -57,4 +49,4 @@ python -B -m unittest discover -s tests -p test_module_release.py -v
 python -I -B tests/test_vps_workflows_manual_only.py -v
 ```
 
-Le fixture costruiscono un archivio sintetico e simulano Engine, processo e HTTP. La prova nativa richiede la pipeline integrata, i pin dell'artefatto e il profilo privato qualificato.
+Le fixture costruiscono un archivio sintetico e simulano Engine, processo e HTTP. La suite opt-in con `OUF_MODULE_RELEASE_NATIVE=1` verifica in CI il pacchetto Docker locale, il fermo al cancello, la migrazione dedicata e la readiness HTTP di un processo Java. [Suite nativa](../tests/test_module_release_native.py)

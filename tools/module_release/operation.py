@@ -105,7 +105,7 @@ def park(rt, cid, name, networks):
             and not doc["NetworkSettings"]["Networks"], "PARK_UNCONFIRMED")
 
 
-def release(p, rt, old, cid, root, restoring=False):
+def waiting_gate(p, rt, old, cid, restoring=False):
     image = old["Image"] if restoring else p["ci"]["imageId"]
     config_image = old["Config"]["Image"] if restoring else image
     first = rt.inspect(cid)
@@ -126,13 +126,19 @@ def release(p, rt, old, cid, root, restoring=False):
         rt.pause()
     else:
         raise Held("GATE_NOT_PROVEN")
+    return generation, checked
+
+
+def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
+    generation, checked = waiting_gate(p, rt, old, cid, restoring)
+    require(expected_generation is None or generation == expected_generation, "MIGRATION_GENERATION_CHANGED")
     if not restoring and p["migration"]["mode"] == "dedicated":
         record(root, "migration-intent.json", {"cid": cid})
         rt.migrate(cid, p["migration"]["command"])
     if not restoring:
         retained(p, rt, old)
     require(rt.process(checked(), gated=True), "GATE_CHANGED")
-    record(root, "restore-signal.json" if restoring else "release-signal.json", {"cid": cid, "epoch": epoch(first)})
+    record(root, "restore-signal.json" if restoring else "release-signal.json", {"cid": cid, "epoch": epoch(checked())})
     rt.signal(cid)
     for _ in range(p["readiness"]["attempts"]):
         if ready(rt, checked(), p["readiness"]):
@@ -169,7 +175,7 @@ def restore(p, rt, old, new, root):
     release(p, rt, old, cid, root, restoring=True)
 
 
-def execute(p, rt, body, old, root, result):
+def execute(p, rt, body, old, root, result, defer_migration):
     new = None
     result["predecessorCid"] = old["Id"]
     record(root, "baseline.private.json", old)
@@ -196,20 +202,32 @@ def execute(p, rt, body, old, root, result):
         check_body(old, doc, p["ci"]["imageId"], p["ci"]["imageId"], created=True)
         check_created_networks(old, doc)
         rt.start(new)
+        if defer_migration and p["migration"]["mode"] != "none":
+            generation, _ = waiting_gate(p, rt, old, new)
+            retained(p, rt, old)
+            stage = {"planSha256": digest(body), "profileSha256": digest(p), "cid": new,
+                     "generation": generation, "predecessorFrame": body["oldFrameSha256"], "migration": p["migration"]}
+            record(root, "migration-plan.json", stage)
+            result.update(status="GATED", migrationSha256=digest(stage))
+            return
         release(p, rt, old, new, root)
         retained(p, rt, old)
         result.update(status="READY", readiness="UP")
     except Exception as exc:
-        result.update(reason=reason(exc), rollback="HELD")
-        try:
-            record(root, "rollback-intent.json", {"cid": old["Id"]})
-            restore(p, rt, old, result.get("successorCid"), root)
-            result.update(rollback="ROLLED_BACK", restoredCid=old["Id"], predecessorReadiness="UP")
-        except Exception as rollback_exc:
-            result["rollbackReason"] = reason(rollback_exc)
+        rollback(p, rt, old, root, result, exc)
 
 
-def apply(profile: dict, plan_sha256: str, runtime=None) -> dict:
+def rollback(p, rt, old, root, result, exc):
+    result.update(status="HELD", reason=reason(exc), rollback="HELD")
+    try:
+        record(root, "rollback-intent.json", {"cid": old["Id"]})
+        restore(p, rt, old, result.get("successorCid"), root)
+        result.update(rollback="ROLLED_BACK", restoredCid=old["Id"], predecessorReadiness="UP")
+    except Exception as rollback_exc:
+        result["rollbackReason"] = reason(rollback_exc)
+
+
+def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=False) -> dict:
     """Replan under exclusion; consume once, write a private receipt even on ordinary failure."""
     result = {"operation": "module-release", "status": "HELD"}
     try:
@@ -238,14 +256,53 @@ def apply(profile: dict, plan_sha256: str, runtime=None) -> dict:
             sync_dir(parent)
             unlock = False
             try:
-                execute(profile, rt, body, old, root, result)
+                execute(profile, rt, body, old, root, result, defer_migration)
             except Exception as exc:
                 result["reason"] = reason(exc)
-            record(root, "receipt.json", result)
-            unlock = result.get("rollback") != "HELD"
+            gated = result["status"] == "GATED"
+            record(root, "stage.json" if gated else "receipt.json", result)
+            unlock = not gated and result.get("rollback") != "HELD"
         finally:
             if unlock:
                 lock.rmdir()
     except Exception as exc:
         result.update(status="HELD", reason=reason(exc))
+    return result
+
+
+def migrate(profile, plan_sha256, migration_sha256, runtime=None):
+    """Resume the exact staged generation under the executor's installation lock."""
+    validate(profile)
+    require(matches(SHA, plan_sha256) and matches(SHA, migration_sha256), "MIGRATION_DIGEST_REQUIRED")
+    parent = Path(profile["journal"])
+    root = parent / plan_sha256
+    lock = parent / (profile["module"] + ".lock")
+
+    def read(name):
+        return json.loads((root / name).read_bytes())
+
+    stage = read("migration-plan.json")
+    staged = read("stage.json")
+    require(lock.is_dir() and not (root / "receipt.json").exists() and staged["status"] == "GATED"
+            and staged["migrationSha256"] == migration_sha256 == digest(stage)
+            and stage["planSha256"] == plan_sha256 and stage["profileSha256"] == digest(profile),
+            "MIGRATION_PLAN_CHANGED")
+    rt = runtime or Docker(profile)
+    old = read("baseline.private.json")
+    cid = stage["cid"]
+    require(cid == staged["successorCid"] and snapshot(old) == stage["predecessorFrame"], "STAGED_FRAME_CHANGED")
+    retained(profile, rt, old)
+    generation, _ = waiting_gate(profile, rt, old, cid)
+    require(generation == stage["generation"], "MIGRATION_GENERATION_CHANGED")
+    record(root, "migration-review-consumed.json", {"digest": migration_sha256})
+    result = {**staged, "status": "HELD"}
+    try:
+        release(profile, rt, old, cid, root, expected_generation=generation)
+        retained(profile, rt, old)
+        result.update(status="READY", readiness="UP")
+    except Exception as exc:
+        rollback(profile, rt, old, root, result, exc)
+    record(root, "receipt.json", result)
+    if result.get("rollback") != "HELD":
+        lock.rmdir()
     return result

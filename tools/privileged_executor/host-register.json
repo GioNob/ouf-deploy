@@ -3,31 +3,31 @@
   "entries": [
     {
       "id": "deploy.a2.executor",
-      "version": 1,
+      "version": 2,
       "owner": "ouf-deploy",
-      "archive": "Entrypoint, moduli Python isolati e runbook del mandato A2",
+      "archive": "Entrypoint comune, librerie isolate A2 e module-release, SQL di inventario e runbook A2",
       "class": "configurazione",
       "secrets": false,
       "capture": "Commit della pipeline, commit del blob e della consegna, SHA-256 dei byte LF, UID, GID e modalità di ogni file dal manifest del bootstrap.",
       "restore": "1. Ricostruire i file dai blob dei commit approvati in una directory di root. Verificare interprete e dipendenze di sistema.",
-      "test": "Confrontare il manifest riprodotto e ripetere il plan di bootstrap a installazione conclusa."
+      "test": "Riprodurre il manifest e importare entrambi gli owner dalla sola installazione."
     },
     {
       "id": "deploy.a2.profile",
-      "version": 1,
+      "version": 2,
       "owner": "ouf-deploy",
-      "archive": "Profilo privato dell’installazione e riferimenti a coda, reviewer e custodia R3",
+      "archive": "Profilo privato con binding PostgreSQL locali, mappa IAM, eventuale prova chatbot, moduli e custodia R3",
       "class": "configurazione",
       "secrets": true,
-      "capture": "Copia cifrata del JSON con distinta privata delle dipendenze per hash. Il servizio libpq, i suoi riferimenti di accesso e l’identità MCP restano sotto la custodia dei rispettivi owner.",
+      "capture": "Cifrare il JSON di installazione e registrare digest, proprietario e permessi. Acquisire container, socket, ruolo e database dal lettore installato, e il profilo Onboarding con i pin CI.",
       "restore": "2. Ripristinare i riferimenti privati e verificare la corrispondenza con autorità, repository e installazione. Custode root dell’installazione. Aggiornare i binding dopo la rotazione degli accessi. Consumatore esecutore A2.",
       "test": "Verificare il diniego per commit diverso e l’inventario completo in un ambiente isolato."
     },
     {
       "id": "deploy.a2.journal",
-      "version": 1,
+      "version": 2,
       "owner": "ouf-deploy",
-      "archive": "Lock, puntatori per verso e run, fotografia originale, claim e ricevute delle operazioni",
+      "archive": "Lock, puntatori, inventari, mandato per run, review per fase, risultati di cutover e prova chatbot separata, ricevute dello staging e della migrazione Onboarding",
       "class": "configurazione",
       "secrets": true,
       "capture": "A esecutore fermo catturare atomicamente la directory privata, inclusi gli HOME di plan R3. Cifrare i byte. Registrare ogni nome, digest, proprietario e modalità. Custode root, accesso di recupero soggetto a rotazione. Consumatore esecutore A2.",

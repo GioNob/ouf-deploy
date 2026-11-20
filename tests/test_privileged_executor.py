@@ -115,6 +115,21 @@ class Protocol(unittest.TestCase):
         actual["NetworkSettings"]["Networks"]["fixture"]["Aliases"].append("other")
         self.assertNotEqual(result["configurationSha256"], semantic.semantic_configuration(actual))
 
+    def test_docker_generated_dns_name_follows_new_cid(self):
+        old = frame()
+        net = old["NetworkSettings"]["Networks"]["fixture"]
+        net["DNSNames"] = ["app", old["Id"][:12]]
+        profile = dict(image=old["Image"], configurationSha256=semantic.semantic_configuration(old), containerName="app")
+        request, target = semantic.prepare(old, profile)
+        cid = "f"*64
+        plan = dict(old=old["Id"], request=request, target=target, template=semantic.profile_template(old))
+        actual = copy.deepcopy(old)
+        actual["Id"] = cid
+        actual["Config"].update(Env=request["Env"], Hostname=cid[:12])
+        actual["NetworkSettings"]["Networks"]["fixture"]["DNSNames"] = ["app", cid[:12]]
+        self.assertEqual(semantic.allocated_profile(plan, cid)["configurationSha256"],
+                         semantic.semantic_configuration(actual))
+
     def test_stop_after_renewal(self):
         old = dict(planSha256="a"*64, outputDirectory="first", observation={"epoch":1})
         fresh = {**old, "planSha256":"b"*64, "outputDirectory":"second"}
@@ -141,7 +156,7 @@ class Protocol(unittest.TestCase):
 
     def test_queue_subset_and_scope(self):
         tenant = {"private-subject": "tenant"}
-        pending = ("private-subject","ref","PENDING","ACTIVE",1,3,None,None,None)
+        pending = ("private-subject","ref","PENDING","ACTIVE",1,3,None,None,None,None)
         rows = queue.inventory([pending],tenant)
         self.assertEqual(set(rows[0]), {"tenant",*queue.FIELDS})
         self.assertNotIn("private-subject", str(rows))
@@ -153,6 +168,44 @@ class Protocol(unittest.TestCase):
             queue.permit(rows, "empty", rows)
         with self.assertRaises(mandate.Held):
             queue.inventory([pending],{})
+
+    def test_readonly_container_projection(self):
+        cfg = dict(container="pg", socket="/run/postgresql", role="reader", database="semantic",
+                   subjectTenants={"private-subject": "tenant"})
+        reader = queue.Queue(cfg, "/run/docker.sock")
+        row = dict.fromkeys(queue.COLUMNS)
+        row.update(owner_scope="private-subject", request_id="ref", state="PENDING", attempt_count=1)
+        with patch.object(queue.subprocess, "run") as run:
+            run.return_value.stdout = json.dumps(row).encode() + b"\n"
+            observed, = reader.snapshot()
+            self.assertEqual(set(observed), {"tenant", *queue.FIELDS})
+            self.assertEqual(observed["tenant"], "tenant")
+            args, = run.call_args.args
+            self.assertEqual(args, ["/usr/bin/docker", "exec", "-i", "-e",
+                "PGOPTIONS=-cdefault_transaction_read_only=on", "pg", "psql", "-X", "-w", "-q",
+                "-P", "pager=off", "-v", "ON_ERROR_STOP=1", "-h", "/run/postgresql", "-U",
+                "reader", "-d", "semantic", "-A", "-t"])
+            sql = run.call_args.kwargs["input"].decode()
+            self.assertIn(queue.QUERY, sql)
+            self.assertIn("READ ONLY", sql)
+            self.assertNotIn("private-subject", str(queue.review_rows([observed])))
+            run.return_value.stdout = json.dumps(dict(row, payload="unexpected")).encode()
+            with self.assertRaisesRegex(mandate.Held, "PROJECTION"):
+                reader.snapshot()
+
+    def test_worker_proof_is_private_and_only_reads(self):
+        cfg = dict(container="pg", socket="/pg", role="reader", database="semantic",
+                   proof=dict(subject="private-'subject", provider="provider", uri="private-uri",
+                              keyHash="a"*64, fingerprint="b"*64), proofWaitSeconds=2)
+        reader = queue.Queue(cfg, "/run/docker.sock")
+        with patch.object(queue.subprocess, "run") as run:
+            run.return_value.stdout = b'"request-1"'
+            self.assertEqual(reader.worker(123), {"requestId":"request-1", "state":"SUCCEEDED"})
+            self.assertNotIn("private-", str(run.call_args.args))
+            sql = run.call_args.kwargs["input"]
+            self.assertIn(b"READ ONLY", sql)
+            self.assertNotIn(b"private-", sql)
+            self.assertIn(b"SELECT to_json(r.request_id)", sql)
 
     def test_release_rejects_image_pid_and_handler_before_signal(self):
         old = frame()
@@ -216,11 +269,12 @@ class Protocol(unittest.TestCase):
         c.observe, c.closed, c.apply_book = Mock(return_value={}), Mock(), Mock()
         c.supervisor = Mock(return_value={"semanticIngress":{"profile":{}}})
         c.queue = Mock()
-        c.queue.snapshot.return_value = nullcontext([{"state":"PENDING"}])
+        c.queue.snapshot.side_effect = [[], [{"state":"PENDING"}]]
         c.books.call.return_value = {"observation":{"authorization":{}, "configurationSha256":"p"}}
         plan = dict(head=27,sequence=27,target={},queue=[])
         stage = dict(cid="old",profile={},generation={},epoch={},issue=None)
-        with patch.object(pipeline, "signal_once") as send, self.assertRaisesRegex(mandate.Held, "QUEUE_APPROVAL_DRIFT"):
+        with patch.object(pipeline, "verified", return_value=nullcontext(None)), \
+             patch.object(pipeline, "signal_once") as send, self.assertRaisesRegex(mandate.Held, "QUEUE_APPROVAL_DRIFT"):
             try:
                 c.finish(plan,stage)
             finally:
@@ -230,6 +284,9 @@ class Protocol(unittest.TestCase):
         import yaml
         wf = yaml.safe_load((ROOT / mandate.WORKFLOW).read_text())
         jobs = wf["jobs"]
+        self.assertIs(wf[True]["workflow_dispatch"]["inputs"]["worker_proof"]["default"], False)
+        self.assertEqual(jobs["proof"]["needs"], "sign")
+        self.assertEqual(jobs["proof"]["if"], "inputs.worker_proof && inputs.direction == 'forward'")
         for phase in mandate.PHASES:
             job = jobs[phase]
             self.assertEqual(job["environment"], "ouf-vps-privileged")
@@ -258,7 +315,10 @@ class RoundTrip(unittest.TestCase):
     def test_return_on_27_without_signature(self):
         self.round_trip(signed=False)
 
-    def round_trip(self, signed):
+    def test_optional_proof_after_forward_completion(self):
+        self.round_trip(signed=True, prove=True)
+
+    def round_trip(self, signed, prove=False):
         from contextlib import ExitStack
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as d, ExitStack() as patches:
@@ -275,6 +335,8 @@ class RoundTrip(unittest.TestCase):
             cfg = dict(originalProfile=original, retainedName="saved", failedName="returned", socket="socket",
                        leaseJournal=str(root / "lease"), installRoot=str(root), queue={}, roleTables=["one","two"],
                        roleCids=["first","second"])
+            if prove:
+                cfg["queue"]["proof"] = {"subject":"fixture"}
             head = SimpleNamespace(version=27, profile=original, waiting=False)
             store.save(root / "status", {"state":"ACTIVE"})
             counts = []
@@ -320,7 +382,7 @@ class RoundTrip(unittest.TestCase):
                 c.observe, c.closed, c.supervisor = observed, closed, supervisor
                 c.ready = Mock()
                 c.probe_preflight = Mock(return_value="preflight")
-                c.queue.snapshot.side_effect = lambda **kw: nullcontext([])
+                c.queue.snapshot.return_value = []
                 c.queue.worker.return_value = {"state":"SUCCEEDED"}
                 stored = {}
                 def call(op, version, approved=None):
@@ -371,9 +433,21 @@ class RoundTrip(unittest.TestCase):
                     c.execute("unbound-review")
                 self.assertFalse((c.path / "issue.claim").exists())
                 req["digest"] = second["digest"]
-                self.assertEqual(c.execute("review-sign")["ingress"], "VERIFIED")
+                done = c.execute("review-sign")
+                self.assertEqual((done["ingress"], done["readiness"], done["worker"]),
+                                 ("VERIFIED", "UP", "on" if direction == "forward" else "off"))
+                c.queue.worker.assert_not_called()
                 with self.assertRaises(FileExistsError):
                     c.execute("review-sign")
+                if direction == "forward":
+                    req.update(phase="proof", digest=done["digest"])
+                    if "proof" in cfg["queue"]:
+                        self.assertEqual(c.execute("review-proof")["proof"], "SUCCEEDED")
+                        c.queue.worker.assert_called_once_with(c.record("result")["proofSince"])
+                    else:
+                        with self.assertRaisesRegex(mandate.Held, "WORKER_PROOF_PROFILE_REQUIRED"):
+                            c.execute("review-proof")
+                        c.queue.worker.assert_not_called()
                 self.assertEqual(head.version, seq)
             scenario("101","forward",28,new_id,stop_at_gate=True)
             if signed:

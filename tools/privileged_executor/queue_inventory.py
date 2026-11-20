@@ -1,32 +1,24 @@
 """PostgreSQL readback. The private subject directory maps every pending row to its tenant."""
-from contextlib import contextmanager
-from datetime import datetime, timezone
-import os
+import json
+from pathlib import Path
+import subprocess
 import time
 
 from mandate import digest, need
-from store import bound
 
-QUERY = """
-SELECT created_by_subject, request_id, state, recovery_state, attempt_count, worker_generation,
-       lease_until, next_attempt_at, budget_deadline
-FROM ouf_sem.discovery_request
-WHERE state IN ('PENDING','RUNNING') ORDER BY request_id
-"""
-
+# Exact registry PR 48 projection (Git blob e8efb79269e4a9435e2b708edece0d4e097e4e36).
+QUERY = Path(__file__).with_name("discovery-queue.sql").read_text(encoding="ascii").strip().removesuffix(";")
+COLUMNS = ("owner_scope", "request_id", "state", "recovery_state", "attempt_count", "worker_generation",
+           "lease_until", "next_attempt_at", "budget_started_at", "budget_deadline")
 FIELDS = ("requestId", "state", "recoveryState", "attempts", "claimGeneration",
-          "leaseUntil", "nextAttemptAt", "budgetDeadline")
+          "leaseUntil", "nextAttemptAt", "budgetStartedAt", "budgetDeadline")
 
 
 def inventory(rows, tenants):
     result = []
     for subject, *values in rows:
         need(subject in tenants and len(values) == len(FIELDS), "QUEUE_SCOPE_UNPROVEN")
-        def scalar(v):
-            if isinstance(v, datetime):
-                return v.astimezone(timezone.utc).isoformat()
-            return v if isinstance(v, int) or v is None else str(v)
-        result.append(dict(tenant=tenants[subject], **dict(zip(FIELDS, map(scalar, values)))))
+        result.append(dict(tenant=tenants[subject], **dict(zip(FIELDS, values))))
     return result
 
 
@@ -41,64 +33,51 @@ def permit(rows, policy, approved):
 
 
 class Queue:
-    def __init__(self, profile):
+    def __init__(self, profile, docker_socket):
         self.cfg = profile
-        self.fenced = None
+        self.socket = docker_socket
 
-    def connect(self):
-        import psycopg
-        os.environ["PGSERVICEFILE"] = str(bound(self.cfg["serviceFile"]))
-        conn = psycopg.connect(service=self.cfg["service"], connect_timeout=5,
-                               options="-c row_security=off -c statement_timeout=5000 -c lock_timeout=1000")
-        try:
-            need(conn.info.dbname == self.cfg["database"], "QUEUE_DATABASE_DRIFT")
-            return conn
-        except BaseException:
-            conn.close()
-            raise
+    def query(self, statement, *, deadline=None):
+        c = self.cfg
+        args = ["/usr/bin/docker", "exec", "-i", "-e", "PGOPTIONS=-cdefault_transaction_read_only=on",
+                c["container"], "psql", "-X", "-w", "-q", "-P", "pager=off", "-v", "ON_ERROR_STOP=1",
+                "-h", c["socket"], "-U", c["role"], "-d", c["database"], "-A", "-t"]
+        timeout = 15 if deadline is None else min(15, deadline - time.monotonic())
+        need(timeout > 0, "INGRESS_WINDOW_EXPIRED")
+        sql = ("BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY;\nSET LOCAL row_security=off;\n"
+               "SET LOCAL statement_timeout='5s';\nSET LOCAL timezone='UTC';\n" + statement + ";\nCOMMIT;\n")
+        run = subprocess.run(args, input=sql.encode(), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                             env={"PATH": "/usr/bin:/bin", "DOCKER_HOST": "unix://" + self.socket},
+                             timeout=timeout, check=True)
+        return [json.loads(line) for line in run.stdout.splitlines()]
 
-    @contextmanager
-    def snapshot(self, fence=False):
-        with self.connect() as conn:
-            if fence:
-                # Block concurrent enqueue, claim and publication through the decision.
-                conn.execute("LOCK TABLE ouf_sem.discovery_request IN SHARE MODE NOWAIT")
-            else:
-                conn.execute("SET TRANSACTION READ ONLY")
-            self.fenced = conn if fence else None
-            try:
-                yield inventory(conn.execute(QUERY), self.cfg["subjectTenants"])
-                if fence:
-                    self.assert_fence()
-            finally:
-                self.fenced = None
-
-    def clock(self):
-        self.assert_fence()
-        return self.fenced.execute("SELECT extract(epoch FROM clock_timestamp())").fetchone()[0]
-
-    def assert_fence(self):
-        need(self.fenced is not None, "QUEUE_FENCE_REQUIRED")
-        sql = """SELECT EXISTS (SELECT 1 FROM pg_locks WHERE pid=pg_backend_pid()
-                 AND relation='ouf_sem.discovery_request'::regclass AND mode='ShareLock' AND granted)"""
-        need(self.fenced.execute(sql).fetchone() == (True,), "QUEUE_FENCE_LOST")
+    def snapshot(self, *, deadline=None):
+        sql = (f"SELECT row_to_json(q) FROM ({QUERY}) AS q WHERE state IN ('PENDING','RUNNING') "
+               "ORDER BY owner_scope, request_id")
+        rows = self.query(sql, deadline=deadline)
+        need(all(isinstance(r, dict) and set(r) == set(COLUMNS) for r in rows), "QUEUE_PROJECTION_DRIFT")
+        return inventory(([r[k] for k in COLUMNS] for r in rows), self.cfg["subjectTenants"])
 
     def worker(self, since):
+        need("proof" in self.cfg, "WORKER_PROOF_PROFILE_REQUIRED")
         spec = self.cfg["proof"]
-        sql = """
-        SELECT r.request_id FROM ouf_sem.discovery_request r
-        WHERE r.created_by_subject=%s AND r.idempotency_key_hash=%s AND r.request_fingerprint=%s
-          AND r.created_at >= to_timestamp(%s) AND r.state='SUCCEEDED' AND r.worker_generation>0
+        # Only hex enters SQL text. The private proof stays on stdin, including for Docker exec events.
+        binding = json.dumps(dict(spec, since=since), allow_nan=False).encode().hex()
+        sql = f"""
+        WITH input AS (SELECT convert_from(decode('{binding}', 'hex'), 'UTF8')::jsonb AS proof)
+        SELECT to_json(r.request_id) FROM ouf_sem.discovery_request r CROSS JOIN input
+        WHERE r.created_by_subject=(proof->>'subject') AND r.idempotency_key_hash=(proof->>'keyHash')
+          AND r.request_fingerprint=(proof->>'fingerprint')
+          AND r.created_at >= to_timestamp((proof->>'since')::numeric / 1000000)
+          AND r.state='SUCCEEDED' AND r.worker_generation>0
           AND EXISTS (SELECT 1 FROM ouf_sem.discovery_candidate c WHERE c.request_id=r.request_id
-              AND c.provider_id=%s AND c.canonical_uri=%s AND octet_length(c.content_bytes)>0)
+              AND c.provider_id=(proof->>'provider') AND c.canonical_uri=(proof->>'uri')
+              AND octet_length(c.content_bytes)>0)
         """
         end = time.monotonic() + self.cfg["proofWaitSeconds"]
         while time.monotonic() < end:
-            with self.connect() as conn:
-                conn.execute("SET TRANSACTION READ ONLY")
-                ids = list(conn.execute(sql, (spec["subject"], spec["keyHash"], spec["fingerprint"],
-                                               since, spec["provider"], spec["uri"])))
-                if len(ids) == 1:
-                    return {"requestId": str(ids[0][0]), "state": "SUCCEEDED"}
+            ids = self.query(sql)
+            if len(ids) == 1:
+                return {"requestId": ids[0], "state": "SUCCEEDED"}
             time.sleep(2)
         need(False, "MCP_WORKER_PROOF_PENDING")

@@ -2,6 +2,10 @@ name: Semantic A2 cutover
 on:
   workflow_dispatch:
     inputs:
+      worker_proof:
+        description: "Attendere la prova chatbot dopo il cutover forward"
+        type: boolean
+        default: false
       direction:
         type: choice
         options: [forward, return]
@@ -14,12 +18,13 @@ on:
 
 permissions: {}
 concurrency:
-  group: ouf-vps-privileged-semantic-a2
+  group: ouf-vps-privileged-operations
   cancel-in-progress: false
 
 env:
   DIRECTION: ${{ inputs.direction }}
   QUEUE: ${{ inputs.queue }}
+  WORKER_PROOF: ${{ inputs.worker_proof }}
 
 jobs:
   intent:
@@ -79,7 +84,11 @@ jobs:
           if not re.fullmatch("[0-9a-f]{64}", stamp):
               raise SystemExit("Risposta esecutore non valida")
           next_phase = {"plan": "apply", "apply": "sign"}.get(req["phase"])
+          if req["phase"] == "sign" and req["direction"] == "forward" and e["WORKER_PROOF"] == "true":
+              next_phase = "proof"
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
+              if "ingress" in result:
+                  print("Ingresso", result["ingress"], "· readiness", result["readiness"], "· worker", result["worker"], file=f)
               if "queueCount" in result:
                   print("Job in coda", result["queueCount"], "· SHA-256", result["queueDigest"], file=f)
                   for row in result["queue"]:
@@ -88,8 +97,8 @@ jobs:
                   comment = " ".join(["A2", req["run"], req["attempt"], req["commit"], req["direction"],
                                       req["queue"], next_phase, stamp])
                   print("Commento di approvazione", chr(10), chr(10), "`" + comment + "`", file=f)
-              else:
-                  print("Ingresso", result["ingress"], "· readiness", result["readiness"], file=f)
+              elif "proof" in result:
+                  print("Prova chatbot", result["proof"], file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + stamp, file=f)
           PY
@@ -121,5 +130,19 @@ jobs:
       DIGEST: ${{ needs.apply.outputs.digest }}
     outputs:
       digest: ${{ steps.call.outputs.digest }}
+    steps:
+      - *invoke
+
+  proof:
+    if: inputs.worker_proof && inputs.direction == 'forward'
+    name: proof ${{ needs.sign.outputs.digest }}
+    needs: sign
+    runs-on: *vps
+    environment: ouf-vps-privileged
+    permissions: {contents: read, actions: read, deployments: read}
+    timeout-minutes: 75
+    env:
+      PHASE: proof
+      DIGEST: ${{ needs.sign.outputs.digest }}
     steps:
       - *invoke

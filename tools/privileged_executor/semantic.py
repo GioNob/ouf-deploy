@@ -85,7 +85,10 @@ def allocated_profile(plan, cid):
         if plan["old"][:12] in (ep["Aliases"] or []):
             ep["Aliases"] = sorted(set(ep["Aliases"]) | {cid[:12]})
         if ep["DNSNames"]:
-            ep["DNSNames"] = sorted(set(ep["DNSNames"]) | {cid[:12]})
+            names = set(ep["DNSNames"])
+            if plan["old"][:12] not in (ep["Aliases"] or []):
+                names.discard(plan["old"][:12])
+            ep["DNSNames"] = sorted(names | {cid[:12]})
     return {**plan["target"], "configurationSha256": semantic_configuration(expected)}
 
 

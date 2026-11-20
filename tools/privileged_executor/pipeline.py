@@ -1,8 +1,8 @@
 """Three protected calls. Root records the expected next digest before returning it to Actions."""
 import copy
+from contextlib import ExitStack
 import http.client
 import hashlib
-import sys
 from pathlib import Path
 import time
 from urllib.parse import quote
@@ -32,7 +32,7 @@ class Cutover:
         self.path = root / req["run"]
         self.log = Journal(self.path)
         self.books = Books(cfg, self.path)
-        self.queue = Queue(cfg["queue"])
+        self.queue = Queue(cfg["queue"], cfg["socket"])
         self.engine = Engine(cfg["socket"])
         self.forward = req["direction"] == "forward"
         self.name = cfg["originalProfile"]["containerName"]
@@ -79,8 +79,8 @@ class Cutover:
         sup = self.supervisor(version)
         self.closed(sup)
         generation = self.engine.process(cid, target, "GATE_WAITING")
-        with self.queue.snapshot() as rows:
-            permit(rows, self.req["queue"], rows)
+        rows = self.queue.snapshot()
+        permit(rows, self.req["queue"], rows)
         return {**original, "intent": intent(self.req), "queue": rows, "resume": {
             "origin": origin.name, "previous": previous.name, "cid": cid, "target": target,
             "generation": generation, "epoch": self.observe(cid, target, sup)}}
@@ -157,8 +157,8 @@ class Cutover:
                   30, "INITIAL_INGRESS_HELD")
         for op in ("start", "probe", *(("issue", "upgrade") if sequence != version else ())):
             self.books.binding(op, sequence)
-        with self.queue.snapshot() as rows:
-            need(self.req["queue"] != "empty" or not rows, "QUEUE_NOT_EMPTY")
+        rows = self.queue.snapshot()
+        need(self.req["queue"] != "empty" or not rows, "QUEUE_NOT_EMPTY")
         return {**frame, "prior": prior, "intent": intent(self.req), "profileSha256": digest(self.cfg), "head": version,
                 "sequence": sequence, "installed": installed, "reconcileUpgrade": reconciliation,
                 "authority": self.authority(), "stop": r3 if kind == "stop" else None, "queue": rows,
@@ -215,48 +215,48 @@ class Cutover:
             self.image_binding(request, target)
         name = self.cfg["retainedName" if self.forward else "failedName"]
         need(self.engine.inspect(name, True) is None, "RETENTION_NAME_DRIFT")
-        with self.queue.snapshot(fence=True) as rows:
-            permit(rows, self.req["queue"], plan["queue"])
-            replace = plan["prior"] is not None
-            if replace:
-                need(self.owner(direction) == plan["prior"] and (self.root / plan["prior"] / "stop-no-effect").is_file(),
-                     "STOP_CLAIM_DRIFT")
-            save(self.root / direction, {"run": self.req["run"], "plan": digest(plan)}, replace=replace)
-            save(self.root / (direction + "-stage"), {"run": self.req["run"]}, replace=replace)
-            if plan["stop"]:
-                def record(n, row):
-                    save(self.path / f"stop-retry-{n}", row)
-                try:
-                    self.log.effect("stop", plan["stop"], lambda: stop(self.books, version, plan["stop"], record))
-                except Held as error:
-                    if str(error) in ("STOP_RETRY_LIMIT", "STOP_REQUIRES_NEW_REVIEW", "RENEWAL_TIMEOUT"):
-                        save(self.path / "stop-no-effect", {"plan": digest(plan), "reason": str(error)})
-                    raise
+        rows = self.queue.snapshot()
+        permit(rows, self.req["queue"], plan["queue"])
+        replace = plan["prior"] is not None
+        if replace:
+            need(self.owner(direction) == plan["prior"] and (self.root / plan["prior"] / "stop-no-effect").is_file(),
+                 "STOP_CLAIM_DRIFT")
+        save(self.root / direction, {"run": self.req["run"], "plan": digest(plan)}, replace=replace)
+        save(self.root / (direction + "-stage"), {"run": self.req["run"]}, replace=replace)
+        if plan["stop"]:
+            def record(n, row):
+                save(self.path / f"stop-retry-{n}", row)
+            try:
+                self.log.effect("stop", plan["stop"], lambda: stop(self.books, version, plan["stop"], record))
+            except Held as error:
+                if str(error) in ("STOP_RETRY_LIMIT", "STOP_REQUIRES_NEW_REVIEW", "RENEWAL_TIMEOUT"):
+                    save(self.path / "stop-no-effect", {"plan": digest(plan), "reason": str(error)})
+                raise
+        self.closed(sup)
+        if plan["reconcileUpgrade"]:
+            book = Books(self.cfg, self.root / self.owner("forward-stage"))
+            upgrade = plan["reconcileUpgrade"]
+            self.log.effect("reconcile-upgrade", upgrade,
+                            lambda: book.call("upgrade", version, upgrade["planSha256"]))
+            sup = self.supervisor(version)
             self.closed(sup)
-            if plan["reconcileUpgrade"]:
-                book = Books(self.cfg, self.root / self.owner("forward-stage"))
-                upgrade = plan["reconcileUpgrade"]
-                self.log.effect("reconcile-upgrade", upgrade,
-                                lambda: book.call("upgrade", version, upgrade["planSha256"]))
-                sup = self.supervisor(version)
-                self.closed(sup)
-            need(self.observe(plan["source"], plan["previous"], sup) == plan["sourceEpoch"], "SOURCE_EPOCH_DRIFT")
-            self.log.effect("detach", {"parent": digest(plan), "cid": plan["source"]},
-                lambda: self.engine.detach(plan["source"], self.cfg["retainedName" if self.forward else "failedName"],
-                                           plan["networks"]))
-            if self.forward:
-                cid = self.log.effect("create", {"request": digest(plan["request"]), "parent": digest(plan)},
-                    lambda: self.engine.create(self.name, plan["request"], plan["target"]["image"]))
-            else:
-                cid = self.log.effect("reconnect", {"parent": digest(plan), "old": plan["old"]},
-                    lambda: self.engine.reconnect(plan["old"], self.name,
-                        plan["request"]["NetworkingConfig"]["EndpointsConfig"], plan["networks"]))
-            launch = copy.deepcopy(plan["request"])
-            if not self.forward:
-                launch["Env"] = ["OUF_DISCOVERY_WORKER_ENABLED=false" if v == "OUF_DISCOVERY_WORKER_ENABLED=true"
-                                 else v for v in launch["Env"]]
-            self.log.effect("start-gate", {"cid": cid, "parent": digest(plan)},
-                            lambda: self.engine.start_gate(cid, self.name, launch, plan["target"]["image"]))
+        need(self.observe(plan["source"], plan["previous"], sup) == plan["sourceEpoch"], "SOURCE_EPOCH_DRIFT")
+        self.log.effect("detach", {"parent": digest(plan), "cid": plan["source"]},
+            lambda: self.engine.detach(plan["source"], self.cfg["retainedName" if self.forward else "failedName"],
+                                       plan["networks"]))
+        if self.forward:
+            cid = self.log.effect("create", {"request": digest(plan["request"]), "parent": digest(plan)},
+                lambda: self.engine.create(self.name, plan["request"], plan["target"]["image"]))
+        else:
+            cid = self.log.effect("reconnect", {"parent": digest(plan), "old": plan["old"]},
+                lambda: self.engine.reconnect(plan["old"], self.name,
+                    plan["request"]["NetworkingConfig"]["EndpointsConfig"], plan["networks"]))
+        launch = copy.deepcopy(plan["request"])
+        if not self.forward:
+            launch["Env"] = ["OUF_DISCOVERY_WORKER_ENABLED=false" if v == "OUF_DISCOVERY_WORKER_ENABLED=true"
+                             else v for v in launch["Env"]]
+        self.log.effect("start-gate", {"cid": cid, "parent": digest(plan)},
+                        lambda: self.engine.start_gate(cid, self.name, launch, plan["target"]["image"]))
         target = allocated_profile(plan, cid) if self.forward else plan["original"]
         return self.issuance_stage(plan, cid, target, sup)
 
@@ -299,25 +299,20 @@ class Cutover:
         chain = self.authority()
         start = self.books.call("start", seq)
         self.apply_book("start", seq, start, digest(stage))
-        def release():
-            self.queue.assert_fence()
-            need(self.authority() == chain, "RELEASE_HEAD_DRIFT")
-            with verified(sup, profile, cid, seq) as deadline:
-                return signal_once(self.engine, self.log, cid, profile, generation, deadline)
         try:
-            with self.queue.snapshot(fence=True) as rows:
-                permit(rows, self.req["queue"], plan["queue"])
-                time_floor = self.queue.clock()
-                until(release, 30, "GATE_RELEASE_HELD")
-                until(lambda: self.ready(cid, profile, generation), 120, "READINESS_HELD")
-                probe = self.books.call("probe", seq)
-                need(probe["observation"]["semantic"]["containerId"] == cid, "PROBE_CID_DRIFT")
-                self.apply_book("probe", seq, probe, digest(stage))
-            if self.forward:
-                print("A2_PROBE_PASSED_AWAITING_CHATBOT_REQUEST", file=sys.stderr, flush=True)
-                proof = self.queue.worker(time_floor)
-            else:
-                proof = {"worker": "off"}
+            permit(self.queue.snapshot(), self.req["queue"], plan["queue"])
+            # PostgreSQL on the local Engine shares the host realtime clock.
+            time_floor = time.time_ns() // 1000
+            with ExitStack() as ingress:
+                deadline = until(lambda: ingress.enter_context(verified(sup, profile, cid, seq)),
+                                 30, "GATE_RELEASE_HELD")
+                need(self.authority() == chain, "RELEASE_HEAD_DRIFT")
+                permit(self.queue.snapshot(deadline=deadline), self.req["queue"], plan["queue"])
+                signal_once(self.engine, self.log, cid, profile, generation, deadline)
+            until(lambda: self.ready(cid, profile, generation), 120, "READINESS_HELD")
+            probe = self.books.call("probe", seq)
+            need(probe["observation"]["semantic"]["containerId"] == cid, "PROBE_CID_DRIFT")
+            self.apply_book("probe", seq, probe, digest(stage))
             need(self.authority() == chain, "FINAL_HEAD_DRIFT")
             self.ready(cid, profile, generation)
             until(lambda: self.check_verified(sup, profile, cid, seq), 30, "FINAL_READBACK_HELD")
@@ -330,7 +325,8 @@ class Cutover:
                             lambda i, p: save(self.path / f"failure-stop-retry-{i}", p)))
             self.closed(sup)
             raise
-        return {"ingress": "VERIFIED", "readiness": "UP", "probe": "C_PROBE_PASSED", "worker": proof}
+        return {"ingress": "VERIFIED", "readiness": "UP", "probe": "C_PROBE_PASSED", "worker": "on" if self.forward else "off",
+                "proofSince": time_floor}
 
     @staticmethod
     def check_verified(sup, profile, cid, seq):
@@ -365,6 +361,16 @@ class Cutover:
         plan = self.record("plan")
         need(plan["intent"] == intent(self.req) and plan["profileSha256"] == digest(self.cfg)
              and self.record("plan.review")["request"]["digest"] == intent(self.req), "PARENT_MANDATE_DRIFT")
+        if phase == "proof":
+            result = self.record("result")
+            need(self.forward and result["worker"] == "on" and self.req["digest"] == digest(result)
+                 and self.owner("forward-stage") == self.req["run"] and not (self.root / "return").exists(),
+                 "WORKER_PROOF_SCOPE")
+            need("proof" in self.cfg["queue"], "WORKER_PROOF_PROFILE_REQUIRED")
+            accept()
+            proof = self.queue.worker(result["proofSince"])
+            save(self.path / "worker-proof", proof)
+            return {"digest": digest(proof), "proof": proof["state"]}
         if phase == "apply":
             need(self.req["digest"] == digest(plan), "APPROVED_PLAN_DRIFT")
             accept()
@@ -378,4 +384,5 @@ class Cutover:
         accept()
         result = self.finish(plan, stage)
         save(self.path / "result", result)
-        return {"digest": digest(result), "ingress": result["ingress"], "readiness": result["readiness"]}
+        return {"digest": digest(result), "ingress": result["ingress"], "readiness": result["readiness"],
+                "worker": result["worker"]}

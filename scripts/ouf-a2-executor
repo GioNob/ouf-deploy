@@ -1,6 +1,5 @@
 #!/usr/bin/python3 -I
 """The only sudoers command. All caller data arrives on a bounded stdin."""
-import fcntl
 import json
 import os
 from pathlib import Path
@@ -12,9 +11,17 @@ sys.path.insert(0, str(ROOT / "lib"))
 from mandate import Held, authorize, github_reader, need, validate
 from store import read, trusted
 from pipeline import Cutover
+from module_operation import ModuleRelease
+
+
+def dispatch(req, cfg, state, get):
+    review = authorize(req, cfg, get)
+    operation = ModuleRelease if req.get("operation") == "module-release" else Cutover
+    return operation(cfg, state, req).execute(review)
 
 
 def main():
+    import fcntl
     need(os.geteuid() == 0 and sys.flags.isolated and len(sys.argv) == 1, "ROOT_ENTRYPOINT_ONLY")
     os.umask(0o077)
     os.chdir("/")
@@ -29,8 +36,7 @@ def main():
     validate(req, cfg)
     with trusted(ROOT / "lock", private=True).open("rb") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        review = authorize(req, cfg, github_reader(cfg["repository"], envelope["token"]))
-        response = Cutover(cfg, ROOT / "state", req).execute(review)
+        response = dispatch(req, cfg, ROOT / "state", github_reader(cfg["repository"], envelope["token"]))
     print(json.dumps(response, separators=(",", ":")))
 
 

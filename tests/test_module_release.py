@@ -3,14 +3,21 @@ import copy
 import hashlib
 import io
 import json
+import runpy
+import sys
+from unittest.mock import Mock, patch
 from pathlib import Path
 import tarfile
 import tempfile
 import unittest
 import zipfile
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(ROOT), str(ROOT / "tools"), *(str(ROOT / "tools" / folder) for folder in
+                ("privileged_executor", "semantic_provider_r3", "semantic_application_cutover"))]
+
 from tools.module_release.contract import ENTRY, Held
-from tools.module_release.operation import apply, plan
+from tools.module_release.operation import apply, migrate, plan
 from tools.module_release.transport import select
 
 
@@ -194,6 +201,53 @@ class ReleaseTest(unittest.TestCase):
         self.assertEqual(result, saved)
         return result
 
+    def test_executor_enforces_each_review_through_onboarding_readiness(self):
+        import mandate
+        import module_operation
+        import store
+        dispatch = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["dispatch"]
+        cfg = dict(repositoryId=10, environmentId=20, branch="protected", environment="test",
+                   reviewerIds=[30], commit="a"*40, modules={"onboarding":self.p})
+        req = dict(run="1", attempt="1", commit=cfg["commit"], operation="module-release",
+                   module="onboarding", phase="plan")
+        req["digest"] = mandate.intent(req)
+        def call(comment=None, workflow=mandate.module_workflow("onboarding")):
+            run = dict(id=1, run_attempt=1, event="workflow_dispatch", status="in_progress",
+                       path=workflow, head_branch="protected", head_sha=cfg["commit"],
+                       repository={"id":10}, head_repository={"id":10})
+            user = {"type":"User", "id":30}
+            env = dict(id=20, name="test", protection_rules=[dict(type="required_reviewers",
+                       reviewers=[{"type":"User", "reviewer":user}])])
+            approval = dict(state="approved", comment=comment or mandate.challenge(req),
+                            user=user, environments=[env])
+            return dispatch(req, cfg, self.root, Mock(side_effect=[run, dict(protected=True,
+                            commit={"sha":cfg["commit"]}), env, [approval]]))
+        with patch.object(store, "sync_dir"), patch.object(store, "trusted", side_effect=lambda p, **_: Path(p)), \
+             patch.object(module_operation.operation, "Docker", return_value=self.rt):
+            with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
+                call(workflow=mandate.WORKFLOW)
+            plan_result = call()
+            req.update(phase="apply", digest="b"*64)
+            with self.assertRaisesRegex(mandate.Held, "APPROVED_PLAN_DRIFT"):
+                call()
+            req["digest"] = plan_result["digest"]
+            stage = call()
+            self.assertEqual(stage["status"], "GATED")
+            self.assertNotIn("signal:2", self.rt.events)
+            req.update(phase="migrate", digest="c"*64)
+            other_review = mandate.challenge(req)
+            with self.assertRaisesRegex(mandate.Held, "APPROVED_MIGRATION_DRIFT"):
+                call()
+            req["digest"] = stage["digest"]
+            with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW"):
+                call(comment=other_review)
+            self.assertNotIn("signal:2", self.rt.events)
+            self.assertEqual(call()["status"], "READY")
+            self.assertEqual(self.rt.events.count("signal:2"), 1)
+            with self.assertRaises(FileExistsError):
+                call()
+            self.assertEqual(self.rt.events.count("signal:2"), 1)
+
     def test_archive_tampered(self):
         next(self.root.glob("*.zip")).write_bytes(b"different")
         self.assertEqual(plan(self.p, self.rt)["reason"], "ARTIFACT_DIGEST_CHANGED")
@@ -225,6 +279,21 @@ class ReleaseTest(unittest.TestCase):
                          ["load", "stop:1", "create", "gate:2", "signal:2", "spring-flyway", "probe:2"])
         self.assertEqual(self.rt.inspect(self.p["retainedName"])["Id"], OLD)
         self.assertFalse(self.rt.docs[OLD]["State"]["Running"])
+
+    def test_no_migration_finishes_in_approved_apply(self):
+        self.p["migration"]["mode"] = "none"
+        result = apply(self.p, self.planned(), self.rt, defer_migration=True)
+        self.assertEqual(result["status"], "READY")
+        self.assertNotIn("migrationSha256", result)
+
+    def test_reviewed_migration_rejects_new_gate_generation(self):
+        approved = self.planned()
+        staged = apply(self.p, approved, self.rt, defer_migration=True)
+        self.rt.docs[NEW]["State"]["StartedAt"] = "unexpected-generation"
+        with self.assertRaisesRegex(Held, "MIGRATION_GENERATION_CHANGED"):
+            migrate(self.p, approved, staged["migrationSha256"], self.rt)
+        self.assertNotIn("signal:2", self.rt.events)
+        self.assertFalse((self.root / approved / "migration-review-consumed.json").exists())
 
     def test_dedicated_migration_before_signal(self):
         self.p["migration"].update(mode="dedicated", command=["app", "migrate"])
