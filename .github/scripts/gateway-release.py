@@ -41,6 +41,8 @@ def main():
         summary.append("Gateway " + status)
         phase = ""
         if status == "PLANNED":
+            if "recoveringRun" in result:
+                summary.append(f"Live resources match the before or after state of pending run {result['recoveringRun']}.")
             counts = result["counts"]
             for key in ("create", "update", "unchanged"):
                 if type(counts[key]) is not int or counts[key] < 0:
