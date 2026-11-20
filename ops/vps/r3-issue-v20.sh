@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=2da87c2d8d81d4e6f713326e23a039aebfb54645
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -51,6 +51,7 @@ delivery() {
   fetch ops/vps/r3-lease-renewal-v22.json 7a53b38d9ecc3f75f1221a637d0c439bc0d31291fdcaedc4daf0414eaa122d53
   fetch ops/vps/r3-lease-renewal-v25.json a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5
   fetch ops/vps/r3-lease-renewal-v26.json 609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9
+  fetch ops/vps/r3-lease-renewal-v27.json a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5
   fetch ops/vps/r3-lease-renewal.json c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f
   fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
@@ -139,7 +140,7 @@ delivery() {
   fetch tools/semantic_provider_r3/adapter_v16.py 1af794ea243bfa1d2caa8cfa702017bd5a378c49d27e6c753f52ab4f1890825a
   fetch tools/semantic_provider_r3/cache_rollover_overlay_v23.py 2f6596c7b1897da8f559891efed7cc2e93baaf724e56b12f03824c4d96124929
   fetch tools/semantic_provider_r3/cache_watch_overlay_v24.py c0c5926783393b5cbc1750230bc188de554e1357bf384598ade11f22815878bc
-  fetch tools/semantic_provider_r3/compose.py a40aadbe5372fbb951f8658ed7a45293d6909a49edceac48ece914ffe526bf67
+  fetch tools/semantic_provider_r3/compose.py 8df6bbfea2ede7416cde29181f211f1868d2bf563b7ea64cbee5da6aa6796e9a
   fetch tools/semantic_provider_r3/dns_parallel_overlay_v22.py 9a11956689e6bc5263be8a8931b5c99b987f6c61225accbd1e38f518d26260a6
   fetch tools/semantic_provider_r3/dns_retransmit_overlay_v20.py 64987fd8606cef23b033918f2bbb301010b79a9139c866c5e08f8f98828d1b2e
   fetch tools/semantic_provider_r3/driver_budget_v17.py 086b695267ac94ce50053fe1c8f6c8bcec6f702d36e6d350fe74c319741a4f02
@@ -147,12 +148,13 @@ delivery() {
   fetch tools/semantic_provider_r3/egress_v15.py 03552b9750a551fb227917ac5756667995362e3f9e9acbaf91d717ded4422f82
   fetch tools/semantic_provider_r3/identity_overlay_v13.py 0334b8a3387e3a9342b3ff6f2679f9ddd179cee67c5085ef9d3e4751bd82e131
   fetch tools/semantic_provider_r3/identity_provider_v13.py 3bdcf7688ffac5c485abfc5893a3f6a3ff5777aab136138ee7488e3a2bd747bf
+  fetch tools/semantic_provider_r3/ingress_memo_overlay_v27.py 11473e5b22cbc418045a1bde5810e1ed7318f3b97f483b86049520f72ea18f48
   fetch tools/semantic_provider_r3/install_common.py 7f06c92bb6d824fec2bdf952aa6a71ff597b545dacd76db44b30ea1086927597
   fetch tools/semantic_provider_r3/lease_observability_overlay_v18.py f75e72ff00d395aa6f7370760e58cbb6fd75089091db6cae5149b98f8a11e33c
   fetch tools/semantic_provider_r3/lease_renewal_overlay_v18.py dd2c600df369f8dc6c595d3e65ff739abeced198a3cf3f547aaaadf27f19889a
   fetch tools/semantic_provider_r3/lease_renewal_v18.py c6fefa170903a92bcb706a061c91a3bfd5af560b51447f08dd0ac3135a5a7ecd
   fetch tools/semantic_provider_r3/lease_timing_overlay_v21.py b57c519a4f0785771c22f054bf85d846bab0057b9a0150b5537baecbcf21f583
-  fetch tools/semantic_provider_r3/operate.py c4245909c8bdddf1d235983cbd28bd470e0a274ab9823cffe2e492757994f75e
+  fetch tools/semantic_provider_r3/operate.py 1efa627946722591de99d0ded5cf135d09b0fff6663205a3ffd76b0ef8f82921
   fetch tools/semantic_provider_r3/read_adapter_v16.py 66b1dd83d4543e4454036489ff64433d16a9a30bb63127b4310431271064de77
   fetch tools/semantic_provider_r3/read_identity_provider_v13.py 7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7
   fetch tools/semantic_provider_r3/read_routes_v15.py e3e62ea885e0a54fb74de591e49891d1b209fae7756296ad74ae2a958506390e
@@ -160,7 +162,7 @@ delivery() {
   fetch tools/semantic_provider_r3/runtime_absent_overlay_v19.py 6fe53b0f9c8e37431bb1c1537d47b8eb450a303b5ef31322eda949963ce58826
   fetch tools/semantic_provider_r3/semantic_identity_v25.py e09aef2977390bca817a1fe297ba92b8b987cb9de530ae3d7a9b2da0c33a7231
   fetch tools/semantic_provider_r3/semantic_overlay_v25.py b74b9c854e76e099663a3a1aa7dde76be574b4ab6a1fbfacf5085fd34d82279d
-  fetch tools/semantic_provider_r3/upgrade.py e40022704f186bf474830ebc390abca1e2ef6fcdad88de4106dc6e2205555d53
+  fetch tools/semantic_provider_r3/upgrade.py f80f68b73f07eb26f3bb45cea0467e32b3026e4986b437d5b187ce8c39919517
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
   fetch tools/semantic_provider_routes/custody.py 2ab7177f21fb5b330473895798c141282cdabc85c245142f96511fa13e848db3
   fetch tools/semantic_provider_routes/routes.py 305f2535e2cc547de5f242080247d62a43b4bdb93303bf00a03bb36e87097997
@@ -327,7 +329,9 @@ if 20 >= 25:
     profile_path.write_bytes(profile); profile_path.chmod(0o600)
     sys.stderr.write("profilo Semantic v25: " + profile.decode("ascii") + "\n")
     # v26 (task-13f): same v25 code, ingress tick budget 2.5 s in its own pinned renewal input.
-    RENEWAL_FILE, RENEWAL_PIN = (("ops/vps/r3-lease-renewal-v26.json", "609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9") if 20 >= 26
+    # v27 (task-13h): v25 parameters again (byte-identical file), new ingress code.
+    RENEWAL_FILE, RENEWAL_PIN = (("ops/vps/r3-lease-renewal-v27.json", "a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5") if 20 >= 27
+                                 else ("ops/vps/r3-lease-renewal-v26.json", "609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9") if 20 == 26
                                  else ("ops/vps/r3-lease-renewal-v25.json", "a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5"))
     renewal = D / RENEWAL_FILE
     if sha(renewal) != RENEWAL_PIN:

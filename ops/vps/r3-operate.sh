@@ -5,7 +5,7 @@
 #       AZIONE=start bash r3-operate.sh apply <planSha256>
 #       per restart-one aggiungere RUOLO=adapter oppure RUOLO=southbound
 # Il plan scarica una consegna propria (D-047: operate + ripristino dei volatili); l'apply riusa
-# consegna e root di output salvate dal plan della stessa azione. Presuppone la v26 installata.
+# consegna e root di output salvate dal plan della stessa azione. Presuppone la v27 installata.
 set -euo pipefail
 umask 077
 
@@ -18,13 +18,13 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=2da87c2d8d81d4e6f713326e23a039aebfb54645
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 S=/etc/ouf/deploy-snapshots
 INSTALL=$S/semantic-provider-r3-install-v1
-STATE=$HOME/.ouf-r3-v26-state
+STATE=$HOME/.ouf-r3-v27-state
 NFT_SHA=57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0
 TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)
 PROFILE=$S/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json
@@ -54,6 +54,7 @@ delivery() {
   fetch ops/vps/r3-lease-renewal-v22.json 7a53b38d9ecc3f75f1221a637d0c439bc0d31291fdcaedc4daf0414eaa122d53
   fetch ops/vps/r3-lease-renewal-v25.json a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5
   fetch ops/vps/r3-lease-renewal-v26.json 609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9
+  fetch ops/vps/r3-lease-renewal-v27.json a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5
   fetch ops/vps/r3-lease-renewal.json c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f
   fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
@@ -142,7 +143,7 @@ delivery() {
   fetch tools/semantic_provider_r3/adapter_v16.py 1af794ea243bfa1d2caa8cfa702017bd5a378c49d27e6c753f52ab4f1890825a
   fetch tools/semantic_provider_r3/cache_rollover_overlay_v23.py 2f6596c7b1897da8f559891efed7cc2e93baaf724e56b12f03824c4d96124929
   fetch tools/semantic_provider_r3/cache_watch_overlay_v24.py c0c5926783393b5cbc1750230bc188de554e1357bf384598ade11f22815878bc
-  fetch tools/semantic_provider_r3/compose.py a40aadbe5372fbb951f8658ed7a45293d6909a49edceac48ece914ffe526bf67
+  fetch tools/semantic_provider_r3/compose.py 8df6bbfea2ede7416cde29181f211f1868d2bf563b7ea64cbee5da6aa6796e9a
   fetch tools/semantic_provider_r3/dns_parallel_overlay_v22.py 9a11956689e6bc5263be8a8931b5c99b987f6c61225accbd1e38f518d26260a6
   fetch tools/semantic_provider_r3/dns_retransmit_overlay_v20.py 64987fd8606cef23b033918f2bbb301010b79a9139c866c5e08f8f98828d1b2e
   fetch tools/semantic_provider_r3/driver_budget_v17.py 086b695267ac94ce50053fe1c8f6c8bcec6f702d36e6d350fe74c319741a4f02
@@ -150,12 +151,13 @@ delivery() {
   fetch tools/semantic_provider_r3/egress_v15.py 03552b9750a551fb227917ac5756667995362e3f9e9acbaf91d717ded4422f82
   fetch tools/semantic_provider_r3/identity_overlay_v13.py 0334b8a3387e3a9342b3ff6f2679f9ddd179cee67c5085ef9d3e4751bd82e131
   fetch tools/semantic_provider_r3/identity_provider_v13.py 3bdcf7688ffac5c485abfc5893a3f6a3ff5777aab136138ee7488e3a2bd747bf
+  fetch tools/semantic_provider_r3/ingress_memo_overlay_v27.py 11473e5b22cbc418045a1bde5810e1ed7318f3b97f483b86049520f72ea18f48
   fetch tools/semantic_provider_r3/install_common.py 7f06c92bb6d824fec2bdf952aa6a71ff597b545dacd76db44b30ea1086927597
   fetch tools/semantic_provider_r3/lease_observability_overlay_v18.py f75e72ff00d395aa6f7370760e58cbb6fd75089091db6cae5149b98f8a11e33c
   fetch tools/semantic_provider_r3/lease_renewal_overlay_v18.py dd2c600df369f8dc6c595d3e65ff739abeced198a3cf3f547aaaadf27f19889a
   fetch tools/semantic_provider_r3/lease_renewal_v18.py c6fefa170903a92bcb706a061c91a3bfd5af560b51447f08dd0ac3135a5a7ecd
   fetch tools/semantic_provider_r3/lease_timing_overlay_v21.py b57c519a4f0785771c22f054bf85d846bab0057b9a0150b5537baecbcf21f583
-  fetch tools/semantic_provider_r3/operate.py c4245909c8bdddf1d235983cbd28bd470e0a274ab9823cffe2e492757994f75e
+  fetch tools/semantic_provider_r3/operate.py 1efa627946722591de99d0ded5cf135d09b0fff6663205a3ffd76b0ef8f82921
   fetch tools/semantic_provider_r3/read_adapter_v16.py 66b1dd83d4543e4454036489ff64433d16a9a30bb63127b4310431271064de77
   fetch tools/semantic_provider_r3/read_identity_provider_v13.py 7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7
   fetch tools/semantic_provider_r3/read_routes_v15.py e3e62ea885e0a54fb74de591e49891d1b209fae7756296ad74ae2a958506390e
@@ -163,7 +165,7 @@ delivery() {
   fetch tools/semantic_provider_r3/runtime_absent_overlay_v19.py 6fe53b0f9c8e37431bb1c1537d47b8eb450a303b5ef31322eda949963ce58826
   fetch tools/semantic_provider_r3/semantic_identity_v25.py e09aef2977390bca817a1fe297ba92b8b987cb9de530ae3d7a9b2da0c33a7231
   fetch tools/semantic_provider_r3/semantic_overlay_v25.py b74b9c854e76e099663a3a1aa7dde76be574b4ab6a1fbfacf5085fd34d82279d
-  fetch tools/semantic_provider_r3/upgrade.py e40022704f186bf474830ebc390abca1e2ef6fcdad88de4106dc6e2205555d53
+  fetch tools/semantic_provider_r3/upgrade.py f80f68b73f07eb26f3bb45cea0467e32b3026e4986b437d5b187ce8c39919517
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
   fetch tools/semantic_provider_routes/custody.py 2ab7177f21fb5b330473895798c141282cdabc85c245142f96511fa13e848db3
   fetch tools/semantic_provider_routes/routes.py 305f2535e2cc547de5f242080247d62a43b4bdb93303bf00a03bb36e87097997
@@ -228,7 +230,7 @@ PINS = {"coordinator": "5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd
         "southbound/launch": "f066a65cffc7766bbf77b9de15fe9d527ce8ca68a9bb0d74cadfe8370c6ad63b",
         "southbound/context": "18a1df8d45fbe0914514478910041d3a49ecf402b8c78a06c8148cf95c06a1c9",
         "southbound/policy": "e489068bc8a86f226dadfa5a3870dc05aaae65437d638a8b9ce56c4c42e218a8"}
-if 26 >= 12:
+if 27 >= 12:
     # D-050: v12 composes on the generation-2 lease kernel published by the migration.
     G2 = "/etc/ouf/lease-kernel-generations/g2-20261117T122656"
     MIG = S + "/semantic-lease-kernel-migration-20261117T122656"
@@ -242,10 +244,10 @@ if 26 >= 12:
                 migrationReceipt="a3456dfb839001657922e5aed892180cb9347b35e9e765c2a38fb8489a6d534b",
                 generationReceipt="0233576fd023ce6f6afe62f040bfaec1d5a3103035c4b7c4b5657eb81082cca8",
                 bootPointer="2c532ae900128e423c33addee66f5536078d7ce2589237601d6b963bd35bbd42")
-    if 26 >= 13:
+    if 27 >= 13:
         # D-051: identity provider peer read at plan time into the delivery (verified by the composer).
         files["identityProviderPeer"] = str(D / "identity-provider-peer.json")
-        if 26 >= 15:
+        if 27 >= 15:
             # D-052: B1 recipes v3, acceptance g6 and the routes projection read at plan time.
             REC3 = S + "/semantic-provider-b1-recipes-20261118-v3"
             for role in ("adapter", "southbound"):
@@ -256,7 +258,7 @@ if 26 >= 12:
             PINS.update({"southbound/launch": "28a50731e885c58e3df1c765b686c4699a102e64564f48d7c66a07020a975945",
                          "southbound/policy": "9109fd88221b25386f68c27327eada4dc392eb0d6c3d426447849ed2c4265a51",
                          "acceptance": "78954515c36921d7321120a2e7e0bf2cb690eeb7f852b913fb3afea5ddf242c9"})
-            if 26 >= 16:
+            if 27 >= 16:
                 # D-053: B1 v4 recipes, acceptance g7, revised installation profile, adapter projection.
                 REC4 = S + "/semantic-provider-b1-recipes-v4"
                 for role in ("adapter", "southbound"):
@@ -269,20 +271,20 @@ if 26 >= 12:
                              "adapter/policy": "6ed79d6e0cfdda7079a7f5417cbcb269388f613a238856c76d4c913a14200f50",
                              "acceptance": "8dcbb865056cf86ff443772653d8daf346ce04520272add747c7cbda83626752",
                              "installationProfile": "b7ca10e139d91e564c313eb226953db6d384e95283c31c13f7091fa40ffbb160"})
-                if 26 >= 17:
+                if 27 >= 17:
                     # R-030: driver verification budget as an installation input (delivered, pinned).
                     files["driverBudget"] = str(D / "ops/vps/r3-driver-budget.json")
                     PINS["driverBudget"] = "2fc0921fd26cdb69adf6ab7dc683b3fea321bb59c5db24db95428d7ac59a1e16"
-                    if 26 >= 18:
+                    if 27 >= 18:
                         # R-022: lease renewal/recovery parameters as an installation input (delivered, pinned).
-                        if 26 >= 22:
+                        if 27 >= 22:
                             # R-022 (task-104): composed budgets DNS 6 s / lock 3 s, immediate-renewal band M=19.
                             files["leaseRenewal"] = str(D / "ops/vps/r3-lease-renewal-v22.json")
                             PINS["leaseRenewal"] = "7a53b38d9ecc3f75f1221a637d0c439bc0d31291fdcaedc4daf0414eaa122d53"
                         else:
                             files["leaseRenewal"] = str(D / "ops/vps/r3-lease-renewal.json")
                             PINS["leaseRenewal"] = "c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f"
-                        assert set(files) == (C.DATA_INPUTS_V24 if 26 >= 24 else C.DATA_INPUTS_V23 if 26 >= 23 else C.DATA_INPUTS_V22 if 26 >= 22 else C.DATA_INPUTS_V21 if 26 >= 21 else C.DATA_INPUTS_V20 if 26 >= 20 else C.DATA_INPUTS_V19 if 26 >= 19 else C.DATA_INPUTS_V18), "R3_INPUT_SET_DRIFT"
+                        assert set(files) == (C.DATA_INPUTS_V24 if 27 >= 24 else C.DATA_INPUTS_V23 if 27 >= 23 else C.DATA_INPUTS_V22 if 27 >= 22 else C.DATA_INPUTS_V21 if 27 >= 21 else C.DATA_INPUTS_V20 if 27 >= 20 else C.DATA_INPUTS_V19 if 27 >= 19 else C.DATA_INPUTS_V18), "R3_INPUT_SET_DRIFT"
                     else:
                         assert set(files) == C.DATA_INPUTS_V17, "R3_INPUT_SET_DRIFT"
                 else:
@@ -303,12 +305,12 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = (C.SOURCE_INPUTS_V24 if 26 >= 24 else C.SOURCE_INPUTS_V23 if 26 >= 23 else C.SOURCE_INPUTS_V22 if 26 >= 22 else C.SOURCE_INPUTS_V21 if 26 >= 21 else C.SOURCE_INPUTS_V20 if 26 >= 20 else C.SOURCE_INPUTS_V19 if 26 >= 19 else C.SOURCE_INPUTS_V18 if 26 >= 18 else C.SOURCE_INPUTS_V17 if 26 >= 17 else C.SOURCE_INPUTS_V16 if 26 >= 16 else C.SOURCE_INPUTS_V15 if 26 >= 15 else C.SOURCE_INPUTS_V13 if 26 >= 13 else C.SOURCE_INPUTS_V12 if 26 >= 12 else C.SOURCE_INPUTS_V11 if 26 >= 11
-              else C.SOURCE_INPUTS_V6 if 26 >= 6 else C.SOURCE_INPUTS)
+SOURCE_SET = (C.SOURCE_INPUTS_V24 if 27 >= 24 else C.SOURCE_INPUTS_V23 if 27 >= 23 else C.SOURCE_INPUTS_V22 if 27 >= 22 else C.SOURCE_INPUTS_V21 if 27 >= 21 else C.SOURCE_INPUTS_V20 if 27 >= 20 else C.SOURCE_INPUTS_V19 if 27 >= 19 else C.SOURCE_INPUTS_V18 if 27 >= 18 else C.SOURCE_INPUTS_V17 if 27 >= 17 else C.SOURCE_INPUTS_V16 if 27 >= 16 else C.SOURCE_INPUTS_V15 if 27 >= 15 else C.SOURCE_INPUTS_V13 if 27 >= 13 else C.SOURCE_INPUTS_V12 if 27 >= 12 else C.SOURCE_INPUTS_V11 if 27 >= 11
+              else C.SOURCE_INPUTS_V6 if 27 >= 6 else C.SOURCE_INPUTS)
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
-if 26 >= 25:
+if 27 >= 25:
     # R-002 (task-07..13d): the reviewed preparer extends the v24 index with the live Semantic
     # profile, the v25 lease renewal input and the stable-identity source. Plan and apply must agree.
     import subprocess
@@ -330,7 +332,9 @@ if 26 >= 25:
     profile_path.write_bytes(profile); profile_path.chmod(0o600)
     sys.stderr.write("profilo Semantic v25: " + profile.decode("ascii") + "\n")
     # v26 (task-13f): same v25 code, ingress tick budget 2.5 s in its own pinned renewal input.
-    RENEWAL_FILE, RENEWAL_PIN = (("ops/vps/r3-lease-renewal-v26.json", "609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9") if 26 >= 26
+    # v27 (task-13h): v25 parameters again (byte-identical file), new ingress code.
+    RENEWAL_FILE, RENEWAL_PIN = (("ops/vps/r3-lease-renewal-v27.json", "a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5") if 27 >= 27
+                                 else ("ops/vps/r3-lease-renewal-v26.json", "609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9") if 27 == 26
                                  else ("ops/vps/r3-lease-renewal-v25.json", "a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5"))
     renewal = D / RENEWAL_FILE
     if sha(renewal) != RENEWAL_PIN:
