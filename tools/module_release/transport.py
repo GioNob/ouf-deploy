@@ -1,20 +1,65 @@
-"""Unprivileged transport of the reviewed module CI ZIP. Requires gh on the runner."""
+"""Unprivileged transport of the reviewed module CI ZIP. Python standard library only: no gh CLI on the host."""
 
 import argparse
+import http.client
 import json
 import os
 from pathlib import Path
-import subprocess
+import re
 import tempfile
+from urllib.parse import urlsplit
 
 from .contract import SEMANTIC_SCHEMA, Held, checksum, package, require
 from .provenance import select_artifact, verify_tested_tree
 
 
+API_LIMIT = 4 << 20
+CHUNK = 1 << 20
+
+
+def _token():
+    token = os.environ.get("GH_TOKEN", "")
+    require(re.fullmatch(r"[A-Za-z0-9_.-]{1,4095}", token) is not None, "TRANSPORT_TOKEN_REQUIRED")
+    return token
+
+
 def github(path, output=None):
-    result = subprocess.run(["gh", "api", path], stdout=output or subprocess.PIPE, stderr=subprocess.DEVNULL, check=True, timeout=360)
-    if output is None:
-        return json.loads(result.stdout)
+    """GET api.github.com/<path>: JSON, or stream an artifact ZIP to output through one HTTPS redirect.
+
+    The bearer goes only to api.github.com; the short-lived download URL is fetched without it.
+    """
+    require(re.fullmatch(r"repos/[\w.-]+/[\w.-]+/[\w./-]+", path) is not None and ".." not in path,
+            "TRANSPORT_API_PATH")
+    headers = {"Authorization": "Bearer " + _token(), "User-Agent": "ouf-module-release-transport",
+               "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
+    conn = http.client.HTTPSConnection("api.github.com", timeout=60)
+    try:
+        conn.request("GET", "/" + path, headers=headers)
+        response = conn.getresponse()
+        if output is None:
+            require(response.status == 200, "TRANSPORT_GITHUB_API")
+            raw = response.read(API_LIMIT + 1)
+            require(len(raw) <= API_LIMIT, "TRANSPORT_GITHUB_API")
+            return json.loads(raw)
+        require(response.status == 302, "TRANSPORT_DOWNLOAD")
+        location = urlsplit(response.getheader("Location") or "")
+    finally:
+        conn.close()
+    require(location.scheme == "https" and bool(location.hostname) and location.username is None
+            and location.password is None and location.port in (443, None), "TRANSPORT_DOWNLOAD")
+    conn = http.client.HTTPSConnection(location.hostname, timeout=360)
+    try:
+        conn.request("GET", location.path + ("?" + location.query if location.query else ""),
+                     headers={"User-Agent": "ouf-module-release-transport"})
+        response = conn.getresponse()
+        require(response.status == 200, "TRANSPORT_DOWNLOAD")
+        while True:
+            chunk = response.read(CHUNK)
+            if not chunk:
+                break
+            output.write(chunk)
+    finally:
+        conn.close()
 
 
 def select(ci, run_id, artifact_id, api, *, artifact_prefix=None):
