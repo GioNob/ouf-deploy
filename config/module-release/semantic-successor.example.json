@@ -1,0 +1,13 @@
+{
+  "ci": {
+    "repository": "GioNob/ouf-semantic-registry",
+    "workflow": "module-ci.yml",
+    "pullRequest": 49,
+    "sourceCommit": "8a79db9201c6285749669a58b169ccf9e0da7cb2",
+    "sourceTree": "e293bbe42b3229087027d015a2002b0775939bd4",
+    "imageName": "ouf-semantic-registry",
+    "manifestSchema": "ouf.semantic-tested-image.v1",
+    "artifactPrefix": "semantic-registry-governed-image"
+  },
+  "migrationsField": "flywayMigrations"
+}

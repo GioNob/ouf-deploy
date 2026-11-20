@@ -44,7 +44,7 @@ class GatewayRelease:
         need(head is None or head["status"] == "APPLIED", "GATEWAY_RECONCILIATION_REQUIRED")
         return head
 
-    def execute(self, review):
+    def execute(self, review, token):
         req, phase = self.req, self.req["phase"]
         current = self.current()
         if phase == "return":
@@ -69,7 +69,7 @@ class GatewayRelease:
             need(intent(req) == approved["digest"] == intent(approved)
                  and digest(prepared) == req["digest"], "GATEWAY_PLAN_DRIFT")
             nonce = prepared["nonce"]
-        ci, resources = package(self.profile, req)
+        ci, resources = package(self.profile, req, token)
         with connect(self.profile) as (admin, identity):
             rows = plan_rows(admin, resources)
             plan = dict(scope=intent(req), profile=digest(self.profile), generation=identity, ci=ci,

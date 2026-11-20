@@ -14,12 +14,12 @@
     },
     {
       "id": "deploy.gateway-release",
-      "version": 1,
+      "version": 2,
       "owner": "ouf-deploy",
-      "archive": "Moduli Gateway e selettore CI del commit installato, sezione gateway del profilo root, riferimenti alle credenziali, journal per run e puntatore gateway-head",
+      "archive": "Moduli Gateway e selettore CI del commit installato, sezione gateway del profilo root, riferimento alla chiave Admin, journal per run e puntatore gateway-head",
       "class": "configurazione",
       "secrets": true,
-      "capture": "Il custode root conserva cifrati profilo, file chiave, token di lettura Actions e journal coerente a esecutore fermo. Registrare commit, proprietari, permessi, run del publisher e digest dello ZIP.",
+      "capture": "Il custode root conserva cifrati profilo, chiave Admin e journal coerente a esecutore fermo. Registrare commit, proprietari, permessi, run del publisher e digest dello ZIP. Il token Actions vive solo nel processo del workflow e dell’esecutore.",
       "restore": "Ripristinare i blob del bootstrap, poi profilo e accessi correnti. Ripristinare insieme stato per run e puntatore privato prima della riapertura del mandato. Riconciliare una testa PENDING sul nodo.",
       "test": "Su APISIX isolato verificare il ritorno approvato, i corpi precedenti, la rimozione delle sole risorse create e la conservazione di una rotta estranea."
     },

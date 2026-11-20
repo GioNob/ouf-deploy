@@ -165,20 +165,22 @@ class Contract(unittest.TestCase):
                    head_repository=repo, pull_requests=[{"number": 7, "head": {"sha": CI["sourceCommit"]}}], run_attempt=1)
         item = dict(id=12, expired=False, workflow_run={"id": 11, "head_sha": CI["sourceCommit"]},
                     name="gateway-release-bundle-11", digest="sha256:" + ci["zipSha256"])
-        source = dict(repository=CI["repository"], workflow=CI["workflow"], tokenFile="/synthetic")
+        source = dict(repository=CI["repository"], workflow=CI["workflow"])
         profile = dict(source=source, values={"binding": SECRET})
         for update, change in (({}, {}), ({"event": "push"}, {}), ({"pull_requests": []}, {}),
                                ({"head_sha": "f"*40}, {}), ({}, {"expired": True}), ({}, {"id": 99}),
                                ({}, {"name": "source-onboarding-governed-image-11"})):
             api = Mock(side_effect=[dict(run, **update), dict(item, **change)])
-            with patch.object(bundle, "trusted"), patch.object(bundle, "github_reader", return_value=api), \
+            with patch.object(bundle, "github_reader", return_value=api) as reader, \
                     patch.object(bundle, "download", return_value=raw) as download:
                 if update or change:
                     with self.assertRaisesRegex(mandate.Held, "CI_PROVENANCE"):
-                        bundle.package(profile, REQ)
+                        bundle.package(profile, REQ, SECRET)
                     download.assert_not_called()
                 else:
-                    self.assertEqual(bundle.package(profile, REQ), (ci, verify((ci, raw))))
+                    self.assertEqual(bundle.package(profile, REQ, SECRET), (ci, verify((ci, raw))))
+                    download.assert_called_once_with(ci, SECRET)
+                reader.assert_called_once_with(CI["repository"], SECRET)
 
 
 class MemoryAdmin:
@@ -211,14 +213,14 @@ class Phases(unittest.TestCase):
         self.admin = MemoryAdmin()
         self.before = deepcopy(self.admin.data)
         ci, raw = artifact(ROWS)
-        self.enterContext(patch.object(operation, "package", return_value=(ci, verify((ci, raw)))))
+        self.package = self.enterContext(patch.object(operation, "package", return_value=(ci, verify((ci, raw)))))
         self.enterContext(patch.object(operation, "connect", side_effect=lambda _: nullcontext((self.admin, "generation"))))
         self.enterContext(patch.object(store, "trusted", side_effect=lambda path, **_: path))
         self.enterContext(patch.object(store, "sync_dir"))  # non-POSIX temporary directory
 
     def phase(self, req):
         mandate.validate(req, self.cfg)
-        result = operation.GatewayRelease(self.cfg, self.root, req).execute("fixture-review")
+        result = operation.GatewayRelease(self.cfg, self.root, req).execute("fixture-review", SECRET)
         self.assertNotIn(SECRET, json.dumps(result))
         return result
 
@@ -231,6 +233,25 @@ class Phases(unittest.TestCase):
     def return_req(self, receipt):
         return dict(operation="gateway-release", phase="return", commit=REQ["commit"], run="71",
                     attempt="1", releaseRun=REQ["run"], digest=receipt["digest"])
+
+    def test_dispatch_uses_ephemeral_token_for_plan_and_apply(self):
+        models = [str(ROOT / "tools" / name) for name in ("semantic_provider_r3", "semantic_application_cutover")]
+        with patch.object(sys, "path", models + sys.path):
+            dispatch = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["dispatch"]
+        token = "synthetic-workflow-token"
+        with patch.dict(dispatch.__globals__, authorize=Mock(return_value="fixture-review")):
+            plan = dispatch(REQ, self.cfg, self.root, Mock(), token=token)
+            self.package.assert_called_once_with(self.cfg["gateway"], REQ, token)
+            req = dict(REQ, phase="apply", digest=plan["digest"])
+            receipt = dispatch(req, self.cfg, self.root, Mock(), token=token)
+            self.package.assert_called_with(self.cfg["gateway"], req, token)
+            result = dispatch(self.return_req(receipt), self.cfg, self.root, Mock(), token=token)
+        self.assertEqual(result["status"], "RETURNED")
+        self.assertEqual(self.package.call_count, 2)
+        self.assertNotIn(token, json.dumps([plan, receipt, result]))
+        for path in self.root.rglob("*"):
+            if path.is_file():
+                self.assertNotIn(token.encode(), path.read_bytes())
 
     def test_apply_then_separately_reviewed_return(self):
         req = self.plan()

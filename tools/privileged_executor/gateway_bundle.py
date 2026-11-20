@@ -3,7 +3,6 @@ import hashlib
 import http.client
 import io
 import json
-from pathlib import Path
 import re
 import stat
 import zipfile
@@ -11,8 +10,7 @@ from urllib.parse import urlsplit
 
 from mandate import Held, canonical, digest, github_reader, need
 from module_release.contract import Held as SourceHeld
-from module_release.transport import select
-from store import trusted
+from module_release.provenance import select_artifact
 
 
 KINDS = ("upstreams", "services", "plugin_configs", "plugin_metadata", "global_rules", "routes")
@@ -123,16 +121,14 @@ def download(ci, token):
         conn.close()
 
 
-def package(profile, req):
+def package(profile, req, token):
     source = profile["source"]
-    token = trusted(Path(source["tokenFile"]), private=True).read_text(encoding="ascii").strip()
     ci = dict(repository=source["repository"], workflow=source["workflow"],
               sourceCommit=req["sourceCommit"], pullRequest=int(req["sourcePr"]))
     get = github_reader(ci["repository"], token)
-    prefix = "repos/" + ci["repository"]
     try:
-        ci = select(ci, int(req["sourceRun"]), int(req["artifact"]), lambda path: get(path[len(prefix):]),
-                    artifact_prefix="gateway-release-bundle")
+        ci = select_artifact(ci, int(req["sourceRun"]), int(req["artifact"]), get,
+                             artifact_prefix="gateway-release-bundle")
         return ci, verify(download(ci, token), ci, profile["values"])
     except SourceHeld as exc:
         raise Held("GATEWAY_CI_PROVENANCE") from exc

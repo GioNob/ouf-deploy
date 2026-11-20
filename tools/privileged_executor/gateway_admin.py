@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 
 from gateway_bundle import ID, KINDS, LIMIT, matches
-from mandate import canonical, need
+from mandate import Held, canonical, need
 from module_release.docker import Docker
 from store import trusted
 
@@ -58,6 +58,12 @@ def open_namespace(path):
         os.close(fd)
 
 
+class AdminRequestError(Held):
+    def __init__(self, status):
+        super().__init__("GATEWAY_ADMIN_REQUEST")
+        self.status = status
+
+
 class Admin:
     def __init__(self, host, port, base, key, guard):
         self.host, self.port, self.base = host, port, base
@@ -81,7 +87,8 @@ class Admin:
                 message = error.get("error_msg", error.get("message"))
                 need(isinstance(message, str) and message.lower() == "key not found", "GATEWAY_ADMIN_NOT_FOUND")
                 return None
-            need(response.status in ((200, 201) if method == "PUT" else (200,)), "GATEWAY_ADMIN_REQUEST")
+            if response.status not in ((200, 201) if method == "PUT" else (200,)):
+                raise AdminRequestError(response.status)
             if method == "DELETE":
                 return None
             doc = json.loads(data)

@@ -41,6 +41,7 @@ def matches(pattern, value):
 NAME = r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}"
 SHA = r"[0-9a-f]{64}"
 IMAGE = "sha256:" + SHA
+SEMANTIC_SCHEMA = "ouf.semantic-tested-image.v1"
 COMMON_CI_COORDINATES = ("repository", "workflow", "pullRequest", "runId", "runAttempt", "artifactId", "zipSha256",
                          "sourceCommit", "sourceTree", "imageName", "imageId")
 CI_COORDINATES = COMMON_CI_COORDINATES + ("manifestSchema",)
@@ -214,6 +215,14 @@ def package(p, target=None, *, transport=False, migrations_field=None):
             }
             require(matches(r"[0-9a-f]{40}", tested) and matches(IMAGE, manifest["imageId"])
                     and all(manifest[k] == v for k, v in expected.items()), "CI_PROVENANCE_CHANGED")
+            if ci["manifestSchema"] == SEMANTIC_SCHEMA:
+                require(manifest.get("qualifiedInCiOnly") is True and all(manifest.get(key) is False for key in
+                        ("targetApplyAuthorized", "humanBudgetGranted", "releaseAcceptance")), "CI_PROVENANCE_CHANGED")
+                entries = manifest.get("flywayMigrations")
+                require(isinstance(entries, list) and entries and all(
+                    isinstance(row, dict) and set(row) == {"name", "sha256"} and
+                    matches(r"V[^/]*\.sql", row["name"]) and matches(SHA, row["sha256"]) for row in entries)
+                    and len({row["name"] for row in entries}) == len(entries), "MIGRATION_INVENTORY_REQUIRED")
             with z.open("image.tar.gz") as archive:
                 archive_hash = checksum(archive, target)
             require(manifest["archiveSha256"] == archive_hash and

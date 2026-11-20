@@ -119,6 +119,7 @@ def inspect(profile):
     if "successorImage" in cfg:
         spec = cfg["successorImage"]
         check(set(spec) == {"ci", "inbox", "migrationsField", "predecessorMigrations"}
+              and set(spec["ci"]) == set(contract.CI_COORDINATES)
               and Path(spec["inbox"]).is_absolute() and isinstance(spec["predecessorMigrations"], list)
               and contract.matches(contract.NAME, spec["migrationsField"]), "SUCCESSOR_IMAGE_PROFILE")
         contract.validate_ci(spec["ci"])

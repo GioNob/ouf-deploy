@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from .contract import Held, checksum, package, require
+from .contract import SEMANTIC_SCHEMA, Held, checksum, package, require
 from .provenance import select_artifact, verify_tested_tree
 
 
@@ -20,8 +20,10 @@ def github(path, output=None):
 def select(ci, run_id, artifact_id, api, *, artifact_prefix=None):
     prefix = "repos/" + ci["repository"]
     if artifact_prefix is None:
-        artifact_prefix = (ci["artifactPrefix"] if ci.get("publisherFormat") == "acquisition-mcp"
-                           else "source-onboarding-governed-image")
+        if ci.get("publisherFormat") == "acquisition-mcp" or ci.get("manifestSchema") == SEMANTIC_SCHEMA:
+            artifact_prefix = ci["artifactPrefix"]
+        else:
+            artifact_prefix = "source-onboarding-governed-image"
     return select_artifact(ci, run_id, artifact_id, lambda path: api(prefix + path),
                            artifact_prefix=artifact_prefix)
 
@@ -36,7 +38,7 @@ def transport(profile, run_id, artifact_id, inbox):
             github(f"{prefix}/actions/artifacts/{artifact_id}/zip", out)
             out.flush()
             os.fsync(out.fileno())
-        receipt = package({"ci": ci, "inbox": tmp}, transport=True)
+        receipt = package({"ci": ci, "inbox": tmp}, transport=True, migrations_field=profile.get("migrationsField"))
         verify_tested_tree(ci, receipt, lambda path: github(prefix + path))
         final = inbox / path.name
         try:

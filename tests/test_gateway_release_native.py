@@ -1,5 +1,5 @@
 """Real Admin API in a disposable, labelled GitHub-hosted Docker Engine."""
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import json
 import os
 from pathlib import Path
@@ -7,10 +7,10 @@ import subprocess
 import tempfile
 import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from test_gateway_release import MARKER, REQ, SECRET, artifact, mandate, operation, row, verify
-from gateway_admin import connect
+from gateway_admin import AdminRequestError, connect
 
 
 def docker(*args):
@@ -18,6 +18,58 @@ def docker(*args):
     if result.returncode:
         raise AssertionError("GATEWAY_FIXTURE_DOCKER")
     return result.stdout.decode().strip()
+
+
+def seed_route(admin, target):
+    # A standalone route needs routing or plugin configuration in addition to its URI.
+    body = {"uri": "/" + target["id"], "status": 1, "priority": 0,
+            "upstream": {"type": "roundrobin", "nodes": {"127.0.0.1:8080": 1}}}
+    written = admin.write(target, body)
+    if written["uri"] != body["uri"] or admin.get(target) != written:
+        raise AssertionError("GATEWAY_FIXTURE_ROUTE_READBACK")
+    return written
+
+
+def wait_for_writable_route(profile, target):
+    deadline = time.monotonic() + 60
+    reason = "STARTUP"
+    while time.monotonic() < deadline:
+        try:
+            with connect(profile) as (admin, _):
+                return seed_route(admin, target)
+        except AdminRequestError as error:
+            if not 500 <= error.status < 600:
+                raise AssertionError(f"GATEWAY_FIXTURE_ROUTE_HTTP_{error.status}") from error
+            reason = f"HTTP_{error.status}"
+        except OSError as error:
+            reason = type(error).__name__
+        time.sleep(min(1, max(0, deadline - time.monotonic())))
+    raise AssertionError(f"GATEWAY_FIXTURE_WRITE_READINESS {reason}")
+
+
+class WriteReadiness(unittest.TestCase):
+    def test_retries_startup_then_reads_back_same_route(self):
+        admin = Mock()
+        written = {"uri": "/target"}
+        admin.write.side_effect = [AdminRequestError(503), written]
+        admin.get.return_value = written
+        with patch(__name__ + ".connect", return_value=nullcontext((admin, None))), patch.object(time, "sleep"):
+            self.assertEqual(wait_for_writable_route({}, {"id": "target"}), written)
+        first, retry = admin.write.call_args_list
+        self.assertEqual(first, retry)
+        self.assertIn("upstream", first.args[1])
+        admin.get.assert_called_once_with({"id": "target"})
+
+    def test_invalid_body_and_deadline_fail_with_http_status(self):
+        for status, clock, reason in ((400, [0, 0], "ROUTE_HTTP_400"),
+                                      (503, [0, 0, 59, 60], "WRITE_READINESS HTTP_503")):
+            admin = Mock()
+            admin.write.side_effect = AdminRequestError(status)
+            with self.subTest(status=status), patch(__name__ + ".connect", return_value=nullcontext((admin, None))), \
+                    patch.object(time, "monotonic", side_effect=clock), patch.object(time, "sleep"), \
+                    self.assertRaisesRegex(AssertionError, reason):
+                wait_for_writable_route({}, {"id": "target"})
+            admin.write.assert_called_once()
 
 
 @unittest.skipUnless(os.getenv("OUF_GATEWAY_RELEASE_NATIVE") == "1", "disposable APISIX opt-in")
@@ -56,23 +108,13 @@ class NativeRelease(unittest.TestCase):
         self.route = row("routes", "target", {})
         self.outside = row("routes", "outside", {})
         self.plugins = row("plugin_configs", "settings", {"plugins": {"proxy-rewrite": {"uri": "/changed"}}})
-        deadline = time.monotonic() + 60
-        while True:
-            try:
-                with connect(self.profile) as (admin, _):
-                    admin.get(self.route)
-                break
-            except (OSError, mandate.Held):
-                self.assertLess(time.monotonic(), deadline, "GATEWAY_FIXTURE_STARTUP")
-                time.sleep(1)
+
+        self.baseline = wait_for_writable_route(self.profile, self.route)
         with connect(self.profile) as (admin, _):
-            for target in (self.route, self.outside):
-                admin.write(target, {"uri": "/" + target["id"], "status": 1, "priority": 0})
-            self.baseline = admin.get(self.route)
-            self.foreign = admin.get(self.outside)
+            self.foreign = seed_route(admin, self.outside)
 
     def phase(self, req):
-        result = operation.GatewayRelease({"gateway": self.profile}, self.state, req).execute("fixture-review")
+        result = operation.GatewayRelease({"gateway": self.profile}, self.state, req).execute("fixture-review", SECRET)
         self.assertNotIn(SECRET, json.dumps(result))
         return result
 

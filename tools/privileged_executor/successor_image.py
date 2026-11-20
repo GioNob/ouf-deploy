@@ -30,10 +30,10 @@ def admit(cfg, journal, source_get):
         previous = inventory(spec["predecessorMigrations"])
         selected = select_artifact(ci, ci["runId"], ci["artifactId"], source_get,
                                    artifact_prefix="semantic-registry-governed-image")
-        need(selected == ci, "SEMANTIC_CI_PINS_CHANGED")
+        need(all(selected[k] == value for k, value in ci.items()), "SEMANTIC_CI_PINS_CHANGED")
         with tempfile.TemporaryFile(dir=journal.path) as archive:
             facts = package(spec, archive, migrations_field=spec["migrationsField"])
-            verify_tested_tree(ci, facts, source_get)
+            verify_tested_tree(selected, facts, source_get)
             current = inventory(facts["migrations"])
             need(previous <= current, "PREDECESSOR_MIGRATIONS_CHANGED")
             added = [row for row in facts["migrations"] if digest(row) not in previous]

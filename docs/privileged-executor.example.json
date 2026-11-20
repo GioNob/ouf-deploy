@@ -36,22 +36,22 @@
   },
   "successorImage": {
     "ci": {
-      "repository": "<owner>/ouf-semantic-registry",
-      "workflow": "<publisher workflow filename>",
-      "pullRequest": 0,
-      "runId": 0,
+      "repository": "GioNob/ouf-semantic-registry",
+      "workflow": "module-ci.yml",
+      "pullRequest": 49,
+      "runId": 44796175289,
       "runAttempt": 0,
       "artifactId": 0,
-      "sourceCommit": "<approved PR head SHA>",
-      "sourceTree": "<tested tree SHA>",
-      "manifestSchema": "<publisher schema>",
-      "imageName": "<publisher image name>",
+      "sourceCommit": "8a79db9201c6285749669a58b169ccf9e0da7cb2",
+      "sourceTree": "e293bbe42b3229087027d015a2002b0775939bd4",
+      "manifestSchema": "ouf.semantic-tested-image.v1",
+      "imageName": "ouf-semantic-registry",
       "zipSha256": "<GitHub artifact SHA-256>",
       "imageId": "sha256:<approved target Engine image ID>"
     },
     "inbox": "<absolute Semantic ZIP inbox>",
-    "migrationsField": "<publisher field containing the full Flyway inventory>",
-    "predecessorMigrations": ["<copy every entry from the original image inventory>"]
+    "migrationsField": "flywayMigrations",
+    "predecessorMigrations": [{"name": "<original Flyway filename>", "sha256": "<original migration SHA-256>"}]
   },
   "retainedName": "<semantic retained>",
   "failedName": "<semantic returned>",
@@ -141,8 +141,7 @@
   "gateway": {
     "source": {
       "repository": "GioNob/ouf-api-gateway",
-      "workflow": "<publisher workflow filename>",
-      "tokenFile": "<absolute private source Actions read token file>"
+      "workflow": "<publisher workflow filename>"
     },
     "dockerSocket": "<absolute local Docker socket>",
     "container": "<APISIX container name>",

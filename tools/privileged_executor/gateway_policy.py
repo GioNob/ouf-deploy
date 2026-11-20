@@ -15,9 +15,9 @@ def valid_profile(profile):
         return False
     source = profile["source"]
     values = profile["values"]
-    if not isinstance(source, dict) or set(source) != {"repository", "workflow", "tokenFile"}:
+    if not isinstance(source, dict) or set(source) != {"repository", "workflow"}:
         return False
-    paths = (profile["dockerSocket"], profile["keyFile"], source["tokenFile"])
+    paths = (profile["dockerSocket"], profile["keyFile"])
     try:
         loopback = isinstance(profile["host"], str) and ipaddress.ip_address(profile["host"]).is_loopback
     except ValueError:

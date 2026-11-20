@@ -41,7 +41,7 @@ class Bootstrap(unittest.TestCase):
         module = cfg["modules"]["onboarding"]
         cfg["gateway"].update(host="127.0.0.1", port=9180, adminPath="/apisix/admin", keyFile=str(tmp/"key"),
                               dockerSocket=cfg["socket"], container="fixture")
-        cfg["gateway"]["source"].update(workflow="ci.yml", tokenFile=str(tmp/"token"))
+        cfg["gateway"]["source"]["workflow"] = "ci.yml"
         module.update(inbox=str(tmp/"inbox"), journal=str(tmp/"journal"), dockerSocket=cfg["socket"],
                       nsenter=str(tmp/"nsenter"), oldImage="sha256:"+"a"*64)
         for i, net in enumerate(module["networks"].values()):
@@ -110,6 +110,13 @@ class Bootstrap(unittest.TestCase):
                     del cfg["modules"]["mcp"]
                 self.path.write_text(json.dumps(cfg))
                 self.assertIn(self.inst.ENTRY, self.inst.inspect(self.path))
+
+    def test_gateway_rejects_legacy_source_token_file(self):
+        cfg = json.loads(self.path.read_bytes())
+        cfg["gateway"]["source"]["tokenFile"] = str(self.path.parent / "token")
+        self.path.write_text(json.dumps(cfg))
+        with self.assertRaisesRegex(ValueError, "GATEWAY_INSTALL_PROFILE"):
+            self.inst.inspect(self.path)
 
     @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_A2_NATIVE") == "1", "Linux bootstrap opt-in")
     def test_apply_reconciles_one_installation(self):
