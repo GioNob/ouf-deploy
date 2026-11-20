@@ -105,7 +105,7 @@ class Contract(unittest.TestCase):
 
     def test_workflow_summary_and_deploy_mandate_agree(self):
         cfg = dict(repositoryId=5, branch="main", commit=REQ["commit"], environmentId=6,
-                   environment="ouf-vps-privileged", reviewerIds=[7], gateway={})
+                   environment="ouf-vps-privileged", reviewerIds=[7], runner="fixture", gateway={})
         inputs = {k: REQ[k] for k in ("sourceRun", "sourcePr", "sourceCommit", "artifact")}
         with tempfile.TemporaryDirectory() as tmp:
             summary, output = Path(tmp)/"summary", Path(tmp)/"output"
@@ -129,7 +129,9 @@ class Contract(unittest.TestCase):
         self.enterContext(patch.object(store, "trusted", side_effect=lambda path, **_: path))
         self.enterContext(patch.object(store, "sync_dir"))
         def authorize(request, source=run, reviews=()):
-            return mandate.authorize(request, cfg, Mock(side_effect=[source, branch, environment, reviews]), state)
+            jobs = {"jobs": [dict(status="in_progress", runner_name="fixture",
+                                  name=request["phase"] + " " + request["digest"])]}
+            return mandate.authorize(request, cfg, Mock(side_effect=[source, jobs, branch, environment, reviews]), state)
         self.assertTrue(mandate.hex64(authorize(REQ)))
         with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
             authorize(REQ, dict(run, path=mandate.WORKFLOW))

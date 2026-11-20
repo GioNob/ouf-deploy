@@ -35,7 +35,7 @@ class Release(unittest.TestCase):
                    "schema": ["relation", "column"]}
         self.rt.database = lambda old: copy.deepcopy(self.db)
         self.cfg = dict(repositoryId=10, environmentId=20, branch="protected", environment="test",
-                        reviewerIds=[30], commit="a"*40, modules={"mcp": p})
+                        reviewerIds=[30], commit="a"*40, runner="fixture", modules={"mcp": p})
         self.req = dict(run="1", attempt="1", commit=self.cfg["commit"], operation="module-release",
                         module="mcp", phase="plan")
         self.req["digest"] = mandate.intent(self.req)
@@ -70,7 +70,9 @@ class Release(unittest.TestCase):
         history = self.approvals.setdefault(run, [])
         if approved:
             history.append(review)
-        get = Mock(side_effect=[job, dict(protected=True, commit={"sha": cfg["commit"]}), env, history])
+        jobs = {"jobs": [dict(status="in_progress", runner_name="fixture",
+                              name=phase + " " + self.req["digest"])]}
+        get = Mock(side_effect=[job, jobs, dict(protected=True, commit={"sha": cfg["commit"]}), env, history])
         return self.dispatch(self.req, cfg, self.root, get)
 
     def planned(self):

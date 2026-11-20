@@ -91,10 +91,15 @@ def authorize(req, policy, get, state):
     if req.get("operation") == "gateway-release":
         workflow = ".github/workflows/gateway-release.yml"
     need(str(run["id"]) == req["run"] and run["run_attempt"] == 1
-         and run["event"] == "workflow_dispatch" and run["status"] == "in_progress"
+         and run["event"] == "workflow_dispatch" and run["status"] in ("in_progress", "queued")
          and run["path"] == workflow and run["head_sha"] == req["commit"]
          and run["head_branch"] == policy["branch"]
          and run["repository"]["id"] == run["head_repository"]["id"] == policy["repositoryId"],
+         "RUN_NOT_AUTHORIZED")
+    jobs = get(path + "/attempts/1/jobs?per_page=100")["jobs"]
+    runner = policy.get("runnerName") or policy["runner"]
+    need(any(job.get("status") == "in_progress" and job.get("runner_name") == runner
+             and job.get("name") == req["phase"] + " " + req["digest"] for job in jobs),
          "RUN_NOT_AUTHORIZED")
     branch = get("/branches/" + quote(policy["branch"], safe=""))
     need(branch["protected"] is True and branch["commit"]["sha"] == req["commit"], "PROTECTED_REF_DRIFT")

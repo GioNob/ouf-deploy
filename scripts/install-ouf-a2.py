@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -I
-"""One-time bootstrap from a private root-owned checkout of the reviewed commit."""
+"""Install or update from a private root-owned checkout of the reviewed commit."""
 import argparse
+from contextlib import contextmanager, ExitStack
 import hashlib
 import json
 import os
@@ -11,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import types
+from uuid import uuid4
 
 ROOT = Path("/opt/ouf-a2")
 ENTRY = Path("/usr/local/sbin/ouf-a2")
@@ -45,7 +47,7 @@ def inspect(profile):
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
-    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "gateway"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
+    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "gateway", "runnerName"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
           and type(cfg["readinessPort"]) is int and 0 < cfg["readinessPort"] < 65536, "INSTALL_PROFILE_FIELDS")
     check(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", cfg["repository"]) and cfg["branch"]
           and all(Path(cfg[k]).is_absolute() for k in ("installRoot","leaseJournal","socket")),
@@ -69,6 +71,7 @@ def inspect(profile):
     import pwd
     user = cfg["runner"]
     check(re.fullmatch("[a-z_][a-z0-9_-]{0,30}", user) and pwd.getpwnam(user).pw_uid != 0, "RUNNER_ACCOUNT")
+    check(isinstance(cfg.get("runnerName", user), str) and cfg.get("runnerName", user).strip(), "RUNNER_NAME")
     check(cfg["environment"] == "ouf-vps-privileged" and isinstance(cfg["reviewerIds"], list)
           and cfg["reviewerIds"] and all(type(i) is int and i > 0 for i in cfg["reviewerIds"]),
           "REVIEW_POLICY")
@@ -141,42 +144,166 @@ def inspect(profile):
         safe(Path(module_profile["nsenter"]))
     check(len({cfg["retainedName"], cfg["failedName"], cfg["originalProfile"]["containerName"]}) == 3
           and len(set(cfg["roleCids"])) == len(set(cfg["roleTables"])) == 2, "INSTALLATION_IDENTITIES")
-    for path, (data, mode) in files.items():
-        parent = path.parent
-        while not parent.exists():
-            parent = parent.parent
-        safe(parent)
-        if os.path.lexists(path):
-            safe(path)
-            check(path.is_file() and path.read_bytes() == data and stat.S_IMODE(path.stat().st_mode) == mode,
-                  "INSTALLED_FILE_CONFLICT")
+    # Older installers delivered these same lib/books paths without an inventory.
+    # Adopt only the reviewed paths on the first upgrade, never scan the tree.
+    owned = sorted(p.relative_to(ROOT).as_posix() for p in files
+                   if p.is_relative_to(ROOT / "lib") or p.is_relative_to(ROOT / "books"))
+    files[ROOT / "managed-files.json"] = (json.dumps(owned).encode(), 0o600)
     return files
 
 
+def existing(path):
+    parent = path.parent
+    while not os.path.lexists(parent):
+        parent = parent.parent
+    safe(parent)
+    check(parent.is_dir(), "INSTALL_PARENT_REQUIRED")
+    if os.path.lexists(path):
+        safe(path)
+        check(path.is_file(), "REGULAR_FILE_REQUIRED")
+        return True
+    return False
+
+
+def fingerprint(data, mode):
+    return {"sha256": sha(data), "mode": oct(mode)}
+
+
+def journals(profile_bytes):
+    return {Path(m["journal"]) for m in json.loads(profile_bytes).get("modules", {}).values()}
+
+
 def manifest(files):
-    return {str(p): {"sha256": sha(b), "mode": oct(m)} for p, (b, m) in files.items()}
+    inventory = ROOT / "managed-files.json"
+    paths = set(files)
+    if existing(inventory):
+        names = json.loads(inventory.read_bytes())
+        check(isinstance(names, list), "INVALID_INSTALL_INVENTORY")
+        for name in names:
+            rel = Path(name)
+            check(len(rel.parts) >= 2 and rel.parts[0] in ("lib", "books")
+                  and rel.as_posix() == name and ".." not in rel.parts, "INVALID_INSTALL_INVENTORY")
+            paths.add(ROOT / rel)
+    profile = ROOT / "profile.json"
+    new_journals = journals(files[profile][0])
+    protected = {ROOT / "state"} | new_journals
+    if existing(profile):
+        protected.update(journals(profile.read_bytes()))
+    for directory in new_journals:
+        if not directory.exists():
+            check(not any(p in directory.parents for p in protected), "PROTECTED_INSTALL_STATE")
+    spec = {}
+    for path in sorted(paths):
+        check(not any(path.is_relative_to(p) for p in protected), "PROTECTED_INSTALL_STATE")
+        before = fingerprint(path.read_bytes(), stat.S_IMODE(path.stat().st_mode)) if existing(path) else None
+        after = fingerprint(*files[path]) if path in files else None
+        if before is None and after is None:
+            continue
+        if before == after:
+            action = "unchanged"
+        elif before is None:
+            action = "create"
+        elif after is None:
+            action = "delete"
+        else:
+            action = "replace"
+        spec[str(path)] = {"action": action, "before": before, "after": after}
+    return spec
 
 
-def publish(path, data, mode):
-    if path.exists():
-        return
-    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as stream:
+def sync_dir(path):
+    fd = os.open(path, os.O_DIRECTORY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def stage(path, data, mode, cleanup):
+    # sudo skips names containing a dot in an @includedir.
+    with tempfile.NamedTemporaryFile(dir=path.parent, prefix=".ouf-a2-", delete=False) as stream:
         tmp = Path(stream.name)
+        cleanup.callback(tmp.unlink, missing_ok=True)
+        stream.write(data)
+        stream.flush()
+        os.fchmod(stream.fileno(), mode)
+        os.fsync(stream.fileno())
+    return tmp
+
+
+def visudo(*args):
+    subprocess.run(["/usr/sbin/visudo", "-c", *args], check=True, stdout=subprocess.DEVNULL)
+
+
+def install(files, spec):
+    changed = [Path(p) for p, row in spec.items() if row["action"] != "unchanged"]
+    changed.sort(key=lambda p: p == RULE)
+    visudo()
+    with ExitStack() as cleanup:
+        staged = {}
+        if RULE in changed:
+            staged[RULE] = stage(RULE, *files[RULE], cleanup)
+            visudo("-f", str(staged[RULE]))
+        for directory in (ROOT, ROOT / "lib", ROOT / "lib/module_release", ROOT / "books",
+                          ROOT / "state", *journals(files[ROOT / "profile.json"][0])):
+            if not directory.exists():
+                directory.mkdir(mode=0o700)
+                sync_dir(directory.parent)
+            safe(directory)
+            check(directory.is_dir() and stat.S_IMODE(directory.stat().st_mode) == 0o700,
+                  "PRIVATE_DIRECTORY_REQUIRED")
+        backups = {}
+        published = []
         try:
-            stream.write(data)
-            stream.flush()
-            os.fchmod(stream.fileno(), mode)
-            os.fsync(stream.fileno())
-            if path == RULE:
-                subprocess.run(["/usr/sbin/visudo", "-cf", str(tmp)], check=True, stdout=subprocess.DEVNULL)
-            os.link(tmp, path)
-            fd = os.open(path.parent, os.O_DIRECTORY)
-            try:
-                os.fsync(fd)
-            finally:
-                os.close(fd)
+            for path in changed:
+                if path in files and path != RULE:
+                    staged[path] = stage(path, *files[path], cleanup)
+                if spec[str(path)]["before"] is not None:
+                    backup = path.with_name(".ouf-a2-old-" + uuid4().hex)
+                    os.link(path, backup)
+                    backups[path] = backup
+            for path in changed:
+                if path in staged:
+                    os.replace(staged[path], path)
+                else:
+                    path.unlink()
+                published.append(path)
+                sync_dir(path.parent)
+            visudo()
+            check(all(row["action"] == "unchanged" for row in manifest(files).values()), "INSTALL_READBACK")
+        except BaseException:
+            while published:
+                path = published[-1]
+                if path in backups:
+                    os.replace(backups[path], path)
+                else:
+                    path.unlink()
+                published.pop()
+                sync_dir(path.parent)
+            raise
+        else:
+            published.clear()
         finally:
-            tmp.unlink(missing_ok=True)
+            # Preserve remaining originals if even the rollback encounters an I/O error.
+            for path, backup in backups.items():
+                if path not in published:
+                    backup.unlink(missing_ok=True)
+
+
+@contextmanager
+def installation_lock():
+    import fcntl
+    fd = os.open(ROOT.parent, os.O_DIRECTORY)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        with ExitStack() as locks:
+            # Older installed executors hold only the per-run lock.
+            if existing(ROOT / "lock"):
+                active = locks.enter_context((ROOT / "lock").open("rb"))
+                fcntl.flock(active, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            yield
+    finally:
+        os.close(fd)
 
 
 def main():
@@ -187,7 +314,6 @@ def main():
     args = parser.parse_args()
     check(os.geteuid() == 0 and sys.flags.isolated, "ROOT_ISOLATED_REQUIRED")
     os.umask(0o077)
-    import fcntl
     files = inspect(args.profile)
     spec = manifest(files)
     stamp = sha(json.dumps(spec, sort_keys=True, separators=(",", ":")).encode())
@@ -196,23 +322,10 @@ def main():
         return
     approved = input("Per installare, trascrivere il digest del plan: ") if args.mode == "bootstrap" else args.plan_sha256
     check(approved == stamp, "INSTALL_PLAN_DRIFT")
-    fd = os.open(ROOT.parent, os.O_DIRECTORY)
-    try:
-        fcntl.flock(fd, fcntl.LOCK_EX)
-        check(manifest(inspect(args.profile)) == spec, "INSTALL_PLAN_DRIFT")
-        subprocess.run(["/usr/sbin/visudo", "-c"], check=True, stdout=subprocess.DEVNULL)
-        installed_cfg = json.loads(files[ROOT / "profile.json"][0])
-        journals = [Path(module["journal"]) for module in installed_cfg["modules"].values()]
-        for p in (*journals, ROOT, ROOT / "lib", ROOT / "lib/module_release", ROOT / "books", ROOT / "state"):
-            p.mkdir(exist_ok=True, mode=0o700)
-            safe(p)
-            check(stat.S_IMODE(p.stat().st_mode) == 0o700, "PRIVATE_DIRECTORY_REQUIRED")
-        for path in (*[p for p in files if p != RULE], RULE):
-            publish(path, *files[path])
-        inspect(args.profile)
-        subprocess.run(["/usr/sbin/visudo", "-c"], check=True, stdout=subprocess.DEVNULL)
-    finally:
-        os.close(fd)
+    with installation_lock():
+        files = inspect(args.profile)
+        check(manifest(files) == spec, "INSTALL_PLAN_DRIFT")
+        install(files, spec)
     print("OUF_A2_INSTALLED")
 
 

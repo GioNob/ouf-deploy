@@ -207,7 +207,7 @@ class ReleaseTest(unittest.TestCase):
         import store
         dispatch = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["dispatch"]
         cfg = dict(repositoryId=10, environmentId=20, branch="protected", environment="test",
-                   reviewerIds=[30], commit="a"*40, modules={"onboarding":self.p})
+                   reviewerIds=[30], commit="a"*40, runner="fixture", modules={"onboarding":self.p})
         req = dict(run="1", attempt="1", commit=cfg["commit"], operation="module-release",
                    module="onboarding", phase="plan")
         req["digest"] = mandate.intent(req)
@@ -220,7 +220,8 @@ class ReleaseTest(unittest.TestCase):
                        reviewers=[{"type":"User", "reviewer":user}])])
             approval = dict(state="approved", comment="",
                             user=user, environments=[env])
-            return dispatch(req, cfg, self.root, Mock(side_effect=[run, dict(protected=True,
+            jobs = {"jobs": [dict(status="in_progress", runner_name="fixture", name=req["phase"] + " " + req["digest"])]}
+            return dispatch(req, cfg, self.root, Mock(side_effect=[run, jobs, dict(protected=True,
                             commit={"sha":cfg["commit"]}), env, [approval] * approval_count]))
         with patch.object(store, "sync_dir"), patch.object(store, "trusted", side_effect=lambda p, **_: Path(p)), \
              patch.object(module_operation.operation, "Docker", return_value=self.rt):
