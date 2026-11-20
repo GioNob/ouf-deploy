@@ -72,6 +72,9 @@ CLOSURE = {
     "tools/semantic_provider_r3/cache_rollover_overlay_v23.py",
     # R-022 (task-109): v24 supervised cache wait overlay.
     "tools/semantic_provider_r3/cache_watch_overlay_v24.py",
+    # R-002 (task-07…13d): v25 stable Semantic identity overlay, input preparer and lease renewal input.
+    "tools/semantic_provider_r3/semantic_overlay_v25.py", "scripts/prepare-semantic-provider-r3-v25-inputs.py",
+    "ops/vps/r3-lease-renewal-v25.json",
     *("tools/semantic_lease_kernel_migration/" + n for n in (
         "__init__.py", "boot_dispatcher.py", "boot_runner_v2.py", "cli.py", "migration.py", "native.py")),
     "tools/semantic_provider_r3/upgrade.py", "scripts/upgrade-semantic-provider-r3.py",
@@ -113,7 +116,7 @@ class R3Runbooks(unittest.TestCase):
         self.assertEqual(paths, CLOSURE | set(C.SOURCE_INPUTS) | set(C.SOURCE_INPUTS_V6) | set(C.SOURCE_INPUTS_V11)
                          | set(C.SOURCE_INPUTS_V12) | set(C.SOURCE_INPUTS_V13)
                          | set(C.SOURCE_INPUTS_V15) | set(C.SOURCE_INPUTS_V16)
-                         | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18) | set(C.SOURCE_INPUTS_V19) | set(C.SOURCE_INPUTS_V20) | set(C.SOURCE_INPUTS_V21) | set(C.SOURCE_INPUTS_V22) | set(C.SOURCE_INPUTS_V23) | set(C.SOURCE_INPUTS_V24))
+                         | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18) | set(C.SOURCE_INPUTS_V19) | set(C.SOURCE_INPUTS_V20) | set(C.SOURCE_INPUTS_V21) | set(C.SOURCE_INPUTS_V22) | set(C.SOURCE_INPUTS_V23) | set(C.SOURCE_INPUTS_V24) | set(C.SOURCE_INPUTS_V25))
 
     def test_sealed_hashes_are_lf_blobs_at_head(self):
         for path, digest in self.deliveries[0]:
