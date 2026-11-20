@@ -26,6 +26,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Normalize the hosted runner's own sudoers modes (the installer runs a full visudo -c)
+        run: sudo chmod 0440 /etc/sudoers.d/* && sudo /usr/sbin/visudo -c
       - name: Label the disposable hosted Engine and prepare local images
         run: |
           set -euo pipefail
