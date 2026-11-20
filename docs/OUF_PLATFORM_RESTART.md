@@ -86,6 +86,119 @@ Lo start avvia i membri mancanti del livello nell’ordine dichiarato, poi verif
 
 Al primo errore l’apply manuale termina con `HELD` e conserva il lavoro già eseguito. Se scade il timeout del client Docker, l’esito del comando va riosservato sul daemon. Nella ricevuta sono disponibili motivo, livello, container, operazioni ed esiti. Per riprendere, correggere la causa e produrre un nuovo plan.
 
+## Moduli con avvio a cancello
+
+Il 20 novembre 2026 Semantic è rimasto fermo per 73 minuti dopo un `docker restart`. Docker vedeva il container in esecuzione. Il PID 1 era ancora la shell in attesa di USR1. Durante un upgrade questo intervallo consente all’owner di completare la migrazione prima dell’avvio dell’applicazione.
+
+Le cinque voci seguenti sono un esempio per gli array `containers` dei rispettivi livelli. Mantenere l’ordine delle dipendenze dell’installazione. Sostituire nomi e ID immutabili delle immagini con quelli qualificati per ciascun modulo e verificare porta, budget e array del comando.
+
+```json
+[
+  {
+    "containerName": "example-ingestion",
+    "gate": {
+      "imageId": "sha256:<ID_INGESTION>",
+      "entrypoint": ["/bin/sh", "-c", "OUF_APPLICATION_GATE=0; trap \"OUF_APPLICATION_GATE=1\" USR1; while [ \"$OUF_APPLICATION_GATE\" = 0 ]; do sleep 1 & wait \"$!\"; done; exec \"$@\"", "ouf-gated-application"],
+      "command": ["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/application.jar"]
+    },
+    "readiness": {"type": "actuator", "address": "127.0.0.1", "port": 8080, "path": "/actuator/health/readiness", "acceptStatus": [200], "jsonStatus": "UP", "timeoutSeconds": 2, "budgetSeconds": 60}
+  },
+  {
+    "containerName": "example-semantic",
+    "gate": {
+      "imageId": "sha256:<ID_SEMANTIC>",
+      "entrypoint": ["/bin/sh", "-c", "OUF_APPLICATION_GATE=0; trap \"OUF_APPLICATION_GATE=1\" USR1; while [ \"$OUF_APPLICATION_GATE\" = 0 ]; do sleep 1 & wait \"$!\"; done; exec \"$@\"", "ouf-gated-application"],
+      "command": ["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/application.jar"]
+    },
+    "readiness": {"type": "actuator", "address": "127.0.0.1", "port": 8080, "path": "/actuator/health/readiness", "acceptStatus": [200], "jsonStatus": "UP", "timeoutSeconds": 2, "budgetSeconds": 60}
+  },
+  {
+    "containerName": "example-udp",
+    "gate": {
+      "imageId": "sha256:<ID_UDP>",
+      "entrypoint": ["/bin/sh", "-c", "OUF_APPLICATION_GATE=0; trap \"OUF_APPLICATION_GATE=1\" USR1; while [ \"$OUF_APPLICATION_GATE\" = 0 ]; do sleep 1 & wait \"$!\"; done; exec \"$@\"", "ouf-gated-application"],
+      "command": ["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/application.jar"]
+    },
+    "readiness": {"type": "actuator", "address": "127.0.0.1", "port": 8080, "path": "/actuator/health/readiness", "acceptStatus": [200], "jsonStatus": "UP", "timeoutSeconds": 2, "budgetSeconds": 60}
+  },
+  {
+    "containerName": "example-onboarding",
+    "gate": {
+      "imageId": "sha256:<ID_ONBOARDING>",
+      "entrypoint": ["/bin/sh", "-c", "OUF_APPLICATION_GATE=0; trap \"OUF_APPLICATION_GATE=1\" USR1; while [ \"$OUF_APPLICATION_GATE\" = 0 ]; do sleep 1 & wait \"$!\"; done; exec \"$@\"", "ouf-gated-application"],
+      "command": ["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/application.jar"]
+    },
+    "readiness": {"type": "actuator", "address": "127.0.0.1", "port": 8080, "path": "/actuator/health/readiness", "acceptStatus": [200], "jsonStatus": "UP", "timeoutSeconds": 2, "budgetSeconds": 60}
+  },
+  {
+    "containerName": "example-mcp",
+    "gate": {
+      "imageId": "sha256:<ID_MCP>",
+      "entrypoint": ["/bin/sh", "-c", "OUF_APPLICATION_GATE=0; trap \"OUF_APPLICATION_GATE=1\" USR1; while [ \"$OUF_APPLICATION_GATE\" = 0 ]; do sleep 1 & wait \"$!\"; done; exec \"$@\"", "ouf-gated-application"],
+      "command": ["/usr/local/bin/ouf-mcp", "server"]
+    },
+    "readiness": {"type": "actuator", "address": "127.0.0.1", "port": 8080, "path": "/health/ready", "acceptStatus": [204], "timeoutSeconds": 2, "budgetSeconds": 60}
+  }
+]
+```
+
+Il controller verifica nel namespace che il PID 1 sia la shell del cancello, con gli argomenti esatti e il gestore USR1 installato. Invia il segnale una volta al CID completo appena avviato. Dopo l’exec verifica l’intero array `gate.command` e il percorso dell’eseguibile per un comando assoluto, oppure il nome dell’eseguibile per un comando come `java`.
+
+La sonda `actuator` esegue la GET sul loopback del container al percorso dichiarato. Accetta i codici elencati in `acceptStatus`. Se il profilo dichiara `jsonStatus`, il campo `status` dell’oggetto JSON deve avere quel valore. Per MCP basta HTTP 204, anche a corpo vuoto. Dopo la risposta il controller verifica nuovamente identità del processo e generazione. Nei profili a cancello del task-20b aggiungere i campi espliciti mostrati sopra prima di ricalcolare l’hash.
+
+Il budget del modulo decorre dall’operazione di start o skip. Ogni GET è limitata dal tempo residuo e da `timeoutSeconds`. Dimensionare il livello per l’avvio dei suoi membri e per le sonde. In caso di scadenza la ricevuta riporta `status=HELD`, `reason=READINESS_NOT_UP`, livello e modulo. Un rifiuto di apertura riporta `reason=GATE_HELD` e il dettaglio in `gateReason`. Entrambi gli esiti fermano anche il boot. Un nuovo apply verifica l’applicazione già avviata. Una shell trovata già in attesa richiede riconciliazione con l’owner dell’upgrade, anche dopo una risposta persa al segnale.
+
+### Comandi equivalenti in emergenza
+
+Lavorare in una finestra esclusiva con l’owner del modulo. Verificare nel journal dell’upgrade che l’immagine sia quella già migrata e che nessun rilascio del cancello sia in corso o abbia esito incerto. Usare il CID completo della ricevuta approvata, il profilo installato e il binding Docker verificato. Questi comandi Bash mostrano i controlli per **un solo modulo Java**. Coordinare gli altri membri e i livelli con il controller.
+
+```bash
+set -euo pipefail
+# PROFILE, NAME e CID provengono dal profilo e dal plan verificati.
+member=$(jq -ce --arg n "$NAME" '.levels[].containers[] | select(.containerName == $n and .gate)' "$PROFILE")
+d=("$(jq -er '.docker.path' "$PROFILE")" --host "unix://$(jq -er '.dockerSocket' "$PROFILE")")
+[[ $CID =~ ^[a-f0-9]{64}$ ]]
+
+# Solo per un modulo osservato fermo in stato exited nel plan.
+# Se la shell è già in attesa, riconciliare journal, migrazione e generazione con l’owner.
+[[ $("${d[@]}" inspect --type container --format '{{.Name}} {{.State.Status}}' "$CID") == "/$NAME exited" ]]
+"${d[@]}" start "$CID"
+frame() {
+  "${d[@]}" inspect --type container --format \
+    '[{{json .Id}},{{json .Name}},{{json .Image}},{{json .Config.Entrypoint}},{{json .Config.Cmd}},{{json .State.Status}},{{json .State.Pid}},{{json .State.StartedAt}}]' "$CID" |
+    jq -ce --arg id "$CID" --argjson m "$member" \
+      'select(.[:6] == [$id,("/"+$m.containerName),$m.gate.imageId,$m.gate.entrypoint,$m.gate.command,"running"] and .[6] > 1) | .[6:]'
+}
+generation=$(frame)
+pid=$(jq -er '.[0]' <<<"$generation")
+argv_matches() {
+  cmp -s "/proc/$pid/cmdline" <(jq -jr "$1 | .[] | ., \"\\u0000\"" <<<"$member")
+}
+[[ $(awk '/^NSpid:/{print $NF}' "/proc/$pid/status") == 1 ]]
+argv_matches '(.gate.entrypoint + .gate.command)'
+caught=$(awk '/^SigCgt:/{print $2}' "/proc/$pid/status")
+(( (16#$caught & (1 << ($(kill -l USR1) - 1))) != 0 ))
+[[ $(frame) == "$generation" ]]
+"${d[@]}" kill --signal=USR1 "$CID"
+```
+
+Se una verifica fallisce, fermarsi. Se manca ancora il gestore del segnale, ripetere solo le letture entro il budget. Dopo il segnale eseguire le verifiche seguenti finché riescono, entro il budget residuo del modulo. Impostare `T` al minore tra il timeout della GET e i secondi residui. Alla scadenza registrare `READINESS_NOT_UP` e fermare la sequenza.
+
+```bash
+addr=$(jq -er '.readiness.address' <<<"$member")
+port=$(jq -er '.readiness.port' <<<"$member")
+path=$(jq -er '.readiness.path' <<<"$member")
+[[ $(frame) == "$generation" ]]
+argv_matches '.gate.command'
+[[ $(basename "$(readlink "/proc/$pid/exe")") == java ]]
+response=$(nsenter --target "$pid" --net curl --noproxy '*' --silent --show-error \
+  --max-time "$T" --max-filesize 65536 --write-out $'\n%{http_code}' "http://$addr:$port$path")
+[[ ${response##*$'\n'} == 200 ]]
+jq -e '.status == "UP"' <<<"${response%$'\n'*}" >/dev/null
+[[ $(frame) == "$generation" ]]
+argv_matches '.gate.command'
+```
+
 ## Comportamento al boot
 
 L’unità verifica i digest del sorgente installato e dell’interprete. Il driver verifica il profilo e il binding Docker. Registra in modo esclusivo il boot ID del kernel nella directory persistente delle ricevute prima del primo inventario. Una seconda invocazione nello stesso boot restituisce `BOOT_ALREADY_ATTEMPTED`. Il lock della directory serializza le operazioni del controller.

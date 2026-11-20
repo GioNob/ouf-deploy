@@ -116,7 +116,150 @@
                           "maximum": 86400
                         }
                       }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "type",
+                        "address",
+                        "port",
+                        "path",
+                        "timeoutSeconds",
+                        "budgetSeconds",
+                        "acceptStatus"
+                      ],
+                      "properties": {
+                        "type": {
+                          "const": "actuator"
+                        },
+                        "address": {
+                          "type": "string",
+                          "format": "ipv4",
+                          "pattern": "^127\\."
+                        },
+                        "port": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 65535
+                        },
+                        "path": {
+                          "type": "string",
+                          "pattern": "^(?:/(?!\\.{1,2}(?:/|$))[A-Za-z0-9_.-]+)+$"
+                        },
+                        "timeoutSeconds": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 86400
+                        },
+                        "budgetSeconds": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 86400
+                        },
+                        "acceptStatus": {
+                          "type": "array",
+                          "minItems": 1,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "integer",
+                            "minimum": 100,
+                            "maximum": 599
+                          }
+                        },
+                        "jsonStatus": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
                     }
+                  ]
+                },
+                "gate": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "imageId",
+                    "entrypoint",
+                    "command"
+                  ],
+                  "properties": {
+                    "imageId": {
+                      "type": "string",
+                      "pattern": "^sha256:[0-9a-f]{64}$"
+                    },
+                    "entrypoint": {
+                      "type": "array",
+                      "minItems": 4,
+                      "maxItems": 4,
+                      "prefixItems": [
+                        {
+                          "allOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^(?:/(?!\\.{1,2}(?:/|$))[A-Za-z0-9_.-]+)+$"
+                            },
+                            {
+                              "pattern": "/sh$"
+                            }
+                          ]
+                        },
+                        {
+                          "const": "-c"
+                        },
+                        {
+                          "const": "OUF_APPLICATION_GATE=0; trap \"OUF_APPLICATION_GATE=1\" USR1; while [ \"$OUF_APPLICATION_GATE\" = 0 ]; do sleep 1 & wait \"$!\"; done; exec \"$@\""
+                        },
+                        {
+                          "const": "ouf-gated-application"
+                        }
+                      ]
+                    },
+                    "command": {
+                      "type": "array",
+                      "minItems": 1,
+                      "prefixItems": [
+                        {
+                          "type": "string",
+                          "anyOf": [
+                            {
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+                            },
+                            {
+                              "pattern": "^(?:/(?!\\.{1,2}(?:/|$))[A-Za-z0-9_.-]+)+$"
+                            }
+                          ]
+                        }
+                      ],
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^[^\\u0000]+$"
+                      }
+                    }
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "readiness": {
+                    "properties": {
+                      "type": {
+                        "const": "actuator"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "gate"
+                ]
+              },
+              "else": {
+                "not": {
+                  "required": [
+                    "gate"
                   ]
                 }
               }

@@ -2,7 +2,9 @@
 import hashlib
 import ipaddress
 import json
+import os
 from pathlib import Path
+import signal
 import stat
 import subprocess
 import time
@@ -19,6 +21,34 @@ INSPECT = (
     '[{{json $n}},{{json (index $e "IPAddress")}},'
     '{{with index $e "IPAMConfig"}}{{json (index . "IPv4Address")}}{{else}}null{{end}}]{{end}}'
 )
+
+GATE_INSPECT = ('[{{json .Id}},{{json .Name}},{{json .State.Status}},{{json .State.StartedAt}},'
+                '{{json .State.Pid}},{{json .Image}},{{json .Config.Entrypoint}},{{json .Config.Cmd}}]')
+
+
+class GateHeld(Held):
+    def __init__(self, detail):
+        super().__init__("GATE_HELD")
+        self.detail = detail
+
+
+def pid1_state(pid, gate):
+    """Read only PID 1's identity, argv and installed signal handler from host procfs."""
+    proc = Path("/proc") / str(pid)
+    status = dict(line.split(":", 1) for line in (proc / "status").read_text().splitlines() if ":" in line)
+    if status.get("NSpid", "").split()[-1:] != ["1"]:
+        raise GateHeld("PID1_UNVERIFIED")
+    argv = (proc / "cmdline").read_bytes().split(b"\0")
+    expected = [os.fsencode(arg) for arg in gate["command"]] + [b""]
+    if argv == [os.fsencode(arg) for arg in gate["entrypoint"]] + expected:
+        caught = int(status["SigCgt"], 16) & (1 << (signal.SIGUSR1 - 1))
+        return "armed" if caught else "arming"
+    if argv == expected:
+        command = gate["command"][0]
+        exe = (proc / "exe").readlink()
+        if (exe.as_posix() if command.startswith("/") else exe.name) == command:
+            return "application"
+    raise GateHeld("PID1_COMMAND_MISMATCH")
 
 
 class Docker:
@@ -40,7 +70,9 @@ class Docker:
         custody(self.cfg["dockerSocket"], stat.S_ISSOCK)
 
     def command(self, *args, deadline=None):
-        require(args[0] in {"inspect", "ps", "start", "stop"}, "COMMAND_DENIED")
+        signal_command = (len(args) == 3 and args[:2] == ("kill", "--signal=USR1")
+                          and isinstance(args[2], str) and HEX.fullmatch(args[2]))
+        require(args and (args[0] in {"inspect", "ps", "start", "stop"} or signal_command), "COMMAND_DENIED")
         self.verify()
         timeout = 30 + (self.cfg["stopTimeoutSeconds"] if args[0] == "stop" else 0)
         if deadline is not None:
@@ -101,3 +133,25 @@ class Docker:
         else:
             require(action == "start", "ACTION_INVALID")
             self.command("start", cid, deadline=deadline)
+
+    def gate_state(self, step, gate, deadline):
+        cid = step["observation"]["cid"]
+        require(HEX.fullmatch(cid), "INVALID_CID")
+        try:
+            raw = self.command("inspect", "--type", "container", "--format", GATE_INSPECT, cid, deadline=deadline)
+            found, name, status, since, pid, image, entry, cmd = json.loads(raw)
+            if found != cid or name != "/" + step["containerName"]:
+                raise GateHeld("CONTAINER_MISMATCH")
+            if image != gate["imageId"]:
+                raise GateHeld("IMAGE_MISMATCH")
+            if entry != gate["entrypoint"] or cmd != gate["command"]:
+                raise GateHeld("LAUNCH_CONFIG_MISMATCH")
+            if status != "running" or type(pid) is not int or pid <= 1 or not isinstance(since, str) or not since:
+                raise GateHeld("RUNNING_GENERATION_UNVERIFIED")
+            return (since, pid), pid1_state(pid, gate)
+        except GateHeld:
+            raise
+        except OSError:
+            raise GateHeld("PROCESS_UNAVAILABLE") from None
+        except (KeyError, TypeError, ValueError, Held):
+            raise GateHeld("GATE_OBSERVATION_FAILED") from None

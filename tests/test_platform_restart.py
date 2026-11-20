@@ -13,10 +13,10 @@ from unittest.mock import patch
 from types import SimpleNamespace
 import uuid
 
-from tools.platform_restart.controller import Controller
-from tools.platform_restart.docker import Docker
+from tools.platform_restart.controller import Controller, http_ready
+from tools.platform_restart.docker import Docker, GATE_INSPECT, pid1_state
 from tools.platform_restart import install
-from tools.platform_restart.profile import Held, canonical, load_profile, sha
+from tools.platform_restart.profile import GATE_LOOP, Held, canonical, load_profile, sha
 
 
 def configuration():
@@ -321,6 +321,333 @@ class PlatformTests(unittest.TestCase):
                 self.assertNotIn("@", unit)
                 self.assertIn("--profile-sha256 " + args.profile_sha256, unit)
                 self.assertEqual((dest / "profile.json").read_bytes(), profile.read_bytes())
+
+
+def gated_member():
+    return dict(containerName="sample-0",
+                gate=dict(imageId="sha256:" + "b" * 64,
+                          entrypoint=["/example/sh", "-c", GATE_LOOP, "ouf-gated-application"],
+                          command=["java", "-jar", "/example/module.jar"]),
+                readiness=dict(type="actuator", address="127.0.0.1", port=12345, path="/sample/ready",
+                               acceptStatus=[200], jsonStatus="UP", timeoutSeconds=1, budgetSeconds=2))
+
+
+class GatedEngine(Engine):
+    gate_state = Docker.gate_state
+
+    def __init__(self, cfg):
+        super().__init__(cfg)
+        self.config = copy.deepcopy(cfg["levels"][0]["containers"][0]["gate"])
+        self.trace = []
+        self.process = "armed"
+
+    def change(self, action, cid, deadline):
+        super().change(action, cid, deadline)
+        self.trace.append(self.changes[-1])
+
+    def command(self, *args, deadline):
+        row = self.rows["sample-0"]
+        if args == ("inspect", "--type", "container", "--format", GATE_INSPECT, row["cid"]):
+            self.trace.append(("inspect_gate", row["name"]))
+            return json.dumps([row["cid"], "/" + row["name"], row["status"], row["startedAt"], 4321,
+                               self.config["imageId"], self.config["entrypoint"], self.config["command"]])
+        if args != ("kill", "--signal=USR1", row["cid"]):
+            raise AssertionError(args)
+        self.trace.append(("USR1", row["name"]))
+        self.process = "application"
+
+
+class GatedRestartTests(unittest.TestCase):
+    def setUp(self):
+        cfg = configuration()
+        cfg["levels"][0]["containers"] = [gated_member()]
+        raw = canonical(cfg)
+        cfg = load_profile(raw, sha(raw))
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        for key in ("incidents", "receipts"):
+            directory = Path(temp.name) / key
+            directory.mkdir()
+            cfg[key] = str(directory)
+        self.engine = GatedEngine(cfg)
+        self.clock = Clock()
+        self.ctrl = Controller(cfg, sha(raw), self.engine, clock=lambda: self.clock.now,
+                               sleep=self.clock.sleep, tcp=lambda *args: True)
+        self.enterContext(patch("tools.platform_restart.docker.pid1_state", side_effect=self.process))
+        self.http = self.enterContext(patch("tools.platform_restart.controller.application_ready", side_effect=self.up))
+
+    def process(self, pid, gate):
+        self.assertEqual(pid, 4321)
+        self.engine.trace.append(("pid1", self.engine.process))
+        return self.engine.process
+
+    def up(self, pid, probe, timeout):
+        self.engine.trace.append(("GET", probe["path"]))
+        return True
+
+    def start(self):
+        plan = self.ctrl.run("plan", "start")
+        return self.ctrl.run("apply", "start", plan["planSha256"])
+
+    def test_start_verify_signal_java_and_up_before_next_level(self):
+        self.assertEqual(self.start()["status"], "SUCCEEDED")
+        self.assertEqual(self.engine.trace, [
+            ("start", "sample-0"), ("inspect_gate", "sample-0"), ("pid1", "armed"), ("USR1", "sample-0"),
+            ("inspect_gate", "sample-0"), ("pid1", "application"), ("GET", "/sample/ready"),
+            ("inspect_gate", "sample-0"), ("pid1", "application"), ("start", "sample-1"), ("start", "sample-2")])
+        self.assertEqual(self.start()["status"], "SUCCEEDED")
+        self.assertEqual(self.engine.trace.count(("USR1", "sample-0")), 1)
+
+    def native_restart(self, observed, executable):
+        member = self.ctrl.members["sample-0"]
+        command = ["/usr/local/bin/ouf-mcp", "server"]
+        member["gate"]["command"] = self.engine.config["command"] = command
+        probe = member["readiness"]
+        probe.update(path="/health/ready", acceptStatus=[204])
+        del probe["jsonStatus"]
+
+        def cmdline():
+            args = observed if self.engine.process == "application" else member["gate"]["entrypoint"] + command
+            return b"\0".join(os.fsencode(arg) for arg in args) + b"\0"
+
+        self.http.side_effect = lambda pid, probe, timeout: http_ready(probe)
+        with (patch("tools.platform_restart.docker.pid1_state", side_effect=pid1_state),
+              patch("pathlib.Path.read_bytes", side_effect=cmdline),
+              patch("pathlib.Path.read_text", return_value="NSpid: 4321 1\nSigCgt: 200"),
+              patch("pathlib.Path.readlink", return_value=Path(executable)),
+              patch("signal.SIGUSR1", 10, create=True), patch("http.client.HTTPConnection") as connect):
+            response = connect.return_value.getresponse.return_value
+            response.status = 204
+            response.read.side_effect = AssertionError("status-only probe read a body")
+            result = self.start()
+            if result["status"] == "SUCCEEDED":
+                connect.return_value.request.assert_called_once_with("GET", "/health/ready")
+            return result
+
+    def test_native_mcp_204_advances_next_level(self):
+        result = self.native_restart(["/usr/local/bin/ouf-mcp", "server"], "/usr/local/bin/ouf-mcp")
+        self.assertEqual(result["status"], "SUCCEEDED", result)
+        self.assertTrue(any(e.get("pid1") == "/usr/local/bin/ouf-mcp" and e["outcome"] == "UP"
+                            for e in result["events"]))
+        self.assertEqual(self.engine.trace.count(("USR1", "sample-0")), 1)
+        self.assertIn(("start", "sample-1"), self.engine.changes)
+
+    def test_post_exec_unexpected_argument_holds_without_second_signal(self):
+        result = self.native_restart(["/usr/local/bin/ouf-mcp", "migrate"], "/usr/local/bin/ouf-mcp")
+        self.assertEqual(result["reason"], "READINESS_NOT_UP")
+        self.assertEqual(self.engine.trace.count(("USR1", "sample-0")), 1)
+        self.assertEqual(self.engine.changes, [("start", "sample-0")])
+        self.http.assert_not_called()
+
+    def test_native_wrong_executable_path_holds(self):
+        result = self.native_restart(["/usr/local/bin/ouf-mcp", "server"], "/other/ouf-mcp")
+        self.assertEqual(result["reason"], "READINESS_NOT_UP")
+        self.http.assert_not_called()
+
+    def test_java_204_holds_next_level(self):
+        self.http.side_effect = lambda pid, probe, timeout: http_ready(probe)
+        with patch("http.client.HTTPConnection") as connect:
+            connect.return_value.getresponse.return_value.status = 204
+            self.assertEqual(self.start()["reason"], "READINESS_NOT_UP")
+        self.assertEqual(self.engine.changes, [("start", "sample-0")])
+        self.assertEqual(self.engine.trace.count(("USR1", "sample-0")), 1)
+
+    def test_profile_requires_explicit_http_codes(self):
+        for value in (None, [], [True], ["204"], [99], [600], [200, 200]):
+            with self.subTest(value=value):
+                cfg = configuration()
+                member = gated_member()
+                if value is None:
+                    del member["readiness"]["acceptStatus"]
+                else:
+                    member["readiness"]["acceptStatus"] = value
+                cfg["levels"][0]["containers"] = [member]
+                raw = canonical(cfg)
+                with self.assertRaises(Held):
+                    load_profile(raw, sha(raw))
+
+    def test_image_entrypoint_or_arguments_mismatch_holds_without_signal(self):
+        original = copy.deepcopy(self.engine.config)
+        for key, value in [("imageId", "sha256:" + "e" * 64), ("entrypoint", ["/example/sh"]),
+                           ("command", ["java", "-jar", "/example/different.jar"])]:
+            with self.subTest(key=key):
+                self.engine.config = {**original, key: value}
+                self.engine.rows["sample-0"].update(status="exited", running=False)
+                result = self.start()
+                self.assertEqual((result["reason"], result["gateReason"]),
+                                 ("GATE_HELD", "IMAGE_MISMATCH" if key == "imageId" else "LAUNCH_CONFIG_MISMATCH"))
+        self.assertFalse(any(op == "USR1" for op, _ in self.engine.trace))
+        self.assertEqual({name for _, name in self.engine.changes}, {"sample-0"})
+
+    def test_readiness_budget_is_terminal_even_at_boot(self):
+        self.http.side_effect = lambda *args: False
+        with contextlib.redirect_stderr(io.StringIO()):
+            result = self.ctrl.run("boot", "start", boot_id=str(uuid.uuid4()))
+        self.assertEqual((result["reason"], result["level"], result["container"]),
+                         ("READINESS_NOT_UP", 1, "sample-0"))
+        self.assertEqual(self.clock.now, 2)
+        self.assertEqual(self.engine.trace.count(("USR1", "sample-0")), 1)
+        self.assertEqual(self.engine.changes, [("start", "sample-0")])
+
+    def test_waits_for_trap_then_for_exec_without_resending(self):
+        self.engine.process = "arming"
+        send = self.engine.command
+        def pending_exec(*args, deadline):
+            result = send(*args, deadline=deadline)
+            if args[0] == "kill":
+                self.engine.process = "armed"
+            return result
+        def arm(delay):
+            self.clock.sleep(delay)
+            self.engine.process = "armed"
+        self.ctrl.sleep = arm
+        with patch.object(self.engine, "command", side_effect=pending_exec):
+            self.assertEqual(self.start()["reason"], "READINESS_NOT_UP")
+        self.assertEqual(self.engine.trace.count(("USR1", "sample-0")), 1)
+        self.assertEqual(self.engine.trace[:6], [("start", "sample-0"), ("inspect_gate", "sample-0"),
+                         ("pid1", "arming"), ("inspect_gate", "sample-0"), ("pid1", "armed"), ("USR1", "sample-0")])
+        self.http.assert_not_called()
+
+    def test_two_gates_share_level_but_have_independent_deadlines(self):
+        first, second, last = self.ctrl.cfg["levels"]
+        peer = second["containers"][0]
+        peer.update(gate=self.engine.config, readiness={**gated_member()["readiness"], "budgetSeconds": 1})
+        first["containers"].append(peer)
+        self.ctrl.cfg["levels"] = [first, last]
+        signals = []
+        def state(step, gate, deadline):
+            row = self.engine.rows[step["containerName"]]
+            pid = int(row["cid"], 16) + 100
+            return (row["startedAt"], pid), "application" if row["cid"] in signals else "armed"
+        def signal(command, option, cid, *, deadline):
+            self.assertEqual((command, option), ("kill", "--signal=USR1"))
+            signals.append(cid)
+        self.http.side_effect = lambda pid, probe, timeout: pid == 101
+        with patch.object(self.engine, "gate_state", side_effect=state), patch.object(self.engine, "command", side_effect=signal):
+            result = self.start()
+        self.assertEqual((result["reason"], result["container"], self.clock.now), ("READINESS_NOT_UP", "sample-1", 1))
+        self.assertEqual(signals, [self.engine.rows[n]["cid"] for n in ("sample-0", "sample-1")])
+        self.assertEqual(self.engine.changes, [("start", "sample-0"), ("start", "sample-1")])
+
+    def test_new_container_stays_with_upgrade_owner(self):
+        self.engine.rows["sample-0"]["status"] = "created"
+        self.assertEqual(self.start()["gateReason"], "FIRST_START_REQUIRES_UPGRADE_OWNER")
+        self.assertEqual(self.engine.trace, [])
+
+    def test_retry_of_same_level_peer_preserves_gate_deadline(self):
+        first, second, last = self.ctrl.cfg["levels"]
+        first["containers"] += second["containers"]
+        self.ctrl.cfg["levels"] = [first, last]
+        self.http.side_effect = lambda *args: False
+        inspect = self.engine.inspect
+        def transient(cid, deadline):
+            if cid == self.engine.rows["sample-1"]["cid"] and self.clock.now == 0:
+                self.clock.sleep(0.75)
+                raise Held("DOCKER_COMMAND_FAILED")
+            return inspect(cid, deadline)
+        with patch.object(self.engine, "inspect", side_effect=transient), contextlib.redirect_stderr(io.StringIO()):
+            result = self.ctrl.run("boot", "start", boot_id=str(uuid.uuid4()))
+        self.assertEqual((result["reason"], result["container"], self.clock.now), ("READINESS_NOT_UP", "sample-0", 2))
+        self.assertEqual(self.engine.trace.count(("USR1", "sample-0")), 1)
+        self.assertNotIn(("start", "sample-2"), self.engine.changes)
+
+    def test_signal_with_lost_reply_and_unowned_shell_are_never_replayed(self):
+        send = self.engine.command
+        def lost(*args, deadline):
+            if args[0] == "kill":
+                self.engine.trace.append(("USR1", "sample-0"))
+                raise Held("DOCKER_TIMEOUT")
+            return send(*args, deadline=deadline)
+        with patch.object(self.engine, "command", side_effect=lost), contextlib.redirect_stderr(io.StringIO()):
+            result = self.ctrl.run("boot", "start", boot_id=str(uuid.uuid4()))
+        self.assertEqual(result["gateReason"], "SIGNAL_UNCONFIRMED")
+        self.assertEqual(self.start()["gateReason"], "GATE_START_NOT_OWNED")
+        self.assertEqual(self.engine.trace.count(("USR1", "sample-0")), 1)
+        self.assertEqual(self.engine.changes, [("start", "sample-0")])
+
+    def test_http_up_cannot_cover_a_restarted_pid1(self):
+        def replaced(*args):
+            self.engine.rows["sample-0"]["startedAt"] = "replacement"
+            return True
+        self.http.side_effect = replaced
+        self.assertEqual(self.start()["gateReason"], "GENERATION_CHANGED")
+        self.assertEqual(self.engine.changes, [("start", "sample-0")])
+
+    def test_pid1_exact_argv_executable_and_installed_handler(self):
+        gate = gated_member()["gate"]
+        def argv(args):
+            return b"\0".join(arg.encode() for arg in args) + b"\0"
+        with (patch("pathlib.Path.read_bytes") as cmd, patch("pathlib.Path.read_text") as status,
+              patch("pathlib.Path.readlink") as exe, patch("signal.SIGUSR1", 10, create=True)):
+            cmd.return_value = argv(gate["entrypoint"] + gate["command"])
+            status.return_value = "NSpid:\t4321\t1\nSigCgt:\t0\n"
+            self.assertEqual(pid1_state(4321, gate), "arming")
+            status.return_value = status.return_value.replace("SigCgt:\t0", "SigCgt:\t200")
+            self.assertEqual(pid1_state(4321, gate), "armed")
+            cmd.return_value = argv(gate["command"])
+            exe.return_value = Path("/example/java")
+            self.assertEqual(pid1_state(4321, gate), "application")
+            exe.return_value = Path("/example/other")
+            with self.assertRaisesRegex(Held, "GATE_HELD"):
+                pid1_state(4321, gate)
+            cmd.return_value = argv(gate["entrypoint"] + gate["command"] + ["unexpected"])
+            with self.assertRaisesRegex(Held, "GATE_HELD"):
+                pid1_state(4321, gate)
+
+    def test_http_requires_bounded_json_and_top_level_up(self):
+        probe = gated_member()["readiness"]
+        with patch("http.client.HTTPConnection") as connect:
+            connection = connect.return_value
+            response = connection.getresponse.return_value
+            for status, body, expected in [(200, b'{"status":"UP"}', True), (204, b"", False),
+                                           (503, b'{"status":"UP"}', False), (302, b"", False),
+                                           (200, b'{"status":"DOWN"}', False), (200, b"UP", False),
+                                           (200, b'{"child":{"status":"UP"}}', False),
+                                           (200, b'{"status":"UP","status":"DOWN"}', False),
+                                           (200, b" " * 65537, False)]:
+                response.status = status
+                response.read.return_value = body
+                self.assertEqual(http_ready(probe), expected)
+            connect.assert_called_with(probe["address"], probe["port"], timeout=probe["timeoutSeconds"])
+            connection.request.assert_called_with("GET", probe["path"])
+
+    def test_http_accepts_each_declared_code_and_json_value(self):
+        probe = dict(gated_member()["readiness"], acceptStatus=[200, 202], jsonStatus="READY")
+        with patch("http.client.HTTPConnection") as connect:
+            response = connect.return_value.getresponse.return_value
+            response.read.return_value = b'{"status":"READY"}'
+            for code in probe["acceptStatus"]:
+                response.status = code
+                self.assertTrue(http_ready(probe))
+            response.read.return_value = b'{"status":"UP"}'
+            self.assertFalse(http_ready(probe))
+
+    def test_only_fixed_docker_signal_with_one_full_id(self):
+        docker = Docker(configuration())
+        cid = "c" * 64
+        with patch.object(docker, "verify"), patch("subprocess.check_output") as run:
+            for args in [("inspect",), ("ps",), ("start", cid), ("stop", cid), ("kill", "--signal=USR1", cid)]:
+                docker.command(*args)
+            self.assertEqual(run.call_count, 5)
+            for args in [(), ("exec", cid), ("restart", cid), ("run",), ("network", "inspect"), ("kill", cid),
+                         ("kill", "--signal=TERM", cid), ("kill", "--signal=USR1", "sample"),
+                         ("kill", "--signal=USR1", cid, cid), ("kill", "--signal=USR1", cid[:12])]:
+                with self.assertRaisesRegex(Held, "COMMAND_DENIED"):
+                    docker.command(*args)
+            self.assertEqual(run.call_count, 5)
+
+    def test_profile_denies_weaker_probes_or_mutable_image(self):
+        for key, field, value in [("gate", "imageId", "sample:latest"), ("gate", "command", []),
+                                  ("gate", "entrypoint", ["/example/sh", "-c", "exit", "ouf-gated-application"]),
+                                  ("readiness", "type", "healthy"), ("readiness", "budgetSeconds", 5),
+                                  ("readiness", "path", "//other"), ("readiness", "address", "192.0.2.1")]:
+            cfg = configuration()
+            member = gated_member()
+            member[key][field] = value
+            cfg["levels"][0]["containers"] = [member]
+            raw = canonical(cfg)
+            with self.assertRaises(Held):
+                load_profile(raw, sha(raw))
 
 
 if __name__ == "__main__":

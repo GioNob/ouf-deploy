@@ -1,5 +1,6 @@
 """Closed installation contract and custody primitives."""
 import hashlib
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -10,6 +11,8 @@ HEX = re.compile(r"[0-9a-f]{64}")
 NAME = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9_.-]*")
 PATH = re.compile(r"(?:/[a-zA-Z0-9_.-]+)+")
 SCHEMA = "ouf.platform-restart-profile.v1"
+GATE_LOOP = ('OUF_APPLICATION_GATE=0; trap "OUF_APPLICATION_GATE=1" USR1; '
+             'while [ "$OUF_APPLICATION_GATE" = 0 ]; do sleep 1 & wait "$!"; done; exec "$@"')
 
 
 class Held(Exception):
@@ -72,6 +75,40 @@ def name(value):
     require(isinstance(value, str) and NAME.fullmatch(value), "INVALID_NAME")
 
 
+def validate_gate(gate, probe, level_timeout):
+    fields(gate, "imageId entrypoint command")
+    require(isinstance(gate["imageId"], str) and re.fullmatch(r"sha256:[0-9a-f]{64}", gate["imageId"]),
+            "INVALID_IMAGE_ID")
+    entry = gate["entrypoint"]
+    require(isinstance(entry, list) and len(entry) == 4 and safe_path(entry[0]).name == "sh"
+            and entry[1:] == ["-c", GATE_LOOP, "ouf-gated-application"], "INVALID_GATE_ENTRYPOINT")
+    cmd = gate["command"]
+    require(isinstance(cmd, list) and cmd and all(isinstance(v, str) and v and "\0" not in v for v in cmd),
+            "INVALID_GATE_COMMAND")
+    if cmd[0].startswith("/"):
+        safe_path(cmd[0])
+    else:
+        name(cmd[0])
+    required = "type address port path timeoutSeconds budgetSeconds acceptStatus"
+    fields(probe, required + " jsonStatus" if "jsonStatus" in probe else required)
+    codes = probe["acceptStatus"]
+    require(type(codes) is list and codes and all(type(code) is int and 100 <= code <= 599 for code in codes)
+            and len(codes) == len(set(codes)), "INVALID_HTTP_STATUS_CODES")
+    if "jsonStatus" in probe:
+        require(isinstance(probe["jsonStatus"], str) and probe["jsonStatus"], "INVALID_JSON_STATUS")
+    require(probe["type"] == "actuator", "GATE_REQUIRES_ACTUATOR")
+    try:
+        loopback = isinstance(probe["address"], str) and ipaddress.IPv4Address(probe["address"]).is_loopback
+    except ValueError:
+        loopback = False
+    require(loopback, "LOOPBACK_REQUIRED")
+    safe_path(probe["path"])
+    integer(probe["port"], 65535)
+    integer(probe["timeoutSeconds"])
+    integer(probe["budgetSeconds"])
+    require(probe["timeoutSeconds"] <= probe["budgetSeconds"] <= level_timeout, "INVALID_READINESS_BUDGET")
+
+
 def load_profile(raw, expected):
     require(sha(raw) == expected, "PROFILE_HASH_CHANGED")
     try:
@@ -105,7 +142,8 @@ def load_profile(raw, expected):
         integer(level["timeoutSeconds"])
         require(type(level["containers"]) is list and level["containers"], "EMPTY_LEVEL")
         for item in level["containers"]:
-            fields(item, "containerName readiness")
+            gated = isinstance(item, dict) and "gate" in item
+            fields(item, "containerName readiness gate" if gated else "containerName readiness")
             target = item["containerName"]
             name(target)
             require(target not in names, "DUPLICATE_OR_EXCLUDED_NAME")
@@ -115,7 +153,9 @@ def load_profile(raw, expected):
             probe = item["readiness"]
             require(type(probe) is dict, "INVALID_PROBE")
             kind = probe.get("type")
-            if kind == "tcp":
+            if gated:
+                validate_gate(item["gate"], probe, level["timeoutSeconds"])
+            elif kind == "tcp":
                 fields(probe, "type network port timeoutSeconds")
                 name(probe["network"])
                 integer(probe["port"], 65535)
