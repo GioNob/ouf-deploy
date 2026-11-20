@@ -39,6 +39,11 @@ def substitute(value, types, values, used):
             name = value["$installation"]
             need(len(value) == 1 and matches(NAME, name) and name in types, "GATEWAY_PLACEHOLDER")
             actual = values.get(name)
+            if types[name] == "integer":
+                # Contract rev. 2: APISIX numeric fields (upstream ports) need a JSON integer, never a bool.
+                need(type(actual) is int, "GATEWAY_INSTALLATION_VALUE")
+                used.add(name)
+                return actual
             need(isinstance(actual, str), "GATEWAY_INSTALLATION_VALUE")
             if types[name] == "url":
                 url = urlsplit(actual)
@@ -74,7 +79,7 @@ def verify(raw, ci, values):
     types = {}
     for item in declarations:
         need(fields(item, "name type") and matches(NAME, item["name"])
-             and item["name"] not in types and item["type"] in ("string", "url", "secret"), "GATEWAY_DECLARATION")
+             and item["name"] not in types and item["type"] in ("string", "url", "secret", "integer"), "GATEWAY_DECLARATION")
         types[item["name"]] = item["type"]
     need(list(types) == sorted(types) and manifest == {
         "schema": "ouf.gateway-release-manifest.v1", "sourceRepository": ci["repository"],

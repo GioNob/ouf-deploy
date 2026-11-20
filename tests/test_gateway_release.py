@@ -142,6 +142,30 @@ class Contract(unittest.TestCase):
         with self.assertRaisesRegex(mandate.Held, "ZIP_DIGEST"):
             verify((dict(ci, zipSha256="0" * 64), raw))
 
+    def test_integer_placeholders_for_upstream_ports(self):
+        # Contract rev. 2: ports are JSON integers, mixed-case registry names are accepted.
+        decl = [{"name": "binding", "type": "secret"}, {"name": "services.ports.Owner", "type": "integer"}]
+        body = {"upstream": {"nodes": [{"host": MARKER, "port": {"$installation": "services.ports.Owner"}, "weight": 1}]}}
+        ci, raw = artifact([row("routes", "r", body)], declarations=decl)
+        out = bundle.verify(raw, ci, {"binding": SECRET, "services.ports.Owner": 8080})
+        self.assertEqual(out[0]["body"]["upstream"]["nodes"][0]["port"], 8080)
+        for wrong in ("8080", True, 8080.0):
+            with self.assertRaisesRegex(mandate.Held, "GATEWAY_INSTALLATION_VALUE"):
+                bundle.verify(raw, ci, {"binding": SECRET, "services.ports.Owner": wrong})
+        with self.assertRaisesRegex(mandate.Held, "GATEWAY_INSTALLATION_VALUE"):
+            ci2, raw2 = artifact([row("routes", "r", {"x": MARKER})])
+            bundle.verify(raw2, ci2, {"binding": 7})
+        import gateway_policy
+        good = dict(source={"repository": "o/ouf-api-gateway", "workflow": "ci.yml"}, container="apisix",
+                    dockerSocket="/var/run/docker.sock", keyFile="/opt/k", host="127.0.0.1", port=9180,
+                    adminPath="/apisix/admin", values={"caddy.oidcDiscoveryUrl": "https://x.invalid/r",
+                                                       "services.ports.ouf-onboarding": 8080})
+        from pathlib import PurePosixPath
+        from unittest.mock import patch as _patch
+        with _patch.object(gateway_policy, "Path", PurePosixPath):  # host paths are POSIX on the VPS
+            self.assertTrue(gateway_policy.valid_profile(good))
+            self.assertFalse(gateway_policy.valid_profile(dict(good, values={"x": True})))
+
     def test_rejects_malformed_or_unbound_package(self):
         cases = [
             artifact(ROWS, change_manifest={"runId": 11}), artifact(ROWS, change_manifest={"extra": ""}),
