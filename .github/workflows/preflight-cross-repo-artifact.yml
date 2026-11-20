@@ -1,0 +1,26 @@
+name: Preflight cross-repo artifact download
+on:
+  pull_request:
+    paths: ['.github/workflows/preflight-cross-repo-artifact.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download artifacts of other public repositories with the workflow token
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          for spec in "ouf-semantic-registry 44796175289 semantic-registry-governed-image-44796175289" \
+                      "ouf-api-gateway 44799405206 gateway-release-bundle-44799405206" \
+                      "ouf-mcp-server 44794107128 acquisition-mcp-image-44794107128"; do
+            set -- $spec
+            id=$(gh api "repos/GioNob/$1/actions/runs/$2/artifacts" -q ".artifacts[] | select(.name==\"$3\") | .id" 2>&1) || true
+            echo "$1 metadata: ${id}"
+            code=$(curl -s -o /dev/null -w '%{http_code}' -L -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/GioNob/$1/actions/artifacts/$id/zip")
+            echo "$1 zip download HTTP: $code"
+          done
