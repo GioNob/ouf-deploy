@@ -50,6 +50,21 @@ def calls_cohort_lab(job):
 
 
 class ManualVpsWorkflows(unittest.TestCase):
+    def test_release_plan_runs_on_vps_and_only_mutations_use_environment(self):
+        for name in ("onboarding-module-release", "mcp-module-release", "gateway-release", "semantic-a2-cutover"):
+            with self.subTest(workflow=name):
+                jobs = yaml.safe_load((WORKFLOWS / (name + ".yml")).read_bytes())["jobs"]
+                self.assertIn("ouf-vps-test", jobs["plan"]["runs-on"])
+                self.assertNotIn("environment", jobs["plan"])
+                for phase in jobs.keys() - {"intent", "plan"}:
+                    self.assertEqual(jobs[phase]["environment"], "ouf-vps-privileged", phase)
+                if name == "gateway-release":
+                    for phase in ("plan", "return"):
+                        self.assertEqual(jobs[phase]["needs"], "intent")
+                        self.assertEqual(jobs[phase]["if"], f"needs.intent.outputs.phase == '{phase}'")
+                        self.assertEqual(jobs[phase]["env"]["PHASE"], phase)
+                    self.assertEqual(jobs["apply"]["needs"], "plan")
+
     def test_repository_workflows(self):
         files = sorted([*WORKFLOWS.glob("*.yml"), *WORKFLOWS.glob("*.yaml")])
         self.assertTrue(files, f"No workflows under {WORKFLOWS}")

@@ -82,7 +82,7 @@ def github_reader(repo, token):
 
 
 def authorize(req, policy, get, state):
-    from store import consume_approval
+    from store import begin_plan, consume_approval
 
     validate(req, policy)
     path = "/actions/runs/" + req["run"]
@@ -100,9 +100,14 @@ def authorize(req, policy, get, state):
     need(branch["protected"] is True and branch["commit"]["sha"] == req["commit"], "PROTECTED_REF_DRIFT")
     env = get("/environments/" + quote(policy["environment"], safe=""))
     rules = [r for r in env["protection_rules"] if r["type"] == "required_reviewers"]
-    need(env["id"] == policy["environmentId"] and len(rules) == 1, "ENVIRONMENT_UNPROTECTED")
+    need(env["id"] == policy["environmentId"] and env["name"] == policy["environment"]
+         and len(rules) == 1, "ENVIRONMENT_UNPROTECTED")
     reviewers = {r["reviewer"]["id"] for r in rules[0]["reviewers"] if r["type"] == "User"}
     allowed = reviewers.intersection(policy["reviewerIds"])
+    if req["phase"] == "plan":
+        need(allowed, "ENVIRONMENT_UNPROTECTED")
+        begin_plan(state / req["run"])
+        return digest({"mandate": req, "environmentId": env["id"], "approval": "none"})
     approvals = [r["user"]["id"] for r in get(path + "/approvals") if r.get("state") == "approved"
                  and r["user"]["type"] == "User" and r["user"]["id"] in allowed
                  and any(e["id"] == env["id"] and e["name"] == env["name"] for e in r["environments"])]

@@ -57,6 +57,13 @@ def read(path):
     return json.loads(trusted(path, private=True).read_bytes())
 
 
+def begin_plan(directory):
+    """Reserve a fresh run under the entrypoint lock without consuming a review."""
+    need(not directory.exists(), "PHASE_ALREADY_AUTHORIZED")
+    Journal(directory)
+    save(directory / "approvals", [])
+
+
 def consume_approval(directory, phase, index):
     """Called under the entrypoint lock, before dispatching any phase effect."""
     ledger = directory / "approvals"

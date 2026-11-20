@@ -28,7 +28,6 @@ jobs:
           digest = hashlib.sha256(json.dumps(scope, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
               print(f"Job `plan {digest}`", file=f)
-              print("Approvare il job (nessun commento richiesto)", file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + digest, file=f)
           PY
@@ -37,7 +36,6 @@ jobs:
     name: plan ${{ needs.intent.outputs.digest }}
     needs: intent
     runs-on: *vps
-    environment: ouf-vps-privileged
     permissions: {contents: read, actions: read, deployments: read}
     timeout-minutes: 40
     env:

@@ -225,19 +225,22 @@ class ReleaseTest(unittest.TestCase):
         with patch.object(store, "sync_dir"), patch.object(store, "trusted", side_effect=lambda p, **_: Path(p)), \
              patch.object(module_operation.operation, "Docker", return_value=self.rt):
             with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
-                call(1, workflow=mandate.WORKFLOW)
-            plan_result = call(1)
+                call(0, workflow=mandate.WORKFLOW)
+            plan_result = call(0)
             req.update(phase="apply", digest=plan_result["digest"])
-            stage = call(2)
+            with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
+                call(0)
+            self.assertNotIn("load", self.rt.events)
+            stage = call(1)
             self.assertEqual(stage["status"], "GATED")
             self.assertNotIn("signal:2", self.rt.events)
             req.update(phase="migrate", digest=stage["digest"])
             with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
-                call(2)
+                call(1)
             self.assertNotIn("signal:2", self.rt.events)
-            self.assertEqual(call(3)["status"], "READY")
+            self.assertEqual(call(2)["status"], "READY")
             with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
-                call(3)
+                call(2)
             self.assertEqual(self.rt.events.count("signal:2"), 1)
 
     def test_archive_tampered(self):

@@ -51,7 +51,8 @@ def main():
             summary.append(f"Return inputs: releaseRun `{req['run']}`, receipt `{stamp}`.")
     if phase:
         summary.append(f"Job `{phase} {stamp}`")
-        summary.append("Approvare il job (nessun commento richiesto)")
+        if phase != "plan":
+            summary.append("Approvare il job (nessun commento richiesto)")
     with open(env["GITHUB_STEP_SUMMARY"], "a") as stream:
         print(*summary, sep="\n\n", file=stream)
     with open(env["GITHUB_OUTPUT"], "a") as stream:

@@ -74,7 +74,7 @@ class Release(unittest.TestCase):
         return self.dispatch(self.req, cfg, self.root, get)
 
     def planned(self):
-        return self.call("plan", self.req["digest"])
+        return self.call("plan", self.req["digest"], approved=False)
 
     def dedicated(self):
         m = self.p["migration"]
