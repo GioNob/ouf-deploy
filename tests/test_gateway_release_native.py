@@ -143,7 +143,7 @@ class NativeRelease(unittest.TestCase):
         with connect(self.profile) as (admin, _):
             live = admin.get(self.route)
             self.assertEqual(live["plugin_config_id"], "settings")
-            self.assertGreater(live["plugins"]["limit-count"].keys(), {"count", "time_window", "key"})
+            self.assertGreaterEqual(live["plugins"]["limit-count"].keys(), {"count", "time_window", "key"})  # APISIX may or may not materialize defaults
             self.assertEqual(admin.get(self.outside), self.foreign)
         back = dict(operation="gateway-release", run="71", attempt="1", commit=REQ["commit"],
                     phase="return", releaseRun=REQ["run"], digest=receipt["digest"])
