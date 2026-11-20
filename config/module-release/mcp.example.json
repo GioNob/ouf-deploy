@@ -1,0 +1,69 @@
+{
+  "schema": "ouf.module-release.v1",
+  "module": "mcp",
+  "provenanceLabels": {
+    "org.opencontainers.image.revision": "publisherCommit",
+    "ouf.mcp.analysis-source": "sourceCommit"
+  },
+  "container": "SERVICE_NAME",
+  "retainedName": "RETAINED_NAME",
+  "failedName": "FAILED_NAME",
+  "oldImage": "sha256:<approved predecessor image ID>",
+  "networks": {
+    "APPLICATION_NETWORK": {
+      "ipv4": "<installation IPv4>",
+      "aliases": [
+        "APPLICATION_ALIAS"
+      ]
+    }
+  },
+  "gate": {
+    "executable": "/usr/local/bin/ouf-mcp",
+    "command": [
+      "/usr/local/bin/ouf-mcp",
+      "server"
+    ]
+  },
+  "migration": {
+    "mode": "none",
+    "rollbackCompatible": false,
+    "database": {
+      "postgresCid": "<approved PostgreSQL CID>",
+      "socket": "/<private socket directory>",
+      "urlEnv": "MCP_DATABASE_URL",
+      "version": 14
+    },
+    "migrations": []
+  },
+  "readiness": {
+    "path": "/health/ready",
+    "port": 8080,
+    "acceptStatus": [
+      204
+    ],
+    "attempts": 60
+  },
+  "inbox": "<absolute transport inbox>",
+  "journal": "<absolute private journal directory>",
+  "dockerSocket": "<absolute Docker socket>",
+  "nsenter": "<absolute nsenter executable>",
+  "ci": {
+    "repository": "GioNob/ouf-mcp-server",
+    "workflow": "ci.yml",
+    "pullRequest": 90,
+    "sourceCommit": "<reviewed PR head>",
+    "sourceTree": "<reviewed source tree>",
+    "imageName": "ouf-mcp",
+    "runId": 0,
+    "runAttempt": 0,
+    "artifactId": 0,
+    "zipSha256": "<GitHub artifact SHA-256>",
+    "imageId": "sha256:<approved target engine image ID>",
+    "publisherCommit": "<tested publisher commit>",
+    "tag": "ci",
+    "publisherFormat": "acquisition-mcp",
+    "sourceBranch": "release/mcp-sprint-02",
+    "transportSha256": "<digest from protected transport receipt>",
+    "artifactPrefix": "acquisition-mcp-image"
+  }
+}

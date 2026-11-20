@@ -1,4 +1,4 @@
-"""Unprivileged transport of the original Onboarding CI ZIP. Requires gh on the runner."""
+"""Unprivileged transport of the reviewed module CI ZIP. Requires gh on the runner."""
 
 import argparse
 import json
@@ -7,18 +7,21 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from .contract import checksum, package, require
+from .contract import Held, checksum, package, require
 from .provenance import select_artifact, verify_tested_tree
 
 
 def github(path, output=None):
-    result = subprocess.run(["gh", "api", path], stdout=output or subprocess.PIPE, check=True, timeout=360)
+    result = subprocess.run(["gh", "api", path], stdout=output or subprocess.PIPE, stderr=subprocess.DEVNULL, check=True, timeout=360)
     if output is None:
         return json.loads(result.stdout)
 
 
-def select(ci, run_id, artifact_id, api, *, artifact_prefix="source-onboarding-governed-image"):
+def select(ci, run_id, artifact_id, api, *, artifact_prefix=None):
     prefix = "repos/" + ci["repository"]
+    if artifact_prefix is None:
+        artifact_prefix = (ci["artifactPrefix"] if ci.get("publisherFormat") == "acquisition-mcp"
+                           else "source-onboarding-governed-image")
     return select_artifact(ci, run_id, artifact_id, lambda path: api(prefix + path),
                            artifact_prefix=artifact_prefix)
 
@@ -41,8 +44,10 @@ def transport(profile, run_id, artifact_id, inbox):
         except FileExistsError:
             with final.open("rb") as existing:
                 require(checksum(existing) == ci["zipSha256"], "EXISTING_TRANSPORT_CHANGED")
-    return {k: ci[k] for k in ("repository", "sourceCommit", "sourceTree", "runId", "runAttempt",
-                               "artifactId", "zipSha256")} | receipt
+    fields = ("repository", "sourceCommit", "sourceTree", "runId", "runAttempt", "artifactId", "zipSha256")
+    if ci.get("publisherFormat") == "acquisition-mcp":
+        fields += ("workflow", "pullRequest", "sourceBranch")
+    return {k: ci[k] for k in fields} | receipt
 
 
 if __name__ == "__main__":
@@ -52,5 +57,8 @@ if __name__ == "__main__":
     parser.add_argument("artifact_id", type=int)
     parser.add_argument("inbox", type=Path)
     args = parser.parse_args()
-    print(json.dumps(transport(json.loads(args.profile.read_text(encoding="utf-8")), args.run_id,
-                               args.artifact_id, args.inbox), sort_keys=True))
+    try:
+        print(json.dumps(transport(json.loads(args.profile.read_text(encoding="utf-8")), args.run_id,
+                                   args.artifact_id, args.inbox), sort_keys=True))
+    except Exception as error:
+        raise SystemExit(str(error) if isinstance(error, Held) else "TRANSPORT_IO_OR_INPUT_ERROR") from None

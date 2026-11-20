@@ -300,6 +300,14 @@ class ReleaseTest(unittest.TestCase):
         self.assertEqual(self.execute()["readiness"], "UP")
         self.assertLess(self.rt.events.index("migrate"), self.rt.events.index("signal:2"))
 
+    def test_original_onboarding_profile_still_requires_http_200_with_up(self):
+        with patch.object(self.rt, "probe", return_value=(204, b"")):
+            self.assertEqual(plan(self.p, self.rt)["reason"], "PREDECESSOR_NOT_READY")
+        with patch.object(self.rt, "probe", return_value=(200, b'{"status":"DOWN"}')):
+            self.assertEqual(plan(self.p, self.rt)["reason"], "PREDECESSOR_NOT_READY")
+        self.assertEqual(self.execute()["status"], "READY")
+        self.assertEqual(self.rt.docs[NEW]["Config"]["Cmd"], ["java", "-jar", "/app/application.jar"])
+
     def test_non_json_readiness(self):
         self.p["readiness"].pop("jsonStatus")
         self.p["readiness"]["acceptStatus"] = [204]

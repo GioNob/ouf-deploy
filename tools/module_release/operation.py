@@ -5,30 +5,35 @@ import os
 from pathlib import Path
 import tempfile
 
-from .contract import CI_COORDINATES, Held, SHA, digest, matches, package, require, validate
+from . import postgres
+from .contract import CI_COORDINATES, MCP_CI_COORDINATES, Held, SHA, digest, matches, package, require, validate
 from .docker import Docker
-from .frame import baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, request, snapshot
+from .frame import baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, provenance_labels, request, snapshot
 
 
 def reason(exc):
     return str(exc) if isinstance(exc, Held) else "RELEASE_IO_OR_INPUT_ERROR"
 
 
-def ready(rt, doc, contract):
+def ready_status(rt, doc, contract):
     if not rt.process(doc, gated=False):
-        return False
+        return None
     status, body = rt.probe(doc)
     if status not in contract["acceptStatus"]:
-        return False
+        return None
     if "jsonStatus" in contract:
         try:
             value = json.loads(body)
         except (ValueError, UnicodeError):
-            return False
+            return None
         if not isinstance(value, dict) or value.get("status") != contract["jsonStatus"]:
-            return False
+            return None
     after = rt.inspect(doc["Id"])
-    return snapshot(after) == snapshot(doc) and rt.process(after, gated=False)
+    return status if snapshot(after) == snapshot(doc) and rt.process(after, gated=False) else None
+
+
+def ready(rt, doc, contract):
+    return bool(ready_status(rt, doc, contract))
 
 
 def observe(p, rt):
@@ -41,12 +46,22 @@ def observe(p, rt):
     require(all(rt.inspect(p[k], missing=True) is None for k in ("retainedName", "failedName")),
             "CUSTODY_NAME_OCCUPIED")
     require(ready(rt, old, p["readiness"]), "PREDECESSOR_NOT_READY")
+    coordinates = MCP_CI_COORDINATES if p["ci"].get("publisherFormat") == "acquisition-mcp" else CI_COORDINATES
+    create_request = request(old, p["ci"]["imageId"], provenance_labels(p))
     body = {
         "operation": "module-release", "module": p["module"], "profileSha256": digest(p),
-        "oldCid": old["Id"], "oldFrameSha256": snapshot(old), "requestSha256": digest(request(old, p["ci"]["imageId"])),
-        "oldImage": old["Image"], "ci": {k: p["ci"][k] for k in CI_COORDINATES}, **artifact,
+        "oldCid": old["Id"], "oldFrameSha256": snapshot(old), "requestSha256": digest(create_request),
+        "oldImage": old["Image"], "ci": {k: p["ci"][k] for k in coordinates}, **artifact,
         "migrationMode": p["migration"]["mode"], "rollback": "AVAILABLE",
     }
+    if "database" in p["migration"]:
+        migration = p["migration"]
+        state = postgres.observe(rt, old)
+        require(len(state["history"]) == migration["database"]["version"], "DATABASE_CHANGED")
+        body.update(rollback="IF_DATABASE_UNCHANGED", databaseSha256=digest(state), schemaSha256=digest(state["schema"]),
+                    migrations=migration["migrations"], migrationsSha256=digest(migration["migrations"]))
+        if migration["migrations"]:
+            body["targetSchemaSha256"] = migration["targetSchemaSha256"]
     return body, old
 
 
@@ -113,7 +128,7 @@ def waiting_gate(p, rt, old, cid, restoring=False):
     def checked():
         doc = rt.inspect(cid)
         require(doc["Id"] == cid and doc["Name"] == "/" + p["container"], "SERVICE_IDENTITY_CHANGED")
-        check_body(old, doc, image, config_image)
+        check_body(old, doc, image, config_image, labels=None if restoring else provenance_labels(p))
         check_live_networks(old, doc)
         require(snapshot(doc) == generation, "GENERATION_CHANGED")
         return doc
@@ -127,20 +142,56 @@ def waiting_gate(p, rt, old, cid, restoring=False):
     return generation, checked
 
 
+def load_predecessor(p, rt, root):
+    saved = json.loads((root / "baseline.private.json").read_bytes())
+    if "database" not in p["migration"]:
+        return saved
+    # Recover immutable fields from the retained CID; its original frame digest
+    # authenticates them. DSNs and other Config.Env values never enter this journal.
+    return {**rt.inspect(saved["Id"]), **saved}
+
+
+def verify_database(p, rt, old, root, *, migrated=False):
+    if "database" in p["migration"]:
+        state = json.loads((root / "database.private.json").read_bytes())
+        plan = json.loads((root / "plan.json").read_bytes())
+        require(digest(plan) == root.name and digest(state) == plan["databaseSha256"], "DATABASE_BASELINE_CHANGED")
+        postgres.verify(rt, old, state, p["migration"], migrated=migrated)
+        return plan["databaseSha256"]
+
+
 def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
     generation, checked = waiting_gate(p, rt, old, cid, restoring)
     require(expected_generation is None or generation == expected_generation, "MIGRATION_GENERATION_CHANGED")
+    database_sha = verify_database(p, rt, old, root)
     if not restoring and p["migration"]["mode"] == "dedicated":
-        record(root, "migration-intent.json", {"cid": cid})
-        rt.migrate(cid, p["migration"]["command"])
+        if "database" in p["migration"]:
+            require(expected_generation is not None, "MIGRATION_REVIEW_REQUIRED")
+            retained(p, rt, old)
+        intent = {"cid": cid}
+        if database_sha:
+            intent.update(databaseSha256=database_sha, migrationsSha256=digest(p["migration"]["migrations"]))
+        require(rt.process(checked(), gated=True), "GATE_CHANGED")
+        record(root, "migration-intent.json", intent)
+        try:
+            rt.migrate(cid, p["migration"]["command"])
+        except Held as exc:
+            if database_sha and str(exc) == "MIGRATION_FAILED":
+                record(root, "migration-complete.json", {"cid": cid, "status": "FAILED"})
+            raise
+        if database_sha:
+            record(root, "migration-complete.json", {"cid": cid, "status": "SUCCEEDED"})
+        verify_database(p, rt, old, root, migrated=True)
     if not restoring:
         retained(p, rt, old)
     require(rt.process(checked(), gated=True), "GATE_CHANGED")
     record(root, "restore-signal.json" if restoring else "release-signal.json", {"cid": cid, "epoch": epoch(checked())})
     rt.signal(cid)
     for _ in range(p["readiness"]["attempts"]):
-        if ready(rt, checked(), p["readiness"]):
-            return
+        status = ready_status(rt, checked(), p["readiness"])
+        if status:
+            verify_database(p, rt, old, root, migrated=not restoring)
+            return {"successorFrameSha256": snapshot(checked()), "readyHttp": status}
         rt.pause()
     raise Held("READINESS_NOT_UP")
 
@@ -152,14 +203,16 @@ def restore(p, rt, old, new, root):
     check_body(old, doc, old["Image"], old["Config"]["Image"])
     require(doc["Id"] == cid and doc["Name"] in (old["Name"], "/" + p["retainedName"])
             and doc["State"]["StartedAt"] == old["State"]["StartedAt"], "RESTORE_IDENTITY_CHANGED")
+    verify_database(p, rt, old, root)
     if new:
         park(rt, new, p["failedName"], networks)
     owner = rt.inspect(p["container"], missing=True)
     require(owner is None or owner["Id"] == cid, "UNKNOWN_SERVICE_OWNER")
     if doc["State"]["Running"]:
-        require(epoch(doc) == epoch(old) and snapshot(doc) == snapshot(old)
-                and ready(rt, doc, p["readiness"]), "OLD_SERVICE_CHANGED")
-        return
+        require(epoch(doc) == epoch(old) and snapshot(doc) == snapshot(old), "OLD_SERVICE_CHANGED")
+        status = ready_status(rt, doc, p["readiness"])
+        require(status, "OLD_SERVICE_CHANGED")
+        return status
     if doc["Name"] != old["Name"]:
         rt.rename(cid, p["container"])
     attached = doc["NetworkSettings"]["Networks"]
@@ -170,13 +223,17 @@ def restore(p, rt, old, new, root):
         if name not in attached:
             rt.connect(cid, ep["NetworkID"], endpoint(ep))
     rt.start(cid)
-    release(p, rt, old, cid, root, restoring=True)
+    return release(p, rt, old, cid, root, restoring=True)["readyHttp"]
 
 
 def execute(p, rt, body, old, root, result, defer_migration):
     new = None
     result["predecessorCid"] = old["Id"]
-    record(root, "baseline.private.json", old)
+    saved = old
+    if "database" in p["migration"]:
+        saved = {key: old[key] for key in ("Id", "Name", "NetworkSettings", "RestartCount")}
+        saved["State"] = {key: old["State"][key] for key in ("Running", "Pid", "StartedAt")}
+    record(root, "baseline.private.json", saved)
     with tempfile.TemporaryFile(dir=root) as archive:
         actual = package(p, archive)
         require(all(body[k] == v for k, v in actual.items()), "ARTIFACT_CHANGED")
@@ -184,11 +241,16 @@ def execute(p, rt, body, old, root, result, defer_migration):
         rt.load(archive, actual)
     require(snapshot(rt.inspect(old["Id"])) == body["oldFrameSha256"], "PRE_STOP_DRIFT")
     networks = old["NetworkSettings"]["Networks"]
+    if "database" in p["migration"]:
+        state = postgres.observe(rt, old)
+        require(digest(state) == body["databaseSha256"], "DATABASE_CHANGED")
+        record(root, "database.private.json", state)
+        record(root, "plan.json", body)
     record(root, "stop-intent.json", {"cid": old["Id"]})
     try:
         park(rt, old["Id"], p["retainedName"], networks)
         retained(p, rt, old)
-        req = request(old, p["ci"]["imageId"])
+        req = request(old, p["ci"]["imageId"], provenance_labels(p))
         record(root, "create-intent.json", {"requestSha256": digest(req)})
         new = rt.create(p["container"], req)
         require(matches(SHA, new) and new != old["Id"], "CREATE_ID_UNCONFIRMED")
@@ -197,10 +259,10 @@ def execute(p, rt, body, old, root, result, defer_migration):
         doc = rt.inspect(new)
         require(doc["Id"] == new and doc["Name"] == old["Name"] and doc["State"]["Status"] == "created"
                 and not doc["State"]["Running"], "CREATED_IDENTITY_CHANGED")
-        check_body(old, doc, p["ci"]["imageId"], p["ci"]["imageId"], created=True)
+        check_body(old, doc, p["ci"]["imageId"], p["ci"]["imageId"], created=True, labels=provenance_labels(p))
         check_created_networks(old, doc)
         rt.start(new)
-        if defer_migration and p["migration"]["mode"] != "none":
+        if (defer_migration or "database" in p["migration"]) and p["migration"]["mode"] != "none":
             generation, _ = waiting_gate(p, rt, old, new)
             retained(p, rt, old)
             stage = {"planSha256": digest(body), "profileSha256": digest(p), "cid": new,
@@ -208,9 +270,11 @@ def execute(p, rt, body, old, root, result, defer_migration):
             record(root, "migration-plan.json", stage)
             result.update(status="GATED", migrationSha256=digest(stage))
             return
-        release(p, rt, old, new, root)
+        proof = release(p, rt, old, new, root)
         retained(p, rt, old)
         result.update(status="READY", readiness="UP")
+        if "database" in p["migration"]:
+            result.update(proof)
     except Exception as exc:
         rollback(p, rt, old, root, result, exc)
 
@@ -219,10 +283,19 @@ def rollback(p, rt, old, root, result, exc):
     result.update(status="HELD", reason=reason(exc), rollback="HELD")
     try:
         record(root, "rollback-intent.json", {"cid": old["Id"]})
-        restore(p, rt, old, result.get("successorCid"), root)
+        if ("database" in p["migration"] and (root / "migration-intent.json").exists()
+                and not (root / "migration-complete.json").exists()):
+            verify_database(p, rt, old, root)
+            raise Held("MIGRATION_OUTCOME_UNCONFIRMED")
+        status = restore(p, rt, old, result.get("successorCid"), root)
+        if "database" in p["migration"]:
+            result["predecessorReadyHttp"] = status
         result.update(rollback="ROLLED_BACK", restoredCid=old["Id"], predecessorReadiness="UP")
     except Exception as rollback_exc:
         result["rollbackReason"] = reason(rollback_exc)
+        if reason(rollback_exc) == "DATABASE_CHANGED":
+            result["releaseReason"] = result["reason"]
+            result["reason"] = "DATABASE_CHANGED"
 
 
 def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=False) -> dict:
@@ -286,7 +359,7 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None):
             and stage["planSha256"] == plan_sha256 and stage["profileSha256"] == digest(profile),
             "MIGRATION_PLAN_CHANGED")
     rt = runtime or Docker(profile)
-    old = read("baseline.private.json")
+    old = load_predecessor(profile, rt, root)
     cid = stage["cid"]
     require(cid == staged["successorCid"] and snapshot(old) == stage["predecessorFrame"], "STAGED_FRAME_CHANGED")
     retained(profile, rt, old)
@@ -295,9 +368,11 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None):
     record(root, "migration-review-consumed.json", {"digest": migration_sha256})
     result = {**staged, "status": "HELD"}
     try:
-        release(profile, rt, old, cid, root, expected_generation=generation)
+        proof = release(profile, rt, old, cid, root, expected_generation=generation)
         retained(profile, rt, old)
         result.update(status="READY", readiness="UP")
+        if "database" in profile["migration"]:
+            result.update(proof)
     except Exception as exc:
         rollback(profile, rt, old, root, result, exc)
     record(root, "receipt.json", result)

@@ -16,8 +16,12 @@ on:
       - '.github/scripts/gateway-release.py'
       - '.github/workflows/gateway-release.yml'
       - 'tests/privileged_executor_fixture.sh'
+      - 'tests/module_release_ready_fixture.go'
+      - 'tests/privileged_postgres_fixture.py'
       - '.github/workflows/semantic-a2-cutover.yml'
       - '.github/workflows/onboarding-module-release.yml'
+      - '.github/workflows/mcp-module-release.yml'
+      - '.github/workflows/mcp-release-artifact-transport.yml'
       - '.github/workflows/privileged-executor-native.yml'
 permissions:
   contents: read

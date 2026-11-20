@@ -5,7 +5,6 @@ import subprocess
 from pathlib import Path
 import sys
 import tempfile
-import time
 import unittest
 import uuid
 
@@ -13,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path[:0] = [str(ROOT / "tools" / n) for n in
                 ("privileged_executor", "semantic_provider_r3", "semantic_application_cutover")]
+from privileged_postgres_fixture import postgres_fixture
 from pipeline import until
 from queue_inventory import Queue, permit, review_rows
 from mandate import Held
@@ -90,30 +90,7 @@ class NativeRoundTrip(unittest.TestCase):
         self.assertIn("ouf.a2.fixture=true", Engine(socket).call("GET", "info")["Labels"])
         cli = ["/usr/bin/docker", "--host", "unix://" + socket]
         name = "queue-fixture-" + uuid.uuid4().hex
-        postgres_bin = Path(subprocess.check_output(["pg_config", "--bindir"], text=True).strip())
-        self.assertTrue((postgres_bin / "initdb").is_file())
-        with tempfile.TemporaryDirectory() as directory:
-            passwd = Path(directory) / "passwd"
-            passwd.write_text("fixture:x:10001:10001:fixture:/tmp:/bin/sh\n")
-            passwd.chmod(0o644)
-            # Use only the hosted VM's installed PostgreSQL distribution, on a private Unix socket.
-            subprocess.run([*cli, "run", "-d", "--network", "none", "--name", name, "--user", "10001:10001",
-                "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "-e", "HOME=/tmp",
-                "-e", f"PATH={postgres_bin}:/usr/bin:/bin", "-v", "/usr:/usr:ro", "-v", "/usr/lib:/lib:ro",
-                "-v", f"{passwd}:/etc/passwd:ro", os.environ["OUF_A2_FIXTURE_IMAGE"], "/bin/sh", "-ec",
-                "initdb -D /tmp/data --no-locale -E UTF8 --auth-local=trust --auth-host=reject && "
-                "exec postgres -D /tmp/data -k /tmp -c listen_addresses=''"],
-                check=True, stdout=subprocess.DEVNULL)
-            self.addCleanup(subprocess.run, [*cli, "rm", "-f", name], check=False)
-            setup = [*cli, "exec", "-i", name, "psql", "-X", "-w", "-q", "-v", "ON_ERROR_STOP=1",
-                     "-h", "/tmp", "-U", "fixture", "-d", "postgres"]
-            for _ in range(60):
-                if subprocess.run(setup, input=b"SELECT 1;", stdout=subprocess.DEVNULL,
-                                  stderr=subprocess.DEVNULL).returncode == 0:
-                    break
-                time.sleep(.5)
-            else:
-                self.fail("Local PostgreSQL socket did not become ready")
+        with postgres_fixture(cli, name) as setup:
             subprocess.run(setup, input=b"""
                 CREATE ROLE reader LOGIN;
                 CREATE SCHEMA ouf_sem;
