@@ -29,7 +29,7 @@ fetch() {
 }
 # BEGIN DELIVERY
 fetch 91-ouf-r3-readers 6735348f06cfccc324a0767c03eeea90c50a155e9a037ececfd61a12b3303cfe
-fetch r3_common.py 309fe1f8fa6514810b0330d03ad440ea6eaefef594685dc634aeca073bf8afae
+fetch r3_common.py b6739e2ce59ecb406d9e5411d6cd181ae616b19edab8d95937c3c5e60d922c26
 fetch r3-epoch-diag.py 1e5e78730cb05eb8649c792f4da5da6c43c2c83369dbf51b49766bfe3d508a31
 fetch r3-epoch-timeline.py 436a94f1b424e9db5033a5001910335a3564ec0d40f56fedc61d228eef672a57
 fetch r3-frame-diag.py 5632b7655aa79c11e1afafd7eacfc32bc4b5ef67d6b8791a852c39d4339d78d3
