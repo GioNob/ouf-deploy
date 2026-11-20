@@ -1,0 +1,324 @@
+"""Portable CI ZIP + Engine/HTTP doubles for the governed module release."""
+import copy
+import hashlib
+import io
+import json
+from pathlib import Path
+import tarfile
+import tempfile
+import unittest
+import zipfile
+
+from tools.module_release.contract import ENTRY, Held
+from tools.module_release.operation import apply, plan
+from tools.module_release.transport import select
+
+
+PROFILE = Path(__file__).resolve().parents[1] / "config/module-release/onboarding.example.json"
+OLD, NEW = "1" * 64, "2" * 64
+TESTED = "d" * 40
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def artifact(p, root, **manifest_changes):
+    ci = p["ci"]
+    tag = ci["imageName"] + ":" + TESTED
+    raw = json.dumps({"config": {"Labels": {"org.opencontainers.image.revision": TESTED,
+                                            "org.opencontainers.image.source": "https://github.com/" + ci["repository"]}}}).encode()
+    config = sha(raw)
+    publisher = json.dumps({"config": {"digest": "sha256:" + config}}).encode()
+    manifest_id = "sha256:" + sha(publisher)
+    members = {"blobs/sha256/" + config: raw, "blobs/sha256/" + sha(publisher): publisher,
+               "index.json": json.dumps({"manifests": [{"digest": manifest_id, "size": len(publisher)}]}).encode(),
+               "manifest.json": json.dumps([{"Config": "blobs/sha256/" + config, "RepoTags": [tag]}]).encode()}
+    image = io.BytesIO()
+    with tarfile.open(fileobj=image, mode="w:gz") as tar:
+        for name, data in members.items():
+            member = tarfile.TarInfo(name)
+            member.size = len(data)
+            tar.addfile(member, io.BytesIO(data))
+    blob = image.getvalue()
+    manifest = dict(schema=ci["manifestSchema"], repository=ci["repository"], reviewedSourceCommit=ci["sourceCommit"],
+                    testedCommit=TESTED, testedTree=ci["sourceTree"], workflowRunId=str(ci["runId"]),
+                    workflowRunAttempt=str(ci["runAttempt"]), imageTag=tag, imageRevisionLabel=TESTED,
+                    archiveName="image.tar.gz", archiveSha256=sha(blob), archiveBytes=len(blob), imageId=manifest_id)
+    manifest.update(manifest_changes)
+    packed = io.BytesIO()
+    with zipfile.ZipFile(packed, "w") as z:
+        z.writestr("manifest.json", json.dumps(manifest))
+        z.writestr("image.tar.gz", blob)
+        z.writestr("SHA256SUMS", sha(blob) + "  image.tar.gz\n")
+    ci.update(zipSha256=sha(packed.getvalue()), imageId="sha256:" + config)
+    (root / (ci["zipSha256"] + ".zip")).write_bytes(packed.getvalue())
+    return blob
+
+
+class Engine:
+    def __init__(self, p, blob):
+        self.p = p
+        self.blob = blob
+        self.events = []
+        self.fault = None
+        self.gates = set()
+        self.nets = {}
+        for i, (net, binding) in enumerate(p["networks"].items(), start=1):
+            self.nets[net] = {"NetworkID": str(i) * 64, "IPAMConfig": None, "IPAddress": binding["ipv4"],
+                              "Aliases": binding["aliases"] + [OLD[:12]], "MacAddress": "allocated-at-first-start"}
+        self.docs = {OLD: {"Id": OLD, "Image": p["oldImage"], "Name": "/" + p["container"],
+                           "Config": {"Image": "previous:ci", "Entrypoint": ENTRY, "Cmd": p["gate"]["command"],
+                                      "MacAddress": "legacy", "Env": ["KEEP=fixture"], "Labels": {"retain": "value"}},
+                           "Path": ENTRY[0], "Args": ENTRY[1:] + p["gate"]["command"],
+                           "HostConfig": {"AutoRemove": False, "RestartPolicy": {"Name": "no"}, "OomKillDisable": None},
+                           "Mounts": [{"Type": "bind", "Destination": "/fixture"}],
+                           "NetworkSettings": {"Networks": copy.deepcopy(self.nets), "Ports": {}},
+                           "State": {"Running": True, "Status": "running", "Pid": 12, "StartedAt": "first"},
+                           "RestartCount": 0}}
+
+    def inspect(self, ident, missing=False):
+        for cid, doc in self.docs.items():
+            if ident in (cid, doc["Name"][1:]):
+                return copy.deepcopy(doc)
+        if not missing:
+            raise Held("MISSING")
+
+    def load(self, archive, package):
+        assert archive.read() == self.blob
+        self.events.append("load")
+
+    def stop(self, cid):
+        self.events.append("stop:" + cid[0])
+        self.docs[cid]["State"].update(Running=False, Status="exited", Pid=0)
+
+    def start(self, cid):
+        self.events.append("gate:" + cid[0])
+        self.docs[cid]["HostConfig"]["OomKillDisable"] = None
+        self.docs[cid]["State"].update(Running=True, Status="running", Pid=55, StartedAt="next")
+        self.gates.add(cid)
+
+    def rename(self, cid, name):
+        self.docs[cid]["Name"] = "/" + name
+
+    def disconnect(self, cid, network):
+        nets = self.docs[cid]["NetworkSettings"]["Networks"]
+        net = next(n for n, e in self.nets.items() if e["NetworkID"] == network)
+        del nets[net]
+        if self.fault == "lost_disconnect":
+            self.fault = None
+            raise OSError()
+
+    def connect(self, cid, network, settings):
+        net = next(n for n, e in self.nets.items() if e["NetworkID"] == network)
+        ep = copy.deepcopy(self.nets[net])
+        ep.update(settings)
+        ep["Aliases"] = settings["Aliases"] + [cid[:12]]
+        ep["MacAddress"] = "allocated-on-attach"
+        self.docs[cid]["NetworkSettings"]["Networks"][net] = ep
+
+    def create(self, name, request):
+        self.events.append("create")
+        doc = copy.deepcopy(self.docs[OLD])
+        self.docs[NEW] = doc
+        cfg = copy.deepcopy(request)
+        nets = cfg.pop("NetworkingConfig")["EndpointsConfig"]
+        doc["HostConfig"] = cfg.pop("HostConfig")
+        doc.update(Id=NEW, Name="/" + name, Image=cfg["Image"], Config=cfg)
+        doc["State"]["Status"] = "created"
+        for net, settings in nets.items():
+            assert "MacAddress" not in settings
+            self.connect(NEW, self.nets[net]["NetworkID"], settings)
+        if self.fault == "config":
+            cfg["Env"] = ["CHANGED=fixture"]
+        if self.fault == "network":
+            doc["NetworkSettings"]["Networks"][next(iter(nets))]["Aliases"].append("unexpected")
+        if self.fault == "lost_create":
+            raise OSError()
+        return NEW
+
+    def process(self, doc, gated):
+        if self.fault == "handler" and doc["Id"] == NEW:
+            return False
+        return (doc["Id"] in self.gates) == gated
+
+    def signal(self, cid):
+        assert cid in self.gates
+        self.gates.remove(cid)
+        self.events.append("signal:" + cid[0])
+        if cid == NEW and self.p["migration"]["mode"] == "spring-flyway":
+            self.events.append("spring-flyway")
+        if cid == NEW and self.fault == "lost_signal":
+            raise OSError()
+
+    def probe(self, doc):
+        self.events.append("probe:" + doc["Id"][0])
+        if self.fault == "readiness" and doc["Id"] == NEW:
+            return 200, b'{"nested":{"status":"UP"},"status":"DOWN"}'
+        if "jsonStatus" not in self.p["readiness"]:
+            return 204, b""
+        return 200, b'{"status":"UP"}'
+
+    def migrate(self, cid, command):
+        assert cid in self.gates
+        self.events.append("migrate")
+
+    def pause(self):
+        pass
+
+
+class ReleaseTest(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name)
+        p = self.p = json.loads(PROFILE.read_text(encoding="utf-8"))
+        p.update(inbox=tmp.name, journal=tmp.name, dockerSocket=str(self.root / "sock"),
+                 nsenter=str(self.root / "nsenter"), oldImage="sha256:" + "a" * 64)
+        for i, net in enumerate(p["networks"].values(), start=1):
+            net["ipv4"] = "192.0.2." + str(i)
+        p["migration"]["rollbackCompatible"] = True
+        p["readiness"]["attempts"] = 2
+        p["ci"].update(runId=15, runAttempt=1, artifactId=17)
+        self.rt = Engine(p, artifact(p, self.root))
+
+    def planned(self):
+        report = plan(self.p, self.rt)
+        self.assertEqual(report["status"], "PLANNED", report)
+        return report["planSha256"]
+
+    def execute(self):
+        approved = self.planned()
+        result = apply(self.p, approved, self.rt)
+        saved = json.loads((self.root / approved / "receipt.json").read_text())
+        self.assertEqual(result, saved)
+        return result
+
+    def test_archive_tampered(self):
+        next(self.root.glob("*.zip")).write_bytes(b"different")
+        self.assertEqual(plan(self.p, self.rt)["reason"], "ARTIFACT_DIGEST_CHANGED")
+        self.assertEqual(self.rt.events, [])
+
+    def test_inner_digest(self):
+        artifact(self.p, self.root, archiveSha256="f" * 64)
+        self.assertEqual(plan(self.p, self.rt)["reason"], "IMAGE_ARCHIVE_DIGEST_CHANGED")
+
+    def test_oci_image_id(self):
+        self.p["ci"]["imageId"] = "sha256:" + "f" * 64
+        self.assertEqual(plan(self.p, self.rt)["reason"], "IMAGE_ID_CHANGED")
+
+    def test_wrong_tested_tree(self):
+        artifact(self.p, self.root, testedTree="c" * 40)
+        self.assertEqual(plan(self.p, self.rt)["reason"], "CI_PROVENANCE_CHANGED")
+
+    def test_plan_read_only_and_drift(self):
+        before = list(self.root.iterdir())
+        approved = self.planned()
+        self.assertEqual(list(self.root.iterdir()), before)
+        self.rt.docs[OLD]["Config"]["Env"].append("DRIFT=1")
+        self.assertEqual(apply(self.p, approved, self.rt)["reason"], "PLAN_CHANGED")
+        self.assertNotIn("load", self.rt.events)
+
+    def test_success_flyway_and_retention(self):
+        self.assertEqual(self.execute()["status"], "READY")
+        self.assertEqual([e for e in self.rt.events if e != "probe:1"],
+                         ["load", "stop:1", "create", "gate:2", "signal:2", "spring-flyway", "probe:2"])
+        self.assertEqual(self.rt.inspect(self.p["retainedName"])["Id"], OLD)
+        self.assertFalse(self.rt.docs[OLD]["State"]["Running"])
+
+    def test_dedicated_migration_before_signal(self):
+        self.p["migration"].update(mode="dedicated", command=["app", "migrate"])
+        self.assertEqual(self.execute()["readiness"], "UP")
+        self.assertLess(self.rt.events.index("migrate"), self.rt.events.index("signal:2"))
+
+    def test_non_json_readiness(self):
+        self.p["readiness"].pop("jsonStatus")
+        self.p["readiness"]["acceptStatus"] = [204]
+        self.assertEqual(self.execute()["status"], "READY")
+
+    def test_extra_env_held(self):
+        self.rt.fault = "config"
+        r = self.execute()
+        self.assertEqual((r["status"], r["reason"], r["rollback"]), ("HELD", "CONFIGURATION_DELTA", "ROLLED_BACK"))
+        self.assertNotIn("signal:2", self.rt.events)
+
+    def test_extra_alias_held(self):
+        self.rt.fault = "network"
+        self.assertEqual(self.execute()["reason"], "ENDPOINT_DELTA")
+        self.assertNotIn("gate:2", self.rt.events)
+        self.assertNotIn("signal:2", self.rt.events)
+
+    def test_missing_handler_held(self):
+        self.rt.fault = "handler"
+        self.assertEqual(self.execute()["reason"], "GATE_NOT_PROVEN")
+        self.assertNotIn("signal:2", self.rt.events)
+
+    def test_readiness_rolls_back(self):
+        self.rt.fault = "readiness"
+        result = self.execute()
+        self.assertEqual((result["reason"], result["rollback"], result["restoredCid"], result["predecessorReadiness"]),
+                         ("READINESS_NOT_UP", "ROLLED_BACK", OLD, "UP"))
+        self.assertEqual(self.rt.events.count("signal:2"), 1)
+        self.assertEqual(self.rt.events.count("signal:1"), 1)
+        self.assertEqual(self.rt.inspect(self.p["container"])["Id"], OLD)
+        self.assertFalse(self.rt.docs[NEW]["State"]["Running"])
+        self.assertFalse(self.rt.docs[NEW]["NetworkSettings"]["Networks"])
+
+    def test_uncertain_signal_never_replayed(self):
+        self.rt.fault = "lost_signal"
+        self.assertEqual(self.execute()["rollback"], "ROLLED_BACK")
+        self.assertEqual(self.rt.events.count("signal:2"), 1)
+
+    def test_lost_create_response_preserves_both_containers_and_exclusion(self):
+        self.rt.fault = "lost_create"
+        result = self.execute()
+        self.assertEqual((result["rollback"], result["rollbackReason"]), ("HELD", "UNKNOWN_SERVICE_OWNER"))
+        self.assertTrue((self.root / (self.p["module"] + ".lock")).is_dir())
+        self.assertFalse(any(doc["State"]["Running"] for doc in self.rt.docs.values()))
+        self.assertEqual(self.rt.events.count("create"), 1)
+
+    def test_http_up_from_a_different_generation_is_rejected(self):
+        probe = self.rt.probe
+        def changed(doc):
+            if doc["Id"] == NEW:
+                self.rt.docs[NEW]["State"]["StartedAt"] = "unexpected-restart"
+            return probe(doc)
+        self.rt.probe = changed
+        result = self.execute()
+        self.assertEqual((result["reason"], result["rollback"]), ("GENERATION_CHANGED", "ROLLED_BACK"))
+
+    def test_partial_detach(self):
+        self.rt.fault = "lost_disconnect"
+        self.assertEqual(self.execute()["rollback"], "ROLLED_BACK")
+        self.assertNotIn("create", self.rt.events)
+
+    def test_irreversible_migration_blocks_before_apply(self):
+        approved = self.planned()
+        self.p["migration"]["rollbackCompatible"] = False
+        self.assertEqual(plan(self.p, self.rt)["rollback"], "BLOCKED")
+        self.assertEqual(apply(self.p, approved, self.rt)["rollback"], "BLOCKED")
+        self.assertEqual(self.rt.events, ["probe:1"])
+
+    def test_interrupted_or_consumed_attempt_held(self):
+        approved = self.planned()
+        lock = self.root / (self.p["module"] + ".lock")
+        lock.mkdir()
+        self.assertEqual(apply(self.p, approved, self.rt)["reason"], "OPERATION_IN_PROGRESS_OR_INTERRUPTED")
+        lock.rmdir()
+        (self.root / approved).mkdir()
+        self.assertEqual(apply(self.p, approved, self.rt)["reason"], "PLAN_ALREADY_CONSUMED")
+        self.assertNotIn("load", self.rt.events)
+
+    def test_transport_binds_successful_run_artifact_and_head(self):
+        ci = self.p["ci"]
+        repo = {"full_name": ci["repository"]}
+        run = dict(id=15, event="pull_request", status="completed", conclusion="success", run_attempt=1,
+                   repository=repo, head_repository=repo, head_sha=ci["sourceCommit"], path=".github/workflows/module-ci.yml",
+                   pull_requests=[{"number": 63, "head": {"sha": ci["sourceCommit"]}}])
+        obj = dict(id=17, expired=False, workflow_run={"id": 15, "head_sha": ci["sourceCommit"]},
+                   name="source-onboarding-governed-image-15", digest="sha256:" + ci["zipSha256"])
+        api = lambda path: run if path.endswith("/runs/15") else obj
+        self.assertEqual(select(ci, 15, 17, api)["zipSha256"], ci["zipSha256"])
+        obj["workflow_run"]["id"] = 14
+        with self.assertRaisesRegex(Held, "CI_ARTIFACT_CHANGED"):
+            select(ci, 15, 17, api)

@@ -1,0 +1,41 @@
+name: Governed Onboarding release
+on:
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: ouf-vps-privileged-operations
+  cancel-in-progress: false
+jobs:
+  plan:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    environment: ouf-vps-privileged
+    timeout-minutes: 10
+    outputs:
+      plan_sha256: ${{ steps.plan.outputs.plan_sha256 }}
+    steps:
+      - name: Plan approved Onboarding profile
+        id: plan
+        shell: bash
+        run: |
+          # Task 17b hook: authenticate deployment, commit, run and phase; call plan.
+          # On PLANNED only, publish plan_sha256 via GITHUB_OUTPUT for the next review.
+          echo "::error::Module release plan awaits the installed task-17b executor"
+          exit 1
+  apply:
+    name: Apply plan ${{ needs.plan.outputs.plan_sha256 }}
+    needs: plan
+    if: needs.plan.result == 'success' && needs.plan.outputs.plan_sha256 != ''
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    environment: ouf-vps-privileged
+    timeout-minutes: 25
+    steps:
+      - name: Consume approved plan digest
+        env:
+          APPROVED_PLAN: ${{ needs.plan.outputs.plan_sha256 }}
+        shell: bash
+        run: |
+          [[ "$APPROVED_PLAN" =~ ^[0-9a-f]{64}$ ]] || exit 1
+          # Task 17b hook: verify the independent apply approval and call apply.
+          echo "::error::Module release apply awaits the installed task-17b executor"
+          exit 1
