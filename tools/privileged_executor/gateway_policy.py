@@ -28,8 +28,9 @@ def valid_profile(profile):
             and match(r"[A-Za-z0-9_-][A-Za-z0-9_.-]*\.ya?ml", source["workflow"])
             and match(r"[A-Za-z0-9][A-Za-z0-9_.-]*", profile["container"])
             and all(isinstance(p, str) and Path(p).is_absolute() and ".." not in Path(p).parts for p in paths)
-            and isinstance(values, dict) and all(match(r"[a-z][a-z0-9_.-]{0,63}", k) and isinstance(v, str)
-                                                  for k, v in values.items()))
+            and isinstance(values, dict)
+            and all(match(r"[A-Za-z][A-Za-z0-9_.-]{0,127}", k) and (isinstance(v, str) or type(v) is int)
+                    for k, v in values.items()))
 
 
 def valid_request(req, common):
