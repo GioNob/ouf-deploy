@@ -54,6 +54,32 @@ def preconditions(observation):
             "C_R3_PRECONDITIONS_UNSATISFIED")
 
 
+def issuance_pointer(path):
+    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+    with os.fdopen(fd, "rb") as stream:
+        require(stat.S_ISREG(os.fstat(fd).st_mode), "C_R3_ISSUANCE_UNPROVEN")
+        return stream.read(513)
+
+
+def accepted_inputs(args, head, reader):
+    path, expected = args.inputs, args.inputs_sha256
+    if path is None:
+        sequence = head["sequence"]
+        name = ".ouf-r3-state" if sequence == 1 else f".ouf-r3-v{sequence}-state"
+        pointer = issuance_pointer(Path(args.issuance_home) / name)
+        match = re.fullmatch(rb"(/etc/ouf/deploy-snapshots/semantic-provider-r3-source\.[A-Za-z0-9]{8}) ([0-9]{1,20})\n?", pointer)
+        require(match and int(match[2]) == head["authorization"]["issuedAt"], "C_R3_ISSUANCE_UNPROVEN")
+        path = match[1].decode("ascii") + "/inputs.json"
+        raw, _ = I.native_switch().custody(path, 0o600)
+        expected = expected or sha(raw)
+    index = I.C.document(reader.read(path, expected))
+    require(index["schema"] == "ouf.semantic-provider-r3-inputs.v1"
+            and I.C.DATA_INPUTS <= set(index["files"]), "C_R3_INPUTS_UNPROVEN")
+    accepted_raw = reader.bound(index["files"]["acceptance"])
+    require(sha(accepted_raw) == head["authorization"]["acceptanceSha256"], "C_R3_ACCEPTANCE_DRIFT")
+    return index, I.C.ACCEPT.decode_manifest(accepted_raw)
+
+
 def installed(args, observation, reader):
     """Same installed runtime loader as operate; link A2 peer to accepted R3 bytes."""
     S = I.native_switch()
@@ -73,14 +99,7 @@ def installed(args, observation, reader):
     heads = [runtime.authorization_head(cfg, raw, cid, auth) for cid in sorted(cfg["candidates"])]
     require(heads[0] == heads[1] and {k: heads[0][k] for k in ("sha256", "sequence", "decision")}
             == observation["authorization"], "C_R3_BINDING_DRIFT")
-    index = I.C.document(reader.read(args.inputs, args.inputs_sha256))
-    require(index["schema"] == "ouf.semantic-provider-r3-inputs.v1"
-            # Any R3 version index: the probe needs only these v1 inputs, each re-bound
-            # to the signed head (acceptance) or to the accepted A2 files below.
-            and I.C.DATA_INPUTS <= set(index["files"]), "C_R3_INPUTS_UNPROVEN")
-    accepted_raw = reader.bound(index["files"]["acceptance"])
-    require(sha(accepted_raw) == heads[0]["authorization"]["acceptanceSha256"], "C_R3_ACCEPTANCE_DRIFT")
-    accepted = I.C.ACCEPT.decode_manifest(accepted_raw)
+    index, accepted = accepted_inputs(args, heads[0], reader)
     # Installed, hash-bound preparer supplies the IP executable, not host PATH.
     cid = observation["candidates"]["southbound"]["cid"]
     broker = I.C.document(runtime.bound_bytes(cfg["admissionConfigurations"][cid]))
@@ -797,11 +816,16 @@ def arguments(argv):
     mode.add_argument("--plan", action="store_true")
     mode.add_argument("--apply", action="store_true")
     parser.add_argument("--plan-sha256")
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--inputs")
+    source.add_argument("--issuance-home")
+    parser.add_argument("--inputs-sha256")
     for name in ("install-root", "wrapper", "wrapper-sha256", "docker", "docker-sha256", "docker-socket",
-                 "systemctl", "systemctl-sha256", "nft", "nft-sha256", "output-directory", "inputs", "inputs-sha256",
+                 "systemctl", "systemctl-sha256", "nft", "nft-sha256", "output-directory",
                  "installation-profile", "installation-profile-sha256", "southbound-ca", "southbound-ca-sha256"):
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args(argv)
+    require(args.inputs is None or args.inputs_sha256 is not None, "INVALID_ARGUMENTS")
     args.timeout_seconds = 10
     require(args.apply == (args.plan_sha256 is not None), "INVALID_ARGUMENTS")
     require(all(I.V.hashed(v) for k, v in vars(args).items() if k.endswith("sha256") and v is not None), "INVALID_ARGUMENTS")

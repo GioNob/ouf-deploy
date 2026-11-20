@@ -19,7 +19,7 @@ C=e4a814324e251ff3dc27434ef62336fb69be68fb
 }
 [[ $EUID == 0 ]] || { echo 'eseguire come root tramite sudo' >&2; exit 2; }
 S=/etc/ouf/deploy-snapshots
-STATE=${C_PROBE_STATE:-$HOME/.ouf-c-probe-state}
+STATE=${C_PROBE_STATE:-/root/.ouf-c-probe-state}
 PY=/usr/bin/python3.13
 PY_SHA=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 CA=$S/semantic-provider-v2-trust-vf7B4SM5/trust-bundle.pem
@@ -166,19 +166,22 @@ if [[ $mode == plan ]]; then
   [[ ! -e $STATE && ! -L $STATE ]] || { echo 'stato esistente: conservarlo; scegliere C_PROBE_STATE nuovo' >&2; exit 2; }
   # Bindings derived like r3-operate.sh; the probe cross-checks them against the
   # installed R3 acceptance/runtime. Env overrides stay possible for diagnosis.
-  OPERATOR_HOME=$(getent passwd "${SUDO_USER:-oufadmin}" | cut -d: -f6)
-  if [[ -z ${C_R3_INPUTS:-} ]]; then
-    read -r R3D _ < "$OPERATOR_HOME/.ouf-r3-v11-state"
-    [[ $R3D =~ ^/etc/ouf/deploy-snapshots/semantic-provider-r3-source\.[A-Za-z0-9]{8}$ ]] || exit 2
-    C_R3_INPUTS=$R3D/inputs.json
+  if [[ -n ${C_R3_INPUTS:-} ]]; then
+    file "$C_R3_INPUTS"
+    C_R3_INPUTS_SHA256=${C_R3_INPUTS_SHA256:-$(sha256sum "$C_R3_INPUTS" | cut -d' ' -f1)}
+    input_args=(--inputs "$C_R3_INPUTS")
+  else
+    OPERATOR_HOME=$(getent passwd "${SUDO_USER:-oufadmin}" | cut -d: -f6)
+    [[ $OPERATOR_HOME == /* ]] || exit 2
+    input_args=(--issuance-home "$OPERATOR_HOME")
   fi
+  if [[ -n ${C_R3_INPUTS_SHA256:-} ]]; then input_args+=(--inputs-sha256 "$C_R3_INPUTS_SHA256"); fi
   C_INSTALLATION_PROFILE=${C_INSTALLATION_PROFILE:-/etc/ouf/installations/ouf-lab-netcup-01/semantic-provider.json}
-  file "$C_R3_INPUTS"; file "$C_INSTALLATION_PROFILE"
-  C_R3_INPUTS_SHA256=${C_R3_INPUTS_SHA256:-$(sha256sum "$C_R3_INPUTS" | cut -d' ' -f1)}
+  file "$C_INSTALLATION_PROFILE"
   C_INSTALLATION_PROFILE_SHA256=${C_INSTALLATION_PROFILE_SHA256:-$(sha256sum "$C_INSTALLATION_PROFILE" | cut -d' ' -f1)}
   C_WRAPPER_SHA256=${C_WRAPPER_SHA256:-$(sha256sum /usr/local/sbin/ouf-semantic-admitted-v2 | cut -d' ' -f1)}
   C_SYSTEMCTL_SHA256=${C_SYSTEMCTL_SHA256:-$(sha256sum /usr/bin/systemctl | cut -d' ' -f1)}
-  printf 'binding %s %s\n' inputs "$C_R3_INPUTS_SHA256" profile "$C_INSTALLATION_PROFILE_SHA256" \
+  printf 'binding %s %s\n' inputs "${C_R3_INPUTS_SHA256:-authenticated-head}" profile "$C_INSTALLATION_PROFILE_SHA256" \
     wrapper "$C_WRAPPER_SHA256" systemctl "$C_SYSTEMCTL_SHA256" >&2
   D=$(mktemp -d "$S/semantic-provider-c-source.XXXXXXXX")
   DOWNLOAD=1
@@ -190,7 +193,7 @@ if [[ $mode == plan ]]; then
     --docker-socket unix:///var/run/docker.sock
     --systemctl /usr/bin/systemctl --systemctl-sha256 "$C_SYSTEMCTL_SHA256"
     --nft /usr/sbin/nft --nft-sha256 57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0
-    --inputs "$C_R3_INPUTS" --inputs-sha256 "$C_R3_INPUTS_SHA256"
+    "${input_args[@]}"
     --installation-profile "$C_INSTALLATION_PROFILE" --installation-profile-sha256 "$C_INSTALLATION_PROFILE_SHA256"
     --southbound-ca "$CA" --southbound-ca-sha256 "$CA_SHA" --output-directory "$OUT")
   (set -o noclobber; printf '%s\0' "${args[@]}" > "$D/arguments")
