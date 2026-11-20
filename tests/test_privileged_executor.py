@@ -40,7 +40,7 @@ class Review(unittest.TestCase):
         self.req = dict(run="123", commit="a"*40, attempt="1", phase="plan", direction="forward", queue="empty")
         self.req["digest"] = mandate.intent(self.req)
         self.cfg = dict(repositoryId=17, environment="private", environmentId=4, reviewerIds=[8],
-                        commit=self.req["commit"], branch="protected")
+                        commit=self.req["commit"], branch="protected", runner="local", runnerName="vps")
         self.run = dict(id=123, run_attempt=1, event="workflow_dispatch", status="in_progress",
                         head_sha=self.req["commit"], head_branch="protected", path=mandate.WORKFLOW,
                         repository={"id":17}, head_repository={"id":17})
@@ -54,12 +54,14 @@ class Review(unittest.TestCase):
         self.effects = Mock()
 
     def invoke(self, req):
-        docs = [self.run, {"protected":True,"commit":{"sha":self.req["commit"]}}, self.env, self.reviews]
+        jobs = {"jobs": [dict(status="in_progress", runner_name="vps", name=req["phase"] + " " + req["digest"])]}
+        docs = [self.run, jobs, {"protected":True,"commit":{"sha":self.req["commit"]}}, self.env, self.reviews]
         get = Mock(side_effect=docs)
         review = mandate.authorize(req, self.cfg, get, self.state)
         if req["phase"] == "plan":
             self.assertEqual([call.args[0] for call in get.call_args_list], [
-                "/actions/runs/" + req["run"], "/branches/protected", "/environments/private"])
+                "/actions/runs/" + req["run"], "/actions/runs/" + req["run"] + "/attempts/1/jobs?per_page=100",
+                "/branches/protected", "/environments/private"])
         self.effects(review)
         return review
 
@@ -134,6 +136,7 @@ class Review(unittest.TestCase):
 
     def test_plan_requires_authorized_run_ref_and_protected_environment(self):
         branch = {"protected": True, "commit": {"sha": self.req["commit"]}}
+        jobs = {"jobs": [dict(status="in_progress", runner_name="vps", name="plan " + self.req["digest"])]}
         for update in ({"id": 321}, {"run_attempt": 2}, {"event": "push"}, {"status": "completed"},
                        {"path": "other.yml"}, {"head_sha": "b"*40}, {"head_branch": "other"},
                        {"head_repository": {"id": 42}}):
@@ -141,13 +144,24 @@ class Review(unittest.TestCase):
                 mandate.authorize(self.req, self.cfg, Mock(side_effect=[dict(self.run, **update)]), self.state)
         for update in ({"protected": False}, {"commit": {"sha": "b"*40}}):
             with self.subTest(update=update), self.assertRaisesRegex(mandate.Held, "PROTECTED_REF_DRIFT"):
-                mandate.authorize(self.req, self.cfg, Mock(side_effect=[self.run, dict(branch, **update)]), self.state)
+                mandate.authorize(self.req, self.cfg, Mock(side_effect=[self.run, jobs, dict(branch, **update)]), self.state)
         for update in ({"id": 42}, {"name": "other"}, {"protection_rules": []},
                        {"protection_rules": [{"type": "required_reviewers", "reviewers": []}]}):
             with self.subTest(update=update), self.assertRaisesRegex(mandate.Held, "ENVIRONMENT_UNPROTECTED"):
-                get = Mock(side_effect=[self.run, branch, dict(self.env, **update)])
+                get = Mock(side_effect=[self.run, jobs, branch, dict(self.env, **update)])
                 mandate.authorize(self.req, self.cfg, get, self.state)
         self.assertFalse((self.state / self.req["run"]).exists())
+
+    def test_queued_requires_the_active_calling_job_on_the_profile_runner(self):
+        job = dict(status="in_progress", runner_name="vps", name="plan " + self.req["digest"])
+        for status in ("queued", "in_progress"):
+            self.run["status"] = status
+            for rows in ([], [dict(job, status="queued")], [dict(job, runner_name="local")], [dict(job, name="intent")]):
+                with self.subTest(status=status, rows=rows), self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
+                    mandate.authorize(self.req, self.cfg, Mock(side_effect=[self.run, {"jobs": rows}]), self.state)
+        self.assertFalse((self.state / self.req["run"]).exists())
+        self.run["status"] = "queued"
+        self.invoke(self.req)
 
     def test_missing_unverifiable_or_other_reviewer(self):
         self.cfg["reviewerIds"].append(9)
