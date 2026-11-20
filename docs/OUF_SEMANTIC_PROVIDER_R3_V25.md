@@ -1,5 +1,7 @@
 # R3 v25 · Identità stabile del Semantic
 
+La correzione B della v27 conserva il profilo d’ingresso e aggiorna la verifica crittografica e il momento del tick. [Guida R3 v27](OUF_SEMANTIC_PROVIDER_R3_V27.md)
+
 La firma OPERATE v25 lega il profilo del Semantic al trasporto southbound. Un restart o una ricreazione conforme può ricevere una porta nuova sotto la stessa firma. Il riferimento di confronto è una v24 riautorizzata sulla generazione viva e riconciliata. La qualifica Linux con traffico è prevista nel workflow R3.
 
 ## Profilo, epoca e autorità

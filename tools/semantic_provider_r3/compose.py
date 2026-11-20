@@ -445,6 +445,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         if version >= 25:
             from .semantic_overlay_v25 import sources_v25
             emitted = sources_v25(emitted, selected_map, SEMANTIC_IDENTITY)
+        if version >= 27:
+            from .ingress_memo_overlay_v27 import sources_v27
+            emitted = sources_v27(emitted, selected_map)
         emitted, hashes = seal_v18(sources, emitted, source_map, RECOVERY, sha)
     else:
         hashes = {target: sha(emitted[original]) for target, original in source_map.items()}
