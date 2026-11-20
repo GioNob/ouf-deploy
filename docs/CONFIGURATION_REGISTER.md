@@ -1,5 +1,13 @@
 # Registro della configurazione dell'host
 
+## Rilascio della configurazione APISIX
+
+`deploy.gateway-release@1` registra il profilo privato, i file delle due credenziali, lo stato per run e il puntatore all'ultimo rilascio. Il custode root configura `gateway.source` con repository, nome del workflow produttore e file del token con lettura Actions sul repository sorgente. Indica socket Docker locale, container, IP numerico di loopback e porta nel namespace APISIX, file della chiave Admin e dizionario `values` per i segnaposto. Il bootstrap accetta anche i profili preesistenti privi della sezione Gateway. I file delle credenziali devono appartenere a root, con permessi privati e antenati in custodia root. Il custode aggiorna i file alla rotazione. [Profilo di esempio](privileged-executor.example.json) · [Registro host](../tools/privileged_executor/host-register.json)
+
+Nel dispatch `release`, indicare run CI, artifact ID, PR e SHA della testa revisionata. Il plan scarica lo ZIP originale, verifica i tre file v1 e pubblica i conteggi per azione con l'impronta da approvare. L'apply ripete la verifica e confronta lo stato vivo prima delle scritture. Il journal privato conserva il piano, lo snapshot, le review, gli intenti e il risultato. La ricevuta APPLIED fornisce `releaseRun` e `receipt` per un dispatch `return` con una nuova review. Il ritorno controlla il rilascio corrente, la generazione e i corpi prima di ripristinare lo snapshot. [Workflow di rilascio](../.github/workflows/gateway-release.yml)
+
+Per il recupero, acquisire sotto lock profilo, journal per run e `gateway-head` come insieme coerente e cifrato. Ripristinarli dopo il bootstrap dello stesso commit. Una testa `PENDING` conserva l'esclusione dopo un'interruzione o una compensazione non verificabile. Il custode riconcilia gli intenti e le risorse coinvolte prima di riaprire il rilascio. La prova nativa copre ritorno, rifiuto di una rotta e ripristino su APISIX temporaneo. [Prova nativa](../tests/test_gateway_release_native.py)
+
 ## Rilascio dei moduli applicativi
 
 Le voci D-065 descrivono i tipi di archivio di competenza deploy. La distinta privata associa ogni istanza al modulo, alla revisione dell'esecutore, al commit del modulo e ai digest approvati. [Guida di rilascio](OUF_MODULE_RELEASE.md)

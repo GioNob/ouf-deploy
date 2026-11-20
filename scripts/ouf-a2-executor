@@ -12,12 +12,15 @@ from mandate import Held, authorize, github_reader, need, validate
 from store import read, trusted
 from pipeline import Cutover
 from module_operation import ModuleRelease
+from gateway_operation import GatewayRelease
 
 
 def dispatch(req, cfg, state, get, source_get=None):
     review = authorize(req, cfg, get)
     if req.get("operation") == "module-release":
         return ModuleRelease(cfg, state, req).execute(review)
+    if req.get("operation") == "gateway-release":
+        return GatewayRelease(cfg, state, req).execute(review)
     return Cutover(cfg, state, req, source_get).execute(review)
 
 

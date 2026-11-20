@@ -38,6 +38,9 @@ class Bootstrap(unittest.TestCase):
             runId=3, runAttempt=1, artifactId=4, pullRequest=2, zipSha256="a"*64, imageId="sha256:"+"b"*64)
         c.update(container="pg", role="reader", database="semantic", socket="/run/postgresql")
         module = cfg["modules"]["onboarding"]
+        cfg["gateway"].update(host="127.0.0.1", port=9180, adminPath="/apisix/admin", keyFile=str(tmp/"key"),
+                              dockerSocket=cfg["socket"], container="fixture")
+        cfg["gateway"]["source"].update(workflow="ci.yml", tokenFile=str(tmp/"token"))
         module.update(inbox=str(tmp/"inbox"), journal=str(tmp/"journal"), dockerSocket=cfg["socket"],
                       nsenter=str(tmp/"nsenter"), oldImage="sha256:"+"a"*64)
         for i, net in enumerate(module["networks"].values()):
@@ -81,7 +84,7 @@ class Bootstrap(unittest.TestCase):
                 file.write_bytes(data)
         probe = ("import sys;sys.path.insert(0,sys.argv[1]);"
                  "from pipeline import Cutover;from module_operation import ModuleRelease;"
-                 "from module_release.operation import migrate")
+                 "from module_release.operation import migrate;from gateway_operation import GatewayRelease")
         subprocess.run([sys.executable, "-I", "-B", "-c", probe, str(lib)], check=True)
 
     def test_install_without_successor_image(self):

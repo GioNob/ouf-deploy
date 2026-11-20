@@ -17,10 +17,10 @@ def github(path, output=None):
         return json.loads(result.stdout)
 
 
-def select(ci, run_id, artifact_id, api):
+def select(ci, run_id, artifact_id, api, *, artifact_prefix="source-onboarding-governed-image"):
     prefix = "repos/" + ci["repository"]
     return select_artifact(ci, run_id, artifact_id, lambda path: api(prefix + path),
-                           artifact_prefix="source-onboarding-governed-image")
+                           artifact_prefix=artifact_prefix)
 
 
 def transport(profile, run_id, artifact_id, inbox):

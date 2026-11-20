@@ -13,6 +13,17 @@
       "test": "Verificare rifiuto del digest Flyway errato, assenza di USR1 e ritorno v29 al CID e all’immagine iniziali."
     },
     {
+      "id": "deploy.gateway-release",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Moduli Gateway e selettore CI del commit installato, sezione gateway del profilo root, riferimenti alle credenziali, journal per run e puntatore gateway-head",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Il custode root conserva cifrati profilo, file chiave, token di lettura Actions e journal coerente a esecutore fermo. Registrare commit, proprietari, permessi, run del publisher e digest dello ZIP.",
+      "restore": "Ripristinare i blob del bootstrap, poi profilo e accessi correnti. Ripristinare insieme stato per run e puntatore privato prima della riapertura del mandato. Riconciliare una testa PENDING sul nodo.",
+      "test": "Su APISIX isolato verificare il ritorno approvato, i corpi precedenti, la rimozione delle sole risorse create e la conservazione di una rotta estranea."
+    },
+    {
       "id": "deploy.a2.executor",
       "version": 2,
       "owner": "ouf-deploy",

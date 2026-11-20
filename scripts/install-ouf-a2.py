@@ -17,6 +17,7 @@ ENTRY = Path("/usr/local/sbin/ouf-a2")
 RULE = Path("/etc/sudoers.d/ouf-a2")
 REPO = Path(__file__).resolve().parents[1]
 LIB = ("mandate", "store", "queue_inventory", "runbooks", "semantic", "ingress", "pipeline", "module_operation", "successor_image")
+LIB += ("gateway_policy", "gateway_bundle", "gateway_admin", "gateway_operation")
 MODELS = ("transition_journal", "gated_creation_plan", "gated_process_observation")
 
 
@@ -44,7 +45,7 @@ def inspect(profile):
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
-    check(set(cfg) in (required, required | {"successorImage"}) and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
+    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "gateway"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
           and type(cfg["readinessPort"]) is int and 0 < cfg["readinessPort"] < 65536, "INSTALL_PROFILE_FIELDS")
     check(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", cfg["repository"]) and cfg["branch"]
           and all(Path(cfg[k]).is_absolute() for k in ("installRoot","leaseJournal","socket")),
@@ -109,7 +110,7 @@ def inspect(profile):
     sql = "discovery-queue.sql"
     files[ROOT / "lib" / sql] = (blob("tools/privileged_executor/" + sql), 0o600)
     package = ROOT / "lib/module_release"
-    for module in ("__init__", "contract", "docker", "frame", "operation", "provenance"):
+    for module in ("__init__", "contract", "docker", "frame", "operation", "provenance", "transport"):
         files[package / (module + ".py")] = (blob(f"tools/module_release/{module}.py"), 0o600)
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")
@@ -120,6 +121,10 @@ def inspect(profile):
               and Path(spec["inbox"]).is_absolute() and isinstance(spec["predecessorMigrations"], list)
               and contract.matches(contract.NAME, spec["migrationsField"]), "SUCCESSOR_IMAGE_PROFILE")
         contract.validate_ci(spec["ci"])
+    if "gateway" in cfg:
+        gateway = types.ModuleType("gateway_policy")
+        exec(compile(files[ROOT / "lib/gateway_policy.py"][0], "gateway_policy.py", "exec"), gateway.__dict__)
+        check(gateway.valid_profile(cfg["gateway"]), "GATEWAY_INSTALL_PROFILE")
     check(isinstance(cfg["modules"], dict) and "onboarding" in cfg["modules"], "MODULE_PROFILE_REQUIRED")
     for name, module_profile in cfg["modules"].items():
         contract.validate(module_profile)
