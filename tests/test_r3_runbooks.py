@@ -77,6 +77,8 @@ CLOSURE = {
     "ops/vps/r3-lease-renewal-v25.json",
     # R-002 (task-13f): v26 = v25 code with the ingress tick budget at 2.5 s (chain verification inside the budget).
     "ops/vps/r3-lease-renewal-v26.json",
+    # R-002 (task-13h/13i): v27 = signature memo and committed-renewal ingress tick, v25 parameters.
+    "ops/vps/r3-lease-renewal-v27.json", "tools/semantic_provider_r3/ingress_memo_overlay_v27.py",
     *("tools/semantic_lease_kernel_migration/" + n for n in (
         "__init__.py", "boot_dispatcher.py", "boot_runner_v2.py", "cli.py", "migration.py", "native.py")),
     "tools/semantic_provider_r3/upgrade.py", "scripts/upgrade-semantic-provider-r3.py",
