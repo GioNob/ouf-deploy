@@ -21,6 +21,8 @@ on:
       - scripts/issue-semantic-provider-operation-authorization.py
       - scripts/semantic-provider-*-v2.py
       - tests/test_semantic_provider_r3_compose.py
+      - tests/test_semantic_provider_r3_ceiling.py
+      - tests/r3_sealed_inputs.py
       - tests/fixtures/r3-v1-document-hashes.json
       - tests/test_semantic_provider_operation*.py
       - tests/test_semantic_b1_acceptance.py
@@ -37,7 +39,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with: {persist-credentials: false}
+        with: {persist-credentials: false, fetch-depth: 0}
       - name: Allow exec on /run (newer runner images mount it noexec)
         run: sudo mount -o remount,exec /run
       - name: Diagnose native fixture execution mounts and identity
@@ -51,6 +53,8 @@ jobs:
           # Tests also print findmnt -T for their actual temporary directory.
       - name: Pure composition, real validators and frame observer contract
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_compose.py -v
+      - name: Composition ceiling with the current emitted validator
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_ceiling.py -v
       - name: D-050 v12 migration bindings and frozen v1-v11 replay
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_v12.py -v
       - name: Native issuance with ephemeral Ed25519 key, custody and actual CLI

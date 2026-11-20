@@ -10,6 +10,7 @@ from unittest.mock import patch, Mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / 'tests')]
+from r3_sealed_inputs import sealed_legacy_inputs
 import test_semantic_provider_r3_v12 as V12
 from tools.semantic_provider_r3 import compose as C, install_common as I, upgrade as U
 from tools.semantic_provider_r3 import identity_provider_v13 as P, read_identity_provider_v13 as R
@@ -137,7 +138,7 @@ class Composition(unittest.TestCase):
     def test_frozen_v1_v12_input_and_output_bytes(self):
         golden = json.loads(V12.blob('tests/fixtures/r3-v1-v12-pre-v13-hashes.json'))
         for version in range(1, 13):
-            with self.subTest(version=version):
+            with self.subTest(version=version), sealed_legacy_inputs(V12):
                 if version == 12:
                     x, old, _, _ = V12.fixture()
                     r = V12.composed(x, old)
@@ -158,7 +159,8 @@ class Composition(unittest.TestCase):
                  'd2af995334a42fb314ff94d8ae22010dd45aa7c760987cc1145de4f95bc8321e',
                  'ea87a0e4779aed3e411a8d14cdd22baeda035afcdf65b7148c35a776951015a3'),
         }
-        inputs, previous = fixture()
+        with sealed_legacy_inputs(V12):
+            inputs, previous = fixture()
         for version, expected in golden.items():
             with self.subTest(version=version):
                 result = C.compose(inputs, version, sequence=version, supersedes=C.sha(previous['authorization']))

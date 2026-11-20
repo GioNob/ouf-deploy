@@ -122,20 +122,12 @@ SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRe
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
 require, canonical, sha = A.require, A.canonical, A.sha
-CURRENT_COMPOSITION_VERSION = 27
-
-
-def composition_version(version, fields):
-    if "compositionCeiling" not in fields:
-        return version
-    ceiling = fields["compositionCeiling"]
-    require(type(ceiling) is int and 24 <= ceiling <= min(version, CURRENT_COMPOSITION_VERSION),
-            "R3_COMPOSITION_CEILING_INVALID")
-    return ceiling
+CURRENT_COMPOSITION_VERSION = A.CURRENT_COMPOSITION_VERSION
+composition_version = A.composition_version
 
 
 def input_set(files, sources):
-    """Closed input pairs; the authenticated sequence still selects the version."""
+    """Recognize manifest shapes. compose() enforces the selected composition."""
     return ((set(files) == DATA_INPUTS and set(sources) in
              (SOURCE_INPUTS, SOURCE_INPUTS_V6, SOURCE_INPUTS_V11)) or
             (set(files) == DATA_INPUTS_V12 and set(sources) == SOURCE_INPUTS_V12) or
@@ -308,13 +300,6 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     inputs = {"files": {logical name: bytes}, "sources": {repository path: bytes}}.
     The caller authenticates custody and expected input hashes before calling.
     """
-    result = _compose_candidate(inputs, version, sequence=sequence, supersedes=supersedes)
-    A.validate(result["authorization"])
-    return result
-
-
-def _compose_candidate(inputs, version, *, sequence, supersedes):
-    """Build the candidate bytes. Only compose() validates the authorization for issuance."""
     require(type(version) is int and version >= 1, "R3_VERSION_REQUIRED")
     if version == 1:
         require(sequence in (None, 1) and supersedes is None, "R3_VERSION_ONE_CHAIN_REQUIRED")
@@ -702,6 +687,15 @@ def _compose_candidate(inputs, version, *, sequence, supersedes):
         "acceptanceSha256": sha(files["acceptance"]), "roles": operation_roles,
         "lease": {"ownerConfigurationSha256": sha(files["coordinator"]),
                   "leaseStructureHash": owner["binding"]["leaseStructureHash"], "dnsProfileSha256": dns["sha256"]}})
+    A.validate(payload)
+    if ceiling_field:
+        # A stale source manifest could otherwise sign a successor that its
+        # installed supervisor and runtime will both reject.
+        auth = contract_module(docs["source/tools/semantic_provider_operation/authorization.py"], "authorization")
+        try:
+            auth.validate(payload)
+        except auth.OperationDenied:
+            raise A.OperationDenied("R3_COMPOSED_AUTHORIZATION_REJECTED") from None
     docs = {version_prefix + path: raw for path, raw in docs.items()}
     directories = {version_prefix + "source", "registry", "authorization", "supervisor/state", "supervisor/state/recovery"}
     for role in ROLES:

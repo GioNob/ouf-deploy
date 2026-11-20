@@ -12,6 +12,7 @@ import unittest
 from unittest.mock import patch
 
 import test_semantic_provider_r3_v21 as v21
+from r3_sealed_inputs import sealed_blob
 from test_r3_readers import load as reader
 
 v20 = v21.v20
@@ -20,17 +21,18 @@ PREFIX = 'versions/22/'
 ROOT = Path(__file__).resolve().parents[1]
 
 
-@lru_cache(maxsize=1)
-def fixture():
-    inputs, _, old = v21.fixture()
-    raw = (ROOT / 'ops/vps/r3-lease-renewal-v22.json').read_text().encode()
+@lru_cache(maxsize=2)
+def fixture(*, sealed=False):
+    inputs, _, old = v21.fixture(sealed=sealed)
+    policy = 'ops/vps/r3-lease-renewal-v22.json'
+    raw = sealed_blob(policy) if sealed else (ROOT / policy).read_text().encode()
     inputs = dict(inputs, files={**inputs['files'], 'leaseRenewal': raw})
     return inputs, old, C.compose(inputs, 22, sequence=22, supersedes=C.sha(old['authorization']))
 
 
 class Composition(unittest.TestCase):
     def test_v21_golden_and_final_pins(self):
-        inputs, old, result = fixture()
+        inputs, old, result = fixture(sealed=True)
         self.assertEqual([C.sha(C.canonical(old[k])) for k in ('hashes', 'inputHashes', 'audit', 'layout')]
                          + [C.sha(old['authorization'])], [
             'bf9acd163bbe67237385240a49320230680d048c40c3cff6df8f123b28ae0149',

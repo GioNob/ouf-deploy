@@ -18,15 +18,15 @@ def short_negative(query):
     return packet[:-4] + struct.pack('!I', 16) if query[-4:-2] == b'\x00\x1c' else packet
 
 
-@lru_cache(maxsize=1)
-def fixture():
-    inputs, _, old = v22.fixture()
+@lru_cache(maxsize=2)
+def fixture(*, sealed=False):
+    inputs, _, old = v22.fixture(sealed=sealed)
     return inputs, old, C.compose(inputs, 23, sequence=23, supersedes=C.sha(old['authorization']))
 
 
 class Composition(unittest.TestCase):
     def test_frozen_v22_and_successor_pins(self):
-        inputs, old, result = fixture()
+        inputs, old, result = fixture(sealed=True)
         self.assertEqual([C.sha(C.canonical(old[k])) for k in ('hashes', 'inputHashes', 'audit', 'layout')]
                          + [C.sha(old['authorization'])], [
             '298b02f21b35202af5b333aee4aa21e7026750610129e2fe36e65d1b8fbb4cc8',

@@ -13,6 +13,7 @@ from types import ModuleType, SimpleNamespace
 import unittest
 from unittest.mock import patch
 
+from r3_sealed_inputs import sealed_legacy_inputs
 import test_semantic_provider_r3_v15 as V15
 from tools.semantic_provider_config import acceptance_g7 as G, b1_v4 as B, contract as D
 from tools.semantic_provider_config import observation as O, publication as P
@@ -401,7 +402,7 @@ class Composition(unittest.TestCase):
             'layout': 'b7406a4f31f4b8fd639205ccb230685aca2087f8c9d80b624deccd699dc14580',
         }
         for version in range(1, 17):
-            with self.subTest(version=version):
+            with self.subTest(version=version), sealed_legacy_inputs(V12):
                 if version <= 11:
                     data = V12.F.fixture(version)
                     kwargs = {} if version == 1 else dict(sequence=version, supersedes='a' * 64)
@@ -411,7 +412,7 @@ class Composition(unittest.TestCase):
                     elif version < 16:
                         data, previous = (V13 if version < 15 else V15).fixture()
                     else:
-                        data, previous = self.inputs, self.previous
+                        data, previous = v16_fixture()
                     kwargs = dict(sequence=version, supersedes=C.sha(previous['authorization']))
                 output = C.compose(data, version, **kwargs)
                 actual = {key: C.sha(C.canonical(output[key])) for key in ('hashes', 'inputHashes', 'audit', 'layout')}

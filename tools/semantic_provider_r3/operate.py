@@ -160,11 +160,14 @@ def observe(args, *, output_exists=False, deadline=None):
     heads = [runtime.authorization_head(cfg, raw, cid, auth) for cid in sorted(cfg["candidates"])]
     require(heads[0] == heads[1], "R3_AUTHORIZATION_CHANGED_DURING_OBSERVATION")
     head = heads[0]
-    if (getattr(args, 'action', None) in {'start', 'restart-one'}
-            and C.composition_version(head['sequence'], head['authorization']) >= 25):
+    version = C.composition_version(head['sequence'], head['authorization'])
+    starting = getattr(args, 'action', None) in {'start', 'restart-one'}
+    if starting and version >= 25:
         from .semantic_identity_v25 import semantic_kernel
         semantic_kernel()
     authorization = {k: head[k] for k in ("sha256", "sequence", "decision")}
+    if 'compositionCeiling' in head['authorization']:
+        authorization['compositionCeiling'] = head['authorization']['compositionCeiling']
     boot = epochs.boot_id()
 
     def remaining():
@@ -202,7 +205,7 @@ def observe(args, *, output_exists=False, deadline=None):
             "denials": broker_denials(runtime, cfg["registryRoot"], cid, row["epoch"] if row else None)}
 
     sup = C.document(runtime.bound_bytes(cfg["leaseQuiesce"]["configuration"]))
-    if code_root != root and int(code_root.name) >= 25 and getattr(args, 'action', None) in {'start', 'restart-one'}:
+    if starting and version >= 25:
         from .semantic_identity_v25 import semantic_observe
         spec = sup['semanticIngress']
         first, _ = semantic_observe(spec['profile'], spec['commands'])
@@ -229,7 +232,7 @@ def observe(args, *, output_exists=False, deadline=None):
     public_code(status["reason"], "R3_SUPERVISOR_REASON_INVALID")
     supervisor = {"unit": fields, **{k: status[k] for k in
                   ("state", "reason", "epochs", "activationsLastHour", "authorizationSequence")}}
-    if code_root != root and int(code_root.name) >= 25:
+    if version >= 25:
         epoch = status.get('semanticEpoch')
         require(epoch is None or type(epoch) is str and re.fullmatch('[0-9a-f]{64}', epoch),
                 'R3_SUPERVISOR_STATUS_INVALID')
@@ -241,7 +244,7 @@ def observe(args, *, output_exists=False, deadline=None):
     nft = decode(command(args.nft, args.nft_sha256, ["-j", "list", "tables"], remaining()))
     tables = {(r["table"]["family"], r["table"]["name"]) for r in nft["nftables"] if "table" in r}
     kernel_state = {}
-    if code_root != root and int(code_root.name) >= 12 and getattr(args, 'action', None) in {'start', 'restart-one'}:
+    if starting and version >= 12:
         owner = C.document(runtime.bound_bytes(sup['coordinator']['ownerConfiguration']))
         require(owner['nftPath'] == args.nft and owner['nftSha256'] == args.nft_sha256
                 and all(journal.get(k) == v for k, v in owner['binding'].items()),
@@ -413,7 +416,8 @@ def apply(args, plan, report):
     if args.action == "start":
         VR.apply(args, before, plan["volatileRestore"], report,
                  lambda: observe(args, output_exists=True))
-    if before['authorization']['sequence'] >= 12 and args.action in {'start', 'restart-one'}:
+    authorization = before['authorization']
+    if args.action in {'start', 'restart-one'} and C.composition_version(authorization['sequence'], authorization) >= 12:
         # Volatile restore can take time: recheck the v12 gate immediately
         # before submitting any request that starts a container.
         preconditions(args, observe(args, output_exists=True))

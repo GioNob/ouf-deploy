@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import test_runtime_v52_epochs as V52
+from r3_sealed_inputs import sealed_legacy_inputs
 import test_semantic_provider_r3_v15 as V15
 from tools.semantic_provider_r3 import compose as C, upgrade as U
 from tools.semantic_provider_r3.driver_denial_overlay_v16 import EPOCHS, RUNTIME, sources_v16
@@ -53,7 +54,8 @@ class Composition(unittest.TestCase):
                   '88b0e6d355bf04a3cb4e3a49dfa822886de3281b6092a9c858dee96a33b220a8',
                   '2a3025f16933f4d3269f16ef8e522e13e819ebddb5329a3b0023406cff6fe3ce',
                   '6b36c48005502ac87a53d07305ddc43c3ec7024d16c171ca237380e7d39d1ddb')
-        inputs, before = V15.fixture()
+        with sealed_legacy_inputs(V15.V13.V12):
+            inputs, before = V15.fixture()
         result = C.compose(inputs, 15, sequence=15, supersedes=C.sha(before['authorization']))
         self.assertEqual(tuple(C.sha(C.canonical(result[k])) for k in ('hashes', 'inputHashes', 'audit', 'layout')),
                          golden)

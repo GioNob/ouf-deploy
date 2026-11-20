@@ -131,13 +131,14 @@ def observe(args, clock):
         from tools.semantic_provider_r3 import install_common as I
         I.coordinator_state(settings, files, reader)
     composed = compose_next({"files": files, "sources": sources}, previous, args.issued_at)
-    if previous and previous['sequence'] >= 24:
+    payload = A.validate(composed["authorization"])
+    sequence = payload["sequence"]
+    if C.composition_version(sequence, payload) >= 25:
         from tools.semantic_provider_r3.semantic_identity_v25 import semantic_kernel_probe
-        version = previous['sequence'] + 1
-        supervisor = C.document(composed['documents'][f'versions/{version}/supervisor/configuration.json'])
-        semantic_kernel_probe(supervisor['semanticIngress']['commands']['ip'])
+        supervisor = C.document(composed["documents"][f"versions/{sequence}/supervisor/configuration.json"])
+        semantic_kernel_probe(supervisor["semanticIngress"]["commands"]["ip"])
     reader.verify()
-    plan = {"schema": SCHEMA, "payload": A.validate(composed["authorization"]),
+    plan = {"schema": SCHEMA, "payload": payload,
         "payloadSha256": sha(composed["authorization"]), "documentHashes": composed["hashes"],
         "layout": composed["layout"], "audit": composed["audit"], "inputHashes": reader.hashes.copy(),
         "compositionInputHashes": composed["inputHashes"], "ledger": ledger.snapshot(),
@@ -151,7 +152,7 @@ def compose_next(inputs, previous, issued_at):
         require(previous["decision"] == "OPERATE", "SUPERSEDE_REQUIRES_OPERATE_HEAD")
         require(issued_at >= previous["authorization"]["issuedAt"], "OPERATION_CHAIN_TIME_REGRESSED")
     number = previous["sequence"] + 1 if previous else 1
-    if number == 12:
+    if C.composition_version(number, C.document(inputs["files"]["settings"])) == 12:
         C.migration_bindings(inputs['files'])
         plan = C.document(inputs['files']['migrationPlan'])
         require(plan['observation']['authorization']['sha256'] == previous['sha256']

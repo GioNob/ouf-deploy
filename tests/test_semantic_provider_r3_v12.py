@@ -16,6 +16,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / 'tests')]
 from tools.semantic_provider_r3 import compose as C, install_common as I, upgrade as U, operate as O
 from tools.semantic_lease_kernel_migration import migration as M, boot_dispatcher as K
 from tools.semantic_lease_kernel_migration import native as N
+from r3_sealed_inputs import sealed_blob
 import test_semantic_provider_r3_compose as F
 import test_semantic_provider_r3_operate as OF
 from test_semantic_lease_dns_tolerance import kernel_configuration
@@ -138,7 +139,7 @@ class Composition(unittest.TestCase):
         golden = json.loads(blob('tests/fixtures/r3-v1-v11-pre-v12-hashes.json'))
         for v in range(1, 12):
             with self.subTest(version=v):
-                r = C.compose(F.fixture(v), v, **({} if v == 1 else dict(sequence=v, supersedes='a' * 64)))
+                r = C.compose(F.fixture(v, read_blob=sealed_blob), v, **({} if v == 1 else dict(sequence=v, supersedes='a' * 64)))
                 self.assertEqual({k: r[k] for k in ('hashes', 'inputHashes')}, golden[str(v)])
 
     def test_v12_owner_nics_peers_kernel_and_refresh(self):

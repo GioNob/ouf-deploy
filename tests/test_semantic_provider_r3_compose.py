@@ -13,6 +13,7 @@ from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from r3_sealed_inputs import sealed_blob
 from tools.semantic_provider_r3 import compose as C
 from tools.semantic_provider_operation import authorization as A
 from tools.semantic_provider_admission_v2 import broker_v2 as B, driver_v7 as D, evidence_v2 as E
@@ -30,12 +31,17 @@ grant_fixture = load("tests/test_semantic_provider_admission_v2_preparer.py", "r
 SOURCE_CACHE = None
 
 
-def fixture(version=1):
+def fixture(version=1, *, read_blob=None):
     global SOURCE_CACHE
-    if SOURCE_CACHE is None:
-        # Exercise the current implementation, including uncommitted modules.
-        # Delivery is LF; preserve the fixed recovery pins on CRLF checkouts.
-        SOURCE_CACHE = {p: (ROOT / p).read_bytes().replace(b"\r\n", b"\n") for p in C.SOURCE_INPUTS}
+    if read_blob is None:
+        # Exercise the worktree, preserving the delivery's LF recovery pins.
+        def read_blob(path):
+            return (ROOT / path).read_bytes().replace(b"\r\n", b"\n")
+        if SOURCE_CACHE is None:
+            SOURCE_CACHE = {p: read_blob(p) for p in C.SOURCE_INPUTS}
+        sources = SOURCE_CACHE.copy()
+    else:
+        sources = {p: read_blob(p) for p in C.SOURCE_INPUTS}
     files = {}
     def put(name, value):
         files[name] = A.canonical(value) + b"\n"
@@ -81,8 +87,8 @@ def fixture(version=1):
         if role == "southbound":
             nics[role].append({"interface": "eth2", "bridge": "br-backend", "mac": "02:00:00:00:02:02",
                 "ipv4": "172.18.0.14", "workloadRef": role, "bindingRef": "southbound-backend"})
-        baseline = json.loads((ROOT / ("tools/semantic_frame_compiler/containerd-overlayfs-adapter.json" if role == "adapter"
-            else "tools/semantic_successor_recipes/containerd-overlayfs-southbound-tmpfs.json")).read_bytes())
+        baseline = json.loads(read_blob("tools/semantic_frame_compiler/containerd-overlayfs-adapter.json" if role == "adapter"
+            else "tools/semantic_successor_recipes/containerd-overlayfs-southbound-tmpfs.json"))
         cid = accepted["roles"][role]["containerId"]
         context = {"schema": "ouf.semantic-docker-frame-context.v1", "containerId": cid,
             "bundleParent": "/run/containerd/io.containerd.runtime.v2.task/moby", "metadataParent": "/var/lib/docker/containers",
@@ -132,17 +138,16 @@ def fixture(version=1):
         accepted["preparationA"]["files"][field]["sha256"] = A.sha(files[k])
     put("rootfs", {"roles": seals, "aSuccessors": accepted["preparationA"]["files"]["successors"]})
     files["acceptance"] = C.ACCEPT.build_acceptance(**accepted)
-    sources = SOURCE_CACHE.copy()
     if version >= 6:
         sources.pop(C.OBSERVER)
-        sources[C.OBSERVER_V2] = (ROOT / C.OBSERVER_V2).read_bytes().replace(b'\r\n', b'\n')
+        sources[C.OBSERVER_V2] = read_blob(C.OBSERVER_V2)
     if version >= 11:
         owner['dns'] = {'resolvers': ['46.38.225.230', '46.38.252.230'], 'resolverPort': 53,
                         'timeoutSeconds': 2, 'maxLeaseSeconds': 30, 'applyBudgetSeconds': 1}
         put('coordinator', owner)
         settings['coordinatorBinding']['sha256'] = A.sha(files['coordinator'])
         put('settings', settings)
-        sources = {p: (ROOT / p).read_bytes().replace(b'\r\n', b'\n') for p in C.SOURCE_INPUTS_V11}
+        sources = {p: read_blob(p) for p in C.SOURCE_INPUTS_V11}
     return {"files": files, "sources": sources}
 
 
@@ -151,7 +156,7 @@ class ComposeTests(unittest.TestCase):
         expected = json.loads((ROOT / 'tests/fixtures/r3-v1-v10-dns-tolerance-hashes.json').read_bytes())
         for version in range(1, 11):
             kw = {} if version == 1 else {'sequence': version, 'supersedes': 'a'*64}
-            result = C.compose(fixture(version), version, **kw)
+            result = C.compose(fixture(version, read_blob=sealed_blob), version, **kw)
             self.assertEqual(A.sha(A.canonical(result['hashes'])), expected[str(version)])
 
     def test_v11_profile_source_aliases_and_authorization_hashes(self):
@@ -299,7 +304,7 @@ class ComposeTests(unittest.TestCase):
 
     def test_version_one_fixed_fixture_has_identical_document_bytes(self):
         baseline = json.loads((ROOT / "tests/fixtures/r3-v1-document-hashes.json").read_bytes())
-        inputs = fixture()
+        inputs = fixture(read_blob=sealed_blob)
         # Versioned releases retain their original source INPUTS. Current
         # sources belong to the new closure, never to a rewritten old oracle.
         previous = json.loads((ROOT / "tests/fixtures/r3-v3-document-hashes.json").read_bytes())["retainedSources"]
@@ -318,7 +323,7 @@ class ComposeTests(unittest.TestCase):
 
     def test_version_two_fixed_inputs_and_version_four_current_closure(self):
         baseline = json.loads((ROOT / "tests/fixtures/r3-v2-document-hashes.json").read_bytes())
-        inputs = fixture()
+        inputs = fixture(read_blob=sealed_blob)
         previous = json.loads((ROOT / "tests/fixtures/r3-v3-document-hashes.json").read_bytes())["retainedSources"]
         for path, packed in previous.items():
             inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
@@ -336,7 +341,7 @@ class ComposeTests(unittest.TestCase):
 
     def test_version_three_retained_bytes(self):
         baseline = json.loads((ROOT / "tests/fixtures/r3-v3-document-hashes.json").read_bytes())
-        inputs = fixture()
+        inputs = fixture(read_blob=sealed_blob)
         inputs["sources"].pop(C.L2_SOURCE)
         for path, packed in baseline["retainedSources"].items():
             inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
