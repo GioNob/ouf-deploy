@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import test_semantic_provider_r3_v13 as backend
 import test_semantic_provider_r3_v24 as v24
+from r3_sealed_inputs import sealed_blob
 from tools.semantic_provider_r3 import semantic_identity_v25 as live
 
 C = v24.C
@@ -32,8 +33,8 @@ def docker_row(p):
 
 
 @lru_cache
-def fixture(cadence=20):
-    inputs, _, old = v24.fixture()
+def fixture(cadence=20, *, sealed=False):
+    inputs, _, old = v24.fixture(sealed=sealed)
     profile = dict(role='semantic', containerName='semantic-fixture', image='sha256:' + 'a' * 64,
                    direction='semantic-to-southbound')
     network = C.document(inputs['files']['identityProviderPeer'])['southbound']
@@ -44,8 +45,8 @@ def fixture(cadence=20):
     profile['configurationSha256'] = live.semantic_configuration(docker_row(profile))
     renewal = {**C.document(inputs['files']['leaseRenewal']), 'semanticTickBudgetSeconds': .70,
                'semanticCloseReserveSeconds': .2, 'semanticFullObservationSeconds': cadence}
-    inputs = {'sources': {**inputs['sources'], C.SEMANTIC_IDENTITY:
-                         (Path(__file__).resolve().parents[1] / C.SEMANTIC_IDENTITY).read_bytes()},
+    identity = sealed_blob(C.SEMANTIC_IDENTITY) if sealed else (Path(__file__).resolve().parents[1] / C.SEMANTIC_IDENTITY).read_bytes()
+    inputs = {'sources': {**inputs['sources'], C.SEMANTIC_IDENTITY: identity},
               'files': {**inputs['files'], 'semanticProfile': C.canonical(profile), 'leaseRenewal': C.canonical(renewal)}}
     return inputs, old, C.compose(inputs, 25, sequence=25, supersedes=C.sha(old['authorization']))
 
@@ -132,7 +133,7 @@ class Predecessor(unittest.TestCase):
     def test_frozen_v24(self):
         import test_semantic_provider_r3_v24 as v24
 
-        result = v24.fixture()[2]
+        result = v24.fixture(sealed=True)[2]
         for field, expected in {
             "hashes": "36e6dcc61f485da752003c514afaaa40c22f5debf894df12931417fc1a941932",
             "inputHashes": "a08343d9e31beb977a45e1b3f27e566e806a404618d8897ae6c2e6bbbb52a8c6",

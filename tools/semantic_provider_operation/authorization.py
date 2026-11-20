@@ -38,6 +38,7 @@ HEX64 = re.compile(r"[0-9a-f]{64}")
 DIGEST = re.compile(r"sha256:[0-9a-f]{64}")
 TABLE = re.compile(r"[A-Za-z][A-Za-z0-9_]{0,31}")
 NAME = re.compile(r"([1-9][0-9]{0,5})[.](json|signature[.]json)")
+CURRENT_COMPOSITION_VERSION = 27
 MAX_CHAIN = 256
 LIMIT = 65536
 
@@ -85,13 +86,24 @@ def integer(value, minimum=0):
     return type(value) is int and minimum <= value < 2 ** 53
 
 
+def composition_version(sequence, fields):
+    if "compositionCeiling" not in fields:
+        return sequence
+    ceiling = fields["compositionCeiling"]
+    require(type(ceiling) is int and 24 <= ceiling <= min(sequence, CURRENT_COMPOSITION_VERSION),
+            "R3_COMPOSITION_CEILING_INVALID")
+    return ceiling
+
+
 def validate(raw):
     """Closed schema of one authorization payload (exact canonical bytes)."""
     value = decode(raw)
-    require(set(value) == FIELDS and value["schema"] == SCHEMA, "EXACT_OPERATION_AUTHORIZATION_REQUIRED")
+    require(value.keys() - {"compositionCeiling"} == FIELDS and value["schema"] == SCHEMA,
+            "EXACT_OPERATION_AUTHORIZATION_REQUIRED")
     require(all(identity(value[k]) for k in ("installationRef", "entityRef", "issuerRef")),
             "OPERATION_SCOPE_REQUIRED")
     require(integer(value["sequence"], 1) and integer(value["issuedAt"], 1), "OPERATION_SEQUENCE_AND_TIME_REQUIRED")
+    composition_version(value["sequence"], value)
     require((value["sequence"] == 1 and value["supersedes"] is None)
             or (value["sequence"] > 1 and type(value["supersedes"]) is str and HEX64.fullmatch(value["supersedes"])),
             "OPERATION_SUPERSEDES_REQUIRED")

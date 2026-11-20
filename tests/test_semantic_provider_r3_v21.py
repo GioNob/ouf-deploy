@@ -18,15 +18,15 @@ PREFIX = 'versions/21/'
 RECOVERY = PREFIX + 'source/' + overlay.RECOVERY
 
 
-@lru_cache(maxsize=1)
-def fixture():
-    inputs, _, old = v20.fixture()
+@lru_cache(maxsize=2)
+def fixture(*, sealed=False):
+    inputs, _, old = v20.fixture(sealed=sealed)
     return inputs, old, C.compose(inputs, 21, sequence=21, supersedes=C.sha(old['authorization']))
 
 
 class Composition(unittest.TestCase):
     def test_golden_v20_and_successor(self):
-        inputs, old, result = fixture()
+        inputs, old, result = fixture(sealed=True)
         actual = {k: C.sha(C.canonical(old[k])) for k in ('hashes', 'inputHashes', 'audit', 'layout')}
         self.assertEqual(actual | {'authorization': C.sha(old['authorization'])}, {
             'hashes': 'be41276688f5b2865a23d1072062978f74fd16d99aa49cbf1a677a27a21be5cb',

@@ -9,6 +9,9 @@ from tools.semantic_provider_r3 import compose as C, install_common as I
 from tools.semantic_provider_r3 import semantic_identity_v25 as S
 
 
+V25_ARGUMENTS = ('profile', 'profile_sha256', 'source_sha256', 'lease_renewal', 'lease_renewal_sha256')
+
+
 def candidate(reader, index):
     def document(name):
         return C.document(reader.bound(index['files'][name]))
@@ -41,8 +44,17 @@ def prepare(args, reader):
     index = C.document(reader.read(args.v24_inputs, args.v24_inputs_sha256))
     S.semantic_check(set(index) == {'schema', 'files', 'sources'} and index['schema'] == 'ouf.semantic-provider-r3-inputs.v1'
                      and set(index['files']) == C.DATA_INPUTS_V24 and set(index['sources']) == C.SOURCE_INPUTS_V24)
+    sequence = getattr(args, 'sequence', None)
+    if sequence is not None:
+        S.semantic_check(sequence >= 24)
+        settings = C.document(reader.bound(index['files']['settings']))
+        version = C.composition_version(sequence, settings)
+        if version == 24:
+            S.semantic_check(args.mode == 'inputs' and all(getattr(args, k, None) is None for k in V25_ARGUMENTS))
+            return index
     if args.mode == 'profile':
         return candidate(reader, index)
+    S.semantic_check(all(getattr(args, k, None) for k in V25_ARGUMENTS))
     profile = {'path': args.profile, 'sha256': args.profile_sha256}
     S.semantic_profile(C.document(reader.bound(profile)))
     renewal = {'path': args.lease_renewal, 'sha256': args.lease_renewal_sha256}
@@ -59,11 +71,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--v24-inputs', required=True)
     parser.add_argument('--v24-inputs-sha256', required=True)
+    parser.add_argument('--sequence', type=int, default=C.CURRENT_COMPOSITION_VERSION,
+                        help='Select the input shape using the proposed sequence and the bound settings.')
     modes = parser.add_subparsers(dest='mode', required=True)
     modes.add_parser('profile')
     inputs = modes.add_parser('inputs')
-    for name in ('profile', 'profile-sha256', 'source-sha256', 'lease-renewal', 'lease-renewal-sha256'):
-        inputs.add_argument('--' + name, required=True)
+    for name in V25_ARGUMENTS:
+        inputs.add_argument('--' + name.replace('_', '-'))
     args = parser.parse_args()
     try:
         reader = I.Reader()

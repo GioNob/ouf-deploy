@@ -11,15 +11,15 @@ C, v20 = v23.C, v23.v20
 PREFIX = 'versions/24/'
 
 
-@lru_cache(maxsize=1)
-def fixture():
-    inputs, _, old = v23.fixture()
+@lru_cache(maxsize=2)
+def fixture(*, sealed=False):
+    inputs, _, old = v23.fixture(sealed=sealed)
     return inputs, old, C.compose(inputs, 24, sequence=24, supersedes=C.sha(old['authorization']))
 
 
 class Composition(unittest.TestCase):
     def test_v23_golden_and_successor(self):
-        inputs, old, result = fixture()
+        inputs, old, result = fixture(sealed=True)
         self.assertEqual([C.sha(C.canonical(old[k])) for k in ('hashes', 'inputHashes', 'audit', 'layout')]
                          + [C.sha(old['authorization'])], [
             'd9e5606e169ff9e073734f2e8d4bc885f11938d70a304bcd2d4ca4f476b07024',

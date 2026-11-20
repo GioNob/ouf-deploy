@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
+from r3_sealed_inputs import sealed_legacy_inputs
 from test_semantic_provider_r3_v18 import C, V12, RenewalFixture, upgrade
 from test_semantic_provider_r3_v19 import composition_fixture as v19_fixture
 from tools.semantic_provider_r3 import dns_retransmit_overlay_v20 as overlay
@@ -22,8 +23,12 @@ HOST = 'fixture.invalid'
 TTL = 86400
 
 
-def fixture():
-    inputs, _, old = v19_fixture()
+def fixture(*, sealed=False):
+    if sealed:
+        with sealed_legacy_inputs(V12):
+            inputs, _, old = v19_fixture()
+    else:
+        inputs, _, old = v19_fixture()
     return inputs, old, C.compose(inputs, 20, sequence=20, supersedes=C.sha(old['authorization']))
 
 

@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import test_semantic_provider_r3_v25 as v25
 import test_semantic_provider_r3_v16_adapter as v16
+from r3_sealed_inputs import sealed_blob, sealed_legacy_inputs
 from tools.semantic_authority_mandates import mandates
 from tools.semantic_provider_r3 import ingress_memo_overlay_v27 as overlay
 
@@ -49,19 +50,20 @@ sys.exit(0 if select.select([sys.stdin], [], [], 10)[0] else 1)
 
 
 @lru_cache
-def temporal_inputs():
-    inputs, _, _ = v25.fixture(30)
+def temporal_inputs(*, sealed=False):
+    inputs, _, _ = v25.fixture(30, sealed=sealed)
     # A DNS answer can outlive the 30 s per-flow kernel cap. Generate the
     # corresponding synthetic owner, journal and receipts with their producer.
-    base = v16.V12.F.fixture
-    def dns_profile(version):
-        original = base(version)
-        owner = C.document(original['files']['coordinator'])
-        owner['dns']['maxLeaseSeconds'] = 60
-        original['files']['coordinator'] = C.canonical(owner)
-        return original
-    with patch.object(v16.V12.F, 'fixture', dns_profile):
-        migration = v16.v16_fixture()[0]['files']
+    with sealed_legacy_inputs(v16.V12) if sealed else nullcontext():
+        base = v16.V12.F.fixture
+        def dns_profile(version):
+            original = base(version)
+            owner = C.document(original['files']['coordinator'])
+            owner['dns']['maxLeaseSeconds'] = 60
+            original['files']['coordinator'] = C.canonical(owner)
+            return original
+        with patch.object(v16.V12.F, 'fixture', dns_profile):
+            migration = v16.v16_fixture()[0]['files']
     files = {**inputs['files'], **{k: migration[k] for k in ('coordinator', 'coordinationJournal',
              'migrationPlan', 'migrationReceipt', 'generationReceipt', 'bootPointer')}}
     settings = C.document(files['settings'])
@@ -72,16 +74,18 @@ def temporal_inputs():
 
 
 @lru_cache
-def fixture(version):
-    inputs = temporal_inputs()
+def fixture(version, *, sealed=False):
+    inputs = temporal_inputs(sealed=sealed)
     files = dict(inputs['files'])
-    files['leaseRenewal'] = (ROOT / f'ops/vps/r3-lease-renewal-v{version}.json').read_bytes()
+    policy = f'ops/vps/r3-lease-renewal-v{version}.json'
+    files['leaseRenewal'] = sealed_blob(policy) if sealed else (ROOT / policy).read_bytes()
     inputs = dict(inputs, files=files)
-    return inputs, C.compose(inputs, version, sequence=version, supersedes=C.sha(v25.fixture(30)[2]['authorization']))
+    previous = v25.fixture(30, sealed=sealed)[2]
+    return inputs, C.compose(inputs, version, sequence=version, supersedes=C.sha(previous['authorization']))
 
 
 class Chain:
-    def __init__(self, root, version=27):
+    def __init__(self, root, version=27, *, scope=None):
         self.root = root
         self.directory = root / 'authorizations'
         self.directory.mkdir(mode=0o700)
@@ -96,7 +100,7 @@ class Chain:
         assert public.startswith(mandates.DER_PREFIX) and len(public) == len(mandates.DER_PREFIX) + 32
         self.payload = C.document(fixture(version)[1]['authorization'])
         self.now = self.payload['issuedAt']
-        self.scope = dict(installationRef='fixture-install', entityRef='fixture-entity', issuerRef='fixture-issuer')
+        self.scope = scope or dict(installationRef='fixture-install', entityRef='fixture-entity', issuerRef='fixture-issuer')
         self.payload.update(self.scope)
         binding = dict(path=str(root / 'unused'), sha256='0' * 64)
         self.signer = dict(keyRef='fixture', issuerRef=self.scope['issuerRef'], roles=[C.A.ROLE],
@@ -151,9 +155,11 @@ class Composition(unittest.TestCase):
             C.compose(inputs, 27, sequence=27, supersedes='a' * 64)
         sources, mapping = build.call_args.args
         emitted = overlay.sources_v27(sources, mapping)
-        crlf = {p: raw.replace(b'\n', b'\r\n') for p, raw in sources.items()}
+        def crlf_bytes(raw):
+            return raw.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')
+        crlf = {p: crlf_bytes(raw) for p, raw in sources.items()}
         self.assertEqual(overlay.sources_v27(crlf, mapping),
-                         {p: raw.replace(b'\n', b'\r\n') for p, raw in emitted.items()})
+                         {p: crlf_bytes(raw) for p, raw in emitted.items()})
         path = mapping[overlay.CONTINUOUS]
         with self.assertRaisesRegex(C.A.OperationDenied, overlay.DRIFT):
             overlay.sources_v27(sources | {path: sources[path].replace(b'def renew(', b'def other(')}, mapping)
@@ -161,11 +167,11 @@ class Composition(unittest.TestCase):
     def test_predecessor_source_bytes_and_policy(self):
         # Fingerprint of *all* emitted source bytes at f3473e07, before v27.
         for version in (25, 26):
-            docs = fixture(version)[1]['documents']
+            docs = fixture(version, sealed=True)[1]['documents']
             hashes = {p.split('/source/')[1]: C.sha(b) for p, b in docs.items() if '/source/' in p}
             self.assertEqual(C.sha(C.canonical(hashes)), 'e9699837663f16f326f469b10385801da2d84fa7345bb0de2e1dc482b38e7952')
-        files = fixture(27)[0]['files']
-        self.assertEqual(files['leaseRenewal'], fixture(25)[0]['files']['leaseRenewal'])
+        files = fixture(27, sealed=True)[0]['files']
+        self.assertEqual(files['leaseRenewal'], fixture(25, sealed=True)[0]['files']['leaseRenewal'])
         self.assertEqual(files['leaseRenewal'], C.canonical(C.document(files['leaseRenewal'])))
 
     def test_composition_requires_a_possible_progress_window(self):
