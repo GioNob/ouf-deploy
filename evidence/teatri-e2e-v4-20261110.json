@@ -1,0 +1,81 @@
+{
+  "schema": "ouf-e2e-evidence/v1",
+  "date": "2026-11-10",
+  "outcome": "PASS",
+  "sources": {
+    "historic": "teatri-csv-6609b245",
+    "second": "teatri-seaweedfs-c51745c5"
+  },
+  "originalCsv": {
+    "rebuiltFrom": "ouf_udp canonical payloads of run bb2e2af4-9c0a-49ea-8ad9-a947987c1472 (teatri-csv-6609b245, configuration c9fec43c-19b3-4ffb-9111-781bc347c5b0)",
+    "sha256": "08b20658b2b4eadf34d25cd93eead2945096b353ae33b797cf3c41df5319c9e9",
+    "sizeBytes": 4404,
+    "rows": 13,
+    "format": "UTF-8 BOM, CRLF, ';'"
+  },
+  "corruptedV3": {
+    "onboardingVersionId": "4f8dfb0c-9a27-43d3-a7c3-283df960e631",
+    "runId": "2998141c-1a12-48f4-8f8a-e36625d188db",
+    "differingProperties": 34,
+    "issues": "13 DISMISSED"
+  },
+  "v4": {
+    "onboardingVersionId": "8580e892-abd2-43dd-857a-b770565bc472",
+    "state": "ACTIVE",
+    "publicationId": "3ece4301-b657-4e8b-9862-b3a4c3cf7f56",
+    "bundleChecksum": "sha256:35e02bd48cadb9cfb1893363df1c5475ba7c4a3cd2df6743c89f940e4d4002f2",
+    "managedFileAssetId": "bea48388-8774-48ad-bfa6-2701ed7f2bb6",
+    "fileProfileId": "b57de6f4-c073-4d9d-82d6-ca127f850b49",
+    "stagingRef": "object://managed-files/4a1f3053-0499-433d-a149-4fd21b21de22",
+    "accessLabel": "RESTRICTED",
+    "changedLeavesVsV3": 50,
+    "reconciliation": null
+  },
+  "run": {
+    "runId": "f78029ff-e10a-4c7c-b1ad-902b223712dc",
+    "handoffs": 13,
+    "issues": "13 UNRESOLVED_IDENTITY, best candidate full match, single full candidate each"
+  },
+  "thsPackage": {
+    "packageId": "701b3fb6-01f1-449d-931d-f8700a075c34",
+    "decisions": 26,
+    "approve": 13,
+    "dismiss": 13,
+    "firstAttempt": "HTTP 403 THS session expired, nothing applied"
+  },
+  "materialization": {
+    "objects": 13,
+    "revisionNo": 3,
+    "canonicalHashUnchanged": true,
+    "authorityHashChanged": true,
+    "materialChange": true,
+    "activeBindingsPerObject": 2,
+    "propertiesPerObject": 20,
+    "multiSourceProperties": 20
+  },
+  "mcpSearch": {
+    "objects": 13,
+    "uuidSetSha256": "ec64c2e699218f32f9bbb75e7932289ad6e2cbe175a3f694b2981b914e912027",
+    "matchesBaseline": true
+  },
+  "issueToObject": {
+    "53684986": ["Hangar", "c2f83340"],
+    "ae44edcb": ["Politeama Rossetti", "43d6d5c7"],
+    "19f7a2fb": ["Basaglia", "76d5d321"],
+    "667e1373": ["Verdi", "d6051381"],
+    "653025bf": ["Miela", "535ea2cc"],
+    "bddda3bf": ["Bobbio", "fe0f7632"],
+    "55ac8fa3": ["Rojan", "3969605f"],
+    "a3ade08f": ["Romano", "ec6897bf"],
+    "bae606db": ["Silvio Pellico", "f4f18054"],
+    "6f0a78ee": ["Stabile Sloveno", "96aa4cb9"],
+    "9f1d870d": ["Fabbri", "3db3a213"],
+    "b992d437": ["Salesiani", "2606bba6"],
+    "40b80620": ["San Giovanni", "63d4fde8"]
+  },
+  "toolsVerified": {
+    "rebuild_csv_from_udp.py": "BYTE_IDENTICAL_TO_EXPECTED",
+    "onboarding_swap_asset.py": "reproduces stored v4 configuration exactly from v3",
+    "sql": "all read-only queries executed against production on 2026-11-10"
+  }
+}

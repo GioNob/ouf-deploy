@@ -316,6 +316,37 @@ def closing_context():
 
 
 class Contracts(unittest.TestCase):
+    def test_v27_inputs_from_authenticated_issuance(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            source = "/etc/ouf/deploy-snapshots/semantic-provider-r3-source."
+            (home / ".ouf-r3-v11-state").write_bytes((source + "OLDstate 11\n").encode())
+            current = home / ".ouf-r3-v27-state"
+            current.write_bytes((source + "NEWstate 27\n").encode())
+            args = SimpleNamespace(inputs=None, inputs_sha256=None, issuance_home=temp)
+            accepted = b"v27 acceptance"
+            head = {"sequence": 27, "authorization": {"issuedAt": 27, "acceptanceSha256": C.sha(accepted)}}
+            index = {"schema": "ouf.semantic-provider-r3-inputs.v1",
+                     "files": dict.fromkeys(C.I.C.DATA_INPUTS, {"path": "/fixture", "sha256": C.sha(accepted)})}
+            raw = C.canonical(index)
+            reader = Mock()
+            reader.read.return_value = raw
+            reader.bound.return_value = accepted
+            with patch.object(C, "issuance_pointer", Path.read_bytes), patch.object(C.I, "native_switch") as switch, \
+                    patch.object(C.I.C.ACCEPT, "decode_manifest", return_value={}) as decode:
+                switch.return_value.custody.return_value = (raw, None)
+                self.assertEqual(C.accepted_inputs(args, head, reader), (index, {}))
+                reader.read.assert_called_once_with(source + "NEWstate/inputs.json", C.sha(raw))
+                decode.assert_called_once_with(accepted)
+                current.write_bytes((source + "OLDstate 11\n").encode())
+                with self.assertRaisesRegex(Exception, "C_R3_ISSUANCE_UNPROVEN"):
+                    C.accepted_inputs(args, head, reader)
+                args.inputs, args.inputs_sha256 = "/override", C.sha(raw)
+                reader.bound.return_value = b"old acceptance"
+                with self.assertRaisesRegex(Exception, "C_R3_ACCEPTANCE_DRIFT"):
+                    C.accepted_inputs(args, head, reader)
+                reader.read.assert_called_with("/override", C.sha(raw))
+
     def test_endpoints_are_derived_from_profile_and_bound_transport(self):
         env = state()["configuration"]
         peer = {"binding": {"ipv4": "10.10.0.2", "bridge": "br-test", "hostIfindex": 9}}

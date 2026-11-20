@@ -1,0 +1,6 @@
+{
+  "keepPerFamily": 2,
+  "smallBytes": 8388608,
+  "largeBytes": 67108864,
+  "protected": "^(semantic-provider|semantic-image|semantic-cohort|m2-|r3-|lease-kernel)|trust|r3"
+}

@@ -17,10 +17,21 @@ Gli argomenti comuni sono:
 | `--install-root`, `--wrapper`, `--wrapper-sha256` | Installazione R3 e wrapper attivo |
 | `--docker`, `--docker-sha256`, `--docker-socket` | CLI Docker verificata prima e dopo inspect |
 | `--systemctl`, `--systemctl-sha256`, `--nft`, `--nft-sha256` | Lettori R3 già esistenti |
-| `--inputs`, `--inputs-sha256` | Manifest degli input R3 già legati |
+| `--issuance-home` | Home dell’operatore che ha emesso l’autorizzazione R3, ricavata dal runbook |
+| `--inputs`, `--inputs-sha256` | Override esplicito del manifest degli input R3 e della sua impronta |
 | `--installation-profile`, `--installation-profile-sha256` | Profilo `ouf.semantic-provider-installation.v1` |
 | `--southbound-ca`, `--southbound-ca-sha256` | Bundle PEM pubblico verificato con custodia root |
 | `--output-directory` | Directory nuova `/etc/ouf/deploy-snapshots/semantic-provider-c-probe-YYYYMMDDTHHMMSSZ` |
+
+Il runbook usa la sequenza autenticata dai due ruoli per leggere lo stato scritto
+da `r3-issue` per quella versione. Verifica l’istante di emissione firmato, la
+custodia root dell’indice indicato e il digest firmato dell’accettazione. La
+proposta lega il percorso e il digest dell’indice per il successivo apply.
+Il puntatore della sonda è `/root/.ouf-c-probe-state`, configurabile con
+`C_PROBE_STATE`. Per la cattura D-065 il responsabile della sonda conserva
+il puntatore (solo percorso, privo di segreti) insieme alla consegna e alle
+evidenze. Al ripristino verifica percorso, proprietà root e impronte della
+consegna con il piano conservato. Un apply consumato resta storico.
 
 Il peer `semanticPeer` è riconciliato con `preparationA` del manifest di
 accettazione, il cui hash deve coincidere con l'autorizzazione R3 corrente.

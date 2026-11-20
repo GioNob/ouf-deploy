@@ -15,6 +15,11 @@ def cmd(*args,**kw):
  return p.stdout
 
 class Native(unittest.TestCase):
+ schema_version=13
+ fixture_mac='02:42:ac:44:01:07'
+ def load_image(self):
+  cmd(*D,'load','-i',str(ROOT/'mcp-candidate/image.tar.gz'))
+  self.image=json.loads(cmd(*D,'image','inspect','ouf-mcp:ci'))[0]['Id'];self.assertIn(self.image,(u.CONFIG_ID,u.NATIVE_ID))
  def setUp(self):
   self.tag='ouf-mcp-roll-'+uuid.uuid4().hex[:8];self.ids=[];self.e=r.Engine();self.calls={'token':0,'policy':0,'business':0}
   self.temp=tempfile.TemporaryDirectory();self.root=pathlib.Path(self.temp.name);self.root.chmod(0o755)
@@ -25,8 +30,7 @@ class Native(unittest.TestCase):
   for n,raw in [('client','synthetic-secret'),('fingerprint','f'*64)]:
    path=self.secrets/n;path.write_text(raw);os.chown(path,10005,10005);path.chmod(0o600)
   self.ca=self.root/'ca';self.ca.mkdir();self.ca.chmod(0o755)
-  cmd(*D,'load','-i',str(ROOT/'mcp-candidate/image.tar.gz'))
-  self.image=json.loads(cmd(*D,'image','inspect','ouf-mcp:ci'))[0]['Id'];self.assertIn(self.image,(u.CONFIG_ID,u.NATIVE_ID))
+  self.load_image()
   cmd(*D,'network','create',self.tag);network=json.loads(cmd(*D,'network','inspect',self.tag))[0];gateway=network['IPAM']['Config'][0]['Gateway']
   self.pg=self.tag+'-pg';cmd(*D,'run','-d','--name',self.pg,'--network',self.tag,'-e','POSTGRES_PASSWORD=synthetic-only','postgres:17');self.ids.append(self.pg)
   for _ in range(60):
@@ -37,7 +41,7 @@ class Native(unittest.TestCase):
   self.sql('CREATE SCHEMA ouf_mcp; CREATE TABLE ouf_mcp.schema_migration(version integer primary key,checksum char(64) not null,applied_at timestamptz not null default transaction_timestamp());')
   for path in sorted((ROOT/'mcp-source/internal/adapter/postgres/migrations').glob('*.sql')):
    version=int(path.name.split('_')[0])
-   if version>13:continue
+   if version>self.schema_version:continue
    raw=path.read_bytes();self.assertEqual(hashlib.sha256(raw).hexdigest(),c.MCP_CHECKSUMS[str(version)])
    self.sql("BEGIN;\n"+raw.decode()+"\nINSERT INTO ouf_mcp.schema_migration(version,checksum) VALUES(%d,'%s');\nCOMMIT;"%(version,hashlib.sha256(raw).hexdigest()))
   self.sql('ALTER ROLE fixture NOSUPERUSER NOCREATEROLE NOCREATEDB;', 'postgres')
@@ -80,8 +84,8 @@ class Native(unittest.TestCase):
    if u.readiness(doc):return doc
    time.sleep(1)
   raise AssertionError('MCP not ready: '+cmd(*D,'logs',cid).decode())
- def exercise(self,explicit):
-  mac='02:42:ac:44:01:07';binds=[str(self.pub)+':/run/fixture-public:ro',str(self.secrets)+':/run/fixture-secrets:ro',str(self.ca)+':/run/fixture-ca:ro']
+ def create_server(self,explicit,name):
+  mac=self.fixture_mac;binds=[str(self.pub)+':/run/fixture-public:ro',str(self.secrets)+':/run/fixture-secrets:ro',str(self.ca)+':/run/fixture-ca:ro']
   env=['MCP_DATABASE_URL=postgres://fixture:synthetic-only@'+self.pg+':5432/fixture?sslmode=disable',
    'MCP_OIDC_CLIENT_ID=fixture','MCP_OIDC_CLIENT_SECRET_FILE=/run/fixture-secrets/client','MCP_OIDC_TOKEN_ENDPOINT='+self.origin+'/token',
    'MCP_AUTHORIZATION_BUNDLE_ENDPOINT='+self.origin+'/policy','MCP_GATEWAY_ENDPOINT='+self.origin+'/execute',
@@ -93,8 +97,12 @@ class Native(unittest.TestCase):
    'HostConfig':{'NetworkMode':self.tag,'RestartPolicy':{'Name':'no','MaximumRetryCount':0},'Binds':binds},
    'NetworkingConfig':{'EndpointsConfig':{self.tag:{'MacAddress':mac,'Aliases':['mcp-fixture']}}}}
   if explicit:req['MacAddress']=mac
-  cid=self.e.api('POST','/containers/create?name='+self.tag,req)['Id'];self.ids.append(cid);self.e.api('POST','/containers/'+cid+'/start');self.e.api('POST','/containers/'+cid+'/kill?signal=USR1')
-  old=self.ready(cid);self.assertEqual(old['Config'].get('MacAddress'),mac,'required real legacy MAC precondition');self.current=old;self.sql_pg_id=json.loads(cmd(*D,'inspect',self.pg))[0]['Id']
+  cid=self.e.api('POST','/containers/create?name='+name,req)['Id'];self.ids.append(cid);self.e.api('POST','/containers/'+cid+'/start');self.e.api('POST','/containers/'+cid+'/kill?signal=USR1')
+  old=self.ready(cid);self.current=old;self.sql_pg_id=json.loads(cmd(*D,'inspect',self.pg))[0]['Id']
+  return old
+ def exercise(self,explicit):
+  old=self.create_server(explicit,self.tag)
+  self.assertEqual(old['Config'].get('MacAddress'),self.fixture_mac,'required real legacy MAC precondition')
   before=self.read('before');u.verify_database(before,c.MCP_CHECKSUMS,self.oid)
   sentinel=self.sql("SELECT row_to_json(t) FROM ouf_mcp.application_session t WHERE application_conversation_ref='keep'")
   pub={n:(self.pub/n).read_bytes() for n in ('profile.json','policy.json','permit.json')}
