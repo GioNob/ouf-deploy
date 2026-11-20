@@ -27,7 +27,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Normalize the hosted runner's own sudoers modes (the installer runs a full visudo -c)
-        run: sudo chmod 0440 /etc/sudoers.d/* && sudo /usr/sbin/visudo -c
+        run: sudo find /etc/sudoers.d -type f -exec chmod 0440 {} + && sudo /usr/sbin/visudo -c
       - name: Label the disposable hosted Engine and prepare local images
         run: |
           set -euo pipefail
