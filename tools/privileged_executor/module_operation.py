@@ -52,5 +52,6 @@ class ModuleRelease:
             except ReleaseHeld as error:
                 result = {"status": "HELD", "reason": str(error)}
         save(path / (phase + ".result"), result)
-        need(result["status"] in ("READY", "GATED"), result.get("reason", "MODULE_RELEASE_HELD"))
+        need(result["status"] in ("READY", "GATED"),
+             result.get("rollbackReason", result.get("reason", "MODULE_RELEASE_HELD")))
         return {"status": result["status"], "digest": result.get("migrationSha256", stamp)}
