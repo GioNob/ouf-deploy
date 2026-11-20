@@ -1,0 +1,32 @@
+[Unit]
+Description=OUF governed platform boot start (D-063)
+After=docker.service network-online.target
+Wants=docker.service network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+Restart=no
+TimeoutStartSec=@BOOT_TIMEOUT@
+ExecStartPre=@CHECKSUM@ --check --status @DEST@/boot.sha256
+ExecStart=@PYTHON@ -I -B @DEST@/platform.pyz boot --profile @DEST@/profile.json --profile-sha256 @PROFILE_SHA@ --receipts @RECEIPTS@ --incidents @INCIDENTS@
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=@RECEIPTS@ @INCIDENTS@
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_NETLINK
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ouf-platform-start
+SyslogLevelPrefix=yes
+
+[Install]
+WantedBy=multi-user.target
