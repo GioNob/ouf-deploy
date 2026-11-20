@@ -1,0 +1,84 @@
+name: Governed Gateway configuration release
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        options: [release, return]
+        default: release
+        description: Release a CI bundle or restore an applied snapshot
+      sourceRun:
+        type: string
+        description: Publisher CI run ID for release
+      sourcePr:
+        type: string
+        description: Reviewed Gateway pull request number
+      sourceCommit:
+        type: string
+        description: Reviewed Gateway PR head SHA
+      artifact:
+        type: string
+        description: Publisher artifact ID for release
+      releaseRun:
+        type: string
+        description: Original deploy run ID for return
+      receipt:
+        type: string
+        description: Digest from the successful apply for return
+permissions: {}
+concurrency:
+  group: ouf-vps-privileged-operations
+  cancel-in-progress: false
+env:
+  DISPATCH_INPUTS: ${{ toJSON(inputs) }}
+jobs:
+  intent:
+    if: github.ref_protected && github.run_attempt == '1' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {contents: read}
+    outputs:
+      digest: ${{ steps.intent.outputs.digest }}
+      phase: ${{ steps.intent.outputs.phase }}
+    steps:
+      - &checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - id: intent
+        run: /usr/bin/python3 -I -B .github/scripts/gateway-release.py intent
+
+  plan-or-return:
+    needs: intent
+    name: ${{ needs.intent.outputs.phase }} ${{ needs.intent.outputs.digest }}
+    runs-on: &vps [self-hosted, Linux, X64, ouf-vps-test]
+    environment: ouf-vps-privileged
+    timeout-minutes: 40
+    permissions: &review {contents: read, actions: read, deployments: read}
+    env:
+      PHASE: ${{ needs.intent.outputs.phase }}
+      DIGEST: ${{ needs.intent.outputs.digest }}
+    outputs:
+      digest: ${{ steps.call.outputs.digest }}
+      phase: ${{ steps.call.outputs.phase }}
+    steps:
+      - *checkout
+      - &invoke
+        id: call
+        env:
+          REVIEW_TOKEN: ${{ github.token }}
+        run: /usr/bin/python3 -I -B .github/scripts/gateway-release.py invoke
+
+  apply:
+    needs: plan-or-return
+    if: needs.plan-or-return.outputs.phase == 'apply'
+    name: apply ${{ needs.plan-or-return.outputs.digest }}
+    runs-on: *vps
+    environment: ouf-vps-privileged
+    permissions: *review
+    timeout-minutes: 40
+    env:
+      PHASE: apply
+      DIGEST: ${{ needs.plan-or-return.outputs.digest }}
+    steps:
+      - *checkout
+      - *invoke

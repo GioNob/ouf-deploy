@@ -16,7 +16,7 @@ def github(path, output=None):
         return json.loads(result.stdout)
 
 
-def select(ci, run_id, artifact_id, api):
+def select(ci, run_id, artifact_id, api, *, artifact_prefix="source-onboarding-governed-image"):
     repo = ci["repository"]
     prefix = "repos/" + repo
     run = api(f"{prefix}/actions/runs/{run_id}")
@@ -29,7 +29,7 @@ def select(ci, run_id, artifact_id, api):
     artifact = api(f"{prefix}/actions/artifacts/{artifact_id}")
     require(artifact["id"] == artifact_id and artifact["expired"] is False
             and artifact["workflow_run"]["id"] == run_id and artifact["workflow_run"]["head_sha"] == ci["sourceCommit"]
-            and artifact["name"] == f"source-onboarding-governed-image-{run_id}" and
+            and artifact["name"] == f"{artifact_prefix}-{run_id}" and
             matches("sha256:" + SHA, artifact["digest"]), "CI_ARTIFACT_CHANGED")
     return dict(ci, runId=run_id, runAttempt=run["run_attempt"], artifactId=artifact_id,
                 zipSha256=artifact["digest"][7:])

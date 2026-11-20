@@ -41,6 +41,9 @@ def validate(req, policy):
         need(set(req) == common | {"operation", "module"} and isinstance(req["module"], str)
              and req["module"] in policy["modules"] and req["phase"] in ("plan", "apply", "migrate"),
              "MODULE_REQUEST_SCOPE")
+    elif req.get("operation") == "gateway-release":
+        from gateway_policy import valid_request
+        need("gateway" in policy and valid_request(req, common), "GATEWAY_REQUEST_SCOPE")
     else:
         need(set(req) == common | {"direction", "queue"} and req["phase"] in PHASES
              and req["direction"] in ("forward", "return") and req["queue"] in ("empty", "inventory")
@@ -58,6 +61,8 @@ def intent(req):
 
 
 def challenge(req):
+    if req.get("operation") == "gateway-release":
+        return " ".join(req[k] for k in ("operation", "run", "attempt", "commit", "phase", "digest"))
     if req.get("operation") == "module-release":
         return " ".join([req["operation"], req["run"], req["attempt"], req["commit"], req["module"],
                          req["phase"], req["digest"]])
@@ -89,9 +94,12 @@ def authorize(req, policy, get):
     validate(req, policy)
     path = "/actions/runs/" + req["run"]
     run = get(path)
+    workflow = (module_workflow(req["module"]) if req.get("operation") == "module-release" else WORKFLOW)
+    if req.get("operation") == "gateway-release":
+        workflow = ".github/workflows/gateway-release.yml"
     need(str(run["id"]) == req["run"] and run["run_attempt"] == 1
          and run["event"] == "workflow_dispatch" and run["status"] == "in_progress"
-         and run["path"] == (module_workflow(req["module"]) if req.get("operation") == "module-release" else WORKFLOW) and run["head_sha"] == req["commit"]
+         and run["path"] == workflow and run["head_sha"] == req["commit"]
          and run["head_branch"] == policy["branch"]
          and run["repository"]["id"] == run["head_repository"]["id"] == policy["repositoryId"],
          "RUN_NOT_AUTHORIZED")

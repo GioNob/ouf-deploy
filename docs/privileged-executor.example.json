@@ -119,6 +119,20 @@
       "<IAM subject>": "<tenant>"
     }
   },
+  "gateway": {
+    "source": {
+      "repository": "GioNob/ouf-api-gateway",
+      "workflow": "<publisher workflow filename>",
+      "tokenFile": "<absolute private source Actions read token file>"
+    },
+    "dockerSocket": "<absolute local Docker socket>",
+    "container": "<APISIX container name>",
+    "host": "<numeric loopback address inside APISIX namespace>",
+    "adminPath": "<local Admin API base path>",
+    "port": 0,
+    "keyFile": "<absolute private Admin API key file>",
+    "values": {"example.binding": "<private installation value>"}
+  },
   "modules": {
     "onboarding": {
       "schema": "ouf.module-release.v1",

@@ -12,6 +12,9 @@ on:
       - 'docs/privileged-executor.example.json'
       - 'tests/test_privileged_executor*.py'
       - 'tests/test_module_release*.py'
+      - 'tests/test_gateway_release*.py'
+      - '.github/scripts/gateway-release.py'
+      - '.github/workflows/gateway-release.yml'
       - 'tests/privileged_executor_fixture.sh'
       - '.github/workflows/semantic-a2-cutover.yml'
       - '.github/workflows/onboarding-module-release.yml'
@@ -52,3 +55,5 @@ jobs:
               /usr/bin/python3 -I -B -m unittest discover -s tests -p "$suite" -v
           done
           /usr/bin/python3 -I -B tests/test_vps_workflows_manual_only.py -v
+      - name: Exercise Gateway plan, apply, return and rollback on disposable APISIX
+        run: sudo env OUF_GATEWAY_RELEASE_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_gateway_release*.py' -v
