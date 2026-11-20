@@ -13,7 +13,7 @@ case "$mode" in
   *) echo 'uso: plan | apply <planSha256>' >&2; exit 2 ;;
 esac
 # Claude fissa il commit dopo review e commit D-001.
-C=ef8d29f4d790dd4fad00d03990be6ffa529472ff
+C=c58515e8d4567742fc9dad988b4871966ce49563
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] || {
   echo 'runbook non ancora fissato a un commit' >&2; exit 2;
 }
