@@ -1,5 +1,5 @@
 """Installed module release phases, serialized by the common root entrypoint."""
-from module_release import operation
+from module_release import operation, return_operation
 from module_release.contract import Held as ReleaseHeld
 from mandate import digest, intent, need
 from store import Journal, read, save
@@ -14,12 +14,23 @@ class ModuleRelease:
     def execute(self, review):
         req, path = self.req, self.path
         phase = req["phase"]
+        if phase == "rollback":
+            save(path / "rollback.review", {"request": req, "review": review})
+            result = return_operation.run(self.profile, req["digest"])
+            save(path / "rollback.result", result)
+            need(result["status"] == "ROLLED_BACK", result.get("reason", "MODULE_RETURN_HELD"))
+            return {"digest": req["digest"], "status": result["status"]}
         if phase == "plan":
             save(path / "plan.review", {"request": req, "review": review})
             proposal = operation.plan(self.profile)
             save(path / "plan", proposal)
             need(proposal["status"] == "PLANNED", proposal.get("reason", "MODULE_PLAN_HELD"))
-            return {"digest": proposal["planSha256"], "status": "PLANNED"}
+            response = {"digest": proposal["planSha256"], "status": "PLANNED"}
+            if "migrations" in proposal["plan"]:
+                response["databaseReview"] = {key: proposal["plan"][key] for key in
+                    ("migrations", "migrationsSha256", "databaseSha256", "schemaSha256", "targetSchemaSha256")
+                    if key in proposal["plan"]}
+            return response
         approved = read(path / "plan.review")["request"]
         proposal = read(path / "plan")
         stamp = proposal["planSha256"]

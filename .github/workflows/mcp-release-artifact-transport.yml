@@ -1,0 +1,40 @@
+name: Transport MCP release image
+on:
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: Successful MCP module CI run ID for PR 90
+        required: true
+        type: string
+      source_artifact:
+        description: Governed image artifact ID in that run
+        required: true
+        type: string
+permissions: {contents: read, actions: read}
+jobs:
+  transport:
+    if: github.ref_protected && github.run_attempt == '1' && github.ref_name == github.event.repository.default_branch
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    environment: ouf-vps-privileged
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Verify publisher, original ZIP and image archive in the installation inbox
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.source_run }}
+          SOURCE_ARTIFACT: ${{ inputs.source_artifact }}
+          PROFILE: ${{ vars.MCP_RELEASE_TRANSPORT_PROFILE }}
+          INBOX: ${{ vars.MODULE_RELEASE_INBOX }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 -B -m tools.module_release.transport "$PROFILE" \
+            "$SOURCE_RUN" "$SOURCE_ARTIFACT" "$INBOX" | tee "$RUNNER_TEMP/module-release-$GITHUB_RUN_ID.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mcp-transport-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/module-release-${{ github.run_id }}.json
+          if-no-files-found: error
+          retention-days: 30

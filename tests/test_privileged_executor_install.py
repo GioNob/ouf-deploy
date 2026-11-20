@@ -38,6 +38,14 @@ class Bootstrap(unittest.TestCase):
         for i, net in enumerate(module["networks"].values()):
             net["ipv4"] = f"192.0.2.{i+1}"
         module["ci"].update(runId=1, runAttempt=1, artifactId=1, imageId="sha256:"+"b"*64, zipSha256="c"*64)
+        mcp = cfg["modules"]["mcp"]
+        for key in ("inbox", "journal", "dockerSocket", "nsenter", "oldImage", "networks"):
+            mcp[key] = module[key]
+        for key in ("runId", "runAttempt", "artifactId", "imageId", "zipSha256", "sourceCommit", "sourceTree"):
+            mcp["ci"][key] = module["ci"][key]
+        mcp["ci"]["publisherCommit"] = mcp["ci"]["sourceCommit"]
+        mcp["ci"]["transportSha256"] = "e"*64
+        mcp["migration"]["database"].update(postgresCid="d"*64, socket="/run/postgresql")
         book = ("C="+"f"*40+"\n").encode()
         for binding in cfg["runbooks"].values():
             binding.update(artifactCommit="a"*40, sourceCommit="f"*40, sha256=hashlib.sha256(book).hexdigest())
@@ -68,7 +76,7 @@ class Bootstrap(unittest.TestCase):
         cfg = json.loads(files[inst.ROOT / "profile.json"][0])
         self.assertNotIn("proof", cfg["queue"])
         self.assertEqual(len(cfg["runbooks"]), 13)
-        self.assertEqual(set(cfg["modules"]), {"onboarding"})
+        self.assertEqual(set(cfg["modules"]), {"onboarding", "mcp"})
         lib = inst.ROOT / "lib"
         for file, (data, _) in files.items():
             if file.is_relative_to(lib):

@@ -55,6 +55,16 @@
       "capture": "Conservare nomi e digest di unità, wrapper e configurazione, sequenza e ricevuta di upgrade dell’owner R3 nel registro privato per installazione.",
       "restore": "Ripristinare con la successione R3 autorizzata, con coorte ferma e stato coordinatore riconciliato, prima di aprire l’ingresso.",
       "test": "Usare il readback dell’upgrade, controllare unità caricata, wrapper, WAITING, quindi lease e ingresso osservato dopo lo start."
+    },
+    {
+      "id": "deploy.module-release.mcp",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Profilo privato modules.mcp, pin e ricevuta del trasporto CI, snapshot dei metadati SQL e journal di ritorno.",
+      "secrets": true,
+      "capture": "Custode root. Cifrare la configurazione e i journal, registrare versioni, SHA-256 e permessi. Associare ZIP, ricevuta di trasporto, lista delle migrazioni e plan.",
+      "restore": "Dopo il bootstrap, ripristinare profilo, inbox e journal in ordine. Riconciliare CID, profilo e database prima del rilascio o del ritorno.",
+      "test": "Provare il 204, il ritorno al CID conservato e il rifiuto DATABASE_CHANGED prima del fermo del candidato."
     }
   ]
 }

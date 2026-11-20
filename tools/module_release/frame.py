@@ -44,9 +44,20 @@ def baseline(p, old):
                 and aliases(ep, old["Id"]) == sorted(expected["aliases"]), "NETWORK_BINDING_CHANGED")
 
 
-def request(old, image):
+def image_configuration(old, image, labels):
     cfg = configuration(old)
     cfg["Image"] = image
+    if labels:
+        cfg["Labels"] = {**(cfg.get("Labels") or {}), **labels}
+    return cfg
+
+
+def provenance_labels(profile):
+    return {key: profile["ci"][field] for key, field in profile.get("provenanceLabels", {}).items()}
+
+
+def request(old, image, labels=None):
+    cfg = image_configuration(old, image, labels)
     cfg["HostConfig"] = deepcopy(old["HostConfig"])
     if cfg["HostConfig"].get("OomKillDisable") is None:
         cfg["HostConfig"]["OomKillDisable"] = False
@@ -59,9 +70,8 @@ def epoch(doc):
     return [doc["Id"], doc["State"]["StartedAt"], doc["State"]["Pid"], doc["RestartCount"]]
 
 
-def check_body(old, doc, image, config_image, *, created=False):
-    cfg = configuration(old)
-    cfg["Image"] = config_image
+def check_body(old, doc, image, config_image, *, created=False, labels=None):
+    cfg = image_configuration(old, config_image, labels)
     host = dict(old["HostConfig"])
     if created and host.get("OomKillDisable") is None:
         host["OomKillDisable"] = False
