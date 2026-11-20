@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build both test images from the hosted runner's JDK and system libraries.
+# Build the fixture images from binaries already installed on the hosted runner.
 set -euo pipefail
 work=$(mktemp -d)
 trap 'rm -rf -- "$work"' EXIT
@@ -43,4 +43,23 @@ for revision in old "$tested"; do
         --change "LABEL org.opencontainers.image.revision=$revision" \
         --change 'LABEL org.opencontainers.image.source=https://github.com/fixture/module' \
         rootfs.tar "ouf-ci-gate:$revision"
+done
+
+# Reproduce MCP's absolute /bin/sh link with the runner's BusyBox, offline.
+busybox=$(command -v busybox || echo /usr/lib/initramfs-tools/bin/busybox)
+"$busybox" sh -c 'exit 0'
+mkdir -p busyroot/{bin,usr/local/bin}
+cp "$busybox" busyroot/bin/busybox
+ln -s /bin/busybox busyroot/bin/sh
+ln -s busybox busyroot/bin/sleep
+cp root/usr/local/bin/ouf-mcp busyroot/usr/local/bin/
+while read -r lib; do
+    cp --parents -L "$lib" busyroot/
+done < <(ldd "$busybox" 2>/dev/null | awk '{ for (i=1; i<=NF; i++) if ($i ~ "^/(usr/)?lib") print $i }')
+tar -C busyroot -cf busybox.tar .
+for revision in old "$tested"; do
+    docker import --change 'ENV PATH=/bin:/usr/local/bin' \
+        --change "LABEL org.opencontainers.image.revision=$revision" \
+        --change 'LABEL org.opencontainers.image.source=https://github.com/fixture/module' \
+        busybox.tar "ouf-ci-busybox:$revision"
 done

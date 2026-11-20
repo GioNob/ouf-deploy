@@ -22,6 +22,12 @@ from tools.module_release.operation import apply, migrate, plan, ready
                      "labelled disposable Engine opt-in")
 class NativeRelease(unittest.TestCase):
     def test_gate_migration_and_http_readiness(self):
+        self.exercise_release(busybox=False)
+
+    def test_busybox_gate_and_forced_return_to_ready_predecessor(self):
+        self.exercise_release(busybox=True)
+
+    def exercise_release(self, busybox):
         self.assertEqual(os.geteuid(), 0)
         socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
         cli = ["/usr/bin/docker", "--host", "unix://" + socket]
@@ -33,7 +39,11 @@ class NativeRelease(unittest.TestCase):
         net = name + "-net"
         command = ["java", "-jar", "/app/application.jar"]
         old_image = os.environ["OUF_A2_FIXTURE_IMAGE"]
-        tag = "ouf-ci-gate:" + TESTED
+        image_name = "ouf-ci-busybox" if busybox else "ouf-ci-gate"
+        if busybox:
+            old_image = rt.api("GET", "/images/" + image_name + ":old/json")["Id"]
+            command = ["/usr/local/bin/ouf-mcp", "server"]
+        tag = image_name + ":" + TESTED
         candidate = rt.api("GET", "/images/" + tag + "/json")["Id"]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -42,8 +52,11 @@ class NativeRelease(unittest.TestCase):
                      networks={net: {"ipv4":"192.0.2.35", "aliases":[name]}}, gate={"command":command})
             p["readiness"].update(path="/ready", attempts=20)
             p["migration"].update(mode="dedicated", command=["/bin/sh", "-c", "exit 0"], rollbackCompatible=True)
+            if busybox:
+                p["readiness"] = dict(path="/health/ready", port=8080, acceptStatus=[204], attempts=20)
+                p["migration"]["command"] = ["/bin/sh", "-c", "exit 1"]
             ci = p["ci"]
-            ci.update(repository="fixture/module", imageName="ouf-ci-gate", imageId=candidate,
+            ci.update(repository="fixture/module", imageName=image_name, imageId=candidate,
                       runId=1, runAttempt=1, artifactId=1)
             payload = root / "image.tar.gz"
             with tempfile.TemporaryFile() as raw, gzip.open(payload, "wb", compresslevel=1) as out:
@@ -70,7 +83,7 @@ class NativeRelease(unittest.TestCase):
             self.addCleanup(subprocess.run, [*cli, "network", "rm", network], check=False)
             for container in (name, p["retainedName"], p["failedName"]):
                 self.addCleanup(subprocess.run, [*cli, "rm", "-f", container], stderr=subprocess.DEVNULL)
-            old = rt.create(name, dict(Image=old_image, Entrypoint=ENTRY, Cmd=command,
+            old = rt.create(name, dict(Image=old_image, Entrypoint=ENTRY, Cmd=command, User="10005:10005" if busybox else "",
                 HostConfig={"NetworkMode":net, "RestartPolicy":{"Name":"no"}},
                 NetworkingConfig={"EndpointsConfig":{net:{"Aliases":[name], "IPAMConfig":{"IPv4Address":"192.0.2.35"}}}}))
             rt.start(old)
@@ -89,6 +102,20 @@ class NativeRelease(unittest.TestCase):
                 self.fail("Predecessor HTTP readiness")
             proposal = plan(p)
             self.assertEqual(proposal["status"], "PLANNED", proposal)
+            if busybox:
+                stamp = proposal["planSha256"]
+                result = apply(p, stamp)
+                self.assertEqual((result["status"], result.get("reason"), result.get("rollback")),
+                                 ("HELD", "MIGRATION_FAILED", "ROLLED_BACK"), result)
+                log = root / stamp
+                # The failed exec runs only after the candidate's real gate proof.
+                self.assertEqual(json.loads((log / "migration-intent.json").read_bytes())["cid"], result["successorCid"])
+                self.assertEqual(json.loads((log / "restore-signal.json").read_bytes())["cid"], old)
+                restored = rt.inspect(name)
+                self.assertEqual(restored["Id"], old)
+                self.assertTrue(ready(rt, restored, p["readiness"]))
+                self.assertFalse(rt.inspect(result["successorCid"])["State"]["Running"])
+                return
             staged = apply(p, proposal["planSha256"], defer_migration=True)
             self.assertEqual(staged["status"], "GATED", staged)
             self.assertTrue(rt.process(rt.inspect(staged["successorCid"]), gated=True))

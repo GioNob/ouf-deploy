@@ -3,7 +3,9 @@ import copy
 import hashlib
 import io
 import json
+import os
 import runpy
+import stat
 import sys
 from unittest.mock import Mock, patch
 from pathlib import Path
@@ -17,6 +19,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / "tools"), *(str(ROOT / "tools" / folder) f
                 ("privileged_executor", "semantic_provider_r3", "semantic_application_cutover"))]
 
 from tools.module_release.contract import ENTRY, Held
+from tools.module_release import docker
 from tools.module_release.operation import apply, migrate, plan
 from tools.module_release.transport import select
 
@@ -28,6 +31,49 @@ TESTED = "d" * 40
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
+
+
+class GateProcessTest(unittest.TestCase):
+    def test_shell_links_argv_and_signal_mask(self):
+        proc = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        command = ["/usr/local/bin/ouf-mcp", "server"]
+        rt = docker.Docker({"gate": {"command": command}})
+        doc = {"State": {"Pid": 42, "Running": True}}
+        (proc / "exe").touch()
+        (proc / "other").touch()
+        (proc / "status").write_text("SigCgt:\t00000200\n")
+        cmdline = b"\0".join(arg.encode() for arg in ENTRY + command) + b"\0"
+        (proc / "cmdline").write_bytes(cmdline)
+
+        # Simulated directory descriptors allow POSIX links even on Windows.
+        root, bin_dir, shell, applet = range(4)
+        files = {(None, proc / "root"): root, (root, "bin"): bin_dir,
+                 (bin_dir, "sh"): shell, (bin_dir, "busybox"): applet}
+        metadata = {bin_dir: Mock(st_mode=stat.S_IFDIR), shell: Mock(st_mode=stat.S_IFLNK),
+                    applet: (proc / "exe").stat()}
+        kernel = Mock(wraps=os, O_PATH=1, O_DIRECTORY=2, O_NOFOLLOW=4, path=os.path)
+        kernel.open.side_effect = lambda path, flags, dir_fd=None: files[dir_fd, path]
+        kernel.fstat.side_effect = metadata.__getitem__
+        kernel.close = Mock()
+        self.enterContext(patch.object(docker, "os", kernel))
+        self.enterContext(patch.object(docker, "Path", return_value=proc))
+        self.enterContext(patch.object(docker.signal, "SIGUSR1", 10, create=True))
+        for link in ("/bin/busybox", "busybox", "../../bin/busybox"):
+            with self.subTest(link=link):
+                kernel.readlink.return_value = link
+                self.assertTrue(rt.process(doc, gated=True))
+                kernel.readlink.assert_called_with("", dir_fd=shell)
+        kernel.readlink.return_value = "/bin/sh"
+        self.assertFalse(rt.process(doc, gated=True))
+        kernel.readlink.return_value = "/bin/busybox"
+        metadata[applet] = (proc / "other").stat()
+        self.assertFalse(rt.process(doc, gated=True))
+        metadata[applet] = (proc / "exe").stat()
+        (proc / "cmdline").write_bytes(cmdline + b"\0")
+        self.assertFalse(rt.process(doc, gated=True))
+        (proc / "cmdline").write_bytes(cmdline)
+        (proc / "status").write_text("SigCgt:\t00000000\n")
+        self.assertFalse(rt.process(doc, gated=True))
 
 
 def artifact(p, root, **manifest_changes):

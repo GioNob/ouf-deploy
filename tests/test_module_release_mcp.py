@@ -120,6 +120,41 @@ class Release(unittest.TestCase):
         with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
             self.call("apply", "1"*64, approved=False)
 
+    def exercise_apply_return(self, statuses, expected_error):
+        stamp = self.planned()["digest"]
+        self.rt.fault = "handler"  # Candidate never proves its gate.
+        normal_probe = self.rt.probe
+        responses = iter(statuses)
+
+        def probe(doc):
+            status, body = normal_probe(doc)
+            if doc["Id"] == OLD and "gate:1" in self.rt.events:
+                self.assertNotIn(OLD, self.rt.gates)
+                return next(responses), b""
+            return status, body
+
+        with patch.object(self.rt, "probe", side_effect=probe), self.assertRaisesRegex(mandate.Held, expected_error):
+            self.call("apply", stamp)
+        self.assertNotIn("signal:2", self.rt.events)
+        self.assertEqual(self.rt.events[self.rt.events.index("gate:1"):],
+                         ["gate:1", "signal:1", "probe:1", "probe:1"])
+        root = self.root / stamp
+        self.assertEqual(json.loads((root / "restore-signal.json").read_bytes())["cid"], OLD)
+        return json.loads((root / "receipt.json").read_bytes())
+
+    def test_apply_return_waits_for_predecessor_204(self):
+        receipt = self.exercise_apply_return([503, 204], "GATE_NOT_PROVEN")
+        self.assertEqual((receipt["rollback"], receipt["restoredCid"], receipt["predecessorReadyHttp"]),
+                         ("ROLLED_BACK", OLD, 204))
+
+    def test_apply_return_without_predecessor_readiness_is_held(self):
+        receipt = self.exercise_apply_return([503, 200], "PREDECESSOR_READINESS_NOT_UP")
+        self.assertEqual((receipt["status"], receipt["reason"], receipt["rollback"], receipt["rollbackReason"]),
+                         ("HELD", "GATE_NOT_PROVEN", "HELD", "PREDECESSOR_READINESS_NOT_UP"))
+        self.assertNotIn("predecessorReadiness", receipt)
+        self.assertNotIn("restoredCid", receipt)
+        self.assertTrue((self.root / "mcp.lock").is_dir())
+
     def test_migrate_with_wrong_digest_holds_at_gate(self):
         self.dedicated()
         self.call("apply", self.planned()["digest"])
@@ -155,6 +190,7 @@ class Release(unittest.TestCase):
         receipt = json.loads((self.root / stamp / "receipt.json").read_bytes())
         self.assertEqual((receipt["rollback"], receipt["predecessorReadyHttp"]), ("ROLLED_BACK", 204))
         self.assertNotIn("signal:2", self.rt.events)
+        self.assertEqual(self.rt.events[self.rt.events.index("gate:1"):], ["gate:1", "signal:1", "probe:1"])
 
     def test_rollback_refuses_restarted_successor_before_stop(self):
         stamp = self.planned()["digest"]
