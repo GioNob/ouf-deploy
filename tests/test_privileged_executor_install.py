@@ -31,6 +31,11 @@ class Bootstrap(unittest.TestCase):
                    runner="runner", readinessPort=8080, installRoot=str(tmp), leaseJournal=str(tmp/"lease"),
                    socket=str(tmp/"docker.sock"))
         c = cfg["queue"]
+        cfg["successorImage"].update(inbox=str(tmp/"semantic-inbox"), migrationsField="migrations",
+                                     predecessorMigrations=["V12__baseline.sql"])
+        cfg["successorImage"]["ci"].update(repository="fixture/ouf-semantic-registry", imageName="registry",
+            sourceCommit="a"*40, sourceTree="b"*40, workflow="module-ci.yml", manifestSchema="fixture.v1",
+            runId=3, runAttempt=1, artifactId=4, pullRequest=2, zipSha256="a"*64, imageId="sha256:"+"b"*64)
         c.update(container="pg", role="reader", database="semantic", socket="/run/postgresql")
         module = cfg["modules"]["onboarding"]
         module.update(inbox=str(tmp/"inbox"), journal=str(tmp/"journal"), dockerSocket=cfg["socket"],
@@ -78,6 +83,12 @@ class Bootstrap(unittest.TestCase):
                  "from pipeline import Cutover;from module_operation import ModuleRelease;"
                  "from module_release.operation import migrate")
         subprocess.run([sys.executable, "-I", "-B", "-c", probe, str(lib)], check=True)
+
+    def test_install_without_successor_image(self):
+        cfg = json.loads(self.path.read_bytes())
+        del cfg["successorImage"]
+        self.path.write_text(json.dumps(cfg))
+        self.assertIn(self.inst.ENTRY, self.inst.inspect(self.path))
 
     @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_A2_NATIVE") == "1", "Linux bootstrap opt-in")
     def test_apply_reconciles_one_installation(self):

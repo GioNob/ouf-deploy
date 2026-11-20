@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import tempfile
 
-from .contract import Held, SHA, digest, matches, package, require, validate
+from .contract import CI_COORDINATES, Held, SHA, digest, matches, package, require, validate
 from .docker import Docker
 from .frame import baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, request, snapshot
 
@@ -41,12 +41,10 @@ def observe(p, rt):
     require(all(rt.inspect(p[k], missing=True) is None for k in ("retainedName", "failedName")),
             "CUSTODY_NAME_OCCUPIED")
     require(ready(rt, old, p["readiness"]), "PREDECESSOR_NOT_READY")
-    coordinates = ("repository", "workflow", "pullRequest", "runId", "runAttempt", "artifactId", "zipSha256",
-                   "sourceCommit", "sourceTree", "imageName", "imageId", "manifestSchema")
     body = {
         "operation": "module-release", "module": p["module"], "profileSha256": digest(p),
         "oldCid": old["Id"], "oldFrameSha256": snapshot(old), "requestSha256": digest(request(old, p["ci"]["imageId"])),
-        "oldImage": old["Image"], "ci": {k: p["ci"][k] for k in coordinates}, **artifact,
+        "oldImage": old["Image"], "ci": {k: p["ci"][k] for k in CI_COORDINATES}, **artifact,
         "migrationMode": p["migration"]["mode"], "rollback": "AVAILABLE",
     }
     return body, old

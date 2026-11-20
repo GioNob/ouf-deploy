@@ -41,6 +41,8 @@ def matches(pattern, value):
 NAME = r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}"
 SHA = r"[0-9a-f]{64}"
 IMAGE = "sha256:" + SHA
+CI_COORDINATES = ("repository", "workflow", "pullRequest", "runId", "runAttempt", "artifactId", "zipSha256",
+                  "sourceCommit", "sourceTree", "imageName", "imageId", "manifestSchema")
 GATE = ('OUF_APPLICATION_GATE=0; trap "OUF_APPLICATION_GATE=1" USR1; '
         'while [ "$OUF_APPLICATION_GATE" = 0 ]; do sleep 1 & wait "$!"; done; exec "$@"')
 ENTRY = ["/bin/sh", "-c", GATE, "ouf-gated-application"]
@@ -74,7 +76,10 @@ def validate(p):
             and type(migration["rollbackCompatible"]) is bool, "INVALID_MIGRATION")
     require(("command" in migration) == (migration["mode"] == "dedicated")
             and ("command" not in migration or argv(migration["command"])), "INVALID_MIGRATION_COMMAND")
-    ci = p["ci"]
+    validate_ci(p["ci"])
+
+
+def validate_ci(ci):
     require(matches(NAME + "/" + NAME, ci["repository"]) and matches(NAME, ci["imageName"])
             and matches(r"[0-9a-f]{40}", ci["sourceCommit"]) and matches(r"[0-9a-f]{40}", ci["sourceTree"])
             and all(type(ci[k]) is int and ci[k] > 0 for k in ("runId", "runAttempt", "artifactId"))
@@ -115,7 +120,7 @@ def image_ids(archive, tag, repository, tested):
     return ids
 
 
-def package(p, target=None, *, transport=False):
+def package(p, target=None, *, transport=False, migrations_field=None):
     """Hash the exact open ZIP and inner payload. Only copy verified bytes to private custody."""
     ci = p["ci"]
     path = Path(p["inbox"]) / (ci["zipSha256"] + ".zip")
@@ -148,5 +153,9 @@ def package(p, target=None, *, transport=False):
                 ids = image_ids(archive, tag, ci["repository"], tested)
             require(manifest["imageId"] in ids and (transport or ci["imageId"] in ids), "IMAGE_ID_CHANGED")
             require(os.fstat(stream.fileno()).st_ctime_ns == info.st_ctime_ns, "ARTIFACT_CHANGED_DURING_READ")
-            return {"archiveSha256": archive_hash, "imageTag": tag, "testedCommit": tested,
+            facts = {"archiveSha256": archive_hash, "imageTag": tag, "testedCommit": tested,
                     "publisherImageId": manifest["imageId"], "verifiedImageIds": sorted(ids)}
+            if migrations_field is not None:
+                require(isinstance(manifest.get(migrations_field), list), "MIGRATION_INVENTORY_REQUIRED")
+                facts["migrations"] = manifest[migrations_field]
+            return facts

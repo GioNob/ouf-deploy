@@ -2,6 +2,17 @@
   "schema": "ouf.configuration-register.entries.v1",
   "entries": [
     {
+      "id": "deploy.a2.successor-image",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Sezione successorImage, ZIP originale Semantic, inventario Flyway del predecessore, plan e ricevuta load-image, stage e review migrate dello stesso run",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Il custode di root conserva lo ZIP per digest e cifra profilo e journal del run. Registra image ID di origine e destinazione, origine CI, digest del manifest tramite lo ZIP e inventario approvato.",
+      "restore": "Dopo esecutore e profilo ripristinare ZIP e journal coerente. Riconciliare CID, image ID, testa R3, generazione e schema Flyway con le ricevute prima del rilascio.",
+      "test": "Verificare rifiuto del digest Flyway errato, assenza di USR1 e ritorno v29 al CID e all’immagine iniziali."
+    },
+    {
       "id": "deploy.a2.executor",
       "version": 2,
       "owner": "ouf-deploy",

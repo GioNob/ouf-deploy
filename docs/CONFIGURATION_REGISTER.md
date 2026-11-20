@@ -12,4 +12,6 @@ Le voci D-065 descrivono i tipi di archivio di competenza deploy. La distinta pr
 
 ## Esecutore privilegiato condiviso
 
+La voce `deploy.a2.successor-image@1` copre lo ZIP Semantic selezionato, entrambi gli image ID, gli inventari Flyway e la review sul CID al cancello. La restituzione del CID originario presuppone la compatibilità dello schema applicato con l’immagine conservata, qualificata nel task-24c. [Custodia e prova di ripristino](../tools/privileged_executor/host-register.json)
+
 Le voci `deploy.a2.executor@2`, `deploy.a2.profile@2` e `deploy.a2.journal@2` registrano sorgenti, custode, cattura, ordine di ripristino e prova. Ripristinare insieme il journal del run e quello del modulo per riconciliare la terza approvazione con il CID al cancello. La configurazione dell’inventario contiene container, socket locale, ruolo, database e mappa IAM. La ricevuta della prova chatbot segue la ricevuta del cutover. [Registro host](../tools/privileged_executor/host-register.json)

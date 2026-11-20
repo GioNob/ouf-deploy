@@ -7,7 +7,8 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from .contract import SHA, checksum, matches, package, require
+from .contract import checksum, package, require
+from .provenance import select_artifact, verify_tested_tree
 
 
 def github(path, output=None):
@@ -17,22 +18,9 @@ def github(path, output=None):
 
 
 def select(ci, run_id, artifact_id, api):
-    repo = ci["repository"]
-    prefix = "repos/" + repo
-    run = api(f"{prefix}/actions/runs/{run_id}")
-    require(run["id"] == run_id and run["status"] == "completed" and run["conclusion"] == "success"
-            and run["event"] == "pull_request" and run["path"] == ".github/workflows/" + ci["workflow"]
-            and run["head_sha"] == ci["sourceCommit"] and run["repository"]["full_name"] == repo
-            and run["head_repository"]["full_name"] == repo and any(
-                pr["number"] == ci["pullRequest"] and pr["head"]["sha"] == ci["sourceCommit"]
-                for pr in run["pull_requests"]), "SUCCESSFUL_APPROVED_PR_RUN_REQUIRED")
-    artifact = api(f"{prefix}/actions/artifacts/{artifact_id}")
-    require(artifact["id"] == artifact_id and artifact["expired"] is False
-            and artifact["workflow_run"]["id"] == run_id and artifact["workflow_run"]["head_sha"] == ci["sourceCommit"]
-            and artifact["name"] == f"source-onboarding-governed-image-{run_id}" and
-            matches("sha256:" + SHA, artifact["digest"]), "CI_ARTIFACT_CHANGED")
-    return dict(ci, runId=run_id, runAttempt=run["run_attempt"], artifactId=artifact_id,
-                zipSha256=artifact["digest"][7:])
+    prefix = "repos/" + ci["repository"]
+    return select_artifact(ci, run_id, artifact_id, lambda path: api(prefix + path),
+                           artifact_prefix="source-onboarding-governed-image")
 
 
 def transport(profile, run_id, artifact_id, inbox):
@@ -46,10 +34,7 @@ def transport(profile, run_id, artifact_id, inbox):
             out.flush()
             os.fsync(out.fileno())
         receipt = package({"ci": ci, "inbox": tmp}, transport=True)
-        commit = github(prefix + "/git/commits/" + receipt["testedCommit"])
-        require(commit["tree"]["sha"] == ci["sourceTree"] and
-                (commit["sha"] == ci["sourceCommit"] or
-                 any(p["sha"] == ci["sourceCommit"] for p in commit["parents"])), "TESTED_TREE_CHANGED")
+        verify_tested_tree(ci, receipt, lambda path: github(prefix + path))
         final = inbox / path.name
         try:
             os.link(path, final)

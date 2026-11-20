@@ -14,6 +14,7 @@ from runbooks import Books, stop
 from semantic import Engine, allocated_profile, prepare, profile_template, signal_once
 from semantic_identity_v25 import semantic_observe, semantic_profile
 from store import Journal, read, save, trusted
+from successor_image import admit, migration_review
 
 
 def until(fn, seconds, code):
@@ -27,8 +28,9 @@ def until(fn, seconds, code):
 
 
 class Cutover:
-    def __init__(self, cfg, root, req):
+    def __init__(self, cfg, root, req, source_get=None):
         self.cfg, self.root, self.req = cfg, root, req
+        self.source_get = source_get
         self.path = root / req["run"]
         self.log = Journal(self.path)
         self.books = Books(cfg, self.path)
@@ -97,14 +99,19 @@ class Cutover:
             need(version == 27, "EXPECTED_SOURCE_HEAD")
             profile = semantic_profile(self.cfg["originalProfile"])
             old = self.engine.inspect(self.name)
-            request, target = prepare(old, profile)
-            self.image_binding(request, profile)
+            spec = self.cfg.get("successorImage")
+            request, target = prepare(old, profile, spec["ci"]["imageId"] if spec is not None else None)
+            if "successorImage" not in self.cfg:
+                self.image_binding(request, profile)
             self.ready(old["Id"], profile, self.engine.process(old["Id"], profile, "APPLICATION_RUNNING"))
             probe_preflight = self.probe_preflight(version, old["Id"])
             nets = {k: v["NetworkID"] for k, v in old["NetworkSettings"]["Networks"].items()}
             frame = {"old": old["Id"], "request": request, "networks": nets, "original": profile,
                      "probePreflight": probe_preflight, "template": profile_template(old), "target": target, "source": old["Id"], "previous": profile}
             need(self.engine.inspect(self.cfg["retainedName"], True) is None, "RETAINED_NAME_IN_USE")
+            if "successorImage" in self.cfg:
+                frame["successorImage"] = admit(self.cfg, self.log, self.source_get)
+                self.image_binding(request, target)
         else:
             first = self.original()
             source = read(self.root / self.owner("forward") / "create.receipt")["result"]
@@ -115,6 +122,8 @@ class Cutover:
             need(self.engine.inspect(self.cfg["failedName"], True) is None, "RETURN_NAME_IN_USE")
             frame = {**{k: first[k] for k in ("request", "networks", "old", "original")},
                      "source": source, "previous": allocated_profile(first, source), "target": first["original"]}
+            if "successorImage" in first:
+                frame["request"] = {**first["request"], "Image": first["template"]["Config"]["Image"]}
         sequence = 28 if self.forward else (29 if version == 28 else 27)
         reconciliation = None
         installed = version
@@ -210,7 +219,9 @@ class Cutover:
         sup = self.supervisor(plan["installed"])
         need(self.observe(plan["source"], plan["previous"], sup) == plan["sourceEpoch"], "SOURCE_EPOCH_DRIFT")
         if self.forward:
-            request, target = prepare(self.engine.inspect(plan["old"]), plan["original"])
+            image = plan.get("successorImage")
+            request, target = prepare(self.engine.inspect(plan["old"]), plan["original"],
+                                      image["ci"]["imageId"] if image else None)
             need(request == plan["request"] and target == plan["target"], "SUCCESSOR_PLAN_DRIFT")
             self.image_binding(request, target)
         name = self.cfg["retainedName" if self.forward else "failedName"]
@@ -356,8 +367,14 @@ class Cutover:
             accept()
             plan = self.initial()
             save(self.path / "plan", plan)
-            return {"digest": digest(plan), "queueCount": len(plan["queue"]), "queueDigest": digest(plan["queue"]),
-                    "queue": review_rows(plan["queue"])}
+            response = {"digest": digest(plan), "queueCount": len(plan["queue"]), "queueDigest": digest(plan["queue"]),
+                        "queue": review_rows(plan["queue"])}
+            if "successorImage" in plan:
+                image = plan["successorImage"]
+                response["imageId"] = image["ci"]["imageId"]
+                response["zipSha256"] = image["ci"]["zipSha256"]
+                response["inventorySha256"] = digest(image["migrations"])
+            return response
         plan = self.record("plan")
         need(plan["intent"] == intent(self.req) and plan["profileSha256"] == digest(self.cfg)
              and self.record("plan.review")["request"]["digest"] == intent(self.req), "PARENT_MANDATE_DRIFT")
@@ -376,11 +393,26 @@ class Cutover:
             accept()
             stage = self.prepare_stage(plan)
             save(self.path / "stage", stage)
+            migration = migration_review(plan, stage)
+            if migration:
+                new = plan["successorImage"]["newMigrations"]
+                return {"digest": migration, "migrationCount": len(new), "migrationsSha256": digest(new),
+                        "imageId": stage["profile"]["image"]}
             return {"digest": stage["issue"]["planSha256"] if stage["issue"] else digest(stage)}
         stage = self.record("stage")
-        need(self.record("apply.review")["request"]["digest"] == stage["parent"] == digest(plan)
-             and self.req["digest"] == (stage["issue"]["planSha256"] if stage["issue"] else digest(stage)),
+        need(self.record("apply.review")["request"]["digest"] == stage["parent"] == digest(plan),
              "APPROVED_ISSUANCE_DRIFT")
+        signing = stage["issue"]["planSha256"] if stage["issue"] else digest(stage)
+        migration = migration_review(plan, stage)
+        if phase == "migrate":
+            need(migration and self.req["digest"] == migration, "APPROVED_MIGRATION_DRIFT")
+            accept()
+            return {"digest": signing}
+        need(phase == "sign" and self.req["digest"] == signing, "APPROVED_ISSUANCE_DRIFT")
+        if migration:
+            need((self.path / "migrate.review").is_file() and
+                 self.record("migrate.review")["request"] == {**self.req, "phase": "migrate", "digest": migration},
+                 "MIGRATION_REVIEW_REQUIRED")
         accept()
         result = self.finish(plan, stage)
         save(self.path / "result", result)

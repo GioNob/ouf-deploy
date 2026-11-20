@@ -34,6 +34,25 @@
     "protocol": "tcp",
     "direction": "semantic-to-southbound"
   },
+  "successorImage": {
+    "ci": {
+      "repository": "<owner>/ouf-semantic-registry",
+      "workflow": "<publisher workflow filename>",
+      "pullRequest": 0,
+      "runId": 0,
+      "runAttempt": 0,
+      "artifactId": 0,
+      "sourceCommit": "<approved PR head SHA>",
+      "sourceTree": "<tested tree SHA>",
+      "manifestSchema": "<publisher schema>",
+      "imageName": "<publisher image name>",
+      "zipSha256": "<GitHub artifact SHA-256>",
+      "imageId": "sha256:<approved target Engine image ID>"
+    },
+    "inbox": "<absolute Semantic ZIP inbox>",
+    "migrationsField": "<publisher field containing the full Flyway inventory>",
+    "predecessorMigrations": ["<copy every entry from the original image inventory>"]
+  },
   "retainedName": "<semantic retained>",
   "failedName": "<semantic returned>",
   "readinessPort": 0,

@@ -27,7 +27,7 @@ def hex64(value):
     return isinstance(value, str) and re.fullmatch("[0-9a-f]{64}", value)
 
 
-PHASES = ("plan", "apply", "sign", "proof")
+PHASES = ("plan", "apply", "sign", "proof", "migrate")
 WORKFLOW = ".github/workflows/semantic-a2-cutover.yml"
 
 
@@ -44,7 +44,7 @@ def validate(req, policy):
     else:
         need(set(req) == common | {"direction", "queue"} and req["phase"] in PHASES
              and req["direction"] in ("forward", "return") and req["queue"] in ("empty", "inventory")
-             and (req["phase"] != "proof" or req["direction"] == "forward"), "REQUEST_FIELDS")
+             and (req["phase"] not in ("proof", "migrate") or req["direction"] == "forward"), "REQUEST_FIELDS")
     need(req["attempt"] == "1"
          and re.fullmatch("[1-9][0-9]{0,19}", req["run"])
          and re.fullmatch("[0-9a-f]{40}", req["commit"]) and req["commit"] == policy["commit"]

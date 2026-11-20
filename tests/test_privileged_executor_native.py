@@ -10,6 +10,7 @@ import unittest
 import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
 sys.path[:0] = [str(ROOT / "tools" / n) for n in
                 ("privileged_executor", "semantic_provider_r3", "semantic_application_cutover")]
 from pipeline import until
@@ -23,6 +24,12 @@ from store import Journal
 @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_A2_NATIVE_ENGINE") == "1", "isolated Engine opt-in")
 class NativeRoundTrip(unittest.TestCase):
     def test_engine_gate_and_return(self):
+        self.round_trip()
+
+    def test_distinct_successor_and_original_image_on_return(self):
+        self.round_trip("ouf-ci-gate:" + "d"*40)
+
+    def round_trip(self, successor_tag=None):
         self.assertEqual(os.geteuid(), 0)
         engine = Engine(os.environ["OUF_A2_FIXTURE_SOCKET"])
         self.assertIn("ouf.a2.fixture=true", engine.call("GET", "info")["Labels"])
@@ -51,13 +58,17 @@ class NativeRoundTrip(unittest.TestCase):
         row = engine.inspect(old)
         original = dict(containerName=name, image=image, configurationSha256=semantic_configuration(row))
         until(lambda: engine.process(old, original, "GATE_WAITING"), 8, "BASELINE_GATE")
-        create, proposed = prepare(row, original)
+        candidate = None
+        if successor_tag:
+            candidate = engine.call("GET", f"images/{successor_tag}/json")["Id"]
+            self.assertNotEqual(candidate, image)
+        create, proposed = prepare(row, original, candidate)
         nets = {name:net}
         engine.detach(old, name+"-saved", nets)
-        cid = engine.create(name, create, image)
+        cid = engine.create(name, create, proposed["image"])
         self.addCleanup(engine.call, "DELETE", f"containers/{cid}?force=1")
         target = allocated_profile(dict(old=old,template=profile_template(row),request=create,target=proposed),cid)
-        engine.start_gate(cid,name,create,image)
+        engine.start_gate(cid,name,create,proposed["image"])
         with tempfile.TemporaryDirectory() as d:
             def release(container, profile):
                 gen = until(lambda: engine.process(container, profile, "GATE_WAITING"), 8, "GATE")
@@ -68,6 +79,7 @@ class NativeRoundTrip(unittest.TestCase):
             engine.detach(cid, name+"-return", nets)
             engine.reconnect(old,name,create["NetworkingConfig"]["EndpointsConfig"],nets)
             create["Env"] = row["Config"]["Env"]
+            create["Image"] = row["Config"]["Image"]
             engine.start_gate(old,name,create,image)
             release(old,original)
 
