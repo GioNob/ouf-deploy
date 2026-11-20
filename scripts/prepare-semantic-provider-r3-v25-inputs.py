@@ -45,9 +45,13 @@ def prepare(args, reader):
         return candidate(reader, index)
     profile = {'path': args.profile, 'sha256': args.profile_sha256}
     S.semantic_profile(C.document(reader.bound(profile)))
+    renewal = {'path': args.lease_renewal, 'sha256': args.lease_renewal_sha256}
+    timing = C.document(reader.bound(renewal))
+    S.semantic_check(set(timing) == set(C.document(reader.bound(index['files']['leaseRenewal']))) |
+                     {'semanticTickBudgetSeconds', 'semanticCloseReserveSeconds', 'semanticFullObservationSeconds'})
     source = {'path': str(I.ROOT / C.SEMANTIC_IDENTITY), 'sha256': args.source_sha256}
     reader.bound(source)
-    return {**index, 'files': {**index['files'], 'semanticProfile': profile},
+    return {**index, 'files': {**index['files'], 'semanticProfile': profile, 'leaseRenewal': renewal},
             'sources': {**index['sources'], C.SEMANTIC_IDENTITY: source}}
 
 
@@ -58,7 +62,7 @@ def main():
     modes = parser.add_subparsers(dest='mode', required=True)
     modes.add_parser('profile')
     inputs = modes.add_parser('inputs')
-    for name in ('profile', 'profile-sha256', 'source-sha256'):
+    for name in ('profile', 'profile-sha256', 'source-sha256', 'lease-renewal', 'lease-renewal-sha256'):
         inputs.add_argument('--' + name, required=True)
     args = parser.parse_args()
     try:

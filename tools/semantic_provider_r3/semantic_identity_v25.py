@@ -1,11 +1,13 @@
 """R3 Semantic declaration, live epoch and the two-family admission transaction."""
 import hashlib
+from contextlib import contextmanager
 import ipaddress
 import json
 import os
 from pathlib import Path
 import re
 import socket
+import signal
 import stat
 import subprocess
 import tempfile
@@ -90,6 +92,8 @@ def semantic_executable(binding):
 
 
 def semantic_command(binding, argv, data=None, *, deadline=None):
+    if deadline is not None:
+        semantic_check(time.monotonic() < deadline, 'R3_SEMANTIC_OBSERVATION_TIMEOUT')
     semantic_executable(binding)
     timeout = 5 if deadline is None else min(5, deadline - time.monotonic())
     semantic_check(timeout > 0, 'R3_SEMANTIC_OBSERVATION_TIMEOUT')
@@ -102,6 +106,8 @@ def semantic_command(binding, argv, data=None, *, deadline=None):
         raw = out.read(1048577)
     semantic_executable(binding)
     semantic_check(result.returncode == 0 and len(raw) <= 1048576, 'R3_SEMANTIC_COMMAND_UNPROVEN')
+    if deadline is not None:
+        semantic_check(time.monotonic() < deadline, 'R3_SEMANTIC_OBSERVATION_TIMEOUT')
     return raw
 
 
@@ -166,6 +172,14 @@ def semantic_observe(p, commands, run=semantic_command, process=semantic_process
                    and owners[0][1]['EndpointID'] == ep['EndpointID']
                    and re.fullmatch('[0-9a-f]{64}', ep['EndpointID']), 'R3_SEMANTIC_GENERATION_AMBIGUOUS')
     gen = process(state['Pid'])
+    binding = semantic_link(p, commands, gen, run, process, check_executable)
+    return {'containerId': cid, 'generation': gen, 'bootId': boot or
+            Path('/proc/sys/kernel/random/boot_id').read_text().strip(), 'endpointId': ep['EndpointID'],
+            'startedAt': state['StartedAt'], 'binding': binding, 'profileSha256': semantic_digest(p)}, row
+
+
+def semantic_link(p, commands, gen, run, process=semantic_process, check_executable=semantic_executable):
+    semantic_check(process(gen['pid']) == gen, 'R3_SEMANTIC_EPOCH_CHANGED')
     ip = commands['ip']
     check_executable(ip)
     children = json.loads(run(commands['nsenter'], ['--net=/proc/%d/ns/net' % gen['pid'],
@@ -180,12 +194,9 @@ def semantic_observe(p, commands, run=semantic_command, process=semantic_process
     host, = json.loads(run(ip, ['-j', '-d', 'link', 'show', 'dev', name]))
     semantic_check(host['linkinfo']['info_kind'] == child['linkinfo']['info_kind'] == 'veth'
                    and host['ifname'] == name and host['ifindex'] == index and host['link_index'] == child['ifindex']
-                   and host['master'] == p['bridge'] and process(state['Pid']) == gen)
-    return {'containerId': cid, 'generation': gen, 'bootId': boot or
-            Path('/proc/sys/kernel/random/boot_id').read_text().strip(), 'endpointId': ep['EndpointID'],
-            'startedAt': state['StartedAt'], 'binding': {'bridge': p['bridge'], 'ipv4': p['ipv4'],
-            'hostIfindex': index, 'childIfindex': child['ifindex'], 'hostInterface': host['ifname']},
-            'profileSha256': semantic_digest(p)}, row
+                   and host['master'] == p['bridge'] and process(gen['pid']) == gen)
+    return {'bridge': p['bridge'], 'ipv4': p['ipv4'], 'hostIfindex': index,
+            'childIfindex': child['ifindex'], 'hostInterface': host['ifname']}
 
 
 class SemanticGate:
@@ -195,6 +206,7 @@ class SemanticGate:
         self.table, self.profile, self.nft, self.observe = table, semantic_profile(profile), nft, observe
         self.epoch = None
         self.last_verified = None
+        self.refresh_at = 0
 
     def write(self, port=None, enabled=False):
         lines = []
@@ -227,6 +239,10 @@ class SemanticGate:
                     key = family, name
                     semantic_check(key not in values and obj['family'] == family and obj['table'] == self.table)
                     values[key] = obj.pop('elem', [])
+                    if name == 'semantic_open':
+                        semantic_check(not obj.get('flags') and 'timeout' not in obj
+                                       and values[key] in ([], [self.profile['ipv4']]),
+                                       'R3_SEMANTIC_TABLE_DRIFT')
                 rows.append(entry)
             tables[family] = {'nftables': rows}
         def clean(value):
@@ -245,95 +261,188 @@ class SemanticGate:
         self.epoch = None
         self.write()
 
-    def reconcile(self, footprint):
-        try:
-            first = self.observe()
-            port = first['binding']['hostIfindex']
-            if self.last_verified and self.last_verified != first and self.last_verified['bootId'] == first['bootId']:
-                semantic_check(port > self.last_verified['binding']['hostIfindex'], 'R3_NONMONOTONE_PORT')
-            addr = [self.profile['ipv4']]
-            opened = ([port], addr, addr)
-            if self.epoch == first and self.read(footprint) == opened:
-                semantic_check(self.observe() == first)
-                return first
+    def reconcile(self, footprint, *, link, refresh, clock):
+        # The lock owner provides a separate deadline for recovery on any error.
+        addr = [self.profile['ipv4']]
+        closed = False
+        if self.epoch is not None and clock() < self.refresh_at:
+            old = self.epoch
+            port = old['binding']['hostIfindex']
+            try:
+                unchanged = link(old) == old['binding']
+            except (ValueError, OSError):
+                unchanged = False
+            if unchanged and self.read(footprint) == ([port], addr, addr):
+                semantic_check(link(old) == old['binding'], 'R3_SEMANTIC_EPOCH_CHANGED')
+                return old
             self.close()
             semantic_check(self.read(footprint) == ([], [], []))
-            semantic_check(self.observe() == first, 'R3_SEMANTIC_EPOCH_CHANGED')
+            closed = True
+        first = self.observe()
+        port = first['binding']['hostIfindex']
+        if self.last_verified and self.last_verified != first and self.last_verified['bootId'] == first['bootId']:
+            semantic_check(port > self.last_verified['binding']['hostIfindex'], 'R3_NONMONOTONE_PORT')
+        restage = self.epoch != first or self.read(footprint) != ([port], addr, addr)
+        if restage and not closed:
+            self.close()
+            semantic_check(self.read(footprint) == ([], [], []))
+        semantic_check(self.observe() == first, 'R3_SEMANTIC_EPOCH_CHANGED')
+        if restage:
             self.write(port)
             semantic_check(self.read(footprint) == ([port], [], []) and self.observe() == first)
             self.write(port, True)
-            semantic_check(self.read(footprint) == ([port], addr, addr) and self.observe() == first)
-            self.epoch = first
-            self.last_verified = first
-            return first
-        except Exception:
-            self.close()
-            raise
+        semantic_check(self.read(footprint) == ([port], addr, addr) and self.observe() == first)
+        self.epoch = self.last_verified = first
+        self.refresh_at = clock() + refresh
+        return first
 
 
-def bind_semantic_gate(cfg, coordinator, guards, read_file):
+class SemanticDeadline(BaseException):
+    """Cross nested guards that translate ordinary exceptions into scope failures."""
+
+
+@contextmanager
+def semantic_phase(end, clock):
+    # The Linux supervisor runs on the main thread and owns ITIMER_REAL.
+    # This also bounds signed journal/authority reads which have no timeout API.
+    def expired(*_):
+        raise SemanticDeadline()
+    remaining = end - clock()
+    if remaining <= 0:
+        expired()
+    previous = signal.signal(signal.SIGALRM, expired)
+    try:
+        remaining = end - clock()
+        if remaining <= 0:
+            expired()
+        signal.setitimer(signal.ITIMER_REAL, remaining)
+        yield
+        if clock() >= end:
+            expired()
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous)
+
+
+def bind_semantic_gate(cfg, coordinator, guards, read_file, *, phase=semantic_phase, link_observer=semantic_link):
     ingress = cfg['semanticIngress']
+    renewal = cfg['leaseRenewal']
+    budget = renewal['semanticTickBudgetSeconds']
+    reserve = renewal['semanticCloseReserveSeconds']
+    cadence = renewal['semanticFullObservationSeconds']
+    clock = time.monotonic
     deadline = None
     def inspect(binding, argv):
         return semantic_command(binding, argv, deadline=deadline)
     def nft(argv, data=None):
-        return semantic_command(cfg['coordinator']['nftBinding'], argv, data)
+        return semantic_command(cfg['coordinator']['nftBinding'], argv, data, deadline=deadline)
     gate = SemanticGate(ingress['table'], ingress['profile'], nft,
                         lambda: semantic_observe(ingress['profile'], ingress['commands'], inspect)[0])
-    coordinator.semantic_epoch = lambda: semantic_digest(gate.epoch) if gate.epoch else None
+    def link(epoch):
+        return link_observer(gate.profile, ingress['commands'], epoch['generation'], inspect)
+    verified_at = None
+    coordinator.semantic_epoch = lambda: semantic_digest(gate.epoch) if gate.epoch is not None else None
+    coordinator.semantic_verified_age_ms = lambda: None if verified_at is None else int((clock() - verified_at) * 1000)
+    coordinator.semantic_result = None
 
-    def close_locked():
+    def close_locked(*, quiescing=False):
         gate.epoch = None
-        tables = json.loads(nft(['-j', 'list', 'tables']))['nftables']
-        present = {r['table']['family'] for r in tables if 'table' in r
-                   and r['table']['name'] == ingress['table']} & {'bridge', 'inet'}
-        if present:
+        if quiescing:
+            tables = json.loads(nft(['-j', 'list', 'tables']))['nftables']
+            present = {r['table']['family'] for r in tables if 'table' in r
+                       and r['table']['name'] == ingress['table']} & {'bridge', 'inet'}
+            if not present:
+                return  # Both role tables may be absent during service startup.
             semantic_check(present == {'bridge', 'inet'}, 'PARTIAL_TABLE_PAIR')
-            gate.close()
-            for family in present:
-                rows = json.loads(nft(['-j', 'list', 'set', family, gate.table, 'semantic_open']))['nftables']
-                obj, = [v['set'] for v in rows if 'set' in v]
-                semantic_check(obj['family'] == family and obj['table'] == gate.table
-                               and obj['name'] == 'semantic_open' and not obj.get('elem'))
+        gate.close()
+        for family, name in (('bridge', 'semantic_port'), ('bridge', 'semantic_open'), ('inet', 'semantic_open')):
+            rows = json.loads(nft(['-j', 'list', 'set', family, gate.table, name]))['nftables']
+            obj, = [v['set'] for v in rows if 'set' in v]
+            semantic_check(obj['family'] == family and obj['table'] == gate.table
+                           and obj['name'] == name and not obj.get('elem'))
 
     # The owner has already revoked its finite lease when it publishes QUIESCED.
     # Close the role tables under that same lock before acknowledging quiescence.
     publish = coordinator.publish
     def publish_with_ingress(previous, following):
         if following['state'] == 'QUIESCED':
-            close_locked()
+            close_locked(quiescing=True)
         return publish(previous, following)
     coordinator.publish = publish_with_ingress
 
-    def tick_ingress():
-        nonlocal deadline
-        with coordinator.hold_lock():
-            try:
-                lease = coordinator.journal()
-                if lease['state'] != 'LEASE_READY' or lease['leaseAuthorized'] is not True:
-                    close_locked()
+    def check_time():
+        if clock() >= deadline:
+            raise SemanticDeadline()
+
+    def driver_footprint():
+        check_time()
+        snap = guards.scope_guard()['southbound']
+        cid = ingress['containerId']
+        semantic_check(snap['containerId'] == cid)
+        check_time()
+        row = guards.current(cfg['registryRoot'], cid)
+        semantic_check(row['epoch'] == snap['epoch'] and row['generation'] == snap['generation']
+                       and row['state'] == 'STARTED' and re.fullmatch('[0-9a-f]{64}', row['driverHash']))
+        path = Path(cfg['registryRoot']) / cid / 'epochs' / str(row['epoch']) / 'driver.json'
+        check_time()
+        profile = json.loads(read_file(path, row['driverHash']))['profile']
+        matches = [f['peerIngress']['declaration'] for f in profile['policy']['flows']
+                   if f['peerIngress']['kind'] == 'SEMANTIC_PROFILE']
+        semantic_check(profile['policy']['tableName'] == gate.table and matches == [gate.profile])
+        return profile['expectedFootprint']
+
+    def tick_ingress(wake, lease_end, expected):
+        nonlocal deadline, verified_at
+        started = clock()
+        ordinary_end = started + budget
+        outcome = 'DEFERRED'
+        acquired = False
+        try:
+            if lease_end is None or min(wake, lease_end) < started + coordinator.semantic_horizon:
+                return
+            with coordinator.hold_until(ordinary_end):
+                acquired = True
+                footprint = None
+                try:
+                    deadline = ordinary_end
+                    with phase(deadline, clock):
+                        lease = coordinator.journal()
+                        semantic_check(lease == expected and lease['state'] == 'LEASE_READY'
+                                       and lease['leaseAuthorized'] is True)
+                        footprint = driver_footprint()
+                        check_time()
+                        gate.reconcile(footprint, link=link, refresh=cadence, clock=clock)
+                    verified_at = clock()
+                    outcome = 'VERIFIED'
                     return
-                snap = guards.scope_guard()['southbound']
-                cid = ingress['containerId']
-                semantic_check(snap['containerId'] == cid)
-                row = guards.current(cfg['registryRoot'], cid)
-                semantic_check(row['epoch'] == snap['epoch'] and row['generation'] == snap['generation']
-                               and row['state'] == 'STARTED' and re.fullmatch('[0-9a-f]{64}', row['driverHash']))
-                path = Path(cfg['registryRoot']) / cid / 'epochs' / str(row['epoch']) / 'driver.json'
-                driver = json.loads(read_file(path, row['driverHash']))
-                profile = driver['profile']
-                matches = [f['peerIngress']['declaration'] for f in profile['policy']['flows']
-                           if f['peerIngress']['kind'] == 'SEMANTIC_PROFILE']
-                semantic_check(profile['policy']['tableName'] == gate.table and matches == [gate.profile])
-            except Exception:
-                gate.close()
-                raise
-            try:
-                deadline = time.monotonic() + cfg['driverBudgetSeconds']
-                gate.reconcile(profile['expectedFootprint'])
-            except Exception:
-                # A transient missing peer keeps only this ingress closed. A
-                # failed close or structural drift must terminate the scope.
-                semantic_check(gate.read(profile['expectedFootprint']) == ([], [], []))
+                except (SemanticDeadline, Exception) as error:
+                    gate.epoch = None
+                    timeout = isinstance(error, SemanticDeadline) or clock() >= ordinary_end
+                    fatal = footprint is None and not timeout
+                    if str(error) == 'R3_SEMANTIC_TABLE_DRIFT':
+                        fatal = True
+                    deadline = min(clock(), ordinary_end) + reserve
+                    try:
+                        with phase(deadline, clock):
+                            if footprint is None:
+                                close_locked()
+                            else:
+                                gate.close()
+                                semantic_check(gate.read(footprint) == ([], [], []))
+                    except (SemanticDeadline, Exception):
+                        outcome = 'R3_SEMANTIC_CLOSE_UNVERIFIED'
+                    else:
+                        outcome = 'CLOSED'
+                        if fatal:
+                            raise
+            if outcome == 'R3_SEMANTIC_CLOSE_UNVERIFIED':
+                guards.deny(outcome, outcome)
+        except Exception as error:
+            if not acquired and getattr(error, 'code', None) == 'COMMON_LOCK_TIMEOUT':
+                return
+            raise
+        finally:
+            deadline = None
+            coordinator.semantic_result = {'outcome': outcome, 'durationMs': int((clock() - started) * 1000)}
 
     coordinator.semantic_tick = tick_ingress

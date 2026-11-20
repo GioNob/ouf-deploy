@@ -8,6 +8,8 @@ def sources_v25(sources, mapping, identity):
     supervisor = 'tools/semantic_provider_operation/lease_supervisor.py'
     faces = 'tools/materialize_semantic_shared_faces.py'
     continuous = 'tools/semantic_lease_recovery/continuous_supervisor.py'
+    recovery = 'tools/semantic_lease_recovery/'
+    policy = recovery + 'lease_renewal_v18.py'
 
     def edit(target, old, new):
         path = mapping[target]
@@ -73,10 +75,85 @@ def sources_v25(sources, mapping, identity):
         verify_identity_flows(candidate["transport"], NodeObservation({}, self.budget).run)''')
     edit(supervisor, '"leaseRenewal", "driverBudgetSeconds"}',
          '"leaseRenewal", "driverBudgetSeconds", "semanticIngress"}')
-    edit(supervisor, '    def factory(guards):', '    bind_semantic_gate(cfg, coordinator, guards, read_file)\n\n    def factory(guards):')
+    edit(policy, 'def validate(value):', '''def semantic_horizon(value):
+    return value["semanticTickBudgetSeconds"] + value["semanticCloseReserveSeconds"] + 0.05
+
+
+def validate(value):''')
+    edit(policy, '"dnsTimeoutSeconds", "immediateMinimumSeconds",',
+         '"semanticTickBudgetSeconds", "semanticCloseReserveSeconds", "semanticFullObservationSeconds",\n'
+         '            "dnsTimeoutSeconds", "immediateMinimumSeconds",')
+    edit(policy, 'if not (integer(value["dnsTimeoutSeconds"],', '''if not (type(value["semanticTickBudgetSeconds"]) in (int, float)
+            and 0.70 <= value["semanticTickBudgetSeconds"] <= 3
+            and type(value["semanticCloseReserveSeconds"]) in (int, float)
+            and 0.2 <= value["semanticCloseReserveSeconds"] <= 0.75
+            and integer(value["semanticFullObservationSeconds"], 5, 60)
+            and integer(value["dnsTimeoutSeconds"],''')
+    edit(policy, 'required + 2 <= minimum < margin',
+         'required + 2 <= minimum and minimum + semantic_horizon(value) <= margin\n'
+         '            and semantic_horizon(value) <= cap')
+    edit(policy, 'def retry_reserve(profile):', '''def semantic_schedule(value, limits):
+    if semantic_horizon(value) >= min(limits["heartbeatSeconds"], limits["pollSeconds"]):
+        raise ValueError(INCOMPATIBLE)
+
+
+def retry_reserve(profile):''')
+    edit(supervisor, '        policy.budgets(renewal,',
+         '        policy.semantic_schedule(renewal, cfg["limits"])\n        policy.budgets(renewal,')
+    edit(supervisor, '    def factory(guards):',
+         '    coordinator.semantic_horizon = policy.semantic_horizon(renewal)\n'
+         '    bind_semantic_gate(cfg, coordinator, guards, read_file)\n\n    def factory(guards):')
     edit(supervisor, '                 "updatedAt": int(self.clock())}',
-         '                 "semanticEpoch": self.c.semantic_epoch(),\n                 "updatedAt": int(self.clock())}')
-    edit(continuous, '    def tick(self):\n', '    def tick(self):\n        self.c.semantic_tick()\n')
-    edit(continuous, '    def inspect_cache(self, row):\n',
-         '    def inspect_cache(self, row):\n        self.c.semantic_tick()\n')
+         '                 "semanticEpoch": self.c.semantic_epoch(), "lastSemanticTick": self.c.semantic_result,\n'
+         '                 "lastSemanticVerifiedAgeMs": self.c.semantic_verified_age_ms(),\n'
+         '                 "updatedAt": int(self.clock())}')
+    edit(supervisor, '                    "recoveryScope": self.recovery_scope,',
+         '                    "lastSemanticTick": self.c.semantic_result,\n'
+         '                    "lastSemanticVerifiedAgeMs": self.c.semantic_verified_age_ms(),\n'
+         '                    "recoveryScope": self.recovery_scope,')
+    edit(supervisor, 'allowed = {"COMMON_LOCK_TIMEOUT",',
+         'allowed = {"R3_SEMANTIC_CLOSE_UNVERIFIED", "COMMON_LOCK_TIMEOUT",')
+    journal = recovery + 'recovery_journal.py'
+    edit(recovery + 'bounded_recovery.py', "PERMANENT = {'AUTHORITY_REVOKED',",
+         "PERMANENT = {'R3_SEMANTIC_CLOSE_UNVERIFIED', 'AUTHORITY_REVOKED',")
+    edit(journal, "    'DNS_UNAVAILABLE', 'DNS_WINDOW_TOO_SHORT',",
+         "    'R3_SEMANTIC_CLOSE_UNVERIFIED', 'DNS_UNAVAILABLE', 'DNS_WINDOW_TOO_SHORT',")
+    edit(journal, "    incident = row.get('lastIncident')", """    age = row.get('lastSemanticVerifiedAgeMs')
+    require(age is None or type(age) is int and 0 <= age < 2**63, 'RECOVERY_SEMANTIC_TICK_INVALID')
+    tick = row.get('lastSemanticTick')
+    if tick is not None:
+        require(type(tick) is dict and set(tick) == {'outcome', 'durationMs'}
+                and tick['outcome'] in ('VERIFIED', 'DEFERRED', 'CLOSED', 'R3_SEMANTIC_CLOSE_UNVERIFIED')
+                and type(tick['durationMs']) is int and 0 <= tick['durationMs'] < 2**63,
+                'RECOVERY_SEMANTIC_TICK_INVALID')
+    incident = row.get('lastIncident')""")
+    recovery_budget = recovery + 'lease_recovery_budget.py'
+    edit(recovery_budget, "return {**super().initial(), 'lastIncident': None}",
+         "return {**super().initial(), 'lastIncident': None, 'lastSemanticTick': self.adapter.c.semantic_result,\n"
+         "                'lastSemanticVerifiedAgeMs': self.adapter.c.semantic_verified_age_ms()}")
+    edit(recovery_budget, "        values['lastIncident'] = incident.project",
+         "        values['lastSemanticTick'] = adapter.c.semantic_result\n"
+         "        values['lastSemanticVerifiedAgeMs'] = adapter.c.semantic_verified_age_ms()\n"
+         "        values['lastIncident'] = incident.project")
+    edit(recovery + 'adaptive_supervisor.py', "'remainingSecondsLowerBound': remaining, 'bounds': bounds}",
+         "'remainingSecondsLowerBound': remaining, 'bounds': bounds, 'sampledMonotonic': deadline - remaining}")
+    edit(continuous, "            self.r.adapter.incident.timing.event('plan', wait)",
+         """            wake = schedule['sampledMonotonic'] + wait
+            self.c.semantic_tick(wake, schedule['deadlineMonotonic'], schedule['journal'])
+            wait = max(0, wake - self.r.now()[1])
+            self.r.adapter.incident.timing.event('plan', wait)""")
+    edit(continuous, "            return {**row, 'waitSeconds': wait,",
+         "            return {**row, 'waitSeconds': wait, 'wakeMonotonic': wake,")
+    edit(continuous, "        if now >= adapter.cache_due:", """        if now >= adapter.cache_due:
+            self.c.semantic_tick(adapter.cache_due, end, journal)""")
+    edit(continuous, "        return {**value, 'waitSeconds': min(self.heartbeat, remaining, wake - now), 'cacheWaitOnly': True}",
+         """        wake = min(wake, now + self.heartbeat, now + remaining)
+        self.c.semantic_tick(wake, end, journal)
+        return {**value, 'waitSeconds': max(0, wake - adapter.clock()), 'wakeMonotonic': wake, 'cacheWaitOnly': True}""")
+    edit(continuous, "                if self.r.adapter.incident.timing.wait(stop, row.get('waitSeconds', self.r.wait_seconds(row, self.heartbeat))):",
+         """                if 'wakeMonotonic' in row:
+                    delay = max(0, row['wakeMonotonic'] - self.r.now()[1])
+                else:
+                    delay = row.get('waitSeconds', self.r.wait_seconds(row, self.heartbeat))
+                if self.r.adapter.incident.timing.wait(stop, delay):""")
     return out

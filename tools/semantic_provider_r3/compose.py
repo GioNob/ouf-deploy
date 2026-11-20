@@ -475,6 +475,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     if version >= 18:
         try:
             renewal.budgets(data["leaseRenewal"], dns_profile, owner["kernel"]["providerFlows"], driver_budget)
+            if version >= 25:
+                renewal.semantic_schedule(data["leaseRenewal"], s["supervisorLimits"])
         except ValueError as error:
             raise A.OperationDenied(str(error)) from None
     rows, policies, templates = {}, {}, {}
