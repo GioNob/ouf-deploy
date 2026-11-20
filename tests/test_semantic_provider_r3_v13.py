@@ -47,11 +47,12 @@ def network(peer):
             'Options': {'com.docker.network.bridge.name': peer['bridge']}}
 
 
-def load_modules(result):
+def load_modules(result, version=13):
     """Load the real closed broker source package in its real dependency order."""
-    cfg = C.document(result['documents']['versions/13/broker/southbound.json'])
+    prefix = f'versions/{version}/'
+    cfg = C.document(result['documents'][prefix + 'broker/southbound.json'])
     config_path = '/broker/config.json'
-    disk = {cfg['sourceRoot'] + '/' + p: result['documents']['versions/13/source/' + p]
+    disk = {cfg['sourceRoot'] + '/' + p: result['documents'][prefix + 'source/' + p]
             for p in cfg['sourceHashes']}
     disk[config_path] = C.canonical(cfg)
     class PrivateRoot(PurePosixPath):
@@ -62,9 +63,10 @@ def load_modules(result):
         C.B.load(config_path)
 
 
-def backend_policy(result, own_ifindex=11, semantic_ifindex=12, interface='v-southbound', bridge='br-backend'):
+def backend_policy(result, own_ifindex=11, semantic_ifindex=12, interface='v-southbound', bridge='br-backend',
+                   version=13):
     """Actual composed backend face; the other faces remain in the role table."""
-    t = C.document(result['documents']['versions/13/documents/southbound/transport.json'])
+    t = C.document(result['documents'][f'versions/{version}/documents/southbound/transport.json'])
     attachments = []
     for i, nic in enumerate(t['networkBindings']):
         a = {k: nic[k] for k in ('bridge', 'mac', 'ipv4', 'workloadRef', 'bindingRef')}
@@ -78,7 +80,8 @@ def backend_policy(result, own_ifindex=11, semantic_ifindex=12, interface='v-sou
         if f['peerIngress']['kind'] == 'CREATED_CANDIDATE':
             f['peerIngress'] = {'kind': 'BRIDGE_PORT', 'ifindex': 2000}
         elif f['peerIngress']['kind'] == 'BRIDGE_PORT':
-            f['peerIngress']['ifindex'] = semantic_ifindex
+            if semantic_ifindex is not None:
+                f['peerIngress']['ifindex'] = semantic_ifindex
         else:
             f['peerIngress']['declaration']['bridge'] = bridge
     guarded = [n for n in t['networkBindings'] if 'leaseGuard' in n]

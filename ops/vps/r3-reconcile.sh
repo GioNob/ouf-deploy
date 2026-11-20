@@ -12,7 +12,7 @@ case "${1:-}" in
 esac
 
 # Fissare al commit della consegna dopo review.
-C=2d2b63d92d692f09987f95b3aabf3d1cf37a0f96
+C=396b79c59a52f8692ba3d7940097c2a63044c62d
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] || {
   echo 'runbook non ancora fissato a un commit' >&2; exit 2;
 }

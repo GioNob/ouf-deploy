@@ -160,6 +160,10 @@ def observe(args, *, output_exists=False, deadline=None):
     heads = [runtime.authorization_head(cfg, raw, cid, auth) for cid in sorted(cfg["candidates"])]
     require(heads[0] == heads[1], "R3_AUTHORIZATION_CHANGED_DURING_OBSERVATION")
     head = heads[0]
+    if (getattr(args, 'action', None) in {'start', 'restart-one'}
+            and C.composition_version(head['sequence'], head['authorization']) >= 25):
+        from .semantic_identity_v25 import semantic_kernel
+        semantic_kernel()
     authorization = {k: head[k] for k in ("sha256", "sequence", "decision")}
     boot = epochs.boot_id()
 
@@ -198,6 +202,12 @@ def observe(args, *, output_exists=False, deadline=None):
             "denials": broker_denials(runtime, cfg["registryRoot"], cid, row["epoch"] if row else None)}
 
     sup = C.document(runtime.bound_bytes(cfg["leaseQuiesce"]["configuration"]))
+    if code_root != root and int(code_root.name) >= 25 and getattr(args, 'action', None) in {'start', 'restart-one'}:
+        from .semantic_identity_v25 import semantic_observe
+        spec = sup['semanticIngress']
+        first, _ = semantic_observe(spec['profile'], spec['commands'])
+        second, _ = semantic_observe(spec['profile'], spec['commands'])
+        require(first == second, 'R3_SEMANTIC_EPOCH_CHANGED')
     require(sup["registryRoot"] == cfg["registryRoot"]
             and sup["authorizationRoot"] == cfg["operation"]["authorizationRoot"], "R3_SUPERVISOR_ROOT_DRIFT")
     properties = command(args.systemctl, args.systemctl_sha256,
@@ -219,6 +229,11 @@ def observe(args, *, output_exists=False, deadline=None):
     public_code(status["reason"], "R3_SUPERVISOR_REASON_INVALID")
     supervisor = {"unit": fields, **{k: status[k] for k in
                   ("state", "reason", "epochs", "activationsLastHour", "authorizationSequence")}}
+    if code_root != root and int(code_root.name) >= 25:
+        epoch = status.get('semanticEpoch')
+        require(epoch is None or type(epoch) is str and re.fullmatch('[0-9a-f]{64}', epoch),
+                'R3_SUPERVISOR_STATUS_INVALID')
+        supervisor['semanticEpoch'] = epoch
     journal = C.document(S.custody(sup["coordinator"]["journalPath"], 0o600)[0])
     public_code(journal["state"], "R3_LEASE_STATE_INVALID")
     require(type(journal["leaseAuthorized"]) is bool, "R3_LEASE_STATE_INVALID")
@@ -279,6 +294,7 @@ def service_active(observation):
 def active(observation):
     sup = observation["supervisor"]
     return (service_active(observation) and sup["state"] == "ACTIVE"
+            and ('semanticEpoch' not in sup or sup['semanticEpoch'] is not None)
             and sup["authorizationSequence"] == observation["authorization"]["sequence"]
             and sup["epochs"] == {r: observation["candidates"][r]["epoch"]["epoch"] for r in ROLES})
 

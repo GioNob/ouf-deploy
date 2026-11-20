@@ -95,6 +95,9 @@ SOURCE_MAP_V23 = dict(SOURCE_MAP_V22)
 SOURCE_INPUTS_V23 = frozenset(SOURCE_MAP_V23.values()) | {KERNEL_V1}
 SOURCE_MAP_V24 = dict(SOURCE_MAP_V23)
 SOURCE_INPUTS_V24 = frozenset(SOURCE_MAP_V24.values()) | {KERNEL_V1}
+SEMANTIC_IDENTITY = 'tools/semantic_provider_r3/semantic_identity_v25.py'
+SOURCE_MAP_V25 = {**SOURCE_MAP_V24, SEMANTIC_IDENTITY: SEMANTIC_IDENTITY}
+SOURCE_INPUTS_V25 = frozenset(SOURCE_MAP_V25.values()) | {KERNEL_V1}
 SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
     'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
 
@@ -114,10 +117,21 @@ DATA_INPUTS_V21 = set(DATA_INPUTS_V20)
 DATA_INPUTS_V22 = set(DATA_INPUTS_V21)  # New version of the leaseRenewal document.
 DATA_INPUTS_V23 = set(DATA_INPUTS_V22)
 DATA_INPUTS_V24 = set(DATA_INPUTS_V23)
+DATA_INPUTS_V25 = DATA_INPUTS_V24 | {'semanticProfile'}
 SETTINGS = {"installRoot", "issuedAt", "installationRef", "entityRef", "issuerRef", "anchorBinding",
             "mandateRoot", "opensslBinding", "coordinatorBinding", "tableNames", "runtimeBinding",
             "runtimeRootParent", "rootfsLimits", "supervisorLimits"}
 require, canonical, sha = A.require, A.canonical, A.sha
+CURRENT_COMPOSITION_VERSION = 27
+
+
+def composition_version(version, fields):
+    if "compositionCeiling" not in fields:
+        return version
+    ceiling = fields["compositionCeiling"]
+    require(type(ceiling) is int and 24 <= ceiling <= min(version, CURRENT_COMPOSITION_VERSION),
+            "R3_COMPOSITION_CEILING_INVALID")
+    return ceiling
 
 
 def input_set(files, sources):
@@ -129,7 +143,8 @@ def input_set(files, sources):
             (set(files) == DATA_INPUTS_V15 and set(sources) == SOURCE_INPUTS_V15) or
             (set(files) == DATA_INPUTS_V16 and set(sources) == SOURCE_INPUTS_V16) or
             (set(files) == DATA_INPUTS_V17 and set(sources) == SOURCE_INPUTS_V17) or
-            (set(files) == DATA_INPUTS_V18 and set(sources) == SOURCE_INPUTS_V18))
+            (set(files) == DATA_INPUTS_V18 and set(sources) == SOURCE_INPUTS_V18) or
+            (set(files) == DATA_INPUTS_V25 and set(sources) == SOURCE_INPUTS_V25))
 
 
 def migration_bindings(files):
@@ -293,6 +308,13 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     inputs = {"files": {logical name: bytes}, "sources": {repository path: bytes}}.
     The caller authenticates custody and expected input hashes before calling.
     """
+    result = _compose_candidate(inputs, version, sequence=sequence, supersedes=supersedes)
+    A.validate(result["authorization"])
+    return result
+
+
+def _compose_candidate(inputs, version, *, sequence, supersedes):
+    """Build the candidate bytes. Only compose() validates the authorization for issuance."""
     require(type(version) is int and version >= 1, "R3_VERSION_REQUIRED")
     if version == 1:
         require(sequence in (None, 1) and supersedes is None, "R3_VERSION_ONE_CHAIN_REQUIRED")
@@ -302,9 +324,20 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
+    version_prefix = "" if version == 1 else "versions/" + str(version) + "/"
+    require("settings" in files, "EXACT_R3_INPUT_SET_REQUIRED")
+    s = document(files["settings"])
+    require(s.keys() - {"compositionCeiling"} == SETTINGS, "EXACT_R3_SETTINGS_REQUIRED")
+    ceiling_field = {}
+    if "compositionCeiling" in s:
+        require(sequence == version, "R3_COMPOSITION_SEQUENCE_MISMATCH")
+        ceiling_field["compositionCeiling"] = s["compositionCeiling"]
+        version = composition_version(version, s)
     if version >= 17:
         from . import driver_budget_v17
-    if version >= 24:
+    if version >= 25:
+        selected_map, selected_inputs, selected_data = SOURCE_MAP_V25, SOURCE_INPUTS_V25, DATA_INPUTS_V25
+    elif version >= 24:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V24, SOURCE_INPUTS_V24, DATA_INPUTS_V24
     elif version >= 23:
         selected_map, selected_inputs, selected_data = SOURCE_MAP_V23, SOURCE_INPUTS_V23, DATA_INPUTS_V23
@@ -339,15 +372,14 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         driver_budget = driver_budget_v17.seconds(document(files['driverBudget'], driver_budget_v17.INVALID))
     data = {k: document(v, "RECIPE_POLICY_NOT_CANONICAL_PLUS_LF" if k.endswith("/policy")
                         else "R3_LEASE_RENEWAL_INVALID" if version >= 18 and k == "leaseRenewal"
-                        else "INPUT_NOT_CANONICAL_PLUS_LF") for k, v in files.items() if k != 'driverBudget'}
+                        else "INPUT_NOT_CANONICAL_PLUS_LF") for k, v in files.items()
+            if k not in ('driverBudget', 'settings')}
+    data["settings"] = s
     for role in ROLES:
         require(files[role + "/policy"] == canonical(data[role + "/policy"]) + b"\n",
                 "RECIPE_POLICY_NOT_CANONICAL_PLUS_LF")
-    s = data["settings"]
-    require(set(s) == SETTINGS, "EXACT_R3_SETTINGS_REQUIRED")
     root = s["installRoot"]
     require(B.absolute(root) and root != "/", "EXPLICIT_INSTALL_ROOT_REQUIRED")
-    version_prefix = "" if version == 1 else "versions/" + str(version) + "/"
     code_root = root + ("/" + version_prefix[:-1] if version_prefix else "")
     for k in ("runtimeBinding", "anchorBinding", "coordinatorBinding"):
         require(B.binding(s[k]), "EXACT_R3_BINDING_REQUIRED")
@@ -435,6 +467,12 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         if version >= 24:
             from .cache_watch_overlay_v24 import sources_v24
             emitted = sources_v24(emitted, selected_map)
+        if version >= 25:
+            from .semantic_overlay_v25 import sources_v25
+            emitted = sources_v25(emitted, selected_map, SEMANTIC_IDENTITY)
+        if version >= 27:
+            from .ingress_memo_overlay_v27 import sources_v27
+            emitted = sources_v27(emitted, selected_map)
         emitted, hashes = seal_v18(sources, emitted, source_map, RECOVERY, sha)
     else:
         hashes = {target: sha(emitted[original]) for target, original in source_map.items()}
@@ -465,6 +503,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     if version >= 18:
         try:
             renewal.budgets(data["leaseRenewal"], dns_profile, owner["kernel"]["providerFlows"], driver_budget)
+            if version >= 25:
+                renewal.semantic_schedule(data["leaseRenewal"], s["supervisorLimits"])
         except ValueError as error:
             raise A.OperationDenied(str(error)) from None
     rows, policies, templates = {}, {}, {}
@@ -560,6 +600,16 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                         and type(p["ifindex"]) is int and p["ifindex"] > 1
                         and p["ifindex"] == data["semanticPeer"]["binding"]["hostIfindex"], "A2_INGRESS_DRIFT")
                 flow["peerIngress"] = {"kind": "BRIDGE_PORT", "ifindex": p["ifindex"]}
+                if version >= 25:
+                    stable = contract_module(sources[SEMANTIC_IDENTITY], 'semantic_v25')
+                    profile = stable.semantic_profile(data['semanticProfile'])
+                    backend = data['identityProviderPeer']['southbound']
+                    require(all(profile[k] == backend[k] for k in ('network', 'networkId', 'bridge'))
+                            and (profile['ipv4'], profile['destination'], profile['protocol'], profile['port'])
+                            == (flow['source'], flow['destination'], flow['protocol'], flow['port'])
+                            and backend['ipv4'] == flow['destination'] and flow['purpose'] == 'WORKLOAD_GATEWAY',
+                            'R3_SEMANTIC_FLOW_DRIFT')
+                    flow['peerIngress'] = {'kind': 'SEMANTIC_PROFILE', 'declaration': profile}
                 ingress += 1
         require(sibling == 1 and ingress == (role == "southbound"), "EXACT_TRANSPORT_FLOW_COUNT_REQUIRED")
         peers.declaration({"containerId": candidate["containerId"], "networkBindings": candidate["networkBindings"],
@@ -618,6 +668,15 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         supervisor.update(schema=renewal.SCHEMA, leaseRenewal=data["leaseRenewal"],
                           driverBudgetSeconds=driver_budget)
         supervisor["sourceHashes"][LEASE_RENEWAL_TARGET] = hashes[LEASE_RENEWAL_TARGET]
+    if version >= 25:
+        idp = data['identityProviderPeer']['peer']
+        template = templates['southbound']
+        supervisor['semanticIngress'] = {
+            'profile': profile, 'containerId': rows['southbound']['containerId'],
+            'table': s['tableNames']['southbound'], 'commands': {
+                'docker': idp['dockerBinding'], 'socket': idp['dockerSocket'],
+                **{k: {'path': template['commands'][k], 'sha256': template['commandHashes'][k]}
+                   for k in ('ip', 'nsenter')}}}
     sup = put("supervisor/configuration.json", supervisor)
     contract_module(emitted[selected_map[SUPERVISOR]], "supervisor").validate(docs["supervisor/configuration.json"])
     runtime = {"schema": "ouf.semantic-docker-runtime-adapter.v5.2", "sourceHash": hashes[RUNTIME],
@@ -638,18 +697,17 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     module = contract_module(sources[RUNTIME], "runtime")
     module.read = lambda path: docs["runtime-configuration.json"]
     module.load_configuration(PurePosixPath(rt["path"]))
-    payload = canonical({"schema": A.SCHEMA, **scope, "sequence": sequence, "supersedes": supersedes,
+    payload = canonical({"schema": A.SCHEMA, **scope, **ceiling_field, "sequence": sequence, "supersedes": supersedes,
         "issuedAt": s["issuedAt"], "decision": "OPERATE", "runtimeConfigurationSha256": rt["sha256"],
         "acceptanceSha256": sha(files["acceptance"]), "roles": operation_roles,
         "lease": {"ownerConfigurationSha256": sha(files["coordinator"]),
                   "leaseStructureHash": owner["binding"]["leaseStructureHash"], "dnsProfileSha256": dns["sha256"]}})
-    A.validate(payload)
     docs = {version_prefix + path: raw for path, raw in docs.items()}
     directories = {version_prefix + "source", "registry", "authorization", "supervisor/state", "supervisor/state/recovery"}
     for role in ROLES:
         cid_root = "registry/" + rows[role]["containerId"]
         directories.update({cid_root, cid_root + "/epochs"})
-        if version == 1:
+        if not version_prefix:
             docs[cid_root + "/operation.lock"] = b""
     for path in docs:
         directories.update(str(p) for p in PurePosixPath(path).parents if str(p) != ".")

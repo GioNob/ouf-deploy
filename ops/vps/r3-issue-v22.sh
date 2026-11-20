@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=2d2b63d92d692f09987f95b3aabf3d1cf37a0f96
+C=e4a814324e251ff3dc27434ef62336fb69be68fb
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -49,14 +49,18 @@ delivery() {
   # BEGIN DELIVERY
   fetch ops/vps/r3-driver-budget.json 2fc0921fd26cdb69adf6ab7dc683b3fea321bb59c5db24db95428d7ac59a1e16
   fetch ops/vps/r3-lease-renewal-v22.json 7a53b38d9ecc3f75f1221a637d0c439bc0d31291fdcaedc4daf0414eaa122d53
+  fetch ops/vps/r3-lease-renewal-v25.json a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5
+  fetch ops/vps/r3-lease-renewal-v26.json 609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9
+  fetch ops/vps/r3-lease-renewal-v27.json a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5
   fetch ops/vps/r3-lease-renewal.json c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f
   fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
-  fetch scripts/issue-semantic-provider-operation-authorization.py e5f14e218efdc73fa9a592ef6dd9a2f7fafeb997ed22c785bc72951c82080197
+  fetch scripts/issue-semantic-provider-operation-authorization.py c72f618186e2c1f3eab9904411b0637986e30199e0d3c080e1e84091b46b4323
   fetch scripts/migrate-semantic-lease-kernel.py 7143499813c70c936e0c2792b2e19d44a3cd32cac072fd5b82312ae4dd923901
   fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
   fetch scripts/prepare-semantic-provider-b1-rootfs-v3.py 29899e5ee25aa9e772f21fb62fb473706cdf2b8f921034efeccb3b284d350397
   fetch scripts/prepare-semantic-provider-b1-rootfs.py 8107d055fe0bfd8fe363506f39ffa006f157a292a54bbcbf4de11b011816178d
+  fetch scripts/prepare-semantic-provider-r3-v25-inputs.py 1b291e7c97e3e4adb8e1f9fecf28237b01d663190734ec3b1735646a2664e5f3
   fetch scripts/restore-semantic-provider-r3.py 1be4b6cd69f0c70959627f87502de307488ebca1862928b984b653e290e3fdd8
   fetch scripts/semantic-provider-admission-preparer-v2.py 7e041ddf4e7668861cc5ae111f6069f73eeda32be065622ee51381129a4f9b57
   fetch scripts/semantic-provider-deployment-broker-v2.py 6e97807d5fa010ec7bc670a49533a031dc8f1d5e2472d8569368adfdc15b2d7c
@@ -136,7 +140,7 @@ delivery() {
   fetch tools/semantic_provider_r3/adapter_v16.py 1af794ea243bfa1d2caa8cfa702017bd5a378c49d27e6c753f52ab4f1890825a
   fetch tools/semantic_provider_r3/cache_rollover_overlay_v23.py 2f6596c7b1897da8f559891efed7cc2e93baaf724e56b12f03824c4d96124929
   fetch tools/semantic_provider_r3/cache_watch_overlay_v24.py c0c5926783393b5cbc1750230bc188de554e1357bf384598ade11f22815878bc
-  fetch tools/semantic_provider_r3/compose.py b871383381167beaeb7049a6375e0bf81d08b7f46cecbf78f5dabb3001ade690
+  fetch tools/semantic_provider_r3/compose.py 8df6bbfea2ede7416cde29181f211f1868d2bf563b7ea64cbee5da6aa6796e9a
   fetch tools/semantic_provider_r3/dns_parallel_overlay_v22.py 9a11956689e6bc5263be8a8931b5c99b987f6c61225accbd1e38f518d26260a6
   fetch tools/semantic_provider_r3/dns_retransmit_overlay_v20.py 64987fd8606cef23b033918f2bbb301010b79a9139c866c5e08f8f98828d1b2e
   fetch tools/semantic_provider_r3/driver_budget_v17.py 086b695267ac94ce50053fe1c8f6c8bcec6f702d36e6d350fe74c319741a4f02
@@ -144,18 +148,21 @@ delivery() {
   fetch tools/semantic_provider_r3/egress_v15.py 03552b9750a551fb227917ac5756667995362e3f9e9acbaf91d717ded4422f82
   fetch tools/semantic_provider_r3/identity_overlay_v13.py 0334b8a3387e3a9342b3ff6f2679f9ddd179cee67c5085ef9d3e4751bd82e131
   fetch tools/semantic_provider_r3/identity_provider_v13.py 3bdcf7688ffac5c485abfc5893a3f6a3ff5777aab136138ee7488e3a2bd747bf
+  fetch tools/semantic_provider_r3/ingress_memo_overlay_v27.py 11473e5b22cbc418045a1bde5810e1ed7318f3b97f483b86049520f72ea18f48
   fetch tools/semantic_provider_r3/install_common.py 7f06c92bb6d824fec2bdf952aa6a71ff597b545dacd76db44b30ea1086927597
   fetch tools/semantic_provider_r3/lease_observability_overlay_v18.py f75e72ff00d395aa6f7370760e58cbb6fd75089091db6cae5149b98f8a11e33c
   fetch tools/semantic_provider_r3/lease_renewal_overlay_v18.py dd2c600df369f8dc6c595d3e65ff739abeced198a3cf3f547aaaadf27f19889a
   fetch tools/semantic_provider_r3/lease_renewal_v18.py c6fefa170903a92bcb706a061c91a3bfd5af560b51447f08dd0ac3135a5a7ecd
   fetch tools/semantic_provider_r3/lease_timing_overlay_v21.py b57c519a4f0785771c22f054bf85d846bab0057b9a0150b5537baecbcf21f583
-  fetch tools/semantic_provider_r3/operate.py f0bd132c86d0bebb185a7f473c9abae4819fc47e2cf5284ccc2cfbdad255d885
+  fetch tools/semantic_provider_r3/operate.py 1efa627946722591de99d0ded5cf135d09b0fff6663205a3ffd76b0ef8f82921
   fetch tools/semantic_provider_r3/read_adapter_v16.py 66b1dd83d4543e4454036489ff64433d16a9a30bb63127b4310431271064de77
   fetch tools/semantic_provider_r3/read_identity_provider_v13.py 7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7
   fetch tools/semantic_provider_r3/read_routes_v15.py e3e62ea885e0a54fb74de591e49891d1b209fae7756296ad74ae2a958506390e
   fetch tools/semantic_provider_r3/renewal_overlay_v22.py 81e6e20760b4ea88aa757a1edee60e4436d23bc90d7504dd0f093690176173a7
   fetch tools/semantic_provider_r3/runtime_absent_overlay_v19.py 6fe53b0f9c8e37431bb1c1537d47b8eb450a303b5ef31322eda949963ce58826
-  fetch tools/semantic_provider_r3/upgrade.py bc18eee17996d2cb0533d132ec40789c43244187d2edb2d2ca59f48ff850c754
+  fetch tools/semantic_provider_r3/semantic_identity_v25.py e09aef2977390bca817a1fe297ba92b8b987cb9de530ae3d7a9b2da0c33a7231
+  fetch tools/semantic_provider_r3/semantic_overlay_v25.py b74b9c854e76e099663a3a1aa7dde76be574b4ab6a1fbfacf5085fd34d82279d
+  fetch tools/semantic_provider_r3/upgrade.py f80f68b73f07eb26f3bb45cea0467e32b3026e4986b437d5b187ce8c39919517
   fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
   fetch tools/semantic_provider_routes/custody.py 2ab7177f21fb5b330473895798c141282cdabc85c245142f96511fa13e848db3
   fetch tools/semantic_provider_routes/routes.py 305f2535e2cc547de5f242080247d62a43b4bdb93303bf00a03bb36e87097997
@@ -300,6 +307,38 @@ SOURCE_SET = (C.SOURCE_INPUTS_V24 if 22 >= 24 else C.SOURCE_INPUTS_V23 if 22 >= 
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
+if 22 >= 25:
+    # R-002 (task-07..13d): the reviewed preparer extends the v24 index with the live Semantic
+    # profile, the v25 lease renewal input and the stable-identity source. Plan and apply must agree.
+    import subprocess
+    def prepare(*extra):
+        run = subprocess.run([sys.executable, "-I", "-B", str(D / "scripts/prepare-semantic-provider-r3-v25-inputs.py"),
+                              "--v24-inputs", str(base), "--v24-inputs-sha256", hashlib.sha256(raw).hexdigest(), *extra],
+                             capture_output=True)
+        if run.returncode != 0:
+            sys.stderr.write(run.stderr.decode("ascii", "replace")); raise SystemExit(3)
+        return run.stdout
+    base = D / "inputs-v24.json"
+    if base.exists() and base.read_bytes() != raw:
+        sys.stderr.write("R3_INPUTS_CHANGED_SINCE_PLAN\n"); raise SystemExit(3)
+    base.write_bytes(raw); base.chmod(0o600)
+    profile = prepare("profile")
+    profile_path = D / "semantic-profile.json"
+    if profile_path.exists() and profile_path.read_bytes() != profile:
+        sys.stderr.write("R3_SEMANTIC_PROFILE_CHANGED_SINCE_PLAN\n"); raise SystemExit(3)
+    profile_path.write_bytes(profile); profile_path.chmod(0o600)
+    sys.stderr.write("profilo Semantic v25: " + profile.decode("ascii") + "\n")
+    # v26 (task-13f): same v25 code, ingress tick budget 2.5 s in its own pinned renewal input.
+    # v27 (task-13h): v25 parameters again (byte-identical file), new ingress code.
+    RENEWAL_FILE, RENEWAL_PIN = (("ops/vps/r3-lease-renewal-v27.json", "a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5") if 22 >= 27
+                                 else ("ops/vps/r3-lease-renewal-v26.json", "609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9") if 22 == 26
+                                 else ("ops/vps/r3-lease-renewal-v25.json", "a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5"))
+    renewal = D / RENEWAL_FILE
+    if sha(renewal) != RENEWAL_PIN:
+        sys.stderr.write("R3_INPUT_PIN_MISMATCH leaseRenewal\n"); raise SystemExit(3)
+    raw = prepare("inputs", "--profile", str(profile_path), "--profile-sha256", hashlib.sha256(profile).hexdigest(),
+                  "--source-sha256", sha(D / C.SEMANTIC_IDENTITY),
+                  "--lease-renewal", str(renewal), "--lease-renewal-sha256", RENEWAL_PIN)
 target = D / "inputs.json"
 if target.exists() and target.read_bytes() != raw:
     sys.stderr.write("R3_INPUTS_CHANGED_SINCE_PLAN\n"); raise SystemExit(3)

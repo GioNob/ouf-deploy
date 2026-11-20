@@ -69,7 +69,7 @@ def installed(args, observation, reader):
     cfg, raw = runtime.load_configuration(code_root / "runtime-configuration.json")
     runtime.verify_files(cfg)
     require(sha(raw) == observation["configurationSha256"], "C_R3_BINDING_DRIFT")
-    auth, _ = runtime.operation_modules(cfg)
+    auth, epochs = runtime.operation_modules(cfg)
     heads = [runtime.authorization_head(cfg, raw, cid, auth) for cid in sorted(cfg["candidates"])]
     require(heads[0] == heads[1] and {k: heads[0][k] for k in ("sha256", "sequence", "decision")}
             == observation["authorization"], "C_R3_BINDING_DRIFT")
@@ -81,6 +81,28 @@ def installed(args, observation, reader):
     accepted_raw = reader.bound(index["files"]["acceptance"])
     require(sha(accepted_raw) == heads[0]["authorization"]["acceptanceSha256"], "C_R3_ACCEPTANCE_DRIFT")
     accepted = I.C.ACCEPT.decode_manifest(accepted_raw)
+    # Installed, hash-bound preparer supplies the IP executable, not host PATH.
+    cid = observation["candidates"]["southbound"]["cid"]
+    broker = I.C.document(runtime.bound_bytes(cfg["admissionConfigurations"][cid]))
+    template = I.C.document(runtime.bound_bytes(broker["preparerTemplate"]))
+    ip_binding = (template["commands"]["ip"], template["commandHashes"]["ip"])
+    transport = I.C.document(runtime.bound_bytes(broker["transportBinding"]))
+    if heads[0]['sequence'] >= 25:
+        require(sha(I.C.canonical(transport)) == heads[0]['authorization']['roles']['southbound']['transportSha256'],
+                'C_R3_BINDING_DRIFT')
+        sup = I.C.document(runtime.bound_bytes(cfg['leaseQuiesce']['configuration']))
+        spec = sup['semanticIngress']
+        flows = [f for f in transport['transport'] if f['peerIngress']['kind'] == 'SEMANTIC_PROFILE']
+        require(len(flows) == 1 and flows[0]['peerIngress']['declaration'] == spec['profile']
+                and spec['containerId'] == cid and transport['tableName'] == spec['table'], 'C_R3_PEER_UNPROVEN')
+        epoch = observation['candidates']['southbound']['epoch']['epoch']
+        folder = Path(cfg['registryRoot']) / cid / 'epochs' / str(epoch)
+        journal = epochs.current(cfg['registryRoot'], cid)
+        require(journal['authorizationSha256'] == heads[0]['sha256'] and journal['state'] == 'STARTED'
+                and journal['epoch'] == epoch, 'C_R3_PEER_UNPROVEN')
+        driver = I.C.document(reader.read(str(folder / 'driver.json'), journal['driverHash']))
+        return {'spec': spec, 'nft': sup['coordinator']['nftBinding'], 'epochHash': observation['supervisor']['semanticEpoch'],
+                'footprint': driver['profile']['expectedFootprint']}, ip_binding, transport
     documents = {}
     for name, field in (("semanticPeer", "semanticPeer"), ("a2Manifest", "manifest")):
         bound = index["files"][name]
@@ -90,13 +112,24 @@ def installed(args, observation, reader):
     peer, manifest = documents["semanticPeer"], documents["a2Manifest"]
     require(manifest["manifest"]["semanticPeer"] == peer
             and manifest["planSha256"] == accepted["preparationA"]["planSha256"], "C_R3_PEER_UNPROVEN")
-    # Installed, hash-bound preparer supplies the IP executable, not host PATH.
-    cid = observation["candidates"]["southbound"]["cid"]
-    broker = I.C.document(runtime.bound_bytes(cfg["admissionConfigurations"][cid]))
-    template = I.C.document(runtime.bound_bytes(broker["preparerTemplate"]))
-    ip_binding = (template["commands"]["ip"], template["commandHashes"]["ip"])
-    transport = I.C.document(runtime.bound_bytes(broker["transportBinding"]))
     return peer, ip_binding, transport
+
+
+def current_semantic(context):
+    from tools.semantic_provider_r3.semantic_identity_v25 import (
+        SemanticGate, semantic_command, semantic_digest, semantic_observe)
+    spec = context['spec']
+    observe = lambda: semantic_observe(spec['profile'], spec['commands'])
+    gate = SemanticGate(spec['table'], spec['profile'],
+                        lambda argv: semantic_command(context['nft'], argv), None)
+    first, _ = observe()
+    addr = [spec['profile']['ipv4']]
+    require(semantic_digest(first) == context['epochHash'] and
+            gate.read(context['footprint']) == ([first['binding']['hostIfindex']], addr, addr),
+            'C_SEMANTIC_IDENTITY_DRIFT')
+    second, row = observe()
+    require(second == first, 'C_SEMANTIC_IDENTITY_DRIFT')
+    return first, row
 
 
 def semantic(args, peer, ip_binding, inspector=None):
@@ -259,6 +292,8 @@ def r3_stable(r3):
     activation counter change legitimately with renewals and are excluded from comparisons
     and from the plan digest; state, epochs, unit, lease and tables stay exact."""
     supervisor = {k: r3["supervisor"][k] for k in ("unit", "state", "epochs", "authorizationSequence")}
+    if 'semanticEpoch' in r3['supervisor']:
+        supervisor['semanticEpoch'] = r3['supervisor']['semanticEpoch']
     return {**r3, "supervisor": supervisor}
 
 
@@ -267,7 +302,15 @@ def observation(args, *, output_exists=False, deadline=None):
     preconditions(r3)
     reader = I.Reader()
     peer, ip_binding, transport = installed(args, r3, reader)
-    row = semantic(args, peer, ip_binding)
+    stable = peer if 'spec' in peer else None
+    if stable:
+        peer, row = current_semantic(stable)
+        # targets() consumes the effective BRIDGE_PORT for both versions.
+        transport = {**transport, 'transport': [
+            {**f, 'peerIngress': {'kind': 'BRIDGE_PORT', 'ifindex': peer['binding']['hostIfindex']}}
+            if f['peerIngress']['kind'] == 'SEMANTIC_PROFILE' else f for f in transport['transport']]}
+    else:
+        row = semantic(args, peer, ip_binding)
     env = configuration(row)
     profile = I.C.document(reader.read(args.installation_profile, args.installation_profile_sha256))
     target = targets(profile, env, peer, transport)
@@ -281,7 +324,13 @@ def observation(args, *, output_exists=False, deadline=None):
              "bootId": peer["bootId"]}, "configuration": env, "targets": target,
              "resolver": {"nameserver": resolver(resolv), "sha256": sha(resolv)}, "inputHashes": reader.hashes}
     reader.verify()
-    require(configuration(semantic(args, peer, ip_binding)) == env, "C_SEMANTIC_CONFIGURATION_DRIFT")
+    if stable:
+        again, row = current_semantic(stable)
+        require(again == peer, 'C_SEMANTIC_IDENTITY_DRIFT')
+        state['semantic']['epochSha256'] = stable['epochHash']
+    else:
+        row = semantic(args, peer, ip_binding)
+    require(configuration(row) == env, "C_SEMANTIC_CONFIGURATION_DRIFT")
     again = r3_settled(args, output_exists=output_exists, deadline=deadline)
     require(r3_stable(again) == state["r3"], "C_R3_OBSERVATION_DRIFT")
     return state, ca

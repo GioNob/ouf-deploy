@@ -5,6 +5,7 @@ on:
       - tools/semantic_runtime_v52/**
       - tools/semantic_provider_admission_v2/**
       - tools/semantic_provider_r3/**
+      - tools/semantic_provider_c/**
       - tools/semantic_provider_routes/**
       - tools/semantic_provider_config/**
       - tools/semantic_provider_operation/**
@@ -19,6 +20,7 @@ on:
       - scripts/semantic-provider-lease-supervisor-v3.py
       - scripts/reconcile-semantic-provider-r3-epoch.py
       - scripts/issue-semantic-provider-operation-authorization.py
+      - scripts/prepare-semantic-provider-r3-v25-inputs.py
       - scripts/prepare-semantic-provider-installation.py
       - scripts/semantic-provider-config.py
       - ops/vps/config-publish.sh
@@ -57,6 +59,7 @@ on:
       - docs/OUF_SEMANTIC_PROVIDER_R3_V20.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V22.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V23.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_V25.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_V21.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_RECONCILE.md
       - tests/test_semantic_b1_acceptance.py
@@ -119,6 +122,14 @@ jobs:
         run: >-
           sudo -n env OUF_R3_V13_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_semantic_provider_r3_v13_native.py -v
+      - name: R-002 v25 reauthorized v24 comparison and native bridge rebind
+        run: >-
+          sudo -n env OUF_R3_V25_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_v25.py -v
+      - name: R-002 v27 signature memo, committed-renewal ingress tick and native warm opening
+        run: >-
+          sudo -n env OUF_R3_V27_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_v27.py -v
       - name: D-050 real DNAT and native bridge conntrack (private net and mount namespaces)
         run: >-
           sudo -n env OUF_LEASE_KERNEL_V2_NATIVE=1 /usr/bin/python3 -I -B
