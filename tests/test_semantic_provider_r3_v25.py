@@ -885,6 +885,17 @@ class NativePortLifetime(unittest.TestCase):
         self.private_worker("--reconcile")
 
 
+def create_native_common_lock():
+    # Both workers have already mounted a fresh tmpfs on /run in their namespace.
+    runtime = Path('/run')
+    runtime.chmod(0o700)
+    directory = runtime / 'r3-v25'
+    directory.mkdir(mode=0o700)
+    lock = directory / 'common.lock'
+    lock.touch(mode=0o600, exist_ok=False)
+    return lock
+
+
 def native_reconcile():
     from native_semantic_provider_r3_v13 import IdentityProof, run
     import shutil
@@ -897,8 +908,7 @@ def native_reconcile():
         sys.path.insert(0, str(Path(__file__).resolve().parents[1] /
                                'tools/semantic_cohort_admission/cohort-draft/tools'))
         from semantic_provider_lease_coordination import hold_common_lock
-        lock = Path('/run/semantic-test.lock')
-        lock.touch(mode=0o600, exist_ok=False)
+        lock = create_native_common_lock()
         result = fixture()[2]
         with backend.I.module_scope():
             backend.load_modules(result, version=25)
@@ -1034,8 +1044,7 @@ def private_probe(mode):
     run("mount", "--make-rprivate", "/")
     run("mount", "-t", "tmpfs", "-o", "mode=0755", "tmpfs", "/run")
     Path("/run/netns").mkdir()
-    lock = Path("/run/test-common.lock")
-    lock.touch(mode=0o600, exist_ok=False)
+    lock = create_native_common_lock()
     run("ip", "netns", "add", "workload")
     run("ip", "link", "add", "fixture-br", "type", "bridge")
 

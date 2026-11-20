@@ -187,8 +187,9 @@ class Readers(unittest.TestCase):
                 patch('pathlib.Path.glob', return_value=[Path('1.json')]), patch.object(sys, 'argv', ['status']):
             timing = dict(schema='ouf.lease-renewal-timing.v1', branch=[0, 75], previous=None,
                           current=dict(sequence=1, events=[['sampleAfter', 104, 21.75, 125.75]], truncated=False))
-            for detail in (None, incident, {**incident, 'timing': timing}):
-                with self.subTest(incident=detail is not None):
+            for detail in (None, incident, {**incident, 'timing': timing},
+                           {**incident, 'code': 'R3_SEMANTIC_CLOSE_UNVERIFIED'}):
+                with self.subTest(incident=detail):
                     if detail is not None:
                         row['lastIncident'] = detail
                     output = io.StringIO()
