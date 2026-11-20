@@ -39,9 +39,9 @@ jobs:
               if not re.fullmatch("[0-9a-f]{64}", digest):
                   raise SystemExit("INVALID_RETURN_PLAN")
               phase = "rollback"
-          comment = " ".join([scope["operation"], scope["run"], scope["attempt"], scope["commit"], scope["module"], phase, digest])
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
-              print("Commento di approvazione", chr(10), chr(10), "`" + comment + "`", file=f)
+              print(f"Job `{phase} {digest}`", file=f)
+              print("Approvare il job (nessun commento richiesto)", file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + digest, file=f)
           PY
@@ -88,9 +88,8 @@ jobs:
                   print(chr(96) * 3 + "json", json.dumps(result["databaseReview"], indent=2),
                         chr(96) * 3, sep=chr(10), file=f)
               if next_phase:
-                  comment = " ".join([req["operation"], req["run"], req["attempt"], req["commit"],
-                                      req["module"], next_phase, stamp])
-                  print("Commento di approvazione", chr(10), chr(10), chr(96) + comment + chr(96), file=f)
+                  print(f"Job `{next_phase} {stamp}`", file=f)
+                  print("Approvare il job (nessun commento richiesto)", file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + stamp, "status=" + status, sep=chr(10), file=f)
           PY

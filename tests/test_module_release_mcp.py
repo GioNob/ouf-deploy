@@ -39,6 +39,7 @@ class Release(unittest.TestCase):
         self.req = dict(run="1", attempt="1", commit=self.cfg["commit"], operation="module-release",
                         module="mcp", phase="plan")
         self.req["digest"] = mandate.intent(self.req)
+        self.approvals = {}
         self.dispatch = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["dispatch"]
         self.enterContext(patch.object(operation, "Docker", return_value=self.rt))
         self.enterContext(patch.object(return_operation, "Docker", return_value=self.rt))
@@ -65,9 +66,11 @@ class Release(unittest.TestCase):
         user = {"type": "User", "id": 30}
         env = dict(id=20, name="test", protection_rules=[dict(type="required_reviewers",
                    reviewers=[dict(type="User", reviewer=user)])])
-        review = dict(state="approved", comment=mandate.challenge(self.req), user=user, environments=[env])
-        get = Mock(side_effect=[job, dict(protected=True, commit={"sha": cfg["commit"]}), env,
-                                [review] if approved else []])
+        review = dict(state="approved", comment="", user=user, environments=[env])
+        history = self.approvals.setdefault(run, [])
+        if approved:
+            history.append(review)
+        get = Mock(side_effect=[job, dict(protected=True, commit={"sha": cfg["commit"]}), env, history])
         return self.dispatch(self.req, cfg, self.root, get)
 
     def planned(self):
@@ -90,9 +93,6 @@ class Release(unittest.TestCase):
         plan = self.planned()
         self.assertEqual(plan["databaseReview"]["migrations"], [])
         stamp = plan["digest"]
-        with self.assertRaisesRegex(mandate.Held, "APPROVED_PLAN_DRIFT"):
-            self.call("apply", "1"*64)
-        self.assertNotIn("load", self.rt.events)
         self.assertEqual(self.call("apply", stamp)["status"], "READY")
         candidate = self.rt.inspect(self.p["container"])
         self.assertEqual(candidate["Id"], NEW)
@@ -110,15 +110,28 @@ class Release(unittest.TestCase):
         with self.assertRaisesRegex(mandate.Held, "RETURN_ALREADY_CONSUMED"):
             self.call("rollback", stamp, run="3")
 
-    def test_migration_requires_exact_review_and_verifies_additions(self):
+    def test_apply_with_wrong_digest_consumes_review_before_effect(self):
+        self.planned()
+        with self.assertRaisesRegex(mandate.Held, "APPROVED_PLAN_DRIFT"):
+            self.call("apply", "1"*64)
+        self.assertNotIn("load", self.rt.events)
+        with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
+            self.call("apply", "1"*64, approved=False)
+
+    def test_migrate_with_wrong_digest_holds_at_gate(self):
+        self.dedicated()
+        self.call("apply", self.planned()["digest"])
+        with self.assertRaisesRegex(mandate.Held, "APPROVED_MIGRATION_DRIFT"):
+            self.call("migrate", "1"*64)
+        self.assertFalse(any(action.startswith("signal:") or action == "migrate" for action in self.rt.events))
+
+    def test_migration_requires_new_review_and_verifies_additions(self):
         self.dedicated()
         plan = self.planned()
         self.assertEqual(plan["databaseReview"]["migrations"], self.p["migration"]["migrations"])
         self.assertEqual(plan["databaseReview"]["migrationsSha256"], digest(self.p["migration"]["migrations"]))
         stage = self.call("apply", plan["digest"])
         self.assertEqual(stage["status"], "GATED")
-        with self.assertRaisesRegex(mandate.Held, "APPROVED_MIGRATION_DRIFT"):
-            self.call("migrate", "1"*64)
         with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
             self.call("migrate", stage["digest"], approved=False)
         self.assertFalse(any(action.startswith("signal:") or action == "migrate" for action in self.rt.events))

@@ -211,41 +211,33 @@ class ReleaseTest(unittest.TestCase):
         req = dict(run="1", attempt="1", commit=cfg["commit"], operation="module-release",
                    module="onboarding", phase="plan")
         req["digest"] = mandate.intent(req)
-        def call(comment=None, workflow=mandate.module_workflow("onboarding")):
+        def call(approval_count, workflow=mandate.module_workflow("onboarding")):
             run = dict(id=1, run_attempt=1, event="workflow_dispatch", status="in_progress",
                        path=workflow, head_branch="protected", head_sha=cfg["commit"],
                        repository={"id":10}, head_repository={"id":10})
             user = {"type":"User", "id":30}
             env = dict(id=20, name="test", protection_rules=[dict(type="required_reviewers",
                        reviewers=[{"type":"User", "reviewer":user}])])
-            approval = dict(state="approved", comment=comment or mandate.challenge(req),
+            approval = dict(state="approved", comment="",
                             user=user, environments=[env])
             return dispatch(req, cfg, self.root, Mock(side_effect=[run, dict(protected=True,
-                            commit={"sha":cfg["commit"]}), env, [approval]]))
+                            commit={"sha":cfg["commit"]}), env, [approval] * approval_count]))
         with patch.object(store, "sync_dir"), patch.object(store, "trusted", side_effect=lambda p, **_: Path(p)), \
              patch.object(module_operation.operation, "Docker", return_value=self.rt):
             with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
-                call(workflow=mandate.WORKFLOW)
-            plan_result = call()
-            req.update(phase="apply", digest="b"*64)
-            with self.assertRaisesRegex(mandate.Held, "APPROVED_PLAN_DRIFT"):
-                call()
-            req["digest"] = plan_result["digest"]
-            stage = call()
+                call(1, workflow=mandate.WORKFLOW)
+            plan_result = call(1)
+            req.update(phase="apply", digest=plan_result["digest"])
+            stage = call(2)
             self.assertEqual(stage["status"], "GATED")
             self.assertNotIn("signal:2", self.rt.events)
-            req.update(phase="migrate", digest="c"*64)
-            other_review = mandate.challenge(req)
-            with self.assertRaisesRegex(mandate.Held, "APPROVED_MIGRATION_DRIFT"):
-                call()
-            req["digest"] = stage["digest"]
-            with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW"):
-                call(comment=other_review)
+            req.update(phase="migrate", digest=stage["digest"])
+            with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
+                call(2)
             self.assertNotIn("signal:2", self.rt.events)
-            self.assertEqual(call()["status"], "READY")
-            self.assertEqual(self.rt.events.count("signal:2"), 1)
-            with self.assertRaises(FileExistsError):
-                call()
+            self.assertEqual(call(3)["status"], "READY")
+            with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
+                call(3)
             self.assertEqual(self.rt.events.count("signal:2"), 1)
 
     def test_archive_tampered(self):

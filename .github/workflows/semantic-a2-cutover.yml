@@ -45,9 +45,9 @@ jobs:
           if scope["direction"] not in ("forward", "return") or scope["queue"] not in ("empty", "inventory"):
               raise SystemExit("Mandato sconosciuto")
           digest = hashlib.sha256(json.dumps(scope, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-          comment = " ".join(["A2", *scope.values(), "plan", digest])
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
-              print("Commento di approvazione del plan", chr(10), chr(10), "`" + comment + "`", file=f)
+              print(f"Job `plan {digest}`", file=f)
+              print("Approvare il job (nessun commento richiesto)", file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + digest, file=f)
           PY
@@ -101,9 +101,8 @@ jobs:
                   for row in result["queue"]:
                       print("`" + json.dumps(row, sort_keys=True) + "`", file=f)
               if next_phase:
-                  comment = " ".join(["A2", req["run"], req["attempt"], req["commit"], req["direction"],
-                                      req["queue"], next_phase, stamp])
-                  print("Commento di approvazione", chr(10), chr(10), "`" + comment + "`", file=f)
+                  print(f"Job `{next_phase} {stamp}`", file=f)
+                  print("Approvare il job (nessun commento richiesto)", file=f)
               elif "proof" in result:
                   print("Prova chatbot", result["proof"], file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:

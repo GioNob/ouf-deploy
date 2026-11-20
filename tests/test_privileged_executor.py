@@ -37,8 +37,8 @@ def frame():
 
 class Review(unittest.TestCase):
     def setUp(self):
-        self.req = dict(run="123", commit="a"*40, attempt="1", phase="apply", direction="forward",
-                        queue="empty", digest="c"*64)
+        self.req = dict(run="123", commit="a"*40, attempt="1", phase="plan", direction="forward", queue="empty")
+        self.req["digest"] = mandate.intent(self.req)
         self.cfg = dict(repositoryId=17, environment="private", environmentId=4, reviewerIds=[8],
                         commit=self.req["commit"], branch="protected")
         self.run = dict(id=123, run_attempt=1, event="workflow_dispatch", status="in_progress",
@@ -46,35 +46,95 @@ class Review(unittest.TestCase):
                         repository={"id":17}, head_repository={"id":17})
         self.env = dict(id=4, name="private", protection_rules=[dict(type="required_reviewers",
             reviewers=[dict(type="User", reviewer={"id":8})])])
-        self.reviews = [dict(state="approved", comment=mandate.challenge(self.req), user={"id":8,"type":"User"},
+        self.reviews = [dict(state="approved", comment="", user={"id":8,"type":"User"},
                              environments=[{"id":4,"name":"private"}])]
+        self.state = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.enterContext(patch.object(store, "trusted", side_effect=lambda path, **_: path))
+        self.enterContext(patch.object(store, "sync_dir"))
         self.effects = Mock()
 
     def invoke(self, req):
         docs = [self.run, {"protected":True,"commit":{"sha":self.req["commit"]}}, self.env, self.reviews]
-        review = mandate.authorize(req, self.cfg, Mock(side_effect=docs))
+        review = mandate.authorize(req, self.cfg, Mock(side_effect=docs), self.state)
         self.effects(review)
+        return review
 
-    def test_exact(self):
+    def test_blank_comment_and_cumulative_reviewer_set(self):
+        first = self.invoke(self.req)
+        self.assertEqual(first, mandate.digest(dict(mandate=self.req, environmentId=4,
+                                                    approvalIndex=1, reviewerIds=[8])))
+        self.cfg["reviewerIds"].append(7)
+        self.env["protection_rules"][0]["reviewers"].append(dict(type="User", reviewer={"id": 7}))
+        self.reviews.insert(0, dict(self.reviews[0], user={"type": "User", "id": 7}, comment="Va bene"))
+        apply = dict(self.req, phase="apply", digest="b" * 64)
+        self.assertEqual(self.invoke(apply), mandate.digest(dict(mandate=apply, environmentId=4,
+                                                               approvalIndex=2, reviewerIds=[7, 8])))
+
+    def test_counts_and_phase_replay(self):
+        approved = self.reviews[0]
+        for count in (0, 2):
+            self.reviews = [approved] * count
+            with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
+                self.invoke(self.req)
+        self.reviews = [approved]
         self.invoke(self.req)
-        self.effects.assert_called_once()
+        apply = dict(self.req, phase="apply")
+        with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
+            self.invoke(apply)
+        self.reviews.append(approved)
+        with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
+            self.invoke(self.req)
+        self.invoke(apply)
+        self.assertEqual(self.effects.call_count, 2)
+
+    def test_runs_consume_independently(self):
+        self.invoke(self.req)
+        self.run["id"] = 456
+        req = dict(self.req, run="456")
+        req["digest"] = mandate.intent(req)
+        self.invoke(req)
+        self.assertEqual(self.effects.call_count, 2)
+
+    def test_failed_publication_prevents_dispatch(self):
+        with patch.object(store, "save", side_effect=OSError), self.assertRaises(OSError):
+            self.invoke(self.req)
+        self.effects.assert_not_called()
+        with self.assertRaisesRegex(mandate.Held, "APPROVAL_JOURNAL_MISSING"):
+            self.invoke(self.req)
+
+    def test_directory_fsync_failure_after_publication_prevents_effect_and_reuse(self):
+        run_dir = self.state / self.req["run"]
+
+        def sync(path):
+            if path == run_dir:
+                raise OSError("fixture fsync failure")
+
+        with patch.object(store, "sync_dir", side_effect=sync), self.assertRaises(OSError):
+            self.invoke(self.req)
+        with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
+            self.invoke(self.req)
+        self.effects.assert_not_called()
 
     def test_drift_before_dispatch(self):
-        for key, value in (("digest", "d"*64), ("commit", "b"*40), ("phase", "sign"), ("run", "456"),
+        for key, value in (("digest", "d"*64), ("commit", "b"*40), ("phase", "unknown"), ("run", "456"),
                            ("attempt", "2"), ("direction", "return"), ("queue", "inventory")):
             with self.subTest(key=key), self.assertRaises(mandate.Held):
                 self.invoke({**self.req, key:value})
         self.effects.assert_not_called()
 
     def test_missing_unverifiable_or_other_reviewer(self):
+        self.cfg["reviewerIds"].append(9)
+        self.env["protection_rules"][0]["reviewers"].append(dict(type="User", reviewer={"id": 10}))
         for row in ([], [{**self.reviews[0], "user":{"type":"User","id":9}}],
+                    [{**self.reviews[0], "user":{"type":"User","id":10}}],
+                    [{**self.reviews[0], "user":{"type":"Bot","id":8}}],
                     [{**self.reviews[0], "state":"rejected"}],
                     [{**self.reviews[0], "environments":[{"id":5,"name":"private"}]}]):
             self.reviews = row
             with self.assertRaises(mandate.Held):
                 self.invoke(self.req)
         with self.assertRaises(OSError):
-            mandate.authorize(self.req, self.cfg, Mock(side_effect=OSError))
+            mandate.authorize(self.req, self.cfg, Mock(side_effect=OSError), self.state)
         self.effects.assert_not_called()
 
 
@@ -308,7 +368,9 @@ class Protocol(unittest.TestCase):
                 exec(compile(code,"intent","exec"),{})
             req = dict(run="123",attempt="1",commit="c"*40,direction="forward",queue="empty",phase="plan")
             req["digest"] = mandate.intent(req)
-            self.assertIn(mandate.challenge(req),Path(d,"summary").read_text())
+            summary = Path(d, "summary").read_text()
+            self.assertIn("Approvare il job (nessun commento richiesto)", summary)
+            self.assertIn(req["digest"], summary)
 
 
 class RoundTrip(unittest.TestCase):
