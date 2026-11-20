@@ -4,13 +4,14 @@ from http.client import HTTPConnection
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 import time
 import unittest
 from unittest.mock import Mock, patch
 
-from test_gateway_release import MARKER, REQ, SECRET, artifact, bundle, mandate, operation, row, verify
+from test_gateway_release import MARKER, REQ, ROOT, SECRET, artifact, bundle, mandate, operation, row, verify
 from gateway_admin import Admin, AdminRequestError, connect
 
 
@@ -80,14 +81,20 @@ def docker(*args):
     return result.stdout.decode().strip()
 
 
+def assert_readback(live, desired, *, exact=False):
+    paths = operation.field_differences(live, desired, exact=exact)
+    if paths:
+        raise AssertionError("\n".join(paths))
+
+
 def seed_route(admin, target):
     # A standalone route needs routing or plugin configuration in addition to its URI.
     body = {"uri": "/" + target["id"], "status": 1, "priority": 0,
             "upstream": {"type": "roundrobin", "nodes": {"127.0.0.1:8080": 1}}}
     written = admin.write(target, body)
     live = admin.get(target)
-    if not operation.conforms(written, body) or not operation.conforms(live, body):
-        raise AssertionError("GATEWAY_FIXTURE_ROUTE_READBACK")
+    assert_readback(written, body)
+    assert_readback(live, body)
     return live
 
 
@@ -161,15 +168,23 @@ class NativeRelease(unittest.TestCase):
         issuer_server = ("server { listen 127.0.0.1:9081; default_type application/json; "
                          f"location = {DISCOVERY_PATH} {{ return 200 '{discovery}'; }} "
                          """location = /jwks { return 200 '{"keys":[]}'; } }""")
-        config.write_text(json.dumps({"nginx_config": {"http_configuration_snippet": issuer_server}, "deployment": {
+        # Match the numeric profile already used by OUF on this image. Three
+        # published request-validation schemas require an exact 16-digit maximum.
+        assets = ROOT / "tools/chatbot_file_cohort/assets/apisix"
+        config.write_text(json.dumps({"apisix": {"extra_lua_path": "/usr/local/apisix/conf/?.lua",
+                                                "lua_module_hook": "ouf_json_precision"},
+            "nginx_config": {"http_configuration_snippet": issuer_server}, "deployment": {
             "role": "traditional", "role_traditional": {"config_provider": "etcd"},
             "admin": {"admin_listen": {"ip": "127.0.0.1", "port": 9180}, "allow_admin": ["127.0.0.1/32"],
                       "admin_key": [{"name": "admin", "key": key, "role": "admin"}]},
             "etcd": {"host": ["http://" + name + "-etcd:2379"]}}}))
         cid = docker("run", "-d", "--network", net, "--name", name, "-v",
                      str(config)+":/usr/local/apisix/conf/config.yaml:ro",
+                     "-v", str(assets / "ouf_json_precision.lua")+":/usr/local/apisix/conf/ouf_json_precision.lua:ro",
+                     "-v", str(assets / "jsonschema.lua")+":/usr/local/apisix/deps/share/lua/5.1/jsonschema.lua:ro",
                      "apache/apisix@sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d")
         self.addCleanup(docker, "rm", "-f", cid)
+        self.cid = cid
         self.profile = dict(dockerSocket="/var/run/docker.sock", container=name, host="127.0.0.1",
                             port=9180, adminPath="/apisix/admin", keyFile=str(keyfile), values={"binding": SECRET})
         self.route = row("routes", "target", {})
@@ -181,8 +196,17 @@ class NativeRelease(unittest.TestCase):
             self.foreign = seed_route(admin, self.outside)
 
     def phase(self, req):
-        result = operation.GatewayRelease({"gateway": self.profile}, self.state, req).execute("fixture-review", SECRET)
-        self.assertNotIn(SECRET, json.dumps(result))
+        runner = operation.GatewayRelease({"gateway": self.profile}, self.state, req)
+        try:
+            result = runner.execute("fixture-review", SECRET)
+        except mandate.Held:
+            diagnostics = runner.path / ("gateway." + req["phase"] + ".diagnostics")
+            if diagnostics.exists():
+                for entry in json.loads(diagnostics.read_bytes()):
+                    status = f" HTTP {entry['httpStatus']}" if "httpStatus" in entry else ""
+                    print(f"{entry['stage']} {entry['kind']}/{entry['id']}{status}", *entry["paths"], sep="\n")
+            raise
+        self.assertFalse(SECRET in json.dumps(result), "private fixture value in public receipt")
         return result
 
     @contextmanager
@@ -209,7 +233,7 @@ class NativeRelease(unittest.TestCase):
             live = admin.get(self.route)
             self.assertEqual(live["plugin_config_id"], "settings")
             self.assertGreaterEqual(live["plugins"]["limit-count"].keys(), {"count", "time_window", "key"})  # APISIX may or may not materialize defaults
-            self.assertEqual(admin.get(self.outside), self.foreign)
+            assert_readback(admin.get(self.outside), self.foreign, exact=True)
         back = dict(operation="gateway-release", run="71", attempt="1", commit=REQ["commit"],
                     phase="return", releaseRun=REQ["run"], digest=receipt["digest"])
         self.assertEqual(self.phase(back)["status"], "RETURNED")
@@ -222,12 +246,18 @@ class NativeRelease(unittest.TestCase):
         self.assertEqual(json.loads((self.state / "72/gateway.apply.1.intent").read_bytes()),
                          {"id": "target", "kind": "routes"})
         with connect(self.profile) as (admin, _):
-            self.assertEqual(admin.get(self.route), self.baseline)
-            self.assertIsNone(admin.get(self.plugins))
-            self.assertEqual(admin.get(self.outside), self.foreign)
+            assert_readback(admin.get(self.route), self.baseline, exact=True)
+            assert_readback(admin.get(self.plugins), None, exact=True)
+            assert_readback(admin.get(self.outside), self.foreign, exact=True)
         self.assertEqual((self.state / "70/gateway.snapshot").stat().st_mode & 0o777, 0o600)
 
     def published_routes(self):
+        # Verify the readback exception against the plugin shipped in this exact image.
+        source = docker("exec", self.cid, "cat", "/usr/local/apisix/apisix/plugins/openid-connect.lua")
+        encrypted = re.search(r"\bencrypt_fields\s*=\s*\{([^}]*)\}", source)
+        self.assertIsNotNone(encrypted, "openid-connect.encrypt_fields: missing")
+        self.assertTrue(re.search(r"""["']client_secret["']""", encrypted[1]) is not None,
+                        "openid-connect.encrypt_fields.client_secret: missing")
         self.profile.update(publisher_profile())
         self.enterContext(local_publisher())
         with connect(self.profile):
@@ -249,15 +279,21 @@ class NativeRelease(unittest.TestCase):
         with connect(self.profile) as (admin, _):
             for route in routes:
                 with self.subTest(route=route["id"]):
-                    self.assertTrue(operation.conforms(admin.get(route), route["body"]))
-            self.assertEqual(admin.get(self.outside), self.foreign)
+                    live = admin.get(route)
+                    assert_readback(live, route["body"])
+                    oidc = "openid-connect"
+                    if live["plugins"][oidc]["client_secret"] != route["body"]["plugins"][oidc]["client_secret"]:
+                        print(f"{route['id']} plugins.openid-connect.client_secret: changed (opaque)")
+            assert_readback(admin.get(self.outside), self.foreign, exact=True)
         self.assertEqual(self.phase(published_request("73"))["counts"], dict(create=0, update=0, unchanged=7))
         back = dict(operation="gateway-release", run="71", attempt="1", commit=req["commit"],
                     phase="return", releaseRun=req["run"], digest=receipt["digest"])
         self.assertEqual(self.phase(back)["status"], "RETURNED")
         with connect(self.profile) as (admin, _):
-            self.assertEqual([admin.get(route) for route in routes], before)
-            self.assertEqual(admin.get(self.outside), self.foreign)
+            for route, original in zip(routes, before, strict=True):
+                with self.subTest(route=route["id"]):
+                    assert_readback(admin.get(route), original, exact=True)
+            assert_readback(admin.get(self.outside), self.foreign, exact=True)
         self.assertEqual(json.loads((self.state / "gateway-head").read_bytes()), parent)
 
     def test_published_release_creates_seven_routes_then_returns_to_absence(self):
@@ -287,8 +323,8 @@ class NativeRelease(unittest.TestCase):
         self.assertEqual(json.loads((self.state / "gateway-head").read_bytes()), pending)
         with connect(self.profile) as (admin, _):
             mixed = [admin.get(route) for route in routes]
-        self.assertTrue(operation.conforms(mixed[0], routes[0]["body"]))
-        self.assertEqual(mixed[1:], old_routes)
+        assert_readback(mixed[0], routes[0]["body"])
+        assert_readback(mixed[1:], old_routes, exact=True)
 
         recovery = published_request("72")
         resumed = self.phase(recovery)

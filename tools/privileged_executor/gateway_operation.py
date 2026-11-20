@@ -1,49 +1,66 @@
 """Reviewed release and return. The shared entrypoint holds the host lock throughout."""
+import json
 import secrets
 
-from gateway_admin import connect
+from gateway_admin import AdminRequestError, connect
 from gateway_bundle import package
 from mandate import Held, canonical, digest, intent, need
 from store import Journal, read, save
 
 
+# Encrypted field used by the published bundle. Source: schema.encrypt_fields in
+# https://github.com/apache/apisix/blob/3.18.0/apisix/plugins/openid-connect.lua
+ENCRYPTED_PATHS = {("plugins", "openid-connect", "client_secret")}
+
+
+def field_differences(live, desired, *, exact=False):
+    """Report JSON paths only. Never render a value from either body."""
+    differences = []
+
+    def report(path, reason):
+        name = ""
+        for key in path:
+            if isinstance(key, int):
+                name += f"[{key}]"
+            elif key and key.isascii() and all(c.isalnum() or c in "_-" for c in key):
+                name += ("." if name else "") + key
+            else:
+                name += "[" + json.dumps(key) + "]"
+        differences.append(f"{name or '$'}: {reason}")
+
+    def compare(actual, expected, path, strict_keys):
+        if not exact and path in ENCRYPTED_PATHS and isinstance(expected, str) and expected:
+            if not isinstance(actual, str) or not actual:
+                report(path, "changed")
+        elif type(actual) is not type(expected):
+            report(path, "missing" if actual is None and not path else "changed")
+        elif isinstance(expected, dict):
+            for key in sorted(expected):
+                if key in actual:
+                    compare(actual[key], expected[key], (*path, key), strict_keys)
+                else:
+                    report((*path, key), "missing")
+            if strict_keys and actual.keys() - expected.keys():
+                # An unrequested map key can itself contain response data.
+                report(path, "unexpected field")
+        elif isinstance(expected, list):
+            for index in range(max(len(actual), len(expected))):
+                child = (*path, index)
+                if index >= len(actual):
+                    report(child, "missing")
+                elif index >= len(expected):
+                    report(child, "unexpected")
+                else:
+                    compare(actual[index], expected[index], child, True)
+        elif canonical(actual) != canonical(expected):
+            report(path, "changed")
+
+    compare(live, desired, (), exact)
+    return differences
+
+
 def conforms(live, desired):
-    """APISIX may materialize additional object keys, including inside plugins."""
-    if isinstance(desired, dict):
-        return isinstance(live, dict) and all(
-            key in live and conforms(live[key], value) for key, value in desired.items()
-        )
-    # Arrays are exact, including the objects within them. Distinguish true from 1.
-    return canonical(live) == canonical(desired)
-
-
-def plan_rows(admin, resources, interrupted=None):
-    rows = []
-    if interrupted is not None:
-        need(len(interrupted) == len(resources), "GATEWAY_PENDING_PACKAGE_DRIFT")
-    for index, resource in enumerate(resources):
-        after = resource["body"]
-        if interrupted is not None:
-            previous = interrupted[index]  # Verified bundles have a unique, deterministic order.
-            need((resource["kind"], resource["id"]) == (previous["kind"], previous["id"]),
-                 "GATEWAY_PENDING_PACKAGE_DRIFT")
-            # Older journals expanded just these route defaults before saving the desired body.
-            legacy = {"priority": 0, "status": 1, **after} if resource["kind"] == "routes" else after
-            need(canonical(previous["after"]) in (canonical(after), canonical(legacy)),
-                 "GATEWAY_PENDING_PACKAGE_DRIFT")
-            after = previous["after"]
-        before = admin.get(resource)
-        matches_after = conforms(before, after)
-        if interrupted is not None:
-            need(matches_after or conforms(before, previous["before"]), "GATEWAY_PENDING_LIVE_DRIFT")
-        action = "unchanged" if matches_after else "create" if before is None else "update"
-        rows.append(dict(kind=resource["kind"], id=resource["id"], before=before, after=after, action=action))
-    return rows
-
-
-def check_state(admin, rows, side):
-    for row in rows:
-        need(conforms(admin.get(row), row[side]), "GATEWAY_LIVE_DRIFT")
+    return not field_differences(live, desired)
 
 
 class GatewayRelease:
@@ -53,6 +70,59 @@ class GatewayRelease:
         self.root = root
         self.path = Journal(root / req["run"]).path
         self.head = root / "gateway-head"
+
+    def diagnose(self, stage, row, paths, **metadata):
+        path = self.path / ("gateway." + self.req["phase"] + ".diagnostics")
+        entries = read(path) if path.exists() else []
+        entries.append(dict(stage=stage, kind=row["kind"], id=row["id"], paths=paths, **metadata))
+        save(path, entries, replace=True)
+
+    def observe(self, stage, row, operation, *args):
+        try:
+            return operation(row, *args)
+        except Exception as error:
+            metadata = {"httpStatus": error.status} if isinstance(error, AdminRequestError) else {}
+            self.diagnose(stage, row, ["$: unavailable"], **metadata)
+            if isinstance(error, Held):
+                raise
+            raise Held("GATEWAY_ADMIN_REQUEST") from None
+
+    def verify(self, stage, row, live, desired, code):
+        paths = field_differences(live, desired)
+        if paths:
+            self.diagnose(stage, row, paths)
+            raise Held(code)
+
+    def check_state(self, admin, rows, side):
+        for row in rows:
+            stage = "check-" + side
+            live = self.observe(stage, row, admin.get)
+            self.verify(stage, row, live, row[side], "GATEWAY_LIVE_DRIFT")
+
+    def plan_rows(self, admin, resources, interrupted):
+        rows = []
+        if interrupted is not None:
+            need(len(interrupted) == len(resources), "GATEWAY_PENDING_PACKAGE_DRIFT")
+        for index, resource in enumerate(resources):
+            after = resource["body"]
+            if interrupted is not None:
+                previous = interrupted[index]  # Verified bundles have a unique, deterministic order.
+                need((resource["kind"], resource["id"]) == (previous["kind"], previous["id"]),
+                     "GATEWAY_PENDING_PACKAGE_DRIFT")
+                # Older journals expanded just these route defaults before saving the desired body.
+                legacy = {"priority": 0, "status": 1, **after} if resource["kind"] == "routes" else after
+                if canonical(previous["after"]) not in (canonical(after), canonical(legacy)):
+                    self.diagnose("pending-package", resource, field_differences(previous["after"], after, exact=True))
+                    raise Held("GATEWAY_PENDING_PACKAGE_DRIFT")
+                after = previous["after"]
+            before = self.observe("plan-get", resource, admin.get)
+            diff = field_differences(before, after)
+            if interrupted is not None and diff and not conforms(before, previous["before"]):
+                self.diagnose("pending-after", resource, diff)
+                self.verify("pending-before", resource, before, previous["before"], "GATEWAY_PENDING_LIVE_DRIFT")
+            action = "unchanged" if not diff else "create" if before is None else "update"
+            rows.append(dict(kind=resource["kind"], id=resource["id"], before=before, after=after, action=action))
+        return rows
 
     def current(self):
         head = read(self.head) if self.head.exists() else None
@@ -89,7 +159,7 @@ class GatewayRelease:
                  and plan["profile"] == digest(self.profile), "GATEWAY_RETURN_DRIFT")
             with connect(self.profile) as (admin, identity):
                 need(identity == plan["generation"], "GATEWAY_GENERATION_CHANGED")
-                check_state(admin, plan["rows"], "after")
+                self.check_state(admin, plan["rows"], "after")
                 self.transition(admin, plan, review, current, plan["parent"])
             return {"status": "RETURNED", "digest": req["digest"]}
 
@@ -105,7 +175,7 @@ class GatewayRelease:
         with connect(self.profile) as (admin, identity):
             pending = current is not None and current["status"] == "PENDING"
             interrupted = self.interrupted_rows(current, identity) if pending else None
-            rows = plan_rows(admin, resources, interrupted)
+            rows = self.plan_rows(admin, resources, interrupted)
             plan = dict(scope=intent(req), profile=digest(self.profile), generation=identity, ci=ci,
                         rows=rows, parent=current, nonce=nonce)
             stamp = digest(plan)
@@ -117,7 +187,14 @@ class GatewayRelease:
                 if pending:
                     result["recoveringRun"] = current["run"]
                 return result
-            need(stamp == req["digest"], "GATEWAY_PLAN_DRIFT")
+            if stamp != req["digest"]:
+                # The approved snapshot binds raw GET bodies, including opaque fields.
+                for row, approved_row in zip(rows, prepared["rows"]):
+                    if (row["kind"], row["id"]) == (approved_row["kind"], approved_row["id"]):
+                        paths = field_differences(row["before"], approved_row["before"], exact=True)
+                        if paths:
+                            self.diagnose("approved-get", row, paths)
+                raise Held("GATEWAY_PLAN_DRIFT")
             save(self.path / "gateway.snapshot", plan)
             head = {"status": "APPLIED", "digest": self.return_stamp(plan), "run": req["run"]}
             self.transition(admin, plan, review, current, head)
@@ -141,28 +218,32 @@ class GatewayRelease:
             for index, row in enumerate(rows if forward else reversed(rows)):
                 if row["action"] == "unchanged":
                     continue
-                need(conforms(admin.get(row), row[old]), "GATEWAY_LIVE_DRIFT")
+                live = self.observe("pre-write-get", row, admin.get)
+                self.verify("pre-write-get", row, live, row[old], "GATEWAY_LIVE_DRIFT")
                 claim = self.path / f"{prefix}.{index}.intent"
                 save(claim, {"kind": row["kind"], "id": row["id"]})
                 attempted.append((row, row[new]))
-                ack = admin.write(row, row[new])
+                ack = self.observe("write", row, admin.write, row[new])
                 attempted[-1] = (row, ack)
-                need(conforms(ack, row[new]) and conforms(admin.get(row), row[new]), "GATEWAY_WRITE_READBACK")
-            check_state(admin, rows, new)
+                self.verify("write-ack", row, ack, row[new], "GATEWAY_WRITE_READBACK")
+                live = self.observe("write-get", row, admin.get)
+                self.verify("write-get", row, live, row[new], "GATEWAY_WRITE_READBACK")
+            self.check_state(admin, rows, new)
         except Exception:
             try:
                 for row, ack in reversed(attempted):
-                    live = admin.get(row)
+                    live = self.observe("compensation-get", row, admin.get)
                     # GET and PUT may expose different defaults. Even if the old
                     # body is a subset of the new one, PUT it back to remove additions.
                     # A nonconforming ACK can identify only its exact observed body.
                     if not conforms(live, row[new]) and canonical(live) != canonical(ack):
-                        need(conforms(live, row[old]), "GATEWAY_COMPENSATION_DRIFT")
+                        self.verify("compensation-drift", row, live, row[old], "GATEWAY_COMPENSATION_DRIFT")
                         continue
                     # A missing old body selects DELETE; GET must then prove absence.
-                    admin.write(row, row[old])
-                    need(conforms(admin.get(row), row[old]), "GATEWAY_COMPENSATION_READBACK")
-                check_state(admin, rows, old)
+                    self.observe("compensation-write", row, admin.write, row[old])
+                    live = self.observe("compensation-readback", row, admin.get)
+                    self.verify("compensation-readback", row, live, row[old], "GATEWAY_COMPENSATION_READBACK")
+                self.check_state(admin, rows, old)
                 save(self.path / (prefix + ".failure"), {"status": "RESTORED"})
                 save(self.head, parent, replace=True)
             except Exception:

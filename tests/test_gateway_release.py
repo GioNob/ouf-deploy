@@ -78,6 +78,32 @@ def verify(pair):
 
 
 class Contract(unittest.TestCase):
+    def test_only_declared_encrypted_path_accepts_opaque_readback(self):
+        desired = {"plugins": {"openid-connect": {"client_secret": SECRET, "client_id": "id"},
+                               "other": {"client_secret": SECRET}}}
+        live = deepcopy(desired)
+        oidc = live["plugins"]["openid-connect"]
+        oidc["client_secret"] = "opaque-fixture"
+        self.assertEqual(operation.field_differences(live, desired), [])
+        self.assertEqual(operation.field_differences(live, desired, exact=True),
+                         ["plugins.openid-connect.client_secret: changed"])
+        for invalid in ("", None, False, [], {}):
+            oidc["client_secret"] = invalid
+            self.assertEqual(operation.field_differences(live, desired), ["plugins.openid-connect.client_secret: changed"])
+        del oidc["client_secret"]
+        oidc["client_id"] = SECRET
+        live["plugins"]["other"]["client_secret"] = "different"
+        self.assertEqual(operation.field_differences(live, desired), [
+            "plugins.openid-connect.client_id: changed", "plugins.openid-connect.client_secret: missing",
+            "plugins.other.client_secret: changed"])
+
+    def test_differences_identify_array_indices_and_preserve_exact_limits(self):
+        expected = {"items": [{"maximum": 2**53 - 1}, "sensitive"], "methods": ["GET"]}
+        actual = {"items": [{"maximum": float(format(2**53 - 1, ".14g")), SECRET: True}],
+                  "methods": ["GET", SECRET]}
+        self.assertEqual(operation.field_differences(actual, expected), [
+            "items[0].maximum: changed", "items[0]: unexpected field", "items[1]: missing", "methods[1]: unexpected"])
+
     def test_declared_fields_are_required_and_arrays_are_exact(self):
         conforms = operation.conforms
         self.assertTrue(conforms({"plugin": {"enabled": True, "extra": 1}}, {"plugin": {"enabled": True}}))
@@ -414,6 +440,33 @@ class Phases(unittest.TestCase):
                     self.assertRaisesRegex(mandate.Held, "^" + expected + "$"):
                 self.phase(dict(req, phase="apply", digest=plan["digest"]))
             self.assertEqual(key in self.admin.data, expected == "GATEWAY_RECONCILIATION_REQUIRED")
+            diagnostics = store.read(self.root / run / "gateway.apply.diagnostics")
+            self.assertEqual(diagnostics[0]["stage"], "write-ack")
+            self.assertEqual(diagnostics[0]["paths"],
+                             ["desc: missing", "uri: changed" if ack else "uri: missing"])
+
+    def test_get_and_compensation_failures_retain_only_field_paths(self):
+        key = ("routes", "created")
+        self.select([row(*key, {"uri": "/new", "plugins": {"openid-connect": {"client_secret": MARKER}}})])
+        def alter_readback(key, body):
+            self.admin.data[key]["plugins"]["openid-connect"].clear()
+            self.admin.data[key]["uri"] = SECRET
+        self.admin.on_write = alter_readback
+        plan = self.phase(REQ)
+        with self.assertRaisesRegex(mandate.Held, "^GATEWAY_RECONCILIATION_REQUIRED$"):
+            self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        diagnostic = self.root / REQ["run"] / "gateway.apply.diagnostics"
+        self.assertEqual(store.read(diagnostic), [
+            dict(stage="write-get", kind="routes", id="created",
+                 paths=["plugins.openid-connect.client_secret: missing", "uri: changed"]),
+            dict(stage="compensation-drift", kind="routes", id="created", paths=["$: changed"])])
+
+    def test_unreadable_get_records_no_response_or_exception_text(self):
+        with patch.object(self.admin, "get", side_effect=OSError(SECRET)), \
+                self.assertRaisesRegex(mandate.Held, "^GATEWAY_ADMIN_REQUEST$"):
+            self.phase(REQ)
+        self.assertEqual(store.read(self.root / REQ["run"] / "gateway.plan.diagnostics"), [
+            dict(stage="plan-get", kind="upstreams", id="one", paths=["$: unavailable"])])
 
     def test_pending_return_uses_release_snapshot(self):
         receipt = self.phase(self.plan())
