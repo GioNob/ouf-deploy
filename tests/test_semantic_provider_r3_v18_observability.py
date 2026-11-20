@@ -9,8 +9,9 @@ import types
 import unittest
 from unittest.mock import patch
 
+from r3_sealed_inputs import sealed_legacy_inputs
 from test_r3_readers import load as reader
-from test_semantic_provider_r3_v18 import C, CONFIG, PREFIX, fixture
+from test_semantic_provider_r3_v18 import C, CONFIG, PREFIX, V12, fixture
 
 
 class Clock:
@@ -139,14 +140,14 @@ class Lease:
 class Observability(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        inputs, cls.old = fixture()
+        inputs, old = fixture()
         renewal = C.document(inputs['files']['leaseRenewal'])
         # Isolate the pause and backoff path. The default fast lane is
         # exercised with the real emitted runtime in the renewal suite.
         inputs['files']['leaseRenewal'] = C.canonical(renewal | {
             'fastRetryCount': 0, 'fastRetryDelaysSeconds': [],
         })
-        cls.result = C.compose(inputs, 18, sequence=18, supersedes=C.sha(cls.old['authorization']))
+        cls.result = C.compose(inputs, 18, sequence=18, supersedes=C.sha(old['authorization']))
 
     def test_v17_golden(self):
         # Captured on clean 514679b9 before adding the v18 overlay.
@@ -157,8 +158,10 @@ class Observability(unittest.TestCase):
             'layout': '83ec61849417b6c7932267c207f73918316b795b9a497411a9bd133e58e233ea',
             'authorization': 'ec529e180f7293b5206b8ab467b6b688544cc52cb93bdc5180b82214896c8391',
         }
-        actual = {key: C.sha(C.canonical(self.old[key])) for key in expected if key != 'authorization'}
-        self.assertEqual(actual | {'authorization': C.sha(self.old['authorization'])}, expected)
+        with sealed_legacy_inputs(V12):
+            _, old = fixture()
+        actual = {key: C.sha(C.canonical(old[key])) for key in expected if key != 'authorization'}
+        self.assertEqual(actual | {'authorization': C.sha(old['authorization'])}, expected)
 
     def test_v18_seals_the_existing_closure(self):
         docs = self.result['documents']

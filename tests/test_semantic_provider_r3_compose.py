@@ -13,6 +13,7 @@ from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from r3_sealed_inputs import sealed_blob
 from tools.semantic_provider_r3 import compose as C
 from tools.semantic_provider_operation import authorization as A
 from tools.semantic_provider_admission_v2 import broker_v2 as B, driver_v7 as D, evidence_v2 as E
@@ -155,7 +156,7 @@ class ComposeTests(unittest.TestCase):
         expected = json.loads((ROOT / 'tests/fixtures/r3-v1-v10-dns-tolerance-hashes.json').read_bytes())
         for version in range(1, 11):
             kw = {} if version == 1 else {'sequence': version, 'supersedes': 'a'*64}
-            result = C.compose(fixture(version), version, **kw)
+            result = C.compose(fixture(version, read_blob=sealed_blob), version, **kw)
             self.assertEqual(A.sha(A.canonical(result['hashes'])), expected[str(version)])
 
     def test_v11_profile_source_aliases_and_authorization_hashes(self):
@@ -303,7 +304,7 @@ class ComposeTests(unittest.TestCase):
 
     def test_version_one_fixed_fixture_has_identical_document_bytes(self):
         baseline = json.loads((ROOT / "tests/fixtures/r3-v1-document-hashes.json").read_bytes())
-        inputs = fixture()
+        inputs = fixture(read_blob=sealed_blob)
         # Versioned releases retain their original source INPUTS. Current
         # sources belong to the new closure, never to a rewritten old oracle.
         previous = json.loads((ROOT / "tests/fixtures/r3-v3-document-hashes.json").read_bytes())["retainedSources"]
@@ -322,7 +323,7 @@ class ComposeTests(unittest.TestCase):
 
     def test_version_two_fixed_inputs_and_version_four_current_closure(self):
         baseline = json.loads((ROOT / "tests/fixtures/r3-v2-document-hashes.json").read_bytes())
-        inputs = fixture()
+        inputs = fixture(read_blob=sealed_blob)
         previous = json.loads((ROOT / "tests/fixtures/r3-v3-document-hashes.json").read_bytes())["retainedSources"]
         for path, packed in previous.items():
             inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
@@ -340,7 +341,7 @@ class ComposeTests(unittest.TestCase):
 
     def test_version_three_retained_bytes(self):
         baseline = json.loads((ROOT / "tests/fixtures/r3-v3-document-hashes.json").read_bytes())
-        inputs = fixture()
+        inputs = fixture(read_blob=sealed_blob)
         inputs["sources"].pop(C.L2_SOURCE)
         for path, packed in baseline["retainedSources"].items():
             inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))

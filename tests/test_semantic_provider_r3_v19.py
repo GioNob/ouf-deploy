@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
+from r3_sealed_inputs import sealed_legacy_inputs
 import test_runtime_v52_epochs as V52
 from test_semantic_provider_r3_v18 import C, V12, fixture, upgrade
 from tools.semantic_provider_admission_v2 import broker_v2 as B
@@ -33,8 +34,10 @@ class CompositionV19(unittest.TestCase):
 
     def test_v18_golden(self):
         # Recorded from 6e5ff93b before adding the v19 overlay.
-        actual = {key: C.sha(C.canonical(self.old[key])) for key in ('hashes', 'inputHashes', 'audit', 'layout')}
-        self.assertEqual(actual | {'authorization': C.sha(self.old['authorization'])}, {
+        with sealed_legacy_inputs(V12):
+            _, old, _ = composition_fixture()
+        actual = {key: C.sha(C.canonical(old[key])) for key in ('hashes', 'inputHashes', 'audit', 'layout')}
+        self.assertEqual(actual | {'authorization': C.sha(old['authorization'])}, {
             'hashes': '637ba6f81ebe4406a17f449f9d8cb25d186a6089f923fe4304d6019978c231eb',
             'inputHashes': '9b23c1ffd7c65180b07006c1da38cbea528de8420a3fe0f3cb09f1a3b1bb6a5a',
             'audit': '302d3b526d20af5f200c95a7258d9351254ce50220df3425aa7a3749db8e8aab',
@@ -55,7 +58,8 @@ class CompositionV19(unittest.TestCase):
 
     def test_v19_golden(self):
         # Captured at 0a5840ca and retained from the task-85 diagnostic.
-        result = self.result
+        with sealed_legacy_inputs(V12):
+            _, _, result = composition_fixture()
         actual = {key: C.sha(C.canonical(result[key])) for key in ('hashes', 'inputHashes', 'audit', 'layout')}
         self.assertEqual(actual | {'authorization': C.sha(result['authorization'])}, {
             'hashes': '3bdd788787532520b2b9463a0e5c045ea4d348766e88a420d38935723c8d82ff',

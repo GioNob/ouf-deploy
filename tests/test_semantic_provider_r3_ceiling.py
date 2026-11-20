@@ -53,6 +53,7 @@ def relocated_hashes(result, number):
 class Ceiling(unittest.TestCase):
     def test_complete_historical_closures(self):
         number = 28
+        current_auth = (v27.ROOT / v27.overlay.AUTH).read_bytes().replace(b'\r\n', b'\n')
         for ceiling in (24, 25, 26, 27):
             with self.subTest(ceiling=ceiling):
                 if ceiling == 24:
@@ -77,8 +78,11 @@ class Ceiling(unittest.TestCase):
                 self.assertEqual(candidate['inputHashes']['settings'], C.sha(capped['files']['settings']))
                 auth_hash = C.sha(candidate['authorization'])
                 self.assertEqual(candidate['hashes'], expected | {f'authorization/{number}.json': auth_hash})
-                installed_auth = C.contract_module(candidate['documents'][prefix + 'source/' + v27.overlay.AUTH],
-                                                   'historical_auth')
+                emitted = candidate['documents'][prefix + 'source/' + v27.overlay.AUTH]
+                self.assertEqual(candidate['inputHashes']['repository/' + v27.overlay.AUTH], C.sha(current_auth))
+                if ceiling < 27:  # v27 overlays the signature memo on the current validator.
+                    self.assertEqual(emitted, current_auth)
+                installed_auth = C.contract_module(emitted, 'ceiling_authorization')
                 self.assertEqual(installed_auth.validate(candidate['authorization']), payload)
 
     def test_same_renewal_cannot_distinguish_25_from_26_by_output_hash(self):

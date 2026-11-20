@@ -9,6 +9,7 @@ from types import ModuleType, SimpleNamespace
 import unittest
 from unittest.mock import patch
 
+from r3_sealed_inputs import sealed_legacy_inputs
 import test_semantic_provider_r3_v16_adapter as V16
 from tools.semantic_provider_r3 import compose as C, upgrade
 from tools.semantic_provider_r3 import lease_renewal_v18 as policy
@@ -29,6 +30,7 @@ def fixture():
 
 
 class CompositionBaseline(unittest.TestCase):
+    @sealed_legacy_inputs(V12)
     def test_frozen_v17(self):
         # Captured at 514679b9 before the v18 composition changes.
         inputs, previous = V16.v16_fixture()
