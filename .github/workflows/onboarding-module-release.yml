@@ -1,0 +1,107 @@
+name: Governed Onboarding release
+on:
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: ouf-vps-privileged-operations
+  cancel-in-progress: false
+
+env:
+  MODULE: onboarding
+
+jobs:
+  intent:
+    if: github.ref_protected && github.run_attempt == '1' && github.ref_name == github.event.repository.default_branch
+    runs-on: &vps [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    outputs:
+      digest: ${{ steps.intent.outputs.digest }}
+    steps:
+      - id: intent
+        shell: bash
+        run: |
+          /usr/bin/python3 -I - <<'PY'
+          import hashlib, json, os
+          e = os.environ
+          scope = dict(run=e["GITHUB_RUN_ID"], attempt=e["GITHUB_RUN_ATTEMPT"], commit=e["GITHUB_SHA"],
+                       operation="module-release", module=e["MODULE"])
+          digest = hashlib.sha256(json.dumps(scope, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+          comment = " ".join([scope["operation"], scope["run"], scope["attempt"], scope["commit"], scope["module"], "plan", digest])
+          with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
+              print("Commento di approvazione del plan", chr(10), chr(10), "`" + comment + "`", file=f)
+          with open(e["GITHUB_OUTPUT"], "a") as f:
+              print("digest=" + digest, file=f)
+          PY
+
+  plan:
+    name: plan ${{ needs.intent.outputs.digest }}
+    needs: intent
+    runs-on: *vps
+    environment: ouf-vps-privileged
+    permissions: {contents: read, actions: read, deployments: read}
+    timeout-minutes: 40
+    env:
+      PHASE: plan
+      DIGEST: ${{ needs.intent.outputs.digest }}
+    outputs:
+      digest: ${{ steps.call.outputs.digest }}
+    steps:
+      - &invoke
+        id: call
+        env:
+          REVIEW_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          /usr/bin/python3 -I - <<'PY'
+          import json, os, re, subprocess
+          e = os.environ
+          req = dict(run=e["GITHUB_RUN_ID"], attempt=e["GITHUB_RUN_ATTEMPT"], commit=e["GITHUB_SHA"],
+                     operation="module-release", module=e["MODULE"], phase=e["PHASE"], digest=e["DIGEST"])
+          wire = json.dumps({"request": req, "token": e.pop("REVIEW_TOKEN")}).encode()
+          out = subprocess.run(["/usr/bin/sudo", "-n", "--", "/usr/local/sbin/ouf-a2"],
+                               input=wire, stdout=subprocess.PIPE, check=True)
+          result = json.loads(out.stdout)
+          stamp = result["digest"]
+          if not re.fullmatch("[0-9a-f]{64}", stamp):
+              raise SystemExit("Risposta esecutore non valida")
+          status = result["status"]
+          next_phase = {"PLANNED": "apply", "GATED": "migrate", "READY": None}[status]
+          with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
+              print("Onboarding", status, file=f)
+              if next_phase:
+                  comment = " ".join([req["operation"], req["run"], req["attempt"], req["commit"],
+                                      req["module"], next_phase, stamp])
+                  print("Commento di approvazione", chr(10), chr(10), chr(96) + comment + chr(96), file=f)
+          with open(e["GITHUB_OUTPUT"], "a") as f:
+              print("digest=" + stamp, "status=" + status, sep=chr(10), file=f)
+          PY
+
+  apply:
+    name: apply ${{ needs.plan.outputs.digest }}
+    needs: plan
+    runs-on: *vps
+    environment: ouf-vps-privileged
+    permissions: {contents: read, actions: read, deployments: read}
+    timeout-minutes: 40
+    env:
+      PHASE: apply
+      DIGEST: ${{ needs.plan.outputs.digest }}
+    outputs:
+      status: ${{ steps.call.outputs.status }}
+      digest: ${{ steps.call.outputs.digest }}
+    steps:
+      - *invoke
+
+  migrate:
+    if: needs.apply.outputs.status == 'GATED'
+    name: migrate ${{ needs.apply.outputs.digest }}
+    needs: apply
+    runs-on: *vps
+    environment: ouf-vps-privileged
+    permissions: {contents: read, actions: read, deployments: read}
+    timeout-minutes: 40
+    env:
+      PHASE: migrate
+      DIGEST: ${{ needs.apply.outputs.digest }}
+    steps:
+      - *invoke

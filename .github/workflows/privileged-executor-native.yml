@@ -1,0 +1,54 @@
+name: Privileged executor native tests
+on:
+  pull_request:
+    paths:
+      - 'tools/privileged_executor/**'
+      - 'tools/module_release/**'
+      - 'scripts/ouf-a2-executor'
+      - 'scripts/install-ouf-a2.py'
+      - 'tools/semantic_application_cutover/**'
+      - 'tools/semantic_provider_r3/semantic_identity_v25.py'
+      - 'config/module-release/**'
+      - 'docs/privileged-executor.example.json'
+      - 'tests/test_privileged_executor*.py'
+      - 'tests/test_module_release*.py'
+      - 'tests/privileged_executor_fixture.sh'
+      - '.github/workflows/semantic-a2-cutover.yml'
+      - '.github/workflows/onboarding-module-release.yml'
+      - '.github/workflows/privileged-executor-native.yml'
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Normalize the hosted runner's own sudoers modes (the installer runs a full visudo -c)
+        run: sudo find /etc/sudoers.d -type f -exec chmod 0440 {} + && sudo /usr/sbin/visudo -c
+      - name: Label the disposable hosted Engine and prepare local images
+        run: |
+          set -euo pipefail
+          sudo python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("/etc/docker/daemon.json")
+          cfg = json.loads(path.read_bytes()) if path.exists() else {}
+          cfg.setdefault("labels", []).append("ouf.a2.fixture=true")
+          path.write_text(json.dumps(cfg))
+          PY
+          sudo systemctl restart docker
+          docker info >/dev/null
+          bash tests/privileged_executor_fixture.sh
+      - name: Exercise pidfd, Engine cutover and governed module release
+        run: |
+          set -euo pipefail
+          image=$(docker image inspect --format '{{.Id}}' ouf-ci-gate:old)
+          for suite in 'test_privileged_executor*.py' 'test_module_release*.py'; do
+            sudo env OUF_A2_NATIVE=1 OUF_A2_NATIVE_ENGINE=1 OUF_MODULE_RELEASE_NATIVE=1 \
+              OUF_A2_FIXTURE_SOCKET=/var/run/docker.sock OUF_A2_FIXTURE_IMAGE="$image" \
+              /usr/bin/python3 -I -B -m unittest discover -s tests -p "$suite" -v
+          done
+          /usr/bin/python3 -I -B tests/test_vps_workflows_manual_only.py -v
