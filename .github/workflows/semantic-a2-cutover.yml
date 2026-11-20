@@ -83,10 +83,17 @@ jobs:
           stamp = result["digest"]
           if not re.fullmatch("[0-9a-f]{64}", stamp):
               raise SystemExit("Risposta esecutore non valida")
-          next_phase = {"plan": "apply", "apply": "sign"}.get(req["phase"])
+          migration = "migrationCount" in result
+          next_phase = {"plan": "apply", "apply": "migrate" if migration else "sign", "migrate": "sign"}.get(req["phase"])
           if req["phase"] == "sign" and req["direction"] == "forward" and e["WORKER_PROOF"] == "true":
               next_phase = "proof"
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
+              if "zipSha256" in result:
+                  print("Semantic", result["imageId"], "· ZIP SHA-256", result["zipSha256"],
+                        "· inventario Flyway SHA-256", result["inventorySha256"], file=f)
+              if migration:
+                  print("Review Flyway · immagine", result["imageId"], "· migrazioni nuove", result["migrationCount"],
+                        "· SHA-256 elenco", result["migrationsSha256"], file=f)
               if "ingress" in result:
                   print("Ingresso", result["ingress"], "· readiness", result["readiness"], "· worker", result["worker"], file=f)
               if "queueCount" in result:
@@ -101,6 +108,7 @@ jobs:
                   print("Prova chatbot", result["proof"], file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + stamp, file=f)
+              print("migration=" + str(migration).lower(), file=f)
           PY
 
   apply:
@@ -115,26 +123,47 @@ jobs:
       DIGEST: ${{ needs.plan.outputs.digest }}
     outputs:
       digest: ${{ steps.call.outputs.digest }}
+      migration: ${{ steps.call.outputs.migration }}
     steps:
       - *invoke
 
-  sign:
-    name: sign ${{ needs.apply.outputs.digest }}
+  migrate:
+    name: migrate ${{ needs.apply.outputs.digest }}
     needs: apply
+    if: needs.apply.outputs.migration == 'true'
     runs-on: *vps
     environment: ouf-vps-privileged
     permissions: {contents: read, actions: read, deployments: read}
-    timeout-minutes: 75
+    timeout-minutes: 10
     env:
-      PHASE: sign
+      PHASE: migrate
       DIGEST: ${{ needs.apply.outputs.digest }}
     outputs:
       digest: ${{ steps.call.outputs.digest }}
     steps:
       - *invoke
 
+  sign:
+    name: sign ${{ needs.migrate.outputs.digest || needs.apply.outputs.digest }}
+    needs: [apply, migrate]
+    if: >-
+      ${{ !cancelled() && needs.apply.result == 'success' &&
+      ((needs.apply.outputs.migration == 'false' && needs.migrate.result == 'skipped') ||
+       (needs.apply.outputs.migration == 'true' && needs.migrate.result == 'success')) }}
+    runs-on: *vps
+    environment: ouf-vps-privileged
+    permissions: {contents: read, actions: read, deployments: read}
+    timeout-minutes: 75
+    env:
+      PHASE: sign
+      DIGEST: ${{ needs.migrate.outputs.digest || needs.apply.outputs.digest }}
+    outputs:
+      digest: ${{ steps.call.outputs.digest }}
+    steps:
+      - *invoke
+
   proof:
-    if: inputs.worker_proof && inputs.direction == 'forward'
+    if: ${{ !cancelled() && needs.sign.result == 'success' && inputs.worker_proof && inputs.direction == 'forward' }}
     name: proof ${{ needs.sign.outputs.digest }}
     needs: sign
     runs-on: *vps

@@ -300,6 +300,14 @@ class ReleaseTest(unittest.TestCase):
         self.assertEqual(self.execute()["readiness"], "UP")
         self.assertLess(self.rt.events.index("migrate"), self.rt.events.index("signal:2"))
 
+    def test_original_onboarding_profile_still_requires_http_200_with_up(self):
+        with patch.object(self.rt, "probe", return_value=(204, b"")):
+            self.assertEqual(plan(self.p, self.rt)["reason"], "PREDECESSOR_NOT_READY")
+        with patch.object(self.rt, "probe", return_value=(200, b'{"status":"DOWN"}')):
+            self.assertEqual(plan(self.p, self.rt)["reason"], "PREDECESSOR_NOT_READY")
+        self.assertEqual(self.execute()["status"], "READY")
+        self.assertEqual(self.rt.docs[NEW]["Config"]["Cmd"], ["java", "-jar", "/app/application.jar"])
+
     def test_non_json_readiness(self):
         self.p["readiness"].pop("jsonStatus")
         self.p["readiness"]["acceptStatus"] = [204]
@@ -383,7 +391,7 @@ class ReleaseTest(unittest.TestCase):
         repo = {"full_name": ci["repository"]}
         run = dict(id=15, event="pull_request", status="completed", conclusion="success", run_attempt=1,
                    repository=repo, head_repository=repo, head_sha=ci["sourceCommit"], path=".github/workflows/module-ci.yml",
-                   pull_requests=[{"number": 63, "head": {"sha": ci["sourceCommit"]}}])
+                   pull_requests=[{"number": ci["pullRequest"], "head": {"sha": ci["sourceCommit"]}}])
         obj = dict(id=17, expired=False, workflow_run={"id": 15, "head_sha": ci["sourceCommit"]},
                    name="source-onboarding-governed-image-15", digest="sha256:" + ci["zipSha256"])
         api = lambda path: run if path.endswith("/runs/15") else obj

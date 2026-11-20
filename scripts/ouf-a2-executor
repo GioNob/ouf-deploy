@@ -12,12 +12,16 @@ from mandate import Held, authorize, github_reader, need, validate
 from store import read, trusted
 from pipeline import Cutover
 from module_operation import ModuleRelease
+from gateway_operation import GatewayRelease
 
 
-def dispatch(req, cfg, state, get):
+def dispatch(req, cfg, state, get, source_get=None, *, token=None):
     review = authorize(req, cfg, get)
-    operation = ModuleRelease if req.get("operation") == "module-release" else Cutover
-    return operation(cfg, state, req).execute(review)
+    if req.get("operation") == "module-release":
+        return ModuleRelease(cfg, state, req).execute(review)
+    if req.get("operation") == "gateway-release":
+        return GatewayRelease(cfg, state, req).execute(review, token)
+    return Cutover(cfg, state, req, source_get).execute(review)
 
 
 def main():
@@ -36,7 +40,11 @@ def main():
     validate(req, cfg)
     with trusted(ROOT / "lock", private=True).open("rb") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        response = dispatch(req, cfg, ROOT / "state", github_reader(cfg["repository"], envelope["token"]))
+        token = envelope["token"]
+        source_get = None
+        if req.get("direction") == "forward" and req["phase"] == "plan" and "successorImage" in cfg:
+            source_get = github_reader(cfg["successorImage"]["ci"]["repository"], token)
+        response = dispatch(req, cfg, ROOT / "state", github_reader(cfg["repository"], token), source_get, token=token)
     print(json.dumps(response, separators=(",", ":")))
 
 

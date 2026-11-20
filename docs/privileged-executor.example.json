@@ -34,6 +34,25 @@
     "protocol": "tcp",
     "direction": "semantic-to-southbound"
   },
+  "successorImage": {
+    "ci": {
+      "repository": "GioNob/ouf-semantic-registry",
+      "workflow": "module-ci.yml",
+      "pullRequest": 49,
+      "runId": 44796175289,
+      "runAttempt": 0,
+      "artifactId": 0,
+      "sourceCommit": "8a79db9201c6285749669a58b169ccf9e0da7cb2",
+      "sourceTree": "e293bbe42b3229087027d015a2002b0775939bd4",
+      "manifestSchema": "ouf.semantic-tested-image.v1",
+      "imageName": "ouf-semantic-registry",
+      "zipSha256": "<GitHub artifact SHA-256>",
+      "imageId": "sha256:<approved target Engine image ID>"
+    },
+    "inbox": "<absolute Semantic ZIP inbox>",
+    "migrationsField": "flywayMigrations",
+    "predecessorMigrations": [{"name": "<original Flyway filename>", "sha256": "<original migration SHA-256>"}]
+  },
   "retainedName": "<semantic retained>",
   "failedName": "<semantic returned>",
   "readinessPort": 0,
@@ -119,6 +138,19 @@
       "<IAM subject>": "<tenant>"
     }
   },
+  "gateway": {
+    "source": {
+      "repository": "GioNob/ouf-api-gateway",
+      "workflow": "<publisher workflow filename>"
+    },
+    "dockerSocket": "<absolute local Docker socket>",
+    "container": "<APISIX container name>",
+    "host": "<numeric loopback address inside APISIX namespace>",
+    "adminPath": "<local Admin API base path>",
+    "port": 0,
+    "keyFile": "<absolute private Admin API key file>",
+    "values": {"example.binding": "<private installation value>"}
+  },
   "modules": {
     "onboarding": {
       "schema": "ouf.module-release.v1",
@@ -178,6 +210,75 @@
         "artifactId": 0,
         "zipSha256": "<GitHub artifact SHA-256>",
         "imageId": "sha256:<approved target engine image ID>"
+      }
+    },
+    "mcp": {
+      "schema": "ouf.module-release.v1",
+      "module": "mcp",
+      "provenanceLabels": {
+        "org.opencontainers.image.revision": "publisherCommit",
+        "ouf.mcp.analysis-source": "sourceCommit"
+      },
+      "container": "SERVICE_NAME",
+      "retainedName": "RETAINED_NAME",
+      "failedName": "FAILED_NAME",
+      "oldImage": "sha256:<approved predecessor image ID>",
+      "networks": {
+        "APPLICATION_NETWORK": {
+          "ipv4": "<installation IPv4>",
+          "aliases": [
+            "APPLICATION_ALIAS"
+          ]
+        }
+      },
+      "gate": {
+        "executable": "/usr/local/bin/ouf-mcp",
+        "command": [
+          "/usr/local/bin/ouf-mcp",
+          "server"
+        ]
+      },
+      "migration": {
+        "mode": "none",
+        "rollbackCompatible": false,
+        "database": {
+          "postgresCid": "<approved PostgreSQL CID>",
+          "socket": "/<private socket directory>",
+          "urlEnv": "MCP_DATABASE_URL",
+          "version": 14
+        },
+        "migrations": []
+      },
+      "readiness": {
+        "path": "/health/ready",
+        "port": 8080,
+        "acceptStatus": [
+          204
+        ],
+        "attempts": 60
+      },
+      "inbox": "<absolute transport inbox>",
+      "journal": "<absolute private journal directory>",
+      "dockerSocket": "<absolute Docker socket>",
+      "nsenter": "<absolute nsenter executable>",
+      "ci": {
+        "repository": "GioNob/ouf-mcp-server",
+        "workflow": "ci.yml",
+        "pullRequest": 90,
+        "sourceCommit": "<reviewed PR head>",
+        "sourceTree": "<reviewed source tree>",
+        "imageName": "ouf-mcp",
+        "runId": 0,
+        "runAttempt": 0,
+        "artifactId": 0,
+        "zipSha256": "<GitHub artifact SHA-256>",
+        "imageId": "sha256:<approved target engine image ID>",
+        "publisherCommit": "<tested publisher commit>",
+        "tag": "ci",
+        "publisherFormat": "acquisition-mcp",
+        "sourceBranch": "release/mcp-sprint-02",
+        "transportSha256": "<digest from protected transport receipt>",
+        "artifactPrefix": "acquisition-mcp-image"
       }
     }
   }

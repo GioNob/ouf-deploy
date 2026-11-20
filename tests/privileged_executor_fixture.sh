@@ -3,9 +3,12 @@
 set -euo pipefail
 work=$(mktemp -d)
 trap 'rm -rf -- "$work"' EXIT
+go_fixture="$(dirname "$(realpath "$0")")/module_release_ready_fixture.go"
 cd "$work"
 mkdir -p root/{app,bin,opt,tmp}
 chmod 1777 root/tmp
+mkdir -p root/usr/local/bin
+CGO_ENABLED=0 GOPROXY=off GOTOOLCHAIN=local go build -trimpath -o root/usr/local/bin/ouf-mcp "$go_fixture"
 cat > Fixture.java <<'JAVA'
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;

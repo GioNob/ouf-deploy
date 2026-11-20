@@ -13,6 +13,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
 sys.path[:0] = [str(ROOT / "tools" / subdir) for subdir in
                 ("privileged_executor", "semantic_provider_r3", "semantic_application_cutover")]
 import mandate
@@ -286,7 +287,11 @@ class Protocol(unittest.TestCase):
         jobs = wf["jobs"]
         self.assertIs(wf[True]["workflow_dispatch"]["inputs"]["worker_proof"]["default"], False)
         self.assertEqual(jobs["proof"]["needs"], "sign")
-        self.assertEqual(jobs["proof"]["if"], "inputs.worker_proof && inputs.direction == 'forward'")
+        self.assertEqual(jobs["proof"]["if"], "${{ !cancelled() && needs.sign.result == 'success' && "
+                         "inputs.worker_proof && inputs.direction == 'forward' }}")
+        self.assertEqual(jobs["migrate"]["needs"], "apply")
+        self.assertEqual(jobs["migrate"]["if"], "needs.apply.outputs.migration == 'true'")
+        self.assertEqual(jobs["sign"]["needs"], ["apply", "migrate"])
         for phase in mandate.PHASES:
             job = jobs[phase]
             self.assertEqual(job["environment"], "ouf-vps-privileged")
@@ -318,7 +323,13 @@ class RoundTrip(unittest.TestCase):
     def test_optional_proof_after_forward_completion(self):
         self.round_trip(signed=True, prove=True)
 
-    def round_trip(self, signed, prove=False):
+    def test_image_and_flyway_review_on_resumed_generation(self):
+        self.round_trip(signed=True, migrations=["V13__adoption.sql"])
+
+    def test_image_without_new_migrations(self):
+        self.round_trip(signed=True, migrations=[])
+
+    def round_trip(self, signed, prove=False, migrations=None):
         from contextlib import ExitStack
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as d, ExitStack() as patches:
@@ -327,6 +338,7 @@ class RoundTrip(unittest.TestCase):
             patches.enter_context(patch.object(store, "sync_dir"))
             patches.enter_context(patch.object(pipeline, "verified", side_effect=lambda *args: nullcontext(None)))
             old = frame()
+            old["Config"]["Image"] = "fixture:original"
             original = dict(role="semantic", containerName="app", image=old["Image"],
                 configurationSha256=semantic.semantic_configuration(old), network="fixture",
                 networkId="c"*64, bridge="fixture", direction="semantic-to-southbound",
@@ -337,6 +349,13 @@ class RoundTrip(unittest.TestCase):
                        roleCids=["first","second"])
             if prove:
                 cfg["queue"]["proof"] = {"subject":"fixture"}
+            new_image = original["image"]
+            if migrations is not None:
+                new_image = "sha256:" + "f"*64
+                cfg["successorImage"] = {"ci": {"imageId": new_image, "zipSha256": "1"*64}}
+            admission = patches.enter_context(patch.object(pipeline, "admit",
+                return_value={"ci": {"imageId": new_image, "zipSha256": "1"*64},
+                              "migrations": ["V12__baseline.sql", *(migrations or [])], "newMigrations": migrations}))
             head = SimpleNamespace(version=27, profile=original, waiting=False)
             store.save(root / "status", {"state":"ACTIVE"})
             counts = []
@@ -366,7 +385,7 @@ class RoundTrip(unittest.TestCase):
                 self.assertEqual(name, old_id)
                 return {**old, "Name":"/saved","NetworkSettings":{"Networks":{}},"State":{"Running":False}}
             engine.inspect.side_effect = inspect
-            engine.call.return_value = {"Id": original["image"]}
+            engine.call.return_value = {"Id": new_image}
             engine.create.return_value = new_id
             engine.reconnect.return_value = old_id
             engine.detach.side_effect = lambda cid, *_: cid
@@ -426,6 +445,21 @@ class RoundTrip(unittest.TestCase):
                 self.assertFalse((c.path / "apply.review").exists())
                 req["digest"] = first["digest"]
                 second = c.execute("review-apply")
+                if migrations and direction == "forward":
+                    self.assertEqual(second["migrationsSha256"], mandate.digest(migrations))
+                    signing = c.record("stage")["issue"]["planSha256"]
+                    req.update(phase="sign", digest=signing)
+                    with self.assertRaisesRegex(mandate.Held, "MIGRATION_REVIEW_REQUIRED"):
+                        c.execute("review-sign")
+                    req.update(phase="migrate", digest=signing)
+                    with self.assertRaisesRegex(mandate.Held, "APPROVED_MIGRATION_DRIFT"):
+                        c.execute("wrong-review")
+                    self.assertNotIn(("signal", cid), counts)
+                    req["digest"] = second["digest"]
+                    second = c.execute("review-migrate")
+                    self.assertEqual(second["digest"], signing)
+                else:
+                    self.assertNotIn("migrationCount", second)
                 if stop_at_gate:
                     return
                 req.update(phase="sign",digest="f"*64)
@@ -456,6 +490,12 @@ class RoundTrip(unittest.TestCase):
             else:
                 scenario("102","return",27,old_id)
             engine.create.assert_called_once()
+            self.assertEqual(engine.create.call_args.args[1]["Image"],
+                             new_image if migrations is not None else "fixture:original")
+            self.assertEqual(engine.create.call_args.args[2], new_image)
+            self.assertEqual(engine.start_gate.call_args.args[2]["Image"], "fixture:original")
+            self.assertEqual(engine.start_gate.call_args.args[3], original["image"])
+            self.assertEqual(admission.call_count, int(migrations is not None))
             self.assertEqual(engine.reconnect.call_args.args[0],old_id)
             expected = [("stop",27),("issue",28),("upgrade",28),("start",28),
                         ("signal",new_id),("probe",28),("stop",28),("issue",29),("upgrade",29),("start",29),

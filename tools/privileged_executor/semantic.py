@@ -18,7 +18,7 @@ WORKER = "OUF_DISCOVERY_WORKER_ENABLED"
 PROVIDER = "OUF_SCHEMA_GOV_ENABLED"
 
 
-def prepare(old, profile):
+def prepare(old, profile, successor_image=None):
     cfg, host = copy.deepcopy(old["Config"]), copy.deepcopy(old["HostConfig"])
     need(old["Image"] == profile["image"] and semantic_configuration(old) == profile["configurationSha256"]
          and old["Name"] == "/" + profile["containerName"], "BASELINE_DRIFT")
@@ -35,7 +35,9 @@ def prepare(old, profile):
     cfg.pop("MacAddress", None)
     if cfg["Hostname"] == old["Id"][:12]:
         cfg["Hostname"] = ""
-    # Preserve the inspected Config.Image reference; prevent tag drift independently.
+    if successor_image is not None:
+        cfg["Image"] = expected["Config"]["Image"] = successor_image
+        profile = {**profile, "image": successor_image}
     endpoints = {}
     for net, ep in old["NetworkSettings"]["Networks"].items():
         ipam = ep.get("IPAMConfig") or {}
@@ -79,6 +81,7 @@ def allocated_profile(plan, cid):
     expected["Id"] = cid
     cfg = expected["Config"]
     cfg["Env"] = list(plan["request"]["Env"])
+    cfg["Image"] = plan["request"]["Image"]
     if cfg["Hostname"] == plan["old"][:12]:
         cfg["Hostname"] = cid[:12]
     for ep in expected["NetworkSettings"]["Networks"].values():

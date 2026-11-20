@@ -27,7 +27,7 @@ def hex64(value):
     return isinstance(value, str) and re.fullmatch("[0-9a-f]{64}", value)
 
 
-PHASES = ("plan", "apply", "sign", "proof")
+PHASES = ("plan", "apply", "sign", "proof", "migrate")
 WORKFLOW = ".github/workflows/semantic-a2-cutover.yml"
 
 
@@ -39,12 +39,16 @@ def validate(req, policy):
     common = {"commit", "run", "attempt", "phase", "digest"}
     if req.get("operation") == "module-release":
         need(set(req) == common | {"operation", "module"} and isinstance(req["module"], str)
-             and req["module"] in policy["modules"] and req["phase"] in ("plan", "apply", "migrate"),
+             and req["module"] in policy["modules"] and (req["phase"] in ("plan", "apply", "migrate")
+             or (req["phase"] == "rollback" and "database" in policy["modules"][req["module"]]["migration"])),
              "MODULE_REQUEST_SCOPE")
+    elif req.get("operation") == "gateway-release":
+        from gateway_policy import valid_request
+        need("gateway" in policy and valid_request(req, common), "GATEWAY_REQUEST_SCOPE")
     else:
         need(set(req) == common | {"direction", "queue"} and req["phase"] in PHASES
              and req["direction"] in ("forward", "return") and req["queue"] in ("empty", "inventory")
-             and (req["phase"] != "proof" or req["direction"] == "forward"), "REQUEST_FIELDS")
+             and (req["phase"] not in ("proof", "migrate") or req["direction"] == "forward"), "REQUEST_FIELDS")
     need(req["attempt"] == "1"
          and re.fullmatch("[1-9][0-9]{0,19}", req["run"])
          and re.fullmatch("[0-9a-f]{40}", req["commit"]) and req["commit"] == policy["commit"]
@@ -58,6 +62,8 @@ def intent(req):
 
 
 def challenge(req):
+    if req.get("operation") == "gateway-release":
+        return " ".join(req[k] for k in ("operation", "run", "attempt", "commit", "phase", "digest"))
     if req.get("operation") == "module-release":
         return " ".join([req["operation"], req["run"], req["attempt"], req["commit"], req["module"],
                          req["phase"], req["digest"]])
@@ -89,9 +95,12 @@ def authorize(req, policy, get):
     validate(req, policy)
     path = "/actions/runs/" + req["run"]
     run = get(path)
+    workflow = (module_workflow(req["module"]) if req.get("operation") == "module-release" else WORKFLOW)
+    if req.get("operation") == "gateway-release":
+        workflow = ".github/workflows/gateway-release.yml"
     need(str(run["id"]) == req["run"] and run["run_attempt"] == 1
          and run["event"] == "workflow_dispatch" and run["status"] == "in_progress"
-         and run["path"] == (module_workflow(req["module"]) if req.get("operation") == "module-release" else WORKFLOW) and run["head_sha"] == req["commit"]
+         and run["path"] == workflow and run["head_sha"] == req["commit"]
          and run["head_branch"] == policy["branch"]
          and run["repository"]["id"] == run["head_repository"]["id"] == policy["repositoryId"],
          "RUN_NOT_AUTHORIZED")

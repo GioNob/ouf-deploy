@@ -3,6 +3,7 @@ from contextlib import ExitStack, redirect_stdout
 import hashlib
 import importlib.util
 import io
+import itertools
 import json
 import os
 from pathlib import Path
@@ -31,13 +32,29 @@ class Bootstrap(unittest.TestCase):
                    runner="runner", readinessPort=8080, installRoot=str(tmp), leaseJournal=str(tmp/"lease"),
                    socket=str(tmp/"docker.sock"))
         c = cfg["queue"]
+        cfg["successorImage"].update(inbox=str(tmp/"semantic-inbox"), migrationsField="migrations",
+                                     predecessorMigrations=["V12__baseline.sql"])
+        cfg["successorImage"]["ci"].update(repository="fixture/ouf-semantic-registry", imageName="registry",
+            sourceCommit="a"*40, sourceTree="b"*40, workflow="module-ci.yml", manifestSchema="fixture.v1",
+            runId=3, runAttempt=1, artifactId=4, pullRequest=2, zipSha256="a"*64, imageId="sha256:"+"b"*64)
         c.update(container="pg", role="reader", database="semantic", socket="/run/postgresql")
         module = cfg["modules"]["onboarding"]
+        cfg["gateway"].update(host="127.0.0.1", port=9180, adminPath="/apisix/admin", keyFile=str(tmp/"key"),
+                              dockerSocket=cfg["socket"], container="fixture")
+        cfg["gateway"]["source"]["workflow"] = "ci.yml"
         module.update(inbox=str(tmp/"inbox"), journal=str(tmp/"journal"), dockerSocket=cfg["socket"],
                       nsenter=str(tmp/"nsenter"), oldImage="sha256:"+"a"*64)
         for i, net in enumerate(module["networks"].values()):
             net["ipv4"] = f"192.0.2.{i+1}"
         module["ci"].update(runId=1, runAttempt=1, artifactId=1, imageId="sha256:"+"b"*64, zipSha256="c"*64)
+        mcp = cfg["modules"]["mcp"]
+        for key in ("inbox", "journal", "dockerSocket", "nsenter", "oldImage", "networks"):
+            mcp[key] = module[key]
+        for key in ("runId", "runAttempt", "artifactId", "imageId", "zipSha256", "sourceCommit", "sourceTree"):
+            mcp["ci"][key] = module["ci"][key]
+        mcp["ci"]["publisherCommit"] = mcp["ci"]["sourceCommit"]
+        mcp["ci"]["transportSha256"] = "e"*64
+        mcp["migration"]["database"].update(postgresCid="d"*64, socket="/run/postgresql")
         book = ("C="+"f"*40+"\n").encode()
         for binding in cfg["runbooks"].values():
             binding.update(artifactCommit="a"*40, sourceCommit="f"*40, sha256=hashlib.sha256(book).hexdigest())
@@ -68,16 +85,38 @@ class Bootstrap(unittest.TestCase):
         cfg = json.loads(files[inst.ROOT / "profile.json"][0])
         self.assertNotIn("proof", cfg["queue"])
         self.assertEqual(len(cfg["runbooks"]), 13)
-        self.assertEqual(set(cfg["modules"]), {"onboarding"})
+        self.assertEqual(set(cfg["modules"]), {"onboarding", "mcp"})
         lib = inst.ROOT / "lib"
         for file, (data, _) in files.items():
             if file.is_relative_to(lib):
                 file.parent.mkdir(exist_ok=True, parents=True)
                 file.write_bytes(data)
         probe = ("import sys;sys.path.insert(0,sys.argv[1]);"
+                 "from successor_image import admit;from module_release.mcp_artifact import verify;"
                  "from pipeline import Cutover;from module_operation import ModuleRelease;"
-                 "from module_release.operation import migrate")
+                 "from module_release.operation import migrate;from gateway_operation import GatewayRelease")
         subprocess.run([sys.executable, "-I", "-B", "-c", probe, str(lib)], check=True)
+
+    def test_optional_sections_are_independent(self):
+        original = self.path.read_bytes()
+        for successor, gateway, mcp in itertools.product((False, True), repeat=3):
+            with self.subTest(successor=successor, gateway=gateway, mcp=mcp):
+                cfg = json.loads(original)
+                if not successor:
+                    del cfg["successorImage"]
+                if not gateway:
+                    del cfg["gateway"]
+                if not mcp:
+                    del cfg["modules"]["mcp"]
+                self.path.write_text(json.dumps(cfg))
+                self.assertIn(self.inst.ENTRY, self.inst.inspect(self.path))
+
+    def test_gateway_rejects_legacy_source_token_file(self):
+        cfg = json.loads(self.path.read_bytes())
+        cfg["gateway"]["source"]["tokenFile"] = str(self.path.parent / "token")
+        self.path.write_text(json.dumps(cfg))
+        with self.assertRaisesRegex(ValueError, "GATEWAY_INSTALL_PROFILE"):
+            self.inst.inspect(self.path)
 
     @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_A2_NATIVE") == "1", "Linux bootstrap opt-in")
     def test_apply_reconciles_one_installation(self):

@@ -5,13 +5,14 @@ import subprocess
 from pathlib import Path
 import sys
 import tempfile
-import time
 import unittest
 import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
 sys.path[:0] = [str(ROOT / "tools" / n) for n in
                 ("privileged_executor", "semantic_provider_r3", "semantic_application_cutover")]
+from privileged_postgres_fixture import postgres_fixture
 from pipeline import until
 from queue_inventory import Queue, permit, review_rows
 from mandate import Held
@@ -23,6 +24,12 @@ from store import Journal
 @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_A2_NATIVE_ENGINE") == "1", "isolated Engine opt-in")
 class NativeRoundTrip(unittest.TestCase):
     def test_engine_gate_and_return(self):
+        self.round_trip()
+
+    def test_distinct_successor_and_original_image_on_return(self):
+        self.round_trip("ouf-ci-gate:" + "d"*40)
+
+    def round_trip(self, successor_tag=None):
         self.assertEqual(os.geteuid(), 0)
         engine = Engine(os.environ["OUF_A2_FIXTURE_SOCKET"])
         self.assertIn("ouf.a2.fixture=true", engine.call("GET", "info")["Labels"])
@@ -51,13 +58,17 @@ class NativeRoundTrip(unittest.TestCase):
         row = engine.inspect(old)
         original = dict(containerName=name, image=image, configurationSha256=semantic_configuration(row))
         until(lambda: engine.process(old, original, "GATE_WAITING"), 8, "BASELINE_GATE")
-        create, proposed = prepare(row, original)
+        candidate = None
+        if successor_tag:
+            candidate = engine.call("GET", f"images/{successor_tag}/json")["Id"]
+            self.assertNotEqual(candidate, image)
+        create, proposed = prepare(row, original, candidate)
         nets = {name:net}
         engine.detach(old, name+"-saved", nets)
-        cid = engine.create(name, create, image)
+        cid = engine.create(name, create, proposed["image"])
         self.addCleanup(engine.call, "DELETE", f"containers/{cid}?force=1")
         target = allocated_profile(dict(old=old,template=profile_template(row),request=create,target=proposed),cid)
-        engine.start_gate(cid,name,create,image)
+        engine.start_gate(cid,name,create,proposed["image"])
         with tempfile.TemporaryDirectory() as d:
             def release(container, profile):
                 gen = until(lambda: engine.process(container, profile, "GATE_WAITING"), 8, "GATE")
@@ -68,6 +79,7 @@ class NativeRoundTrip(unittest.TestCase):
             engine.detach(cid, name+"-return", nets)
             engine.reconnect(old,name,create["NetworkingConfig"]["EndpointsConfig"],nets)
             create["Env"] = row["Config"]["Env"]
+            create["Image"] = row["Config"]["Image"]
             engine.start_gate(old,name,create,image)
             release(old,original)
 
@@ -78,30 +90,7 @@ class NativeRoundTrip(unittest.TestCase):
         self.assertIn("ouf.a2.fixture=true", Engine(socket).call("GET", "info")["Labels"])
         cli = ["/usr/bin/docker", "--host", "unix://" + socket]
         name = "queue-fixture-" + uuid.uuid4().hex
-        postgres_bin = Path(subprocess.check_output(["pg_config", "--bindir"], text=True).strip())
-        self.assertTrue((postgres_bin / "initdb").is_file())
-        with tempfile.TemporaryDirectory() as directory:
-            passwd = Path(directory) / "passwd"
-            passwd.write_text("fixture:x:10001:10001:fixture:/tmp:/bin/sh\n")
-            passwd.chmod(0o644)
-            # Use only the hosted VM's installed PostgreSQL distribution, on a private Unix socket.
-            subprocess.run([*cli, "run", "-d", "--network", "none", "--name", name, "--user", "10001:10001",
-                "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "-e", "HOME=/tmp",
-                "-e", f"PATH={postgres_bin}:/usr/bin:/bin", "-v", "/usr:/usr:ro", "-v", "/usr/lib:/lib:ro",
-                "-v", f"{passwd}:/etc/passwd:ro", os.environ["OUF_A2_FIXTURE_IMAGE"], "/bin/sh", "-ec",
-                "initdb -D /tmp/data --no-locale -E UTF8 --auth-local=trust --auth-host=reject && "
-                "exec postgres -D /tmp/data -k /tmp -c listen_addresses=''"],
-                check=True, stdout=subprocess.DEVNULL)
-            self.addCleanup(subprocess.run, [*cli, "rm", "-f", name], check=False)
-            setup = [*cli, "exec", "-i", name, "psql", "-X", "-w", "-q", "-v", "ON_ERROR_STOP=1",
-                     "-h", "/tmp", "-U", "fixture", "-d", "postgres"]
-            for _ in range(60):
-                if subprocess.run(setup, input=b"SELECT 1;", stdout=subprocess.DEVNULL,
-                                  stderr=subprocess.DEVNULL).returncode == 0:
-                    break
-                time.sleep(.5)
-            else:
-                self.fail("Local PostgreSQL socket did not become ready")
+        with postgres_fixture(cli, name) as setup:
             subprocess.run(setup, input=b"""
                 CREATE ROLE reader LOGIN;
                 CREATE SCHEMA ouf_sem;

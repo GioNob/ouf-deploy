@@ -12,9 +12,17 @@ on:
       - 'docs/privileged-executor.example.json'
       - 'tests/test_privileged_executor*.py'
       - 'tests/test_module_release*.py'
+      - 'tests/test_gateway_release*.py'
+      - '.github/scripts/gateway-release.py'
+      - '.github/workflows/gateway-release.yml'
       - 'tests/privileged_executor_fixture.sh'
+      - 'tests/module_release_ready_fixture.go'
+      - 'tests/privileged_postgres_fixture.py'
       - '.github/workflows/semantic-a2-cutover.yml'
       - '.github/workflows/onboarding-module-release.yml'
+      - '.github/workflows/mcp-module-release.yml'
+      - '.github/workflows/mcp-release-artifact-transport.yml'
+      - '.github/workflows/semantic-release-artifact-transport.yml'
       - '.github/workflows/privileged-executor-native.yml'
 permissions:
   contents: read
@@ -29,6 +37,7 @@ jobs:
       - name: Normalize the hosted runner's own sudoers modes (the installer runs a full visudo -c)
         run: sudo find /etc/sudoers.d -type f -exec chmod 0440 {} + && sudo /usr/sbin/visudo -c
       - name: Label the disposable hosted Engine and prepare local images
+        id: fixture
         run: |
           set -euo pipefail
           sudo python3 - <<'PY'
@@ -46,9 +55,16 @@ jobs:
         run: |
           set -euo pipefail
           image=$(docker image inspect --format '{{.Id}}' ouf-ci-gate:old)
+          result=0
           for suite in 'test_privileged_executor*.py' 'test_module_release*.py'; do
             sudo env OUF_A2_NATIVE=1 OUF_A2_NATIVE_ENGINE=1 OUF_MODULE_RELEASE_NATIVE=1 \
               OUF_A2_FIXTURE_SOCKET=/var/run/docker.sock OUF_A2_FIXTURE_IMAGE="$image" \
-              /usr/bin/python3 -I -B -m unittest discover -s tests -p "$suite" -v
+              /usr/bin/python3 -I -B -m unittest discover -s tests -p "$suite" -v || result=1
           done
-          /usr/bin/python3 -I -B tests/test_vps_workflows_manual_only.py -v
+          exit "$result"
+      - name: Exercise Gateway plan, apply, return and rollback on disposable APISIX
+        if: ${{ !cancelled() && steps.fixture.outcome == 'success' }}
+        run: sudo env OUF_GATEWAY_RELEASE_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_gateway_release*.py' -v
+      - name: Check manual dispatch for VPS workflows
+        if: ${{ !cancelled() && steps.fixture.outcome == 'success' }}
+        run: /usr/bin/python3 -I -B tests/test_vps_workflows_manual_only.py -v

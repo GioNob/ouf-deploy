@@ -12,7 +12,8 @@ import sys
 import time
 from urllib.parse import quote
 
-from .contract import ENTRY, Held, require
+from .contract import ENTRY, Held, require, verify_labels
+from .postgres import database_snapshot
 
 
 PROBE = """
@@ -67,11 +68,14 @@ class Docker:
     def load(self, archive, package):
         self.api("POST", "/images/load?quiet=1", archive=archive)
         image = self.api("GET", "/images/" + quote(package["imageTag"], safe="") + "/json")
-        labels = image["Config"]["Labels"]
-        require(image["Id"] == self.p["ci"]["imageId"] and
-                labels.get("org.opencontainers.image.revision") == package["testedCommit"] and
-                labels.get("org.opencontainers.image.source") == "https://github.com/" + self.p["ci"]["repository"],
-                "LOADED_IMAGE_CHANGED")
+        require(image["Id"] == self.p["ci"]["imageId"], "LOADED_IMAGE_CHANGED")
+        ci = self.p["ci"]
+        verify_labels(image["Config"].get("Labels") or {}, ci["repository"], package["testedCommit"],
+                      optional=ci.get("publisherFormat") == "acquisition-mcp")
+
+    def database(self, old):
+        binding = self.p["migration"]["database"]
+        return database_snapshot(self.p["dockerSocket"], binding, old, self.inspect(binding["postgresCid"]))
 
     def stop(self, cid):
         self.api("POST", "/containers/" + cid + "/stop?t=20")
@@ -101,7 +105,8 @@ class Docker:
             actual = (root / "cmdline").read_bytes().rstrip(b"\0").decode().split("\0")
             exe = os.readlink(root / "exe")
             if not gated:
-                identity = exe == command[0] if "/" in command[0] else Path(exe).name == command[0]
+                expected = self.p["gate"].get("executable", command[0])
+                identity = exe == expected if "/" in expected else Path(exe).name == expected
                 return actual == command and identity
             # /bin/sh may resolve to dash or busybox in the container.
             mask = re.search(r"^SigCgt:\s*([0-9a-fA-F]+)$", (root / "status").read_text(), re.M)
