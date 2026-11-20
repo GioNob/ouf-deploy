@@ -1,0 +1,43 @@
+#!/usr/bin/python3 -I
+"""The only sudoers command. All caller data arrives on a bounded stdin."""
+import fcntl
+import json
+import os
+from pathlib import Path
+import sys
+
+sys.dont_write_bytecode = True
+ROOT = Path("/opt/ouf-a2")
+sys.path.insert(0, str(ROOT / "lib"))
+from mandate import Held, authorize, github_reader, need, validate
+from store import read, trusted
+from pipeline import Cutover
+
+
+def main():
+    need(os.geteuid() == 0 and sys.flags.isolated and len(sys.argv) == 1, "ROOT_ENTRYPOINT_ONLY")
+    os.umask(0o077)
+    os.chdir("/")
+    os.environ.clear()
+    os.environ.update(PATH="/usr/sbin:/usr/bin:/sbin:/bin", LC_ALL="C")
+    cfg = read(ROOT / "profile.json")
+    raw = sys.stdin.buffer.read(8193)
+    need(0 < len(raw) <= 8192, "REQUEST_LIMIT")
+    envelope = json.loads(raw)
+    need(set(envelope) == {"request", "token"}, "REQUEST_FIELDS")
+    req = envelope["request"]
+    validate(req, cfg)
+    with trusted(ROOT / "lock", private=True).open("rb") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        review = authorize(req, cfg, github_reader(cfg["repository"], envelope["token"]))
+        response = Cutover(cfg, ROOT / "state", req).execute(review)
+    print(json.dumps(response, separators=(",", ":")))
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as error:
+        # Neither arbitrary API responses nor subprocess diagnostics are public.
+        print(str(error) if isinstance(error, Held) else "A2_EVIDENCE_UNPROVEN", file=sys.stderr)
+        sys.exit(1)

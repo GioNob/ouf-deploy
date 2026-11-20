@@ -1,0 +1,60 @@
+{
+  "schema": "ouf.configuration-register.entries.v1",
+  "entries": [
+    {
+      "id": "deploy.a2.executor",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Entrypoint, moduli Python isolati e runbook del mandato A2",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Commit della pipeline, commit del blob e della consegna, SHA-256 dei byte LF, UID, GID e modalità di ogni file dal manifest del bootstrap.",
+      "restore": "1. Ricostruire i file dai blob dei commit approvati in una directory di root. Verificare interprete e dipendenze di sistema.",
+      "test": "Confrontare il manifest riprodotto e ripetere il plan di bootstrap a installazione conclusa."
+    },
+    {
+      "id": "deploy.a2.profile",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Profilo privato dell’installazione e riferimenti a coda, reviewer e custodia R3",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Copia cifrata del JSON con distinta privata delle dipendenze per hash. Il servizio libpq, i suoi riferimenti di accesso e l’identità MCP restano sotto la custodia dei rispettivi owner.",
+      "restore": "2. Ripristinare i riferimenti privati e verificare la corrispondenza con autorità, repository e installazione. Custode root dell’installazione. Aggiornare i binding dopo la rotazione degli accessi. Consumatore esecutore A2.",
+      "test": "Verificare il diniego per commit diverso e l’inventario completo in un ambiente isolato."
+    },
+    {
+      "id": "deploy.a2.journal",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Lock, puntatori per verso e run, fotografia originale, claim e ricevute delle operazioni",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "A esecutore fermo catturare atomicamente la directory privata, inclusi gli HOME di plan R3. Cifrare i byte. Registrare ogni nome, digest, proprietario e modalità. Custode root, accesso di recupero soggetto a rotazione. Consumatore esecutore A2.",
+      "restore": "3. Ripristinare l’intero insieme dopo il profilo. Conservare anche le directory private dei runbook referenziate per hash. Riconciliare sul nodo identità, epoche, teste, firme e processi prima di ammettere operazioni.",
+      "test": "Ripetere il replay a segnale già reclamato e verificare zero nuovi segnali. Verificare il ritorno allo stesso CID sulla fixture."
+    },
+    {
+      "id": "deploy.a2.sudoers",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Regola di invocazione dell’entrypoint senza argomenti",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Salvare byte, impronta, proprietario e modalità. Associare la regola all’utente previsto dal profilo privato.",
+      "restore": "4. Dopo esecutore, profilo e stato, validare la regola con visudo e pubblicarla per ultima.",
+      "test": "Verificare visudo e la regola effettiva per il solo entrypoint. Provare il rifiuto di un argomento aggiuntivo in un ambiente con account isolato."
+    },
+    {
+      "id": "deploy.a2.r3-unit",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Binding della versione installata del supervisore R3, unità e wrapper governati",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Conservare nomi e digest di unità, wrapper e configurazione, sequenza e ricevuta di upgrade dell’owner R3 nel registro privato per installazione.",
+      "restore": "Ripristinare con la successione R3 autorizzata, con coorte ferma e stato coordinatore riconciliato, prima di aprire l’ingresso.",
+      "test": "Usare il readback dell’upgrade, controllare unità caricata, wrapper, WAITING, quindi lease e ingresso osservato dopo lo start."
+    }
+  ]
+}
