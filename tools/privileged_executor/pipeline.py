@@ -19,12 +19,17 @@ from successor_image import admit, migration_review
 
 def until(fn, seconds, code):
     end = time.monotonic() + seconds
+    last = None
     while time.monotonic() < end:
         try:
             return fn()
-        except (ValueError, OSError, RuntimeError, http.client.HTTPException, Held):
+        except Held as error:
+            last = str(error)
             time.sleep(.25)
-    raise Held(code)
+        except (ValueError, OSError, RuntimeError, http.client.HTTPException):
+            time.sleep(.25)
+    # Public diagnosis: only the last public code of the inner check, never data.
+    raise Held(code + "/" + last if last else code)
 
 
 class Cutover:
