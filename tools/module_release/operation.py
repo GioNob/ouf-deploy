@@ -193,7 +193,7 @@ def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
             verify_database(p, rt, old, root, migrated=not restoring)
             return {"successorFrameSha256": snapshot(checked()), "readyHttp": status}
         rt.pause()
-    raise Held("READINESS_NOT_UP")
+    raise Held("PREDECESSOR_READINESS_NOT_UP" if restoring else "READINESS_NOT_UP")
 
 
 def restore(p, rt, old, new, root):

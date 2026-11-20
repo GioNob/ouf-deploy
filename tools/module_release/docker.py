@@ -1,5 +1,6 @@
 """Narrow Linux adapter for the local Docker Engine API 1.44 and namespace probe."""
 
+from contextlib import ExitStack
 import http.client
 import json
 import os
@@ -7,6 +8,7 @@ from pathlib import Path
 import re
 import signal
 import socket
+import stat
 import subprocess
 import sys
 import time
@@ -26,6 +28,44 @@ if len(body) > 65536:
     sys.exit(1)
 sys.stdout.buffer.write(str(response.status).encode() + b'\\n' + body)
 """
+
+
+def gate_shell_matches(proc):
+    """Compare the live executable inode to /bin/sh in this process's root."""
+    # Pin each component before inspecting it. An absolute link restarts at
+    # the container root, and ".." at that root stays there.
+    with ExitStack() as opened:
+        root = os.open(proc / "root", os.O_PATH | os.O_DIRECTORY)
+        opened.callback(os.close, root)
+        ancestry = [root]
+        pending = ["bin", "sh"]
+        links = 0
+        while pending:
+            part, *pending = pending
+            if part in ("", "."):
+                continue
+            if part == "..":
+                if len(ancestry) > 1:
+                    ancestry.pop()
+                continue
+            fd = os.open(part, os.O_PATH | os.O_NOFOLLOW, dir_fd=ancestry[-1])
+            opened.callback(os.close, fd)
+            info = os.fstat(fd)
+            if stat.S_ISLNK(info.st_mode):
+                links += 1
+                if links > 40:
+                    return False
+                target = os.readlink("", dir_fd=fd)
+                if target.startswith("/"):
+                    ancestry = [root]
+                pending = target.split("/") + pending
+            elif pending:
+                if not stat.S_ISDIR(info.st_mode):
+                    return False
+                ancestry.append(fd)
+            else:
+                return os.path.samestat(info, (proc / "exe").stat())
+        return False
 
 
 class Docker:
@@ -102,16 +142,17 @@ class Docker:
             return False
         root = Path("/proc", str(pid))
         try:
-            actual = (root / "cmdline").read_bytes().rstrip(b"\0").decode().split("\0")
-            exe = os.readlink(root / "exe")
+            expected_argv = ENTRY + command if gated else command
+            if (root / "cmdline").read_bytes() != b"\0".join(arg.encode() for arg in expected_argv) + b"\0":
+                return False
             if not gated:
+                exe = os.readlink(root / "exe")
                 expected = self.p["gate"].get("executable", command[0])
-                identity = exe == expected if "/" in expected else Path(exe).name == expected
-                return actual == command and identity
+                return exe == expected if "/" in expected else Path(exe).name == expected
             # /bin/sh may resolve to dash or busybox in the container.
             mask = re.search(r"^SigCgt:\s*([0-9a-fA-F]+)$", (root / "status").read_text(), re.M)
-            return (actual == ENTRY + command and (root / "exe").samefile(root / "root/bin/sh")
-                    and mask is not None and bool(int(mask[1], 16) & (1 << (signal.SIGUSR1 - 1))))
+            return (mask is not None and bool(int(mask[1], 16) & (1 << (signal.SIGUSR1 - 1)))
+                    and gate_shell_matches(root))
         except (FileNotFoundError, ProcessLookupError):
             return False
 
