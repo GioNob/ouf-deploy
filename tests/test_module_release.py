@@ -391,7 +391,7 @@ class ReleaseTest(unittest.TestCase):
         repo = {"full_name": ci["repository"]}
         run = dict(id=15, event="pull_request", status="completed", conclusion="success", run_attempt=1,
                    repository=repo, head_repository=repo, head_sha=ci["sourceCommit"], path=".github/workflows/module-ci.yml",
-                   pull_requests=[{"number": 63, "head": {"sha": ci["sourceCommit"]}}])
+                   pull_requests=[{"number": ci["pullRequest"], "head": {"sha": ci["sourceCommit"]}}])
         obj = dict(id=17, expired=False, workflow_run={"id": 15, "head_sha": ci["sourceCommit"]},
                    name="source-onboarding-governed-image-15", digest="sha256:" + ci["zipSha256"])
         api = lambda path: run if path.endswith("/runs/15") else obj

@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       source_run:
-        description: Successful Onboarding module CI run ID for PR 63
+        description: Successful Onboarding module CI run ID for PR 64 (release branch)
         required: true
         type: string
       source_artifact:

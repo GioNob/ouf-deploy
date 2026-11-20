@@ -1,6 +1,6 @@
 # Rilascio governato di un modulo
 
-La pipeline di deploy approva il profilo di un modulo e sostituisce l'immagine su un servizio già avviato a cancello. Il primo profilo riguarda la PR 63 di Onboarding, commit `8b1251fd9a16d39bd9ff48758c4921a3cc434220`, albero `c961f41375f6a0a15756baea2481e412570fa7b4`. Il CID del predecessore resta disponibile per il ritorno. [Profilo di esempio](../config/module-release/onboarding.example.json)
+La pipeline di deploy approva il profilo di un modulo e sostituisce l'immagine su un servizio già avviato a cancello. Il profilo corrente riguarda il ramo di rilascio di Onboarding, PR 64 (PR 59, 61, 63, 65 e 66), commit `3b4f3f7fb179aa846b3a6fe51d27d825d636a9a9`, albero `894cdf31c512a0cefe0dd9f6eb3eacc91f5c21cb`. Il profilo MCP riguarda la PR 90, commit `1b086e66273ce040f4c74eaf35ede160efaf3dfe`, provata dalla CI sul commit `609051427d827b2b5d3dd6851d84f6a87c581b84`. Il CID del predecessore resta disponibile per il ritorno. [Profilo di esempio](../config/module-release/onboarding.example.json)
 
 ## Artefatto e installazione
 
