@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=396b79c59a52f8692ba3d7940097c2a63044c62d
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -50,6 +50,7 @@ delivery() {
   fetch ops/vps/r3-driver-budget.json 2fc0921fd26cdb69adf6ab7dc683b3fea321bb59c5db24db95428d7ac59a1e16
   fetch ops/vps/r3-lease-renewal-v22.json 7a53b38d9ecc3f75f1221a637d0c439bc0d31291fdcaedc4daf0414eaa122d53
   fetch ops/vps/r3-lease-renewal-v25.json a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5
+  fetch ops/vps/r3-lease-renewal-v26.json 609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9
   fetch ops/vps/r3-lease-renewal.json c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f
   fetch ops/vps/r3-settings.json 4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
@@ -325,12 +326,15 @@ if 8 >= 25:
         sys.stderr.write("R3_SEMANTIC_PROFILE_CHANGED_SINCE_PLAN\n"); raise SystemExit(3)
     profile_path.write_bytes(profile); profile_path.chmod(0o600)
     sys.stderr.write("profilo Semantic v25: " + profile.decode("ascii") + "\n")
-    renewal = D / "ops/vps/r3-lease-renewal-v25.json"
-    if sha(renewal) != "a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5":
+    # v26 (task-13f): same v25 code, ingress tick budget 2.5 s in its own pinned renewal input.
+    RENEWAL_FILE, RENEWAL_PIN = (("ops/vps/r3-lease-renewal-v26.json", "609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9") if 8 >= 26
+                                 else ("ops/vps/r3-lease-renewal-v25.json", "a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5"))
+    renewal = D / RENEWAL_FILE
+    if sha(renewal) != RENEWAL_PIN:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH leaseRenewal\n"); raise SystemExit(3)
     raw = prepare("inputs", "--profile", str(profile_path), "--profile-sha256", hashlib.sha256(profile).hexdigest(),
                   "--source-sha256", sha(D / C.SEMANTIC_IDENTITY),
-                  "--lease-renewal", str(renewal), "--lease-renewal-sha256", "a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5")
+                  "--lease-renewal", str(renewal), "--lease-renewal-sha256", RENEWAL_PIN)
 target = D / "inputs.json"
 if target.exists() and target.read_bytes() != raw:
     sys.stderr.write("R3_INPUTS_CHANGED_SINCE_PLAN\n"); raise SystemExit(3)

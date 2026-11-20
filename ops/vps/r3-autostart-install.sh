@@ -31,6 +31,7 @@ MANIFEST = {
     'ops/vps/r3-driver-budget.json': '2fc0921fd26cdb69adf6ab7dc683b3fea321bb59c5db24db95428d7ac59a1e16',
     'ops/vps/r3-lease-renewal-v22.json': '7a53b38d9ecc3f75f1221a637d0c439bc0d31291fdcaedc4daf0414eaa122d53',
     'ops/vps/r3-lease-renewal-v25.json': 'a829c0ba2a5fca451d9065bbf108b4e0bdd4bb8550f46f5f73a09931461a34d5',
+    'ops/vps/r3-lease-renewal-v26.json': '609f65e7b830e2d9fae33e3a04b9e3a058ee6ac93b3e6b3da97b3a7d094700e9',
     'ops/vps/r3-lease-renewal.json': 'c35a9a6a22da6027ce3c07eccf1a4b8e21d4f697399de5e83ecab1f8340f403f',
     'ops/vps/r3-settings.json': '4b1aa5560a23657b92fe0a99915d747d02d272a0b765c5b719921f4007d5c150',
     'scripts/autostart-semantic-provider-r3.py': '0d280a2f0608a564f582f5f6058b4950ea12033b4c4b25f6a504076a54a03449',
