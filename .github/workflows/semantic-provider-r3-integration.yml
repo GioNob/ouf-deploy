@@ -126,6 +126,10 @@ jobs:
         run: >-
           sudo -n env OUF_R3_V25_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_semantic_provider_r3_v25.py -v
+      - name: R-002 v27 signature memo, committed-renewal ingress tick and native warm opening
+        run: >-
+          sudo -n env OUF_R3_V27_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_v27.py -v
       - name: D-050 real DNAT and native bridge conntrack (private net and mount namespaces)
         run: >-
           sudo -n env OUF_LEASE_KERNEL_V2_NATIVE=1 /usr/bin/python3 -I -B
