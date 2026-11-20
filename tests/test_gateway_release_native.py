@@ -25,9 +25,10 @@ def seed_route(admin, target):
     body = {"uri": "/" + target["id"], "status": 1, "priority": 0,
             "upstream": {"type": "roundrobin", "nodes": {"127.0.0.1:8080": 1}}}
     written = admin.write(target, body)
-    if written["uri"] != body["uri"] or admin.get(target) != written:
+    live = admin.get(target)
+    if not operation.conforms(written, body) or not operation.conforms(live, body):
         raise AssertionError("GATEWAY_FIXTURE_ROUTE_READBACK")
-    return written
+    return live
 
 
 def wait_for_writable_route(profile, target):
@@ -50,7 +51,8 @@ def wait_for_writable_route(profile, target):
 class WriteReadiness(unittest.TestCase):
     def test_retries_startup_then_reads_back_same_route(self):
         admin = Mock()
-        written = {"uri": "/target"}
+        written = {"uri": "/target", "status": 1, "priority": 0,
+                   "upstream": {"type": "roundrobin", "nodes": {"127.0.0.1:8080": 1}}}
         admin.write.side_effect = [AdminRequestError(503), written]
         admin.get.return_value = written
         with patch(__name__ + ".connect", return_value=nullcontext((admin, None))), patch.object(time, "sleep"):
@@ -120,7 +122,8 @@ class NativeRelease(unittest.TestCase):
 
     @contextmanager
     def selected(self, invalid=False):
-        body = dict(self.baseline, desc=MARKER, plugin_config_id="settings")
+        body = dict(self.baseline, desc=MARKER, plugin_config_id="settings",
+                    plugins={"limit-count": {"count": 5, "time_window": 60, "key": "remote_addr"}})
         if invalid:
             body["methods"] = "invalid-method-list"
         pair = artifact([self.plugins, row("routes", "target", body)])
@@ -134,8 +137,13 @@ class NativeRelease(unittest.TestCase):
             with self.assertRaisesRegex(mandate.Held, "PLAN_DRIFT"):
                 self.phase(dict(REQ, phase="apply", digest="0"*64))
             receipt = self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+            again = dict(REQ, run="73")
+            again["digest"] = mandate.intent(again)
+            self.assertEqual(self.phase(again)["counts"], dict(create=0, update=0, unchanged=2))
         with connect(self.profile) as (admin, _):
-            self.assertEqual(admin.get(self.route)["plugin_config_id"], "settings")
+            live = admin.get(self.route)
+            self.assertEqual(live["plugin_config_id"], "settings")
+            self.assertGreater(live["plugins"]["limit-count"].keys(), {"count", "time_window", "key"})
             self.assertEqual(admin.get(self.outside), self.foreign)
         back = dict(operation="gateway-release", run="71", attempt="1", commit=REQ["commit"],
                     phase="return", releaseRun=REQ["run"], digest=receipt["digest"])

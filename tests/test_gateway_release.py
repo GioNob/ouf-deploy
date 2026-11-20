@@ -78,6 +78,15 @@ def verify(pair):
 
 
 class Contract(unittest.TestCase):
+    def test_declared_fields_are_required_and_arrays_are_exact(self):
+        conforms = operation.conforms
+        self.assertTrue(conforms({"plugin": {"enabled": True, "extra": 1}}, {"plugin": {"enabled": True}}))
+        for live, wanted in (({}, {"field": None}), ({"field": False}, {"field": 0}),
+                             ([1, 2], [2, 1]), ([1, 2], [1]), ([True], [1]),
+                             ([{"k": 0, "extra": 1}], [{"k": 0}]), ({}, None), (None, {})):
+            with self.subTest(live=live, wanted=wanted):
+                self.assertFalse(conforms(live, wanted))
+
     def test_admin_uses_only_scoped_paths_and_errors_are_public_codes(self):
         admin = Admin("127.0.0.1", 9180, "/fixture", SECRET, Mock())
         with patch("gateway_admin.http.client.HTTPConnection") as factory:
@@ -92,6 +101,8 @@ class Contract(unittest.TestCase):
                 args = conn.request.call_args.args
                 self.assertEqual(args[:3], ("GET", "/fixture/" + kind + "/item", None))
                 self.assertEqual(args[3]["X-API-KEY"], SECRET)
+            self.assertIsNone(admin.write(target, None))
+            self.assertEqual(conn.request.call_args.args[:3], ("DELETE", "/fixture/" + kind + "/item", None))
             response.status = 404
             response.read.return_value = b'{"message":"Key not found"}'
             self.assertIsNone(admin.get(target))
@@ -117,6 +128,14 @@ class Contract(unittest.TestCase):
             self.assertNotIn("Approvare", summary.read_text())
             self.assertIn(REQ["digest"], summary.read_text())
             self.assertIn("digest=" + REQ["digest"], output.read_text())
+            planned = {"status": "PLANNED", "digest": "c"*64, "recoveringRun": "69",
+                       "counts": {"create": 0, "update": 6, "unchanged": 1}}
+            with patch.dict(os.environ, dict(env, REVIEW_TOKEN=SECRET), clear=True), \
+                    patch.object(sys, "argv", ["client", "invoke"]), \
+                    patch("subprocess.run", return_value=Mock(stdout=encoded(planned))):
+                runpy.run_path(str(ROOT/".github/scripts/gateway-release.py"), run_name="__main__")
+            self.assertIn("pending run 69", summary.read_text())
+            self.assertNotIn(SECRET, summary.read_text())
         workflow = ".github/workflows/gateway-release.yml"
         run = dict(id=70, run_attempt=1, status="in_progress", event="workflow_dispatch", path=workflow,
                    head_sha=REQ["commit"], head_branch="main", repository={"id":5}, head_repository={"id":5})
@@ -267,6 +286,151 @@ class Phases(unittest.TestCase):
         return dict(operation="gateway-release", phase="return", commit=REQ["commit"], run="71",
                     attempt="1", releaseRun=REQ["run"], digest=receipt["digest"])
 
+    def select(self, resources):
+        pair = artifact(resources)
+        self.package.return_value = pair[0], verify(pair)
+
+    def new_plan_request(self, run):
+        req = dict(REQ, run=run)
+        return dict(req, digest=mandate.intent(req))
+
+    def test_plugin_defaults_in_ack_and_get_and_replacement_of_old_fields(self):
+        key = ("routes", "one")
+        limit = {"count": 5, "time_window": 60}
+        self.select([row(*key, {"uri": "/old", "desc": MARKER, "plugins": {"limit-count": limit}})])
+        self.admin.data[key]["methods"] = ["GET"]
+        def materialize(key, body):
+            self.admin.data[key]["status"] = 1
+            self.admin.data[key]["plugins"]["limit-count"]["policy"] = "local"
+        self.admin.on_write = materialize
+        write = self.admin.write
+        with patch.object(self.admin, "write", side_effect=lambda r, b: dict(write(r, b), priority=0)):
+            plan = self.phase(REQ)
+            self.assertEqual(plan["counts"]["update"], 1)
+            self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        self.assertNotIn("methods", self.admin.data[key])
+        self.assertEqual(self.phase(self.new_plan_request("72"))["counts"]["unchanged"], 1)
+        self.assertEqual(self.admin.writes, [key])
+
+    def test_failed_update_removes_additions_and_deletes_new_route_after_different_ack(self):
+        new, existing = ("routes", "created"), ("routes", "one")
+        self.select([row(*new, {"uri": "/created", "desc": MARKER}),
+                     row(*existing, {"uri": "/old", "methods": ["POST"]})])
+        def fail_after_second_put(key, body):
+            if key == new and body:
+                self.admin.data[key]["status"] = 1
+            if key == existing and "methods" in body:
+                raise RuntimeError("lost response")
+        self.admin.on_write = fail_after_second_put
+        write = self.admin.write
+        def write_with_ack(r, b):
+            ack = write(r, b)
+            return dict(ack, priority=0) if ack is not None else None
+        with patch.object(self.admin, "write", side_effect=write_with_ack) as calls:
+            plan = self.phase(REQ)
+            with self.assertRaisesRegex(mandate.Held, "^GATEWAY_WRITE_FAILED_RESTORED$"):
+                self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+            self.assertIsNone(calls.call_args.args[1])
+        self.assertEqual(self.admin.writes, [new, existing, existing, new])
+        self.assertEqual(self.admin.data, self.before)
+
+    def test_pending_legacy_snapshot_resumes_from_mixed_live_state(self):
+        desired = [row("routes", str(i), {"uri": f"/new/{i}", "desc": MARKER}) for i in range(7)]
+        self.select(desired)
+        for i in range(1, 7):
+            self.admin.data[("routes", str(i))] = {"uri": f"/old/{i}", "methods": ["GET"]}
+        # The old executor added priority/status to the snapshot and PUT body.
+        for resource in self.package.return_value[1]:
+            resource["body"].update(priority=0, status=1)
+        plan = self.phase(REQ)
+        def crash(key, body):
+            self.admin.data[key]["plugins"] = {}
+            raise KeyboardInterrupt()
+        self.admin.on_write = crash
+        with self.assertRaises(KeyboardInterrupt):
+            self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        mixed = deepcopy(self.admin.data)
+        pending = store.read(self.root / "gateway-head")
+        self.assertEqual(pending, {"status": "PENDING", "phase": "apply", "run": REQ["run"]})
+        for other in (desired[:-1], [*desired[:-1], row("routes", "6", {"uri": "/other"})]):
+            self.select(other)
+            with self.assertRaisesRegex(mandate.Held, "^GATEWAY_PENDING_PACKAGE_DRIFT$"):
+                self.phase(self.new_plan_request("74"))
+        self.select(desired)
+        self.admin.on_write = lambda *_: None
+        new = self.new_plan_request("72")
+        recovered = self.phase(new)
+        self.assertEqual(recovered["recoveringRun"], REQ["run"])
+        self.assertEqual(recovered["counts"], {"unchanged": 1, "update": 6, "create": 0})
+        self.assertEqual(self.admin.data, mixed)
+        self.assertEqual(store.read(self.root / "gateway-head"), pending)
+        apply = dict(new, phase="apply", digest=recovered["digest"])
+        key = ("routes", "1")
+        self.admin.data[key]["uri"] = "/unrelated"
+        with self.assertRaisesRegex(mandate.Held, "^GATEWAY_PENDING_LIVE_DRIFT$"):
+            self.phase(apply)
+        self.assertEqual(self.admin.writes, [("routes", "0")])
+        self.admin.data[key] = mixed[key].copy()
+        receipt = self.phase(apply)
+        self.assertEqual(self.admin.writes, [("routes", str(i)) for i in range(7)])
+        self.assertEqual(store.read(self.root / "gateway-head")["digest"], receipt["digest"])
+        for resource in desired:
+            self.assertEqual(self.admin.data[("routes", resource["id"])]["uri"], resource["body"]["uri"])
+        self.phase(dict(self.return_req(receipt), releaseRun=new["run"]))
+        self.assertEqual(self.admin.data, mixed)
+        self.assertEqual(store.read(self.root / "gateway-head"), pending)
+
+    def test_delete_ack_does_not_prove_compensation_without_absence(self):
+        key = ("routes", "created")
+        self.select([row(*key, {"uri": "/created", "desc": MARKER})])
+        write = self.admin.write
+        def lost_put_ignored_delete(resource, body):
+            if body is not None:
+                write(resource, body)
+                raise OSError("lost response")
+            return None
+        with patch.object(self.admin, "write", side_effect=lost_put_ignored_delete) as calls:
+            plan = self.phase(REQ)
+            with self.assertRaisesRegex(mandate.Held, "^GATEWAY_RECONCILIATION_REQUIRED$"):
+                self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+            self.assertIsNone(calls.call_args.args[1])
+        self.assertIn(key, self.admin.data)
+        self.assertEqual(store.read(self.root / "gateway-head")["status"], "PENDING")
+
+    def test_creation_with_nonconforming_put_response(self):
+        key = ("routes", "created")
+        self.select([row(*key, {"uri": "/created", "desc": MARKER})])
+        write = self.admin.write
+        def wrong_ack(resource, body):
+            if body is None:
+                return write(resource, None)
+            write(resource, {"uri": "/unexpected"})
+            return ack
+        for run, ack, expected in (("73", {"uri": "/unexpected"}, "GATEWAY_WRITE_FAILED_RESTORED"),
+                                   ("74", {}, "GATEWAY_RECONCILIATION_REQUIRED")):
+            req = self.new_plan_request(run)
+            plan = self.phase(req)
+            with self.subTest(run=run), patch.object(self.admin, "write", side_effect=wrong_ack), \
+                    self.assertRaisesRegex(mandate.Held, "^" + expected + "$"):
+                self.phase(dict(req, phase="apply", digest=plan["digest"]))
+            self.assertEqual(key in self.admin.data, expected == "GATEWAY_RECONCILIATION_REQUIRED")
+
+    def test_pending_return_uses_release_snapshot(self):
+        receipt = self.phase(self.plan())
+        applied = deepcopy(self.admin.data)
+        def interrupt_return(*_):
+            raise KeyboardInterrupt()
+        self.admin.on_write = interrupt_return
+        with self.assertRaises(KeyboardInterrupt):
+            self.phase(self.return_req(receipt))
+        self.admin.on_write = lambda *_: None
+        req = self.new_plan_request("72")
+        result = self.phase(req)
+        self.assertEqual(result["recoveringRun"], "71")
+        self.assertEqual(result["counts"], {"create": 0, "update": 1, "unchanged": 2})
+        self.phase(dict(req, phase="apply", digest=result["digest"]))
+        self.assertEqual(self.admin.data, applied)
+
     def test_dispatch_uses_ephemeral_token_for_plan_and_apply(self):
         models = [str(ROOT / "tools" / name) for name in ("semantic_provider_r3", "semantic_application_cutover")]
         with patch.object(sys, "path", models + sys.path):
@@ -338,7 +502,7 @@ class Phases(unittest.TestCase):
             self.phase(req)
         req = dict(REQ, run="78")
         req["digest"] = mandate.intent(req)
-        with self.assertRaisesRegex(mandate.Held, "RECONCILIATION_REQUIRED"):
+        with self.assertRaisesRegex(mandate.Held, "^GATEWAY_PENDING_LIVE_DRIFT$"):
             self.phase(req)
         self.assertEqual(self.admin.data[("upstreams", "one")], {"desc": "foreign"})
 
@@ -347,7 +511,7 @@ class Phases(unittest.TestCase):
         receipt = self.phase(req)
         back = self.return_req(receipt)
         applied = deepcopy(self.admin.data)
-        self.admin.data[("routes", "one")]["status"] = 0
+        self.admin.data[("routes", "one")]["uri"] = "/drift"
         with self.assertRaisesRegex(mandate.Held, "LIVE_DRIFT"):
             self.phase(back)
         self.admin.data = deepcopy(applied)
