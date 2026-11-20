@@ -13,6 +13,7 @@ on:
       - 'tests/test_privileged_executor*.py'
       - 'tests/test_module_release*.py'
       - 'tests/test_gateway_release*.py'
+      - 'tests/fixtures/gateway-release-bundle-44815101705.zip'
       - '.github/scripts/gateway-release.py'
       - '.github/workflows/gateway-release.yml'
       - 'tests/privileged_executor_fixture.sh'

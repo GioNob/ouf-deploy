@@ -1,5 +1,6 @@
 """Real Admin API in a disposable, labelled GitHub-hosted Docker Engine."""
 from contextlib import contextmanager, nullcontext
+from http.client import HTTPConnection
 import json
 import os
 from pathlib import Path
@@ -9,8 +10,67 @@ import time
 import unittest
 from unittest.mock import Mock, patch
 
-from test_gateway_release import MARKER, REQ, SECRET, artifact, mandate, operation, row, verify
-from gateway_admin import AdminRequestError, connect
+from test_gateway_release import MARKER, REQ, SECRET, artifact, bundle, mandate, operation, row, verify
+from gateway_admin import Admin, AdminRequestError, connect
+
+
+PUBLISHER = dict(repository="GioNob/ouf-api-gateway", workflow="ci.yml", pullRequest=93,
+                 sourceCommit="80aaea4bbe6e50d965bab82ad14c2182f05a6ef5", runId=44815101705,
+                 runAttempt=1, artifactId=14668284707,
+                 zipSha256="ab32a0b2a218b513e0b0827eb8e0ee441e4982a553c30b2a91061d23de39dd28")
+BUNDLE_ZIP = Path(__file__).with_name("fixtures") / "gateway-release-bundle-44815101705.zip"
+ISSUER = "http://127.0.0.1:9081"
+DISCOVERY_PATH = "/.well-known/openid-configuration"
+VALUES = {
+    "caddy.oidcDiscoveryUrl": ISSUER + DISCOVERY_PATH,
+    "gateway.delegationKeyEnv": "FIXTURE_DELEGATION_KEY",
+    "gateway.issuerUrl": ISSUER,
+    "gateway.oidcClientSecretRef": SECRET,
+    "gateway.requiredAudience": "fixture-gateway",
+    "gateway.semanticProposalOwnerKeyEnv": "FIXTURE_SEMANTIC_KEY",
+    "gateway.sourceRevisionOwnerKeyEnv": "FIXTURE_REVISION_KEY",
+    "iam.workloadClients.mcpServer": "fixture-mcp",
+    "installationId": "fixture",
+    "revision": "fixture-revision",
+    "services.bindings.ouf-onboarding": "127.0.0.1",
+    "services.bindings.ouf-semantic-registry": "127.0.0.1",
+    "services.ports.ouf-onboarding": 18080,
+    "services.ports.ouf-semantic-registry": 18081,
+}
+
+
+def published_request(run):
+    req = dict(REQ, run=run, sourcePr=str(PUBLISHER["pullRequest"]), sourceRun=str(PUBLISHER["runId"]),
+               artifact=str(PUBLISHER["artifactId"]), sourceCommit=PUBLISHER["sourceCommit"])
+    return dict(req, digest=mandate.intent(req))
+
+
+@contextmanager
+def local_publisher():
+    # Replace only GitHub selection and transport. package() still verifies the original ZIP on each phase.
+    with patch.object(bundle, "select_artifact", return_value=PUBLISHER), \
+            patch.object(bundle, "download", return_value=BUNDLE_ZIP.read_bytes()):
+        yield
+
+
+def publisher_profile():
+    return dict(source={k: PUBLISHER[k] for k in ("repository", "workflow")}, values=VALUES)
+
+
+class PublishedBundle(unittest.TestCase):
+    def test_verified_fixture_has_seven_plugin_routes_and_integer_ports(self):
+        with local_publisher():
+            _, routes = bundle.package(publisher_profile(), published_request("70"), SECRET)
+        self.assertEqual(len(routes), 7)
+        for route in routes:
+            with self.subTest(route=route["id"]):
+                self.assertEqual(route["kind"], "routes")
+                body = route["body"]
+                self.assertEqual(body["plugins"]["openid-connect"]["discovery"], ISSUER + DISCOVERY_PATH)
+                self.assertGreaterEqual(body["plugins"].keys(), {"limit-count", "request-validation",
+                                        "serverless-pre-function", "serverless-post-function"})
+                for node in body["upstream"]["nodes"]:
+                    self.assertIs(type(node["port"]), int)
 
 
 def docker(*args):
@@ -96,7 +156,12 @@ class NativeRelease(unittest.TestCase):
         keyfile.chmod(0o600)
         config = private / "config.yaml"
         # JSON is also valid YAML. No host port or public listener for the Admin API.
-        config.write_text(json.dumps({"deployment": {
+        # A static discovery document on the gateway's own loopback, also reachable during a PUT.
+        discovery = json.dumps({"issuer": ISSUER, "jwks_uri": ISSUER + "/jwks"})
+        issuer_server = ("server { listen 127.0.0.1:9081; default_type application/json; "
+                         f"location = {DISCOVERY_PATH} {{ return 200 '{discovery}'; }} "
+                         """location = /jwks { return 200 '{"keys":[]}'; } }""")
+        config.write_text(json.dumps({"nginx_config": {"http_configuration_snippet": issuer_server}, "deployment": {
             "role": "traditional", "role_traditional": {"config_provider": "etcd"},
             "admin": {"admin_listen": {"ip": "127.0.0.1", "port": 9180}, "allow_admin": ["127.0.0.1/32"],
                       "admin_key": [{"name": "admin", "key": key, "role": "admin"}]},
@@ -161,3 +226,72 @@ class NativeRelease(unittest.TestCase):
             self.assertIsNone(admin.get(self.plugins))
             self.assertEqual(admin.get(self.outside), self.foreign)
         self.assertEqual((self.state / "70/gateway.snapshot").stat().st_mode & 0o777, 0o600)
+
+    def published_routes(self):
+        self.profile.update(publisher_profile())
+        self.enterContext(local_publisher())
+        with connect(self.profile):
+            conn = HTTPConnection("127.0.0.1", 9081, timeout=5)
+            try:
+                conn.request("GET", DISCOVERY_PATH)
+                response = conn.getresponse()
+                self.assertEqual(response.status, 200)
+                self.assertEqual(json.load(response)["issuer"], ISSUER)
+            finally:
+                conn.close()
+        _, routes = bundle.package(self.profile, published_request("70"), SECRET)
+        self.assertEqual(len(routes), 7)
+        return routes
+
+    def apply_readback_return(self, req, plan, routes, before, parent):
+        receipt = self.phase(dict(req, phase="apply", digest=plan["digest"]))
+        self.assertEqual(receipt["status"], "APPLIED")
+        with connect(self.profile) as (admin, _):
+            for route in routes:
+                with self.subTest(route=route["id"]):
+                    self.assertTrue(operation.conforms(admin.get(route), route["body"]))
+            self.assertEqual(admin.get(self.outside), self.foreign)
+        self.assertEqual(self.phase(published_request("73"))["counts"], dict(create=0, update=0, unchanged=7))
+        back = dict(operation="gateway-release", run="71", attempt="1", commit=req["commit"],
+                    phase="return", releaseRun=req["run"], digest=receipt["digest"])
+        self.assertEqual(self.phase(back)["status"], "RETURNED")
+        with connect(self.profile) as (admin, _):
+            self.assertEqual([admin.get(route) for route in routes], before)
+            self.assertEqual(admin.get(self.outside), self.foreign)
+        self.assertEqual(json.loads((self.state / "gateway-head").read_bytes()), parent)
+
+    def test_published_release_creates_seven_routes_then_returns_to_absence(self):
+        routes = self.published_routes()
+        req = published_request("70")
+        plan = self.phase(req)
+        self.assertEqual(plan["counts"], dict(create=7, update=0, unchanged=0))
+        self.apply_readback_return(req, plan, routes, [None] * len(routes), None)
+
+    def test_published_release_recovers_first_put_and_returns_to_pending_snapshot(self):
+        routes = self.published_routes()
+        with connect(self.profile) as (admin, _):
+            old_routes = [seed_route(admin, route) for route in routes[1:]]
+        req = published_request("70")
+        plan = self.phase(req)
+        self.assertEqual(plan["counts"], dict(create=1, update=6, unchanged=0))
+
+        write = Admin.write
+
+        def interrupt_after_put(admin, route, body):
+            write(admin, route, body)
+            raise KeyboardInterrupt()
+
+        with patch.object(Admin, "write", interrupt_after_put), self.assertRaises(KeyboardInterrupt):
+            self.phase(dict(req, phase="apply", digest=plan["digest"]))
+        pending = {"status": "PENDING", "phase": "apply", "run": req["run"]}
+        self.assertEqual(json.loads((self.state / "gateway-head").read_bytes()), pending)
+        with connect(self.profile) as (admin, _):
+            mixed = [admin.get(route) for route in routes]
+        self.assertTrue(operation.conforms(mixed[0], routes[0]["body"]))
+        self.assertEqual(mixed[1:], old_routes)
+
+        recovery = published_request("72")
+        resumed = self.phase(recovery)
+        self.assertEqual(resumed["recoveringRun"], req["run"])
+        self.assertEqual(resumed["counts"], dict(create=0, update=6, unchanged=1))
+        self.apply_readback_return(recovery, resumed, routes, mixed, pending)
