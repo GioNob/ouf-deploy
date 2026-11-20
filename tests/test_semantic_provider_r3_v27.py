@@ -1,6 +1,8 @@
 """R-002. Replay the emitted supervisor from closed ingress with real operation signatures."""
 import builtins
 from contextlib import ExitStack, contextmanager, nullcontext
+from copy import deepcopy
+import errno
 from functools import lru_cache
 import json
 import os
@@ -24,6 +26,26 @@ from tools.semantic_provider_r3 import ingress_memo_overlay_v27 as overlay
 C = v25.C
 ROOT = Path(__file__).resolve().parents[1]
 OPENSSL = shutil.which('openssl')
+
+
+@contextmanager
+def exclusive_writer(path):
+    program = """import fcntl, os, select, sys
+fd = os.open(sys.argv[1], os.O_RDONLY)
+fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+print('locked', flush=True)
+sys.exit(0 if select.select([sys.stdin], [], [], 10)[0] else 1)
+"""
+    with subprocess.Popen([sys.executable, '-I', '-B', '-c', program, str(path)],
+                          stdin=subprocess.PIPE, stdout=subprocess.PIPE) as writer:
+        try:
+            if writer.stdout.readline().strip() != b'locked':
+                raise AssertionError('exclusive writer failed to acquire flock')
+            yield
+        finally:
+            writer.stdin.close()
+            if writer.wait(timeout=12):
+                raise AssertionError('writer exited before release')
 
 
 @lru_cache
@@ -264,6 +286,7 @@ class Replay(unittest.TestCase):
                 if disable:
                     coordinator.semantic_tick = lambda *_: None
             if version >= 27:
+                self.writer_locks = sup.ingress_writer_locks
                 sup.ingress_writer_locks = lambda *_: nullcontext()
             with patch.object(sup, 'bind_semantic_gate', bind):
                 return sup.runtime(configuration)
@@ -308,6 +331,96 @@ class Replay(unittest.TestCase):
         self.assertEqual(case.scheduled['state'], 'ACTIVE')
         return before, case.clock()
 
+    @contextmanager
+    def writer_error(self, case, *, at_open=False):
+        # Exercise the emitted lock acquisition even on hosts without fcntl.
+        # Only the descriptor and flock syscalls are synthetic.
+        closed = []
+        def attempted(*_):
+            raise BlockingIOError(errno.EWOULDBLOCK, 'busy')
+        def flock(fd, flags):
+            self.assertEqual((fd, flags), (7, 1 | 4))
+            attempted()
+        descriptors = SimpleNamespace(O_RDONLY=0, O_NOFOLLOW=1, O_NONBLOCK=2,
+            open=attempted if at_open else lambda *_: 7, close=closed.append)
+        with patch.dict(sys.modules, fcntl=SimpleNamespace(LOCK_SH=1, LOCK_NB=4, flock=flock)), \
+             patch.multiple(case.sup, ancestors=lambda _: None, os=descriptors,
+                            ingress_writer_locks=self.writer_locks):
+            yield
+        self.assertEqual(closed, [] if at_open else [7])
+
+    def check_busy_tick(self, case):
+        self.assertTrue(all(self.tables.members.values()))
+        lease = deepcopy((case.coordination, case.elements, case.commands, case.journal.read()))
+        with patch.object(self.tables, 'command', wraps=self.tables.command) as commands:
+            row = case.supervisor.ingress_before_wait(case.scheduled, case.stop)
+        self.assertIs(row, case.scheduled)
+        self.assertEqual(row['state'], 'ACTIVE')
+        self.assertTrue(case.supervisor.active_here)
+        self.assertEqual((case.coordination, case.elements, case.commands, case.journal.read()), lease)
+        self.assertEqual(case.c.semantic_result['outcome'], 'CLOSED')
+        self.assertLessEqual(case.c.semantic_result['durationMs'],
+                             case.cfg['leaseRenewal']['semanticCloseReserveSeconds'] * 1000)
+        self.assertIsNone(case.c.semantic_epoch())
+        self.assertFalse(any(self.tables.members.values()))
+        reads = [args for (args, _, _), _kwargs in commands.call_args_list if 'set' in args]
+        self.assertCountEqual([(args[-3], args[-1]) for args in reads], self.tables.members.keys())
+        self.assertFalse(case.locked)
+
+    @unittest.skipUnless(sys.platform == 'linux' and os.getuid() == os.getgid() == 0,
+                         'requires Linux and root-owned lock paths')
+    def test_exclusive_writer_in_another_process(self):
+        import fcntl  # Save the native module before the portable bootstrap substitutes it.
+        case = self.start(27)
+        with tempfile.TemporaryDirectory(dir='/var/lib') as directory:
+            root = Path(directory)
+            auth = root / 'authorization'
+            auth.mkdir(mode=0o700)
+            paths = []
+            for role in self.guards.fixed.values():
+                cid = root / role['containerId']
+                cid.mkdir(mode=0o700)
+                paths.append(cid / 'operation.lock')
+                paths[-1].touch(mode=0o600)
+            def real_locks(cfg, guards):
+                return self.writer_locks(dict(cfg, registryRoot=str(root), authorizationRoot=str(auth)), guards)
+            with patch.dict(sys.modules, fcntl=fcntl), patch.multiple(case.sup, Path=Path,
+                                                                     ingress_writer_locks=real_locks):
+                self.wait_and_renew(case)
+                case.supervisor.ingress_before_wait(case.scheduled, case.stop)
+                for path in (max(paths), auth):
+                    with self.subTest(lock=path.name):
+                        self.wait_and_renew(case)
+                        with exclusive_writer(path):
+                            self.check_busy_tick(case)
+                        self.wait_and_renew(case)
+                        case.supervisor.ingress_before_wait(case.scheduled, case.stop)
+                        self.assertEqual(case.c.semantic_result['outcome'], 'VERIFIED')
+
+    def test_would_block_from_open_remains_fatal(self):
+        case = self.start(27)
+        self.wait_and_renew(case)
+        with self.writer_error(case, at_open=True):
+            row = case.supervisor.ingress_before_wait(case.scheduled, case.stop)
+        self.assertEqual(row['state'], 'BLOCKED')
+        self.assertEqual(case.c.semantic_result['outcome'], 'CLOSED')
+
+    def test_busy_writer_unverified_close_blocks(self):
+        case = self.start(27)
+        self.wait_and_renew(case)
+        command = case.sup.semantic_command
+        def missing_readback(binding, args, raw=None, *, deadline):
+            # Fail the reserved readback. The subsequent pause has its own
+            # independent quiescence verification outside the tick deadline.
+            if deadline is not None and 'set' in args:
+                return b'{"nftables":[]}'
+            return command(binding, args, raw, deadline=deadline)
+        with self.writer_error(case), patch.object(case.sup, 'semantic_command', missing_readback):
+            row = case.supervisor.ingress_before_wait(case.scheduled, case.stop)
+        self.assertEqual((row['state'], row['reason']), ('BLOCKED', 'R3_SEMANTIC_CLOSE_UNVERIFIED'))
+        self.assertEqual(case.c.semantic_result['outcome'], row['reason'])
+        self.assertFalse(case.locked)
+
     def test_old_failures_and_first_committed_opening(self):
         for version, expected in ((25, 'CLOSED'), (26, 'DEFERRED'), (27, 'VERIFIED')):
             with self.subTest(version=version), ExitStack() as stack:
@@ -350,16 +463,22 @@ class Replay(unittest.TestCase):
                 if i == 4 and not disable:
                     case.release = case.clock() + .19
                 before = case.clock()
-                case.supervisor.ingress_before_wait(case.scheduled, case.stop)
+                busy = i in (2, 9) and not disable
+                if busy:
+                    with self.writer_error(case):
+                        self.check_busy_tick(case)
+                else:
+                    case.supervisor.ingress_before_wait(case.scheduled, case.stop)
                 durations.append(case.clock() - before)
                 if not disable:
-                    expected = 'DEFERRED' if i == 7 else 'VERIFIED'
+                    expected = 'CLOSED' if busy else 'DEFERRED' if i == 7 else 'VERIFIED'
                     self.assertEqual(case.c.semantic_result['outcome'], expected)
                     if i == 7:
                         self.assertEqual(case.scheduled['waitSeconds'], 0)
                     else:
                         self.assertGreaterEqual(case.c.semantic_window_ms, 950)
-                        opportunities.append(before)
+                        if not busy:
+                            opportunities.append(before)
                     self.assertLess(durations[-1], .7)
             self.assertEqual(case.supervisor.renewals, 14)
             # A short cached DNS answer requires a fresh collection while the

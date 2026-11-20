@@ -160,7 +160,8 @@ def observe(args, *, output_exists=False, deadline=None):
     heads = [runtime.authorization_head(cfg, raw, cid, auth) for cid in sorted(cfg["candidates"])]
     require(heads[0] == heads[1], "R3_AUTHORIZATION_CHANGED_DURING_OBSERVATION")
     head = heads[0]
-    if head['sequence'] >= 25 and getattr(args, 'action', None) in {'start', 'restart-one'}:
+    if (getattr(args, 'action', None) in {'start', 'restart-one'}
+            and C.composition_version(head['sequence'], head['authorization']) >= 25):
         from .semantic_identity_v25 import semantic_kernel
         semantic_kernel()
     authorization = {k: head[k] for k in ("sha256", "sequence", "decision")}

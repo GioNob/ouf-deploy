@@ -45,10 +45,15 @@ def chain_identity(root, count, attributes):
 '''
 
 
-LOCKS = '''@contextmanager
+LOCKS = '''class IngressWriterBusy(Exception):
+    """An exclusive writer prevented this tick from taking a shared flock."""
+
+
+@contextmanager
 def ingress_writer_locks(cfg, guards):
     # Writers acquire CID locks before the authorization directory. A writer
     # may already be waiting for our common lock: never wait for these locks.
+    import errno
     import fcntl
     with ExitStack() as stack:
         paths = [Path(cfg["registryRoot"]) / cid / "operation.lock"
@@ -59,7 +64,12 @@ def ingress_writer_locks(cfg, guards):
             flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
             fd = os.open(path, flags | (os.O_DIRECTORY if directory else 0))
             stack.callback(os.close, fd)
-            fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+            try:
+                fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+            except BlockingIOError as error:
+                if error.errno != errno.EWOULDBLOCK:
+                    raise
+                raise IngressWriterBusy() from error
             info = os.fstat(fd)
             semantic_check(info.st_uid == info.st_gid == 0 and os.path.samestat(info, path.lstat()))
             if directory:
@@ -130,7 +140,8 @@ def sources_v27(sources, mapping):
                             # snapshot and live epochs before acknowledging the opening.
                             guards.scope_guard()''')
     edit(SUPERVISOR, 'fatal = footprint is None and not timeout',
-         'fatal = (footprint is None and not timeout) or isinstance(error, guards.Permanent)')
+         '''fatal = (footprint is None and not timeout and not isinstance(error, IngressWriterBusy)
+                             or isinstance(error, guards.Permanent))''')
     for spaces in (17, 20):
         marker = '\n' + ' ' * spaces + '"lastSemanticVerifiedAgeMs":'
         edit(SUPERVISOR, marker, marker.replace('VerifiedAge', 'Window') + ' self.c.semantic_window_ms,' + marker)
