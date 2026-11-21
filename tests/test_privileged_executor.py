@@ -251,10 +251,14 @@ class Protocol(unittest.TestCase):
 
     def test_expired_or_unbounded_kernel_lease(self):
         from ingress import live_members
-        for ttl in (0, 50, 40000):
+        # nft -j: whole seconds. 0 = under one second left, 31 > lease, 25000 = milliseconds (wrong unit).
+        for ttl in (0, 31, 25000):
             with self.assertRaisesRegex(mandate.Held, "LEASE_EXPIRED"):
                 live_members([{"elem":{"val":"member","expires":ttl}}], ["member"], 30, .1)
-        live_members([{"elem":{"val":"member","expires":1000}}], ["member"], 30, .1)
+        with self.assertRaisesRegex(mandate.Held, "LEASE_EXPIRED"):
+            live_members([{"elem":{"val":"member","expires":1}}], ["member"], 30, 1.5)
+        for ttl in (1, 25, 30):
+            live_members([{"elem":{"val":"member","expires":ttl}}], ["member"], 30, .1)
 
     def test_queue_subset_and_scope(self):
         tenant = {"private-subject": "tenant"}

@@ -9,9 +9,10 @@ from store import bound, read, trusted
 
 
 def live_members(elems, expected, max_seconds, remaining):
+    # libnftables JSON reports "expires" in whole seconds (kernel milliseconds / 1000).
     need(sorted(e["elem"]["val"] for e in elems) == sorted(expected) and expected
          and all(type(e["elem"]["expires"]) is int and
-                 0 < 1000*remaining < e["elem"]["expires"] <= 1000*max_seconds for e in elems),
+                 0 < remaining < e["elem"]["expires"] <= max_seconds for e in elems),
          "LEASE_EXPIRED")
 
 

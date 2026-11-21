@@ -17,14 +17,22 @@ from store import Journal, read, save, trusted
 from successor_image import admit, migration_review
 
 
-def until(fn, seconds, code):
+INGRESS_PAUSE = 2.0
+
+
+def until(fn, seconds, code, pause=.25):
     end = time.monotonic() + seconds
+    last = None
     while time.monotonic() < end:
         try:
             return fn()
-        except (ValueError, OSError, RuntimeError, http.client.HTTPException, Held):
-            time.sleep(.25)
-    raise Held(code)
+        except Held as error:
+            last = str(error)
+            time.sleep(pause)
+        except (ValueError, OSError, RuntimeError, http.client.HTTPException):
+            time.sleep(pause)
+    # Public diagnosis: only the last public code of the inner check, never data.
+    raise Held(code + "/" + last if last else code)
 
 
 class Cutover:
@@ -162,8 +170,9 @@ class Cutover:
         if kind == "start":
             self.closed(sup)
         else:
+            # Ingress checks hold the R3 common lock: leave the supervisor room for its tick.
             until(lambda: self.check_verified(sup, frame["previous"], frame["source"], version),
-                  30, "INITIAL_INGRESS_HELD")
+                  60, "INITIAL_INGRESS_HELD", pause=INGRESS_PAUSE)
         for op in ("start", "probe", *(("issue", "upgrade") if sequence != version else ())):
             self.books.binding(op, sequence)
         rows = self.queue.snapshot()
@@ -316,7 +325,7 @@ class Cutover:
             time_floor = time.time_ns() // 1000
             with ExitStack() as ingress:
                 deadline = until(lambda: ingress.enter_context(verified(sup, profile, cid, seq)),
-                                 30, "GATE_RELEASE_HELD")
+                                 60, "GATE_RELEASE_HELD", pause=INGRESS_PAUSE)
                 need(self.authority() == chain, "RELEASE_HEAD_DRIFT")
                 permit(self.queue.snapshot(deadline=deadline), self.req["queue"], plan["queue"])
                 signal_once(self.engine, self.log, cid, profile, generation, deadline)
@@ -326,7 +335,8 @@ class Cutover:
             self.apply_book("probe", seq, probe, digest(stage))
             need(self.authority() == chain, "FINAL_HEAD_DRIFT")
             self.ready(cid, profile, generation)
-            until(lambda: self.check_verified(sup, profile, cid, seq), 30, "FINAL_READBACK_HELD")
+            until(lambda: self.check_verified(sup, profile, cid, seq), 60, "FINAL_READBACK_HELD",
+                  pause=INGRESS_PAUSE)
         except Exception:
             cleanup = self.books.call("stop", seq)
             need(cleanup["observation"]["authorization"] == start["observation"]["authorization"]
