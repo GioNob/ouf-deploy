@@ -18,7 +18,41 @@ WORKER = "OUF_DISCOVERY_WORKER_ENABLED"
 PROVIDER = "OUF_SCHEMA_GOV_ENABLED"
 
 
-def prepare(old, profile, successor_image=None):
+def merge_image(cfg, image):
+    """Docker daemon merge for a Linux container (API 1.44), request wins."""
+    need(isinstance(image, dict), "IMAGE_CONFIG_REQUIRED")
+    for field in ("User", "WorkingDir", "StopSignal"):
+        if not cfg.get(field) and image.get(field):
+            cfg[field] = image[field]
+    for field in ("Labels", "Volumes", "ExposedPorts"):
+        if image.get(field):
+            cfg[field] = {**image[field], **(cfg.get(field) or {})}
+    if not cfg.get("Labels") and "Labels" in image:
+        cfg["Labels"] = copy.deepcopy(image["Labels"])
+    if image.get("Env"):
+        env = cfg.get("Env") or []
+        keys = {entry.partition("=")[0] for entry in env}
+        cfg["Env"] = env + [entry for entry in image["Env"] if entry.partition("=")[0] not in keys]
+    if not cfg.get("Entrypoint"):
+        if not cfg.get("Cmd") and image.get("Cmd"):
+            cfg["Cmd"] = list(image["Cmd"])
+        if cfg.get("Entrypoint") is None and image.get("Entrypoint"):
+            cfg["Entrypoint"] = list(image["Entrypoint"])
+    health = image.get("Healthcheck")
+    if health is not None:
+        if cfg.get("Healthcheck") is None:
+            cfg["Healthcheck"] = copy.deepcopy(health)
+        else:
+            for key in ("Test", "Interval", "Timeout", "Retries", "StartPeriod", "StartInterval"):
+                if not cfg["Healthcheck"].get(key) and health.get(key):
+                    cfg["Healthcheck"][key] = copy.deepcopy(health[key])
+
+
+def configuration(request):
+    return {k: v for k, v in request.items() if k not in ("HostConfig", "NetworkingConfig")}
+
+
+def prepare(old, profile, successor_image=None, image_config=None):
     cfg, host = copy.deepcopy(old["Config"]), copy.deepcopy(old["HostConfig"])
     need(old["Image"] == profile["image"] and semantic_configuration(old) == profile["configurationSha256"]
          and old["Name"] == "/" + profile["containerName"], "BASELINE_DRIFT")
@@ -31,13 +65,15 @@ def prepare(old, profile, successor_image=None):
          and host["RestartPolicy"]["Name"] == "no" and not host["Privileged"], "GATED_BASELINE")
     expected = copy.deepcopy(old)
     cfg["Env"][keys.index(WORKER)] = WORKER + "=true"
-    expected["Config"]["Env"] = list(cfg["Env"])
+    if successor_image is not None:
+        # The request always carries the gate Entrypoint, so the daemon ignores the image's own.
+        merge_image(cfg, image_config)
+        cfg["Image"] = successor_image
+        profile = {**profile, "image": successor_image}
+    expected["Config"] = copy.deepcopy(cfg)
     cfg.pop("MacAddress", None)
     if cfg["Hostname"] == old["Id"][:12]:
         cfg["Hostname"] = ""
-    if successor_image is not None:
-        cfg["Image"] = expected["Config"]["Image"] = successor_image
-        profile = {**profile, "image": successor_image}
     endpoints = {}
     for net, ep in old["NetworkSettings"]["Networks"].items():
         ipam = ep.get("IPAMConfig") or {}
@@ -53,6 +89,7 @@ def prepare(old, profile, successor_image=None):
         need(len(parts) in (2, 3), "EXPLICIT_MOUNT_REQUIRED")
         declared[parts[1]] = ("bind" if parts[0].startswith("/") else "volume", parts[0])
     need(endpoints and not host.get("VolumesFrom"), "EXPLICIT_BINDINGS_REQUIRED")
+    need(set(cfg.get("Volumes") or {}) <= set(declared), "EXPLICIT_MOUNT_REQUIRED")
     for m in old["Mounts"]:
         src = m["Name"] if m["Type"] == "volume" else m["Source"]
         need(m["Type"] in ("volume", "bind") and declared.get(m["Destination"]) == (m["Type"], src),
@@ -79,10 +116,9 @@ def allocated_profile(plan, cid):
     expected = copy.deepcopy(plan["template"])
     need(expected["Id"] == plan["old"], "TEMPLATE_CID_DRIFT")
     expected["Id"] = cid
-    cfg = expected["Config"]
-    cfg["Env"] = list(plan["request"]["Env"])
-    cfg["Image"] = plan["request"]["Image"]
-    if cfg["Hostname"] == plan["old"][:12]:
+    cfg = expected["Config"] = configuration(plan["request"])
+    cfg.pop("MacAddress", None)
+    if cfg["Hostname"] == "":
         cfg["Hostname"] = cid[:12]
     for ep in expected["NetworkSettings"]["Networks"].values():
         if plan["old"][:12] in (ep["Aliases"] or []):
@@ -93,6 +129,11 @@ def allocated_profile(plan, cid):
                 names.discard(plan["old"][:12])
             ep["DNSNames"] = sorted(names | {cid[:12]})
     return {**plan["target"], "configurationSha256": semantic_configuration(expected)}
+
+
+def never_started(state):
+    return (state["Status"] == "created" and state["Pid"] == 0 and state["Running"] is False
+            and state["StartedAt"] == "0001-01-01T00:00:00Z")
 
 
 class UnixHTTP(http.client.HTTPConnection):
@@ -156,13 +197,13 @@ class Engine:
                       {"Container": cid, "EndpointConfig": endpoint})
         return cid
 
-    def start_gate(self, cid, name, request, image):
+    def stopped_gate(self, cid, name, request, image):
         row = self.inspect(cid)
         cfg = dict(row["Config"])
         cfg.pop("MacAddress", None)
         if cfg["Hostname"] == cid[:12] and request["Hostname"] == "":
             cfg["Hostname"] = ""
-        expected = {k: v for k, v in request.items() if k not in ("HostConfig", "NetworkingConfig")}
+        expected = configuration(request)
         need(row["Id"] == cid and row["Name"] == "/" + name and row["Image"] == image
              and row["State"]["Pid"] == 0 and not row["State"]["Running"] and cfg == expected
              and row["Config"]["Entrypoint"] == ENTRY, "STOPPED_GATE_FRAME_DRIFT")
@@ -171,7 +212,22 @@ class Engine:
         if host.get("OomKillDisable") is False and request["HostConfig"].get("OomKillDisable") is None:
             host["OomKillDisable"] = None
         need(host == request["HostConfig"], "STOPPED_HOST_FRAME_DRIFT")
+        return row
+
+    def start_gate(self, cid, name, request, image):
+        self.stopped_gate(cid, name, request, image)
         return self.call("POST", f"containers/{cid}/start")
+
+    def remove_stopped(self, cid, name, *, created=False):
+        row = self.inspect(cid)
+        need(hex64(cid) and row["Id"] == cid and row["Name"] == "/" + name
+             and row["State"]["Status"] in ("created", "exited") and row["State"]["Pid"] == 0
+             and row["State"]["Running"] is False, "REMOVE_CID_DRIFT")
+        if created:
+            need(never_started(row["State"]), "NEVER_STARTED_REQUIRED")
+        self.call("DELETE", f"containers/{cid}")
+        need(self.inspect(cid, True) is None and self.inspect(name, True) is None, "REMOVE_UNPROVEN")
+        return cid
 
     def process(self, cid, profile, kind):
         row = self.inspect(cid)
