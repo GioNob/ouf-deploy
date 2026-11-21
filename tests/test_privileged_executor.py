@@ -444,16 +444,20 @@ class Protocol(unittest.TestCase):
             self.assertEqual(len(engine.call.call_args_list), 2)
             self.assertEqual(engine.call.call_args.args[2], {"Container":"old","EndpointConfig":{"Aliases":["alias"]}})
 
-    def test_head_30_requires_a_complete_chain(self):
+    def test_head_requires_complete_chain_and_installed_profile(self):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))
         chain = root / "authorization"
         chain.mkdir()
         c = object.__new__(pipeline.Cutover)
-        c.cfg = {"installRoot": str(root)}
-        for n in range(1, 31):
+        c.cfg = {"installRoot": str(root), "runbooks": {f"start-{n}": {} for n in range(27, 32)}}
+        for n in range(1, 32):
             for suffix in ("json", "signature.json"):
                 (chain / f"{n}.{suffix}").touch()
-        self.assertEqual(c.current_version(), 30)
+            if n >= 27:
+                self.assertEqual(c.current_version(), n)
+        with patch.dict(c.cfg["runbooks"], {"start-30": {}}, clear=True), \
+                self.assertRaisesRegex(mandate.Held, "HEAD_RECONCILIATION_REQUIRED"):
+            c.current_version()
         (chain / "28.signature.json").unlink()
         with self.assertRaisesRegex(mandate.Held, "HEAD_RECONCILIATION_REQUIRED"):
             c.current_version()
@@ -550,6 +554,9 @@ class RoundTrip(unittest.TestCase):
 
     def test_next_release_after_legacy_completion(self):
         self.round_trip(signed=True, migrations=["V13.sql"], next_mode="legacy")
+
+    def test_successive_next_from_29_and_signed_return_to_its_predecessor(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="successive")
 
     def test_next_release_finishes_partial_pointer_archival(self):
         self.round_trip(signed=True, migrations=["V13.sql"], next_mode="archive")
@@ -709,7 +716,12 @@ class RoundTrip(unittest.TestCase):
                 c.authority = lambda: "signed-chain"
                 c.observe, c.supervisor = observed, supervisor
                 c.ready = Mock()
-                c.probe_preflight = Mock(return_value="preflight")
+                def probe_preflight(version, cid):
+                    books = c.source_probe(c.books)
+                    if release_next:
+                        self.assertEqual(books.probe_source, root / {28: "103", 29: "202"}[version])
+                    return "preflight"
+                c.probe_preflight = probe_preflight
                 c.queue.snapshot.return_value = []
                 c.queue.worker.return_value = {"state":"SUCCEEDED"}
                 stored = {}
@@ -769,11 +781,19 @@ class RoundTrip(unittest.TestCase):
                         c.initial()
                     with patch.dict(spec["ci"], imageId=head.profile["image"]), self.assertRaisesRegex(mandate.Held, "NEXT_RELEASE_BASELINE_DRIFT"):
                         c.initial()
+                if run == "301":
+                    before = counts.copy()
+                    with patch.dict(cfg, runbooks={"stop-30": {}}), \
+                            patch.object(c.books, "binding", runbooks.Books(cfg, c.path).binding), \
+                            self.assertRaisesRegex(mandate.Held, "RUNBOOK_BINDING_REQUIRED"):
+                        c.initial()
+                    self.assertEqual(counts, before)
                 first = c.execute("review-plan")
                 if release_next and direction == "forward":
                     self.assertEqual(first["returnAfterIssue"], "available")
+                    self.assertEqual(first["returnSequence"], seq + 1)
                     for op in pipeline.SUCCESS:
-                        c.books.binding.assert_any_call(op, 30)
+                        c.books.binding.assert_any_call(op, seq + 1)
                 if run == "200":
                     c.books.binding.side_effect = mandate.Held("RUNBOOK_BINDING_REQUIRED")
                     req.update(phase="apply", digest=first["digest"])
@@ -945,6 +965,39 @@ class RoundTrip(unittest.TestCase):
                         self.assertEqual(store.read(root / "completed-forward")["run"], "103")
                     else:
                         scenario("202", "forward", 29, new_id, release_next=True)
+                        if next_mode == "successive":
+                            cid29, image29 = new_id, head.profile["image"]
+                            previous = admission.return_value["migrations"]
+                            new_id, new_image = "7"*64, "sha256:" + "8"*64
+                            migrations = []
+                            ci = {"imageId": new_image, "zipSha256": "7"*64}
+                            cfg["nextSuccessorImage"] = {"ci": ci, "predecessorMigrations": previous}
+                            admission.return_value = {"ci": ci, "migrations": previous, "newMigrations": []}
+                            engine.call.return_value["Id"] = new_image
+                            scenario("299", "forward", 30, new_id, stop_at_gate=True, release_next=True)
+                            scenario("300", "return", 29, cid29, release_next=True)
+                            self.assertNotIn(("issue", 30), counts)
+                            self.assertEqual(store.read(root / "completed-forward")["run"], "202")
+                            abandoned = new_id
+                            new_id = "6"*64
+                            scenario("301", "forward", 30, new_id, release_next=True)
+                            self.assertNotIn(abandoned, containers)
+                            forward = store.read(root / "301" / "plan")
+                            self.assertEqual((forward["head"], forward["old"], forward["original"]["image"]),
+                                             (29, cid29, image29))
+                            self.assertEqual(containers[cid29]["Name"], "/saved-v29")
+                            self.assertEqual(containers[new_id]["Image"], new_image)
+                            scenario("302", "return", 31, cid29, release_next=True)
+                            self.assertEqual((head.profile["image"], containers[cid29]["Name"]), (image29, "/app"))
+                            self.assertIn("OUF_DISCOVERY_WORKER_ENABLED=true", containers[cid29]["Config"]["Env"])
+                            self.assertEqual((containers[old_id]["Name"], containers[line_c]["Name"]),
+                                             ("/saved", "/saved-v28"))
+                            self.assertEqual(containers[new_id]["State"]["Status"], "exited")
+                            for seq in (30, 31):
+                                for op in ("issue", "upgrade", "start", "probe"):
+                                    self.assertEqual(counts.count((op, seq)), 1)
+                            self.assertEqual(store.read(root / "last-closed")["run"], "302")
+                            return
                         if next_mode in ("signed", "signal"):
                             scenario("203", "forward", 29, new_id, release_next=True)
                         scenario("210", "return", 30, line_c, release_next=True)

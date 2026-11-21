@@ -1,6 +1,6 @@
 # Cutover A2 del Semantic
 
-Il workflow manuale governa il cutover A2 27→28 e il rilascio Semantic 28→29. Ogni transazione identifica il proprio predecessore tramite CID. Il plan effettivo identifica l’installazione. La riuscita dell’andata richiede una ricevuta della firma, l’upgrade, lo start R3, un ingresso `VERIFIED`, Java PID 1, readiness HTTP 200 con `status=UP`, sonda C e worker abilitato nel frame verificato. L’owner riferisce A2 completato nel run 44882047892. Le prove del rilascio successivo usano un host simulato e una fixture Engine dedicata.
+Il workflow manuale governa il cutover A2 27→28 e i rilasci Semantic successivi con `release=next`. Ogni transazione identifica il proprio predecessore tramite CID. Il plan effettivo identifica l’installazione. La riuscita dell’andata richiede una ricevuta della firma, l’upgrade, lo start R3, un ingresso `VERIFIED`, Java PID 1, readiness HTTP 200 con `status=UP`, sonda C e worker abilitato nel frame verificato. L’owner riferisce A2 completato nel run 44882047892 e la testa 29 raggiunta nel run 44909669060.
 
 ## Migrazione online del database Semantic
 
@@ -40,9 +40,29 @@ Il dispatch non chiede `confirm_no_return`. Per `release=next` l’esecutore ver
 
 **Ritorno.** Selezionare `release=next`, `direction=return` in un nuovo dispatch. Prima della firma di 29 si torna al CID della linea C sulla testa 28 senza firmare. Dopo la firma di 29 si conserva il Semantic nuovo fermo, si ricollega lo stesso CID della linea C e si firma la 30 per il suo profilo. Se la 29 è firmata ma non installata, l’upgrade 29 viene prima riconciliato con il piano e gli input dell’emittente. La 30 richiede upgrade, start, ingresso verificato, USR1, readiness e sonda sugli input della **30**, con worker acceso. Questo è un ritorno applicativo, non un downgrade del database: compatibilità della linea C con V14 e qualifica nativa restano da verificare. Non cancellare claim né rigiocare comandi ambigui: riprendere con un nuovo dispatch di ritorno e nuove review.
 
-**Limiti verificati.** La catena locale deve contenere ogni coppia payload/firma dalla 1 alla testa; l’esecutore e il dispatcher ammettono solo 27–30. La sorgente del forward rimane intenzionalmente 27 (A2) o 28 (next), non una versione libera. Nel sorgente R3 fissato la catena ammette fino a 256 emissioni; 27 è l’ultima famiglia di composizione, non l’ultima sequenza. Gli overlay `>=27` e gli input di rinnovo v27 restano quelli della 29. Operate osserva la testa autenticata: il vecchio stato v29 e le soglie del suo preparatore non erano invocati da start/stop. La sonda C deriva la sequenza dalla testa. Il ciclo `(27, 28)` nella fixture del ceiling ricostruiva due file di prova, non era un controllo dell’autorità.
+L’esecutore richiede tutte le coppie payload/firma dalla 1 alla testa e una testa coperta dal profilo installato. L’installatore richiede ruoli contigui dalla 27 per start, stop e probe e dalla 28 per issue e upgrade, fino alla versione massima del profilo. Verifica i blob e i pin per ciascun ruolo. L’autorità R3 ammette fino a 256 emissioni. La composizione continua a usare l’overlay e gli input di rinnovo v27. Operate e sonda C leggono la testa autenticata.
 
 **Journal e interruzioni.** Il forward concluso salva i due puntatori in `<run>/closed-forward` e pubblica `completed-forward`. La rimozione dei puntatori attivi termina con `forward-stage`. Un nuovo dispatch completa una chiusura interrotta, anche per un successo A2 prodotto dalla 17u. L’archivio conserva la provenienza per proof e ritorno. La transazione nuova pubblica i propri puntatori all’apply. Se il ritorno si interrompe durante il ricollegamento, il plan identifica i CID e le reti residue e l’apply completa i collegamenti mancanti. Prima della CREATE, una ricevuta di stop e il frame del CID identificano il distacco da completare. Un claim CREATE con esito privo di CID resta HELD. Al gate la ripresa riusa il CID registrato e richiede le review del nuovo run. Dopo la firma, un nuovo forward confronta il payload 29, lo stage approvato, la generazione e i claim. Per upgrade, start e sonda recupera anche un `result.json` dell’owner con stato e digest attesi. In presenza di un claim USR1 serve Java nella stessa generazione. La ripresa verifica readiness, ingresso e sonda senza un altro segnale. Effetti ambigui privi di riscontro restano HELD.
+
+## Rilascio Semantic dalla testa 29
+
+Per il forward 29→30 del task-16 usare `release=next`, `direction=forward`. Nel profilo privato fissare in `nextSuccessorImage` le coordinate CI e lo ZIP dell’immagine corretta. Impostare `predecessorMigrations` all’inventario completo dell’immagine rilasciata sulla 29. Il plan verifica il journal del forward concluso sulla 29, il relativo CID, il profilo del supervisore e l’immagine del container in esecuzione. La sonda preflight usa gli input del run che ha emesso la 29.
+
+Aggiungere queste cinque voci ai 18 binding fino alla 30. Per ogni voce impostare `sourceCommit` a `c58515e8d4567742fc9dad988b4871966ce49563` e `artifactCommit` allo SHA Git completo del commit revisionato che contiene il file. Per i due nuovi wrapper l’`artifactCommit` sarà disponibile dopo il commit del task-17. I digest si riferiscono ai blob LF.
+
+| Chiave in `runbooks` | File in `ops/vps/` | `sha256` |
+|---|---|---|
+| `issue-31` | `r3-issue-v31.sh` | `424bb1588dd7e543264f17d8599273ee17e05f9191f46e11ab3cf799199e9ccc` |
+| `upgrade-31` | `r3-upgrade-v31.sh` | `2ea6239a2b80bd1f32813c171b83305a8e63595620f1db57e52517c60c7c3532` |
+| `start-31` | `r3-operate.sh` | `5c1da7b2c8d1c37cc2a83e612faf38b70645e09b67830860355c62d5a99326f6` |
+| `stop-31` | `r3-operate.sh` | `5c1da7b2c8d1c37cc2a83e612faf38b70645e09b67830860355c62d5a99326f6` |
+| `probe-31` | `c-probe.sh` | `5287ef8a820ef8c1216c29e65ed7ff0a8612d729473db1d757bd4fd06570ca70` |
+
+Il forward verifica i cinque binding della 31 al plan, prima del fermo e prima della firma. Conserva il CID della 29 in `<retainedName>-v29`. Per il ritorno usare `release=next`, `direction=return`. Prima della firma della 30 si ripristina il predecessore sulla 29. Dopo la firma si riconcilia l’eventuale upgrade 30 pendente, si ricollega lo stesso CID e si emette la 31 per il suo profilo. Upgrade, start e sonda qualificano la 31 con il worker acceso. Le migrazioni del database restano applicate.
+
+### Domande aperte
+
+Una coppia stabile `issue`/`upgrade` potrebbe ricevere dal piano approvato la sequenza richiesta, il digest della testa autenticata e il manifest dei sorgenti fissati. Al plan e all’apply l’emittente verificherebbe `sequenza = testa + 1` e il digest del predecessore. La sequenza determinerebbe i percorsi di stato e di output. L’upgrade consumerebbe gli input e la ricevuta della stessa emissione. Resta da decidere come esprimere nel profilo l’intervallo autorizzato per ciascun manifest. Questa proposta riguarda un task successivo.
 
 ## Mandato e approvazione
 
@@ -144,7 +164,7 @@ Il modello considera sostituzione del commit, confusione fra le review sullo ste
 
 Il registro di componente D-065 descrive esecutore, profilo, giornali, sudoers e binding dell’unità R3 con metodi di cattura, ordine e prova di ripristino. [Voci del registro host](../tools/privileged_executor/host-register.json)
 
-I test portabili esercitano la macchina delle fasi 27→28→29 con confini host simulati. Il test Linux con `OUF_A2_NATIVE=1` usa una shell e un pidfd reali. La suite `test_privileged_executor_native.py` con `OUF_A2_NATIVE_ENGINE=1` richiede un daemon locale usa e getta etichettato `ouf.a2.fixture=true`, il percorso `OUF_A2_FIXTURE_SOCKET` e l’image ID locale `OUF_A2_FIXTURE_IMAGE` con il JAR di prova persistente. Crea una rete interna, due container e verifica gate, segnale e ritorno. Per qualificare l’installazione servono inoltre le prove native R3/D-047, le review reali, il giro integrato coda e sonda, la prova MCP e l’osservazione di almeno 60 minuti con rollover. [Suite pipeline](../tests/test_privileged_executor.py) · [Suite Engine](../tests/test_privileged_executor_native.py) · [Qualifica R3](OUF_SEMANTIC_PROVIDER_R3_V27.md)
+I test portabili esercitano la macchina delle fasi 27→28→29→30 e il ritorno 30→31 con confini host simulati. Il test Linux con `OUF_A2_NATIVE=1` usa una shell e un pidfd reali. La suite `test_privileged_executor_native.py` con `OUF_A2_NATIVE_ENGINE=1` richiede un daemon locale usa e getta etichettato `ouf.a2.fixture=true`, il percorso `OUF_A2_FIXTURE_SOCKET` e l’image ID locale `OUF_A2_FIXTURE_IMAGE` con il JAR di prova persistente. Crea una rete interna, due container e verifica gate, segnale e ritorno. Per qualificare l’installazione servono inoltre le prove native R3/D-047, le review reali, il giro integrato coda e sonda, la prova MCP e l’osservazione di almeno 60 minuti con rollover. [Suite pipeline](../tests/test_privileged_executor.py) · [Suite Engine](../tests/test_privileged_executor_native.py) · [Qualifica R3](OUF_SEMANTIC_PROVIDER_R3_V27.md)
 
 Il workflow delle PR esercita il pidfd, il ritorno Docker A2, la coda su PostgreSQL con grant per colonna, il bootstrap e il rilascio di un modulo su una VM GitHub effimera. Le immagini a cancello derivano dal JDK del runner. La prova della coda usa i binari PostgreSQL locali individuati con `pg_config --bindir` in un container con rete disabilitata. [Prove native](../.github/workflows/privileged-executor-native.yml)
 

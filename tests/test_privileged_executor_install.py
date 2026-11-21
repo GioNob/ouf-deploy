@@ -140,27 +140,40 @@ class Bootstrap(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "SUCCESSOR_IMAGE_PROFILE"):
             self.inst.inspect(self.path)
 
-    def test_complete_v30_bindings_use_reviewed_blobs(self):
+    def test_complete_extensions_use_reviewed_blobs(self):
         cfg = json.loads(self.path.read_bytes())
-        for op in ("start", "stop", "issue", "upgrade", "probe"):
-            name = {"start": "r3-operate", "stop": "r3-operate", "probe": "c-probe"}.get(op, f"r3-{op}-v30")
-            path = f"ops/vps/{name}.sh"
-            raw = (ROOT / path).read_text(encoding="utf8").encode()
-            artifact = "d" * 40
-            self.artifacts[f"{artifact}:{path}"] = raw
-            cfg["runbooks"][f"{op}-30"] = dict(artifactCommit=artifact, sourceCommit="c58515e8d4567742fc9dad988b4871966ce49563", sha256=hashlib.sha256(raw).hexdigest())
-        self.path.write_text(json.dumps(cfg))
-        files = self.inst.inspect(self.path)
-        for role, binding in cfg["runbooks"].items():
-            self.assertEqual(hashlib.sha256(files[self.inst.ROOT / "books" / role][0]).hexdigest(), binding["sha256"])
-        cfg["runbooks"]["probe-30"]["sha256"] = "0" * 64
+        filenames = {"start": "r3-operate", "stop": "r3-operate", "probe": "c-probe"}
+        source = "c58515e8d4567742fc9dad988b4871966ce49563"
+        artifact = "d" * 40
+        for version in (30, 31):
+            for op in ("start", "stop", "issue", "upgrade", "probe"):
+                name = filenames.get(op, f"r3-{op}-v{version}")
+                path = f"ops/vps/{name}.sh"
+                raw = (ROOT / path).read_text(encoding="utf8").encode()
+                self.artifacts[f"{artifact}:{path}"] = raw
+                cfg["runbooks"][f"{op}-{version}"] = dict(artifactCommit=artifact, sourceCommit=source,
+                                                          sha256=hashlib.sha256(raw).hexdigest())
+            self.path.write_text(json.dumps(cfg))
+            if version == 30:
+                self.install_fixture()
+            else:
+                files = self.inst.inspect(self.path)
+                self.inst.install(files, self.inst.manifest(files))
+            installed = json.loads((self.inst.ROOT / "profile.json").read_bytes())["runbooks"]
+            self.assertEqual(installed.keys(), cfg["runbooks"].keys())
+            for role, binding in cfg["runbooks"].items():
+                path = self.inst.ROOT / "books" / role
+                self.assertEqual(Path(installed[role]["path"]), path)
+                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), binding["sha256"])
+        cfg["runbooks"]["probe-31"]["sha256"] = "0" * 64
         self.path.write_text(json.dumps(cfg))
         with self.assertRaisesRegex(ValueError, "RUNBOOK_PIN_DRIFT"):
             self.inst.inspect(self.path)
-        del cfg["runbooks"]["probe-30"]
-        self.path.write_text(json.dumps(cfg))
-        with self.assertRaisesRegex(ValueError, "RUNBOOK_SET_REQUIRED"):
-            self.inst.inspect(self.path)
+        for missing in ("probe-31", "issue-30"):
+            books = {role: pin for role, pin in cfg["runbooks"].items() if role != missing}
+            self.path.write_text(json.dumps(dict(cfg, runbooks=books)))
+            with self.assertRaisesRegex(ValueError, "RUNBOOK_SET_REQUIRED"):
+                self.inst.inspect(self.path)
 
     def test_gateway_rejects_legacy_source_token_file(self):
         cfg = json.loads(self.path.read_bytes())

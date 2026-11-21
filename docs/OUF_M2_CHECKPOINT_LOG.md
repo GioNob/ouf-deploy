@@ -697,3 +697,7 @@ Sulla base `5a5871eb` la fixture portabile verifica il delta Ingestion, la revie
 ## 21 novembre 2026 · sprint-03/14 · storia Semantic V12 e immagine V16
 
 L’operatore ha riferito il disallineamento sulla testa 29. La prova portabile copre il plan per prefisso, il rollback dello script interrotto, la riconciliazione da storia e la verifica prima della firma. Il confronto con Flyway reale è nella CI nativa dell’esecutore. La prossima osservazione del database vivo spetta al plan dopo l’installazione e la configurazione del binding privato. [Procedura](OUF_PRIVILEGED_PIPELINE.md#migrazione-online-del-database-semantic)
+
+## 21 novembre 2026 · sprint-03/17 · ritorno R3 dopo la firma della 30
+
+La prova portabile concatena i forward dalla 27 alla 30. Il ritorno firma la 31 per il CID e l’immagine della 29 con worker acceso. L’installatore verifica i 23 binding del profilo esteso e conserva la compatibilità con i due profili precedenti. La testa in esercizio riferita dall’owner è la 29 nel run 44909669060. [Procedura e pin v31](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-29)

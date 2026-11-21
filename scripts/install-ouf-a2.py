@@ -92,10 +92,13 @@ def inspect(profile):
              ENTRY: (blob("scripts/ouf-a2-executor"), 0o755),
              RULE: (f'{user} ALL=(root) NOPASSWD: NOSETENV: {ENTRY} ""\n'.encode(), 0o440)}
     ops = ("start", "stop", "issue", "upgrade", "probe")
-    base = {f"{op}-{version}" for op in ops for version in range(28 if op in ("issue", "upgrade") else 27, 30)}
-    extended = base | {f"{op}-30" for op in ops}
     roles = set(cfg["runbooks"])
-    check(roles == base or roles == extended, "RUNBOOK_SET_REQUIRED")
+    last = max((int(role.removeprefix("start-")) for role in roles
+                if re.fullmatch(r"start-[1-9][0-9]{1,2}", role)), default=0)
+    check(29 <= last <= 256, "RUNBOOK_SET_REQUIRED")  # R3 authorization.MAX_CHAIN
+    expected = {f"{op}-{version}" for op in ops
+                for version in range(28 if op in ("issue", "upgrade") else 27, last + 1)}
+    check(roles == expected, "RUNBOOK_SET_REQUIRED")
     for role in sorted(roles):
         op, version = role.split("-")
         spec = cfg["runbooks"][role]
@@ -150,7 +153,8 @@ def inspect(profile):
     check(len({cfg["retainedName"], cfg["failedName"], cfg["originalProfile"]["containerName"]}) == 3
           and len(set(cfg["roleCids"])) == len(set(cfg["roleTables"])) == 2, "INSTALLATION_IDENTITIES")
     if "nextSuccessorImage" in cfg:
-        check(cfg["retainedName"] + "-v28" not in (cfg["failedName"], cfg["originalProfile"]["containerName"]),
+        check(all(f"{cfg['retainedName']}-v{head}" not in (cfg["failedName"], cfg["originalProfile"]["containerName"])
+                  for head in (28, *range(29, last - 1))),
               "INSTALLATION_IDENTITIES")
     # Older installers delivered these same lib/books paths without an inventory.
     # Adopt only the reviewed paths on the first upgrade, never scan the tree.
