@@ -13,8 +13,9 @@ from runbooks import Books, SUCCESS, SUPPORTED_HEADS, stop
 from semantic import Engine, allocated_profile, configuration, never_started, prepare, profile_template, signal_once
 from semantic_identity_v25 import semantic_observe, semantic_profile
 import store
+import semantic_database as database
 from store import Journal, read, save, trusted
-from successor_image import admit, inventory, migration_review
+from successor_image import admit, inventory, live_manifest, migration_review
 
 
 INGRESS_PAUSE = 2.0
@@ -44,7 +45,7 @@ class Cutover:
         self.books = Books(cfg, self.path)
         self.queue = Queue(cfg["queue"], cfg["socket"])
         self.engine = Engine(cfg["socket"])
-        self.forward = req["direction"] == "forward"
+        self.forward = req.get("direction") == "forward"
         self.next_release = req.get("release") == "next"
         self.source_head = 28 if self.next_release else 27
         self.name = cfg["originalProfile"]["containerName"]
@@ -971,6 +972,63 @@ class Cutover:
             conn.close()
         need(self.engine.process(cid, profile, "APPLICATION_RUNNING") == generation, "READINESS_EPOCH_DRIFT")
 
+    def database_operation(self, review):
+        db = database.Database(self.cfg)
+        head = self.current_version()
+        profile = self.supervisor(head)["semanticIngress"]["profile"]
+        doc = self.engine.inspect(self.name)
+        cid = doc["Id"]
+        need(profile["containerName"] == self.name and doc["Image"] == profile["image"], "LIVE_R3_IMAGE_DRIFT")
+        generation = self.engine.process(cid, profile, "APPLICATION_RUNNING")
+        need(doc["State"]["Pid"] == generation["pid"] and doc["State"]["StartedAt"] == generation["startedAt"],
+             "LIVE_R3_GENERATION_DRIFT")
+        authority = self.authority()
+
+        def guard():
+            need(self.current_version() == head and self.authority() == authority
+                 and self.supervisor(head)["semanticIngress"]["profile"] == profile
+                 and self.engine.process(cid, profile, "APPLICATION_RUNNING") == generation,
+                 "LIVE_R3_GENERATION_DRIFT")
+
+        rows, scripts = database.reviewed(doc, live_manifest(self.cfg, doc["Image"]))
+        guard()
+        context = {"intent": intent(self.req), "profile": digest(self.cfg), "head": head,
+                   "authority": authority, "generation": generation}
+        phase = self.req["phase"]
+        save(self.path / (phase + ".review"), {"request": self.req, "review": review})
+        if phase == "plan":
+            proof = database.proposal(db, rows, scripts)
+            guard()
+            plan = {**context, "database": proof}
+            save(self.path / "plan", plan)
+            return {"digest": digest(plan), "pending": rows[proof["applied"]:], "head": head}
+        plan = self.record("plan")
+        need(phase == "apply" and self.req["digest"] == digest(plan)
+             and plan == {**context, "database": plan["database"]}, "SEMANTIC_MIGRATION_PLAN_DRIFT")
+        database.apply(self.root, self.req["run"], db, plan["database"], rows, scripts, guard)
+        self.ready(cid, profile, generation)
+        guard()
+        result = {"plan": digest(plan), "lastVersion": rows[-1]["version"], "readiness": "UP", "head": head}
+        save(self.path / "result", result)
+        return {**result, "digest": digest(result)}
+
+    def migration_guard(self, plan, stage):
+        need(self.forward and self.owner("forward-stage") == self.req["run"]
+             and not (self.root / "return").exists() and self.current_version() == plan["head"]
+             and self.authority() == plan["authority"]
+             and self.engine.process(stage["cid"], stage["profile"], "GATE_WAITING") == stage["generation"],
+             "MIGRATION_STAGE_DRIFT")
+        self.retained(plan)
+
+    def staged_scripts(self, plan, stage):
+        self.migration_guard(plan, stage)
+        doc = self.engine.inspect(stage["cid"])
+        need(doc["Id"] == stage["cid"] and doc["State"]["Pid"] == stage["generation"]["pid"]
+             and doc["State"]["StartedAt"] == stage["generation"]["startedAt"]
+             and doc["Image"] == plan["successorImage"]["ci"]["imageId"]
+             and database.route(doc["Config"]) == "governed-sql", "MIGRATION_STAGE_DRIFT")
+        return database.reviewed(doc, plan["successorImage"]["migrations"])
+
     def execute(self, review):
         phase = self.req["phase"]
         def accept():
@@ -988,6 +1046,10 @@ class Cutover:
                 response["imageId"] = image["ci"]["imageId"]
                 response["zipSha256"] = image["ci"]["zipSha256"]
                 response["inventorySha256"] = digest(image["migrations"])
+            if self.forward and "successorImage" in plan and "committedFrom" not in plan:
+                response["migrationMode"] = database.route(plan["request"])
+                if response["migrationMode"] == "governed-sql":
+                    database.binding(self.cfg)
             return response
         plan = self.record("plan")
         need(plan["intent"] == intent(self.req) and plan["profileSha256"] == digest(self.cfg)
@@ -1008,11 +1070,17 @@ class Cutover:
             need(self.req["digest"] == digest(plan), "APPROVED_PLAN_DRIFT")
             accept()
             stage = self.prepare_stage(plan)
+            if (self.forward and "successorImage" in plan and "committedFrom" not in plan
+                    and database.route(plan["request"]) == "governed-sql"):
+                rows, scripts = self.staged_scripts(plan, stage)
+                stage["databaseMigration"] = database.proposal(database.Database(self.cfg), rows, scripts)
             save(self.path / "stage", stage)
             migration = migration_review(plan, stage)
             if migration:
-                new = plan["successorImage"]["newMigrations"]
+                proof = stage.get("databaseMigration")
+                new = proof["rows"][proof["applied"]:] if proof else plan["successorImage"]["newMigrations"]
                 return {"digest": migration, "migrationCount": len(new), "migrationsSha256": digest(new),
+                        **({"pending": new} if proof else {}),
                         "imageId": stage["profile"]["image"]}
             return {"digest": stage["issue"]["planSha256"] if stage["issue"] else digest(stage)}
         stage = self.record("stage")
@@ -1023,12 +1091,22 @@ class Cutover:
         if phase == "migrate":
             need(migration and self.req["digest"] == migration, "APPROVED_MIGRATION_DRIFT")
             accept()
+            if "databaseMigration" in stage:
+                rows, scripts = self.staged_scripts(plan, stage)
+                database.apply(self.root, self.req["run"], database.Database(self.cfg), stage["databaseMigration"],
+                               rows, scripts, lambda: self.migration_guard(plan, stage))
+                save(self.path / "migrate.complete", {"migration": migration})
             return {"digest": signing}
         need(phase == "sign" and self.req["digest"] == signing, "APPROVED_ISSUANCE_DRIFT")
         if migration:
             need((self.path / "migrate.review").is_file() and
                  self.record("migrate.review")["request"] == {**self.req, "phase": "migrate", "digest": migration},
                  "MIGRATION_REVIEW_REQUIRED")
+            if "databaseMigration" in stage:
+                need((self.path / "migrate.complete").is_file() and
+                     self.record("migrate.complete") == {"migration": migration}, "MIGRATION_EFFECT_UNPROVEN")
+                self.migration_guard(plan, stage)
+                database.verify(database.Database(self.cfg), stage["databaseMigration"])
         accept()
         result = self.finish(plan, stage)
         save(self.path / "result", result)

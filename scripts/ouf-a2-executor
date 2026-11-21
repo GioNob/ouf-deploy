@@ -25,6 +25,8 @@ from gateway_operation import GatewayRelease
 
 def dispatch(req, cfg, state, get, source_get=None, *, token=None):
     review = authorize(req, cfg, get, state)
+    if req.get("operation") == "semantic-database-migration":
+        return Cutover(cfg, state, req).database_operation(review)
     if req.get("operation") == "module-release":
         return ModuleRelease(cfg, state, req).execute(review)
     if req.get("operation") == "gateway-release":

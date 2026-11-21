@@ -21,6 +21,7 @@ on:
       - 'tests/module_release_ready_fixture.go'
       - 'tests/privileged_postgres_fixture.py'
       - '.github/workflows/semantic-a2-cutover.yml'
+      - '.github/workflows/semantic-database-migration.yml'
       - '.github/workflows/onboarding-module-release.yml'
       - '.github/workflows/mcp-module-release.yml'
       - '.github/workflows/udp-module-release.yml'

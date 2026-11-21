@@ -9,7 +9,8 @@ from test_module_release import PROFILE, TESTED, artifact
 from mandate import Held
 from module_release.docker import Docker
 from store import Journal
-from successor_image import admit
+from successor_image import admit, live_manifest
+from module_release.contract import SEMANTIC_SCHEMA
 
 
 class SemanticArtifact(unittest.TestCase):
@@ -45,6 +46,20 @@ class SemanticArtifact(unittest.TestCase):
 
     def run_plan(self):
         return admit(self.cfg, self.journal, self.get)
+
+    def test_live_inventory_selects_exact_profile_image_without_load(self):
+        self.spec.update(migrationsField="flywayMigrations")
+        ci = self.spec["ci"]
+        ci["manifestSchema"] = SEMANTIC_SCHEMA
+        rows = [{"name": "V12__previous.sql", "sha256": "a"*64}]
+        artifact(self.spec, self.root, flywayMigrations=rows, qualifiedInCiOnly=True,
+                 targetApplyAuthorized=False, humanBudgetGranted=False, releaseAcceptance=False)
+        for key in ("successorImage", "nextSuccessorImage"):
+            with self.subTest(key=key):
+                self.assertEqual(live_manifest({key: self.spec}, ci["imageId"]), rows)
+        with self.assertRaisesRegex(Held, "LIVE_SEMANTIC_MANIFEST_REQUIRED"):
+            live_manifest(self.cfg, "sha256:" + "9"*64)
+        self.engine.assert_not_called()
 
     def test_load_exact_publisher_bytes_into_approved_store_identity(self):
         result = self.run_plan()

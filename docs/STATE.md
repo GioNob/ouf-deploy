@@ -1,5 +1,9 @@
 # Stato corrente OUF
 
+## Semantic su R3 29 · migrazione database · 21 novembre 2026
+
+L’operatore riferisce discovery HTTP 500, storia a V12 e immagine con V1–V16. Il task sprint-03/14 introduce il recupero online con un’approvazione e la migrazione al cancello nei rilasci A2 e next con Flyway disabilitato. La qualifica nativa PostgreSQL/Flyway è collegata alla CI. Per la prova in esercizio servono il binding privato e il plan del nuovo esecutore. [Procedura e valori da inserire](OUF_PRIVILEGED_PIPELINE.md#migrazione-online-del-database-semantic)
+
 ## Semantic su R3 28 · 21 novembre 2026
 
 L’owner riferisce il completamento di A2 con il run 44882047892, testa 28 ACTIVE e worker abilitato. In sprint-03/10 l’esecutore prepara il rilascio 28→29 dal profilo della linea C. Il prossimo passo operativo richiede i pin CI del task-09 e i cinque binding v30 nel profilo privato. Il task-10b prova offline il ritorno al CID della linea C con emissione 30; non attesta deploy, compatibilità con il database dopo V14 o esito runtime. [Procedura e recupero](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)

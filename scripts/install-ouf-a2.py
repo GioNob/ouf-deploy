@@ -19,7 +19,7 @@ ENTRY = Path("/usr/local/sbin/ouf-a2")
 RULE = Path("/etc/sudoers.d/ouf-a2")
 REPO = Path(__file__).resolve().parents[1]
 LIB = ("mandate", "store", "queue_inventory", "runbooks", "semantic", "ingress", "pipeline", "module_operation", "successor_image")
-LIB += ("gateway_policy", "gateway_bundle", "gateway_admin", "gateway_operation")
+LIB += ("gateway_policy", "gateway_bundle", "gateway_admin", "gateway_operation", "semantic_database")
 MODELS = ("transition_journal", "gated_creation_plan", "gated_process_observation")
 
 
@@ -47,7 +47,7 @@ def inspect(profile):
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
-    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "nextSuccessorImage", "gateway", "runnerName"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
+    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "nextSuccessorImage", "gateway", "runnerName", "semanticDatabase"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
           and type(cfg["readinessPort"]) is int and 0 < cfg["readinessPort"] < 65536, "INSTALL_PROFILE_FIELDS")
     check(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", cfg["repository"]) and cfg["branch"]
           and all(Path(cfg[k]).is_absolute() for k in ("installRoot","leaseJournal","socket")),
@@ -123,6 +123,8 @@ def inspect(profile):
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")
     exec(compile(files[package / "contract.py"][0], "contract.py", "exec"), contract.__dict__)
+    if "semanticDatabase" in cfg:
+        check(contract.valid_semantic_database(cfg["semanticDatabase"]), "SEMANTIC_DATABASE_PROFILE_REQUIRED")
     for spec in (cfg[k] for k in ("successorImage", "nextSuccessorImage") if k in cfg):
         check(set(spec) == {"ci", "inbox", "migrationsField", "predecessorMigrations"}
               and set(spec["ci"]) == set(contract.CI_COORDINATES)

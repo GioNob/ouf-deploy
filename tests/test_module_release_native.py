@@ -24,6 +24,61 @@ from tools.module_release.operation import apply, migrate, plan, ready
 @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_MODULE_RELEASE_NATIVE") == "1",
                      "labelled disposable Engine opt-in")
 class NativeRelease(unittest.TestCase):
+    def test_semantic_database_history_matches_real_flyway(self):
+        import semantic_database as semantic_db
+        from mandate import Held
+        socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
+        cli = ["/usr/bin/docker", "--host", "unix://" + socket]
+        rt = Docker({"dockerSocket": socket})
+        self.assertIn("ouf.a2.fixture=true", rt.api("GET", "/info")["Labels"])
+        name = "semantic-db-" + uuid.uuid4().hex
+        net, pg = name + "-net", name + "-pg"
+        subprocess.run([*cli, "network", "create", "--internal", net], check=True, stdout=subprocess.DEVNULL)
+        self.addCleanup(subprocess.run, [*cli, "network", "rm", net], check=False)
+        command = ["java", "-jar", "/app/flyway.jar"]
+        candidate = "ouf-ci-flyway:semantic"
+        with postgres_fixture(cli, pg, net, jdbc=True) as setup, tempfile.TemporaryDirectory(dir="/root") as directory:
+            subprocess.run(setup, input=b"CREATE DATABASE reference;", check=True)
+            for image, dbname in ((candidate, "reference"), ("ouf-ci-flyway:old", "postgres")):
+                subprocess.run([*cli, "run", "--rm", "--network", net, "-e", "FIXTURE_USER=fixture",
+                                "-e", f"FIXTURE_URL=jdbc:postgresql://{pg}/{dbname}", image, *command,
+                                "--migrate-only"], check=True, stdout=subprocess.DEVNULL)
+            cid = subprocess.check_output([*cli, "run", "-d", "--network", net, "-e", "SPRING_FLYWAY_ENABLED=false",
+                                          candidate, *command], text=True).strip()
+            self.addCleanup(subprocess.run, [*cli, "rm", "-f", cid], check=False)
+            db = semantic_db.Database({"socket": socket, "semanticDatabase": {
+                "postgresCid": rt.inspect(pg)["Id"], "socket": "/tmp", "user": "fixture", "database": "postgres",
+                "schema": "release_fixture"}})
+            row = rt.inspect(cid)
+            scripts = {}
+            rows = flyway.inventory(row, scripts=scripts)
+            plan = semantic_db.proposal(db, rows, scripts)
+            self.assertEqual([r["version"] for r in rows[plan["applied"]:]], ["21", "22"])
+            before = db.history()
+            with self.assertRaisesRegex(Held, "MIGRATION_HELD"):
+                db.apply_one(before, rows[-1], b"CREATE TABLE rollback_probe (n int); SELECT 1/0;")
+            self.assertEqual(db.history(), before)
+            self.assertEqual(subprocess.check_output(setup + ["-Atc",
+                "SELECT to_regclass('release_fixture.rollback_probe') IS NULL"]).strip(), b"t")
+            with self.assertRaisesRegex(Held, "MIGRATION_HELD"):
+                db.apply_one({**before, "databaseOid": "0"}, rows[-1], scripts[rows[-1]["script"]])
+            root = Path(directory)
+            semantic_db.apply(root, "1", db, plan, rows, scripts, lambda: None)
+            receipts = sorted(root.rglob("*.receipt"))
+            self.assertEqual(len(receipts), 2)
+            receipt = receipts[0]
+            receipt.unlink()  # Simulate commit followed by process loss.
+            semantic_db.apply(root, "2", db, semantic_db.proposal(db, rows, scripts), rows, scripts, lambda: None)
+            self.assertTrue(receipt.is_file())
+            columns = """SELECT installed_rank,version,description,type,script,checksum,installed_by,success,
+                execution_time >= 0, installed_on IS NOT NULL FROM release_fixture.flyway_schema_history
+                ORDER BY installed_rank"""
+            def query(dbname, sql):
+                return subprocess.check_output([*setup[:-1], dbname, "-Atc", sql])
+            self.assertEqual(query("postgres", columns), query("reference", columns))
+            self.assertEqual(query("postgres", "SELECT repeat_key FROM release_fixture.base_row").strip(), b"ready")
+            self.assertEqual(rt.inspect(cid)["State"]["StartedAt"], row["State"]["StartedAt"])
+
     def test_gate_migration_and_http_readiness(self):
         self.exercise_release(busybox=False)
 

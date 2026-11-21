@@ -5,6 +5,16 @@
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
   "status": "F1_PASS_WIDE_COMPONENTS_READY_DISCOVERY_ACTIVATION_PENDING",
+  "semanticDatabaseTask14": {
+    "operatorObservationDate": "2026-11-21",
+    "reportedHead": 29,
+    "reportedHistoryVersion": 12,
+    "reportedImageLastVersion": 16,
+    "reportedDiscoveryHttp": 500,
+    "qualification": "Offline portable executor tests. Native PostgreSQL/Flyway CI result pending.",
+    "runtimeApply": false,
+    "procedure": "docs/OUF_PRIVILEGED_PIPELINE.md#migrazione-online-del-database-semantic"
+  },
   "semanticReleaseTask10": {
     "operatorReportedA2Run": "44882047892",
     "operatorReportedHead": 28,
