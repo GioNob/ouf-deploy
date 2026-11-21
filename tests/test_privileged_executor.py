@@ -65,6 +65,15 @@ class Review(unittest.TestCase):
         self.effects(review)
         return review
 
+    def test_next_confirmation_belongs_to_the_reviewed_intent(self):
+        req = dict(self.req, release="next", confirmNoReturn=False)
+        req["digest"] = mandate.intent(req)
+        self.invoke(req)
+        with self.assertRaisesRegex(mandate.Held, "PLAN_INTENT_DRIFT"):
+            mandate.validate(dict(req, confirmNoReturn=True), self.cfg)
+        with self.assertRaisesRegex(mandate.Held, "RETURN_CONFIRMATION_FIELD"):
+            mandate.validate(dict(req, confirmNoReturn="true"), self.cfg)
+
     def test_blank_comment_and_cumulative_reviewer_set(self):
         apply = dict(self.req, phase="apply")
         first = self.invoke(apply)
@@ -408,8 +417,9 @@ class Protocol(unittest.TestCase):
             log = store.Journal(Path(d))
             engine = semantic.Engine("unused")
             stopped = dict(Id="old",State={"Running":False},NetworkSettings={"Networks":{}})
-            engine.inspect = lambda name, absent=False: stopped if name=="old" else None
             engine.call = Mock()
+            engine.inspect = lambda name, absent=False: stopped if name == "old" or (
+                name == "semantic" and engine.call.called) else None
             plan = {"old":"old", "source":"new", "endpoints":{"network":{"Aliases":["alias"]}}}
             for _ in range(2):
                 outcome = log.effect("reconnect", plan, lambda: engine.reconnect(
@@ -418,18 +428,34 @@ class Protocol(unittest.TestCase):
             self.assertEqual(len(engine.call.call_args_list), 2)
             self.assertEqual(engine.call.call_args.args[2], {"Container":"old","EndpointConfig":{"Aliases":["alias"]}})
 
+    def test_head_29_requires_a_complete_chain(self):
+        root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        chain = root / "authorization"
+        chain.mkdir()
+        c = object.__new__(pipeline.Cutover)
+        c.cfg = {"installRoot": str(root)}
+        for n in range(1, 30):
+            for suffix in ("json", "signature.json"):
+                (chain / f"{n}.{suffix}").touch()
+        self.assertEqual(c.current_version(), 29)
+        (chain / "28.signature.json").unlink()
+        with self.assertRaisesRegex(mandate.Held, "HEAD_RECONCILIATION_REQUIRED"):
+            c.current_version()
+
     def test_unauthorized_queue_never_signals(self):
         c = object.__new__(pipeline.Cutover)
         c.forward, c.req, c.root = False, {"direction":"return","run":"123","queue":"inventory"}, Path(".")
         c.owner, c.current_version = Mock(return_value="123"), Mock(return_value=27)
         c.authority = Mock(return_value="chain")
         c.engine, c.books, c.log = Mock(), Mock(), Mock()
+        c.log.path = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        c.next_release = False
         c.engine.process.return_value = {}
         c.observe, c.closed, c.apply_book = Mock(return_value={}), Mock(), Mock()
         c.supervisor = Mock(return_value={"semanticIngress":{"profile":{}}})
         c.queue = Mock()
         c.queue.snapshot.side_effect = [[], [{"state":"PENDING"}]]
-        c.books.call.return_value = {"observation":{"authorization":{}, "configurationSha256":"p"}}
+        c.books.call.return_value = {"observation":{"authorization":{"sequence":27}, "configurationSha256":"p"}, "planSha256":"p"}
         plan = dict(head=27,sequence=27,target={},queue=[])
         stage = dict(cid="old",profile={},generation={},epoch={},issue=None)
         with patch.object(pipeline, "verified", return_value=nullcontext(None)), \
@@ -461,7 +487,7 @@ class Protocol(unittest.TestCase):
             self.assertNotIn("checkout", script)
             self.assertNotIn("docker", script)
         env = dict(GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="1", GITHUB_SHA="c"*40,
-                   DIRECTION="forward", QUEUE="empty")
+                   DIRECTION="forward", QUEUE="empty", RELEASE="a2", CONFIRM_NO_RETURN="false")
         with tempfile.TemporaryDirectory() as d:
             env.update(GITHUB_STEP_SUMMARY=d+"/summary", GITHUB_OUTPUT=d+"/output")
             code = jobs["intent"]["steps"][0]["run"].split("<<'PY'\n")[1].rsplit("\nPY",1)[0]
@@ -472,6 +498,11 @@ class Protocol(unittest.TestCase):
             summary = Path(d, "summary").read_text()
             self.assertNotIn("Approvare", summary)
             self.assertIn(req["digest"], summary)
+            with patch.dict(os.environ, {**env, "RELEASE": "next", "CONFIRM_NO_RETURN": "true"}):
+                exec(compile(code, "intent", "exec"), {})
+            req.update(release="next", confirmNoReturn=True)
+            self.assertIn(mandate.intent(req), Path(d, "summary").read_text())
+            self.assertEqual(jobs["apply"]["if"], "needs.plan.outputs.confirmed == 'true'")
 
 
 class RoundTrip(unittest.TestCase):
@@ -501,12 +532,40 @@ class RoundTrip(unittest.TestCase):
     def test_new_forward_retires_only_archived_stopped_failure(self):
         self.round_trip(signed=False, migrations=[], restart=True)
 
-    def round_trip(self, signed, prove=False, migrations=None, interrupted=False, restart=False):
+    def test_next_release_after_legacy_completion(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="legacy")
+
+    def test_next_release_finishes_partial_pointer_archival(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="archive")
+
+    def test_next_release_resume_after_create(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="created")
+
+    def test_next_release_return_before_issue(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="return")
+
+    def test_next_release_resume_after_detach(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="detached")
+
+    def test_next_release_return_after_stop(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="stopped-return")
+
+    def test_next_release_resume_interrupted_return(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="reconnect")
+
+    def test_next_release_resume_after_signature(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="signed")
+
+    def test_next_release_observe_uncertain_signal(self):
+        self.round_trip(signed=True, migrations=["V13.sql"], next_mode="signal")
+
+    def round_trip(self, signed, prove=False, migrations=None, interrupted=False, restart=False, next_mode=None):
         from contextlib import ExitStack
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as d, ExitStack() as patches:
             root = Path(d)
             patches.enter_context(patch.object(store, "trusted", side_effect=lambda p, **_: Path(p)))
+            patches.enter_context(patch.object(pipeline, "trusted", side_effect=lambda p, **_: Path(p)))
             patches.enter_context(patch.object(store, "sync_dir"))
             patches.enter_context(patch.object(pipeline, "verified", side_effect=lambda *args: nullcontext(None)))
             old = frame()
@@ -549,11 +608,13 @@ class RoundTrip(unittest.TestCase):
             patches.enter_context(patch.object(pipeline, "stop", side_effect=stop_book))
             def signal_gate(engine, log, cid, profile, generation, deadline):
                 self.assertFalse(head.waiting)
+                process_kinds[cid] = "APPLICATION_RUNNING"
                 counts.append(("signal",cid))
             patches.enter_context(patch.object(pipeline, "signal_once", side_effect=signal_gate))
             engine = Mock()
             old["State"] = {"Running": True, "Pid": 42, "Status": "running"}
             containers = {old_id: copy.deepcopy(old)}
+            process_kinds = {old_id: "APPLICATION_RUNNING"}
             def inspect(name, absent=False):
                 if name in cfg["roleCids"]:
                     return {"Id": name, "State": {"Status": "exited" if head.waiting else "running",
@@ -593,16 +654,31 @@ class RoundTrip(unittest.TestCase):
             gate.inspect = inspect
             def start_gate(cid, name, request, image):
                 gate.stopped_gate(cid, name, request, image)
+                process_kinds[cid] = "GATE_WAITING"
                 containers[cid]["State"] = {"Pid": 42, "Running": True, "Status": "running"}
             engine.create.side_effect = create
             engine.detach.side_effect = detach
             engine.reconnect.side_effect = reconnect
+            def reconnect_missing(cid, name, endpoints, networks, *, rename, missing):
+                self.assertFalse(rename)
+                self.assertEqual(set(missing), set(networks))
+                self.assertEqual(containers[cid]["Name"], "/" + name)
+                containers[cid]["NetworkSettings"] = copy.deepcopy(old["NetworkSettings"])
+                return cid
+            engine.reconnect_missing.side_effect = reconnect_missing
             engine.remove_stopped.side_effect = remove
             engine.stopped_gate.side_effect = gate.stopped_gate
             engine.start_gate.side_effect = start_gate
-            engine.process.side_effect = lambda cid,*_: {"cid":cid, "pid":42}
-            def scenario(run, direction, seq, cid, stop_at_gate=False):
+            def process(cid, profile, kind):
+                mandate.need(containers[cid]["State"]["Running"] and process_kinds[cid] == kind, "PROCESS_KIND_UNPROVEN")
+                return {"cid": cid, "pid": 42}
+            engine.process.side_effect = process
+            import hashlib
+            payload_hash = hashlib.sha256(b"payload").hexdigest()
+            def scenario(run, direction, seq, cid, stop_at_gate=False, *, release_next=False, confirm=True):
                 req = dict(run=run,attempt="1",commit=cfg["commit"],phase="plan",queue="empty",direction=direction)
+                if release_next:
+                    req.update(release="next", confirmNoReturn=confirm)
                 req["digest"] = mandate.intent(req)
                 c = pipeline.Cutover(cfg,root,req)
                 c.engine, c.books, c.queue = engine, Mock(), Mock(spec=queue.Queue)
@@ -620,7 +696,10 @@ class RoundTrip(unittest.TestCase):
                         counts.append((op, version))
                         if op=="issue":
                             head.version = version
-                            return {"payloadSha256":"payload"}
+                            auth = root / "authorization" / f"{version}.json"
+                            auth.parent.mkdir(exist_ok=True)
+                            auth.write_bytes(b"payload")
+                            return {"payloadSha256":payload_hash}
                         if op=="upgrade":
                             head.profile = c.record("stage")["profile"]
                         if op=="start":
@@ -637,10 +716,10 @@ class RoundTrip(unittest.TestCase):
                         plan = c.record("plan")
                         target = semantic.allocated_profile(plan,cid) if direction=="forward" else original
                         value = dict(previousHead={"sequence":version-1,"sha256":"previous"},
-                                     payload={"sequence":version,"supersedes":"previous"},
+                                     payload={"sequence":version,"supersedes":"previous"}, payloadSha256=payload_hash,
                                      compositionInputHashes={"semanticProfile":mandate.digest(target)},privateKeysRead=0)
                     elif op=="upgrade":
-                        value = dict(versionBefore=version-1,versionAfter=version,authorization={"sha256":"payload"},
+                        value = dict(versionBefore=version-1,versionAfter=version,authorization={"sha256":payload_hash},
                                      compositionInputHashes=stored["issue"]["compositionInputHashes"])
                     else:
                         self.assertEqual(op,"probe")
@@ -653,7 +732,33 @@ class RoundTrip(unittest.TestCase):
                     def legacy_prepare(row, profile, image):
                         return semantic.prepare(row, profile, image["ci"]["imageId"], {})
                     c.prepare_image = legacy_prepare
+                if run == "210":
+                    with self.assertRaisesRegex(mandate.Held, "RETURN_UNAVAILABLE_REQUIRES_V30"):
+                        c.execute("review-plan")
+                    return
+                if run == "203" and next_mode == "signed":
+                    # The original issuing HOME is required to complete upgrade 29.
+                    prior = store.read(root / "202" / "stage")["issue"]
+                    stored["issue"] = prior
+                    patches.enter_context(patch.object(pipeline, "Books", return_value=c.books))
+                if run == "203" and next_mode == "signal":
+                    with patch.dict(process_kinds, {cid: "GATE_WAITING"}), self.assertRaisesRegex(mandate.Held, "PROCESS_KIND_UNPROVEN"):
+                        c.initial()
+                if run == "200":
+                    spec = cfg["nextSuccessorImage"]
+                    with patch.dict(spec, predecessorMigrations=[]), self.assertRaisesRegex(mandate.Held, "PREDECESSOR_MIGRATIONS_CHANGED"):
+                        c.initial()
+                    with patch.dict(spec["ci"], imageId=head.profile["image"]), self.assertRaisesRegex(mandate.Held, "NEXT_RELEASE_BASELINE_DRIFT"):
+                        c.initial()
                 first = c.execute("review-plan")
+                if release_next and direction == "forward":
+                    self.assertEqual(first["returnAfterIssue"], "unavailable")
+                if not confirm:
+                    req.update(phase="apply", digest=first["digest"])
+                    with self.assertRaisesRegex(mandate.Held, "CONFIRM_FORWARD_WITHOUT_V30_RETURN"):
+                        c.execute("review-apply")
+                    self.assertFalse((root / "forward").exists())
+                    return
                 req.update(phase="apply",digest="e"*64)
                 with self.assertRaisesRegex(mandate.Held, "APPROVED_PLAN_DRIFT"):
                     c.execute("unbound-review")
@@ -664,6 +769,20 @@ class RoundTrip(unittest.TestCase):
                             self.assertRaisesRegex(mandate.Held, "SUCCESSOR_PLAN_DRIFT"):
                         c.prepare_stage(c.record("plan"))
                     self.assertFalse((root / "forward").exists())
+                if run == "201" and next_mode in ("detached", "stopped-return"):
+                    effect = c.log.effect
+                    def interrupt(name, claim, action):
+                        if name == ("create" if next_mode == "detached" else "detach"):
+                            raise InterruptedError
+                        return effect(name, claim, action)
+                    c.log.effect = interrupt
+                    with self.assertRaises(InterruptedError):
+                        c.execute("review-apply")
+                    return
+                if run == "201" and next_mode == "created":
+                    with patch.object(engine, "start_gate", side_effect=mandate.Held("fixture interruption")), self.assertRaises(mandate.Held):
+                        c.execute("review-apply")
+                    return
                 if interrupted and run == "101":
                     with self.assertRaisesRegex(mandate.Held, "STOPPED_GATE_FRAME_DRIFT"):
                         c.execute("review-apply")
@@ -673,7 +792,7 @@ class RoundTrip(unittest.TestCase):
                     self.assertFalse((c.path / "start-gate.receipt").exists())
                     cfg["commit"] = "b"*40
                     return
-                if "createdFrom" in c.record("plan"):
+                if "createdFrom" in c.record("plan") and not release_next:
                     self.assertEqual(c.record("plan")["createdFrom"], "101")
                     with patch.dict(containers[new_id]["State"], StartedAt="different"), \
                             self.assertRaisesRegex(mandate.Held, "NEVER_STARTED_REQUIRED"):
@@ -689,17 +808,26 @@ class RoundTrip(unittest.TestCase):
                         with patch.dict(containers[cid]["Config"], Labels={"changed": "yes"}), \
                                 self.assertRaisesRegex(mandate.Held, "STOPPED_GATE_FRAME_DRIFT"):
                             c.prepare_stage(c.record("plan"))
+                if next_mode == "reconnect" and run == "202":
+                    def disconnected(cid, name, endpoints, networks):
+                        containers[cid]["Name"] = "/" + name
+                        raise InterruptedError
+                    with patch.object(engine, "reconnect", side_effect=disconnected), self.assertRaises(InterruptedError):
+                        c.execute("review-apply")
+                    return
                 second = c.execute("review-apply")
                 if migrations and direction == "forward":
                     self.assertEqual(second["migrationsSha256"], mandate.digest(migrations))
-                    signing = c.record("stage")["issue"]["planSha256"]
+                    stage = c.record("stage")
+                    signing = stage["issue"]["planSha256"] if stage["issue"] else mandate.digest(stage)
                     req.update(phase="sign", digest=signing)
                     with self.assertRaisesRegex(mandate.Held, "MIGRATION_REVIEW_REQUIRED"):
                         c.execute("review-sign")
                     req.update(phase="migrate", digest=signing)
                     with self.assertRaisesRegex(mandate.Held, "APPROVED_MIGRATION_DRIFT"):
                         c.execute("wrong-review")
-                    self.assertNotIn(("signal", cid), counts)
+                    if next_mode != "signal" or run != "203":
+                        self.assertNotIn(("signal", cid), counts)
                     req["digest"] = second["digest"]
                     second = c.execute("review-migrate")
                     self.assertEqual(second["digest"], signing)
@@ -712,9 +840,41 @@ class RoundTrip(unittest.TestCase):
                     c.execute("unbound-review")
                 self.assertFalse((c.path / "issue.claim").exists())
                 req["digest"] = second["digest"]
+                if run == "202" and next_mode in ("signed", "signal"):
+                    class Interrupted(BaseException):
+                        pass
+                    if next_mode == "signed":
+                        def halt(op, version, approved=None):
+                            if op == "upgrade":
+                                raise Interrupted
+                            return call(op, version, approved)
+                        c.books.call.side_effect = halt
+                    else:
+                        def halt(engine, journal, container, profile, generation, deadline):
+                            store.save(journal.path / "signal.claim", generation)
+                            process_kinds[container] = "APPLICATION_RUNNING"
+                            counts.append(("signal", container))
+                            raise Interrupted
+                        patches.enter_context(patch.object(pipeline, "signal_once", side_effect=halt))
+                    with self.assertRaises(Interrupted):
+                        c.execute("review-sign")
+                    return
+                if run == "103" and next_mode == "archive":
+                    unlink = Path.unlink
+                    def cut(path, *args, **kwargs):
+                        if path == root / "forward-stage":
+                            raise InterruptedError
+                        return unlink(path, *args, **kwargs)
+                    with patch.object(Path, "unlink", cut), self.assertRaises(InterruptedError):
+                        c.execute("review-sign")
+                    self.assertTrue((root / "103" / "closed-forward").is_file())
+                    self.assertFalse((root / "forward").exists())
+                    return
+                if run == "103" and next_mode == "legacy":
+                    c.close_forward = Mock()  # installed 17u left these pointers live
                 done = c.execute("review-sign")
                 self.assertEqual((done["ingress"], done["readiness"], done["worker"]),
-                                 ("VERIFIED", "UP", "on" if direction == "forward" else "off"))
+                                 ("VERIFIED", "UP", "on" if direction == "forward" or release_next else "off"))
                 c.queue.worker.assert_not_called()
                 with self.assertRaises(FileExistsError):
                     c.execute("review-sign")
@@ -731,6 +891,40 @@ class RoundTrip(unittest.TestCase):
             scenario("101","forward",28,new_id,stop_at_gate=True)
             if signed:
                 scenario("103","forward",28,new_id)
+                if next_mode:
+                    line_c = new_id
+                    new_id = "e"*64
+                    previous = admission.return_value["migrations"]
+                    migrations = ["V14__discovery.sql"]
+                    new_image = "sha256:" + "9"*64
+                    cfg["nextSuccessorImage"] = {"ci": {"imageId": new_image, "zipSha256": "9"*64},
+                                                 "predecessorMigrations": previous}
+                    admission.return_value = {"ci": cfg["nextSuccessorImage"]["ci"],
+                                              "migrations": previous + migrations, "newMigrations": migrations}
+                    engine.call.return_value["Id"] = new_image
+                    scenario("200", "forward", 29, new_id, release_next=True, confirm=False)
+                    self.assertEqual(store.read(root / "completed-forward")["run"], "103")
+                    scenario("201", "forward", 29, new_id, stop_at_gate=True, release_next=True)
+                    self.assertEqual(containers[old_id]["Name"], "/saved")
+                    self.assertEqual(containers[line_c]["Name"], "/app" if next_mode == "stopped-return" else "/saved-v28")
+                    if next_mode in ("return", "stopped-return", "reconnect"):
+                        scenario("202", "return", 28, line_c, release_next=True)
+                        if next_mode == "reconnect":
+                            scenario("203", "return", 28, line_c, release_next=True)
+                        self.assertEqual(containers[line_c]["Name"], "/app")
+                        self.assertEqual(head.profile["image"], cfg["successorImage"]["ci"]["imageId"])
+                        self.assertEqual(store.read(root / "completed-forward")["run"], "103")
+                    else:
+                        scenario("202", "forward", 29, new_id, release_next=True)
+                        if next_mode in ("signed", "signal"):
+                            scenario("203", "forward", 29, new_id, release_next=True)
+                        scenario("210", "return", 29, line_c, release_next=True)
+                        self.assertEqual(head.profile["image"], new_image)
+                        self.assertEqual(counts.count(("issue", 29)), 1)
+                        self.assertEqual(counts.count(("signal", new_id)), 1)
+                        self.assertFalse((root / "forward").exists())
+                    self.assertEqual(engine.create.call_count, 1 if next_mode == "stopped-return" else 2)
+                    return
                 scenario("102","return",29,old_id)
             else:
                 scenario("102","return",27,old_id)
@@ -766,7 +960,8 @@ class RoundTrip(unittest.TestCase):
                 new_id = "e"*64
                 scenario("104", "forward", 28, new_id)
                 self.assertEqual(engine.create.call_count, 2)
-                self.assertEqual(store.read(root / "forward-stage")["run"], "104")
+                self.assertFalse((root / "forward-stage").exists())
+                self.assertEqual(store.read(root / "completed-forward")["run"], "104")
                 self.assertEqual((root / "104" / "remove-archived.receipt").exists(), not interrupted)
 
 

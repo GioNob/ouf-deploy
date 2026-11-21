@@ -2,6 +2,15 @@ name: Semantic A2 cutover
 on:
   workflow_dispatch:
     inputs:
+      release:
+        description: "Transazione Semantic"
+        type: choice
+        options: [a2, next]
+        default: a2
+      confirm_no_return:
+        description: "Confermo il forward 28→29 senza ritorno dopo la firma della 29"
+        type: boolean
+        default: false
       worker_proof:
         description: "Attendere la prova chatbot dopo il cutover forward"
         type: boolean
@@ -22,6 +31,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  RELEASE: ${{ inputs.release }}
+  CONFIRM_NO_RETURN: ${{ inputs.confirm_no_return }}
   DIRECTION: ${{ inputs.direction }}
   QUEUE: ${{ inputs.queue }}
   WORKER_PROOF: ${{ inputs.worker_proof }}
@@ -42,6 +53,8 @@ jobs:
           e = os.environ
           scope = dict(run=e["GITHUB_RUN_ID"], attempt=e["GITHUB_RUN_ATTEMPT"], commit=e["GITHUB_SHA"],
                        direction=e["DIRECTION"], queue=e["QUEUE"])
+          if e["RELEASE"] == "next":
+              scope.update(release="next", confirmNoReturn=e["CONFIRM_NO_RETURN"] == "true")
           if scope["direction"] not in ("forward", "return") or scope["queue"] not in ("empty", "inventory"):
               raise SystemExit("Mandato sconosciuto")
           digest = hashlib.sha256(json.dumps(scope, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
@@ -61,6 +74,7 @@ jobs:
       PHASE: plan
       DIGEST: ${{ needs.intent.outputs.digest }}
     outputs:
+      confirmed: ${{ steps.call.outputs.confirmed }}
       digest: ${{ steps.call.outputs.digest }}
     steps:
       - &invoke
@@ -74,6 +88,8 @@ jobs:
           e = os.environ
           req = dict(run=e["GITHUB_RUN_ID"], attempt=e["GITHUB_RUN_ATTEMPT"], commit=e["GITHUB_SHA"],
                      direction=e["DIRECTION"], queue=e["QUEUE"], phase=e["PHASE"], digest=e["DIGEST"])
+          if e["RELEASE"] == "next":
+              req.update(release="next", confirmNoReturn=e["CONFIRM_NO_RETURN"] == "true")
           wire = json.dumps({"request": req, "token": e.pop("REVIEW_TOKEN")}).encode()
           out = subprocess.run(["/usr/bin/sudo", "-n", "--", "/usr/local/sbin/ouf-a2"],
                                input=wire, stdout=subprocess.PIPE, check=True)
@@ -86,6 +102,11 @@ jobs:
           if req["phase"] == "sign" and req["direction"] == "forward" and e["WORKER_PROOF"] == "true":
               next_phase = "proof"
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
+              if result.get("returnAfterIssue") == "unavailable":
+                  print("Forward 28→29. Dopo la firma della 29 il ritorno alla linea C richiede i runbook v30.", file=f)
+                  if not req["confirmNoReturn"]:
+                      next_phase = None
+                      print("Per applicare, avviare un nuovo dispatch con confirm_no_return selezionato.", file=f)
               if "zipSha256" in result:
                   print("Semantic", result["imageId"], "· ZIP SHA-256", result["zipSha256"],
                         "· inventario Flyway SHA-256", result["inventorySha256"], file=f)
@@ -106,9 +127,11 @@ jobs:
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + stamp, file=f)
               print("migration=" + str(migration).lower(), file=f)
+              print("confirmed=" + str(result.get("returnAfterIssue") != "unavailable" or req["confirmNoReturn"]).lower(), file=f)
           PY
 
   apply:
+    if: needs.plan.outputs.confirmed == 'true'
     name: apply ${{ needs.plan.outputs.digest }}
     needs: plan
     runs-on: *vps

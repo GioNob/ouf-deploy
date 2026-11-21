@@ -47,7 +47,7 @@ def inspect(profile):
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
-    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "gateway", "runnerName"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
+    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "nextSuccessorImage", "gateway", "runnerName"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
           and type(cfg["readinessPort"]) is int and 0 < cfg["readinessPort"] < 65536, "INSTALL_PROFILE_FIELDS")
     check(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", cfg["repository"]) and cfg["branch"]
           and all(Path(cfg[k]).is_absolute() for k in ("installRoot","leaseJournal","socket")),
@@ -119,8 +119,7 @@ def inspect(profile):
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")
     exec(compile(files[package / "contract.py"][0], "contract.py", "exec"), contract.__dict__)
-    if "successorImage" in cfg:
-        spec = cfg["successorImage"]
+    for spec in (cfg[k] for k in ("successorImage", "nextSuccessorImage") if k in cfg):
         check(set(spec) == {"ci", "inbox", "migrationsField", "predecessorMigrations"}
               and set(spec["ci"]) == set(contract.CI_COORDINATES)
               and Path(spec["inbox"]).is_absolute() and isinstance(spec["predecessorMigrations"], list)
@@ -144,6 +143,9 @@ def inspect(profile):
         safe(Path(module_profile["nsenter"]))
     check(len({cfg["retainedName"], cfg["failedName"], cfg["originalProfile"]["containerName"]}) == 3
           and len(set(cfg["roleCids"])) == len(set(cfg["roleTables"])) == 2, "INSTALLATION_IDENTITIES")
+    if "nextSuccessorImage" in cfg:
+        check(cfg["retainedName"] + "-v28" not in (cfg["failedName"], cfg["originalProfile"]["containerName"]),
+              "INSTALLATION_IDENTITIES")
     # Older installers delivered these same lib/books paths without an inventory.
     # Adopt only the reviewed paths on the first upgrade, never scan the tree.
     owned = sorted(p.relative_to(ROOT).as_posix() for p in files

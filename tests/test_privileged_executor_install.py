@@ -112,6 +112,18 @@ class Bootstrap(unittest.TestCase):
                 self.path.write_text(json.dumps(cfg))
                 self.assertIn(self.inst.ENTRY, self.inst.inspect(self.path))
 
+    def test_next_image_uses_the_same_ci_contract(self):
+        cfg = json.loads(self.path.read_bytes())
+        cfg["nextSuccessorImage"] = json.loads(json.dumps(cfg["successorImage"]))
+        cfg["nextSuccessorImage"]["ci"]["pullRequest"] += 1
+        self.path.write_text(json.dumps(cfg))
+        installed = json.loads(self.inst.inspect(self.path)[self.inst.ROOT / "profile.json"][0])
+        self.assertEqual(installed["nextSuccessorImage"], cfg["nextSuccessorImage"])
+        del cfg["nextSuccessorImage"]["ci"]["sourceTree"]
+        self.path.write_text(json.dumps(cfg))
+        with self.assertRaisesRegex(ValueError, "SUCCESSOR_IMAGE_PROFILE"):
+            self.inst.inspect(self.path)
+
     def test_gateway_rejects_legacy_source_token_file(self):
         cfg = json.loads(self.path.read_bytes())
         cfg["gateway"]["source"]["tokenFile"] = str(self.path.parent / "token")

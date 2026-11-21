@@ -23,13 +23,14 @@ def configuration(request):
     return {k: v for k, v in request.items() if k not in ("HostConfig", "NetworkingConfig")}
 
 
-def prepare(old, profile, successor_image=None, image_config=None):
+def prepare(old, profile, successor_image=None, image_config=None, *, worker_enabled=False):
     cfg, host = copy.deepcopy(old["Config"]), copy.deepcopy(old["HostConfig"])
     need(old["Image"] == profile["image"] and semantic_configuration(old) == profile["configurationSha256"]
          and old["Name"] == "/" + profile["containerName"], "BASELINE_DRIFT")
     env = cfg["Env"]
     keys = [v.split("=", 1)[0] for v in env]
-    need(len(keys) == len(set(keys)) and WORKER+"=false" in env and PROVIDER+"=true" in env,
+    baseline = "true" if worker_enabled else "false"
+    need(len(keys) == len(set(keys)) and WORKER+"="+baseline in env and PROVIDER+"=true" in env,
          "WORKER_BASELINE")
     need(cfg["Entrypoint"] == ENTRY and cfg["Cmd"] == ["java", "-XX:MaxRAMPercentage=75", "-jar",
          "/app/application.jar"] and cfg["User"] == "10001:10001" and not host["AutoRemove"]
@@ -163,10 +164,16 @@ class Engine:
         row = self.inspect(cid)
         need(row["Id"] == cid and not row["State"]["Running"] and not row["NetworkSettings"]["Networks"]
              and self.inspect(name, True) is None, "RETURN_CID_UNPROVEN")
-        self.call("POST", f"containers/{cid}/rename?name=" + quote(name, safe=""))
-        for net, endpoint in endpoints.items():
-            self.call("POST", "networks/" + networks[net] + "/connect",
-                      {"Container": cid, "EndpointConfig": endpoint})
+        return self.reconnect_missing(cid, name, endpoints, networks, rename=True, missing=networks)
+
+    def reconnect_missing(self, cid, name, endpoints, networks, *, rename, missing):
+        if rename:
+            need(self.inspect(name, True) is None, "RETURN_NAME_IN_USE")
+            self.call("POST", f"containers/{cid}/rename?name=" + quote(name, safe=""))
+        need(self.inspect(name)["Id"] == cid, "RETURN_CID_UNPROVEN")
+        for network in missing:
+            self.call("POST", "networks/" + networks[network] + "/connect",
+                      {"Container": cid, "EndpointConfig": endpoints[network]})
         return cid
 
     def stopped_gate(self, cid, name, request, image):

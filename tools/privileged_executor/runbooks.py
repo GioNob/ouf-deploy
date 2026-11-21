@@ -68,6 +68,7 @@ def issued_inputs_sha256(path):
 class Books:
     def __init__(self, cfg, home):
         self.cfg, self.home = cfg, home
+        self.probe_source = None
 
     def binding(self, op, version):
         need(op in SUCCESS and version in (27, 28, 29), "UNKNOWN_OPERATION")
@@ -88,7 +89,9 @@ class Books:
             for key in ("C_R3_INPUTS", "C_R3_INPUTS_SHA256", "C_INSTALLATION_PROFILE",
                         "C_INSTALLATION_PROFILE_SHA256"):
                 env[key] = self.cfg["probe"][key]
-            env.update(issued_probe_inputs(self.home, self.cfg["installRoot"], version))
+            inputs = issued_probe_inputs(self.probe_source or self.home, self.cfg["installRoot"], version)
+            need(self.probe_source is None or inputs, "C_R3_ISSUANCE_UNPROVEN")
+            env.update(inputs)
             env["C_PROBE_STATE"] = str(self.home / f".ouf-c-probe-v{version}-state")
         need(approved is None or hex64(approved), "RUNBOOK_DIGEST")
         argv = ["apply", approved] if approved else ["plan"]

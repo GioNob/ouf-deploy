@@ -678,3 +678,7 @@ Nel run 44877430252 il daemon ha aggiunto alla Config del successore una label d
 ## 21 novembre 2026 · sprint-03/03
 
 Worktree su `4adbda46`. Le fixture portabili verificano ripresa o ritorno con readiness e diniego leggibile in caso di identità o storia incerta. La fixture APISIX verifica il ritorno alla prima baseline. Qualifica Linux e osservazioni target pendenti. [Matrice](OUF_PRIVILEGED_PIPELINE.md#matrice-delle-interruzioni-di-moduli-e-gateway)
+
+## 21 novembre 2026 · sprint-03/10
+
+L’owner riferisce la conclusione del forward A2 sulla testa 28 nel run 44882047892. Implementato il rilascio successivo con review Flyway, archivio dei puntatori, riprese e ritorno pre-firma alla linea C. La qualifica nativa del cambiamento resta da eseguire. [Procedura](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)

@@ -46,7 +46,11 @@ def validate(req, policy):
         from gateway_policy import valid_request
         need("gateway" in policy and valid_request(req, common), "GATEWAY_REQUEST_SCOPE")
     else:
-        need(set(req) == common | {"direction", "queue"} and req["phase"] in PHASES
+        fields = common | {"direction", "queue"}
+        if req.get("release") == "next":
+            fields |= {"release", "confirmNoReturn"}
+            need(type(req.get("confirmNoReturn")) is bool, "RETURN_CONFIRMATION_FIELD")
+        need(set(req) == fields and req["phase"] in PHASES
              and req["direction"] in ("forward", "return") and req["queue"] in ("empty", "inventory")
              and (req["phase"] not in ("proof", "migrate") or req["direction"] == "forward"), "REQUEST_FIELDS")
     need(req["attempt"] == "1"
