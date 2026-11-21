@@ -1,5 +1,9 @@
 # Stato corrente OUF
 
+## Sprint 03/24 · stop R3 e predecessore dei moduli
+
+La qualifica locale copre il ritentativo dello stop dopo il rinnovo e due rilasci consecutivi dello stesso modulo con `oldImage` invariato. Il percorso da ricevuta richiede la firma Ed25519 del completamento e la corrispondenza con la review, il CID e il frame in esercizio. Il prossimo passaggio è la review del codice. [Contratto e binding del firmatario](OUF_PRIVILEGED_PIPELINE.md#stop-r3-durante-il-rinnovo-e-successione-dei-moduli)
+
 ## Semantic su R3 29 · rilascio task-16 e ritorno 31
 
 L’owner riferisce la testa 29 nel run 44909669060 del 21 novembre 2026. Il task sprint-03/17 qualifica offline il forward 29→30 e il ritorno firmato 30→31 allo stesso CID e alla stessa immagine della 29. Per il rilascio operativo servono i pin dell’immagine task-16 e i cinque binding della 31 nel profilo privato. [Procedura e SHA-256](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-29)

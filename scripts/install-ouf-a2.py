@@ -19,7 +19,7 @@ ENTRY = Path("/usr/local/sbin/ouf-a2")
 RULE = Path("/etc/sudoers.d/ouf-a2")
 REPO = Path(__file__).resolve().parents[1]
 LIB = ("mandate", "store", "queue_inventory", "runbooks", "semantic", "ingress", "pipeline", "module_operation", "successor_image")
-LIB += ("gateway_policy", "gateway_bundle", "gateway_admin", "gateway_operation", "semantic_database")
+LIB += ("gateway_policy", "gateway_bundle", "gateway_admin", "gateway_operation", "semantic_database", "module_receipt")
 MODELS = ("transition_journal", "gated_creation_plan", "gated_process_observation")
 
 

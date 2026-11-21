@@ -246,3 +246,22 @@ Per UDP e Ingestion gli esempi adottano l’opzione 1. Nel blocco `migration.fly
 Il lettore controlla `SPRING_APPLICATION_JSON` in memoria, dal `Config.Env` del predecessore, dalla configurazione prevista nel plan e dal candidato effettivo prima del segnale. JSON malformato, chiavi duplicate, override del datasource o di Flyway (anche annidati, puntati o con grafia alternativa) e selettori di configurazione ambigui portano a `HELD`. Il plan e i messaggi di errore omettono i valori dell’ambiente. Senza la dichiarazione rimangono i controlli restrittivi del lettore.
 
 Per Onboarding si può dichiarare lo stesso binding dopo aver verificato la configurazione esterna. Il suo profilo esistente senza blocco `migration.flyway` mantiene il percorso del 20 novembre, con avvio Spring e readiness. In quel percorso un esito incerto del segnale richiede comunque una prova Flyway per la riconciliazione.
+
+## Stop R3 durante il rinnovo e successione dei moduli
+
+Lo stop attende la pubblicazione atomica di un nuovo journal con `state=LEASE_READY` e `leaseAuthorized=true` immediatamente prima dell’apply. L’attesa ha un limite di 15 secondi. Alla scadenza, il primo tentativo può usare il digest approvato se il lease risulta ancora autorizzato e pronto. Ogni ritentativo richiede una pubblicazione fresca. Il runbook registra ogni invocazione in `book-*`. La claim conserva il primo piano, mentre `stop-retry-1` e `stop-retry-2` conservano i piani ammessi per i due ritentativi. Solo una collisione attestata prima di qualsiasi effetto consente di ripianificare.
+
+Il runbook `r3-operate.sh` chiama `operate.observe`. Sia `observation.lease` sia `lastObservation.lease` contengono esattamente `state` e `leaseAuthorized`. La scadenza `leaseDeadlineMonotonic` appartiene allo scheduler. Il segnale di pubblicazione è la coppia `st_ino`, `st_mtime_ns` del journal. Nessuno di questi tre valori entra nel piano di stop. Nel confronto tra piani possono variare soltanto `outputDirectory` e il digest complessivo `planSha256`. Le epoche correnti e precedenti dei candidati, `supervisor.epochs` e il digest d’identità `supervisor.semanticEpoch` restano vincolanti in entrambe le osservazioni.
+
+Per abilitare il predecessore da ricevuta, il profilo privato del modulo accetta questo binding opzionale per una chiave Ed25519 dedicata, custodita dall’installazione. La chiave pubblica è in formato DER SubjectPublicKeyInfo. Il pin è lo SHA-256 del file DER. La chiave privata deve essere accessibile solo a root e utilizzabile da OpenSSL senza interazione.
+
+```json
+{
+  "receiptSigning": {
+    "publicKey": {"path": "<percorso-assoluto-DER>", "sha256": "<sha256-DER>"},
+    "privateKey": "<percorso-assoluto-chiave-privata>"
+  }
+}
+```
+
+A completamento `READY`, l’esecutore conserva run, fase e digest in `module-<modulo>.ready`. Con il binding configurato, firma i byte di `receipt.json` in `receipt.ed25519`. Il plan successivo risale dalla ricevuta al piano approvato e al suo `ci.imageId`. Verifica firma, review consumata, completamento della fase, CID e frame vivo. L’apply ripete il controllo sotto lock. Un ritorno avviato, una firma assente o una ricevuta diversa fermano questo percorso. Il percorso da `oldImage` resta disponibile anche per le installazioni con ricevute storiche prive di firma. Ogni candidato richiede i propri pin CI e nomi di custodia disponibili.

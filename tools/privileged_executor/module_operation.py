@@ -2,8 +2,9 @@
 from pathlib import Path
 
 from module_release import operation, recovery, return_operation
-from module_release.contract import Held as ReleaseHeld
-from mandate import Held, digest, intent, need
+from module_release.contract import Held as ReleaseHeld, require
+import module_receipt
+from mandate import Held, digest, hex64, intent, need
 from store import Journal, read, save
 
 
@@ -16,6 +17,44 @@ class ModuleRelease:
         peer = cfg["modules"].get("mcp", {})
         if req["module"] == "onboarding" and peer.get("dockerSocket") == self.profile["dockerSocket"]:
             self.runtime.flyway_peer = peer.get("migration", {}).get("database")
+
+    def previous_release(self):
+        """Read the last completion published under the executor lock for this module."""
+        module = self.req["module"]
+        pointer = self.path.parent / ("module-" + module + ".ready")
+        require(pointer.is_file(), "MODULE_PREDECESSOR_RECEIPT_REQUIRED")
+        tip = read(pointer)
+        run_id, phase, source = tip["run"], tip["phase"], tip["planSha256"]
+        require(isinstance(run_id, str) and run_id.isascii() and run_id.isdigit()
+                and phase in ("apply", "migrate") and hex64(source), "MODULE_RECEIPT_DRIFT")
+        run = self.path.parent / run_id
+        directory = Path(self.profile["journal"]) / source
+        require(not (directory / "return-intent.json").exists(), "MODULE_RECEIPT_RETURNED")
+        module_receipt.attest(self.profile.get("receiptSigning"), directory)
+        receipt = read(directory / "receipt.json")
+        plan = read(directory / "plan.json")
+        require(plan["module"] == module and plan["operation"] == receipt["operation"] == "module-release"
+                and digest(plan) == source == receipt["planSha256"] and receipt == read(run / (phase + ".result"))
+                and receipt["status"] == "READY" and receipt["readiness"] == "UP"
+                and receipt["predecessorCid"] == plan["oldCid"], "MODULE_RECEIPT_DRIFT")
+        proposal = read(run / "plan")
+        stamp = digest(proposal["plan"])
+        review = read(run / "apply.review")
+        req = review["request"]
+        phases = read(run / "approvals")
+        require(req["operation"] == "module-release" and req["module"] == module and req["run"] == run_id
+                and req["phase"] == "apply" and hex64(review["review"]) and "apply" in phases
+                and req["digest"] == proposal["planSha256"] == stamp
+                and proposal["plan"].get("sourcePlan", stamp) == source, "MODULE_APPROVAL_DRIFT")
+        if phase == "migrate":
+            migration = read(run / "migrate.review")
+            stage = read(run / "apply.result")
+            require("migrate" in phases and hex64(migration["review"]) and stage["status"] == "GATED"
+                    and stage["planSha256"] == source and stage["migrationSha256"] == receipt["migrationSha256"]
+                    and migration["request"] == {**req, "phase": phase, "digest": stage["migrationSha256"]},
+                    "MODULE_APPROVAL_DRIFT")
+        return {"planSha256": source, "imageId": plan["ci"]["imageId"], "successorCid": receipt["successorCid"],
+                "successorFrameSha256": receipt["successorFrameSha256"]}
 
     def execute(self, review):
         try:
@@ -45,7 +84,7 @@ class ModuleRelease:
                 body = recovery.proposal(self.profile, self.runtime)
                 proposal = {"status": "PLANNED", "planSha256": digest(body), "plan": body}
             else:
-                proposal = operation.plan(self.profile, self.runtime)
+                proposal = operation.plan(self.profile, self.runtime, previous_release=self.previous_release)
             save(path / "plan", proposal)
             need(proposal["status"] == "PLANNED", proposal.get("reason", "MODULE_PLAN_HELD"))
             response = {"digest": proposal["planSha256"], "status": "PLANNED"}
@@ -67,10 +106,13 @@ class ModuleRelease:
         if phase == "apply":
             need(req["digest"] == stamp, "APPROVED_PLAN_DRIFT")
             save(path / "apply.review", {"request": req, "review": review})
+            if "receiptSigning" in self.profile:
+                module_receipt.signing_key(self.profile["receiptSigning"])
             if "sourcePlan" in proposal["plan"]:
                 result = recovery.resume(self.profile, self.runtime, proposal["plan"])
             else:
-                result = operation.apply(self.profile, stamp, self.runtime, defer_migration=True)
+                result = operation.apply(self.profile, stamp, self.runtime, defer_migration=True,
+                                         previous_release=self.previous_release)
         else:
             stage = read(path / "apply.result")
             source = proposal["plan"].get("sourcePlan", stamp)
@@ -78,6 +120,8 @@ class ModuleRelease:
                  and stage["planSha256"] == source and req["digest"] == stage["migrationSha256"],
                  "APPROVED_MIGRATION_DRIFT")
             save(path / "migrate.review", {"request": req, "review": review})
+            if "receiptSigning" in self.profile:
+                module_receipt.signing_key(self.profile["receiptSigning"])
             try:
                 result = operation.migrate(self.profile, source, req["digest"], self.runtime,
                                            recover="sourcePlan" in proposal["plan"])
@@ -97,4 +141,12 @@ class ModuleRelease:
                 proof = stage["flywayReview"]
                 response["databaseReview"] = {k: proof[k] for k in ("before", "after", "pending")}
             return response
-        return {"status": result["status"], "digest": result["planSha256"]}
+        source = result["planSha256"]
+        need(source == proposal["plan"].get("sourcePlan", stamp) and hex64(source), "MODULE_RECEIPT_DRIFT")
+        directory = Path(self.profile["journal"]) / source
+        need(read(directory / "receipt.json") == result, "MODULE_RECEIPT_DRIFT")
+        save(path.parent / ("module-" + req["module"] + ".ready"),
+             {"run": req["run"], "phase": phase, "planSha256": source}, replace=True)
+        if "receiptSigning" in self.profile:
+            module_receipt.attest(self.profile["receiptSigning"], directory, issue=True)
+        return {"status": result["status"], "digest": source}

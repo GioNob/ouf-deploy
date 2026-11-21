@@ -38,14 +38,19 @@ def ready(rt, doc, contract):
     return bool(ready_status(rt, doc, contract))
 
 
-def observe(p, rt):
+def observe(p, rt, previous_release=None):
     validate(p)
     require(p["migration"]["rollbackCompatible"], "MIGRATION_ROLLBACK_BLOCKED")
     binding = p["migration"].get("flyway", {})
     defaults = {} if "candidate" in p or "effectiveDatasource" in binding else None
     artifact = package(p, image_defaults=defaults)
     old = rt.inspect(p["container"])
-    baseline(p, old)
+    previous = None
+    if old["Image"] != p["oldImage"] and previous_release is not None:
+        previous = previous_release()
+        require(old["Id"] == previous["successorCid"] and snapshot(old) == previous["successorFrameSha256"],
+                "PREDECESSOR_CHANGED")
+    baseline(p, old, predecessor_image=previous["imageId"] if previous else None)
     require(old["Image"] != p["ci"]["imageId"], "ALREADY_INSTALLED")
     require(all(rt.inspect(p[k], missing=True) is None for k in ("retainedName", "failedName")),
             "CUSTODY_NAME_OCCUPIED")
@@ -66,6 +71,8 @@ def observe(p, rt):
         "oldImage": old["Image"], "ci": {k: p["ci"][k] for k in coordinates}, **artifact,
         "migrationMode": p["migration"]["mode"], "rollback": "AVAILABLE",
     }
+    if previous:
+        body["predecessorPlanSha256"] = previous["planSha256"]
     if "candidate" in p:
         removed = p["candidate"].get("removeArgs", [])
         body["candidateReview"] = {
@@ -87,14 +94,14 @@ def observe(p, rt):
     if "flyway" in p["migration"]:
         jar = PurePosixPath("/app", jar_name(p["gate"]["command"]))
         require(not any(jar.is_relative_to(m["Destination"]) for m in old["Mounts"]), "FLYWAY_JAR_SHADOWED")
-        body["flywayBaseline"] = flyway.baseline(flyway.observe(rt, old))
+        body["flywayBaseline"] = flyway.baseline(flyway.observe(rt, old, predecessor=True))
     return body, old
 
 
-def plan(profile: dict, runtime=None) -> dict:
+def plan(profile: dict, runtime=None, *, previous_release=None) -> dict:
     """Read-only; no image import, lock, journal, signal or network download."""
     try:
-        body, _ = observe(profile, runtime or Docker(profile))
+        body, _ = observe(profile, runtime or Docker(profile), previous_release)
         return {"status": "PLANNED", "planSha256": digest(body), "plan": body}
     except Exception as exc:
         return {"status": "HELD", "reason": reason(exc), "rollback":
@@ -233,9 +240,9 @@ def verify_flyway_return(p, rt, old, root):
             require(stage["planSha256"] == root.name and stage["profileSha256"] == digest(p)
                     and read(root, "migration-review-consumed.json") == {"digest": digest(stage)},
                     "FLYWAY_REVIEW_CHANGED")
-            flyway.verify(rt, old, stage["flywayReview"])
+            flyway.verify(rt, old, stage["flywayReview"], predecessor=True)
         else:
-            require(flyway.baseline(flyway.observe(rt, old)) == read(root, "plan.json")["flywayBaseline"],
+            require(flyway.baseline(flyway.observe(rt, old, predecessor=True)) == read(root, "plan.json")["flywayBaseline"],
                     "FLYWAY_BASELINE_CHANGED")
 
 
@@ -487,7 +494,7 @@ def rollback(p, rt, old, root, result, exc):
             result["reason"] = "DATABASE_CHANGED"
 
 
-def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=False) -> dict:
+def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=False, previous_release=None) -> dict:
     """Replan under exclusion; consume once, write a private receipt even on ordinary failure."""
     result = {"operation": "module-release", "status": "HELD"}
     try:
@@ -506,7 +513,7 @@ def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=Fals
         unlock = True
         try:
             rt = runtime or Docker(profile)
-            body, old = observe(profile, rt)
+            body, old = observe(profile, rt, previous_release)
             require(digest(body) == plan_sha256, "PLAN_CHANGED")
             root = parent / plan_sha256
             try:

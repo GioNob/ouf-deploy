@@ -88,6 +88,13 @@ def validate(p):
         require(matches(NAME, p[name]), "INVALID_NAME")
     require(len({p[k] for k in ("container", "retainedName", "failedName")}) == 3, "NAME_COLLISION")
     require(matches(IMAGE, p["oldImage"]), "PREDECESSOR_IMAGE_REQUIRED")
+    if "receiptSigning" in p:
+        signer = p["receiptSigning"]
+        require(isinstance(signer, dict) and set(signer) == {"publicKey", "privateKey"}
+                and isinstance(signer["publicKey"], dict) and set(signer["publicKey"]) == {"path", "sha256"}
+                and matches(SHA, signer["publicKey"]["sha256"])
+                and all(isinstance(path, str) and Path(path).is_absolute() and ".." not in Path(path).parts
+                        for path in (signer["publicKey"]["path"], signer["privateKey"])), "MODULE_RECEIPT_SIGNER_PROFILE")
     for key in ("inbox", "journal", "dockerSocket", "nsenter"):
         require(Path(p[key]).is_absolute() and ".." not in Path(p[key]).parts, "ABSOLUTE_PATH_REQUIRED")
     require(p["networks"] and all(matches(NAME, n) for n in p["networks"]), "NETWORKS_REQUIRED")

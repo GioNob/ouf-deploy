@@ -33,7 +33,10 @@ def sync_dir(path):
 
 
 def save(path, value, *, replace=False):
-    raw = canonical(value)
+    save_bytes(path, canonical(value), replace=replace)
+
+
+def save_bytes(path, raw, *, replace=False):
     with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as f:
         tmp = Path(f.name)
         try:
