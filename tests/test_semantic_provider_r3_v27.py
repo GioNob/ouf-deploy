@@ -149,6 +149,15 @@ class Chain:
 
 
 class Composition(unittest.TestCase):
+    def test_new_heads_preserve_the_v27_overlay_and_supersede_in_order(self):
+        inputs, previous = fixture(27)
+        for sequence in range(28, 31):
+            parent = C.sha(previous['authorization'])
+            previous = C.compose(inputs, sequence, sequence=sequence, supersedes=parent)
+            payload = C.A.validate(previous['authorization'])
+            self.assertEqual((payload['sequence'], payload['supersedes']), (sequence, parent))
+            self.assertIn(f'versions/{sequence}/supervisor/configuration.json', previous['documents'])
+
     def test_overlay_is_anchored_and_preserves_line_endings(self):
         inputs, _ = fixture(27)
         with patch.object(overlay, 'sources_v27', wraps=overlay.sources_v27) as build:

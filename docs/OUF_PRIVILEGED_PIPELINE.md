@@ -1,6 +1,30 @@
 # Cutover A2 del Semantic
 
-Il workflow manuale governa una successione 27→28 e il ritorno al CID conservato. Il plan effettivo identifica l’installazione. La riuscita dell’andata richiede una ricevuta della firma, l’upgrade, lo start R3, un ingresso `VERIFIED`, Java PID 1, readiness HTTP 200 con `status=UP`, sonda C e worker abilitato nel frame verificato. La qualifica portabile usa un host simulato. Il collaudo sul nodo è ancora da eseguire.
+Il workflow manuale governa il cutover A2 27→28 e il rilascio Semantic 28→29. Ogni transazione identifica il proprio predecessore tramite CID. Il plan effettivo identifica l’installazione. La riuscita dell’andata richiede una ricevuta della firma, l’upgrade, lo start R3, un ingresso `VERIFIED`, Java PID 1, readiness HTTP 200 con `status=UP`, sonda C e worker abilitato nel frame verificato. L’owner riferisce A2 completato nel run 44882047892. Le prove del rilascio successivo usano un host simulato e una fixture Engine dedicata.
+
+## Rilascio Semantic dalla testa 28
+
+Per il task-09 selezionare `release=next`, `direction=forward`. La forma precedente del mandato rimane il default `a2`. Il plan controlla la catena 1…28, la ricevuta terminale del forward A2, il CID corrente, il profilo installato nel supervisore e il frame della linea C con worker acceso. La sonda preflight usa gli input dell’emissione 28 dal run che l’ha completata.
+
+Aggiungere al profilo privato `nextSuccessorImage` con gli stessi campi di `successorImage`. Servono i pin del PR Semantic task-09, workflow, commit e tree provati, run e tentativo CI, ID artefatto, SHA-256 dello ZIP originale, image ID, nome immagine, schema manifest, inbox e campo Flyway. `predecessorMigrations` deve riprodurre l’inventario completo dell’immagine A2 ammessa. Il trasporto pubblico di esempio fissa ancora il PR 49. Chi prepara lo ZIP per il task-09 deve usare le coordinate revisionate del nuovo publisher. L’esecutore verifica di nuovo CI, ZIP, manifest, immagine e inventario prima del fermo.
+
+Il dispatch non chiede `confirm_no_return`. Per `release=next` l’esecutore verifica tutti e cinque i runbook del ritorno prima del fermo e della firma: se manca un binding o un digest non coincide, il forward si ferma. Il profilo storico a 13 binding rimane valido per A2, non abilita questo forward. Apply conserva la linea C in `<retainedName>-v28`; il CID storico A2 resta in `retainedName`. La review Flyway del delta (V14 per il task-09) precede sign e USR1.
+
+**Profilo privato.** Per ogni chiave in tabella inserire `artifactCommit`, `sourceCommit` e `sha256`. `artifactCommit` è lo SHA Git completo del commit revisionato che contiene il rispettivo file: Claude lo completa dopo il commit di 10b. Non usare `HEAD`, un branch o lo SHA del sorgente come sostituto. Per tutte le righe `sourceCommit` è il `C=` del runbook: `c58515e8d4567742fc9dad988b4871966ce49563`. Gli SHA-256 si riferiscono ai blob Git LF, non al checkout CRLF. L’installatore verifica i blob dal clone locale e aggiunge `path` al profilo installato.
+
+| Chiave in `runbooks` | File in `ops/vps/` | `sha256` |
+|---|---|---|
+| `issue-30` | `r3-issue-v30.sh` | `8f6da4c76baf0fcdd9ec7ca356076f087512b68434c47c790f40ea4e74d04564` |
+| `upgrade-30` | `r3-upgrade-v30.sh` | `e465df555805ca0b5edeac8bc6885bf41b7c767a176b7c74a2b533969276e53b` |
+| `start-30` | `r3-operate.sh` | `5c1da7b2c8d1c37cc2a83e612faf38b70645e09b67830860355c62d5a99326f6` |
+| `stop-30` | `r3-operate.sh` | `5c1da7b2c8d1c37cc2a83e612faf38b70645e09b67830860355c62d5a99326f6` |
+| `probe-30` | `c-probe.sh` | `5287ef8a820ef8c1216c29e65ed7ff0a8612d729473db1d757bd4fd06570ca70` |
+
+**Ritorno.** Selezionare `release=next`, `direction=return` in un nuovo dispatch. Prima della firma di 29 si torna al CID della linea C sulla testa 28 senza firmare. Dopo la firma di 29 si conserva il Semantic nuovo fermo, si ricollega lo stesso CID della linea C e si firma la 30 per il suo profilo. Se la 29 è firmata ma non installata, l’upgrade 29 viene prima riconciliato con il piano e gli input dell’emittente. La 30 richiede upgrade, start, ingresso verificato, USR1, readiness e sonda sugli input della **30**, con worker acceso. Questo è un ritorno applicativo, non un downgrade del database: compatibilità della linea C con V14 e qualifica nativa restano da verificare. Non cancellare claim né rigiocare comandi ambigui: riprendere con un nuovo dispatch di ritorno e nuove review.
+
+**Limiti verificati.** La catena locale deve contenere ogni coppia payload/firma dalla 1 alla testa; l’esecutore e il dispatcher ammettono solo 27–30. La sorgente del forward rimane intenzionalmente 27 (A2) o 28 (next), non una versione libera. Nel sorgente R3 fissato la catena ammette fino a 256 emissioni; 27 è l’ultima famiglia di composizione, non l’ultima sequenza. Gli overlay `>=27` e gli input di rinnovo v27 restano quelli della 29. Operate osserva la testa autenticata: il vecchio stato v29 e le soglie del suo preparatore non erano invocati da start/stop. La sonda C deriva la sequenza dalla testa. Il ciclo `(27, 28)` nella fixture del ceiling ricostruiva due file di prova, non era un controllo dell’autorità.
+
+**Journal e interruzioni.** Il forward concluso salva i due puntatori in `<run>/closed-forward` e pubblica `completed-forward`. La rimozione dei puntatori attivi termina con `forward-stage`. Un nuovo dispatch completa una chiusura interrotta, anche per un successo A2 prodotto dalla 17u. L’archivio conserva la provenienza per proof e ritorno. La transazione nuova pubblica i propri puntatori all’apply. Se il ritorno si interrompe durante il ricollegamento, il plan identifica i CID e le reti residue e l’apply completa i collegamenti mancanti. Prima della CREATE, una ricevuta di stop e il frame del CID identificano il distacco da completare. Un claim CREATE con esito privo di CID resta HELD. Al gate la ripresa riusa il CID registrato e richiede le review del nuovo run. Dopo la firma, un nuovo forward confronta il payload 29, lo stage approvato, la generazione e i claim. Per upgrade, start e sonda recupera anche un `result.json` dell’owner con stato e digest attesi. In presenza di un claim USR1 serve Java nella stessa generazione. La ripresa verifica readiness, ingresso e sonda senza un altro segnale. Effetti ambigui privi di riscontro restano HELD.
 
 ## Mandato e approvazione
 

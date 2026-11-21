@@ -46,7 +46,9 @@ def input_index(inputs, public):
 
 
 class Replay(unittest.TestCase):
-    def setUp(self):
+    def prepare_chain(self, sequence):
+        self.assertIn(sequence, range(28, 31))
+        self.sequence = sequence
         self.temp = Path(self.enterContext(tempfile.TemporaryDirectory()))
         self.base = v27.fixture(27)[0]
         self.settings = C.document(self.base['files']['settings'])
@@ -70,10 +72,11 @@ class Replay(unittest.TestCase):
         acceptance['trustPolicy'] = self.settings['anchorBinding']
         self.base = dict(self.base, files=dict(self.base['files'], settings=C.canonical(self.settings),
                                                acceptance=C.canonical(acceptance) + b'\n'))
-        self.old = C.compose(self.base, 27, sequence=27, supersedes=self.chain.digest)
-        self.chain.payload = C.A.validate(self.old['authorization'])
-        self.chain.append()
-        self.assertEqual(self.old['authorization'], (self.chain.directory / '27.json').read_bytes())
+        for number in range(self.chain.count + 1, sequence):
+            self.old = C.compose(self.base, number, sequence=number, supersedes=self.chain.digest)
+            self.chain.payload = C.A.validate(self.old['authorization'])
+            self.chain.append()
+            self.assertEqual(self.old['authorization'], (self.chain.directory / f'{number}.json').read_bytes())
         self.root = PurePosixPath(self.settings['installRoot'])
         self.disk = {}
         self.started = {}
@@ -112,7 +115,7 @@ class Replay(unittest.TestCase):
                          c.scope['installationRef'], c.scope['entityRef'], c.scope['issuerRef'], lambda: c.now)
 
     def inputs(self, cap):
-        prepare = V12.F.load('scripts/prepare-semantic-provider-r3-v25-inputs.py', 'prepare_28')
+        prepare = V12.F.load('scripts/prepare-semantic-provider-r3-v25-inputs.py', f'prepare_{self.sequence}')
         base = self.base if cap is None else with_ceiling(self.base, cap)
         public = {}
         files = {k: base['files'][k] for k in C.DATA_INPUTS_V24}
@@ -120,7 +123,7 @@ class Replay(unittest.TestCase):
         sources = {k: base['sources'][k] for k in C.SOURCE_INPUTS_V24}
         index = input_index(dict(files=files, sources=sources), public)
         public['/base'] = C.canonical(index)
-        args = SimpleNamespace(sequence=28, mode='inputs', v24_inputs='/base', v24_inputs_sha256=C.sha(public['/base']))
+        args = SimpleNamespace(sequence=self.sequence, mode='inputs', v24_inputs='/base', v24_inputs_sha256=C.sha(public['/base']))
         if cap != 24:
             public['/profile'] = base['files']['semanticProfile']
             public['/renewal'] = v27.fixture(cap or 27)[0]['files']['leaseRenewal']
@@ -138,7 +141,7 @@ class Replay(unittest.TestCase):
     def issue(self, inputs, cap):
         c = self.chain
         previous = self.head(C.A)
-        self.assertEqual((previous['sequence'], previous['authorization']), (27, c.payload))
+        self.assertEqual((previous['sequence'], previous['authorization']), (self.sequence - 1, c.payload))
         public = {self.profile_path: self.profile, '/anchor': self.anchor_bytes,
                   '/openssl': c.openssl.read_bytes(),
                   self.settings['coordinatorBinding']['path']: inputs['files']['coordinator']}
@@ -196,17 +199,17 @@ class Replay(unittest.TestCase):
         self.assertEqual(payload.get('compositionCeiling'), cap)
         self.assertEqual('compositionCeiling' in payload, cap is not None)
         self.assertEqual(payload['supersedes'], previous['sha256'])
-        result = C.compose(inputs, 28, sequence=28, supersedes=previous['sha256'])
+        result = C.compose(inputs, self.sequence, sequence=self.sequence, supersedes=previous['sha256'])
         self.assertEqual(proposal['documentHashes'], result['hashes'])
-        self.assertEqual((receipt['sequence'], receipt['signaturesIssued']), (28, 1))
-        self.assertEqual(progress['writtenFiles'], ['28.json', '28.signature.json'])
-        self.assertEqual((c.directory / '28.json').read_bytes(), result['authorization'])
+        self.assertEqual((receipt['sequence'], receipt['signaturesIssued']), (self.sequence, 1))
+        self.assertEqual(progress['writtenFiles'], [f'{self.sequence}.json', f'{self.sequence}.signature.json'])
+        self.assertEqual((c.directory / f'{self.sequence}.json').read_bytes(), result['authorization'])
         self.assertEqual(C.document((output / 'result.json').read_bytes()), receipt)
         if cap == 26:
             # Even after updating payloadHash in the public envelope, the same
             # signature cannot authorize a different valid cap on identical documents.
             tampered = C.canonical(dict(payload, compositionCeiling=25))
-            envelope = C.document((c.directory / '28.signature.json').read_bytes())
+            envelope = C.document((c.directory / f'{self.sequence}.signature.json').read_bytes())
             envelope['payloadHash'] = C.sha(tampered)
             with self.assertRaisesRegex(C.A.OperationDenied, '^OPERATION_SIGNATURE_INVALID$'):
                 ledger_view = ledger(self.settings['anchorBinding'], self.settings['mandateRoot'],
@@ -223,9 +226,11 @@ class Replay(unittest.TestCase):
             lock='/lock', docker='/docker', docker_sha256='a'*64, docker_socket='unix:///docker.sock',
             systemctl='/systemctl', systemctl_sha256='b'*64)
         disk.update({str(root / p): raw for p, raw in self.old['documents'].items()})
-        for n in (27, 28):
-            disk[str(root / 'authorization' / f'{n}.json')] = (self.chain.directory / f'{n}.json').read_bytes()
-        before = root / 'versions/27'
+        sequence = head['sequence']
+        self.assertEqual(sequence, self.sequence)
+        for number in (sequence - 1, sequence):
+            disk[str(root / 'authorization' / f'{number}.json')] = (self.chain.directory / f'{number}.json').read_bytes()
+        before = root / 'versions' / str(sequence - 1)
         old_cfg = C.document(disk[str(before / 'runtime-configuration.json')])
         old_sup = disk[str(before / 'supervisor/configuration.json')]
         disk[args.wrapper] = I.wrapper_bytes(old_cfg['pythonPath'], before)
@@ -284,14 +289,14 @@ class Replay(unittest.TestCase):
             report = dict(I.COUNTERS)
             U.apply(args, plan, result, report)
         self.assertEqual((report['status'], report['versionBefore'], report['versionAfter']),
-                         ('SEMANTIC_PROVIDER_R3_UPGRADED_WAITING', 27, 28))
+                         ('SEMANTIC_PROVIDER_R3_UPGRADED_WAITING', sequence - 1, sequence))
         self.assertEqual(report['signaturesIssued'], 0)
         return report['wrapperAfter']
 
 
     def start(self, inputs, head, wrapper_hash, cap):
         disk, root = self.disk, self.root
-        installed = root / 'versions/28'
+        installed = root / 'versions' / str(self.sequence)
         source = installed / 'source'
         cfg = C.document(disk[str(installed / 'runtime-configuration.json')])
         sup_cfg = C.document(disk[str(installed / 'supervisor/configuration.json')])
@@ -350,7 +355,7 @@ class Replay(unittest.TestCase):
 
         def service_status():
             status = dict(schema=sup.STATUS_SCHEMA, state='WAITING', reason='EPOCH_NOT_LIVE',
-                          epochs=dict.fromkeys(O.ROLES), authorizationSequence=28, activationsLastHour=0)
+                          epochs=dict.fromkeys(O.ROLES), authorizationSequence=self.sequence, activationsLastHour=0)
             if len(rows) == 2:
                 guard.scope_guard()
                 status.update(state='ACTIVE', reason=None, epochs=guard.epochs, authorizationSequence=guard.sequence)
@@ -401,10 +406,11 @@ class Replay(unittest.TestCase):
         O.apply(args, plan, report)
         self.assertEqual((report['status'], report['dockerStartRequests'], report['signaturesIssued']),
                          ('SEMANTIC_PROVIDER_R3_STARTED', 2, 0))
-        self.assertEqual(guard.sequence, 28)
+        self.assertEqual(guard.sequence, self.sequence)
         self.assertEqual('semanticEpoch' in report['lastObservation']['supervisor'], cap != 24)
 
-    def replay(self, cap):
+    def replay(self, cap, sequence=28):
+        self.prepare_chain(sequence)
         inputs = self.inputs(cap)
         result = self.issue(inputs, cap)
         head = self.head(C.A)
@@ -417,6 +423,9 @@ class Replay(unittest.TestCase):
 
     def test_return_to_v26(self):
         self.replay(26)
+
+    def test_return_head_30(self):
+        self.replay(None, sequence=30)
 
     def test_uncapped_successor(self):
         self.replay(None)

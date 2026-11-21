@@ -57,6 +57,7 @@ class Bootstrap(unittest.TestCase):
         mcp["ci"]["transportSha256"] = "e"*64
         mcp["migration"]["database"].update(postgresCid="d"*64, socket="/run/postgresql")
         book = ("C="+"f"*40+"\n").encode()
+        self.artifacts = {}
         for binding in cfg["runbooks"].values():
             binding.update(artifactCommit="a"*40, sourceCommit="f"*40, sha256=hashlib.sha256(book).hexdigest())
         self.path.write_text(json.dumps(cfg))
@@ -65,6 +66,8 @@ class Bootstrap(unittest.TestCase):
             if argv[-2:] == ["rev-parse", "HEAD"]:
                 return cfg["commit"].encode()
             name = argv[-1].split(":", 1)[1]
+            if argv[-1] in self.artifacts:
+                return self.artifacts[argv[-1]]
             return book if name.startswith("ops/vps/") else (ROOT / name).read_bytes()
         stack.enter_context(patch.object(inst.subprocess, "check_output", side_effect=git))
         stack.enter_context(patch.dict(sys.modules, pwd=types.SimpleNamespace(
@@ -111,6 +114,40 @@ class Bootstrap(unittest.TestCase):
                     del cfg["modules"]["mcp"]
                 self.path.write_text(json.dumps(cfg))
                 self.assertIn(self.inst.ENTRY, self.inst.inspect(self.path))
+
+    def test_next_image_uses_the_same_ci_contract(self):
+        cfg = json.loads(self.path.read_bytes())
+        cfg["nextSuccessorImage"] = json.loads(json.dumps(cfg["successorImage"]))
+        cfg["nextSuccessorImage"]["ci"]["pullRequest"] += 1
+        self.path.write_text(json.dumps(cfg))
+        installed = json.loads(self.inst.inspect(self.path)[self.inst.ROOT / "profile.json"][0])
+        self.assertEqual(installed["nextSuccessorImage"], cfg["nextSuccessorImage"])
+        del cfg["nextSuccessorImage"]["ci"]["sourceTree"]
+        self.path.write_text(json.dumps(cfg))
+        with self.assertRaisesRegex(ValueError, "SUCCESSOR_IMAGE_PROFILE"):
+            self.inst.inspect(self.path)
+
+    def test_complete_v30_bindings_use_reviewed_blobs(self):
+        cfg = json.loads(self.path.read_bytes())
+        for op in ("start", "stop", "issue", "upgrade", "probe"):
+            name = {"start": "r3-operate", "stop": "r3-operate", "probe": "c-probe"}.get(op, f"r3-{op}-v30")
+            path = f"ops/vps/{name}.sh"
+            raw = (ROOT / path).read_text(encoding="utf8").encode()
+            artifact = "d" * 40
+            self.artifacts[f"{artifact}:{path}"] = raw
+            cfg["runbooks"][f"{op}-30"] = dict(artifactCommit=artifact, sourceCommit="c58515e8d4567742fc9dad988b4871966ce49563", sha256=hashlib.sha256(raw).hexdigest())
+        self.path.write_text(json.dumps(cfg))
+        files = self.inst.inspect(self.path)
+        for role, binding in cfg["runbooks"].items():
+            self.assertEqual(hashlib.sha256(files[self.inst.ROOT / "books" / role][0]).hexdigest(), binding["sha256"])
+        cfg["runbooks"]["probe-30"]["sha256"] = "0" * 64
+        self.path.write_text(json.dumps(cfg))
+        with self.assertRaisesRegex(ValueError, "RUNBOOK_PIN_DRIFT"):
+            self.inst.inspect(self.path)
+        del cfg["runbooks"]["probe-30"]
+        self.path.write_text(json.dumps(cfg))
+        with self.assertRaisesRegex(ValueError, "RUNBOOK_SET_REQUIRED"):
+            self.inst.inspect(self.path)
 
     def test_gateway_rejects_legacy_source_token_file(self):
         cfg = json.loads(self.path.read_bytes())
