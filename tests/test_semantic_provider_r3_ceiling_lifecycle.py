@@ -47,7 +47,7 @@ def input_index(inputs, public):
 
 class Replay(unittest.TestCase):
     def prepare_chain(self, sequence):
-        self.assertIn(sequence, range(28, 31))
+        self.assertGreaterEqual(sequence, 28)
         self.sequence = sequence
         self.temp = Path(self.enterContext(tempfile.TemporaryDirectory()))
         self.base = v27.fixture(27)[0]
@@ -426,6 +426,9 @@ class Replay(unittest.TestCase):
 
     def test_return_head_30(self):
         self.replay(None, sequence=30)
+
+    def test_return_head_31(self):
+        self.replay(None, sequence=31)
 
     def test_uncapped_successor(self):
         self.replay(None)

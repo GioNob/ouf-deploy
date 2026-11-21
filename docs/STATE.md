@@ -1,5 +1,9 @@
 # Stato corrente OUF
 
+## Semantic su R3 29 · rilascio task-16 e ritorno 31
+
+L’owner riferisce la testa 29 nel run 44909669060 del 21 novembre 2026. Il task sprint-03/17 qualifica offline il forward 29→30 e il ritorno firmato 30→31 allo stesso CID e alla stessa immagine della 29. Per il rilascio operativo servono i pin dell’immagine task-16 e i cinque binding della 31 nel profilo privato. [Procedura e SHA-256](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-29)
+
 ## Semantic su R3 29 · migrazione database · 21 novembre 2026
 
 L’operatore riferisce discovery HTTP 500, storia a V12 e immagine con V1–V16. Il task sprint-03/14 introduce il recupero online con un’approvazione e la migrazione al cancello nei rilasci A2 e next con Flyway disabilitato. La qualifica nativa PostgreSQL/Flyway è collegata alla CI. Per la prova in esercizio servono il binding privato e il plan del nuovo esecutore. [Procedura e valori da inserire](OUF_PRIVILEGED_PIPELINE.md#migrazione-online-del-database-semantic)

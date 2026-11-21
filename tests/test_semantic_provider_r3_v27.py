@@ -151,7 +151,7 @@ class Chain:
 class Composition(unittest.TestCase):
     def test_new_heads_preserve_the_v27_overlay_and_supersede_in_order(self):
         inputs, previous = fixture(27)
-        for sequence in range(28, 31):
+        for sequence in range(28, 32):
             parent = C.sha(previous['authorization'])
             previous = C.compose(inputs, sequence, sequence=sequence, supersedes=parent)
             payload = C.A.validate(previous['authorization'])

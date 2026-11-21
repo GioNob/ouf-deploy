@@ -9,7 +9,7 @@ from urllib.parse import quote
 from ingress import verified
 from mandate import Held, digest, hex64, intent, need
 from queue_inventory import Queue, permit, review_rows
-from runbooks import Books, SUCCESS, SUPPORTED_HEADS, stop
+from runbooks import Books, SUCCESS, stop
 from semantic import Engine, allocated_profile, configuration, never_started, prepare, profile_template, signal_once
 from semantic_identity_v25 import semantic_observe, semantic_profile
 import store
@@ -47,12 +47,22 @@ class Cutover:
         self.engine = Engine(cfg["socket"])
         self.forward = req.get("direction") == "forward"
         self.next_release = req.get("release") == "next"
-        self.source_head = 28 if self.next_release else 27
         self.name = cfg["originalProfile"]["containerName"]
 
     @property
+    def source_head(self):
+        if not self.next_release:
+            return 27
+        if self.forward and not (self.root / "forward").exists():
+            head = self.completed_forward()["head"]
+        else:
+            head = self.original()["head"]
+        need(head >= 28, "ACTIVE_RELEASE_MISMATCH")
+        return head
+
+    @property
     def retained_name(self):
-        return self.cfg["retainedName"] + ("-v28" if self.next_release else "")
+        return self.cfg["retainedName"] + (f"-v{self.source_head}" if self.next_release else "")
 
     def record(self, file):
         return read(self.path / file)
@@ -89,9 +99,9 @@ class Cutover:
         plan = read(self.root / run / "plan")
         return self.root / plan.get("committedFrom", run)
 
-    def bind_return(self):
+    def bind_return(self, source_head):
         for op in SUCCESS:
-            self.books.binding(op, self.source_head + 2)
+            self.books.binding(op, source_head + 2)
 
     def prepare_image(self, old, profile, image):
         if image is None:
@@ -341,7 +351,7 @@ class Cutover:
                      "CREATE_OUTCOME_REQUIRES_RECONCILIATION")
             else:
                 need(read(creation / "create.receipt")["result"] == plan["source"], "RETURN_SOURCE_DRIFT")
-            need(result["worker"] == ("on" if self.original()["head"] == 28 else "off")
+            need(result["worker"] == ("off" if self.original()["head"] == 27 else "on")
                  and result["readiness"] == "UP" and result["ingress"] == "VERIFIED"
                  and staged["cid"] == plan["old"] and staged["parent"] == digest(plan),
                  "RETURN_COMPLETION_UNPROVEN")
@@ -372,7 +382,7 @@ class Cutover:
         directory = Path(self.cfg["installRoot"]) / "authorization"
         names = {p.name for p in directory.iterdir()}
         n = len(names) // 2
-        need(n in SUPPORTED_HEADS and names == {f"{i}.{suffix}" for i in range(1, n+1)
+        need(n >= 27 and f"start-{n}" in self.cfg["runbooks"] and names == {f"{i}.{suffix}" for i in range(1, n+1)
              for suffix in ("json", "signature.json")}, "HEAD_RECONCILIATION_REQUIRED")
         return n
 
@@ -563,27 +573,29 @@ class Cutover:
         self.close_forward()
         version = self.current_version()
         direction = self.req["direction"]
-        if self.next_release and (self.forward or version > self.source_head):
-            self.bind_return()
+        need(not self.forward or not (self.root / "return").exists(), "TRANSACTION_SUPERSEDED")
+        source_head = self.source_head
+        if self.next_release and (self.forward or version > source_head):
+            self.bind_return(source_head)
         if (self.root / "forward").exists():
-            need(self.original()["head"] == self.source_head, "ACTIVE_RELEASE_MISMATCH")
+            need(self.original()["head"] == source_head, "ACTIVE_RELEASE_MISMATCH")
         prior = None
         if (self.root / direction).exists():
             prior = self.owner(direction)
             if self.next_release:
-                if self.forward and version == self.source_head + 1:
+                if self.forward and version == source_head + 1:
                     return self.committed_plan()
                 if not self.forward and not self.stop_unattempted(prior):
                     if not (self.root / prior / "start-gate.receipt").exists():
                         return self.restore_plan(version)
-                    if version == self.source_head + 2 or (self.root / self.owner("return-stage") / "start.claim").exists():
+                    if version == source_head + 2 or (self.root / self.owner("return-stage") / "start.claim").exists():
                         return self.committed_plan()
             if not (self.root / prior / "stop-no-effect").is_file() and not self.stop_unattempted(prior):
                 if self.forward and not (self.root / prior / "start-gate.receipt").exists():
                     return self.created_plan(version)
                 return self.resume_gated(version)
         if self.forward:
-            need(version == self.source_head, "EXPECTED_SOURCE_HEAD")
+            need(version == source_head, "EXPECTED_SOURCE_HEAD")
             profile = semantic_profile(self.cfg["originalProfile"])
             old = self.engine.inspect(self.name)
             spec = self.cfg.get("successorImage")
@@ -593,11 +605,13 @@ class Cutover:
                 profile = semantic_profile(self.supervisor(version)["semanticIngress"]["profile"])
                 source_plan = read(self.root / archive["pointers"]["forward"]["run"] / "plan")
                 spec = self.cfg.get("nextSuccessorImage")
-                need(archive["head"] == version and previous["profile"] == profile and spec
+                need(archive["pointers"]["forward"]["plan"] == digest(source_plan)
+                     and archive["head"] == version and previous["profile"] == profile and spec
                      and previous["cid"] == old["Id"]
                      and spec["ci"]["imageId"] != profile["image"], "NEXT_RELEASE_BASELINE_DRIFT")
-                need("successorImage" in source_plan and
-                     inventory(spec["predecessorMigrations"]) == inventory(source_plan["successorImage"]["migrations"]),
+                predecessor = source_plan.get("successorImage")
+                need(predecessor and predecessor["ci"]["imageId"] == profile["image"], "NEXT_RELEASE_BASELINE_DRIFT")
+                need(inventory(spec["predecessorMigrations"]) == inventory(predecessor["migrations"]),
                      "PREDECESSOR_MIGRATIONS_CHANGED")
             request, target = prepare(old, profile, worker_enabled=self.next_release)
             if spec is None:
@@ -618,8 +632,8 @@ class Cutover:
         else:
             need((self.root / "forward").is_file() or (self.root / "completed-forward").is_file(), "ACTIVE_FORWARD_REQUIRED")
             first = self.original()
-            need(first["head"] == self.source_head, "ACTIVE_RELEASE_MISMATCH")
-            need(version in (self.source_head, self.source_head + 1), "RETURN_HEAD_DRIFT")
+            need(first["head"] == source_head, "ACTIVE_RELEASE_MISMATCH")
+            need(version in (source_head, source_head + 1), "RETURN_HEAD_DRIFT")
             need(self.engine.inspect(self.cfg["failedName"], True) is None, "RETURN_NAME_IN_USE")
             if not (self.root / self.owner("forward") / "start-gate.receipt").exists():
                 return self.created_plan(version)
@@ -629,10 +643,10 @@ class Cutover:
                      "source": source, "previous": allocated_profile(first, source), "target": first["original"]}
             frame["forwardOwner"] = self.pointer("forward")
             frame["request"] = self.return_request(first)
-        sequence = version + 1 if self.forward or version != self.source_head else version
+        sequence = version + 1 if self.forward or version != source_head else version
         reconciliation = None
         installed = version
-        if not self.forward and version != self.source_head:
+        if not self.forward and version != source_head:
             origin = self.issuing_run(self.owner("forward-stage"))
             if not (origin / "upgrade.receipt").exists() and (origin / "upgrade.claim").exists():
                 claim = read(origin / "upgrade.claim")
@@ -641,18 +655,18 @@ class Cutover:
             elif not (origin / "upgrade.receipt").exists():
                 issue = self.approved_issue(origin, read(origin / "stage"), version)
                 reconciliation = Books(self.cfg, origin).call("upgrade", version)
-                need(reconciliation["versionBefore"] == self.source_head and reconciliation["versionAfter"] == version
+                need(reconciliation["versionBefore"] == source_head and reconciliation["versionAfter"] == version
                      and reconciliation["authorization"]["sha256"] == issue["payloadSha256"]
                      and reconciliation["compositionInputHashes"]["semanticProfile"] == digest(frame["previous"]),
                      "RETURN_UPGRADE_DRIFT")
-                installed = self.source_head
+                installed = source_head
         sup = self.supervisor(installed)
         need(sup["coordinator"]["journalPath"] == self.cfg["leaseJournal"]
              and sup["semanticIngress"]["commands"]["socket"] == self.cfg["socket"], "INSTALLATION_BINDING")
         kind = "start" if read(sup["statusPath"])["state"] == "WAITING" else "stop"
         need(not self.forward or kind == "stop", "FORWARD_REQUIRES_ACTIVE")
         # The waiting candidate can differ from the signed source profile before issuance.
-        staged_source = not self.forward and installed == self.source_head and kind == "start"
+        staged_source = not self.forward and installed == source_head and kind == "start"
         if staged_source:
             creation = self.forward_creation()
             stopped = self.book_result(creation, "stop", read(creation / "plan")["stop"])
@@ -839,6 +853,7 @@ class Cutover:
         need(epoch == self.observe(cid, target, sup), "GATED_EPOCH_DRIFT")
         issue = None
         if seq != version:
+            need(seq == version + 1, "ISSUANCE_SCOPE_DRIFT")
             issue = self.books.call("issue", seq)
             need(issue["previousHead"]["sequence"] == version and issue["payload"]["sequence"] == seq
                  and issue["payload"]["supersedes"] == issue["previousHead"]["sha256"]
@@ -862,7 +877,7 @@ class Cutover:
         self.closed(self.supervisor(version))
         if stage["issue"]:
             if self.next_release and self.forward:
-                self.bind_return()
+                self.bind_return(version)
             # The existing issuer revalidates its frozen input bundle, mandate and head under lock.
             stamp = stage["issue"]["planSha256"]
             signed = self.log.effect("issue", {"plan": stamp, "parent": digest(stage)},
@@ -1041,6 +1056,7 @@ class Cutover:
                         "queue": review_rows(plan["queue"])}
             if self.forward and self.next_release:
                 response["returnAfterIssue"] = "available"
+                response["returnSequence"] = plan["head"] + 2
             if "successorImage" in plan:
                 image = plan["successorImage"]
                 response["imageId"] = image["ci"]["imageId"]
@@ -1066,7 +1082,7 @@ class Cutover:
             return {"digest": digest(proof), "proof": proof["state"]}
         if phase == "apply":
             if self.next_release and self.forward:
-                self.bind_return()
+                self.bind_return(plan["head"])
             need(self.req["digest"] == digest(plan), "APPROVED_PLAN_DRIFT")
             accept()
             stage = self.prepare_stage(plan)

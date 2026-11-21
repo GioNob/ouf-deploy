@@ -5,6 +5,15 @@
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
   "status": "F1_PASS_WIDE_COMPONENTS_READY_DISCOVERY_ACTIVATION_PENDING",
+  "semanticReleaseTask17": {
+    "operatorReportedRun": "44909669060",
+    "operatorReportedHead": 29,
+    "forwardHead": 30,
+    "signedReturnHead": 31,
+    "qualification": "Offline successive forwards and signed return to the head-29 container and image with worker enabled.",
+    "runtimeApply": false,
+    "procedure": "docs/OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-29"
+  },
   "semanticDatabaseTask14": {
     "operatorObservationDate": "2026-11-21",
     "reportedHead": 29,

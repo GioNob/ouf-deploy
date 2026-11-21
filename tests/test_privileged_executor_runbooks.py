@@ -54,12 +54,15 @@ class RunbookPaths(unittest.TestCase):
         binding = self.enterContext(patch.object(runbooks.Books, "binding"))
         launch = self.enterContext(patch.object(runbooks.subprocess, "run"))
         next_return = pipeline.Cutover(self.config, self.root, {"direction": "return", "release": "next", "run": "103"})
+        return31 = pipeline.Cutover(self.config, self.root, {"direction": "return", "release": "next", "run": "104"})
         for book, op, version in [(forward, "probe", 27), (forward, "stop", 27), (forward, "issue", 28),
                                   (forward, "upgrade", 28), (forward, "start", 28), (forward, "probe", 28),
                                   (rollback, "stop", 28), (rollback, "issue", 29), (rollback, "upgrade", 29),
                                   (rollback, "start", 29), (rollback, "probe", 29),
                                   (next_return, "stop", 29), (next_return, "issue", 30), (next_return, "upgrade", 30),
-                                  (next_return, "start", 30), (next_return, "probe", 30)]:
+                                  (next_return, "start", 30), (next_return, "probe", 30),
+                                  (return31, "stop", 30), (return31, "issue", 31), (return31, "upgrade", 31),
+                                  (return31, "start", 31), (return31, "probe", 31)]:
             with self.subTest(op=op, version=version):
                 name = {"probe": "c-probe", "stop": "r3-operate", "start": "r3-operate"}.get(op, f"r3-{op}-v{version}")
                 binding.return_value = BOOKS / (name + ".sh")
@@ -139,7 +142,7 @@ class RunbookPaths(unittest.TestCase):
         books = runbooks.Books(self.config, self.root)
         states = set()
         with patch.object(books, "binding"), patch.object(runbooks.subprocess, "run") as launch:
-            for version in range(27, 31):
+            for version in range(27, 32):
                 row = dict(planSha256=STAMP, observation={"r3": {"authorization": {"sequence": version}}})
                 launch.return_value = SimpleNamespace(stdout=json.dumps(dict(row, status="PLAN_READY")).encode(),
                                                       returncode=0)

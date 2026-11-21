@@ -97,7 +97,7 @@ jobs:
               next_phase = "proof"
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
               if result.get("returnAfterIssue") == "available":
-                  print("Dopo la firma della 29: ritorno al CID della linea C con emissione 30.", file=f)
+                  print("Ritorno al CID predecessore dopo la firma con emissione", result["returnSequence"], file=f)
               if "zipSha256" in result:
                   print("Semantic", result["imageId"], "· ZIP SHA-256", result["zipSha256"],
                         "· inventario Flyway SHA-256", result["inventorySha256"], file=f)
