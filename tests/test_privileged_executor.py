@@ -428,16 +428,16 @@ class Protocol(unittest.TestCase):
             self.assertEqual(len(engine.call.call_args_list), 2)
             self.assertEqual(engine.call.call_args.args[2], {"Container":"old","EndpointConfig":{"Aliases":["alias"]}})
 
-    def test_head_29_requires_a_complete_chain(self):
+    def test_head_30_requires_a_complete_chain(self):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))
         chain = root / "authorization"
         chain.mkdir()
         c = object.__new__(pipeline.Cutover)
         c.cfg = {"installRoot": str(root)}
-        for n in range(1, 30):
+        for n in range(1, 31):
             for suffix in ("json", "signature.json"):
                 (chain / f"{n}.{suffix}").touch()
-        self.assertEqual(c.current_version(), 29)
+        self.assertEqual(c.current_version(), 30)
         (chain / "28.signature.json").unlink()
         with self.assertRaisesRegex(mandate.Held, "HEAD_RECONCILIATION_REQUIRED"):
             c.current_version()
@@ -500,9 +500,9 @@ class Protocol(unittest.TestCase):
             self.assertIn(req["digest"], summary)
             with patch.dict(os.environ, {**env, "RELEASE": "next", "CONFIRM_NO_RETURN": "true"}):
                 exec(compile(code, "intent", "exec"), {})
-            req.update(release="next", confirmNoReturn=True)
+            req["release"] = "next"
             self.assertIn(mandate.intent(req), Path(d, "summary").read_text())
-            self.assertEqual(jobs["apply"]["if"], "needs.plan.outputs.confirmed == 'true'")
+            self.assertEqual(jobs["apply"]["needs"], "plan")
 
 
 class RoundTrip(unittest.TestCase):
@@ -558,6 +558,11 @@ class RoundTrip(unittest.TestCase):
 
     def test_next_release_observe_uncertain_signal(self):
         self.round_trip(signed=True, migrations=["V13.sql"], next_mode="signal")
+
+    def test_post_signature_return_interruptions(self):
+        for mode in ("return-before-stop", "return-reconnect", "return-signed", "return-signal", "return-gated", "before-upgrade"):
+            with self.subTest(mode=mode):
+                self.round_trip(signed=True, migrations=["V13.sql"], next_mode=mode)
 
     def round_trip(self, signed, prove=False, migrations=None, interrupted=False, restart=False, next_mode=None):
         from contextlib import ExitStack
@@ -675,10 +680,12 @@ class RoundTrip(unittest.TestCase):
             engine.process.side_effect = process
             import hashlib
             payload_hash = hashlib.sha256(b"payload").hexdigest()
-            def scenario(run, direction, seq, cid, stop_at_gate=False, *, release_next=False, confirm=True):
+            def scenario(run, direction, seq, cid, stop_at_gate=False, *, release_next=False, confirm=None):
                 req = dict(run=run,attempt="1",commit=cfg["commit"],phase="plan",queue="empty",direction=direction)
                 if release_next:
-                    req.update(release="next", confirmNoReturn=confirm)
+                    req["release"] = "next"
+                    if confirm is not None:
+                        req["confirmNoReturn"] = confirm
                 req["digest"] = mandate.intent(req)
                 c = pipeline.Cutover(cfg,root,req)
                 c.engine, c.books, c.queue = engine, Mock(), Mock(spec=queue.Queue)
@@ -701,7 +708,8 @@ class RoundTrip(unittest.TestCase):
                             auth.write_bytes(b"payload")
                             return {"payloadSha256":payload_hash}
                         if op=="upgrade":
-                            head.profile = c.record("stage")["profile"]
+                            stage_dir = root / "202" if (run, version) == ("210", 29) else c.path
+                            head.profile = store.read(stage_dir / "stage")["profile"]
                         if op=="start":
                             head.waiting = False
                             store.save(root/"status", {"state":"ACTIVE"}, replace=True)
@@ -714,7 +722,7 @@ class RoundTrip(unittest.TestCase):
                         value = dict(installRoot=str(root),observation=obs)
                     elif op=="issue":
                         plan = c.record("plan")
-                        target = semantic.allocated_profile(plan,cid) if direction=="forward" else original
+                        target = semantic.allocated_profile(plan,cid) if direction=="forward" else plan["original"]
                         value = dict(previousHead={"sequence":version-1,"sha256":"previous"},
                                      payload={"sequence":version,"supersedes":"previous"}, payloadSha256=payload_hash,
                                      compositionInputHashes={"semanticProfile":mandate.digest(target)},privateKeysRead=0)
@@ -732,13 +740,8 @@ class RoundTrip(unittest.TestCase):
                     def legacy_prepare(row, profile, image):
                         return semantic.prepare(row, profile, image["ci"]["imageId"], {})
                     c.prepare_image = legacy_prepare
-                if run == "210":
-                    with self.assertRaisesRegex(mandate.Held, "RETURN_UNAVAILABLE_REQUIRES_V30"):
-                        c.execute("review-plan")
-                    return
-                if run == "203" and next_mode == "signed":
-                    # The original issuing HOME is required to complete upgrade 29.
-                    prior = store.read(root / "202" / "stage")["issue"]
+                if (run, next_mode) in (("203", "signed"), ("211", "return-signed"), ("210", "before-upgrade")):
+                    prior = store.read(root / ("210" if run == "211" else "202") / "stage")["issue"]
                     stored["issue"] = prior
                     patches.enter_context(patch.object(pipeline, "Books", return_value=c.books))
                 if run == "203" and next_mode == "signal":
@@ -752,10 +755,13 @@ class RoundTrip(unittest.TestCase):
                         c.initial()
                 first = c.execute("review-plan")
                 if release_next and direction == "forward":
-                    self.assertEqual(first["returnAfterIssue"], "unavailable")
-                if not confirm:
+                    self.assertEqual(first["returnAfterIssue"], "available")
+                    for op in pipeline.SUCCESS:
+                        c.books.binding.assert_any_call(op, 30)
+                if run == "200":
+                    c.books.binding.side_effect = mandate.Held("RUNBOOK_BINDING_REQUIRED")
                     req.update(phase="apply", digest=first["digest"])
-                    with self.assertRaisesRegex(mandate.Held, "CONFIRM_FORWARD_WITHOUT_V30_RETURN"):
+                    with self.assertRaisesRegex(mandate.Held, "RUNBOOK_BINDING_REQUIRED"):
                         c.execute("review-apply")
                     self.assertFalse((root / "forward").exists())
                     return
@@ -783,6 +789,12 @@ class RoundTrip(unittest.TestCase):
                     with patch.object(engine, "start_gate", side_effect=mandate.Held("fixture interruption")), self.assertRaises(mandate.Held):
                         c.execute("review-apply")
                     return
+                if (run, next_mode) == ("210", "return-before-stop"):
+                    with patch.object(c.log, "effect", side_effect=InterruptedError), self.assertRaises(InterruptedError):
+                        c.execute("review-apply")
+                    self.assertEqual(c.owner("return"), run)
+                    self.assertFalse((c.path / "stop.claim").exists())
+                    return
                 if interrupted and run == "101":
                     with self.assertRaisesRegex(mandate.Held, "STOPPED_GATE_FRAME_DRIFT"):
                         c.execute("review-apply")
@@ -808,7 +820,7 @@ class RoundTrip(unittest.TestCase):
                         with patch.dict(containers[cid]["Config"], Labels={"changed": "yes"}), \
                                 self.assertRaisesRegex(mandate.Held, "STOPPED_GATE_FRAME_DRIFT"):
                             c.prepare_stage(c.record("plan"))
-                if next_mode == "reconnect" and run == "202":
+                if (next_mode, run) in (("reconnect", "202"), ("return-reconnect", "210")):
                     def disconnected(cid, name, endpoints, networks):
                         containers[cid]["Name"] = "/" + name
                         raise InterruptedError
@@ -833,17 +845,18 @@ class RoundTrip(unittest.TestCase):
                     self.assertEqual(second["digest"], signing)
                 else:
                     self.assertNotIn("migrationCount", second)
-                if stop_at_gate:
+                if stop_at_gate or (run, next_mode) == ("210", "return-gated"):
                     return
                 req.update(phase="sign",digest="f"*64)
                 with self.assertRaisesRegex(mandate.Held, "APPROVED_ISSUANCE_DRIFT"):
                     c.execute("unbound-review")
                 self.assertFalse((c.path / "issue.claim").exists())
                 req["digest"] = second["digest"]
-                if run == "202" and next_mode in ("signed", "signal"):
+                if (run == "202" and next_mode in ("signed", "signal", "before-upgrade")) or (run == "210" and next_mode in ("return-signed", "return-signal")):
                     class Interrupted(BaseException):
                         pass
-                    if next_mode == "signed":
+                    stop_before_upgrade = next_mode in ("signed", "return-signed", "before-upgrade")
+                    if stop_before_upgrade:
                         def halt(op, version, approved=None):
                             if op == "upgrade":
                                 raise Interrupted
@@ -855,8 +868,8 @@ class RoundTrip(unittest.TestCase):
                             process_kinds[container] = "APPLICATION_RUNNING"
                             counts.append(("signal", container))
                             raise Interrupted
-                        patches.enter_context(patch.object(pipeline, "signal_once", side_effect=halt))
-                    with self.assertRaises(Interrupted):
+                    interruption = nullcontext() if stop_before_upgrade else patch.object(pipeline, "signal_once", side_effect=halt)
+                    with interruption, self.assertRaises(Interrupted):
                         c.execute("review-sign")
                     return
                 if run == "103" and next_mode == "archive":
@@ -902,7 +915,7 @@ class RoundTrip(unittest.TestCase):
                     admission.return_value = {"ci": cfg["nextSuccessorImage"]["ci"],
                                               "migrations": previous + migrations, "newMigrations": migrations}
                     engine.call.return_value["Id"] = new_image
-                    scenario("200", "forward", 29, new_id, release_next=True, confirm=False)
+                    scenario("200", "forward", 29, new_id, release_next=True, confirm=True)
                     self.assertEqual(store.read(root / "completed-forward")["run"], "103")
                     scenario("201", "forward", 29, new_id, stop_at_gate=True, release_next=True)
                     self.assertEqual(containers[old_id]["Name"], "/saved")
@@ -918,10 +931,16 @@ class RoundTrip(unittest.TestCase):
                         scenario("202", "forward", 29, new_id, release_next=True)
                         if next_mode in ("signed", "signal"):
                             scenario("203", "forward", 29, new_id, release_next=True)
-                        scenario("210", "return", 29, line_c, release_next=True)
-                        self.assertEqual(head.profile["image"], new_image)
+                        scenario("210", "return", 30, line_c, release_next=True)
+                        if next_mode in ("return-before-stop", "return-signed", "return-reconnect", "return-signal", "return-gated"):
+                            scenario("211", "return", 30, line_c, release_next=True)
+                        self.assertEqual(head.profile["image"], cfg["successorImage"]["ci"]["imageId"])
+                        self.assertEqual(containers[line_c]["Name"], "/app")
+                        for op in ("issue", "upgrade", "start", "probe"):
+                            self.assertEqual(counts.count((op, 30)), 1)
                         self.assertEqual(counts.count(("issue", 29)), 1)
-                        self.assertEqual(counts.count(("signal", new_id)), 1)
+                        self.assertEqual(counts.count(("signal", new_id)), int(next_mode != "before-upgrade"))
+                        self.assertEqual(counts.count(("signal", line_c)), 2)
                         self.assertFalse((root / "forward").exists())
                     self.assertEqual(engine.create.call_count, 1 if next_mode == "stopped-return" else 2)
                     return

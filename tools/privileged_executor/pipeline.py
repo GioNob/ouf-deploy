@@ -9,7 +9,7 @@ from urllib.parse import quote
 from ingress import verified
 from mandate import Held, digest, hex64, intent, need
 from queue_inventory import Queue, permit, review_rows
-from runbooks import Books, SUCCESS, stop
+from runbooks import Books, SUCCESS, SUPPORTED_HEADS, stop
 from semantic import Engine, allocated_profile, configuration, never_started, prepare, profile_template, signal_once
 from semantic_identity_v25 import semantic_observe, semantic_profile
 import store
@@ -83,6 +83,14 @@ class Cutover:
     def forward_creation(self):
         plan = self.original()
         return self.root / plan.get("createdFrom", plan.get("beforeCreate", self.owner("forward")))
+
+    def issuing_run(self, run):
+        plan = read(self.root / run / "plan")
+        return self.root / plan.get("committedFrom", run)
+
+    def bind_return(self):
+        for op in SUCCESS:
+            self.books.binding(op, self.source_head + 2)
 
     def prepare_image(self, old, profile, image):
         if image is None:
@@ -363,7 +371,7 @@ class Cutover:
         directory = Path(self.cfg["installRoot"]) / "authorization"
         names = {p.name for p in directory.iterdir()}
         n = len(names) // 2
-        need(n in (27, 28, 29) and names == {f"{i}.{suffix}" for i in range(1, n+1)
+        need(n in SUPPORTED_HEADS and names == {f"{i}.{suffix}" for i in range(1, n+1)
              for suffix in ("json", "signature.json")}, "HEAD_RECONCILIATION_REQUIRED")
         return n
 
@@ -402,7 +410,8 @@ class Cutover:
         origin = self.root / active.get("returnFrom", owner)
         first = read(origin / "plan")
         need(self.pointer("return") == {"run": owner, "plan": digest(active)}
-             and version == first["head"] == first["sequence"] == self.source_head
+             and version == first["head"] and version in (self.source_head, self.source_head + 1)
+             and first["sequence"] == (version if version == self.source_head else version + 1)
              and self.authority() == first["authority"] and first["profileSha256"] == digest(self.cfg),
              "RETURN_STAGE_DRIFT")
         self.closed(self.supervisor(version))
@@ -473,30 +482,37 @@ class Cutover:
                                                               rename=plan["rename"], missing=plan["missing"]))
         return self.start_stage(plan, cid, sup)
 
+    def approved_issue(self, directory, stage, version):
+        issue = stage["issue"]
+        stamp = issue["planSha256"]
+        need(issue["payload"]["sequence"] == version and read(directory / "sign.review")["request"]["digest"] == stamp
+             and read(directory / "issue.claim") == {"parent": digest(stage), "plan": stamp}, "SIGNED_STAGE_DRIFT")
+        head = Path(self.cfg["installRoot"]) / "authorization" / f"{version}.json"
+        need(hashlib.sha256(trusted(head, private=True).read_bytes()).hexdigest() == issue["payloadSha256"],
+             "SIGNED_PAYLOAD_DRIFT")
+        return issue
+
     def committed_plan(self):
         # The stage owner keeps all one-shot claims across recovery dispatches.
         directory = self.root / self.owner(self.req["direction"] + "-stage")
         first, stage = (read(directory / key) for key in ("plan", "stage"))
         version = self.current_version()
-        need(version == first["sequence"] and first["head"] == self.source_head
+        issued = stage["issue"] is not None
+        before = self.source_head + int(not self.forward and issued)
+        need(version == first["sequence"] == before + int(issued) and first["head"] == before
              and first["profileSha256"] == digest(self.cfg) and stage["parent"] == digest(first),
              "COMMITTED_STAGE_DRIFT")
-        reviewed = read(directory / "sign.review")["request"]["digest"]
         if self.forward:
-            issue = stage["issue"]
-            need(version == self.source_head + 1 and not (self.root / "return").exists()
-                 and stage["cid"] == read(self.forward_creation() / "create.receipt")["result"]
-                 and reviewed == issue["planSha256"]
-                 and read(directory / "issue.claim") == {"parent": digest(stage), "plan": reviewed},
-                 "SIGNED_STAGE_DRIFT")
-            head = Path(self.cfg["installRoot"]) / "authorization" / f"{version}.json"
-            need(hashlib.sha256(trusted(head, private=True).read_bytes()).hexdigest() == issue["payloadSha256"],
-                 "SIGNED_PAYLOAD_DRIFT")
+            need(issued and not (self.root / "return").exists()
+                 and stage["cid"] == read(self.forward_creation() / "create.receipt")["result"], "SIGNED_STAGE_DRIFT")
         else:
             receipt = read(self.root / self.owner("return") / "reconnect.receipt")
-            need(version == self.source_head and stage["issue"] is None and reviewed == digest(stage)
-                 and stage["cid"] == first["old"] == receipt["result"]
-                 and self.authority() == first["authority"], "RETURN_STAGE_DRIFT")
+            need(stage["cid"] == first["old"] == self.original()["old"] == receipt["result"], "RETURN_STAGE_DRIFT")
+        if issued:
+            self.approved_issue(directory, stage, version)
+        else:
+            reviewed = read(directory / "sign.review")["request"]["digest"]
+            need(reviewed == digest(stage) and self.authority() == first["authority"], "RETURN_STAGE_DRIFT")
         checkpoint = {}
         for op in ("issue", "upgrade", "start", "signal", "probe", "failure-stop"):
             for suffix in ("claim", "receipt"):
@@ -528,21 +544,26 @@ class Cutover:
                 "authority": self.authority(), "queue": rows, "checkpoint": checkpoint, "r3State": state}
 
     def stop_unattempted(self, run):
-        if not self.next_release or not self.forward:
+        if not self.next_release:
             return False
         path = self.root / run
         plan = read(path / "plan")
-        return (self.pointer("forward") == {"run": run, "plan": digest(plan)}
+        if not self.forward and (not plan.get("stop") or plan["head"] != self.source_head + 1
+                                 or plan["sequence"] != self.source_head + 2 or "returnFrom" in plan):
+            return False
+        return (self.pointer(self.req["direction"]) == {"run": run, "plan": digest(plan)}
                 and not any((path / key).exists() for key in
-                            ("stop.claim", "detach.claim", "create.claim", "start-gate.claim"))
-                and not (self.root / "return").exists() and "beforeCreate" not in plan and "createdFrom" not in plan)
+                            ("stop.claim", "detach.claim", "create.claim", "reconnect.claim", "start-gate.claim"))
+                and (not self.forward or not (self.root / "return").exists())
+                and "beforeCreate" not in plan and "createdFrom" not in plan)
 
     def initial(self):
         self.close_return()
         self.close_forward()
         version = self.current_version()
         direction = self.req["direction"]
-        need(self.forward or version != 29, "RETURN_UNAVAILABLE_REQUIRES_V30")
+        if self.next_release and (self.forward or version > self.source_head):
+            self.bind_return()
         if (self.root / "forward").exists():
             need(self.original()["head"] == self.source_head, "ACTIVE_RELEASE_MISMATCH")
         prior = None
@@ -551,10 +572,10 @@ class Cutover:
             if self.next_release:
                 if self.forward and version == self.source_head + 1:
                     return self.committed_plan()
-                if not self.forward:
+                if not self.forward and not self.stop_unattempted(prior):
                     if not (self.root / prior / "start-gate.receipt").exists():
                         return self.restore_plan(version)
-                    if (self.root / self.owner("return-stage") / "start.claim").exists():
+                    if version == self.source_head + 2 or (self.root / self.owner("return-stage") / "start.claim").exists():
                         return self.committed_plan()
             if not (self.root / prior / "stop-no-effect").is_file() and not self.stop_unattempted(prior):
                 if self.forward and not (self.root / prior / "start-gate.receipt").exists():
@@ -597,6 +618,7 @@ class Cutover:
             need((self.root / "forward").is_file() or (self.root / "completed-forward").is_file(), "ACTIVE_FORWARD_REQUIRED")
             first = self.original()
             need(first["head"] == self.source_head, "ACTIVE_RELEASE_MISMATCH")
+            need(version in (self.source_head, self.source_head + 1), "RETURN_HEAD_DRIFT")
             need(self.engine.inspect(self.cfg["failedName"], True) is None, "RETURN_NAME_IN_USE")
             if not (self.root / self.owner("forward") / "start-gate.receipt").exists():
                 return self.created_plan(version)
@@ -610,13 +632,16 @@ class Cutover:
         reconciliation = None
         installed = version
         if not self.forward and version != self.source_head:
-            origin = self.root / self.owner("forward-stage")
-            if not (origin / "upgrade.receipt").exists():
-                need(not (origin / "upgrade.claim").exists(), "PARTIAL_UPGRADE_REQUIRES_RECONCILIATION")
-                signed = read(origin / "issue.receipt")["result"]
+            origin = self.issuing_run(self.owner("forward-stage"))
+            if not (origin / "upgrade.receipt").exists() and (origin / "upgrade.claim").exists():
+                claim = read(origin / "upgrade.claim")
+                need(claim["parent"] == digest(read(origin / "stage")), "COMMITTED_STAGE_DRIFT")
+                self.book_result(origin, "upgrade", claim)
+            elif not (origin / "upgrade.receipt").exists():
+                issue = self.approved_issue(origin, read(origin / "stage"), version)
                 reconciliation = Books(self.cfg, origin).call("upgrade", version)
                 need(reconciliation["versionBefore"] == self.source_head and reconciliation["versionAfter"] == version
-                     and reconciliation["authorization"]["sha256"] == signed["payloadSha256"]
+                     and reconciliation["authorization"]["sha256"] == issue["payloadSha256"]
                      and reconciliation["compositionInputHashes"]["semanticProfile"] == digest(frame["previous"]),
                      "RETURN_UPGRADE_DRIFT")
                 installed = self.source_head
@@ -660,7 +685,7 @@ class Cutover:
         if self.next_release:
             archive = self.completed_forward()
             need(archive["head"] == self.source_head, "PROBE_SOURCE_HEAD_DRIFT")
-            books.probe_source = self.root / archive["pointers"]["forward-stage"]["run"]
+            books.probe_source = self.issuing_run(archive["pointers"]["forward-stage"]["run"])
         return books
 
     def probe_preflight(self, version, cid):
@@ -769,7 +794,7 @@ class Cutover:
                 raise
         self.closed(sup)
         if plan["reconcileUpgrade"]:
-            book = Books(self.cfg, self.root / self.owner("forward-stage"))
+            book = Books(self.cfg, self.issuing_run(self.owner("forward-stage")))
             upgrade = plan["reconcileUpgrade"]
             self.log.effect("reconcile-upgrade", upgrade,
                             lambda: book.call("upgrade", version, upgrade["planSha256"]))
@@ -835,6 +860,8 @@ class Cutover:
              and self.observe(cid, profile, self.supervisor(version)) == stage["epoch"], "SIGNING_EPOCH_DRIFT")
         self.closed(self.supervisor(version))
         if stage["issue"]:
+            if self.next_release and self.forward:
+                self.bind_return()
             # The existing issuer revalidates its frozen input bundle, mandate and head under lock.
             stamp = stage["issue"]["planSha256"]
             signed = self.log.effect("issue", {"plan": stamp, "parent": digest(stage)},
@@ -872,7 +899,7 @@ class Cutover:
             applied("upgrade", issuing_books, upgrade_scope)
         sup = self.supervisor(seq)
         need(sup["semanticIngress"]["profile"] == profile, "START_PROFILE_DRIFT")
-        if recovering:
+        if recovering or stage["issue"]:
             self.books.probe_source = log.path
         chain = self.authority()
         if not (log.path / "start.claim").exists():
@@ -904,7 +931,7 @@ class Cutover:
                     permit(self.queue.snapshot(deadline=deadline), self.req["queue"], plan["queue"])
                     signal_once(self.engine, log, cid, profile, generation, deadline)
             until(lambda: self.ready(cid, profile, generation), 120, "READINESS_HELD")
-            if self.next_release and not self.forward:
+            if self.next_release and not self.forward and stage["issue"] is None:
                 self.source_probe(self.books)
             applied("probe", self.books, lambda row: need(
                 row["observation"]["semantic"]["containerId"] == cid, "PROBE_CID_DRIFT"))
@@ -955,7 +982,7 @@ class Cutover:
             response = {"digest": digest(plan), "queueCount": len(plan["queue"]), "queueDigest": digest(plan["queue"]),
                         "queue": review_rows(plan["queue"])}
             if self.forward and self.next_release:
-                response["returnAfterIssue"] = "unavailable"
+                response["returnAfterIssue"] = "available"
             if "successorImage" in plan:
                 image = plan["successorImage"]
                 response["imageId"] = image["ci"]["imageId"]
@@ -976,7 +1003,8 @@ class Cutover:
             save(self.path / "worker-proof", proof)
             return {"digest": digest(proof), "proof": proof["state"]}
         if phase == "apply":
-            need(not (self.next_release and self.forward) or self.req["confirmNoReturn"], "CONFIRM_FORWARD_WITHOUT_V30_RETURN")
+            if self.next_release and self.forward:
+                self.bind_return()
             need(self.req["digest"] == digest(plan), "APPROVED_PLAN_DRIFT")
             accept()
             stage = self.prepare_stage(plan)

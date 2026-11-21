@@ -9,6 +9,8 @@
     "operatorReportedA2Run": "44882047892",
     "operatorReportedHead": 28,
     "nextHead": 29,
+    "signedReturnHead": 30,
+    "signedReturnQualification": "Offline predecessor CID and worker recovery tested; private pins, native R3 and post-V14 database compatibility pending",
     "scope": "Offline executor implementation; native qualification pending",
     "procedure": "docs/OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28"
   },

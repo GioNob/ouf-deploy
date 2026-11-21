@@ -91,21 +91,25 @@ def inspect(profile):
     files = {ROOT / "lock": (b"", 0o600),
              ENTRY: (blob("scripts/ouf-a2-executor"), 0o755),
              RULE: (f'{user} ALL=(root) NOPASSWD: NOSETENV: {ENTRY} ""\n'.encode(), 0o440)}
-    for op in ("start", "stop", "issue", "upgrade", "probe"):
-        for version in ((28, 29) if op in ("issue", "upgrade") else (27, 28, 29)):
-            role = f"{op}-{version}"
-            spec = cfg["runbooks"][role]
-            check(set(spec) == {"artifactCommit", "sourceCommit", "sha256"} and
-                  all(re.fullmatch("[0-9a-f]{40}", spec[k]) for k in ("artifactCommit","sourceCommit")),
-                  "RUNBOOK_BINDING_REQUIRED")
-            name = {"start":"r3-operate.sh", "stop":"r3-operate.sh", "probe":"c-probe.sh"}.get(op, f"r3-{op}-v{version}.sh")
-            raw_book = git("cat-file", "blob", spec["artifactCommit"] + ":ops/vps/" + name)
-            check(sha(raw_book) == spec["sha256"] and
-                  re.findall(rb"^C=([0-9a-f]{40})$", raw_book, re.M) == [spec["sourceCommit"].encode()]
-                  and spec["sourceCommit"] != "0"*40, "RUNBOOK_PIN_DRIFT")
-            book = ROOT / "books" / role
-            spec["path"] = str(book)
-            files[book] = (raw_book, 0o600)
+    ops = ("start", "stop", "issue", "upgrade", "probe")
+    base = {f"{op}-{version}" for op in ops for version in range(28 if op in ("issue", "upgrade") else 27, 30)}
+    extended = base | {f"{op}-30" for op in ops}
+    roles = set(cfg["runbooks"])
+    check(roles == base or roles == extended, "RUNBOOK_SET_REQUIRED")
+    for role in sorted(roles):
+        op, version = role.split("-")
+        spec = cfg["runbooks"][role]
+        check(set(spec) == {"artifactCommit", "sourceCommit", "sha256"} and
+              all(re.fullmatch("[0-9a-f]{40}", spec[k]) for k in ("artifactCommit","sourceCommit")),
+              "RUNBOOK_BINDING_REQUIRED")
+        name = {"start":"r3-operate.sh", "stop":"r3-operate.sh", "probe":"c-probe.sh"}.get(op, f"r3-{op}-v{version}.sh")
+        raw_book = git("cat-file", "blob", spec["artifactCommit"] + ":ops/vps/" + name)
+        check(sha(raw_book) == spec["sha256"] and
+              re.findall(rb"^C=([0-9a-f]{40})$", raw_book, re.M) == [spec["sourceCommit"].encode()]
+              and spec["sourceCommit"] != "0"*40, "RUNBOOK_PIN_DRIFT")
+        book = ROOT / "books" / role
+        spec["path"] = str(book)
+        files[book] = (raw_book, 0o600)
     files[ROOT / "profile.json"] = (json.dumps(cfg, sort_keys=True, separators=(",", ":")).encode(), 0o600)
     for module, directory in [(n, "privileged_executor") for n in LIB] + [
             (n, "semantic_application_cutover") for n in MODELS] + [("semantic_identity_v25", "semantic_provider_r3")]:

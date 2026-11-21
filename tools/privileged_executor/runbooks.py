@@ -15,6 +15,7 @@ from store import bound, read, save, trusted
 SUCCESS = {"stop": "SEMANTIC_PROVIDER_R3_STOPPED", "start": "SEMANTIC_PROVIDER_R3_STARTED",
            "issue": "SEMANTIC_PROVIDER_OPERATION_AUTHORIZATION_ISSUED",
            "upgrade": "SEMANTIC_PROVIDER_R3_UPGRADED_WAITING", "probe": "C_PROBE_PASSED"}
+SUPPORTED_HEADS = range(27, 31)
 
 
 def issued_probe_inputs(home, install_root, version):
@@ -71,7 +72,8 @@ class Books:
         self.probe_source = None
 
     def binding(self, op, version):
-        need(op in SUCCESS and version in (27, 28, 29), "UNKNOWN_OPERATION")
+        need(op in SUCCESS and type(version) is int and version in SUPPORTED_HEADS, "UNKNOWN_OPERATION")
+        need(f"{op}-{version}" in self.cfg["runbooks"], "RUNBOOK_BINDING_REQUIRED")
         binding = self.cfg["runbooks"][f"{op}-{version}"]
         path = bound(binding)
         pin = binding["sourceCommit"]

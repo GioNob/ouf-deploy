@@ -2,7 +2,7 @@
 
 ## Semantic su R3 28 · 21 novembre 2026
 
-L’owner riferisce il completamento di A2 con il run 44882047892, testa 28 ACTIVE e worker abilitato. In sprint-03/10 l’esecutore prepara il rilascio 28→29 dal profilo della linea C. Il prossimo passo operativo richiede i pin CI del task-09 nel profilo privato e la conferma specifica del limite al ritorno dopo l’emissione. [Procedura e recupero](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)
+L’owner riferisce il completamento di A2 con il run 44882047892, testa 28 ACTIVE e worker abilitato. In sprint-03/10 l’esecutore prepara il rilascio 28→29 dal profilo della linea C. Il prossimo passo operativo richiede i pin CI del task-09 e i cinque binding v30 nel profilo privato. Il task-10b prova offline il ritorno al CID della linea C con emissione 30; non attesta deploy, compatibilità con il database dopo V14 o esito runtime. [Procedura e recupero](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)
 
 ## Ripresa rilasci moduli e Gateway · 21 novembre 2026
 

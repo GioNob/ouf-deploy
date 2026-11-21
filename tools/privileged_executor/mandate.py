@@ -48,8 +48,10 @@ def validate(req, policy):
     else:
         fields = common | {"direction", "queue"}
         if req.get("release") == "next":
-            fields |= {"release", "confirmNoReturn"}
-            need(type(req.get("confirmNoReturn")) is bool, "RETURN_CONFIRMATION_FIELD")
+            fields.add("release")
+            if "confirmNoReturn" in req:
+                fields.add("confirmNoReturn")
+                need(type(req["confirmNoReturn"]) is bool, "RETURN_CONFIRMATION_FIELD")
         need(set(req) == fields and req["phase"] in PHASES
              and req["direction"] in ("forward", "return") and req["queue"] in ("empty", "inventory")
              and (req["phase"] not in ("proof", "migrate") or req["direction"] == "forward"), "REQUEST_FIELDS")

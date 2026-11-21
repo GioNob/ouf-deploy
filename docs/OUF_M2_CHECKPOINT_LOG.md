@@ -682,3 +682,7 @@ Worktree su `4adbda46`. Le fixture portabili verificano ripresa o ritorno con re
 ## 21 novembre 2026 · sprint-03/10
 
 L’owner riferisce la conclusione del forward A2 sulla testa 28 nel run 44882047892. Implementato il rilascio successivo con review Flyway, archivio dei puntatori, riprese e ritorno pre-firma alla linea C. La qualifica nativa del cambiamento resta da eseguire. [Procedura](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)
+
+## 21 novembre 2026 · sprint-03/10b
+
+Verificato offline il ritorno dalla 29 al predecessore della linea C con nuova emissione 30 e ripresa da journal. Il forward next richiede i cinque binding v30, non una rinuncia al ritorno. Nessun effetto sul target. [Procedura e pin](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)
