@@ -1,5 +1,4 @@
 """Three protected calls. Root records the expected next digest before returning it to Actions."""
-import copy
 from contextlib import ExitStack
 import http.client
 import hashlib
@@ -8,11 +7,12 @@ import time
 from urllib.parse import quote
 
 from ingress import verified
-from mandate import Held, digest, intent, need
+from mandate import Held, digest, hex64, intent, need
 from queue_inventory import Queue, permit, review_rows
 from runbooks import Books, stop
-from semantic import Engine, allocated_profile, prepare, profile_template, signal_once
+from semantic import Engine, allocated_profile, never_started, prepare, profile_template, signal_once
 from semantic_identity_v25 import semantic_observe, semantic_profile
+import store
 from store import Journal, read, save, trusted
 from successor_image import admit, migration_review
 
@@ -59,6 +59,161 @@ class Cutover:
     def original(self):
         return read(self.root / self.owner("forward") / "plan")
 
+    def forward_creation(self):
+        plan = self.original()
+        return self.root / plan.get("createdFrom", self.owner("forward"))
+
+    def prepare_image(self, old, profile, image):
+        if image is None:
+            return prepare(old, profile)
+        iid = image["ci"]["imageId"]
+        inspected = self.engine.call("GET", "images/" + quote(iid, safe="") + "/json")
+        need(inspected["Id"] == iid, "IMAGE_REFERENCE_DRIFT")
+        return prepare(old, profile, iid, inspected["Config"])
+
+    def retained(self, first):
+        row = self.engine.inspect(first["old"])
+        config = dict(row["Config"])
+        config.pop("MacAddress", None)
+        need(row["Id"] == first["old"] and row["Name"] == "/" + self.cfg["retainedName"]
+             and row["Image"] == first["original"]["image"] and config == first["template"]["Config"]
+             and row["State"]["Status"] == "exited" and row["State"]["Running"] is False
+             and row["State"]["Pid"] == 0 and not row["NetworkSettings"]["Networks"], "RETAINED_CID_DRIFT")
+
+    def interrupted_creation(self, version):
+        """Reconstruct the reviewed create from its original immutable journal."""
+        owner = self.owner("forward")
+        origin = self.forward_creation()
+        first = read(origin / "plan")
+        active = self.original()
+        need(read(self.root / "forward") == {"run": owner, "plan": digest(active)}
+             and self.owner("forward-stage") in (owner, active.get("interrupted", owner))
+             and not (self.root / owner / "start-gate.receipt").exists()
+             and not (origin / "start-gate.receipt").exists()
+             and (not self.forward or not (self.root / "return").exists())
+             and version == first["head"] == first["installed"] == 27
+             and self.authority() == first["authority"], "CREATED_RESUME_UNPROVEN")
+        original_commit = read(origin / "plan.review")["request"]["commit"]
+        # Installing the fix changes the executor commit. All other installed
+        # profile fields must still reproduce the original private digest.
+        need(first["profileSha256"] in (digest(self.cfg), digest({**self.cfg, "commit": original_commit})),
+             "CREATED_PROFILE_DRIFT")
+        parent = digest(first)
+        stopped = self.effect_result(origin, "stop", first["stop"])
+        need(stopped["lastObservation"]["authorization"]["sequence"] == version
+             and stopped["lastObservation"]["authorization"]["decision"] == "OPERATE"
+             and self.effect_result(origin, "detach", {"parent": parent, "cid": first["old"]}) == first["old"],
+             "STOP_RECEIPT_REQUIRED")
+        cid = self.effect_result(origin, "create", {"request": digest(first["request"]), "parent": parent})
+        need(hex64(cid) and cid != first["old"], "CREATE_CID_REQUIRED")
+        for directory, plan in ((origin, first), (self.root / owner, active)):
+            claim = directory / "start-gate.claim"
+            if claim.exists():
+                need(read(claim) == {"cid": cid, "parent": digest(plan)}, "START_GATE_CLAIM_DRIFT")
+        sup = self.supervisor(version)
+        need(sup["coordinator"]["journalPath"] == self.cfg["leaseJournal"]
+             and sup["semanticIngress"]["commands"]["socket"] == self.cfg["socket"], "INSTALLATION_BINDING")
+        self.closed(sup)
+        self.retained(first)
+        row = self.engine.inspect(cid)
+        need(row["Id"] == cid and row["Name"] == "/" + self.name and row["Image"] == first["target"]["image"]
+             and never_started(row["State"]), "NEVER_STARTED_REQUIRED")
+        return origin, first, row
+
+    @staticmethod
+    def effect_result(origin, name, claim):
+        receipt = origin / (name + ".receipt")
+        need(receipt.is_file(), "INTERRUPTED_RECEIPT_REQUIRED")
+        row = read(receipt)
+        need(read(origin / (name + ".claim")) == claim and row["planSha256"] == digest(claim),
+             "CREATED_RECEIPT_DRIFT")
+        return row["result"]
+
+    def created_plan(self, version):
+        origin, first, row = self.interrupted_creation(version)
+        cid = row["Id"]
+        if self.forward:
+            baseline = {**first["template"], "Name": "/" + self.name, "Image": first["original"]["image"]}
+            request, target = self.prepare_image(baseline, first["original"], first.get("successorImage"))
+            if "successorImage" not in first:
+                self.image_binding(request, target)
+            self.engine.stopped_gate(cid, self.name, request, target["image"])
+            nets = row["NetworkSettings"]["Networks"]
+            endpoints = request["NetworkingConfig"]["EndpointsConfig"]
+            need(nets.keys() == endpoints.keys() and all(
+                nets[k].get("NetworkID") in (None, "", first["networks"][k])
+                and all(nets[k].get(f) == ep.get(f) for f in ("IPAMConfig", "DriverOpts", "Links"))
+                and set(ep.get("Aliases") or []) <= set(nets[k].get("Aliases") or []) <=
+                    set(ep.get("Aliases") or []) | {self.name, cid[:12]}
+                for k, ep in endpoints.items()), "CREATED_NETWORK_DRIFT")
+        else:
+            request = self.return_request(first)
+            target = first["original"]
+        rows = self.queue.snapshot()
+        permit(rows, self.req["queue"], rows)
+        frame = {k: first[k] for k in ("old", "original", "networks", "template", "head", "authority", "installed")}
+        if self.forward and "successorImage" in first:
+            frame["successorImage"] = first["successorImage"]
+        sequence = 28 if self.forward else 27
+        for op in ("start", "probe", *(("issue", "upgrade") if self.forward else ())):
+            self.books.binding(op, sequence)
+        return {**frame, "request": request, "target": target, "source": cid,
+                "createdFrom": origin.name, "interrupted": self.owner("forward"), "originPlan": digest(first),
+                "sequence": sequence, "queue": rows, "intent": intent(self.req), "profileSha256": digest(self.cfg)}
+
+    @staticmethod
+    def return_request(first):
+        return {**first["template"]["Config"], "HostConfig": first["template"]["HostConfig"],
+                "NetworkingConfig": first["request"]["NetworkingConfig"]}
+
+    def close_return(self):
+        # The last pointer retired is the recovery anchor for partial archival.
+        if not (self.root / "return-stage").exists():
+            return
+        stage = self.root / self.owner("return-stage")
+        if not (stage / "result").exists():
+            return
+        path = stage / "closed-transaction"
+        if not path.exists():
+            pointers = {key: read(self.root / key) for key in ("forward", "forward-stage", "return", "return-stage")}
+            for key in ("forward", "return"):
+                need(pointers[key]["plan"] == digest(read(self.root / pointers[key]["run"] / "plan")),
+                     "CLOSURE_PLAN_DRIFT")
+            plan = read(stage / "plan")
+            staged = read(stage / "stage")
+            result = read(stage / "result")
+            need(result["worker"] == "off" and result["readiness"] == "UP" and result["ingress"] == "VERIFIED"
+                 and staged["cid"] == plan["old"] and staged["parent"] == digest(plan)
+                 and read(self.forward_creation() / "create.receipt")["result"] == plan["source"],
+                 "RETURN_COMPLETION_UNPROVEN")
+            saved_cid = None if "createdFrom" in plan else plan["source"]
+            save(path, {"pointers": pointers, "result": digest(result), "failedCid": saved_cid})
+        archive = read(path)
+        pointers = archive["pointers"]
+        keys = ("forward", "forward-stage", "return", "return-stage")
+        need(set(pointers) == set(keys) and archive["result"] == digest(read(stage / "result"))
+             and all(not (self.root / key).exists() or read(self.root / key) == pointers[key] for key in keys),
+             "CLOSURE_POINTER_DRIFT")
+        save(self.root / "last-closed", {"run": stage.name, "archive": digest(archive)}, replace=True)
+        for key in keys:
+            pointer = self.root / key
+            if pointer.exists():
+                pointer.unlink()
+                store.sync_dir(self.root)
+
+    def archived_failure(self):
+        row = self.engine.inspect(self.cfg["failedName"], True)
+        if row is None:
+            return None
+        need((self.root / "last-closed").exists(), "RETURN_NAME_IN_USE")
+        last = read(self.root / "last-closed")
+        archive = read(self.root / last["run"] / "closed-transaction")
+        need(digest(archive) == last["archive"] and row["Id"] == archive["failedCid"]
+             and row["Name"] == "/" + self.cfg["failedName"] and row["State"]["Status"] == "exited"
+             and row["State"]["Pid"] == 0 and row["State"]["Running"] is False
+             and not row["NetworkSettings"]["Networks"], "ARCHIVED_CID_DRIFT")
+        return row["Id"]
+
     def current_version(self):
         directory = Path(self.cfg["installRoot"]) / "authorization"
         names = {p.name for p in directory.iterdir()}
@@ -84,7 +239,8 @@ class Cutover:
         if (previous / "issue.claim").exists():
             need(read(previous / "issue-no-effect")["plan"] == read(previous / "issue.claim")["plan"],
                  "PARTIAL_ISSUANCE_REQUIRES_RECONCILIATION")
-        cid = read(origin / ("create.receipt" if self.forward else "reconnect.receipt"))["result"]
+        receipt = self.forward_creation() / "create.receipt" if self.forward else origin / "reconnect.receipt"
+        cid = read(receipt)["result"]
         target = allocated_profile(original, cid) if self.forward else original["original"]
         sup = self.supervisor(version)
         self.closed(sup)
@@ -96,19 +252,21 @@ class Cutover:
             "generation": generation, "epoch": self.observe(cid, target, sup)}}
 
     def initial(self):
+        self.close_return()
         version = self.current_version()
         direction = self.req["direction"]
         prior = None
         if (self.root / direction).exists():
             prior = self.owner(direction)
             if not (self.root / prior / "stop-no-effect").is_file():
+                if self.forward and not (self.root / prior / "start-gate.receipt").exists():
+                    return self.created_plan(version)
                 return self.resume_gated(version)
         if self.forward:
             need(version == 27, "EXPECTED_SOURCE_HEAD")
             profile = semantic_profile(self.cfg["originalProfile"])
             old = self.engine.inspect(self.name)
-            spec = self.cfg.get("successorImage")
-            request, target = prepare(old, profile, spec["ci"]["imageId"] if spec is not None else None)
+            request, target = prepare(old, profile)
             if "successorImage" not in self.cfg:
                 self.image_binding(request, profile)
             self.ready(old["Id"], profile, self.engine.process(old["Id"], profile, "APPLICATION_RUNNING"))
@@ -117,21 +275,22 @@ class Cutover:
             frame = {"old": old["Id"], "request": request, "networks": nets, "original": profile,
                      "probePreflight": probe_preflight, "template": profile_template(old), "target": target, "source": old["Id"], "previous": profile}
             need(self.engine.inspect(self.cfg["retainedName"], True) is None, "RETAINED_NAME_IN_USE")
+            frame["archivedFailure"] = self.archived_failure()
             if "successorImage" in self.cfg:
-                frame["successorImage"] = admit(self.cfg, self.log, self.source_get)
-                self.image_binding(request, target)
+                image = admit(self.cfg, self.log, self.source_get)
+                frame["successorImage"] = image
+                frame["request"], frame["target"] = self.prepare_image(old, profile, image)
         else:
+            need((self.root / "forward").is_file(), "ACTIVE_FORWARD_REQUIRED")
             first = self.original()
-            source = read(self.root / self.owner("forward") / "create.receipt")["result"]
-            retained = self.engine.inspect(first["old"])
-            need(retained["Id"] == first["old"] and retained["Name"] == "/" + self.cfg["retainedName"]
-                 and retained["Image"] == first["original"]["image"] and not retained["State"]["Running"]
-                 and not retained["NetworkSettings"]["Networks"], "RETAINED_CID_DRIFT")
             need(self.engine.inspect(self.cfg["failedName"], True) is None, "RETURN_NAME_IN_USE")
+            if not (self.root / self.owner("forward") / "start-gate.receipt").exists():
+                return self.created_plan(version)
+            source = read(self.forward_creation() / "create.receipt")["result"]
+            self.retained(first)
             frame = {**{k: first[k] for k in ("request", "networks", "old", "original")},
                      "source": source, "previous": allocated_profile(first, source), "target": first["original"]}
-            if "successorImage" in first:
-                frame["request"] = {**first["request"], "Image": first["template"]["Config"]["Image"]}
+            frame["request"] = self.return_request(first)
         sequence = 28 if self.forward else (29 if version == 28 else 27)
         reconciliation = None
         installed = version
@@ -155,7 +314,7 @@ class Cutover:
         # cannot admit. Use the signed stop receipt and live closure in that case.
         staged27 = not self.forward and installed == 27 and kind == "start"
         if staged27:
-            stopped = read(self.root / self.owner("forward") / "stop.receipt")["result"]
+            stopped = read(self.forward_creation() / "stop.receipt")["result"]
             need(stopped["lastObservation"]["authorization"]["sequence"] == installed
                  and (reconciliation is not None or self.authority() == first["authority"]), "STOP_RECEIPT_REQUIRED")
             r3 = None
@@ -226,13 +385,27 @@ class Cutover:
             save(self.root / (direction + "-stage"), {"run": self.req["run"]}, replace=True)
             return self.issuance_stage(plan, staged["cid"], staged["target"], self.supervisor(version))
         sup = self.supervisor(plan["installed"])
+        if "createdFrom" in plan:
+            need(self.created_plan(version) == plan, "CREATED_PLAN_DRIFT")
+            cid = plan["source"]
+            if self.forward:
+                self.log.effect("reuse", {"cid": cid, "origin": plan["createdFrom"], "plan": digest(plan)},
+                                lambda: cid)
+            else:
+                need(self.engine.inspect(self.cfg["failedName"], True) is None, "RETURN_NAME_IN_USE")
+            self.publish(plan, replace=self.forward)
+            if not self.forward:
+                self.log.effect("remove-created", {"cid": cid, "parent": digest(plan)},
+                                lambda: self.engine.remove_stopped(cid, self.name, created=True))
+            return self.launch_stage(plan, cid, sup)
         need(self.observe(plan["source"], plan["previous"], sup) == plan["sourceEpoch"], "SOURCE_EPOCH_DRIFT")
         if self.forward:
+            need(not (self.root / "return").exists(), "TRANSACTION_SUPERSEDED")
             image = plan.get("successorImage")
-            request, target = prepare(self.engine.inspect(plan["old"]), plan["original"],
-                                      image["ci"]["imageId"] if image else None)
+            request, target = self.prepare_image(self.engine.inspect(plan["old"]), plan["original"], image)
             need(request == plan["request"] and target == plan["target"], "SUCCESSOR_PLAN_DRIFT")
-            self.image_binding(request, target)
+            if image is None:
+                self.image_binding(request, target)
         name = self.cfg["retainedName" if self.forward else "failedName"]
         need(self.engine.inspect(name, True) is None, "RETENTION_NAME_DRIFT")
         rows = self.queue.snapshot()
@@ -241,8 +414,17 @@ class Cutover:
         if replace:
             need(self.owner(direction) == plan["prior"] and (self.root / plan["prior"] / "stop-no-effect").is_file(),
                  "STOP_CLAIM_DRIFT")
-        save(self.root / direction, {"run": self.req["run"], "plan": digest(plan)}, replace=replace)
-        save(self.root / (direction + "-stage"), {"run": self.req["run"]}, replace=replace)
+        else:
+            need(not (self.root / direction).exists(), "TRANSACTION_SUPERSEDED")
+        if self.forward:
+            failed = self.archived_failure()
+            need(failed == plan.get("archivedFailure"), "ARCHIVED_CID_DRIFT")
+            if failed:
+                self.log.effect("remove-archived", {"cid": failed, "parent": digest(plan)},
+                                lambda: self.engine.remove_stopped(failed, self.cfg["failedName"]))
+        else:
+            self.retained(self.original())
+        self.publish(plan, replace)
         if plan["stop"]:
             def record(n, row):
                 save(self.path / f"stop-retry-{n}", row)
@@ -268,15 +450,23 @@ class Cutover:
             cid = self.log.effect("create", {"request": digest(plan["request"]), "parent": digest(plan)},
                 lambda: self.engine.create(self.name, plan["request"], plan["target"]["image"]))
         else:
+            cid = plan["old"]
+        return self.launch_stage(plan, cid, sup)
+
+    def publish(self, plan, replace):
+        direction = self.req["direction"]
+        for key, pointer in ((direction, {"run": self.req["run"], "plan": digest(plan)}),
+                             (direction + "-stage", {"run": self.req["run"]})):
+            save(self.root / key, pointer, replace=replace)
+            need(read(self.root / key) == pointer, "OWNER_PUBLICATION_DRIFT")
+
+    def launch_stage(self, plan, cid, sup):
+        if not self.forward:
             cid = self.log.effect("reconnect", {"parent": digest(plan), "old": plan["old"]},
                 lambda: self.engine.reconnect(plan["old"], self.name,
                     plan["request"]["NetworkingConfig"]["EndpointsConfig"], plan["networks"]))
-        launch = copy.deepcopy(plan["request"])
-        if not self.forward:
-            launch["Env"] = ["OUF_DISCOVERY_WORKER_ENABLED=false" if v == "OUF_DISCOVERY_WORKER_ENABLED=true"
-                             else v for v in launch["Env"]]
         self.log.effect("start-gate", {"cid": cid, "parent": digest(plan)},
-                        lambda: self.engine.start_gate(cid, self.name, launch, plan["target"]["image"]))
+                        lambda: self.engine.start_gate(cid, self.name, plan["request"], plan["target"]["image"]))
         target = allocated_profile(plan, cid) if self.forward else plan["original"]
         return self.issuance_stage(plan, cid, target, sup)
 
@@ -426,5 +616,7 @@ class Cutover:
         accept()
         result = self.finish(plan, stage)
         save(self.path / "result", result)
+        if not self.forward:
+            self.close_return()
         return {"digest": digest(result), "ingress": result["ingress"], "readiness": result["readiness"],
                 "worker": result["worker"]}

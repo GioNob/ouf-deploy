@@ -45,6 +45,11 @@ for revision in old "$tested"; do
         rootfs.tar "ouf-ci-gate:$revision"
 done
 
+# A2 successor with image defaults absent from the predecessor.
+docker import --change 'ENV PATH=/opt/java/bin:/bin' --change 'ENV A2_IMAGE_DEFAULT=yes' \
+    --change 'LABEL fixture.a2.successor=yes' --change 'ENTRYPOINT ["/bin/false"]' \
+    rootfs.tar ouf-ci-gate:a2-successor
+
 # Reproduce MCP's absolute /bin/sh link with the runner's BusyBox, offline.
 busybox=$(command -v busybox || echo /usr/lib/initramfs-tools/bin/busybox)
 "$busybox" sh -c 'exit 0'

@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 sys.path[:0] = [str(ROOT / "tools" / n) for n in
                 ("privileged_executor", "semantic_provider_r3", "semantic_application_cutover")]
 from privileged_postgres_fixture import postgres_fixture
-from pipeline import until
+from pipeline import Cutover, until
 from queue_inventory import Queue, permit, review_rows
 from mandate import Held
 from semantic import ENTRY, Engine, allocated_profile, prepare, profile_template, signal_once
@@ -27,7 +27,7 @@ class NativeRoundTrip(unittest.TestCase):
         self.round_trip()
 
     def test_distinct_successor_and_original_image_on_return(self):
-        self.round_trip("ouf-ci-gate:" + "d"*40)
+        self.round_trip("ouf-ci-gate:a2-successor")
 
     def round_trip(self, successor_tag=None):
         self.assertEqual(os.geteuid(), 0)
@@ -58,13 +58,27 @@ class NativeRoundTrip(unittest.TestCase):
         row = engine.inspect(old)
         original = dict(containerName=name, image=image, configurationSha256=semantic_configuration(row))
         until(lambda: engine.process(old, original, "GATE_WAITING"), 8, "BASELINE_GATE")
-        candidate = None
+        candidate = candidate_config = None
         if successor_tag:
-            candidate = engine.call("GET", f"images/{successor_tag}/json")["Id"]
+            inspected = engine.call("GET", f"images/{successor_tag}/json")
+            candidate, candidate_config = inspected["Id"], inspected["Config"]
             self.assertNotEqual(candidate, image)
-        create, proposed = prepare(row, original, candidate)
+            self.assertNotIn("fixture.a2.successor", row["Config"]["Labels"] or {})
+            self.assertNotIn("A2_IMAGE_DEFAULT=yes", row["Config"]["Env"])
+        create, proposed = prepare(row, original, candidate, candidate_config)
         nets = {name:net}
         engine.detach(old, name+"-saved", nets)
+        if candidate:
+            # main copied the predecessor Config, then replaced only Image and the worker.
+            legacy, _ = prepare(row, original)
+            legacy["Image"] = candidate
+            legacy_cid = engine.create(name, legacy, candidate)
+            try:
+                with self.assertRaisesRegex(Held, "STOPPED_GATE_FRAME_DRIFT"):
+                    engine.start_gate(legacy_cid, name, legacy, candidate)
+                self.assertEqual(engine.inspect(legacy_cid)["State"]["Status"], "created")
+            finally:
+                engine.remove_stopped(legacy_cid, name)
         cid = engine.create(name, create, proposed["image"])
         self.addCleanup(engine.call, "DELETE", f"containers/{cid}?force=1")
         target = allocated_profile(dict(old=old,template=profile_template(row),request=create,target=proposed),cid)
@@ -78,9 +92,8 @@ class NativeRoundTrip(unittest.TestCase):
             release(cid,target)
             engine.detach(cid, name+"-return", nets)
             engine.reconnect(old,name,create["NetworkingConfig"]["EndpointsConfig"],nets)
-            create["Env"] = row["Config"]["Env"]
-            create["Image"] = row["Config"]["Image"]
-            engine.start_gate(old,name,create,image)
+            launch = Cutover.return_request({"request": create, "template": profile_template(row)})
+            engine.start_gate(old,name,launch,image)
             release(old,original)
 
 

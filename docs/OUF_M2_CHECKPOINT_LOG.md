@@ -670,3 +670,7 @@ Controller P `10bb8dba`, launcher `18c671c1`. Il piano in sola lettura stampa tu
 Il primo `--plan` è terminato con `DOCKER_PEER_UNPROVEN`. Opus ha verificato le unità e la proprietà di `/run/docker.sock`. La modalità systemd verifica il listener tra i descriptor di `dockerd` prima di collegarsi. La modalità daemon verifica il PID del peer e il suo eseguibile.
 
 Controller `f846940c`, launcher `2a73a13f`. [Otto test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43024793348/job/130536665105). Sul VPS sono ancora da eseguire il nuovo piano P e la revisione del profilo completo da parte di Opus.
+
+## Cutover A2 del 21 novembre 2026
+
+Nel run 44877430252 il daemon ha aggiunto alla Config del successore una label della sua immagine. Il confronto prima dell’avvio ha fermato il forward. Nel percorso di ritorno usato dal run 44879131658, l’osservatore richiedeva un container running. La fixture di task-17u riproduce il disaccordo e verifica ripresa, ritorno sulla testa 27 e successiva transazione. I due run sono segnalazioni dell’operatore. La prova su Docker reale è predisposta nella suite nativa esistente.

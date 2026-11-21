@@ -56,10 +56,25 @@ def main():
     print(json.dumps(response, separators=(",", ":")))
 
 
+def public_error(error):
+    if isinstance(error, Held):
+        return str(error)
+    entry = Path(__file__).resolve()
+    lib = ROOT / "lib"
+    tb = error.__traceback__
+    location = entry.name
+    while tb:
+        source = Path(tb.tb_frame.f_code.co_filename).resolve()
+        if source == entry or source.is_relative_to(lib):
+            location = f"{source.name}:{tb.tb_lineno}"
+        tb = tb.tb_next
+    return f"A2_EVIDENCE_UNPROVEN/{type(error).__name__}@{location}"
+
+
 if __name__ == "__main__":
     try:
         main()
     except Exception as error:
         # Neither arbitrary API responses nor subprocess diagnostics are public.
-        print(str(error) if isinstance(error, Held) else "A2_EVIDENCE_UNPROVEN", file=sys.stderr)
+        print(public_error(error), file=sys.stderr)
         sys.exit(1)

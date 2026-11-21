@@ -1,5 +1,9 @@
 # Stato corrente OUF
 
+## Cutover Semantic A2 del 21 novembre 2026
+
+L’operatore segnala R3 chiuso sulla testa 27 e il successore nello stato Docker `created` dopo il fallimento di `start-gate`. La correzione in task-17u supera in fixture sia la ripresa con lo stesso CID sia il ritorno al predecessore. La qualifica Docker nativa e l’installazione in laboratorio restano da verificare. [Checkpoint A2](OUF_M2_CHECKPOINT_LOG.md#cutover-a2-del-21-novembre-2026)
+
 10 novembre 2026, Europe/Rome. Priorità operativa **discovery OntoPiA live su schema.gov.it dal chatbot**, senza fallback locale. Agente principale, esecuzione sequenziale. Per ogni effetto sul VPS e per ogni merge serve un sì esplicito di Giovanni.
 
 ## Risultato e blocco attuale

@@ -180,6 +180,59 @@ class Review(unittest.TestCase):
 
 
 class Protocol(unittest.TestCase):
+    def test_image_defaults_and_allocated_config_hash(self):
+        old = frame()
+        old["Config"].update(Labels={"common": "request"}, ExposedPorts={"one": {}},
+                             Volumes={"/mount": {}}, Healthcheck={"Retries": 3}, WorkingDir="")
+        old["HostConfig"]["Binds"] = ["volume:/mount", "second:/second"]
+        profile = dict(image=old["Image"], configurationSha256=semantic.semantic_configuration(old),
+                       containerName="app")
+        image = dict(Labels={"common": "image", "source": "fixture"}, ExposedPorts={"two": {}},
+                     Volumes={"/second": {}}, Env=["KEEP=no", "NEW=yes"], WorkingDir="/work",
+                     StopSignal="SIGTERM", Healthcheck={"Retries": 5, "Test": ["NONE"]})
+        iid = "sha256:" + "f"*64
+        request, target = semantic.prepare(old, profile, iid, image)
+        # Independently project the daemon's effective container configuration.
+        expected = copy.deepcopy(old)
+        expected["Config"].update(Image=iid, Labels={"common": "request", "source": "fixture"},
+            Env=["OUF_DISCOVERY_WORKER_ENABLED=true", "OUF_SCHEMA_GOV_ENABLED=true", "KEEP=yes", "NEW=yes"],
+            ExposedPorts={"one": {}, "two": {}}, Volumes={"/mount": {}, "/second": {}},
+            WorkingDir="/work", StopSignal="SIGTERM", Healthcheck={"Retries": 3, "Test": ["NONE"]})
+        self.assertEqual(semantic.configuration(request), {**expected["Config"], "Hostname": ""})
+        self.assertEqual(target["configurationSha256"], semantic.semantic_configuration(expected))
+        cid = "d"*64
+        allocated = semantic.allocated_profile(dict(template=semantic.profile_template(old), request=request,
+                                                    old=old["Id"], target=target), cid)
+        expected["Id"] = cid
+        expected["Config"]["Hostname"] = cid[:12]
+        self.assertEqual(allocated["configurationSha256"], semantic.semantic_configuration(expected))
+        # Like the real successor image: its own Entrypoint is ignored behind the gate.
+        own, _ = semantic.prepare(old, profile, iid, {**image, "Entrypoint": ["java", "-jar", "/app/application.jar"]})
+        self.assertEqual(own["Entrypoint"], semantic.ENTRY)
+        self.assertEqual(semantic.configuration(own), semantic.configuration(request))
+        with self.assertRaisesRegex(mandate.Held, "EXPLICIT_MOUNT_REQUIRED"):
+            semantic.prepare(old, profile, iid, {**image, "Volumes": {"/anonymous": {}}})
+        defaults = {"User": "user", "Entrypoint": ["gate"], "Cmd": ["app"], "Env": ["ONE=yes"]}
+        cfg = {}
+        semantic.merge_image(cfg, defaults)
+        self.assertEqual(cfg, defaults)
+        cfg = {"Entrypoint": ["explicit"], "Cmd": None}
+        semantic.merge_image(cfg, defaults)
+        self.assertEqual((cfg["Entrypoint"], cfg["Cmd"]), (["explicit"], None))
+
+    def test_public_diagnostic_uses_innermost_executor_frame(self):
+        import runpy
+        public = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["public_error"]
+        with tempfile.TemporaryDirectory() as directory, patch.dict(public.__globals__, ROOT=Path(directory)):
+            lib = Path(directory) / "lib"
+            inner = compile('raise KeyError("private value")', str(Path(directory) / "external.py"), "exec")
+            code = compile('\nexec(inner)', str(lib / "module.py"), "exec")
+            try:
+                exec(code, {"inner": inner})
+            except KeyError as error:
+                self.assertEqual(public(error), "A2_EVIDENCE_UNPROVEN/KeyError@module.py:2")
+            self.assertEqual(public(mandate.Held("PUBLIC_CODE")), "PUBLIC_CODE")
+
     def test_only_worker_delta(self):
         old = frame()
         profile = dict(image=old["Image"], configurationSha256=semantic.semantic_configuration(old),
@@ -439,7 +492,16 @@ class RoundTrip(unittest.TestCase):
     def test_image_without_new_migrations(self):
         self.round_trip(signed=True, migrations=[])
 
-    def round_trip(self, signed, prove=False, migrations=None):
+    def test_reuse_never_started_successor_then_issue_migrate_sign(self):
+        self.round_trip(signed=True, migrations=["V13__adoption.sql"], interrupted=True)
+
+    def test_return_never_started_then_new_forward(self):
+        self.round_trip(signed=False, migrations=["V13__adoption.sql"], interrupted=True, restart=True)
+
+    def test_new_forward_retires_only_archived_stopped_failure(self):
+        self.round_trip(signed=False, migrations=[], restart=True)
+
+    def round_trip(self, signed, prove=False, migrations=None, interrupted=False, restart=False):
         from contextlib import ExitStack
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as d, ExitStack() as patches:
@@ -454,7 +516,7 @@ class RoundTrip(unittest.TestCase):
                 networkId="c"*64, bridge="fixture", direction="semantic-to-southbound",
                 ipv4="192.0.2.1", destination="192.0.2.2", protocol="tcp", port=443)
             old_id, new_id = old["Id"], "d"*64
-            cfg = dict(originalProfile=original, retainedName="saved", failedName="returned", socket="socket",
+            cfg = dict(originalProfile=original, retainedName="saved", failedName="returned", socket="socket", commit="a"*40,
                        leaseJournal=str(root / "lease"), installRoot=str(root), queue={}, roleTables=["one","two"],
                        roleCids=["first","second"])
             if prove:
@@ -469,16 +531,19 @@ class RoundTrip(unittest.TestCase):
             head = SimpleNamespace(version=27, profile=original, waiting=False)
             store.save(root / "status", {"state":"ACTIVE"})
             counts = []
+            tables = []
+            patches.enter_context(patch("semantic_identity_v25.semantic_command",
+                                        side_effect=lambda *args: json.dumps({"nftables": tables})))
             def observed(cid, profile, sup):
+                self.assertTrue(containers[cid]["State"]["Running"])
                 return {"cid":cid, "profile":profile}
-            def closed(sup):
-                self.assertTrue(head.waiting)
             def supervisor(version):
-                return {"semanticIngress":{"profile":head.profile,"commands":{"socket":"socket"}},
-                        "coordinator":{"journalPath":str(root / "lease")}, "statusPath":str(root / "status")}
+                return {"semanticIngress":{"profile":head.profile,"commands":{"socket":"socket"}, "table":"one"},
+                        "coordinator":{"journalPath":str(root / "lease"), "nftBinding":{}}, "statusPath":str(root / "status")}
             def stop_book(books, seq, plan, record):
                 counts.append(("stop",seq))
                 head.waiting = True
+                store.save(root / "lease", {"state": "QUIESCED", "leaseAuthorized": False}, replace=True)
                 store.save(root/"status", {"state":"WAITING"}, replace=True)
                 return {"lastObservation":plan["observation"]}
             patches.enter_context(patch.object(pipeline, "stop", side_effect=stop_book))
@@ -487,28 +552,63 @@ class RoundTrip(unittest.TestCase):
                 counts.append(("signal",cid))
             patches.enter_context(patch.object(pipeline, "signal_once", side_effect=signal_gate))
             engine = Mock()
+            old["State"] = {"Running": True, "Pid": 42, "Status": "running"}
+            containers = {old_id: copy.deepcopy(old)}
             def inspect(name, absent=False):
-                if absent:
-                    return None
-                if name=="app" or (name==old_id and not engine.detach.called):
-                    return old
-                self.assertEqual(name, old_id)
-                return {**old, "Name":"/saved","NetworkSettings":{"Networks":{}},"State":{"Running":False}}
+                if name in cfg["roleCids"]:
+                    return {"Id": name, "State": {"Status": "exited" if head.waiting else "running",
+                                                  "Pid": 0 if head.waiting else 42}}
+                row = next((r for r in containers.values() if name in (r["Id"], r["Name"][1:])), None)
+                self.assertTrue(row or absent)
+                return copy.deepcopy(row)
             engine.inspect.side_effect = inspect
-            engine.call.return_value = {"Id": new_image}
-            engine.create.return_value = new_id
-            engine.reconnect.return_value = old_id
-            engine.detach.side_effect = lambda cid, *_: cid
-            engine.start_gate.return_value = None
+            engine.call.return_value = {"Id": new_image, "Config": {
+                "Labels": {"org.opencontainers.image.source": "fixture"}, "Env": ["ADDED=yes"]}}
+            def create(name, request, image):
+                config = copy.deepcopy(semantic.configuration(request))
+                config["Hostname"] = new_id[:12]
+                if migrations is not None:
+                    config.setdefault("Labels", {}).setdefault("org.opencontainers.image.source", "fixture")
+                    if "ADDED=yes" not in config["Env"]:
+                        config["Env"].append("ADDED=yes")
+                containers[new_id] = {**copy.deepcopy(old), "Id": new_id, "Image": image, "Config": config,
+                    "State": {"Running": False, "Pid": 0, "Status": "created", "StartedAt": "0001-01-01T00:00:00Z"}}
+                return new_id
+            def detach(cid, name, networks):
+                containers[cid].update(Name="/"+name, NetworkSettings={"Networks": {}},
+                    State={"Running": False, "Pid": 0, "Status": "exited"})
+                return cid
+            def reconnect(cid, name, endpoints, networks):
+                self.assertIsNone(inspect(name, True))
+                containers[cid].update(Name="/"+name, NetworkSettings=copy.deepcopy(old["NetworkSettings"]))
+                return cid
+            def remove(cid, name, *, created=False):
+                self.assertEqual(containers[cid]["Name"], "/"+name)
+                self.assertFalse(containers[cid]["State"]["Running"])
+                if created:
+                    self.assertTrue(semantic.never_started(containers[cid]["State"]))
+                del containers[cid]
+                return cid
+            gate = semantic.Engine("fixture")
+            gate.inspect = inspect
+            def start_gate(cid, name, request, image):
+                gate.stopped_gate(cid, name, request, image)
+                containers[cid]["State"] = {"Pid": 42, "Running": True, "Status": "running"}
+            engine.create.side_effect = create
+            engine.detach.side_effect = detach
+            engine.reconnect.side_effect = reconnect
+            engine.remove_stopped.side_effect = remove
+            engine.stopped_gate.side_effect = gate.stopped_gate
+            engine.start_gate.side_effect = start_gate
             engine.process.side_effect = lambda cid,*_: {"cid":cid, "pid":42}
             def scenario(run, direction, seq, cid, stop_at_gate=False):
-                req = dict(run=run,attempt="1",commit="a"*40,phase="plan",queue="empty",direction=direction)
+                req = dict(run=run,attempt="1",commit=cfg["commit"],phase="plan",queue="empty",direction=direction)
                 req["digest"] = mandate.intent(req)
                 c = pipeline.Cutover(cfg,root,req)
                 c.engine, c.books, c.queue = engine, Mock(), Mock(spec=queue.Queue)
                 c.current_version = lambda: head.version
                 c.authority = lambda: "signed-chain"
-                c.observe, c.closed, c.supervisor = observed, closed, supervisor
+                c.observe, c.supervisor = observed, supervisor
                 c.ready = Mock()
                 c.probe_preflight = Mock(return_value="preflight")
                 c.queue.snapshot.return_value = []
@@ -548,12 +648,47 @@ class RoundTrip(unittest.TestCase):
                     stored[op] = {**value,"planSha256":mandate.digest(value)}
                     return stored[op]
                 c.books.call.side_effect = call
+                if interrupted and run == "101":
+                    # Capture the old run exactly: no image defaults in its plan or create claim.
+                    def legacy_prepare(row, profile, image):
+                        return semantic.prepare(row, profile, image["ci"]["imageId"], {})
+                    c.prepare_image = legacy_prepare
                 first = c.execute("review-plan")
                 req.update(phase="apply",digest="e"*64)
                 with self.assertRaisesRegex(mandate.Held, "APPROVED_PLAN_DRIFT"):
                     c.execute("unbound-review")
                 self.assertFalse((c.path / "apply.review").exists())
                 req["digest"] = first["digest"]
+                if migrations is not None and not interrupted and run == "101":
+                    with patch.dict(engine.call.return_value["Config"], Env=["ADDED=changed"]), \
+                            self.assertRaisesRegex(mandate.Held, "SUCCESSOR_PLAN_DRIFT"):
+                        c.prepare_stage(c.record("plan"))
+                    self.assertFalse((root / "forward").exists())
+                if interrupted and run == "101":
+                    with self.assertRaisesRegex(mandate.Held, "STOPPED_GATE_FRAME_DRIFT"):
+                        c.execute("review-apply")
+                    for effect in ("stop", "detach", "create"):
+                        self.assertTrue((c.path / (effect + ".receipt")).is_file())
+                    self.assertTrue((c.path / "start-gate.claim").is_file())
+                    self.assertFalse((c.path / "start-gate.receipt").exists())
+                    cfg["commit"] = "b"*40
+                    return
+                if "createdFrom" in c.record("plan"):
+                    self.assertEqual(c.record("plan")["createdFrom"], "101")
+                    with patch.dict(containers[new_id]["State"], StartedAt="different"), \
+                            self.assertRaisesRegex(mandate.Held, "NEVER_STARTED_REQUIRED"):
+                        c.prepare_stage(c.record("plan"))
+                    with patch.dict(containers[old_id]["Config"], User="other"), \
+                            self.assertRaisesRegex(mandate.Held, "RETAINED_CID_DRIFT"):
+                        c.prepare_stage(c.record("plan"))
+                    tables.append({"table": {"name": "one"}})
+                    with self.assertRaisesRegex(mandate.Held, "ROLE_TABLES_PRESENT"):
+                        c.prepare_stage(c.record("plan"))
+                    tables.clear()
+                    if direction == "forward":
+                        with patch.dict(containers[cid]["Config"], Labels={"changed": "yes"}), \
+                                self.assertRaisesRegex(mandate.Held, "STOPPED_GATE_FRAME_DRIFT"):
+                            c.prepare_stage(c.record("plan"))
                 second = c.execute("review-apply")
                 if migrations and direction == "forward":
                     self.assertEqual(second["migrationsSha256"], mandate.digest(migrations))
@@ -612,6 +747,27 @@ class RoundTrip(unittest.TestCase):
                         ("signal",old_id),("probe",29)] if signed else [
                         ("stop",27),("start",27),("signal",old_id),("probe",27)]
             self.assertEqual(counts, expected)
+            archive = store.read(root / "102" / "closed-transaction")
+            for key in ("forward", "return", "forward-stage", "return-stage"):
+                self.assertFalse((root / key).exists())
+                self.assertIn(key, archive["pointers"])
+            if interrupted and signed:
+                self.assertEqual(archive["pointers"]["forward"]["run"], "103")
+                self.assertTrue((root / "103" / "reuse.receipt").exists())
+            if restart:
+                if interrupted:
+                    self.assertTrue((root / "102" / "remove-created.receipt").exists())
+                else:
+                    check = pipeline.Cutover(cfg, root, {"direction": "forward", "run": "104"})
+                    check.engine = engine
+                    for bad in ({"Id": "e"*64}, {"State": {"Running": True, "Pid": 42, "Status": "running"}}):
+                        with patch.dict(containers[new_id], bad), self.assertRaisesRegex(mandate.Held, "ARCHIVED_CID_DRIFT"):
+                            check.archived_failure()
+                new_id = "e"*64
+                scenario("104", "forward", 28, new_id)
+                self.assertEqual(engine.create.call_count, 2)
+                self.assertEqual(store.read(root / "forward-stage")["run"], "104")
+                self.assertEqual((root / "104" / "remove-archived.receipt").exists(), not interrupted)
 
 
 @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_A2_NATIVE") == "1", "Linux pidfd opt-in")

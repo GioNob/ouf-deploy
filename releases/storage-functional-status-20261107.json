@@ -26,6 +26,15 @@
     "currentSemanticBudget": "DYNAMIC_PROFILE_BINDING_REQUIRED_FIXED_CANDIDATE_NOT_FOR_DEPLOYMENT"
   },
   "observations": {
+    "semanticCutoverA2": {
+      "dateLocal": "2026-11-21",
+      "operatorReportedRuns": ["44877430252", "44879131658"],
+      "operatorReportedHead": 27,
+      "operatorReportedSuccessorState": "created",
+      "portableRecoveryAndReturn": "PASS",
+      "nativeQualification": "PENDING",
+      "targetVerification": "PENDING"
+    },
     "historicalCustody": {
       "provenance": "OPERATOR_REPORTED_WINDOWS_RESULT_IN_GIT",
       "archiveBytes": 6544578724,
