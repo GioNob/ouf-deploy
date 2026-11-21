@@ -14,7 +14,7 @@ class ModuleRelease:
         self.req = req
         self.runtime = operation.Docker(self.profile)
         peer = cfg["modules"].get("mcp", {})
-        if peer.get("dockerSocket") == self.profile["dockerSocket"]:
+        if req["module"] == "onboarding" and peer.get("dockerSocket") == self.profile["dockerSocket"]:
             self.runtime.flyway_peer = peer.get("migration", {}).get("database")
 
     def execute(self, review):
@@ -49,6 +49,8 @@ class ModuleRelease:
             save(path / "plan", proposal)
             need(proposal["status"] == "PLANNED", proposal.get("reason", "MODULE_PLAN_HELD"))
             response = {"digest": proposal["planSha256"], "status": "PLANNED"}
+            if "candidateReview" in proposal["plan"]:
+                response["candidateReview"] = proposal["plan"]["candidateReview"]
             if "sourcePlan" in proposal["plan"]:
                 response["sourcePlan"] = proposal["plan"]["sourcePlan"]
             if "migrations" in proposal["plan"]:
@@ -88,4 +90,11 @@ class ModuleRelease:
                 cause += f" rollback=ROLLED_BACK cid={result['restoredCid']} HTTP={result['predecessorReadyHttp']}"
             rollback_reason = result.get("rollbackReason", cause)
             raise Held(rollback_reason if rollback_reason == cause else f"{rollback_reason} cause={cause}")
-        return {"status": result["status"], "digest": result["migrationSha256"] if result["status"] == "GATED" else result["planSha256"]}
+        if result["status"] == "GATED":
+            stage = operation.read(Path(self.profile["journal"]) / result["planSha256"], "migration-plan.json")
+            response = {"status": "GATED", "digest": result["migrationSha256"]}
+            if "flywayReview" in stage:
+                proof = stage["flywayReview"]
+                response["databaseReview"] = {k: proof[k] for k in ("before", "after", "pending")}
+            return response
+        return {"status": result["status"], "digest": result["planSha256"]}

@@ -49,6 +49,7 @@ Tutti e quattro i workflow partono solo con `workflow_dispatch`. Il plan usa il 
 |---|---|
 | Onboarding | Verifica lo ZIP e la provenienza, osserva container, PID 1 e readiness. Calcola la richiesta di creazione del successore. L’importazione dell’immagine e il fermo iniziano in `apply`. |
 | MCP | Esegue le stesse verifiche e legge storia Flyway e schema PostgreSQL. Il ritorno da `READY` passa dal job protetto `rollback`. |
+| UDP e Ingestion | Il plan fissa il database del modulo e la storia Flyway. Dopo la CREATE, il job apply presenta il delta del JAR per la review di migrate. |
 | Gateway | Verifica il bundle, legge le risorse APISIX con GET e calcola creazioni, aggiornamenti e risorse invariate. Le scritture APISIX appartengono ai job protetti `apply` e `return`. |
 | Semantic A2 | Osserva coda, generazione e ingresso. Invoca i runbook in modalità `plan`, che prepara fotografie e stato privato. Se il profilo forward prevede un’immagine successore, ne verifica i byte e la carica nello store Docker. Questi effetti additivi lasciano invariate la configurazione viva e i container in esercizio. Anche nel verso di ritorno il fermo e il ricollegamento richiedono `apply`. |
 
@@ -172,3 +173,38 @@ La readiness della transazione Gateway consiste nella rilettura Admin API di tut
 | Perdita dopo la ricevuta finale e prima della testa | La ricevuta resta immutabile | Finché la testa è PENDING, il nuovo plan riconcilia le risorse sulla stessa generazione | Dopo la pubblicazione la testa determina la transizione disponibile |
 
 La compensazione di un apply di recupero riporta al punto di partenza di quell'apply. Il ritorno approvato di una release recuperata usa la baseline completa autenticata da `returnBaseline`. Il diniego pubblico riporta `owner=gateway`, stato della testa e, se disponibile, l'ultima risorsa reclamata e la presenza della sua rilettura registrata. Gli errori inattesi di moduli e Gateway riportano tipo, basename del file e riga. [Transizioni Gateway](../tools/privileged_executor/gateway_operation.py) · [Prova di interruzione APISIX](../tests/test_gateway_release_native.py)
+
+## Rilascio di UDP e Ingestion
+
+Ogni modulo ha un profilo facoltativo in `modules`. Copiare il relativo esempio nel profilo privato dell’esecutore e completare tutti i segnaposto. La compatibilità del predecessore con le migrazioni proposte richiede una verifica umana prima di impostare `migration.rollbackCompatible`. [UDP](../config/module-release/udp.example.json) · [Ingestion](../config/module-release/ingestion.example.json)
+
+1. Dal PR del modulo acquisire repository, nome del workflow, numero del PR, commit e tree revisionati, ID del run, tentativo, ID e prefisso dell’artefatto, SHA-256 dello ZIP, schema del manifest, nome e ID dell’immagine qualificata. Il formato supportato contiene `manifest.json`, `SHA256SUMS` e `image.tar.gz` con le coordinate del tested-image. Confrontare il formato con il publisher del PR.
+2. Per il trasporto preparare una copia leggibile dal runner con le sole chiavi `module` e `ci`. Impostare `UDP_RELEASE_TRANSPORT_PROFILE` o `INGESTION_RELEASE_TRANSPORT_PROFILE` al suo percorso e `MODULE_RELEASE_INBOX` alla directory di arrivo. Avviare il workflow manuale di trasporto con modulo, run e artifact ID. Il trasporto confronta i pin, verifica il commit testato e pubblica lo ZIP per digest. [Workflow di trasporto](../.github/workflows/java-module-artifact-transport.yml)
+3. Avviare il workflow di rilascio del modulo. Il plan controlla la readiness del predecessore e fissa peer, database e storia Flyway. Il primo clic autorizza il passaggio al candidato trattenuto al cancello. La sintesi del job espone i nomi e i checksum Flyway degli script pendenti letti dal JAR indicato da `gate.command`, insieme ai digest della storia iniziale e attesa. Il secondo clic autorizza quel digest. La riconciliazione usa una transazione PostgreSQL read-only sulla tabella qualificata `flyway_schema_history` e la readiness HTTP della stessa generazione.
+4. Dopo un’interruzione, un nuovo dispatch senza input propone la ripresa. Per tornare al predecessore, fornire a `return_plan` il digest del plan originale. Il ritorno verifica la storia attesa e il CID di proprietà prima di parcheggiare il candidato. Dopo un segnale incerto il lettore deve poter riconciliare la storia completa. Una CREATE senza CID registrato o uno start senza generazione attestata restano HELD secondo la matrice.
+
+Sul VPS ricavare nome e image ID del predecessore con `docker inspect --format '{{.Name}} {{.Image}}'`. Per ciascuna rete leggere soltanto nome, IPv4 e alias funzionali. Confrontare localmente entrypoint, comando e nome dell’eseguibile con il gate R-039. Acquisire nomi di custodia, inbox, journal privato, socket Docker, nsenter e contratto di readiness dal profilo installato. Per PostgreSQL verificare CID, directory del socket, nomi delle variabili JDBC e utente, database e schema della history. Confermare i binding sulla configurazione applicativa revisionata e con una SELECT in transazione read-only. Conservare i valori delle variabili d’ambiente sul VPS.
+
+### Argomenti di Ingestion e verifica di V21
+
+In `modules.ingestion`, `gate.command` deve coincidere con il comando completo del predecessore. L’esempio recepisce il comando osservato il 21 novembre e dichiara il seguente delta. [Profilo Ingestion](../config/module-release/ingestion.example.json) · [Profilo dell’esecutore](privileged-executor.example.json)
+
+| Campo | Valore nell’esempio | Effetto |
+|---|---|---|
+| `gate.command` | `["java","-jar","/app/app.jar","--spring.flyway.enabled=false","--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY"]` | Identifica il processo originale anche durante il ritorno |
+| `candidate.removeArgs` | `["--spring.flyway.enabled=false","--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY"]` | Il candidato esegue `java -jar /app/app.jar` |
+| `candidate.enableFlyway` | `true` | Imposta `SPRING_FLYWAY_ENABLED` sul candidato dopo il merge con i default dell’immagine |
+
+Il blocco `candidate` è facoltativo per i profili Java con `migration.mode` uguale a `spring-flyway`. Ogni rimozione identifica una sola opzione completa `--nome=valore` dopo il JAR. Il riepilogo del plan mostra le rimozioni, le impronte dei due argv e l’operazione sull’ambiente. Per opzioni diverse dalle due costanti documentate espone solo il nome. Il digest approvato copre il delta e la richiesta CREATE. Il ritorno riavvia il CID trattenuto con argv e ambiente originali.
+
+Per UDP completare `gate.command` nel profilo privato con tutti gli argomenti osservati, compresi quelli del lake S3. Il profilo UDP d’esempio eredita il comando completo.
+
+Per l’immagine del task-12c, verificare nella review di `migrate` che la lista degli script pendenti contenga V21 con il checksum atteso. Con il candidato ancora al gate, la storia deve coincidere con la baseline del plan. Dopo il segnale, `READY` richiede sia la storia attesa sul database fissato sia la readiness HTTP dello stesso processo. Il ritorno richiede la compatibilità del predecessore con V21 già applicata.
+
+### Dichiarazione del datasource effettivo
+
+Per UDP e Ingestion gli esempi adottano l’opzione 1. Nel blocco `migration.flyway`, `effectiveDatasource` uguale a `profile-env` dichiara che applicazione e Flyway usano effettivamente URL e utente identificati da `urlEnv` e `userEnv`, e la history nel database e nello schema dichiarati. Nel profilo privato inserire i **nomi** delle variabili `OUF_*_DB_URL` e `OUF_*_DB_USER` del modulo. Chi firma il profilo deve verificare questa corrispondenza anche per le sorgenti caricate da `SPRING_CONFIG_ADDITIONAL_LOCATION` e per entrambe le immagini durante il rilascio. Il contenuto dei file esterni è coperto dalla dichiarazione dell’operatore. Il lettore non interpreta quei file.
+
+Il lettore controlla `SPRING_APPLICATION_JSON` in memoria, dal `Config.Env` del predecessore, dalla configurazione prevista nel plan e dal candidato effettivo prima del segnale. JSON malformato, chiavi duplicate, override del datasource o di Flyway (anche annidati, puntati o con grafia alternativa) e selettori di configurazione ambigui portano a `HELD`. Il plan e i messaggi di errore omettono i valori dell’ambiente. Senza la dichiarazione rimangono i controlli restrittivi del lettore.
+
+Per Onboarding si può dichiarare lo stesso binding dopo aver verificato la configurazione esterna. Il suo profilo esistente senza blocco `migration.flyway` mantiene il percorso del 20 novembre, con avvio Spring e readiness. In quel percorso un esito incerto del segnale richiede comunque una prova Flyway per la riconciliazione.

@@ -1,4 +1,4 @@
-"""Read-only reconciliation of the reviewed Onboarding Spring/Flyway launch."""
+"""Read-only reconciliation of a reviewed Spring/Flyway launch."""
 import json
 import os
 import re
@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 import zipfile
 import zlib
 
-from .contract import digest, matches, require
+from .contract import Held, digest, jar_name, matches, require
 
 
 SQL = """BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY;
@@ -16,7 +16,7 @@ SET LOCAL statement_timeout='5s';
 SET LOCAL search_path=pg_catalog;
 SELECT json_build_object('databaseOid',(SELECT oid::text FROM pg_database WHERE datname=current_database()),
 'history',(SELECT json_agg(json_build_object('version',version,'script',script,'type',type,
-'checksum',checksum,'success',success) ORDER BY installed_rank) FROM ouf_onboarding.flyway_schema_history));
+'checksum',checksum,'success',success) ORDER BY installed_rank) FROM :"schema".flyway_schema_history));
 ROLLBACK;"""
 
 
@@ -59,7 +59,7 @@ def inventory(doc):
     try:
         app = os.open("app", flags | os.O_NOFOLLOW, dir_fd=root)
         try:
-            fd = os.open("application.jar", os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW, dir_fd=app)
+            fd = os.open(jar_name(doc["Config"]["Cmd"]), os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW, dir_fd=app)
         finally:
             os.close(app)
     finally:
@@ -70,29 +70,96 @@ def inventory(doc):
         return java_migrations(jar)
 
 
-def observe(rt, candidate):
-    binding = rt.flyway_peer
-    require(binding and rt.p["module"] == "onboarding", "FLYWAY_BINDING_UNPROVEN")
-    pg = rt.inspect(binding["postgresCid"])
-    values = dict(v.split("=", 1) for v in candidate["Config"]["Env"] if "=" in v)
-    # An overlay could select another datasource. Recovery cannot infer its
-    # effective binding from the base URL or from an unrelated schema.
+def canonical_property(name):
+    return re.sub(r"[._-]", "", name).lower()
+
+
+def check_application_json(raw, binding):
+    """Check Spring's nested and dotted properties without exporting keys or values."""
+    denied = "FLYWAY_DATASOURCE_UNPROVEN"
+
+    def unique(pairs):
+        obj = dict(pairs)
+        require(len(obj) == len(pairs), denied)
+        return obj
+
+    def invalid_constant(_):
+        raise Held(denied)
+
+    protected = ("springdatasource", "springflyway", "springconfig", "springprofiles",
+                 "springapplicationjson", "springmain", "springautoconfigure", "springjndi",
+                 canonical_property(binding["urlEnv"]), canonical_property(binding["userEnv"]))
+
+    def walk(obj, prefix):
+        for key, value in obj.items():
+            require(matches(r"[a-zA-Z0-9_.-]+", key), denied)
+            path = prefix + canonical_property(key)
+            require(not path.startswith(protected), denied)
+            if isinstance(value, dict):
+                walk(value, path)
+
+    try:
+        obj = json.loads(raw, object_pairs_hook=unique, parse_constant=invalid_constant)
+        require(isinstance(obj, dict), denied)
+        walk(obj, "")
+    except (ValueError, RecursionError):
+        raise Held(denied) from None
+
+
+def datasource(binding, config, *, predecessor):
+    env = [v.split("=", 1) for v in config["Env"] if "=" in v]
+    values = dict(env)
+    require(len(env) == len(values), "FLYWAY_DATASOURCE_UNPROVEN")
+    options = [values.get(k, "") for k in ("JAVA_TOOL_OPTIONS", "JDK_JAVA_OPTIONS", "_JAVA_OPTIONS", "JAVA_OPTS")]
+    allowed = set()
+    args = config["Cmd"]
+    if binding.get("effectiveDatasource") == "profile-env":
+        allowed.update(("SPRING_CONFIG_ADDITIONAL_LOCATION", "SPRING_APPLICATION_JSON"))
+        if "SPRING_APPLICATION_JSON" in values:
+            check_application_json(values["SPRING_APPLICATION_JSON"], binding)
+        if values.get("SPRING_FLYWAY_ENABLED") in (("true", "false") if predecessor else ("true",)):
+            allowed.add("SPRING_FLYWAY_ENABLED")
+        if predecessor:
+            args = [arg for arg in args if arg != "--spring.flyway.enabled=false"]
+        # Reject aliases that Spring could resolve differently from the literal
+        # environment keys used for the read-only PostgreSQL connection.
+        names = (binding["urlEnv"], binding["userEnv"])
+        direct = allowed | set(names) | {"SPRING_DATASOURCE_URL", "SPRING_DATASOURCE_USERNAME",
+                                        "SPRING_DATASOURCE_PASSWORD"}
+        sensitive = ("springdatasource", "springflyway", "springconfig", "springprofiles", "springapplicationjson",
+                     *(canonical_property(k) for k in names))
+        require(all(k in direct or not canonical_property(k).startswith(sensitive) for k in values),
+                "FLYWAY_DATASOURCE_UNPROVEN")
+        require(not any(canonical_property(arg.partition("=")[0].removeprefix("-D")).startswith(sensitive)
+                        for arg in args), "FLYWAY_DATASOURCE_UNPROVEN")
+        require(not any(prefix in canonical_property(option) for option in options for prefix in sensitive),
+                "FLYWAY_DATASOURCE_UNPROVEN")
     selectors = ("SPRING_CONFIG_", "SPRING_PROFILES_", "SPRING_FLYWAY_")
-    require(not any(v and (k.startswith(selectors) or k == "SPRING_APPLICATION_JSON")
-                    for k, v in values.items()) and not any("spring." in arg.lower() for arg in
-                    [*candidate["Args"], *(values.get(k, "") for k in ("JAVA_TOOL_OPTIONS", "JDK_JAVA_OPTIONS", "JAVA_OPTS"))]),
+    require(not any(v and k not in allowed and (k.startswith(selectors) or k == "SPRING_APPLICATION_JSON")
+                    for k, v in values.items()) and not any("spring." in arg.lower() for arg in [*args, *options]),
             "FLYWAY_DATASOURCE_UNPROVEN")
     require(all(not key.startswith("SPRING_DATASOURCE_") or key in
                 ("SPRING_DATASOURCE_URL", "SPRING_DATASOURCE_USERNAME", "SPRING_DATASOURCE_PASSWORD")
                 for key in values), "FLYWAY_DATASOURCE_UNPROVEN")
-    jdbc = values.get("OUF_ONB_DB_URL", "")
-    user = values.get("OUF_ONB_DB_USER", "")
+    jdbc = values.get(binding["urlEnv"], "")
+    user = values.get(binding["userEnv"], "")
     require(jdbc.startswith("jdbc:postgresql://") and matches(r"[a-z_][a-z0-9_]{0,62}", user)
             and values.get("SPRING_DATASOURCE_URL", jdbc) == jdbc
             and values.get("SPRING_DATASOURCE_USERNAME", user) == user, "FLYWAY_DATASOURCE_UNPROVEN")
     url = urlsplit(jdbc[5:])
-    require(not url.query and not url.fragment and not url.username and not url.password
-            and matches(r"/[a-z_][a-z0-9_]{0,62}", url.path), "FLYWAY_DATASOURCE_UNPROVEN")
+    require(url.query in ("", "currentSchema=" + binding["schema"]) and not url.fragment and not url.username
+            and not url.password and matches(r"/[a-z_][a-z0-9_]{0,62}", url.path)
+            and binding.get("database", url.path[1:]) == url.path[1:], "FLYWAY_DATASOURCE_UNPROVEN")
+    return url, user
+
+
+def observe(rt, candidate):
+    binding = rt.p["migration"].get("flyway")
+    if binding is None:
+        require(rt.p["module"] == "onboarding" and rt.flyway_peer, "FLYWAY_BINDING_UNPROVEN")
+        binding = dict(rt.flyway_peer, urlEnv="OUF_ONB_DB_URL", userEnv="OUF_ONB_DB_USER", schema="ouf_onboarding")
+    url, user = datasource(binding, candidate["Config"], predecessor=candidate["Image"] == rt.p["oldImage"])
+    pg = rt.inspect(binding["postgresCid"])
     nets = {ep["NetworkID"] for ep in candidate["NetworkSettings"]["Networks"].values()}
     require(pg["Id"] == binding["postgresCid"] and pg["State"]["Running"] and any(
         ep["NetworkID"] in nets and url.hostname in
@@ -100,7 +167,7 @@ def observe(rt, candidate):
         for ep in pg["NetworkSettings"]["Networks"].values()), "FLYWAY_POSTGRES_CHANGED")
     args = ["/usr/bin/docker", "--host", "unix://" + rt.p["dockerSocket"], "exec", "-i", pg["Id"],
             "psql", "-XwqAt", "-v", "ON_ERROR_STOP=1", "-h", binding["socket"], "-p", str(url.port or 5432),
-            "-U", user, "-d", url.path[1:]]
+            "-v", "schema=" + binding["schema"], "-U", user, "-d", url.path[1:]]
     result = subprocess.run(args, input=SQL.encode(), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=12)
     require(result.returncode == 0 and 0 < len(result.stdout) <= 1 << 20, "FLYWAY_READ_FAILED")
     facts = json.loads(result.stdout)
@@ -111,14 +178,22 @@ def observe(rt, candidate):
     return {"peer": pg["Id"], "db": facts["databaseOid"], "history": rows}
 
 
+def baseline(current):
+    rows = current["history"]
+    return {"peer": current["peer"], "db": current["db"], "count": len(rows), "before": digest(rows)}
+
+
 def checkpoint(rt, candidate):
     expected = inventory(candidate)
     current = observe(rt, candidate)
     rows = current["history"]
     sql = [r for r in rows if r["type"] == "SQL"]
     require(sql == expected[:len(sql)], "FLYWAY_BASELINE_CHANGED")
-    return {"peer": current["peer"], "db": current["db"], "count": len(rows), "before": digest(rows),
-            "after": digest(rows + expected[len(sql):])}
+    pending = expected[len(sql):]
+    proof = {**baseline(current), "after": digest(rows + pending)}
+    if "flyway" in rt.p["migration"]:
+        proof["pending"] = pending
+    return proof
 
 
 def verify(rt, candidate, proof):

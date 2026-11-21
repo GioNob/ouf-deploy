@@ -56,6 +56,15 @@ class Bootstrap(unittest.TestCase):
         mcp["ci"]["publisherCommit"] = mcp["ci"]["sourceCommit"]
         mcp["ci"]["transportSha256"] = "e"*64
         mcp["migration"]["database"].update(postgresCid="d"*64, socket="/run/postgresql")
+        for name in ("udp", "ingestion"):
+            java = cfg["modules"][name]
+            for key in ("inbox", "journal", "dockerSocket", "nsenter", "oldImage", "networks", "readiness"):
+                java[key] = module[key]
+            if name == "udp":
+                java["gate"] = module["gate"]
+            java["ci"] = dict(module["ci"], artifactPrefix="fixture-" + name)
+            java["migration"]["flyway"].update(postgresCid="d"*64, socket="/tmp", urlEnv="APP_URL",
+                                               userEnv="APP_USER", database="fixture", schema=name)
         book = ("C="+"f"*40+"\n").encode()
         self.artifacts = {}
         for binding in cfg["runbooks"].values():
@@ -89,7 +98,7 @@ class Bootstrap(unittest.TestCase):
         cfg = json.loads(files[inst.ROOT / "profile.json"][0])
         self.assertNotIn("proof", cfg["queue"])
         self.assertEqual(len(cfg["runbooks"]), 13)
-        self.assertEqual(set(cfg["modules"]), {"onboarding", "mcp"})
+        self.assertEqual(set(cfg["modules"]), {"onboarding", "mcp", "udp", "ingestion"})
         lib = inst.ROOT / "lib"
         for file, (data, _) in files.items():
             if file.is_relative_to(lib):
@@ -112,6 +121,8 @@ class Bootstrap(unittest.TestCase):
                     del cfg["gateway"]
                 if not mcp:
                     del cfg["modules"]["mcp"]
+                    del cfg["modules"]["udp"]
+                    del cfg["modules"]["ingestion"]
                 self.path.write_text(json.dumps(cfg))
                 self.assertIn(self.inst.ENTRY, self.inst.inspect(self.path))
 

@@ -686,3 +686,10 @@ L’owner riferisce la conclusione del forward A2 sulla testa 28 nel run 4488204
 ## 21 novembre 2026 · sprint-03/10b
 
 Verificato offline il ritorno dalla 29 al predecessore della linea C con nuova emissione 30 e ripresa da journal. Il forward next richiede i cinque binding v30, non una rinuncia al ritorno. Nessun effetto sul target. [Procedura e pin](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)
+## 21 novembre 2026 · sprint-03/12f
+
+Sulla base `8cbcaa40` il rilascio privilegiato di UDP e Ingestion supera le prove portabili di gate, review Flyway, segnale interrotto e ritorno. La CI include una prova UDP con Java, Flyway e PostgreSQL. Restano la sua esecuzione Linux e la verifica dei profili e dei pin reali. [Procedura](OUF_PRIVILEGED_PIPELINE.md#rilascio-di-udp-e-ingestion)
+
+## 21 novembre 2026 · sprint-03/12f2
+
+Sulla base `5a5871eb` la fixture portabile verifica il delta Ingestion, la review di V21, il confronto della storia dopo il segnale e il ritorno al comando e all’ambiente del predecessore. La V21 sintetica ha aggiunto la colonna attesa in SQLite. La fixture Linux usa lo stesso SQL con Flyway e PostgreSQL. La sua esecuzione e la verifica sul target restano pendenti. [Procedura](OUF_PRIVILEGED_PIPELINE.md#argomenti-di-ingestion-e-verifica-di-v21)

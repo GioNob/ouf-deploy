@@ -51,7 +51,8 @@ def calls_cohort_lab(job):
 
 class ManualVpsWorkflows(unittest.TestCase):
     def test_release_plan_runs_on_vps_and_only_mutations_use_environment(self):
-        for name in ("onboarding-module-release", "mcp-module-release", "gateway-release", "semantic-a2-cutover"):
+        for name in ("onboarding-module-release", "mcp-module-release", "udp-module-release",
+                     "ingestion-module-release", "gateway-release", "semantic-a2-cutover"):
             with self.subTest(workflow=name):
                 jobs = yaml.safe_load((WORKFLOWS / (name + ".yml")).read_bytes())["jobs"]
                 self.assertIn("ouf-vps-test", jobs["plan"]["runs-on"])

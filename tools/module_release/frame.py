@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 
-from .contract import ENTRY, SHA, digest, matches, require
+from .contract import ENTRY, SHA, candidate_command, digest, matches, require
 
 
 def merge_image(cfg, image):
@@ -86,8 +86,29 @@ def provenance_labels(profile):
     return {key: profile["ci"][field] for key, field in profile.get("provenanceLabels", {}).items()}
 
 
-def request(old, image, labels=None):
+def configure_candidate(cfg, candidate):
+    cfg["Cmd"] = candidate_command(cfg["Cmd"], candidate)
+    if candidate.get("enableFlyway"):
+        env = cfg.get("Env") or []
+        key = "SPRING_FLYWAY_ENABLED"
+        positions = [i for i, item in enumerate(env) if item.partition("=")[0] == key]
+        require(len(positions) <= 1, "AMBIGUOUS_CANDIDATE_ENV")
+        if positions:
+            env[positions[0]] = key + "=true"
+        else:
+            env.append(key + "=true")
+        cfg["Env"] = env
+
+
+def request(old, image, labels=None, *, candidate=None, image_defaults=None):
     cfg = image_configuration(old, image, labels)
+    if candidate:
+        launch = {"Cmd": cfg["Cmd"], "Entrypoint": cfg["Entrypoint"], "Env": cfg.get("Env")}
+        merge_image(launch, image_defaults)
+        configure_candidate(launch, candidate)
+        cfg["Cmd"] = launch["Cmd"]
+        if candidate.get("enableFlyway"):
+            cfg["Env"] = launch["Env"]
     cfg["HostConfig"] = deepcopy(old["HostConfig"])
     if cfg["HostConfig"].get("OomKillDisable") is None:
         cfg["HostConfig"]["OomKillDisable"] = False
@@ -100,17 +121,19 @@ def epoch(doc):
     return [doc["Id"], doc["State"]["StartedAt"], doc["State"]["Pid"], doc["RestartCount"]]
 
 
-def check_body(old, doc, image, config_image, *, created=False, labels=None, image_defaults=None):
+def check_body(old, doc, image, config_image, *, created=False, labels=None, image_defaults=None, candidate=None):
     cfg = image_configuration(old, config_image, labels)
     if image_defaults is not None:
         merge_image(cfg, image_defaults)
+    if candidate:
+        configure_candidate(cfg, candidate)
     host = dict(old["HostConfig"])
     if created and host.get("OomKillDisable") is None:
         host["OomKillDisable"] = False
     mounts = lambda d: sorted(d["Mounts"], key=lambda m: m["Destination"])
     require(digest(configuration(doc)) == digest(cfg) and doc["Image"] == image
             and digest(doc["HostConfig"]) == digest(host) and mounts(doc) == mounts(old)
-            and (doc["Path"], doc["Args"]) == (old["Path"], old["Args"]), "CONFIGURATION_DELTA")
+            and [doc["Path"], *doc["Args"]] == cfg["Entrypoint"] + cfg["Cmd"], "CONFIGURATION_DELTA")
 
 
 def check_created_networks(old, doc):
