@@ -701,3 +701,7 @@ L’operatore ha riferito il disallineamento sulla testa 29. La prova portabile 
 ## 21 novembre 2026 · sprint-03/17 · ritorno R3 dopo la firma della 30
 
 La prova portabile concatena i forward dalla 27 alla 30. Il ritorno firma la 31 per il CID e l’immagine della 29 con worker acceso. L’installatore verifica i 23 binding del profilo esteso e conserva la compatibilità con i due profili precedenti. La testa in esercizio riferita dall’owner è la 29 nel run 44909669060. [Procedura e pin v31](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-29)
+
+## 21 novembre 2026 · sprint-03/24 · stop R3 e successione dei moduli
+
+Prova locale dello stop riuscito al secondo tentativo, della nuova review per deriva dello scope e del limite di tre collisioni. Due rilasci Onboarding sintetici hanno usato lo stesso pin iniziale e una chiave di fixture temporanea. La selezione del secondo predecessore ha verificato il completamento firmato del primo. [Dettagli](OUF_PRIVILEGED_PIPELINE.md#stop-r3-durante-il-rinnovo-e-successione-dei-moduli)

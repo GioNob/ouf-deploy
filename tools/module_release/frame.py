@@ -66,9 +66,9 @@ def configuration(doc):
     return cfg
 
 
-def baseline(p, old):
+def baseline(p, old, *, predecessor_image=None):
     host = old["HostConfig"]
-    require(matches(SHA, old["Id"]) and old["Image"] == p["oldImage"]
+    require(matches(SHA, old["Id"]) and old["Image"] == (predecessor_image or p["oldImage"])
             and old["Name"] == "/" + p["container"] and old["State"]["Running"], "PREDECESSOR_CHANGED")
     require(old["Config"]["Entrypoint"] == ENTRY and old["Config"]["Cmd"] == p["gate"]["command"]
             and [old["Path"], *old["Args"]] == ENTRY + p["gate"]["command"], "KNOWN_GATE_REQUIRED")

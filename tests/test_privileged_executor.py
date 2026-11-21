@@ -311,21 +311,73 @@ class Protocol(unittest.TestCase):
                          semantic.semantic_configuration(actual))
 
     def test_stop_after_renewal(self):
-        old = dict(planSha256="a"*64, outputDirectory="first", observation={"epoch":1})
-        fresh = {**old, "planSha256":"b"*64, "outputDirectory":"second"}
+        observation = dict(configurationSha256="c"*64, authorization={"sequence": 30, "decision": "OPERATE"},
+                           candidates={"adapter": {"cid": "d"*64, "epoch": {"epoch": 1}}},
+                           supervisor={"epochs": {"adapter": 1}, "semanticEpoch": "e"*64},
+                           lease={"state": "LEASE_READY", "leaseAuthorized": True})
+        old = dict(planSha256="a"*64, outputDirectory="first", observation=observation,
+                   lastObservation=copy.deepcopy(observation))
+        fresh = {**old, "planSha256": "b"*64, "outputDirectory": "second"}
         books, record = Mock(), Mock()
         books.call.side_effect = [runbooks.RenewalCollision(), fresh, "stopped"]
-        self.assertEqual(runbooks.stop(books, 27, old, record), "stopped")
-        self.assertEqual([c.args for c in books.call.call_args_list],
-                         [("stop",27,old["planSha256"]), ("stop",27), ("stop",27,fresh["planSha256"])])
-        books.wait_renewal.assert_called_once()
+        self.assertEqual(runbooks.stop(books, 30, old, record), "stopped")
+        self.assertEqual([(name, args) for name, args, _ in books.method_calls], [
+            ("wait_renewal", ()), ("call", ("stop", 30, old["planSha256"])),
+            ("wait_renewal", ()), ("call", ("stop", 30)), ("wait_renewal", ()),
+            ("call", ("stop", 30, fresh["planSha256"]))])
+        self.assertEqual([c.kwargs for c in books.wait_renewal.call_args_list],
+                         [{"required": False}, {}, {"required": True}])
         record.assert_called_once_with(1, fresh)
-        books.call.side_effect = [runbooks.RenewalCollision(), {**fresh, "observation":{"epoch":2}}]
-        with self.assertRaisesRegex(mandate.Held, "NEW_REVIEW"):
-            runbooks.stop(books, 27, old, record)
-        books.call.side_effect = [runbooks.RenewalCollision(), fresh]*3
-        with self.assertRaisesRegex(mandate.Held, "RETRY_LIMIT"):
-            runbooks.stop(books, 27, old, record)
+
+        for field in ("observation", "lastObservation"):
+            for key, value in (("configurationSha256", "f"*64), ("authorization", {"sequence": 31}),
+                               ("candidates", {"adapter": {"cid": "0"*64, "epoch": {"epoch": 1}}}),
+                               ("supervisor", {"epochs": {"adapter": 2}, "semanticEpoch": "e"*64}),
+                               ("lease", {"state": "LEASE_READY", "leaseAuthorized": 1})):
+                with self.subTest(field=field, key=key):
+                    books, record = Mock(), Mock()
+                    drift = {**fresh, field: {**observation, key: value}}
+                    books.call.side_effect = [runbooks.RenewalCollision(), drift]
+                    with self.assertRaisesRegex(mandate.Held, "STOP_REQUIRES_NEW_REVIEW"):
+                        runbooks.stop(books, 30, old, record)
+                    record.assert_not_called()
+                    self.assertEqual(books.call.call_count, 2)
+
+        books, record = Mock(), Mock()
+        books.call.side_effect = [runbooks.RenewalCollision(), mandate.Held("R3_HEAD_DRIFT")]
+        with self.assertRaisesRegex(mandate.Held, "STOP_REQUIRES_NEW_REVIEW"):
+            runbooks.stop(books, 30, old, record)
+        record.assert_not_called()
+
+        books, record = Mock(), Mock()
+        third = {**fresh, "outputDirectory": "third", "planSha256": "c"*64}
+        books.call.side_effect = [runbooks.RenewalCollision(), fresh, runbooks.RenewalCollision(),
+                                  third, runbooks.RenewalCollision()]
+        with self.assertRaisesRegex(mandate.Held, "STOP_RETRY_LIMIT"):
+            runbooks.stop(books, 30, old, record)
+        self.assertEqual([c.args for c in record.call_args_list], [(1, fresh), (2, third)])
+        self.assertEqual(books.wait_renewal.call_count, 5)
+
+    def test_wait_for_new_ready_publication(self):
+        root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        journal = root / "lease"
+        def publish(state, authorized):
+            pending = root / "pending"
+            pending.write_text(json.dumps({"state": state, "leaseAuthorized": authorized}))
+            pending.replace(journal)
+        publish("LEASE_READY", True)
+        updates = iter([("LEASE_UPDATING", True), ("LEASE_READY", False), ("LEASE_READY", True)])
+        with patch.object(runbooks, "trusted", side_effect=lambda path, **_: Path(path)), \
+             patch.object(runbooks.time, "sleep", side_effect=lambda _: publish(*next(updates))) as wait:
+            runbooks.Books({"leaseJournal": journal}, root).wait_renewal()
+        self.assertEqual(wait.call_count, 3)
+        books = runbooks.Books({"leaseJournal": journal}, root)
+        with patch.object(runbooks, "trusted", return_value=journal), \
+             patch.object(runbooks, "read", side_effect=lambda path: json.loads(path.read_bytes())), \
+             patch.object(runbooks.time, "monotonic", side_effect=[0, 16, 20, 36]):
+            books.wait_renewal(required=False)
+            with self.assertRaisesRegex(mandate.Held, "RENEWAL_TIMEOUT"):
+                books.wait_renewal()
 
     def test_expired_or_unbounded_kernel_lease(self):
         from ingress import live_members
