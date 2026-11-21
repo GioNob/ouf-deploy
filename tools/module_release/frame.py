@@ -1,6 +1,7 @@
 """Translate Docker inspect into a create request and check the realized configuration."""
 
 from copy import deepcopy
+import re
 
 from .contract import ENTRY, SHA, candidate_command, digest, matches, require
 
@@ -35,8 +36,17 @@ def merge_image(cfg, image):
                     cfg["Healthcheck"][key] = deepcopy(health[key])
 
 
+CONTAINER_ID_ALIAS = re.compile(r"[0-9a-f]{12}")
+
+
+def functional(names):
+    # Docker carries every predecessor's short ID forward as an alias on each
+    # release. Those identity aliases are not part of the reviewed binding.
+    return sorted({a for a in names if not CONTAINER_ID_ALIAS.fullmatch(a)})
+
+
 def aliases(ep, cid):
-    return sorted(set(ep.get("Aliases") or ()) - {cid[:12]})
+    return functional(set(ep.get("Aliases") or ()) - {cid[:12]})
 
 
 def endpoint(ep):
@@ -71,7 +81,7 @@ def baseline(p, old):
     for name, expected in p["networks"].items():
         ep = nets[name]
         require(matches(SHA, ep["NetworkID"]) and ep["IPAddress"] == expected["ipv4"]
-                and aliases(ep, old["Id"]) == sorted(expected["aliases"]), "NETWORK_BINDING_CHANGED")
+                and aliases(ep, old["Id"]) == functional(expected["aliases"]), "NETWORK_BINDING_CHANGED")
 
 
 def image_configuration(old, image, labels):
