@@ -74,6 +74,22 @@ class Review(unittest.TestCase):
         with self.assertRaisesRegex(mandate.Held, "RETURN_CONFIRMATION_FIELD"):
             mandate.validate(dict(req, confirmNoReturn="true"), self.cfg)
 
+    def test_database_migration_workflow_and_single_approval(self):
+        self.cfg["semanticDatabase"] = {}
+        req = {k: v for k, v in self.req.items() if k not in ("direction", "queue")}
+        req["operation"] = "semantic-database-migration"
+        req["digest"] = mandate.intent(req)
+        with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
+            self.invoke(req)
+        self.run["path"] = ".github/workflows/semantic-database-migration.yml"
+        self.invoke(req)
+        req.update(phase="apply", digest="c"*64)
+        with patch.object(self, "reviews", []), self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
+            self.invoke(req)
+        self.invoke(req)
+        with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
+            self.invoke(req)
+
     def test_blank_comment_and_cumulative_reviewer_set(self):
         apply = dict(self.req, phase="apply")
         first = self.invoke(apply)

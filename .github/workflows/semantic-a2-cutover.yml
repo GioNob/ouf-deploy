@@ -104,6 +104,10 @@ jobs:
               if migration:
                   print("Review Flyway · immagine", result["imageId"], "· migrazioni nuove", result["migrationCount"],
                         "· SHA-256 elenco", result["migrationsSha256"], file=f)
+              if "migrationMode" in result:
+                  print("Modalità di migrazione", result["migrationMode"], file=f)
+              for row in result.get("pending", []):
+                  print(f"- `{row['script']}` · CRC32 Flyway `{row['checksum']}`", file=f)
               if "ingress" in result:
                   print("Ingresso", result["ingress"], "· readiness", result["readiness"], "· worker", result["worker"], file=f)
               if "queueCount" in result:

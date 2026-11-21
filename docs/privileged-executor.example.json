@@ -54,6 +54,13 @@
     "predecessorMigrations": [{"name": "<original Flyway filename>", "sha256": "<original migration SHA-256>"}]
   },
   "retainedName": "<semantic retained>",
+  "semanticDatabase": {
+    "postgresCid": "<full PostgreSQL CID from the module Flyway binding>",
+    "socket": "<PostgreSQL socket directory from queue.socket>",
+    "user": "ouf_semantic",
+    "database": "ouf_semantic",
+    "schema": "ouf_sem"
+  },
   "failedName": "<semantic returned>",
   "readinessPort": 0,
   "runbooks": {

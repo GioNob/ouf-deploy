@@ -69,13 +69,23 @@ Path("flyway.mf").write_text("Manifest-Version: 1.0\nMain-Class: FlywayFixture\n
                             "\n ".join(classpath[i:i+68] for i in range(0,len(classpath),68)) + "\n\n")
 PY
 rm BOOT-INF/classes/db/migration/V2__added.sql
-for revision in old "$tested"; do
+for revision in old "$tested" semantic; do
     resources=BOOT-INF/classes/db/migration
     defaults=()
     echo 'CREATE TABLE release_fixture.base_row(id integer);' > "$resources/V1__base.sql"
-    if [[ "$revision" == "$tested" ]]; then
+    if [[ "$revision" != old ]]; then
         cp "$fixtures/module-release-flyway/V21__add_repeat_key.sql" "$resources/"
         defaults=(--change 'ENV FIXTURE_JAVA_IMAGE=successor' --change 'LABEL fixture.java.successor=yes')
+    fi
+    if [[ "$revision" == semantic ]]; then
+        cat > "$resources/V22__create_probe.sql" <<'SQL'
+CREATE FUNCTION release_fixture.probe_key() RETURNS text LANGUAGE plpgsql AS $probe$
+BEGIN
+    RETURN 'ready';
+END;
+$probe$;
+INSERT INTO release_fixture.base_row VALUES (22, release_fixture.probe_key());
+SQL
     fi
     jar --create --file root/app/flyway.jar --manifest flyway.mf Fixture.class FlywayFixture.class BOOT-INF
     tar -C root -cf - . | docker import "${defaults[@]}" --change 'ENV PATH=/opt/java/bin:/bin' \

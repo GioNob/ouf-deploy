@@ -693,3 +693,7 @@ Sulla base `8cbcaa40` il rilascio privilegiato di UDP e Ingestion supera le prov
 ## 21 novembre 2026 · sprint-03/12f2
 
 Sulla base `5a5871eb` la fixture portabile verifica il delta Ingestion, la review di V21, il confronto della storia dopo il segnale e il ritorno al comando e all’ambiente del predecessore. La V21 sintetica ha aggiunto la colonna attesa in SQLite. La fixture Linux usa lo stesso SQL con Flyway e PostgreSQL. La sua esecuzione e la verifica sul target restano pendenti. [Procedura](OUF_PRIVILEGED_PIPELINE.md#argomenti-di-ingestion-e-verifica-di-v21)
+
+## 21 novembre 2026 · sprint-03/14 · storia Semantic V12 e immagine V16
+
+L’operatore ha riferito il disallineamento sulla testa 29. La prova portabile copre il plan per prefisso, il rollback dello script interrotto, la riconciliazione da storia e la verifica prima della firma. Il confronto con Flyway reale è nella CI nativa dell’esecutore. La prossima osservazione del database vivo spetta al plan dopo l’installazione e la configurazione del binding privato. [Procedura](OUF_PRIVILEGED_PIPELINE.md#migrazione-online-del-database-semantic)

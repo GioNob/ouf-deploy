@@ -2,6 +2,24 @@
 
 Il workflow manuale governa il cutover A2 27→28 e il rilascio Semantic 28→29. Ogni transazione identifica il proprio predecessore tramite CID. Il plan effettivo identifica l’installazione. La riuscita dell’andata richiede una ricevuta della firma, l’upgrade, lo start R3, un ingresso `VERIFIED`, Java PID 1, readiness HTTP 200 con `status=UP`, sonda C e worker abilitato nel frame verificato. L’owner riferisce A2 completato nel run 44882047892. Le prove del rilascio successivo usano un host simulato e una fixture Engine dedicata.
 
+## Migrazione online del database Semantic
+
+Il 21 novembre l’operatore ha osservato la testa R3 29 con Flyway disabilitato, storia a V12 e immagine fino a V16. Per il recupero usare il solo dispatch manuale `Semantic database migration`. Il plan legge il profilo della testa R3 e il JAR del processo Semantic vivo, verifica nomi e SHA-256 con il manifest dello ZIP fissato nel profilo e confronta la storia PostgreSQL in sola lettura. Il riepilogo identifica testa, digest approvabile, file pendenti e CRC32 Flyway. Per il caso osservato sono attese V13–V16.
+
+L’unica approvazione è sul job `apply` dell’environment `ouf-vps-privileged`. Ogni script prende un lock sulla tabella di storia, ricontrolla OID e prefisso, esegue SQL e inserisce la riga Flyway nella stessa transazione. Il timeout del lock è 5 secondi e quello dello statement 60 secondi. Un errore conserva le versioni già committate. Dopo un’interruzione, un nuovo dispatch legge la storia e presenta il residuo per una nuova approvazione. L’apply ricostruisce la ricevuta di uno script già committato dal claim e dalla riga esatta. La verifica conclusiva richiede l’intera storia, HTTP 200 con stato `UP` e la stessa generazione di PID 1 sulla stessa testa.
+
+**Domande aperte per il profilo privato.** Claude deve inserire la sezione facoltativa `semanticDatabase` con i seguenti valori prima dell’installazione dell’esecutore aggiornato.
+
+| Campo | Valore da inserire |
+|---|---|
+| `postgresCid` | CID completo a 64 cifre esadecimali del PostgreSQL identificato da `queue.container`, lo stesso di `modules.<modulo>.migration.flyway.postgresCid` |
+| `socket` | Directory del socket Unix PostgreSQL **dentro il container**, da confermare con `queue.socket` e il binding del modulo |
+| `user` | `ouf_semantic` |
+| `database` | `ouf_semantic` |
+| `schema` | `ouf_sem` |
+
+Conservare nell’inbox lo ZIP originale del profilo che identifica l’immagine viva (`nextSuccessorImage` per la 29). I valori d’ambiente restano nel perimetro privato dell’esecutore.
+
 ## Rilascio Semantic dalla testa 28
 
 Per il task-09 selezionare `release=next`, `direction=forward`. La forma precedente del mandato rimane il default `a2`. Il plan controlla la catena 1…28, la ricevuta terminale del forward A2, il CID corrente, il profilo installato nel supervisore e il frame della linea C con worker acceso. La sonda preflight usa gli input dell’emissione 28 dal run che l’ha completata.
@@ -104,7 +122,7 @@ Per il plan A2 compilare `successorImage.ci` con i pin del publisher e i valori 
 
 Al plan il lettore GitHub deve poter leggere i metadati pubblici del repository del modulo. L’esecutore confronta workflow, PR, testa, run e tentativo con i pin privati, verifica appartenenza, nome e digest GitHub dell’artefatto, quindi verifica ZIP, manifest, parentela e albero testato con i lettori del rilascio moduli. Dopo la verifica registra il claim di import e carica nel Docker locale i byte verificati. Rilegge tag, label e image ID dello store. La ricevuta privata del plan lega provenienza, inventario completo e aggiunte alla richiesta di CREATE. Il riepilogo per la review di apply mostra image ID, digest ZIP e digest dell’inventario.
 
-La CREATE usa l’image ID approvato. Il frame applicativo deriva dal predecessore con il worker abilitato. Il runbook v28 legge dal successore al cancello l’identità R3 corrispondente a questa immagine. Con migrazioni nuove, dopo apply il job protetto `migrate` presenta il numero e l’impronta delle aggiunte. La review autorizza l’avvio di Flyway via Spring per quel piano, CID e generazione. Collocarla prima di `sign` consente di attendere con ingresso chiuso e conservare il mandato dell’emittente sul suo esatto `planSha256`. La fase `sign` verifica la ricevuta della review, rilegge la generazione e controlla l’ingresso prima di inviare USR1. Una ripresa in un altro run richiede una review Flyway del nuovo stage. Se gli inventari coincidono, apply produce direttamente l’impronta per sign.
+La CREATE usa l’image ID approvato. Nel rilascio con immagine, il plan dichiara la modalità ricavata dal frame del candidato. Con `spring-flyway` il job `migrate` revisiona le aggiunte del manifest e Spring migra all’avvio. Con `SPRING_FLYWAY_ENABLED=false` la modalità è `governed-sql`. Apply calcola le pendenti dal JAR del candidato al cancello e dall’intera storia del database, comprese le migrazioni di rilasci precedenti ancora da applicare. Il job protetto `migrate` usa lo stesso esecutore SQL del recupero online e verifica il predecessore fermo. Prima della firma, `sign` richiede la ricevuta di completamento, la storia completa e la generazione approvata al cancello. Una ripresa prima della firma richiede una review del nuovo stage.
 
 Il ritorno v29 ricollega lo stesso CID conservato e usa l’image ID e il riferimento Docker originali. **V13 resta applicata al database.** L’immagine precedente ignora le aggiunte introdotte da V13. La verifica applicativa di questa compatibilità sulle immagini effettive appartiene al task-24c. La prova nativa A2 con due immagini distinte verifica l’identità e il rilascio al cancello in entrambe le direzioni. [Suite Engine](../tests/test_privileged_executor_native.py)
 

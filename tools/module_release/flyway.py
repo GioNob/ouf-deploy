@@ -11,12 +11,14 @@ import zlib
 from .contract import Held, digest, jar_name, matches, require
 
 
-SQL = """BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY;
+HISTORY_QUERY = """SELECT json_build_object('databaseOid',(SELECT oid::text FROM pg_database WHERE datname=current_database()),
+'history',(SELECT json_agg(json_build_object('version',version,'script',script,'type',type,
+'checksum',checksum,'success',success) ORDER BY installed_rank) FROM :"schema".flyway_schema_history))"""
+
+SQL = f"""BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY;
 SET LOCAL statement_timeout='5s';
 SET LOCAL search_path=pg_catalog;
-SELECT json_build_object('databaseOid',(SELECT oid::text FROM pg_database WHERE datname=current_database()),
-'history',(SELECT json_agg(json_build_object('version',version,'script',script,'type',type,
-'checksum',checksum,'success',success) ORDER BY installed_rank) FROM :"schema".flyway_schema_history));
+{HISTORY_QUERY};
 ROLLBACK;"""
 
 
@@ -31,7 +33,7 @@ def flyway_checksum(raw):
     return value if value < 2**31 else value-2**32
 
 
-def java_migrations(jar):
+def java_migrations(jar, *, scripts=None):
     """Read migration bytes from the already verified packaged executable JAR."""
     rows = []
     with zipfile.ZipFile(jar) as archive:
@@ -44,6 +46,8 @@ def java_migrations(jar):
             require(match is not None and member.filename == 'BOOT-INF/classes/db/migration/'+name,
                     'REPEATABLE_OR_CUSTOM_MIGRATION_REQUIRES_REVIEW')
             raw = archive.read(member)
+            if scripts is not None:
+                scripts[name] = raw
             rows.append({'version':match[1].replace('_','.'),'script':name,'type':'SQL',
                          'checksum':flyway_checksum(raw),'success':True})
     rows.sort(key=lambda r:tuple(int(v) for v in r['version'].split('.')))
@@ -51,7 +55,7 @@ def java_migrations(jar):
     return rows
 
 
-def inventory(doc):
+def inventory(doc, *, scripts=None):
     # Resolve only fixed regular components in PID 1's pinned root. The gate has
     # not yet exec'd Java. A symlink in the image must never select a host file.
     flags = os.O_RDONLY | os.O_DIRECTORY
@@ -67,7 +71,7 @@ def inventory(doc):
     with os.fdopen(fd, "rb") as jar:
         info = os.fstat(fd)
         require(stat.S_ISREG(info.st_mode) and 0 < info.st_size <= 512 << 20, "FLYWAY_JAR_UNPROVEN")
-        return java_migrations(jar)
+        return java_migrations(jar, scripts=scripts)
 
 
 def canonical_property(name):

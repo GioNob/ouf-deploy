@@ -52,6 +52,13 @@ def matches(pattern, value):
     return isinstance(value, str) and re.fullmatch(pattern, value) is not None
 
 
+def valid_semantic_database(db):
+    return (isinstance(db, dict) and set(db) == {"postgresCid", "socket", "user", "database", "schema"}
+            and matches(r"[a-f0-9]{64}", db["postgresCid"])
+            and matches(r"/(?:[a-zA-Z0-9_-]+/)*[a-zA-Z0-9_-]+", db["socket"])
+            and all(matches(r"[a-z_][a-z0-9_]{0,62}", db[k]) for k in ("user", "database", "schema")))
+
+
 NAME = r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}"
 SHA = r"[0-9a-f]{64}"
 IMAGE = "sha256:" + SHA

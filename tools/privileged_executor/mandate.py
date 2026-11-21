@@ -43,6 +43,9 @@ def validate(req, policy):
              or (req["phase"] == "rollback" and {"database", "flyway"}.intersection(
                  policy["modules"][req["module"]]["migration"]))),
              "MODULE_REQUEST_SCOPE")
+    elif req.get("operation") == "semantic-database-migration":
+        need(set(req) == common | {"operation"} and req["phase"] in ("plan", "apply")
+             and "semanticDatabase" in policy, "SEMANTIC_DATABASE_REQUEST_SCOPE")
     elif req.get("operation") == "gateway-release":
         from gateway_policy import valid_request
         need("gateway" in policy and valid_request(req, common), "GATEWAY_REQUEST_SCOPE")
@@ -97,6 +100,8 @@ def authorize(req, policy, get, state):
     workflow = (module_workflow(req["module"]) if req.get("operation") == "module-release" else WORKFLOW)
     if req.get("operation") == "gateway-release":
         workflow = ".github/workflows/gateway-release.yml"
+    if req.get("operation") == "semantic-database-migration":
+        workflow = ".github/workflows/semantic-database-migration.yml"
     need(str(run["id"]) == req["run"] and run["run_attempt"] == 1
          and run["event"] == "workflow_dispatch" and run["status"] in ("in_progress", "queued")
          and run["path"] == workflow and run["head_sha"] == req["commit"]

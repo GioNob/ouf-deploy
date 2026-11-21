@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 
 from mandate import Held, digest, need
-from module_release.contract import CI_COORDINATES, NAME, Held as ReleaseHeld, matches, package, validate_ci
+from module_release.contract import CI_COORDINATES, NAME, SEMANTIC_SCHEMA, Held as ReleaseHeld, matches, package, validate_ci
 from module_release.docker import Docker
 from module_release.provenance import select_artifact, verify_tested_tree
 
@@ -23,6 +23,8 @@ def admit(cfg, journal, source_get):
     try:
         need(set(ci) == set(CI_COORDINATES), "SEMANTIC_CI_PROFILE_REQUIRED")
         validate_ci(ci)
+        if ci["manifestSchema"] == SEMANTIC_SCHEMA:
+            need(spec["migrationsField"] == "flywayMigrations", "SEMANTIC_MIGRATION_MANIFEST_FIELD")
         need(repo.split("/")[-1] == "ouf-semantic-registry" and matches(NAME, ci["workflow"])
              and type(ci["pullRequest"]) is int and ci["pullRequest"] > 0
              and matches(NAME, ci["manifestSchema"]) and matches(NAME, spec["migrationsField"])
@@ -48,7 +50,23 @@ def admit(cfg, journal, source_get):
 
 def migration_review(plan, stage):
     image = plan.get("successorImage")
+    if "committedFrom" in plan and "databaseMigration" in stage:
+        return None
+    if "databaseMigration" in stage:
+        return digest({"mode": "governed-sql", "stage": digest(stage), "plan": digest(plan)})
     if image and image["newMigrations"]:
         return digest({"mode": "spring-flyway", "stage": digest(stage), "plan": digest(plan),
                        "imageId": image["ci"]["imageId"], "newMigrations": image["newMigrations"]})
     return None
+
+
+def live_manifest(cfg, image):
+    specs = [cfg[k] for k in ("nextSuccessorImage", "successorImage")
+             if k in cfg and cfg[k]["ci"]["imageId"] == image]
+    need(len(specs) == 1 and specs[0]["migrationsField"] == "flywayMigrations"
+         and specs[0]["ci"]["manifestSchema"] == SEMANTIC_SCHEMA
+         and specs[0]["ci"]["repository"].split("/")[-1] == "ouf-semantic-registry", "LIVE_SEMANTIC_MANIFEST_REQUIRED")
+    try:
+        return package(specs[0], migrations_field="flywayMigrations")["migrations"]
+    except ReleaseHeld as exc:
+        raise Held(str(exc)) from None

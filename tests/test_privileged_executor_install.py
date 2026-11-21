@@ -39,6 +39,7 @@ class Bootstrap(unittest.TestCase):
             sourceCommit="a"*40, sourceTree="b"*40, workflow="module-ci.yml", manifestSchema="fixture.v1",
             runId=3, runAttempt=1, artifactId=4, pullRequest=2, zipSha256="a"*64, imageId="sha256:"+"b"*64)
         c.update(container="pg", role="reader", database="semantic", socket="/run/postgresql")
+        cfg["semanticDatabase"].update(postgresCid="d"*64, socket=c["socket"])
         module = cfg["modules"]["onboarding"]
         cfg["gateway"].update(host="127.0.0.1", port=9180, adminPath="/apisix/admin", keyFile=str(tmp/"key"),
                               dockerSocket=cfg["socket"], container="fixture")
@@ -115,6 +116,7 @@ class Bootstrap(unittest.TestCase):
         for successor, gateway, mcp in itertools.product((False, True), repeat=3):
             with self.subTest(successor=successor, gateway=gateway, mcp=mcp):
                 cfg = json.loads(original)
+                del cfg["semanticDatabase"]
                 if not successor:
                     del cfg["successorImage"]
                 if not gateway:
