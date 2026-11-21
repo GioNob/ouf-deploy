@@ -674,3 +674,22 @@ Controller `f846940c`, launcher `2a73a13f`. [Otto test passati](https://github.c
 ## Cutover A2 del 21 novembre 2026
 
 Nel run 44877430252 il daemon ha aggiunto alla Config del successore una label della sua immagine. Il confronto prima dell’avvio ha fermato il forward. Nel percorso di ritorno usato dal run 44879131658, l’osservatore richiedeva un container running. La fixture di task-17u riproduce il disaccordo e verifica ripresa, ritorno sulla testa 27 e successiva transazione. I due run sono segnalazioni dell’operatore. La prova su Docker reale è predisposta nella suite nativa esistente.
+
+## 21 novembre 2026 · sprint-03/03
+
+Worktree su `4adbda46`. Le fixture portabili verificano ripresa o ritorno con readiness e diniego leggibile in caso di identità o storia incerta. La fixture APISIX verifica il ritorno alla prima baseline. Qualifica Linux e osservazioni target pendenti. [Matrice](OUF_PRIVILEGED_PIPELINE.md#matrice-delle-interruzioni-di-moduli-e-gateway)
+
+## 21 novembre 2026 · sprint-03/10
+
+L’owner riferisce la conclusione del forward A2 sulla testa 28 nel run 44882047892. Implementato il rilascio successivo con review Flyway, archivio dei puntatori, riprese e ritorno pre-firma alla linea C. La qualifica nativa del cambiamento resta da eseguire. [Procedura](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)
+
+## 21 novembre 2026 · sprint-03/10b
+
+Verificato offline il ritorno dalla 29 al predecessore della linea C con nuova emissione 30 e ripresa da journal. Il forward next richiede i cinque binding v30, non una rinuncia al ritorno. Nessun effetto sul target. [Procedura e pin](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)
+## 21 novembre 2026 · sprint-03/12f
+
+Sulla base `8cbcaa40` il rilascio privilegiato di UDP e Ingestion supera le prove portabili di gate, review Flyway, segnale interrotto e ritorno. La CI include una prova UDP con Java, Flyway e PostgreSQL. Restano la sua esecuzione Linux e la verifica dei profili e dei pin reali. [Procedura](OUF_PRIVILEGED_PIPELINE.md#rilascio-di-udp-e-ingestion)
+
+## 21 novembre 2026 · sprint-03/12f2
+
+Sulla base `5a5871eb` la fixture portabile verifica il delta Ingestion, la review di V21, il confronto della storia dopo il segnale e il ritorno al comando e all’ambiente del predecessore. La V21 sintetica ha aggiunto la colonna attesa in SQLite. La fixture Linux usa lo stesso SQL con Flyway e PostgreSQL. La sua esecuzione e la verifica sul target restano pendenti. [Procedura](OUF_PRIVILEGED_PIPELINE.md#argomenti-di-ingestion-e-verifica-di-v21)

@@ -15,6 +15,20 @@ class Held(Exception):
     """Only stable reason codes may cross the executor boundary."""
 
 
+def diagnostic(prefix, exc):
+    # Only code locations inside the installed executor may cross this boundary.
+    directories = {Path(__file__).resolve().parent, Path(__file__).resolve().parent.parent}
+    directories.add(Path(__file__).resolve().parent.parent / "privileged_executor")
+    tb = exc.__traceback__
+    location = "unknown:0"
+    while tb:
+        source = Path(tb.tb_frame.f_code.co_filename).resolve()
+        if source.parent in directories:
+            location = f"{source.name}:{tb.tb_lineno}"
+        tb = tb.tb_next
+    return f"{prefix}/{type(exc).__name__}@{location}"
+
+
 def require(condition, code):
     if not condition:
         raise Held(code)
@@ -49,10 +63,16 @@ MCP_CI_COORDINATES = COMMON_CI_COORDINATES + ("publisherFormat", "artifactPrefix
 GATE = ('OUF_APPLICATION_GATE=0; trap "OUF_APPLICATION_GATE=1" USR1; '
         'while [ "$OUF_APPLICATION_GATE" = 0 ]; do sleep 1 & wait "$!"; done; exec "$@"')
 ENTRY = ["/bin/sh", "-c", GATE, "ouf-gated-application"]
+INGESTION_STARTUP_FLAGS = ("--spring.flyway.enabled=false", "--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY")
 
 
 def argv(value):
     return isinstance(value, list) and value and all(isinstance(v, str) and v and "\0" not in v for v in value)
+
+
+def candidate_command(command, candidate):
+    removed = candidate.get("removeArgs", [])
+    return [arg for arg in command if arg not in removed]
 
 
 def validate(p):
@@ -77,12 +97,41 @@ def validate(p):
             and ready["acceptStatus"] and all(type(s) is int and 200 <= s < 300 for s in ready["acceptStatus"])
             and ("jsonStatus" not in ready or isinstance(ready["jsonStatus"], str)), "INVALID_READINESS")
     migration = p["migration"]
+    if "candidate" in p:
+        candidate = p["candidate"]
+        require(migration["mode"] == "spring-flyway"
+                and isinstance(candidate, dict) and candidate and set(candidate) <= {"removeArgs", "enableFlyway"},
+                "INVALID_CANDIDATE_PROFILE")
+        removed = candidate.get("removeArgs", [])
+        command = p["gate"]["command"]
+        jar_name(command)
+        options = command[command.index("-jar") + 2:]
+        require(isinstance(removed, list) and ("removeArgs" not in candidate or removed)
+                and all(matches(r"--[a-z][a-z0-9.-]*=[^\x00\r\n]+", arg) and arg in options
+                        and removed.count(arg) == command.count(arg) == 1 for arg in removed)
+                and candidate.get("enableFlyway", True) is True, "INVALID_CANDIDATE_PROFILE")
     require(migration["mode"] in ("none", "spring-flyway", "dedicated")
             and type(migration["rollbackCompatible"]) is bool, "INVALID_MIGRATION")
     require(("command" in migration) == (migration["mode"] == "dedicated")
             and ("command" not in migration or argv(migration["command"])), "INVALID_MIGRATION_COMMAND")
     ci = p["ci"]
     validate_ci(ci)
+    if "flyway" in migration or p["module"] in ("udp", "ingestion"):
+        db = migration.get("flyway", {})
+        ident = r"[a-z_][a-z0-9_]{0,62}"
+        require(migration["mode"] == "spring-flyway" and "database" not in migration
+                and matches(SHA, db.get("postgresCid")) and matches(r"/[a-zA-Z0-9_./-]+", db.get("socket"))
+                and ".." not in db["socket"].split("/")
+                and all(matches(ident, db.get(k)) for k in ("database", "schema"))
+                and all(matches(r"[A-Z_][A-Z_0-9]*", db.get(k)) for k in ("urlEnv", "userEnv"))
+                and db["urlEnv"] != db["userEnv"], "INVALID_FLYWAY_BINDING")
+        require("effectiveDatasource" not in db or db["effectiveDatasource"] == "profile-env",
+                "INVALID_FLYWAY_BINDING")
+        jar_name(p["gate"]["command"])
+    if p["module"] in ("udp", "ingestion"):
+        require(matches(NAME, ci.get("artifactPrefix")) and matches(NAME, ci.get("manifestSchema"))
+                and "publisherFormat" not in ci and matches(NAME, ci.get("workflow"))
+                and type(ci.get("pullRequest")) is int and ci["pullRequest"] > 0, "JAVA_PUBLISHER_PINS_REQUIRED")
     labels = p.get("provenanceLabels", {})
     require(isinstance(labels, dict) and all(matches(NAME, key) and field in ("publisherCommit", "sourceCommit")
             and field in ci for key, field in labels.items()), "INVALID_PROVENANCE_LABELS")
@@ -103,6 +152,13 @@ def validate(p):
                 for i, item in enumerate(items, db["version"] + 1)), "INVALID_MIGRATION_LIST")
         require(migration["mode"] == ("dedicated" if items else "none")
                 and (not items or matches(SHA, migration.get("targetSchemaSha256"))), "MIGRATION_MODE_MISMATCH")
+
+
+def jar_name(command):
+    require(command.count("-jar") == 1, "FLYWAY_JAR_UNPROVEN")
+    tail = command[command.index("-jar") + 1:]
+    require(tail and matches(r"/app/[A-Za-z0-9_-][A-Za-z0-9._-]*\.jar", tail[0]), "FLYWAY_JAR_UNPROVEN")
+    return tail[0].split("/")[-1]
 
 
 def validate_ci(ci):
@@ -145,7 +201,7 @@ def image_metadata(archive, verify_blobs):
     return metadata, blob_sizes
 
 
-def image_ids(archive, tag, repository, tested, *, publisher_config=None):
+def image_ids(archive, tag, repository, tested, *, publisher_config=None, image_defaults=None):
     """Bind both Docker store identities to the single CI image, without extracting files."""
     metadata, blob_sizes = image_metadata(archive, verify_blobs=publisher_config is not None)
     entry, = json.loads(metadata["manifest.json"])
@@ -154,6 +210,8 @@ def image_ids(archive, tag, repository, tested, *, publisher_config=None):
     config_hash = hashlib.sha256(raw).hexdigest()
     require(entry["Config"] in ("blobs/sha256/" + config_hash, config_hash + ".json"), "IMAGE_CONFIG_DIGEST_CHANGED")
     config = json.loads(raw)["config"]
+    if image_defaults is not None:
+        image_defaults.update(config)
     labels = config.get("Labels") or {}
     verify_labels(labels, repository, tested, optional=publisher_config is not None)
     if publisher_config is not None:
@@ -185,7 +243,7 @@ def verify_labels(labels, repository, tested, *, optional):
             "IMAGE_LABELS_CHANGED")
 
 
-def package(p, target=None, *, transport=False, migrations_field=None):
+def package(p, target=None, *, transport=False, migrations_field=None, image_defaults=None):
     """Hash the exact open ZIP and inner payload. Only copy verified bytes to private custody."""
     ci = p["ci"]
     path = Path(p["inbox"]) / (ci["zipSha256"] + ".zip")
@@ -228,7 +286,7 @@ def package(p, target=None, *, transport=False, migrations_field=None):
             require(manifest["archiveSha256"] == archive_hash and
                     z.read("SHA256SUMS") == (archive_hash + "  image.tar.gz\n").encode(), "IMAGE_ARCHIVE_DIGEST_CHANGED")
             with z.open("image.tar.gz") as archive:
-                ids = image_ids(archive, tag, ci["repository"], tested)
+                ids = image_ids(archive, tag, ci["repository"], tested, image_defaults=image_defaults)
             require(manifest["imageId"] in ids and (transport or ci["imageId"] in ids), "IMAGE_ID_CHANGED")
             require(os.fstat(stream.fileno()).st_ctime_ns == info.st_ctime_ns, "ARTIFACT_CHANGED_DURING_READ")
             facts = {"archiveSha256": archive_hash, "imageTag": tag, "testedCommit": tested,

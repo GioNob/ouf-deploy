@@ -14,7 +14,7 @@ import sys
 import time
 from urllib.parse import quote
 
-from .contract import ENTRY, Held, require, verify_labels
+from .contract import ENTRY, Held, candidate_command, require, verify_labels
 from .postgres import database_snapshot
 
 
@@ -71,6 +71,7 @@ def gate_shell_matches(proc):
 class Docker:
     def __init__(self, profile):
         self.p = profile
+        self.flyway_peer = None
 
     def api(self, method, path, body=None, *, archive=None, missing=False):
         sock = self.p["dockerSocket"]
@@ -113,6 +114,11 @@ class Docker:
         verify_labels(image["Config"].get("Labels") or {}, ci["repository"], package["testedCommit"],
                       optional=ci.get("publisherFormat") == "acquisition-mcp")
 
+    def image_defaults(self, image_id):
+        image = self.api("GET", "/images/" + quote(image_id, safe="") + "/json")
+        require(image["Id"] == image_id, "LOADED_IMAGE_CHANGED")
+        return image["Config"]
+
     def database(self, old):
         binding = self.p["migration"]["database"]
         return database_snapshot(self.p["dockerSocket"], binding, old, self.inspect(binding["postgresCid"]))
@@ -137,6 +143,8 @@ class Docker:
 
     def process(self, doc, gated):
         command = self.p["gate"]["command"]
+        if "candidate" in self.p and doc["Image"] == self.p["ci"]["imageId"]:
+            command = candidate_command(command, self.p["candidate"])
         pid = doc["State"]["Pid"]
         if not doc["State"]["Running"] or pid <= 0:
             return False

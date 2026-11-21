@@ -367,6 +367,8 @@ class Phases(unittest.TestCase):
         self.select(desired)
         for i in range(1, 7):
             self.admin.data[("routes", str(i))] = {"uri": f"/old/{i}", "methods": ["GET"]}
+        original = deepcopy(self.admin.data)
+        published = deepcopy(self.package.return_value)
         # The old executor added priority/status to the snapshot and PUT body.
         for resource in self.package.return_value[1]:
             resource["body"].update(priority=0, status=1)
@@ -384,7 +386,7 @@ class Phases(unittest.TestCase):
             self.select(other)
             with self.assertRaisesRegex(mandate.Held, "^GATEWAY_PENDING_PACKAGE_DRIFT$"):
                 self.phase(self.new_plan_request("74"))
-        self.select(desired)
+        self.package.return_value = published
         self.admin.on_write = lambda *_: None
         new = self.new_plan_request("72")
         recovered = self.phase(new)
@@ -405,8 +407,30 @@ class Phases(unittest.TestCase):
         for resource in desired:
             self.assertEqual(self.admin.data[("routes", resource["id"])]["uri"], resource["body"]["uri"])
         self.phase(dict(self.return_req(receipt), releaseRun=new["run"]))
-        self.assertEqual(self.admin.data, mixed)
-        self.assertEqual(store.read(self.root / "gateway-head"), pending)
+        self.assertEqual(self.admin.data, original)
+        self.assertIsNone(store.read(self.root / "gateway-head"))
+
+    def test_second_recovery_returns_to_original_applied_parent(self):
+        parent = self.phase(self.plan())
+        head = store.read(self.root / "gateway-head")
+        before = deepcopy(self.admin.data)
+        self.select([row("routes", str(i), {"uri": f"/next/{i}", "desc": MARKER}) for i in range(3)])
+        def crash(*_):
+            raise KeyboardInterrupt
+        for run in ("75", "76"):
+            request = self.new_plan_request(run)
+            plan = self.phase(request)
+            self.admin.on_write = crash
+            with self.assertRaises(KeyboardInterrupt):
+                self.phase(dict(request, phase="apply", digest=plan["digest"]))
+        self.admin.on_write = lambda *_: None
+        request = self.new_plan_request("77")
+        plan = self.phase(request)
+        receipt = self.phase(dict(request, phase="apply", digest=plan["digest"]))
+        self.phase(dict(self.return_req(receipt), releaseRun="77"))
+        self.assertEqual(self.admin.data, before)
+        self.assertEqual(store.read(self.root / "gateway-head"), head)
+        self.assertEqual(head["digest"], parent["digest"])
 
     def test_delete_ack_does_not_prove_compensation_without_absence(self):
         key = ("routes", "created")
@@ -467,6 +491,10 @@ class Phases(unittest.TestCase):
         with patch.object(self.admin, "get", side_effect=OSError(SECRET)), \
                 self.assertRaisesRegex(mandate.Held, "^GATEWAY_ADMIN_REQUEST$"):
             self.phase(REQ)
+        report = store.read(self.root / REQ["run"] / "gateway.plan.held")
+        self.assertEqual((report["owner"], report["residual"]), ("gateway", "no-head"))
+        self.assertRegex(report["diagnostic"], r"/OSError@gateway_operation\.py:[0-9]+$")
+        self.assertNotIn(SECRET, str(report))
         self.assertEqual(store.read(self.root / REQ["run"] / "gateway.plan.diagnostics"), [
             dict(stage="plan-get", kind="upstreams", id="one", paths=["$: unavailable"])])
 

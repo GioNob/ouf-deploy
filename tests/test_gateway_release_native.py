@@ -303,7 +303,7 @@ class NativeRelease(unittest.TestCase):
         self.assertEqual(plan["counts"], dict(create=7, update=0, unchanged=0))
         self.apply_readback_return(req, plan, routes, [None] * len(routes), None)
 
-    def test_published_release_recovers_first_put_and_returns_to_pending_snapshot(self):
+    def test_published_release_recovers_first_put_and_returns_to_original_snapshot(self):
         routes = self.published_routes()
         with connect(self.profile) as (admin, _):
             old_routes = [seed_route(admin, route) for route in routes[1:]]
@@ -330,4 +330,4 @@ class NativeRelease(unittest.TestCase):
         resumed = self.phase(recovery)
         self.assertEqual(resumed["recoveringRun"], req["run"])
         self.assertEqual(resumed["counts"], dict(create=0, update=6, unchanged=1))
-        self.apply_readback_return(recovery, resumed, routes, mixed, pending)
+        self.apply_readback_return(recovery, resumed, routes, [None, *old_routes], None)

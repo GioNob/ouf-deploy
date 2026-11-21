@@ -20,11 +20,12 @@ sys.path[:0] = [str(ROOT), str(ROOT / "tools"), *(str(ROOT / "tools" / folder) f
 
 from tools.module_release.contract import ENTRY, Held
 from tools.module_release import docker
+from tools.module_release.frame import merge_image
 from tools.module_release.operation import apply, migrate, plan
 from tools.module_release.transport import select
 
 
-PROFILE = Path(__file__).resolve().parents[1] / "config/module-release/onboarding.example.json"
+PROFILE = Path(__file__).resolve().parents[1] / "tests/fixtures/module-release/onboarding.example.json"
 OLD, NEW = "1" * 64, "2" * 64
 TESTED = "d" * 40
 
@@ -34,6 +35,27 @@ def sha(data):
 
 
 class GateProcessTest(unittest.TestCase):
+    def test_ingestion_gate_and_java_match_only_the_command_of_their_image(self):
+        proc = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        profile = json.loads(PROFILE.with_name("ingestion.example.json").read_bytes())
+        profile["gate"]["executable"] = "/opt/java/bin/java"
+        old = profile["gate"]["command"]
+        new = old[:3]
+        doc = {"State": {"Pid": 42, "Running": True}}
+        (proc / "status").write_text("SigCgt:\t00000200\n")
+        self.enterContext(patch.object(docker, "Path", return_value=proc))
+        self.enterContext(patch.object(docker.signal, "SIGUSR1", 10, create=True))
+        self.enterContext(patch.object(docker, "gate_shell_matches", return_value=True))
+        self.enterContext(patch.object(docker.os, "readlink", return_value="/opt/java/bin/java"))
+        rt = docker.Docker(profile)
+        for image, expected in ((profile["oldImage"], old), (profile["ci"]["imageId"], new)):
+            doc["Image"] = image
+            for gated in (True, False):
+                for actual in (new, old):
+                    argv = ENTRY + actual if gated else actual
+                    (proc / "cmdline").write_bytes(b"\0".join(arg.encode() for arg in argv) + b"\0")
+                    self.assertEqual(rt.process(doc, gated), actual == expected)
+
     def test_shell_links_argv_and_signal_mask(self):
         proc = Path(self.enterContext(tempfile.TemporaryDirectory()))
         command = ["/usr/local/bin/ouf-mcp", "server"]
@@ -76,11 +98,14 @@ class GateProcessTest(unittest.TestCase):
         self.assertFalse(rt.process(doc, gated=True))
 
 
-def artifact(p, root, **manifest_changes):
+def artifact(p, root, *, image_env=None, **manifest_changes):
     ci = p["ci"]
     tag = ci["imageName"] + ":" + TESTED
-    raw = json.dumps({"config": {"Labels": {"org.opencontainers.image.revision": TESTED,
-                                            "org.opencontainers.image.source": "https://github.com/" + ci["repository"]}}}).encode()
+    defaults = {"Labels": {"org.opencontainers.image.revision": TESTED,
+                           "org.opencontainers.image.source": "https://github.com/" + ci["repository"]}}
+    if image_env is not None:
+        defaults["Env"] = image_env
+    raw = json.dumps({"config": defaults}).encode()
     config = sha(raw)
     publisher = json.dumps({"config": {"digest": "sha256:" + config}}).encode()
     manifest_id = "sha256:" + sha(publisher)
@@ -141,6 +166,9 @@ class Engine:
         assert archive.read() == self.blob
         self.events.append("load")
 
+    def image_defaults(self, image_id):
+        return {}
+
     def stop(self, cid):
         self.events.append("stop:" + cid[0])
         self.docs[cid]["State"].update(Running=False, Status="exited", Pid=0)
@@ -177,8 +205,10 @@ class Engine:
         cfg = copy.deepcopy(request)
         nets = cfg.pop("NetworkingConfig")["EndpointsConfig"]
         doc["HostConfig"] = cfg.pop("HostConfig")
+        merge_image(cfg, self.image_defaults(cfg["Image"]))
         doc.update(Id=NEW, Name="/" + name, Image=cfg["Image"], Config=cfg)
-        doc["State"]["Status"] = "created"
+        doc["Path"], *doc["Args"] = cfg["Entrypoint"] + cfg["Cmd"]
+        doc["State"].update(Status="created", StartedAt="0001-01-01T00:00:00Z", FinishedAt="0001-01-01T00:00:00Z")
         for net, settings in nets.items():
             assert "MacAddress" not in settings
             self.connect(NEW, self.nets[net]["NetworkID"], settings)
@@ -252,6 +282,11 @@ class ReleaseTest(unittest.TestCase):
         import module_operation
         import store
         dispatch = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["dispatch"]
+        command = self.p["gate"]["command"] + ["--fixture.option=private-marker"]
+        self.p["gate"]["command"] = command
+        self.p["candidate"] = {"removeArgs": command[-1:]}
+        self.rt.docs[OLD]["Config"]["Cmd"] = command
+        self.rt.docs[OLD]["Args"] = ENTRY[1:] + command
         cfg = dict(repositoryId=10, environmentId=20, branch="protected", environment="test",
                    reviewerIds=[30], commit="a"*40, runner="fixture", modules={"onboarding":self.p})
         req = dict(run="1", attempt="1", commit=cfg["commit"], operation="module-release",
@@ -274,6 +309,8 @@ class ReleaseTest(unittest.TestCase):
             with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
                 call(0, workflow=mandate.WORKFLOW)
             plan_result = call(0)
+            self.assertEqual(plan_result["candidateReview"]["removedArgs"], ["--fixture.option=<redacted>"])
+            self.assertFalse("private-marker" in json.dumps(plan_result))
             req.update(phase="apply", digest=plan_result["digest"])
             with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
                 call(0)
@@ -384,9 +421,36 @@ class ReleaseTest(unittest.TestCase):
         self.assertFalse(self.rt.docs[NEW]["NetworkSettings"]["Networks"])
 
     def test_uncertain_signal_never_replayed(self):
+        self.p["migration"]["mode"] = "none"
         self.rt.fault = "lost_signal"
-        self.assertEqual(self.execute()["rollback"], "ROLLED_BACK")
+        self.assertEqual(self.execute()["status"], "READY")
         self.assertEqual(self.rt.events.count("signal:2"), 1)
+
+    def test_missing_flyway_receipt_requires_reviewed_checksums_and_same_generation(self):
+        from tools.module_release import flyway, recovery
+        rt = self.rt
+        rt.flyway_peer = {"postgresCid": "3"*64}
+        expected = [dict(version=str(n), script=f"V{n}__fixture.sql", type="SQL", checksum=n, success=True)
+                    for n in (1, 2)]
+        history = {"peer": "3"*64, "db": "42", "history": expected[:1]}
+        with patch.object(flyway, "inventory", return_value=expected), patch.object(flyway, "observe", return_value=history):
+            stamp = self.planned()
+            stage = apply(self.p, stamp, rt, defer_migration=True)
+            signal = rt.signal
+            def interrupted(cid):
+                signal(cid)
+                history["history"].append(dict(expected[1], checksum=-1))
+                raise KeyboardInterrupt
+            with patch.object(rt, "signal", side_effect=interrupted), self.assertRaises(KeyboardInterrupt):
+                migrate(self.p, stamp, stage["migrationSha256"], rt)
+            with self.assertRaisesRegex(Held, "FLYWAY_OUTCOME_UNCONFIRMED"):
+                recovery.resume(self.p, rt, recovery.proposal(self.p, rt))
+            self.assertEqual(rt.events.count("signal:2"), 1)
+            self.assertNotIn("signal:1", rt.events)
+            history["history"][-1] = expected[1]
+            final = recovery.resume(self.p, rt, recovery.proposal(self.p, rt))
+            self.assertEqual((final["status"], final["readyHttp"]), ("READY", 200))
+            self.assertEqual(rt.events.count("signal:2"), 1)
 
     def test_lost_create_response_preserves_both_containers_and_exclusion(self):
         self.rt.fault = "lost_create"

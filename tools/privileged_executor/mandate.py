@@ -40,13 +40,20 @@ def validate(req, policy):
     if req.get("operation") == "module-release":
         need(set(req) == common | {"operation", "module"} and isinstance(req["module"], str)
              and req["module"] in policy["modules"] and (req["phase"] in ("plan", "apply", "migrate")
-             or (req["phase"] == "rollback" and "database" in policy["modules"][req["module"]]["migration"])),
+             or (req["phase"] == "rollback" and {"database", "flyway"}.intersection(
+                 policy["modules"][req["module"]]["migration"]))),
              "MODULE_REQUEST_SCOPE")
     elif req.get("operation") == "gateway-release":
         from gateway_policy import valid_request
         need("gateway" in policy and valid_request(req, common), "GATEWAY_REQUEST_SCOPE")
     else:
-        need(set(req) == common | {"direction", "queue"} and req["phase"] in PHASES
+        fields = common | {"direction", "queue"}
+        if req.get("release") == "next":
+            fields.add("release")
+            if "confirmNoReturn" in req:
+                fields.add("confirmNoReturn")
+                need(type(req["confirmNoReturn"]) is bool, "RETURN_CONFIRMATION_FIELD")
+        need(set(req) == fields and req["phase"] in PHASES
              and req["direction"] in ("forward", "return") and req["queue"] in ("empty", "inventory")
              and (req["phase"] not in ("proof", "migrate") or req["direction"] == "forward"), "REQUEST_FIELDS")
     need(req["attempt"] == "1"

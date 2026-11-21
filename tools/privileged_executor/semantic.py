@@ -13,52 +13,24 @@ from gated_creation_plan import ENTRY
 from gated_process_observation import GatedProcessObservation
 from semantic_identity_v25 import semantic_configuration
 from mandate import canonical, hex64, need
+from module_release.frame import merge_image
 
 WORKER = "OUF_DISCOVERY_WORKER_ENABLED"
 PROVIDER = "OUF_SCHEMA_GOV_ENABLED"
-
-
-def merge_image(cfg, image):
-    """Docker daemon merge for a Linux container (API 1.44), request wins."""
-    need(isinstance(image, dict), "IMAGE_CONFIG_REQUIRED")
-    for field in ("User", "WorkingDir", "StopSignal"):
-        if not cfg.get(field) and image.get(field):
-            cfg[field] = image[field]
-    for field in ("Labels", "Volumes", "ExposedPorts"):
-        if image.get(field):
-            cfg[field] = {**image[field], **(cfg.get(field) or {})}
-    if not cfg.get("Labels") and "Labels" in image:
-        cfg["Labels"] = copy.deepcopy(image["Labels"])
-    if image.get("Env"):
-        env = cfg.get("Env") or []
-        keys = {entry.partition("=")[0] for entry in env}
-        cfg["Env"] = env + [entry for entry in image["Env"] if entry.partition("=")[0] not in keys]
-    if not cfg.get("Entrypoint"):
-        if not cfg.get("Cmd") and image.get("Cmd"):
-            cfg["Cmd"] = list(image["Cmd"])
-        if cfg.get("Entrypoint") is None and image.get("Entrypoint"):
-            cfg["Entrypoint"] = list(image["Entrypoint"])
-    health = image.get("Healthcheck")
-    if health is not None:
-        if cfg.get("Healthcheck") is None:
-            cfg["Healthcheck"] = copy.deepcopy(health)
-        else:
-            for key in ("Test", "Interval", "Timeout", "Retries", "StartPeriod", "StartInterval"):
-                if not cfg["Healthcheck"].get(key) and health.get(key):
-                    cfg["Healthcheck"][key] = copy.deepcopy(health[key])
 
 
 def configuration(request):
     return {k: v for k, v in request.items() if k not in ("HostConfig", "NetworkingConfig")}
 
 
-def prepare(old, profile, successor_image=None, image_config=None):
+def prepare(old, profile, successor_image=None, image_config=None, *, worker_enabled=False):
     cfg, host = copy.deepcopy(old["Config"]), copy.deepcopy(old["HostConfig"])
     need(old["Image"] == profile["image"] and semantic_configuration(old) == profile["configurationSha256"]
          and old["Name"] == "/" + profile["containerName"], "BASELINE_DRIFT")
     env = cfg["Env"]
     keys = [v.split("=", 1)[0] for v in env]
-    need(len(keys) == len(set(keys)) and WORKER+"=false" in env and PROVIDER+"=true" in env,
+    baseline = "true" if worker_enabled else "false"
+    need(len(keys) == len(set(keys)) and WORKER+"="+baseline in env and PROVIDER+"=true" in env,
          "WORKER_BASELINE")
     need(cfg["Entrypoint"] == ENTRY and cfg["Cmd"] == ["java", "-XX:MaxRAMPercentage=75", "-jar",
          "/app/application.jar"] and cfg["User"] == "10001:10001" and not host["AutoRemove"]
@@ -67,6 +39,7 @@ def prepare(old, profile, successor_image=None, image_config=None):
     cfg["Env"][keys.index(WORKER)] = WORKER + "=true"
     if successor_image is not None:
         # The request always carries the gate Entrypoint, so the daemon ignores the image's own.
+        need(isinstance(image_config, dict), "IMAGE_CONFIG_REQUIRED")
         merge_image(cfg, image_config)
         cfg["Image"] = successor_image
         profile = {**profile, "image": successor_image}
@@ -191,10 +164,16 @@ class Engine:
         row = self.inspect(cid)
         need(row["Id"] == cid and not row["State"]["Running"] and not row["NetworkSettings"]["Networks"]
              and self.inspect(name, True) is None, "RETURN_CID_UNPROVEN")
-        self.call("POST", f"containers/{cid}/rename?name=" + quote(name, safe=""))
-        for net, endpoint in endpoints.items():
-            self.call("POST", "networks/" + networks[net] + "/connect",
-                      {"Container": cid, "EndpointConfig": endpoint})
+        return self.reconnect_missing(cid, name, endpoints, networks, rename=True, missing=networks)
+
+    def reconnect_missing(self, cid, name, endpoints, networks, *, rename, missing):
+        if rename:
+            need(self.inspect(name, True) is None, "RETURN_NAME_IN_USE")
+            self.call("POST", f"containers/{cid}/rename?name=" + quote(name, safe=""))
+        need(self.inspect(name)["Id"] == cid, "RETURN_CID_UNPROVEN")
+        for network in missing:
+            self.call("POST", "networks/" + networks[network] + "/connect",
+                      {"Container": cid, "EndpointConfig": endpoints[network]})
         return cid
 
     def stopped_gate(self, cid, name, request, image):

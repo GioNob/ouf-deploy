@@ -29,7 +29,10 @@ class NativeRoundTrip(unittest.TestCase):
     def test_distinct_successor_and_original_image_on_return(self):
         self.round_trip("ouf-ci-gate:a2-successor")
 
-    def round_trip(self, successor_tag=None):
+    def test_worker_enabled_next_image_and_interrupted_create(self):
+        self.round_trip("ouf-ci-gate:a2-successor", worker_enabled=True)
+
+    def round_trip(self, successor_tag=None, worker_enabled=False):
         self.assertEqual(os.geteuid(), 0)
         engine = Engine(os.environ["OUF_A2_FIXTURE_SOCKET"])
         self.assertIn("ouf.a2.fixture=true", engine.call("GET", "info")["Labels"])
@@ -48,7 +51,7 @@ class NativeRoundTrip(unittest.TestCase):
         ip = str(subnet.network_address + 3)
         request = dict(Image=image, User="10001:10001", Entrypoint=ENTRY,
                        Cmd=["java","-XX:MaxRAMPercentage=75","-jar","/app/application.jar"],
-                       Env=["OUF_SCHEMA_GOV_ENABLED=true","OUF_DISCOVERY_WORKER_ENABLED=false"],
+                       Env=["OUF_SCHEMA_GOV_ENABLED=true", "OUF_DISCOVERY_WORKER_ENABLED=" + str(worker_enabled).lower()],
                        HostConfig=dict(NetworkMode=name, CapDrop=["ALL"], SecurityOpt=["no-new-privileges:true"],
                                        RestartPolicy={"Name":"no","MaximumRetryCount":0}),
                        NetworkingConfig={"EndpointsConfig":{name:{"Aliases":[name],"IPAMConfig":{"IPv4Address":ip}}}})
@@ -65,12 +68,12 @@ class NativeRoundTrip(unittest.TestCase):
             self.assertNotEqual(candidate, image)
             self.assertNotIn("fixture.a2.successor", row["Config"]["Labels"] or {})
             self.assertNotIn("A2_IMAGE_DEFAULT=yes", row["Config"]["Env"])
-        create, proposed = prepare(row, original, candidate, candidate_config)
+        create, proposed = prepare(row, original, candidate, candidate_config, worker_enabled=worker_enabled)
         nets = {name:net}
         engine.detach(old, name+"-saved", nets)
         if candidate:
             # main copied the predecessor Config, then replaced only Image and the worker.
-            legacy, _ = prepare(row, original)
+            legacy, _ = prepare(row, original, worker_enabled=worker_enabled)
             legacy["Image"] = candidate
             legacy_cid = engine.create(name, legacy, candidate)
             try:
@@ -82,6 +85,13 @@ class NativeRoundTrip(unittest.TestCase):
         cid = engine.create(name, create, proposed["image"])
         self.addCleanup(engine.call, "DELETE", f"containers/{cid}?force=1")
         target = allocated_profile(dict(old=old,template=profile_template(row),request=create,target=proposed),cid)
+        if worker_enabled:
+            # A fresh executor sees the same never-started CID and frozen create request.
+            recovered = Engine(os.environ["OUF_A2_FIXTURE_SOCKET"])
+            stopped = recovered.stopped_gate(cid, name, create, candidate)
+            self.assertEqual(stopped["State"]["Status"], "created")
+            self.assertIn("OUF_DISCOVERY_WORKER_ENABLED=true", stopped["Config"]["Env"])
+            self.assertEqual(recovered.inspect(name+"-saved")["Id"], old)
         engine.start_gate(cid,name,create,proposed["image"])
         with tempfile.TemporaryDirectory() as d:
             def release(container, profile):
@@ -90,6 +100,22 @@ class NativeRoundTrip(unittest.TestCase):
                 java = until(lambda: engine.process(container, profile, "APPLICATION_RUNNING"), 12, "JAVA")
                 self.assertEqual(gen,java)
             release(cid,target)
+            if worker_enabled:
+                # A second image change retains line C while the older CID is still parked.
+                current = engine.inspect(cid)
+                third = engine.call("GET", "images/ouf-ci-gate:" + "d"*40 + "/json")
+                self.assertNotIn(third["Id"], (image, candidate))
+                next_request, next_target = prepare(current, target, third["Id"], third["Config"], worker_enabled=True)
+                engine.detach(cid, name+"-saved-v28", nets)
+                next_cid = engine.create(name, next_request, third["Id"])
+                self.addCleanup(engine.call, "DELETE", f"containers/{next_cid}?force=1")
+                observed = allocated_profile(dict(old=cid, template=profile_template(current),
+                                                 request=next_request, target=next_target), next_cid)
+                engine.start_gate(next_cid, name, next_request, third["Id"])
+                release(next_cid, observed)
+                self.assertEqual(engine.inspect(name+"-saved-v28")["Id"], cid)
+                self.assertEqual(engine.inspect(name+"-saved")["Id"], old)
+                return
             engine.detach(cid, name+"-return", nets)
             engine.reconnect(old,name,create["NetworkingConfig"]["EndpointsConfig"],nets)
             launch = Cutover.return_request({"request": create, "template": profile_template(row)})

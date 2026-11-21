@@ -1,0 +1,71 @@
+{
+  "schema": "ouf.module-release.v1",
+  "module": "ingestion",
+  "container": "SERVICE_NAME",
+  "retainedName": "RETAINED_NAME",
+  "failedName": "FAILED_NAME",
+  "oldImage": "sha256:<approved predecessor image ID>",
+  "networks": {
+    "NETWORK_NAME": {
+      "ipv4": "<installation IPv4>",
+      "aliases": [
+        "<approved network alias>"
+      ]
+    }
+  },
+  "gate": {
+    "command": [
+      "java",
+      "-jar",
+      "/app/app.jar",
+      "--spring.flyway.enabled=false",
+      "--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY"
+    ]
+  },
+  "candidate": {
+    "removeArgs": [
+      "--spring.flyway.enabled=false",
+      "--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY"
+    ],
+    "enableFlyway": true
+  },
+  "migration": {
+    "mode": "spring-flyway",
+    "rollbackCompatible": false,
+    "flyway": {
+      "postgresCid": "<approved PostgreSQL CID>",
+      "socket": "<absolute PostgreSQL socket directory>",
+      "urlEnv": "<JDBC URL variable name>",
+      "userEnv": "<database user variable name>",
+      "database": "<database identifier>",
+      "schema": "<Flyway schema identifier>",
+      "effectiveDatasource": "profile-env"
+    }
+  },
+  "readiness": {
+    "path": "<readiness path>",
+    "port": 0,
+    "acceptStatus": [],
+    "jsonStatus": "<expected top-level status if applicable>",
+    "attempts": 0
+  },
+  "inbox": "<absolute transport inbox>",
+  "journal": "<absolute private journal directory>",
+  "dockerSocket": "<absolute Docker socket>",
+  "nsenter": "<absolute nsenter executable>",
+  "ci": {
+    "repository": "GioNob/ouf-ingestion-runtime",
+    "workflow": "<PR workflow filename>",
+    "pullRequest": 0,
+    "sourceCommit": "<reviewed PR head>",
+    "sourceTree": "<reviewed source tree>",
+    "manifestSchema": "<tested-image manifest schema>",
+    "imageName": "<image name without tag>",
+    "runId": 0,
+    "runAttempt": 0,
+    "artifactId": 0,
+    "zipSha256": "<GitHub artifact SHA-256>",
+    "imageId": "sha256:<approved target engine image ID>",
+    "artifactPrefix": "<artifact prefix before run ID>"
+  }
+}

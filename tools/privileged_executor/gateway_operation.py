@@ -1,9 +1,11 @@
 """Reviewed release and return. The shared entrypoint holds the host lock throughout."""
 import json
+import re
 import secrets
 
 from gateway_admin import AdminRequestError, connect
 from gateway_bundle import package
+from module_release.contract import diagnostic
 from mandate import Held, canonical, digest, intent, need
 from store import Journal, read, save
 
@@ -70,6 +72,7 @@ class GatewayRelease:
         self.root = root
         self.path = Journal(root / req["run"]).path
         self.head = root / "gateway-head"
+        self.error_location = None
 
     def diagnose(self, stage, row, paths, **metadata):
         path = self.path / ("gateway." + self.req["phase"] + ".diagnostics")
@@ -85,10 +88,11 @@ class GatewayRelease:
             self.diagnose(stage, row, ["$: unavailable"], **metadata)
             if isinstance(error, Held):
                 raise
+            self.error_location = diagnostic("GATEWAY_ADMIN_REQUEST", error)
             raise Held("GATEWAY_ADMIN_REQUEST") from None
 
-    def verify(self, stage, row, live, desired, code):
-        paths = field_differences(live, desired)
+    def verify(self, stage, row, live, desired, code, *, exact=False):
+        paths = field_differences(live, desired, exact=exact)
         if paths:
             self.diagnose(stage, row, paths)
             raise Held(code)
@@ -97,7 +101,7 @@ class GatewayRelease:
         for row in rows:
             stage = "check-" + side
             live = self.observe(stage, row, admin.get)
-            self.verify(stage, row, live, row[side], "GATEWAY_LIVE_DRIFT")
+            self.verify(stage, row, live, row[side], "GATEWAY_LIVE_DRIFT", exact=side == "before")
 
     def plan_rows(self, admin, resources, interrupted):
         rows = []
@@ -117,24 +121,33 @@ class GatewayRelease:
                 after = previous["after"]
             before = self.observe("plan-get", resource, admin.get)
             diff = field_differences(before, after)
-            if interrupted is not None and diff and not conforms(before, previous["before"]):
+            if interrupted is not None and diff and canonical(before) != canonical(previous["before"]):
                 self.diagnose("pending-after", resource, diff)
-                self.verify("pending-before", resource, before, previous["before"], "GATEWAY_PENDING_LIVE_DRIFT")
+                self.verify("pending-before", resource, before, previous["before"], "GATEWAY_PENDING_LIVE_DRIFT", exact=True)
             action = "unchanged" if not diff else "create" if before is None else "update"
             rows.append(dict(kind=resource["kind"], id=resource["id"], before=before, after=after, action=action))
         return rows
 
     def current(self):
         head = read(self.head) if self.head.exists() else None
-        need(head is None or head["status"] in ("APPLIED", "PENDING"), "GATEWAY_RECONCILIATION_REQUIRED")
+        if head is not None:
+            need(isinstance(head, dict) and isinstance(head.get("run"), str) and
+                 re.fullmatch(r"[1-9][0-9]{0,19}", head["run"]), "GATEWAY_RECONCILIATION_REQUIRED")
+            need((head.get("status") == "APPLIED" and isinstance(head.get("digest"), str)
+                  and re.fullmatch(r"[a-f0-9]{64}", head["digest"])) or
+                 (head.get("status") == "PENDING" and head.get("phase") in ("apply", "return")),
+                 "GATEWAY_RECONCILIATION_REQUIRED")
         return head
 
-    def interrupted_rows(self, head, identity):
+    def interrupted_snapshot(self, head, identity):
+        need(re.fullmatch(r"[1-9][0-9]{0,19}", head["run"]), "GATEWAY_PENDING_JOURNAL")
         directory = self.root / head["run"]
         phase = head["phase"]
         need(phase in ("apply", "return"), "GATEWAY_PENDING_JOURNAL")
         try:
             request = read(directory / f"gateway.{phase}.review")["request"]
+            if phase == "return":
+                need(re.fullmatch(r"[1-9][0-9]{0,19}", request["releaseRun"]), "GATEWAY_PENDING_JOURNAL")
             source = directory if phase == "apply" else self.root / request["releaseRun"]
             snapshot = read(source / "gateway.snapshot")
             stamp = digest(snapshot) if phase == "apply" else self.return_stamp(snapshot)
@@ -142,11 +155,54 @@ class GatewayRelease:
                  "GATEWAY_PENDING_JOURNAL")
             need(snapshot["profile"] == digest(self.profile) and snapshot["generation"] == identity,
                  "GATEWAY_PENDING_TARGET_DRIFT")
-            return snapshot["rows"]
+            return snapshot
         except (FileNotFoundError, KeyError, TypeError, ValueError):
             raise Held("GATEWAY_PENDING_JOURNAL") from None
 
+    def original_snapshot(self, snapshot, identity):
+        seen = set()
+        while snapshot["parent"] and snapshot["parent"]["status"] == "PENDING":
+            head = snapshot["parent"]
+            need(head["run"] not in seen, "GATEWAY_PENDING_JOURNAL")
+            seen.add(head["run"])
+            snapshot = self.interrupted_snapshot(head, identity)
+        return snapshot
+
     def execute(self, review, token):
+        try:
+            return self.execute_phase(review, token)
+        except Exception as exc:
+            reason = str(exc) if isinstance(exc, Held) else diagnostic("GATEWAY_EVIDENCE_UNPROVEN", exc)
+            try:
+                residual = self.residual()
+            except Exception:
+                residual = "journal-unobserved"
+            row = {"status": "HELD", "owner": "gateway", "residual": residual, "reason": reason}
+            if self.error_location:
+                row["diagnostic"] = self.error_location
+            save(self.path / ("gateway." + self.req["phase"] + ".held"), row, replace=True)
+            error = Held(reason)
+            error.public_context = "owner=gateway residual=" + residual
+            if self.error_location:
+                error.public_context += " " + self.error_location
+            raise error from None
+
+    def residual(self):
+        head = self.current()
+        if head is None:
+            return "no-head"
+        state = f"{head['status']}/run-{head['run']}"
+        if head["status"] == "PENDING":
+            directory = self.root / head["run"]
+            intents = directory.glob(f"gateway.{head['phase']}.*.intent")
+            last = max(intents, key=lambda f: int(f.name.split(".")[-2]), default=None)
+            if last:
+                row = read(last)
+                effect = "read-back" if last.with_suffix(".receipt").exists() else "unconfirmed"
+                state += f"/{row['kind']}/{row['id']}={effect}"
+        return state
+
+    def execute_phase(self, review, token):
         req, phase = self.req, self.req["phase"]
         current = self.current()
         if phase == "return":
@@ -159,8 +215,11 @@ class GatewayRelease:
                  and plan["profile"] == digest(self.profile), "GATEWAY_RETURN_DRIFT")
             with connect(self.profile) as (admin, identity):
                 need(identity == plan["generation"], "GATEWAY_GENERATION_CHANGED")
-                self.check_state(admin, plan["rows"], "after")
-                self.transition(admin, plan, review, current, plan["parent"])
+                original = self.original_snapshot(plan, identity)
+                if "returnBaseline" in plan:
+                    need(digest(original) == plan["returnBaseline"], "GATEWAY_RETURN_DRIFT")
+                self.check_state(admin, original["rows"], "after")
+                self.transition(admin, original, review, current, original["parent"])
             return {"status": "RETURNED", "digest": req["digest"]}
 
         if phase == "plan":
@@ -174,10 +233,14 @@ class GatewayRelease:
         ci, resources = package(self.profile, req, token)
         with connect(self.profile) as (admin, identity):
             pending = current is not None and current["status"] == "PENDING"
-            interrupted = self.interrupted_rows(current, identity) if pending else None
-            rows = self.plan_rows(admin, resources, interrupted)
+            original = self.original_snapshot(self.interrupted_snapshot(current, identity), identity) if pending else None
+            if pending:
+                need(original["ci"] == ci, "GATEWAY_PENDING_PACKAGE_DRIFT")
+            rows = self.plan_rows(admin, resources, original["rows"] if pending else None)
             plan = dict(scope=intent(req), profile=digest(self.profile), generation=identity, ci=ci,
                         rows=rows, parent=current, nonce=nonce)
+            if pending:
+                plan["returnBaseline"] = digest(original)
             stamp = digest(plan)
             if phase == "plan":
                 save(self.path / "gateway.plan.review", {"request": req, "review": review})
@@ -228,8 +291,11 @@ class GatewayRelease:
                 self.verify("write-ack", row, ack, row[new], "GATEWAY_WRITE_READBACK")
                 live = self.observe("write-get", row, admin.get)
                 self.verify("write-get", row, live, row[new], "GATEWAY_WRITE_READBACK")
+                save(self.path / f"{prefix}.{index}.receipt", {"kind": row["kind"], "id": row["id"]})
             self.check_state(admin, rows, new)
-        except Exception:
+        except Exception as exc:
+            if not isinstance(exc, Held):
+                self.error_location = diagnostic("GATEWAY_EVIDENCE_UNPROVEN", exc)
             try:
                 for row, ack in reversed(attempted):
                     live = self.observe("compensation-get", row, admin.get)
@@ -246,7 +312,9 @@ class GatewayRelease:
                 self.check_state(admin, rows, old)
                 save(self.path / (prefix + ".failure"), {"status": "RESTORED"})
                 save(self.head, parent, replace=True)
-            except Exception:
+            except Exception as exc:
+                if not isinstance(exc, Held):
+                    self.error_location = diagnostic("GATEWAY_EVIDENCE_UNPROVEN", exc)
                 raise Held("GATEWAY_RECONCILIATION_REQUIRED") from None
             raise Held("GATEWAY_WRITE_FAILED_RESTORED") from None
         save(self.path / (prefix + ".result"), successor if forward else {"status": "RETURNED"})

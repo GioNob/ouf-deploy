@@ -1,5 +1,18 @@
 # Stato corrente OUF
 
+## Semantic su R3 28 · 21 novembre 2026
+
+L’owner riferisce il completamento di A2 con il run 44882047892, testa 28 ACTIVE e worker abilitato. In sprint-03/10 l’esecutore prepara il rilascio 28→29 dal profilo della linea C. Il prossimo passo operativo richiede i pin CI del task-09 e i cinque binding v30 nel profilo privato. Il task-10b prova offline il ritorno al CID della linea C con emissione 30; non attesta deploy, compatibilità con il database dopo V14 o esito runtime. [Procedura e recupero](OUF_PRIVILEGED_PIPELINE.md#rilascio-semantic-dalla-testa-28)
+## Rilascio UDP e Ingestion · 21 novembre 2026
+
+Il task sprint-03/12f2 porta nel plan le due rimozioni dal comando Ingestion e l’attivazione di Flyway sul candidato. La prova portabile esegue la V21 sintetica su SQLite e verifica la nuova colonna dopo il segnale, con storia Flyway simulata. Le prove coprono anche il JSON UDP e il ritorno alla configurazione originale. Restano da eseguire la fixture Linux con Flyway e PostgreSQL e da confermare il datasource dei profili privati. [Contratto del candidato](OUF_PRIVILEGED_PIPELINE.md#argomenti-di-ingestion-e-verifica-di-v21)
+
+Il task sprint-03/12f estende l’esecutore privilegiato ai due moduli. Le prove locali coprono rilascio, interruzioni e ritorno. Restano da qualificare la fixture Linux e gli ZIP dei PR reali. L’operatore deve completare i due binding privati e verificare la configurazione Spring effettiva. [Procedura di rilascio](OUF_PRIVILEGED_PIPELINE.md#rilascio-di-udp-e-ingestion)
+
+## Ripresa rilasci moduli e Gateway · 21 novembre 2026
+
+Task sprint-03/03 copre distacco, CREATE con CID, migrazione, segnale incerto e ritorno Gateway dopo PENDING. Le prove portabili esercitano il nuovo dispatch. La qualifica Docker/PostgreSQL/APISIX della CI resta da eseguire. [Matrice e limiti](OUF_PRIVILEGED_PIPELINE.md#matrice-delle-interruzioni-di-moduli-e-gateway)
+
 ## Cutover Semantic A2 del 21 novembre 2026
 
 L’operatore segnala R3 chiuso sulla testa 27 e il successore nello stato Docker `created` dopo il fallimento di `start-gate`. La correzione in task-17u supera in fixture sia la ripresa con lo stesso CID sia il ritorno al predecessore. La qualifica Docker nativa e l’installazione in laboratorio restano da verificare. [Checkpoint A2](OUF_M2_CHECKPOINT_LOG.md#cutover-a2-del-21-novembre-2026)
