@@ -1,5 +1,9 @@
 # Stato corrente OUF
 
+## Rilascio UDP e Ingestion · 21 novembre 2026
+
+Il task sprint-03/12f estende l’esecutore privilegiato ai due moduli. Le prove locali coprono rilascio, interruzioni e ritorno. Restano da qualificare la fixture Linux e gli ZIP dei PR reali. L’operatore deve completare i due binding privati e verificare la configurazione Spring effettiva. [Procedura di rilascio](OUF_PRIVILEGED_PIPELINE.md#rilascio-di-udp-e-ingestion)
+
 ## Ripresa rilasci moduli e Gateway · 21 novembre 2026
 
 Task sprint-03/03 copre distacco, CREATE con CID, migrazione, segnale incerto e ritorno Gateway dopo PENDING. Le prove portabili esercitano il nuovo dispatch. La qualifica Docker/PostgreSQL/APISIX della CI resta da eseguire. [Matrice e limiti](OUF_PRIVILEGED_PIPELINE.md#matrice-delle-interruzioni-di-moduli-e-gateway)

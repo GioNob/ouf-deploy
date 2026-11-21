@@ -3,7 +3,7 @@ from pathlib import Path
 
 from . import operation as op
 from .contract import SHA, digest, matches, require, validate
-from .frame import check_body, check_created_networks, check_live_networks, epoch, provenance_labels, snapshot
+from .frame import check_body, check_live_networks, epoch, snapshot
 
 
 def residual(p, rt):
@@ -38,6 +38,15 @@ def proposal(p, rt):
     journal = {f.name: digest(op.read(root, f.name)) for f in root.glob("*.json")}
     return {"operation": "module-recovery", "sourcePlan": stamp, "profileSha256": digest(p),
             "journal": journal, "frames": frames}
+
+
+def verify_stop_claim(rt, old, body, root):
+    if (root / "stop-intent.json").exists():
+        require(op.read(root, "stop-intent.json") == {"cid": old["Id"]}, "STOP_CLAIM_CHANGED")
+    else:
+        # Before our stop claim even an exact CID might have been stopped by another owner.
+        require(snapshot(rt.inspect(old["Id"])) == body["oldFrameSha256"] and
+                not (root / "create-intent.json").exists(), "PRE_STOP_DRIFT")
 
 
 def resume(p, rt, approved):
@@ -75,14 +84,10 @@ def resume(p, rt, approved):
                 require(failed["Name"] == "/" + p["failedName"] and not failed["State"]["Running"] and
                         not failed["NetworkSettings"]["Networks"], "PARK_UNCONFIRMED")
         op.verify_database(p, rt, old, root, migrated=forward)
+        op.verify_flyway_return(p, rt, old, root)
         op.unlock_module(lock)
         return receipt
-    if (root / "stop-intent.json").exists():
-        require(op.read(root, "stop-intent.json") == {"cid": old["Id"]}, "STOP_CLAIM_CHANGED")
-    else:
-        # Before our stop claim even an exact CID might have been stopped by another owner.
-        require(snapshot(rt.inspect(old["Id"])) == body["oldFrameSha256"] and
-                not (root / "create-intent.json").exists(), "PRE_STOP_DRIFT")
+    verify_stop_claim(rt, old, body, root)
     created = (root / "created.json").exists()
     if created:
         cid = op.read(root, "created.json")["cid"]
@@ -104,16 +109,7 @@ def resume(p, rt, approved):
         doc = rt.inspect(cid)
         require(doc["Id"] == cid and doc["Name"] == old["Name"], "SERVICE_IDENTITY_CHANGED")
         if doc["State"]["Status"] == "created":
-            state = doc["State"]
-            zero = "0001-01-01T00:00:00Z"
-            require(not state["Running"] and state["Pid"] == 0 and doc["RestartCount"] == 0 and
-                    state["StartedAt"] == zero and state["FinishedAt"] == zero and
-                    not (root / "start-generation.json").exists() and
-                    not (root / "migration-plan.json").exists() and not (root / "release-signal.json").exists(),
-                    "NEVER_STARTED_UNPROVEN")
-            check_body(old, doc, p["ci"]["imageId"], p["ci"]["imageId"], created=True,
-                       labels=provenance_labels(p), image_defaults=rt.image_defaults(p["ci"]["imageId"]))
-            check_created_networks(old, doc)
+            op.verify_never_started(p, rt, old, doc, root)
             op.start_candidate(p, rt, old, cid, root)
         require(op.read(root, "start-intent.json") == {"cid": cid} and
                 (root / "start-generation.json").exists(), "START_GENERATION_UNCONFIRMED")
@@ -122,10 +118,16 @@ def resume(p, rt, approved):
         if (root / "migration-plan.json").exists():
             stage = op.read(root, "migration-plan.json")
             check = op.checked_generation if (root / "release-signal.json").exists() else op.waiting_gate
-            generation, _ = check(p, rt, old, cid)
-            require(stage == {"cid": cid, "generation": generation, "planSha256": root.name,
+            generation, checked = check(p, rt, old, cid)
+            expected = {"cid": cid, "generation": generation, "planSha256": root.name,
                               "profileSha256": digest(p), "predecessorFrame": body["oldFrameSha256"],
-                              "migration": p["migration"]}, "MIGRATION_PLAN_CHANGED")
+                              "migration": p["migration"]}
+            if "flyway" in p["migration"]:
+                proof = (op.read(root, "flyway-plan.json") if (root / "release-signal.json").exists()
+                         else op.flyway.checkpoint(rt, checked()))
+                require(all(proof[k] == v for k, v in body["flywayBaseline"].items()), "FLYWAY_BASELINE_CHANGED")
+                expected["flywayReview"] = proof
+            require(stage == expected, "MIGRATION_PLAN_CHANGED")
             if (root / "release-signal.json").exists():
                 require(op.read(root, "migration-review-consumed.json") == {"digest": digest(stage)},
                         "MIGRATION_REVIEW_UNPROVEN")

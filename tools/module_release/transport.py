@@ -9,7 +9,7 @@ import re
 import tempfile
 from urllib.parse import urlsplit
 
-from .contract import SEMANTIC_SCHEMA, Held, checksum, package, require
+from .contract import SEMANTIC_SCHEMA, Held, checksum, package, require, validate_ci
 from .provenance import select_artifact, verify_tested_tree
 
 
@@ -65,7 +65,7 @@ def github(path, output=None):
 def select(ci, run_id, artifact_id, api, *, artifact_prefix=None):
     prefix = "repos/" + ci["repository"]
     if artifact_prefix is None:
-        if ci.get("publisherFormat") == "acquisition-mcp" or ci.get("manifestSchema") == SEMANTIC_SCHEMA:
+        if "artifactPrefix" in ci or ci.get("publisherFormat") or ci.get("manifestSchema") == SEMANTIC_SCHEMA:
             artifact_prefix = ci["artifactPrefix"]
         else:
             artifact_prefix = "source-onboarding-governed-image"
@@ -75,6 +75,11 @@ def select(ci, run_id, artifact_id, api, *, artifact_prefix=None):
 
 def transport(profile, run_id, artifact_id, inbox):
     ci = select(profile["ci"], run_id, artifact_id, github)
+    pinned = profile.get("module") in ("udp", "ingestion")
+    if pinned:
+        validate_ci(profile["ci"])
+        require(all(ci[k] == profile["ci"][k] for k in ("runId", "runAttempt", "artifactId", "zipSha256")),
+                "TRANSPORT_PIN_CHANGED")
     prefix = "repos/" + ci["repository"]
     require(inbox.is_absolute() and inbox.is_dir(), "TRANSPORT_INBOX_REQUIRED")
     with tempfile.TemporaryDirectory(dir=inbox) as tmp:
@@ -83,7 +88,7 @@ def transport(profile, run_id, artifact_id, inbox):
             github(f"{prefix}/actions/artifacts/{artifact_id}/zip", out)
             out.flush()
             os.fsync(out.fileno())
-        receipt = package({"ci": ci, "inbox": tmp}, transport=True, migrations_field=profile.get("migrationsField"))
+        receipt = package({"ci": ci, "inbox": tmp}, transport=not pinned, migrations_field=profile.get("migrationsField"))
         verify_tested_tree(ci, receipt, lambda path: github(prefix + path))
         final = inbox / path.name
         try:
@@ -99,13 +104,16 @@ def transport(profile, run_id, artifact_id, inbox):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--module", choices=("udp", "ingestion"))
     parser.add_argument("profile", type=Path)
     parser.add_argument("run_id", type=int)
     parser.add_argument("artifact_id", type=int)
     parser.add_argument("inbox", type=Path)
     args = parser.parse_args()
     try:
-        print(json.dumps(transport(json.loads(args.profile.read_text(encoding="utf-8")), args.run_id,
+        profile = json.loads(args.profile.read_text(encoding="utf-8"))
+        require(args.module is None or profile.get("module") == args.module, "MODULE_PROFILE_MISMATCH")
+        print(json.dumps(transport(profile, args.run_id,
                                    args.artifact_id, args.inbox), sort_keys=True))
     except Exception as error:
         raise SystemExit(str(error) if isinstance(error, Held) else "TRANSPORT_IO_OR_INPUT_ERROR") from None

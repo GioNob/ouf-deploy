@@ -97,6 +97,20 @@ def validate(p):
             and ("command" not in migration or argv(migration["command"])), "INVALID_MIGRATION_COMMAND")
     ci = p["ci"]
     validate_ci(ci)
+    if "flyway" in migration or p["module"] in ("udp", "ingestion"):
+        db = migration.get("flyway", {})
+        ident = r"[a-z_][a-z0-9_]{0,62}"
+        require(migration["mode"] == "spring-flyway" and "database" not in migration
+                and matches(SHA, db.get("postgresCid")) and matches(r"/[a-zA-Z0-9_./-]+", db.get("socket"))
+                and ".." not in db["socket"].split("/")
+                and all(matches(ident, db.get(k)) for k in ("database", "schema"))
+                and all(matches(r"[A-Z_][A-Z_0-9]*", db.get(k)) for k in ("urlEnv", "userEnv"))
+                and db["urlEnv"] != db["userEnv"], "INVALID_FLYWAY_BINDING")
+        jar_name(p["gate"]["command"])
+    if p["module"] in ("udp", "ingestion"):
+        require(matches(NAME, ci.get("artifactPrefix")) and matches(NAME, ci.get("manifestSchema"))
+                and "publisherFormat" not in ci and matches(NAME, ci.get("workflow"))
+                and type(ci.get("pullRequest")) is int and ci["pullRequest"] > 0, "JAVA_PUBLISHER_PINS_REQUIRED")
     labels = p.get("provenanceLabels", {})
     require(isinstance(labels, dict) and all(matches(NAME, key) and field in ("publisherCommit", "sourceCommit")
             and field in ci for key, field in labels.items()), "INVALID_PROVENANCE_LABELS")
@@ -117,6 +131,13 @@ def validate(p):
                 for i, item in enumerate(items, db["version"] + 1)), "INVALID_MIGRATION_LIST")
         require(migration["mode"] == ("dedicated" if items else "none")
                 and (not items or matches(SHA, migration.get("targetSchemaSha256"))), "MIGRATION_MODE_MISMATCH")
+
+
+def jar_name(command):
+    require(command.count("-jar") == 1, "FLYWAY_JAR_UNPROVEN")
+    tail = command[command.index("-jar") + 1:]
+    require(tail and matches(r"/app/[A-Za-z0-9_-][A-Za-z0-9._-]*\.jar", tail[0]), "FLYWAY_JAR_UNPROVEN")
+    return tail[0].split("/")[-1]
 
 
 def validate_ci(ci):

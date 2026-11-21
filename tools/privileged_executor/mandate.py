@@ -40,7 +40,8 @@ def validate(req, policy):
     if req.get("operation") == "module-release":
         need(set(req) == common | {"operation", "module"} and isinstance(req["module"], str)
              and req["module"] in policy["modules"] and (req["phase"] in ("plan", "apply", "migrate")
-             or (req["phase"] == "rollback" and "database" in policy["modules"][req["module"]]["migration"])),
+             or (req["phase"] == "rollback" and {"database", "flyway"}.intersection(
+                 policy["modules"][req["module"]]["migration"]))),
              "MODULE_REQUEST_SCOPE")
     elif req.get("operation") == "gateway-release":
         from gateway_policy import valid_request

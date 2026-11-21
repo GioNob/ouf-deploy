@@ -2,11 +2,11 @@
 
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import tempfile
 
 from . import flyway, postgres
-from .contract import CI_COORDINATES, MCP_CI_COORDINATES, Held, SHA, diagnostic, digest, matches, package, require, validate
+from .contract import CI_COORDINATES, MCP_CI_COORDINATES, Held, SHA, diagnostic, digest, jar_name, matches, package, require, validate
 from .docker import Docker
 from .frame import baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, provenance_labels, request, snapshot
 
@@ -62,6 +62,12 @@ def observe(p, rt):
                     migrations=migration["migrations"], migrationsSha256=digest(migration["migrations"]))
         if migration["migrations"]:
             body["targetSchemaSha256"] = migration["targetSchemaSha256"]
+    if "artifactPrefix" in p["ci"]:
+        body["ci"]["artifactPrefix"] = p["ci"]["artifactPrefix"]
+    if "flyway" in p["migration"]:
+        jar = PurePosixPath("/app", jar_name(p["gate"]["command"]))
+        require(not any(jar.is_relative_to(m["Destination"]) for m in old["Mounts"]), "FLYWAY_JAR_SHADOWED")
+        body["flywayBaseline"] = flyway.baseline(flyway.observe(rt, old))
     return body, old
 
 
@@ -200,6 +206,19 @@ def verify_database(p, rt, old, root, *, migrated=False):
         return plan["databaseSha256"]
 
 
+def verify_flyway_return(p, rt, old, root):
+    if "flyway" in p["migration"]:
+        if (root / "release-signal.json").exists():
+            stage = read(root, "migration-plan.json")
+            require(stage["planSha256"] == root.name and stage["profileSha256"] == digest(p)
+                    and read(root, "migration-review-consumed.json") == {"digest": digest(stage)},
+                    "FLYWAY_REVIEW_CHANGED")
+            flyway.verify(rt, old, stage["flywayReview"])
+        else:
+            require(flyway.baseline(flyway.observe(rt, old)) == read(root, "plan.json")["flywayBaseline"],
+                    "FLYWAY_BASELINE_CHANGED")
+
+
 def finish_migration(p, rt, old, cid, root, checked, expected_generation):
     migration = p["migration"]
     intent = {"cid": cid}
@@ -252,7 +271,12 @@ def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
         require(read(root, signal_file) == signal_claim, "SIGNAL_GENERATION_CHANGED")
     else:
         require(rt.process(checked(), gated=True), "GATE_CHANGED")
-        if spring and getattr(rt, "flyway_peer", None):
+        if spring and "flyway" in p["migration"]:
+            proof = flyway.checkpoint(rt, checked())
+            require(proof == read(root, "migration-plan.json")["flywayReview"], "FLYWAY_REVIEW_CHANGED")
+            confirm(root, "flyway-plan.json", proof)
+            require(rt.process(checked(), gated=True), "GATE_CHANGED")
+        elif spring and getattr(rt, "flyway_peer", None):
             # The existing profile also permits deployments without a provable
             # Flyway reader. Preserve their normal launch; uncertainty stays HELD.
             try:
@@ -281,9 +305,11 @@ def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
                 except Exception as exc:
                     raise Held("FLYWAY_OUTCOME_UNCONFIRMED/" + reason(exc)) from None
             verify_database(p, rt, old, root, migrated=not restoring)
+            if restoring:
+                verify_flyway_return(p, rt, old, root)
             return {"successorFrameSha256": snapshot(checked()), "readyHttp": status}
         rt.pause()
-    if spring and signalled:
+    if spring and (signalled or "flyway" in p["migration"]):
         raise Held("FLYWAY_OUTCOME_UNCONFIRMED")
     raise Held("PREDECESSOR_READINESS_NOT_UP" if restoring else "READINESS_NOT_UP")
 
@@ -297,6 +323,7 @@ def restore(p, rt, old, new, root):
             and (doc["State"]["StartedAt"] == old["State"]["StartedAt"] or
                  (root / "restore-start.json").exists()), "RESTORE_IDENTITY_CHANGED")
     verify_database(p, rt, old, root)
+    verify_flyway_return(p, rt, old, root)
     attached = doc["NetworkSettings"]["Networks"]
     require(set(attached) <= set(networks) and all(ep.get("NetworkID") in ("", networks[name]["NetworkID"])
             for name, ep in attached.items()), "RESTORE_NETWORK_SET_CHANGED")
@@ -334,6 +361,17 @@ def restore(p, rt, old, new, root):
     return release(p, rt, old, cid, root, restoring=True)["readyHttp"]
 
 
+def verify_never_started(p, rt, old, doc, root):
+    state = doc["State"]
+    require(state["Status"] == "created" and not state["Running"] and state["Pid"] == 0 and doc["RestartCount"] == 0
+            and state["StartedAt"] == state["FinishedAt"] == "0001-01-01T00:00:00Z"
+            and not any((root / f).exists() for f in ("start-generation.json", "migration-plan.json", "release-signal.json")),
+            "NEVER_STARTED_UNPROVEN")
+    image = p["ci"]["imageId"]
+    check_body(old, doc, image, image, created=True, labels=provenance_labels(p), image_defaults=rt.image_defaults(image))
+    check_created_networks(old, doc)
+
+
 def start_candidate(p, rt, old, cid, root):
     confirm(root, "start-intent.json", {"cid": cid})
     rt.start(cid)
@@ -344,12 +382,18 @@ def start_candidate(p, rt, old, cid, root):
 def finish_apply(p, rt, body, old, new, root, result, defer_migration):
     start = read(root, "start-generation.json")
     require(start == {"cid": new, "generation": snapshot(rt.inspect(new))}, "START_GENERATION_CHANGED")
-    if (defer_migration or "database" in p["migration"]) and p["migration"]["mode"] != "none":
-        generation, _ = waiting_gate(p, rt, old, new)
+    review = defer_migration or "database" in p["migration"] or "flyway" in p["migration"]
+    if review and p["migration"]["mode"] != "none":
+        generation, checked = waiting_gate(p, rt, old, new)
         require(generation == start["generation"], "START_GENERATION_CHANGED")
         retained(p, rt, old)
         stage = {"planSha256": digest(body), "profileSha256": digest(p), "cid": new,
                  "generation": generation, "predecessorFrame": body["oldFrameSha256"], "migration": p["migration"]}
+        if "flyway" in p["migration"]:
+            proof = flyway.checkpoint(rt, checked())
+            require(all(proof[k] == v for k, v in body["flywayBaseline"].items()), "FLYWAY_BASELINE_CHANGED")
+            require(rt.process(checked(), gated=True), "GATE_CHANGED")
+            stage["flywayReview"] = proof
         confirm(root, "migration-plan.json", stage)
         result.update(status="GATED", migrationSha256=digest(stage))
         return
@@ -377,6 +421,7 @@ def execute(p, rt, body, old, root, result, defer_migration):
         state = postgres.observe(rt, old)
         require(digest(state) == body["databaseSha256"], "DATABASE_CHANGED")
         record(root, "database.private.json", state)
+    verify_flyway_return(p, rt, old, root)
     record(root, "stop-intent.json", {"cid": old["Id"]})
     try:
         park(rt, old["Id"], p["retainedName"], networks)
@@ -497,6 +542,11 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
         result.update(proof)
     except Exception as exc:
         rollback(profile, rt, old, root, result, exc)
+    if ("flyway" in profile["migration"] and result.get("rollback") == "HELD"
+            and not (root / "rollback-intent.json").exists()):
+        # An uncertain signal may finish while no executor is running. Retain
+        # the reviewed stage for a fresh dispatch to reconcile it read-only.
+        return result
     record(root, "receipt.json", result)
     if result.get("rollback") != "HELD":
         unlock_module(lock)

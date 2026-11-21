@@ -678,3 +678,7 @@ Nel run 44877430252 il daemon ha aggiunto alla Config del successore una label d
 ## 21 novembre 2026 · sprint-03/03
 
 Worktree su `4adbda46`. Le fixture portabili verificano ripresa o ritorno con readiness e diniego leggibile in caso di identità o storia incerta. La fixture APISIX verifica il ritorno alla prima baseline. Qualifica Linux e osservazioni target pendenti. [Matrice](OUF_PRIVILEGED_PIPELINE.md#matrice-delle-interruzioni-di-moduli-e-gateway)
+
+## 21 novembre 2026 · sprint-03/12f
+
+Sulla base `8cbcaa40` il rilascio privilegiato di UDP e Ingestion supera le prove portabili di gate, review Flyway, segnale interrotto e ritorno. La CI include una prova UDP con Java, Flyway e PostgreSQL. Restano la sua esecuzione Linux e la verifica dei profili e dei pin reali. [Procedura](OUF_PRIVILEGED_PIPELINE.md#rilascio-di-udp-e-ingestion)

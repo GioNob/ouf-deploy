@@ -26,6 +26,14 @@
     "currentSemanticBudget": "DYNAMIC_PROFILE_BINDING_REQUIRED_FIXED_CANDIDATE_NOT_FOR_DEPLOYMENT"
   },
   "observations": {
+    "udpIngestionModuleRelease": {
+      "dateLocal": "2026-11-21",
+      "baseCommit": "8cbcaa404d2338351dfa978873de7bf88b75d6d7",
+      "modules": ["udp", "ingestion"],
+      "portableReleaseRecoveryReturn": "PASS",
+      "nativeQualification": "PENDING",
+      "targetVerification": "NOT_EXECUTED"
+    },
     "privilegedReleaseInterruptionMatrix": {
       "dateLocal": "2026-11-21",
       "baseCommit": "4adbda46",

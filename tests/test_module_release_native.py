@@ -15,7 +15,7 @@ import zipfile
 
 from test_module_release import PROFILE, TESTED
 from privileged_postgres_fixture import postgres_fixture
-from tools.module_release import flyway, postgres, recovery
+from tools.module_release import flyway, postgres, recovery, return_operation
 from tools.module_release.contract import ENTRY, checksum, digest
 from tools.module_release.docker import Docker
 from tools.module_release.operation import apply, migrate, plan, ready
@@ -42,6 +42,9 @@ class NativeRelease(unittest.TestCase):
     def test_flyway_commit_and_lost_signal_are_reconciled(self):
         self.exercise_release(busybox=False, interruption="flyway")
 
+    def test_udp_real_flyway_release_reconciliation_and_return(self):
+        self.exercise_release(busybox=False, interruption="jdbc")
+
     def exercise_release(self, busybox, interruption=None):
         self.assertEqual(os.geteuid(), 0)
         socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
@@ -55,6 +58,12 @@ class NativeRelease(unittest.TestCase):
         command = ["java", "-jar", "/app/application.jar"]
         old_image = os.environ["OUF_A2_FIXTURE_IMAGE"]
         image_name = "ouf-ci-busybox" if busybox else "ouf-ci-gate"
+        if interruption == "jdbc":
+            image_name = "ouf-ci-flyway"
+            old_image = rt.api("GET", "/images/" + image_name + ":old/json")["Id"]
+            command = ["java", "-jar", "/app/flyway.jar"]
+            p["module"] = "udp"
+            p["ci"]["artifactPrefix"] = "fixture-udp"
         if busybox:
             old_image = rt.api("GET", "/images/" + image_name + ":old/json")["Id"]
             command = ["/usr/local/bin/ouf-mcp", "server"]
@@ -99,12 +108,17 @@ class NativeRelease(unittest.TestCase):
             for container in (name, p["retainedName"], p["failedName"]):
                 self.addCleanup(subprocess.run, [*cli, "rm", "-f", container], stderr=subprocess.DEVNULL)
             env = []
-            if interruption in ("flyway", "database"):
+            if interruption in ("flyway", "database", "jdbc"):
                 pg = name + "-pg"
-                setup = self.enterContext(postgres_fixture(cli, pg, net))
+                setup = self.enterContext(postgres_fixture(cli, pg, net, jdbc=interruption == "jdbc"))
                 def sql(command):
                     subprocess.run(setup, input=command.encode(), check=True, stdout=subprocess.DEVNULL)
-                if interruption == "database":
+                if interruption == "jdbc":
+                    p["migration"] = dict(mode="spring-flyway", rollbackCompatible=True, flyway=dict(
+                        postgresCid=rt.inspect(pg)["Id"], socket="/tmp", urlEnv="FIXTURE_URL",
+                        userEnv="FIXTURE_USER", database="postgres", schema="release_fixture"))
+                    env = [f"FIXTURE_URL=jdbc:postgresql://{pg}/postgres", "FIXTURE_USER=fixture"]
+                elif interruption == "database":
                     sql("""CREATE SCHEMA ouf_mcp;
                         CREATE TABLE ouf_mcp.profile_analysis(id int);
                         CREATE TABLE ouf_mcp.profile_analysis_task(id int);
@@ -150,6 +164,30 @@ class NativeRelease(unittest.TestCase):
             proposal = plan(p)
             self.assertEqual(proposal["status"], "PLANNED", proposal)
             stamp = proposal["planSha256"]
+            if interruption == "jdbc":
+                stage = apply(p, stamp, rt, defer_migration=True)
+                self.assertEqual(stage["status"], "GATED", stage)
+                config = rt.inspect(stage["successorCid"])["Config"]
+                self.assertEqual(config["Entrypoint"], ENTRY)
+                self.assertIn("FIXTURE_JAVA_IMAGE=successor", config["Env"])
+                self.assertEqual(config["Labels"]["fixture.java.successor"], "yes")
+                review = json.loads((root / stamp / "migration-plan.json").read_bytes())["flywayReview"]
+                self.assertEqual([r["script"] for r in review["pending"]], ["V2__added.sql"])
+                send = rt.signal
+                def interrupt_after_delivery(cid):
+                    send(cid)
+                    raise KeyboardInterrupt
+                with patch.object(rt, "signal", side_effect=interrupt_after_delivery), self.assertRaises(KeyboardInterrupt):
+                    migrate(p, stamp, stage["migrationSha256"], rt)
+                runtime = Docker(p)
+                with patch.object(runtime, "signal", side_effect=AssertionError("duplicate signal")):
+                    final = recovery.resume(p, runtime, recovery.proposal(p, runtime))
+                self.assertEqual((final["status"], final["readyHttp"]), ("READY", 200))
+                table = subprocess.check_output(setup + ["-Atc", "SELECT to_regclass('release_fixture.added_row')"])
+                self.assertIn(b"added_row", table)
+                restored = return_operation.run(p, stamp, rt)
+                self.assertEqual((restored.get("restoredCid"), restored.get("predecessorReadyHttp")), (old, 200), restored)
+                return
             if interruption == "database":
                 stage = apply(p, stamp, rt, defer_migration=True)
                 self.assertEqual(stage["status"], "GATED", stage)
