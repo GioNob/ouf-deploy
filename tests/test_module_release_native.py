@@ -10,10 +10,13 @@ import tempfile
 import time
 import unittest
 import uuid
+from unittest.mock import patch
 import zipfile
 
 from test_module_release import PROFILE, TESTED
-from tools.module_release.contract import ENTRY, checksum
+from privileged_postgres_fixture import postgres_fixture
+from tools.module_release import flyway, postgres, recovery
+from tools.module_release.contract import ENTRY, checksum, digest
 from tools.module_release.docker import Docker
 from tools.module_release.operation import apply, migrate, plan, ready
 
@@ -27,7 +30,19 @@ class NativeRelease(unittest.TestCase):
     def test_busybox_gate_and_forced_return_to_ready_predecessor(self):
         self.exercise_release(busybox=True)
 
-    def exercise_release(self, busybox):
+    def test_crash_after_detach_returns_to_http_readiness(self):
+        self.exercise_release(busybox=True, interruption="detach")
+
+    def test_created_busybox_and_lost_signal_resume_same_cid(self):
+        self.exercise_release(busybox=True, interruption="create")
+
+    def test_committed_dedicated_migration_with_missing_receipt(self):
+        self.exercise_release(busybox=True, interruption="database")
+
+    def test_flyway_commit_and_lost_signal_are_reconciled(self):
+        self.exercise_release(busybox=False, interruption="flyway")
+
+    def exercise_release(self, busybox, interruption=None):
         self.assertEqual(os.geteuid(), 0)
         socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
         cli = ["/usr/bin/docker", "--host", "unix://" + socket]
@@ -83,7 +98,36 @@ class NativeRelease(unittest.TestCase):
             self.addCleanup(subprocess.run, [*cli, "network", "rm", network], check=False)
             for container in (name, p["retainedName"], p["failedName"]):
                 self.addCleanup(subprocess.run, [*cli, "rm", "-f", container], stderr=subprocess.DEVNULL)
-            old = rt.create(name, dict(Image=old_image, Entrypoint=ENTRY, Cmd=command, User="10005:10005" if busybox else "",
+            env = []
+            if interruption in ("flyway", "database"):
+                pg = name + "-pg"
+                setup = self.enterContext(postgres_fixture(cli, pg, net))
+                def sql(command):
+                    subprocess.run(setup, input=command.encode(), check=True, stdout=subprocess.DEVNULL)
+                if interruption == "database":
+                    sql("""CREATE SCHEMA ouf_mcp;
+                        CREATE TABLE ouf_mcp.profile_analysis(id int);
+                        CREATE TABLE ouf_mcp.profile_analysis_task(id int);
+                        CREATE TABLE ouf_mcp.schema_migration(version int, checksum text, applied_at timestamptz);
+                        INSERT INTO ouf_mcp.schema_migration VALUES (1,repeat('a',64),now());""")
+                    env = [f"MCP_DATABASE_URL=postgresql://fixture@{pg}/postgres"]
+                    p["migration"].update(command=["/bin/sh", "-c", "exit 0"],
+                        database=dict(postgresCid=rt.inspect(pg)["Id"], version=1, socket="/tmp", urlEnv="MCP_DATABASE_URL"),
+                        migrations=[dict(version=2, checksum="b"*64)])
+                else:
+                    sql("""CREATE SCHEMA ouf_onboarding;
+                        CREATE TABLE ouf_onboarding.flyway_schema_history(installed_rank int, version text,
+                        script text, type text, checksum int, success boolean);
+                        INSERT INTO ouf_onboarding.flyway_schema_history VALUES
+                        (1,'1','V1__base.sql','SQL',%d,true);""" % flyway.flyway_checksum(b"SELECT 1;"))
+                    rt.flyway_peer = dict(postgresCid=rt.inspect(pg)["Id"], socket="/tmp")
+                    p["migration"].pop("command")
+                    p["migration"]["mode"] = "spring-flyway"
+                    env = [f"OUF_ONB_DB_URL=jdbc:postgresql://{pg}/postgres", "OUF_ONB_DB_USER=fixture"]
+            elif interruption == "create":
+                p["migration"].pop("command")
+                p["migration"]["mode"] = "none"
+            old = rt.create(name, dict(Image=old_image, Entrypoint=ENTRY, Cmd=command, Env=env, User="10005:10005" if busybox else "",
                 HostConfig={"NetworkMode":net, "RestartPolicy":{"Name":"no"}},
                 NetworkingConfig={"EndpointsConfig":{net:{"Aliases":[name], "IPAMConfig":{"IPv4Address":"192.0.2.35"}}}}))
             rt.start(old)
@@ -100,8 +144,77 @@ class NativeRelease(unittest.TestCase):
                 time.sleep(.1)
             else:
                 self.fail("Predecessor HTTP readiness")
+            if interruption == "database":
+                # A data-only migration preserves the qualified schema signature.
+                p["migration"]["targetSchemaSha256"] = digest(postgres.observe(rt, rt.inspect(old))["schema"])
             proposal = plan(p)
             self.assertEqual(proposal["status"], "PLANNED", proposal)
+            stamp = proposal["planSha256"]
+            if interruption == "database":
+                stage = apply(p, stamp, rt, defer_migration=True)
+                self.assertEqual(stage["status"], "GATED", stage)
+                execute_migration = rt.migrate
+                def committed(cid, argv):
+                    execute_migration(cid, argv)
+                    sql("INSERT INTO ouf_mcp.schema_migration VALUES (2,repeat('b',64),now())")
+                    raise KeyboardInterrupt
+                with patch.object(rt, "migrate", side_effect=committed), self.assertRaises(KeyboardInterrupt):
+                    migrate(p, stamp, stage["migrationSha256"], rt)
+                self.assertFalse((root / stamp / "migration-complete.json").exists())
+                runtime = Docker(p)
+                stage = recovery.resume(p, runtime, recovery.proposal(p, runtime))
+                with patch.object(runtime, "migrate", side_effect=AssertionError("duplicate migration")):
+                    final = migrate(p, stamp, stage["migrationSha256"], runtime, recover=True)
+                self.assertEqual((final["status"], final["readyHttp"]), ("READY", 204))
+                return
+            if interruption == "detach":
+                disconnect = rt.disconnect
+                def crash_detach(cid, netid):
+                    disconnect(cid, netid)
+                    raise KeyboardInterrupt
+                with patch.object(rt, "disconnect", side_effect=crash_detach), self.assertRaises(KeyboardInterrupt):
+                    apply(p, stamp, rt)
+                runtime = Docker(p)
+                recovered = recovery.resume(p, runtime, recovery.proposal(p, runtime))
+                self.assertEqual((recovered["restoredCid"], recovered["predecessorReadyHttp"]), (old, 204))
+                self.assertTrue(ready(rt, rt.inspect(old), p["readiness"]))
+                return
+            if interruption == "create":
+                with patch.object(rt, "start", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+                    apply(p, stamp, rt)
+                doc = rt.inspect(name)
+                self.assertEqual(doc["State"]["Status"], "created")
+                self.assertEqual(doc["Config"]["Entrypoint"], ENTRY)
+                self.assertIn("MODULE_SUCCESSOR=yes", doc["Config"]["Env"])
+                self.assertEqual(doc["Config"]["Labels"]["fixture.module.successor"], "yes")
+            if interruption in ("create", "flyway"):
+                if interruption == "flyway":
+                    stage = apply(p, stamp, rt, defer_migration=True)
+                    self.assertEqual(stage["status"], "GATED", stage)
+                    doc = rt.inspect(name)
+                if interruption == "create":
+                    rt = Docker(p)
+                send = rt.signal
+                def delivered(cid):
+                    send(cid)
+                    if interruption == "flyway":
+                        sql("INSERT INTO ouf_onboarding.flyway_schema_history VALUES "
+                            "(2,'2','V2__added.sql','SQL',%d,true)" % flyway.flyway_checksum(b"SELECT 2;"))
+                    raise KeyboardInterrupt
+                with patch.object(rt, "signal", side_effect=delivered) as sent, self.assertRaises(KeyboardInterrupt):
+                    if interruption == "create":
+                        recovery.resume(p, rt, recovery.proposal(p, rt))
+                    else:
+                        migrate(p, stamp, stage["migrationSha256"], rt)
+                sent.assert_called_once_with(doc["Id"])
+                runtime = Docker(p)
+                runtime.flyway_peer = rt.flyway_peer
+                with patch.object(runtime, "signal", side_effect=AssertionError("duplicate USR1")):
+                    final = recovery.resume(p, runtime, recovery.proposal(p, runtime))
+                self.assertEqual((final["successorCid"], final["readyHttp"]),
+                                 (doc["Id"], 204 if busybox else 200), final)
+                self.assertTrue(ready(rt, rt.inspect(doc["Id"]), p["readiness"]))
+                return
             if busybox:
                 stamp = proposal["planSha256"]
                 result = apply(p, stamp)

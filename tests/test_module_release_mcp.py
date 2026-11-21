@@ -91,6 +91,124 @@ class Release(unittest.TestCase):
             self.db["history"].append([15, "f"*64, "UTC"])
         self.rt.migrate = migrate
 
+    def recover(self, run="2"):
+        request = dict(self.req, run=run, phase="plan")
+        plan = self.call("plan", mandate.intent(request), approved=False, run=run)
+        return self.call("apply", plan["digest"], run=run)
+
+    def test_crash_after_create_and_after_signal_reuses_one_cid(self):
+        stamp = self.planned()["digest"]
+        with patch.object(self.rt, "start", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            self.call("apply", stamp)
+        self.assertEqual(self.rt.inspect(NEW)["State"]["Status"], "created")
+        signal = self.rt.signal
+        def lost_response(cid):
+            signal(cid)
+            raise KeyboardInterrupt
+        with patch.object(self.rt, "signal", side_effect=lost_response), self.assertRaises(KeyboardInterrupt):
+            self.recover()
+        self.assertEqual(self.recover("3"), {"status": "READY", "digest": stamp})
+        self.assertEqual(self.rt.events.count("create"), 1)
+        self.assertEqual(self.rt.events.count("signal:2"), 1)
+        self.assertEqual(operation.read(self.root / stamp, "receipt.json")["readyHttp"], 204)
+
+    def test_start_without_generation_receipt_holds_same_cid_without_signal(self):
+        stamp = self.planned()["digest"]
+        start = self.rt.start
+        def started(cid):
+            start(cid)
+            raise KeyboardInterrupt
+        with patch.object(self.rt, "start", side_effect=started), self.assertRaises(KeyboardInterrupt):
+            self.call("apply", stamp)
+        with self.assertRaisesRegex(mandate.Held, "START_GENERATION_UNCONFIRMED.*owner=mcp"):
+            self.recover()
+        self.assertEqual(self.rt.gates, {NEW})
+        self.assertNotIn("signal:2", self.rt.events)
+
+    def test_crash_after_detach_restores_original_predecessor(self):
+        stamp = self.planned()["digest"]
+        detach = self.rt.disconnect
+        def interrupted(cid, network):
+            detach(cid, network)
+            raise KeyboardInterrupt
+        with patch.object(self.rt, "disconnect", side_effect=interrupted), self.assertRaises(KeyboardInterrupt):
+            self.call("apply", stamp)
+        with self.assertRaisesRegex(mandate.Held, "INTERRUPTED_RELEASE_RESTORED"):
+            self.recover()
+        receipt = operation.read(self.root / stamp, "receipt.json")
+        self.assertEqual((receipt["restoredCid"], receipt["predecessorReadyHttp"]), (OLD, 204))
+        self.assertNotIn("create", self.rt.events)
+
+    def test_missing_migration_receipt_reconciles_exact_history(self):
+        self.dedicated()
+        stamp = self.planned()["digest"]
+        stage = self.call("apply", stamp)
+        migrate = self.rt.migrate
+        def interrupted(cid, argv):
+            migrate(cid, argv)
+            raise KeyboardInterrupt
+        with patch.object(self.rt, "migrate", side_effect=interrupted), self.assertRaises(KeyboardInterrupt):
+            self.call("migrate", stage["digest"])
+        self.assertFalse((self.root / stamp / "migration-complete.json").exists())
+        stage2 = self.recover()
+        self.assertEqual(stage2, stage)
+        self.assertEqual(self.call("migrate", stage2["digest"], run="2")["status"], "READY")
+        self.assertEqual(self.rt.events.count("migrate"), 1)
+        self.assertEqual(self.rt.events.count("signal:2"), 1)
+
+    def test_recovery_apply_rechecks_reviewed_live_frames_before_start(self):
+        with patch.object(self.rt, "start", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            self.call("apply", self.planned()["digest"])
+        req = dict(self.req, run="2", phase="plan")
+        plan = self.call("plan", mandate.intent(req), approved=False, run="2")
+        self.rt.docs[NEW]["Config"]["Env"].append("DRIFT=1")
+        with self.assertRaisesRegex(mandate.Held, "RECOVERY_PLAN_CHANGED.*owner=mcp"):
+            self.call("apply", plan["digest"], run="2")
+        self.assertNotIn("gate:2", self.rt.events)
+        with self.assertRaisesRegex(mandate.Held, "CONFIGURATION_DELTA.*owner=mcp"):
+            self.recover("3")
+        self.assertNotIn("gate:2", self.rt.events)
+
+    def test_lost_migration_receipt_with_other_checksum_holds_both_cids(self):
+        self.dedicated()
+        stamp = self.planned()["digest"]
+        stage = self.call("apply", stamp)
+        migrate = self.rt.migrate
+        def interrupted(cid, argv):
+            migrate(cid, argv)
+            self.db["history"][-1][1] = "a" * 64
+            raise KeyboardInterrupt
+        with patch.object(self.rt, "migrate", side_effect=interrupted), self.assertRaises(KeyboardInterrupt):
+            self.call("migrate", stage["digest"])
+        resumed = self.recover()
+        with self.assertRaisesRegex(mandate.Held, "DATABASE_CHANGED.*owner=mcp"):
+            self.call("migrate", resumed["digest"], run="2")
+        self.assertEqual(self.rt.events.count("migrate"), 1)
+        self.assertEqual(self.rt.gates, {NEW})
+        self.assertFalse(self.rt.docs[OLD]["State"]["Running"])
+
+    def test_create_response_without_cid_has_public_residual(self):
+        self.rt.fault = "lost_create"
+        with self.assertRaisesRegex(mandate.Held, "owner=mcp.*container=created"):
+            self.call("apply", self.planned()["digest"])
+        held = operation.read(self.root / "1", "apply.held")
+        self.assertRegex(held["reason"], r"/OSError@operation\.py:[0-9]+")
+        self.assertEqual(held["residual"]["container"]["cid"], NEW)
+        self.assertEqual(held["residual"]["retainedName"]["state"], "exited")
+        self.assertEqual(self.rt.events.count("create"), 1)
+
+    def test_crash_after_return_signal_observes_original_generation(self):
+        stamp = self.planned()["digest"]
+        self.call("apply", stamp)
+        signal = self.rt.signal
+        def interrupted(cid):
+            signal(cid)
+            raise KeyboardInterrupt
+        with patch.object(self.rt, "signal", side_effect=interrupted), self.assertRaises(KeyboardInterrupt):
+            self.call("rollback", stamp, run="2")
+        self.assertEqual(self.call("rollback", stamp, run="3")["status"], "ROLLED_BACK")
+        self.assertEqual(self.rt.events.count("signal:1"), 1)
+
     def test_reviewed_90_ready_and_reviewed_return(self):
         plan = self.planned()
         self.assertEqual(plan["databaseReview"]["migrations"], [])

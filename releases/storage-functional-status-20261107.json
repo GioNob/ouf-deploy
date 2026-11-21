@@ -26,6 +26,15 @@
     "currentSemanticBudget": "DYNAMIC_PROFILE_BINDING_REQUIRED_FIXED_CANDIDATE_NOT_FOR_DEPLOYMENT"
   },
   "observations": {
+    "privilegedReleaseInterruptionMatrix": {
+      "dateLocal": "2026-11-21",
+      "baseCommit": "4adbda46",
+      "scope": ["module-release", "gateway-release"],
+      "portableRecoveryAndReturn": "PASS",
+      "nativeQualification": "PENDING",
+      "targetVerification": "NOT_EXECUTED",
+      "matrix": "docs/OUF_PRIVILEGED_PIPELINE.md"
+    },
     "semanticCutoverA2": {
       "dateLocal": "2026-11-21",
       "operatorReportedRuns": ["44877430252", "44879131658"],

@@ -27,7 +27,10 @@ public class Fixture {
 }
 JAVA
 javac Fixture.java
-jar --create --file root/app/application.jar --main-class Fixture Fixture.class
+mkdir -p BOOT-INF/classes/db/migration
+echo 'SELECT 1;' > BOOT-INF/classes/db/migration/V1__base.sql
+echo 'SELECT 2;' > BOOT-INF/classes/db/migration/V2__added.sql
+jar --create --file root/app/application.jar --main-class Fixture Fixture.class BOOT-INF
 jlink --add-modules jdk.httpserver --no-header-files --no-man-pages --output root/opt/java
 cp /bin/dash /bin/sleep root/bin/
 ln -s dash root/bin/sh
@@ -63,7 +66,12 @@ while read -r lib; do
 done < <(ldd "$busybox" 2>/dev/null | awk '{ for (i=1; i<=NF; i++) if ($i ~ "^/(usr/)?lib") print $i }')
 tar -C busyroot -cf busybox.tar .
 for revision in old "$tested"; do
-    docker import --change 'ENV PATH=/bin:/usr/local/bin' \
+    defaults=()
+    if [[ $revision == "$tested" ]]; then
+        defaults=(--change 'ENV MODULE_SUCCESSOR=yes' --change 'LABEL fixture.module.successor=yes'
+                  --change 'ENTRYPOINT ["/usr/local/bin/ouf-mcp"]')
+    fi
+    docker import "${defaults[@]}" --change 'ENV PATH=/bin:/usr/local/bin' \
         --change "LABEL org.opencontainers.image.revision=$revision" \
         --change 'LABEL org.opencontainers.image.source=https://github.com/fixture/module' \
         busybox.tar "ouf-ci-busybox:$revision"

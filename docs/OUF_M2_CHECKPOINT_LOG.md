@@ -674,3 +674,7 @@ Controller `f846940c`, launcher `2a73a13f`. [Otto test passati](https://github.c
 ## Cutover A2 del 21 novembre 2026
 
 Nel run 44877430252 il daemon ha aggiunto alla Config del successore una label della sua immagine. Il confronto prima dell’avvio ha fermato il forward. Nel percorso di ritorno usato dal run 44879131658, l’osservatore richiedeva un container running. La fixture di task-17u riproduce il disaccordo e verifica ripresa, ritorno sulla testa 27 e successiva transazione. I due run sono segnalazioni dell’operatore. La prova su Docker reale è predisposta nella suite nativa esistente.
+
+## 21 novembre 2026 · sprint-03/03
+
+Worktree su `4adbda46`. Le fixture portabili verificano ripresa o ritorno con readiness e diniego leggibile in caso di identità o storia incerta. La fixture APISIX verifica il ritorno alla prima baseline. Qualifica Linux e osservazioni target pendenti. [Matrice](OUF_PRIVILEGED_PIPELINE.md#matrice-delle-interruzioni-di-moduli-e-gateway)

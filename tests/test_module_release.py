@@ -141,6 +141,9 @@ class Engine:
         assert archive.read() == self.blob
         self.events.append("load")
 
+    def image_defaults(self, image_id):
+        return {}
+
     def stop(self, cid):
         self.events.append("stop:" + cid[0])
         self.docs[cid]["State"].update(Running=False, Status="exited", Pid=0)
@@ -178,7 +181,7 @@ class Engine:
         nets = cfg.pop("NetworkingConfig")["EndpointsConfig"]
         doc["HostConfig"] = cfg.pop("HostConfig")
         doc.update(Id=NEW, Name="/" + name, Image=cfg["Image"], Config=cfg)
-        doc["State"]["Status"] = "created"
+        doc["State"].update(Status="created", StartedAt="0001-01-01T00:00:00Z", FinishedAt="0001-01-01T00:00:00Z")
         for net, settings in nets.items():
             assert "MacAddress" not in settings
             self.connect(NEW, self.nets[net]["NetworkID"], settings)
@@ -384,9 +387,36 @@ class ReleaseTest(unittest.TestCase):
         self.assertFalse(self.rt.docs[NEW]["NetworkSettings"]["Networks"])
 
     def test_uncertain_signal_never_replayed(self):
+        self.p["migration"]["mode"] = "none"
         self.rt.fault = "lost_signal"
-        self.assertEqual(self.execute()["rollback"], "ROLLED_BACK")
+        self.assertEqual(self.execute()["status"], "READY")
         self.assertEqual(self.rt.events.count("signal:2"), 1)
+
+    def test_missing_flyway_receipt_requires_reviewed_checksums_and_same_generation(self):
+        from tools.module_release import flyway, recovery
+        rt = self.rt
+        rt.flyway_peer = {"postgresCid": "3"*64}
+        expected = [dict(version=str(n), script=f"V{n}__fixture.sql", type="SQL", checksum=n, success=True)
+                    for n in (1, 2)]
+        history = {"peer": "3"*64, "db": "42", "history": expected[:1]}
+        with patch.object(flyway, "inventory", return_value=expected), patch.object(flyway, "observe", return_value=history):
+            stamp = self.planned()
+            stage = apply(self.p, stamp, rt, defer_migration=True)
+            signal = rt.signal
+            def interrupted(cid):
+                signal(cid)
+                history["history"].append(dict(expected[1], checksum=-1))
+                raise KeyboardInterrupt
+            with patch.object(rt, "signal", side_effect=interrupted), self.assertRaises(KeyboardInterrupt):
+                migrate(self.p, stamp, stage["migrationSha256"], rt)
+            with self.assertRaisesRegex(Held, "FLYWAY_OUTCOME_UNCONFIRMED"):
+                recovery.resume(self.p, rt, recovery.proposal(self.p, rt))
+            self.assertEqual(rt.events.count("signal:2"), 1)
+            self.assertNotIn("signal:1", rt.events)
+            history["history"][-1] = expected[1]
+            final = recovery.resume(self.p, rt, recovery.proposal(self.p, rt))
+            self.assertEqual((final["status"], final["readyHttp"]), ("READY", 200))
+            self.assertEqual(rt.events.count("signal:2"), 1)
 
     def test_lost_create_response_preserves_both_containers_and_exclusion(self):
         self.rt.fault = "lost_create"

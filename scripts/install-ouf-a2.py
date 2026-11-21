@@ -113,8 +113,8 @@ def inspect(profile):
     sql = "discovery-queue.sql"
     files[ROOT / "lib" / sql] = (blob("tools/privileged_executor/" + sql), 0o600)
     package = ROOT / "lib/module_release"
-    for module in ("__init__", "contract", "docker", "frame", "mcp_artifact", "operation",
-                   "postgres", "provenance", "return_operation", "transport"):
+    for module in ("__init__", "contract", "docker", "flyway", "frame", "mcp_artifact", "operation",
+                   "postgres", "provenance", "recovery", "return_operation", "transport"):
         files[package / (module + ".py")] = (blob(f"tools/module_release/{module}.py"), 0o600)
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")

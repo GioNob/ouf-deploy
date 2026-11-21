@@ -13,39 +13,10 @@ from gated_creation_plan import ENTRY
 from gated_process_observation import GatedProcessObservation
 from semantic_identity_v25 import semantic_configuration
 from mandate import canonical, hex64, need
+from module_release.frame import merge_image
 
 WORKER = "OUF_DISCOVERY_WORKER_ENABLED"
 PROVIDER = "OUF_SCHEMA_GOV_ENABLED"
-
-
-def merge_image(cfg, image):
-    """Docker daemon merge for a Linux container (API 1.44), request wins."""
-    need(isinstance(image, dict), "IMAGE_CONFIG_REQUIRED")
-    for field in ("User", "WorkingDir", "StopSignal"):
-        if not cfg.get(field) and image.get(field):
-            cfg[field] = image[field]
-    for field in ("Labels", "Volumes", "ExposedPorts"):
-        if image.get(field):
-            cfg[field] = {**image[field], **(cfg.get(field) or {})}
-    if not cfg.get("Labels") and "Labels" in image:
-        cfg["Labels"] = copy.deepcopy(image["Labels"])
-    if image.get("Env"):
-        env = cfg.get("Env") or []
-        keys = {entry.partition("=")[0] for entry in env}
-        cfg["Env"] = env + [entry for entry in image["Env"] if entry.partition("=")[0] not in keys]
-    if not cfg.get("Entrypoint"):
-        if not cfg.get("Cmd") and image.get("Cmd"):
-            cfg["Cmd"] = list(image["Cmd"])
-        if cfg.get("Entrypoint") is None and image.get("Entrypoint"):
-            cfg["Entrypoint"] = list(image["Entrypoint"])
-    health = image.get("Healthcheck")
-    if health is not None:
-        if cfg.get("Healthcheck") is None:
-            cfg["Healthcheck"] = copy.deepcopy(health)
-        else:
-            for key in ("Test", "Interval", "Timeout", "Retries", "StartPeriod", "StartInterval"):
-                if not cfg["Healthcheck"].get(key) and health.get(key):
-                    cfg["Healthcheck"][key] = copy.deepcopy(health[key])
 
 
 def configuration(request):
@@ -67,6 +38,7 @@ def prepare(old, profile, successor_image=None, image_config=None):
     cfg["Env"][keys.index(WORKER)] = WORKER + "=true"
     if successor_image is not None:
         # The request always carries the gate Entrypoint, so the daemon ignores the image's own.
+        need(isinstance(image_config, dict), "IMAGE_CONFIG_REQUIRED")
         merge_image(cfg, image_config)
         cfg["Image"] = successor_image
         profile = {**profile, "image": successor_image}

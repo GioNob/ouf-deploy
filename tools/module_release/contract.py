@@ -15,6 +15,20 @@ class Held(Exception):
     """Only stable reason codes may cross the executor boundary."""
 
 
+def diagnostic(prefix, exc):
+    # Only code locations inside the installed executor may cross this boundary.
+    directories = {Path(__file__).resolve().parent, Path(__file__).resolve().parent.parent}
+    directories.add(Path(__file__).resolve().parent.parent / "privileged_executor")
+    tb = exc.__traceback__
+    location = "unknown:0"
+    while tb:
+        source = Path(tb.tb_frame.f_code.co_filename).resolve()
+        if source.parent in directories:
+            location = f"{source.name}:{tb.tb_lineno}"
+        tb = tb.tb_next
+    return f"{prefix}/{type(exc).__name__}@{location}"
+
+
 def require(condition, code):
     if not condition:
         raise Held(code)

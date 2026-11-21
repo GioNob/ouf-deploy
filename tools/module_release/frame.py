@@ -5,6 +5,36 @@ from copy import deepcopy
 from .contract import ENTRY, SHA, digest, matches, require
 
 
+def merge_image(cfg, image):
+    """Docker daemon merge for a Linux container (API 1.44), request wins."""
+    require(isinstance(image, dict), "IMAGE_CONFIG_REQUIRED")
+    for field in ("User", "WorkingDir", "StopSignal"):
+        if not cfg.get(field) and image.get(field):
+            cfg[field] = image[field]
+    for field in ("Labels", "Volumes", "ExposedPorts"):
+        if image.get(field):
+            cfg[field] = {**image[field], **(cfg.get(field) or {})}
+    if not cfg.get("Labels") and "Labels" in image:
+        cfg["Labels"] = deepcopy(image["Labels"])
+    if image.get("Env"):
+        env = cfg.get("Env") or []
+        keys = {entry.partition("=")[0] for entry in env}
+        cfg["Env"] = env + [entry for entry in image["Env"] if entry.partition("=")[0] not in keys]
+    if not cfg.get("Entrypoint"):
+        if not cfg.get("Cmd") and image.get("Cmd"):
+            cfg["Cmd"] = list(image["Cmd"])
+        if cfg.get("Entrypoint") is None and image.get("Entrypoint"):
+            cfg["Entrypoint"] = list(image["Entrypoint"])
+    health = image.get("Healthcheck")
+    if health is not None:
+        if cfg.get("Healthcheck") is None:
+            cfg["Healthcheck"] = deepcopy(health)
+        else:
+            for key in ("Test", "Interval", "Timeout", "Retries", "StartPeriod", "StartInterval"):
+                if not cfg["Healthcheck"].get(key) and health.get(key):
+                    cfg["Healthcheck"][key] = deepcopy(health[key])
+
+
 def aliases(ep, cid):
     return sorted(set(ep.get("Aliases") or ()) - {cid[:12]})
 
@@ -70,8 +100,10 @@ def epoch(doc):
     return [doc["Id"], doc["State"]["StartedAt"], doc["State"]["Pid"], doc["RestartCount"]]
 
 
-def check_body(old, doc, image, config_image, *, created=False, labels=None):
+def check_body(old, doc, image, config_image, *, created=False, labels=None, image_defaults=None):
     cfg = image_configuration(old, config_image, labels)
+    if image_defaults is not None:
+        merge_image(cfg, image_defaults)
     host = dict(old["HostConfig"])
     if created and host.get("OomKillDisable") is None:
         host["OomKillDisable"] = False

@@ -58,7 +58,7 @@ def main():
 
 def public_error(error):
     if isinstance(error, Held):
-        return str(error)
+        return " ".join(filter(None, (str(error), getattr(error, "public_context", None))))
     entry = Path(__file__).resolve()
     lib = ROOT / "lib"
     tb = error.__traceback__

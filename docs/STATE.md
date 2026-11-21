@@ -1,5 +1,9 @@
 # Stato corrente OUF
 
+## Ripresa rilasci moduli e Gateway · 21 novembre 2026
+
+Task sprint-03/03 copre distacco, CREATE con CID, migrazione, segnale incerto e ritorno Gateway dopo PENDING. Le prove portabili esercitano il nuovo dispatch. La qualifica Docker/PostgreSQL/APISIX della CI resta da eseguire. [Matrice e limiti](OUF_PRIVILEGED_PIPELINE.md#matrice-delle-interruzioni-di-moduli-e-gateway)
+
 ## Cutover Semantic A2 del 21 novembre 2026
 
 L’operatore segnala R3 chiuso sulla testa 27 e il successore nello stato Docker `created` dopo il fallimento di `start-gate`. La correzione in task-17u supera in fixture sia la ripresa con lo stesso CID sia il ritorno al predecessore. La qualifica Docker nativa e l’installazione in laboratorio restano da verificare. [Checkpoint A2](OUF_M2_CHECKPOINT_LOG.md#cutover-a2-del-21-novembre-2026)
