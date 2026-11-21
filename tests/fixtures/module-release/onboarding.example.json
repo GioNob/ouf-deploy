@@ -1,0 +1,60 @@
+{
+  "schema": "ouf.module-release.v1",
+  "module": "onboarding",
+  "container": "SERVICE_NAME",
+  "retainedName": "RETAINED_NAME",
+  "failedName": "FAILED_NAME",
+  "oldImage": "sha256:<approved predecessor image ID>",
+  "networks": {
+    "APPLICATION_NETWORK": {
+      "ipv4": "<installation IPv4>",
+      "aliases": [
+        "APPLICATION_ALIAS"
+      ]
+    },
+    "STORAGE_NETWORK": {
+      "ipv4": "<installation IPv4>",
+      "aliases": [
+        "STORAGE_ALIAS"
+      ]
+    }
+  },
+  "gate": {
+    "command": [
+      "java",
+      "-jar",
+      "/app/application.jar"
+    ]
+  },
+  "migration": {
+    "mode": "spring-flyway",
+    "rollbackCompatible": false
+  },
+  "readiness": {
+    "path": "/actuator/health/readiness",
+    "port": 8080,
+    "acceptStatus": [
+      200
+    ],
+    "jsonStatus": "UP",
+    "attempts": 60
+  },
+  "inbox": "<absolute transport inbox>",
+  "journal": "<absolute private journal directory>",
+  "dockerSocket": "<absolute Docker socket>",
+  "nsenter": "<absolute nsenter executable>",
+  "ci": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "workflow": "module-ci.yml",
+    "pullRequest": 64,
+    "sourceCommit": "3b4f3f7fb179aa846b3a6fe51d27d825d636a9a9",
+    "sourceTree": "894cdf31c512a0cefe0dd9f6eb3eacc91f5c21cb",
+    "manifestSchema": "ouf.onboarding-tested-image.v1",
+    "imageName": "ouf-source-onboarding",
+    "runId": 0,
+    "runAttempt": 0,
+    "artifactId": 0,
+    "zipSha256": "<GitHub artifact SHA-256>",
+    "imageId": "sha256:<approved target engine image ID>"
+  }
+}

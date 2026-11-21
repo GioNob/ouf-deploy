@@ -25,7 +25,7 @@ from tools.module_release.operation import apply, migrate, plan
 from tools.module_release.transport import select
 
 
-PROFILE = Path(__file__).resolve().parents[1] / "config/module-release/onboarding.example.json"
+PROFILE = Path(__file__).resolve().parents[1] / "tests/fixtures/module-release/onboarding.example.json"
 OLD, NEW = "1" * 64, "2" * 64
 TESTED = "d" * 40
 

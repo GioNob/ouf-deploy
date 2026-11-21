@@ -46,17 +46,17 @@
   "nsenter": "<absolute nsenter executable>",
   "ci": {
     "repository": "GioNob/ouf-udp-object-resolution",
-    "workflow": "<PR workflow filename>",
-    "pullRequest": 0,
-    "sourceCommit": "<reviewed PR head>",
-    "sourceTree": "<reviewed source tree>",
-    "manifestSchema": "<tested-image manifest schema>",
-    "imageName": "<image name without tag>",
-    "runId": 0,
-    "runAttempt": 0,
-    "artifactId": 0,
-    "zipSha256": "<GitHub artifact SHA-256>",
-    "imageId": "sha256:<approved target engine image ID>",
-    "artifactPrefix": "<artifact prefix before run ID>"
+    "workflow": "module-ci.yml",
+    "pullRequest": 52,
+    "sourceCommit": "5ee347ace0958fed3abfa0dc548e27e7d0e08491",
+    "sourceTree": "4259674ac8890a6704ae7ed1948a91d4b9563936",
+    "manifestSchema": "ouf.udp-tested-image.v1",
+    "imageName": "ouf-udp",
+    "runId": 44901963091,
+    "runAttempt": 1,
+    "artifactId": 14706128942,
+    "zipSha256": "98d51f6dd232162a6576f0b24c2120ffc8b008a0208878f75f18d8db587d9973",
+    "imageId": "sha256:5d37f405b8a70c9af917b97c26f28cb2ec6d3cc31d82dcaa88bef377de53cddb",
+    "artifactPrefix": "udp-governed-image"
   }
 }

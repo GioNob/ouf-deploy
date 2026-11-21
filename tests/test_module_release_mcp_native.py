@@ -19,7 +19,7 @@ from tools.module_release.operation import ready
                      "labelled disposable Engine opt-in")
 class NativeMCP(unittest.TestCase):
     def test_gated_go_server_returns_204(self):
-        profile = json.loads((ROOT / "config/module-release/mcp.example.json").read_bytes())
+        profile = json.loads((ROOT / "tests/fixtures/module-release/mcp.example.json").read_bytes())
         profile.update(nsenter="/usr/bin/nsenter", dockerSocket=os.environ["OUF_A2_FIXTURE_SOCKET"])
         rt = Docker(profile)
         self.assertIn("ouf.a2.fixture=true", rt.api("GET", "/info")["Labels"])
@@ -50,7 +50,7 @@ class NativeMCP(unittest.TestCase):
         self.assertFalse(rt.process(doc, gated=False))
 
     def test_postgres_snapshot_history_and_schema(self):
-        profile = json.loads((ROOT / "config/module-release/mcp.example.json").read_bytes())
+        profile = json.loads((ROOT / "tests/fixtures/module-release/mcp.example.json").read_bytes())
         profile["dockerSocket"] = os.environ["OUF_A2_FIXTURE_SOCKET"]
         rt = Docker(profile)
         self.assertIn("ouf.a2.fixture=true", rt.api("GET", "/info")["Labels"])

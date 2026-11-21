@@ -55,17 +55,17 @@
   "nsenter": "<absolute nsenter executable>",
   "ci": {
     "repository": "GioNob/ouf-ingestion-runtime",
-    "workflow": "<PR workflow filename>",
-    "pullRequest": 0,
-    "sourceCommit": "<reviewed PR head>",
-    "sourceTree": "<reviewed source tree>",
-    "manifestSchema": "<tested-image manifest schema>",
-    "imageName": "<image name without tag>",
-    "runId": 0,
-    "runAttempt": 0,
-    "artifactId": 0,
-    "zipSha256": "<GitHub artifact SHA-256>",
-    "imageId": "sha256:<approved target engine image ID>",
-    "artifactPrefix": "<artifact prefix before run ID>"
+    "workflow": "module-ci.yml",
+    "pullRequest": 52,
+    "sourceCommit": "6f0504240b2653e5aa93729ae70cedc52228515d",
+    "sourceTree": "c64e76f2c0cd11c1d9f32fd5be33291b75a2d4e4",
+    "manifestSchema": "ouf.ingestion-tested-image.v1",
+    "imageName": "ouf-ingestion",
+    "runId": 44901967659,
+    "runAttempt": 1,
+    "artifactId": 14706506788,
+    "zipSha256": "07b52fbe4155b59aa482960d3f57b05666e6769357ffc74e88bc9c1fcbaa251e",
+    "imageId": "sha256:ce314c03e9c9d5513be2db3d92bed45fade72df93f43277e74fe027195005871",
+    "artifactPrefix": "ingestion-governed-image"
   }
 }

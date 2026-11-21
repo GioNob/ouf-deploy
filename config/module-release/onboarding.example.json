@@ -46,9 +46,9 @@
   "ci": {
     "repository": "GioNob/ouf-source-onboarding",
     "workflow": "module-ci.yml",
-    "pullRequest": 64,
-    "sourceCommit": "3b4f3f7fb179aa846b3a6fe51d27d825d636a9a9",
-    "sourceTree": "894cdf31c512a0cefe0dd9f6eb3eacc91f5c21cb",
+    "pullRequest": 69,
+    "sourceCommit": "79672b55aefa2ef43c777e9bba904e0c48663f75",
+    "sourceTree": "24dcade5199e9fbb683426eec2f867d1d33e5925",
     "manifestSchema": "ouf.onboarding-tested-image.v1",
     "imageName": "ouf-source-onboarding",
     "runId": 0,

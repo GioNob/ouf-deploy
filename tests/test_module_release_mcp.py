@@ -21,7 +21,7 @@ class Release(unittest.TestCase):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name)
-        p = self.p = json.loads((ROOT / "config/module-release/mcp.example.json").read_bytes())
+        p = self.p = json.loads((ROOT / "tests/fixtures/module-release/mcp.example.json").read_bytes())
         p.update(inbox=temp.name, journal=temp.name, dockerSocket=str(self.root / "docker.sock"),
                  nsenter=str(self.root / "nsenter"), oldImage="sha256:" + "a"*64)
         next(iter(p["networks"].values()))["ipv4"] = "192.0.2.2"

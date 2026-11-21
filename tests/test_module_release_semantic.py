@@ -22,7 +22,7 @@ MIGRATIONS = [{"name": "V13__adoption.sql", "sha256": sha(b"fixture SQL")}]
 
 class SemanticTransport(unittest.TestCase):
     def setUp(self):
-        self.profile = json.loads((ROOT / "config/module-release/semantic-successor.example.json").read_bytes())
+        self.profile = json.loads((ROOT / "tests/fixtures/module-release/semantic-successor.example.json").read_bytes())
         self.root = Path(self.enterContext(tempfile.TemporaryDirectory()))
         self.inbox = self.root / "inbox"
         self.inbox.mkdir()
