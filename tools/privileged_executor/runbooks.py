@@ -9,7 +9,7 @@ import subprocess
 import time
 import uuid
 
-from mandate import Held, hex64, need
+from mandate import Held, canonical, hex64, need
 from store import bound, read, save, trusted
 
 SUCCESS = {"stop": "SEMANTIC_PROVIDER_R3_STOPPED", "start": "SEMANTIC_PROVIDER_R3_STARTED",
@@ -132,22 +132,26 @@ class Books:
                  and row["decision"] == "OPERATE", "SIGNATURE_READBACK")
         return row
 
-    def renewal(self):
+    def wait_renewal(self, *, required=True):
         path = trusted(self.cfg["leaseJournal"], private=True)
-        stat = path.stat()
-        lease = read(path)
-        need(lease["state"] == "LEASE_READY" and lease["leaseAuthorized"] is True, "LEASE_NOT_READY")
-        return (stat.st_ino, stat.st_mtime_ns)
-
-    def wait_renewal(self, previous):
+        previous = path.stat()
         until = time.monotonic() + 15
         while time.monotonic() < until:
-            try:
-                if self.renewal() != previous:
-                    return
-            except Exception:
-                pass
+            # The coordinator publishes by atomic replacement. Read the stamp
+            # and the authorization from the same file, including across rename.
+            with trusted(path, private=True).open("rb") as stream:
+                current = os.fstat(stream.fileno())
+                if (current.st_ino, current.st_mtime_ns) != (previous.st_ino, previous.st_mtime_ns):
+                    lease = json.load(stream)
+                    if lease["state"] == "LEASE_READY" and lease["leaseAuthorized"] is True:
+                        return
             time.sleep(.1)
+        # A quiet but still-authorized lease did not previously prevent the
+        # initial, digest-checked stop (including cleanup after a failed start).
+        if not required:
+            lease = read(path)
+            if lease["state"] == "LEASE_READY" and lease["leaseAuthorized"] is True:
+                return
         need(False, "RENEWAL_TIMEOUT")
 
 
@@ -156,18 +160,28 @@ class RenewalCollision(Exception):
 
 
 def stop(books, version, approved, record):
-    # A retry changes the wrapper's unique evidence directory. Its entire operation
-    # and observation must equal the approved ones, including lease and peer epochs.
+    # operate.observe projects the lease to state/leaseAuthorized. Candidate and
+    # supervisor epochs identify live generations (including the Semantic peer).
     def scope(row):
-        return {k: v for k, v in row.items() if k not in ("outputDirectory", "planSha256")}
+        return canonical({k: v for k, v in row.items() if k not in ("outputDirectory", "planSha256")})
+
     current = approved
     for attempt in range(3):
-        before = books.renewal()
+        if attempt:
+            # A collision can arrive while the coordinator is still updating.
+            books.wait_renewal()
+            try:
+                current = books.call("stop", version)
+            except Held as error:
+                if str(error) == "R3_HEAD_DRIFT":
+                    raise Held("STOP_REQUIRES_NEW_REVIEW") from error
+                raise
+            need(scope(current) == scope(approved), "STOP_REQUIRES_NEW_REVIEW")
+            record(attempt, current)
+        # Planning can take longer than a renewal period. Align the apply itself
+        # with a fresh LEASE_READY publication, after any delivery and journaling.
+        books.wait_renewal(required=attempt > 0)
         try:
             return books.call("stop", version, current["planSha256"])
         except RenewalCollision:
             need(attempt < 2, "STOP_RETRY_LIMIT")
-            books.wait_renewal(before)
-            current = books.call("stop", version)
-            need(scope(current) == scope(approved), "STOP_REQUIRES_NEW_REVIEW")
-            record(attempt + 1, current)

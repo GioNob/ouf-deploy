@@ -5,7 +5,9 @@ import io
 import json
 import os
 import runpy
+import shutil
 import stat
+import subprocess
 import sys
 from unittest.mock import Mock, patch
 from pathlib import Path
@@ -277,23 +279,18 @@ class ReleaseTest(unittest.TestCase):
         self.assertEqual(result, saved)
         return result
 
-    def test_executor_enforces_each_review_through_onboarding_readiness(self):
+    def governed_dispatch(self):
         import mandate
         import module_operation
         import store
         dispatch = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["dispatch"]
-        command = self.p["gate"]["command"] + ["--fixture.option=private-marker"]
-        self.p["gate"]["command"] = command
-        self.p["candidate"] = {"removeArgs": command[-1:]}
-        self.rt.docs[OLD]["Config"]["Cmd"] = command
-        self.rt.docs[OLD]["Args"] = ENTRY[1:] + command
         cfg = dict(repositoryId=10, environmentId=20, branch="protected", environment="test",
                    reviewerIds=[30], commit="a"*40, runner="fixture", modules={"onboarding":self.p})
         req = dict(run="1", attempt="1", commit=cfg["commit"], operation="module-release",
                    module="onboarding", phase="plan")
         req["digest"] = mandate.intent(req)
         def call(approval_count, workflow=mandate.module_workflow("onboarding")):
-            run = dict(id=1, run_attempt=1, event="workflow_dispatch", status="in_progress",
+            run = dict(id=int(req["run"]), run_attempt=1, event="workflow_dispatch", status="in_progress",
                        path=workflow, head_branch="protected", head_sha=cfg["commit"],
                        repository={"id":10}, head_repository={"id":10})
             user = {"type":"User", "id":30}
@@ -304,28 +301,132 @@ class ReleaseTest(unittest.TestCase):
             jobs = {"jobs": [dict(status="in_progress", runner_name="fixture", name=req["phase"] + " " + req["digest"])]}
             return dispatch(req, cfg, self.root, Mock(side_effect=[run, jobs, dict(protected=True,
                             commit={"sha":cfg["commit"]}), env, [approval] * approval_count]))
-        with patch.object(store, "sync_dir"), patch.object(store, "trusted", side_effect=lambda p, **_: Path(p)), \
-             patch.object(module_operation.operation, "Docker", return_value=self.rt):
-            with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
-                call(0, workflow=mandate.WORKFLOW)
-            plan_result = call(0)
-            self.assertEqual(plan_result["candidateReview"]["removedArgs"], ["--fixture.option=<redacted>"])
-            self.assertFalse("private-marker" in json.dumps(plan_result))
-            req.update(phase="apply", digest=plan_result["digest"])
-            with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
-                call(0)
-            self.assertNotIn("load", self.rt.events)
-            stage = call(1)
-            self.assertEqual(stage["status"], "GATED")
-            self.assertNotIn("signal:2", self.rt.events)
-            req.update(phase="migrate", digest=stage["digest"])
-            with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
-                call(1)
-            self.assertNotIn("signal:2", self.rt.events)
-            self.assertEqual(call(2)["status"], "READY")
-            with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
-                call(2)
-            self.assertEqual(self.rt.events.count("signal:2"), 1)
+        self.enterContext(patch.object(store, "sync_dir"))
+        self.enterContext(patch.object(store, "trusted", side_effect=lambda path, **_: Path(path)))
+        self.enterContext(patch.object(module_operation.operation, "Docker", return_value=self.rt))
+        return call, req
+
+    def test_executor_enforces_each_review_through_onboarding_readiness(self):
+        import mandate
+        command = self.p["gate"]["command"] + ["--fixture.option=private-marker"]
+        self.p["gate"]["command"] = command
+        self.p["candidate"] = {"removeArgs": command[-1:]}
+        self.rt.docs[OLD]["Config"]["Cmd"] = command
+        self.rt.docs[OLD]["Args"] = ENTRY[1:] + command
+        call, req = self.governed_dispatch()
+        with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
+            call(0, workflow=mandate.WORKFLOW)
+        plan_result = call(0)
+        self.assertEqual(plan_result["candidateReview"]["removedArgs"], ["--fixture.option=<redacted>"])
+        self.assertFalse("private-marker" in json.dumps(plan_result))
+        req.update(phase="apply", digest=plan_result["digest"])
+        with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
+            call(0)
+        self.assertNotIn("load", self.rt.events)
+        stage = call(1)
+        self.assertEqual(stage["status"], "GATED")
+        self.assertNotIn("signal:2", self.rt.events)
+        req.update(phase="migrate", digest=stage["digest"])
+        with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
+            call(1)
+        self.assertNotIn("signal:2", self.rt.events)
+        self.assertEqual(call(2)["status"], "READY")
+        with self.assertRaisesRegex(mandate.Held, "PHASE_ALREADY_AUTHORIZED"):
+            call(2)
+        self.assertEqual(self.rt.events.count("signal:2"), 1)
+
+    def test_successive_releases_require_last_signed_completed_candidate(self):
+        import mandate
+        import module_receipt
+        import store
+        openssl = shutil.which("openssl")
+        self.assertIsNotNone(openssl)
+        private, public = self.root / "fixture-key", self.root / "fixture-public.der"
+        subprocess.run([openssl, "genpkey", "-algorithm", "Ed25519", "-out", str(private)], check=True)
+        subprocess.run([openssl, "pkey", "-in", str(private), "-pubout", "-outform", "DER", "-out", str(public)],
+                       check=True)
+        self.p["receiptSigning"] = {"privateKey": str(private),
+                                    "publicKey": {"path": str(public), "sha256": sha(public.read_bytes())}}
+        self.enterContext(patch.object(module_receipt, "OPENSSL", openssl))
+        self.enterContext(patch.object(module_receipt, "trusted", side_effect=lambda path, **_: Path(path)))
+        call, req = self.governed_dispatch()
+        plan_result = call(0)
+        req.update(phase="apply", digest=plan_result["digest"])
+        stage = call(1)
+        req.update(phase="migrate", digest=stage["digest"])
+        self.assertEqual(call(2)["status"], "READY")
+
+        # The next candidate has fresh CI pins and free custody names. The
+        # installed predecessor image pin still identifies the first baseline.
+        pinned = self.p["oldImage"]
+        self.p["retainedName"] += "-next"
+        self.p["migration"]["mode"] = "none"
+        self.rt.blob = artifact(self.p, self.root, image_env=["VERSION=next"])
+        next_run = 1
+
+        def next_plan():
+            nonlocal next_run
+            next_run += 1
+            req.update(run=str(next_run), phase="plan")
+            req["digest"] = mandate.intent(req)
+            return call(0)
+
+        receipt = self.root / plan_result["digest"] / "receipt.json"
+        saved = receipt.read_bytes()
+        sigfile = receipt.with_name("receipt.ed25519")
+        signature = sigfile.read_bytes()
+        sigfile.unlink()
+        with self.assertRaisesRegex(mandate.Held, "MODULE_RECEIPT_SIGNATURE_REQUIRED"):
+            next_plan()
+        sigfile.write_bytes(bytes(64))
+        with self.assertRaisesRegex(mandate.Held, "MODULE_RECEIPT_SIGNATURE_INVALID"):
+            next_plan()
+        sigfile.write_bytes(signature)
+        receipt.unlink()
+        with self.assertRaises(mandate.Held):
+            next_plan()
+        receipt.write_bytes(saved)
+        for key, value in (("successorCid", OLD), ("successorFrameSha256", "0" * 64), ("status", "GATED")):
+            with self.subTest(key=key):
+                receipt.write_text(json.dumps({**json.loads(saved), key: value}))
+                with self.assertRaisesRegex(mandate.Held, "MODULE_RECEIPT_SIGNATURE_INVALID"):
+                    next_plan()
+        receipt.write_bytes(saved)
+        review_file = self.root / "1" / "apply.review"
+        review_bytes = review_file.read_bytes()
+        altered = json.loads(review_bytes)
+        altered["request"]["digest"] = "0" * 64
+        review_file.write_text(json.dumps(altered))
+        with self.assertRaisesRegex(mandate.Held, "MODULE_APPROVAL_DRIFT"):
+            next_plan()
+        review_file.write_bytes(review_bytes)
+        second = next_plan()
+        self.assertEqual(self.p["oldImage"], pinned)
+        planned_run = req["run"]
+        approved = store.read(self.root / planned_run / "plan")["plan"]
+        self.assertEqual(approved["oldImage"], self.rt.docs[NEW]["Image"])
+        self.assertEqual(approved["predecessorPlanSha256"], plan_result["digest"])
+        first_live = copy.deepcopy(self.rt.docs[NEW])
+        for fields in ({"Id": "4" * 64}, {"Image": "sha256:" + "5" * 64}, {"RestartCount": 1}):
+            with self.subTest(drift=tuple(fields)), patch.dict(self.rt.docs[NEW], fields):
+                with self.assertRaisesRegex(mandate.Held, "PREDECESSOR_CHANGED"):
+                    next_plan()
+        # Replanning under the module lock checks the evidence again.
+        req.update(run=planned_run, phase="apply", digest=second["digest"])
+        receipt.unlink()
+        with self.assertRaises(mandate.Held):
+            call(1)
+        self.assertEqual(self.rt.events.count("load"), 1)
+        receipt.write_bytes(saved)
+        second = next_plan()
+        req.update(phase="apply", digest=second["digest"])
+        with patch.multiple(sys.modules[__name__], OLD=NEW, NEW="3" * 64):
+            self.assertEqual(call(1)["status"], "READY")
+        # Even a byte-for-byte match for the earlier signed release is stale.
+        self.assertEqual(store.read(self.root / "module-onboarding.ready")["planSha256"], second["digest"])
+        with patch.dict(self.rt.docs, {NEW: first_live}):
+            with self.assertRaisesRegex(mandate.Held, "PREDECESSOR_CHANGED"):
+                next_plan()
 
     def test_archive_tampered(self):
         next(self.root.glob("*.zip")).write_bytes(b"different")

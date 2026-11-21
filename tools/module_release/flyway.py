@@ -157,12 +157,12 @@ def datasource(binding, config, *, predecessor):
     return url, user
 
 
-def observe(rt, candidate):
+def observe(rt, candidate, *, predecessor=False):
     binding = rt.p["migration"].get("flyway")
     if binding is None:
         require(rt.p["module"] == "onboarding" and rt.flyway_peer, "FLYWAY_BINDING_UNPROVEN")
         binding = dict(rt.flyway_peer, urlEnv="OUF_ONB_DB_URL", userEnv="OUF_ONB_DB_USER", schema="ouf_onboarding")
-    url, user = datasource(binding, candidate["Config"], predecessor=candidate["Image"] == rt.p["oldImage"])
+    url, user = datasource(binding, candidate["Config"], predecessor=predecessor)
     pg = rt.inspect(binding["postgresCid"])
     nets = {ep["NetworkID"] for ep in candidate["NetworkSettings"]["Networks"].values()}
     require(pg["Id"] == binding["postgresCid"] and pg["State"]["Running"] and any(
@@ -200,8 +200,8 @@ def checkpoint(rt, candidate):
     return proof
 
 
-def verify(rt, candidate, proof):
-    current = observe(rt, candidate)
+def verify(rt, candidate, proof, *, predecessor=False):
+    current = observe(rt, candidate, predecessor=predecessor)
     rows = current["history"]
     require(current["peer"] == proof["peer"] and current["db"] == proof["db"] and
             digest(rows[:proof["count"]]) == proof["before"] and digest(rows) == proof["after"],
