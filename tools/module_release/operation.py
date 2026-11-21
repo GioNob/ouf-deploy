@@ -6,9 +6,11 @@ from pathlib import Path, PurePosixPath
 import tempfile
 
 from . import flyway, postgres
-from .contract import CI_COORDINATES, MCP_CI_COORDINATES, Held, SHA, diagnostic, digest, jar_name, matches, package, require, validate
+from .contract import (CI_COORDINATES, INGESTION_STARTUP_FLAGS, MCP_CI_COORDINATES, Held, SHA, diagnostic,
+                       digest, jar_name, matches, package, require, validate)
 from .docker import Docker
-from .frame import baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, provenance_labels, request, snapshot
+from .frame import (baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, merge_image,
+                    provenance_labels, request, snapshot)
 
 
 def reason(exc):
@@ -39,7 +41,9 @@ def ready(rt, doc, contract):
 def observe(p, rt):
     validate(p)
     require(p["migration"]["rollbackCompatible"], "MIGRATION_ROLLBACK_BLOCKED")
-    artifact = package(p)
+    binding = p["migration"].get("flyway", {})
+    defaults = {} if "candidate" in p or "effectiveDatasource" in binding else None
+    artifact = package(p, image_defaults=defaults)
     old = rt.inspect(p["container"])
     baseline(p, old)
     require(old["Image"] != p["ci"]["imageId"], "ALREADY_INSTALLED")
@@ -47,13 +51,29 @@ def observe(p, rt):
             "CUSTODY_NAME_OCCUPIED")
     require(ready(rt, old, p["readiness"]), "PREDECESSOR_NOT_READY")
     coordinates = MCP_CI_COORDINATES if p["ci"].get("publisherFormat") == "acquisition-mcp" else CI_COORDINATES
-    create_request = request(old, p["ci"]["imageId"], provenance_labels(p))
+    create_request = request(old, p["ci"]["imageId"], provenance_labels(p),
+                             candidate=p.get("candidate"), image_defaults=defaults)
+    if "effectiveDatasource" in binding:
+        prospective = {key: create_request.get(key) for key in ("Entrypoint", "Cmd", "Env")}
+        merge_image(prospective, defaults)
+        flyway.datasource(binding, prospective, predecessor=False)
+        if p["module"] == "ingestion":
+            require("--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY" not in prospective["Cmd"],
+                    "CANDIDATE_VALIDATE_ONLY")
     body = {
         "operation": "module-release", "module": p["module"], "profileSha256": digest(p),
         "oldCid": old["Id"], "oldFrameSha256": snapshot(old), "requestSha256": digest(create_request),
         "oldImage": old["Image"], "ci": {k: p["ci"][k] for k in coordinates}, **artifact,
         "migrationMode": p["migration"]["mode"], "rollback": "AVAILABLE",
     }
+    if "candidate" in p:
+        removed = p["candidate"].get("removeArgs", [])
+        body["candidateReview"] = {
+            "predecessorCmdSha256": digest(old["Config"]["Cmd"]), "candidateCmdSha256": digest(create_request["Cmd"]),
+            "removedArgs": [arg if arg in INGESTION_STARTUP_FLAGS else arg.partition("=")[0] + "=<redacted>"
+                            for arg in old["Config"]["Cmd"] if arg in removed],
+            "envOperations": {"SPRING_FLYWAY_ENABLED": "enable"} if p["candidate"].get("enableFlyway") else {},
+        }
     if "database" in p["migration"]:
         migration = p["migration"]
         state = postgres.observe(rt, old)
@@ -168,7 +188,7 @@ def checked_generation(p, rt, old, cid, restoring=False):
         doc = rt.inspect(cid)
         require(doc["Id"] == cid and doc["Name"] == "/" + p["container"], "SERVICE_IDENTITY_CHANGED")
         check_body(old, doc, image, config_image, labels=None if restoring else provenance_labels(p),
-                   image_defaults=defaults)
+                   image_defaults=defaults, candidate=None if restoring else p.get("candidate"))
         check_live_networks(old, doc)
         require(snapshot(doc) == generation, "GENERATION_CHANGED")
         return doc
@@ -368,7 +388,8 @@ def verify_never_started(p, rt, old, doc, root):
             and not any((root / f).exists() for f in ("start-generation.json", "migration-plan.json", "release-signal.json")),
             "NEVER_STARTED_UNPROVEN")
     image = p["ci"]["imageId"]
-    check_body(old, doc, image, image, created=True, labels=provenance_labels(p), image_defaults=rt.image_defaults(image))
+    check_body(old, doc, image, image, created=True, labels=provenance_labels(p),
+               image_defaults=rt.image_defaults(image), candidate=p.get("candidate"))
     check_created_networks(old, doc)
 
 
@@ -416,6 +437,10 @@ def execute(p, rt, body, old, root, result, defer_migration):
         archive.seek(0)
         rt.load(archive, actual)
     require(snapshot(rt.inspect(old["Id"])) == body["oldFrameSha256"], "PRE_STOP_DRIFT")
+    image = p["ci"]["imageId"]
+    req = request(old, image, provenance_labels(p), candidate=p.get("candidate"),
+                  image_defaults=rt.image_defaults(image) if "candidate" in p else None)
+    require(digest(req) == body["requestSha256"], "CREATE_REQUEST_CHANGED")
     networks = old["NetworkSettings"]["Networks"]
     if "database" in p["migration"]:
         state = postgres.observe(rt, old)
@@ -426,7 +451,6 @@ def execute(p, rt, body, old, root, result, defer_migration):
     try:
         park(rt, old["Id"], p["retainedName"], networks)
         retained(p, rt, old)
-        req = request(old, p["ci"]["imageId"], provenance_labels(p))
         record(root, "create-intent.json", {"requestSha256": digest(req)})
         new = rt.create(p["container"], req)
         require(matches(SHA, new) and new != old["Id"], "CREATE_ID_UNCONFIRMED")
@@ -436,7 +460,7 @@ def execute(p, rt, body, old, root, result, defer_migration):
         require(doc["Id"] == new and doc["Name"] == old["Name"] and doc["State"]["Status"] == "created"
                 and not doc["State"]["Running"], "CREATED_IDENTITY_CHANGED")
         check_body(old, doc, p["ci"]["imageId"], p["ci"]["imageId"], created=True, labels=provenance_labels(p),
-                   image_defaults=rt.image_defaults(p["ci"]["imageId"]))
+                   image_defaults=rt.image_defaults(image), candidate=p.get("candidate"))
         check_created_networks(old, doc)
         start_candidate(p, rt, old, new, root)
         finish_apply(p, rt, body, old, new, root, result, defer_migration)

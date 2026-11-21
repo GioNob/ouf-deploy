@@ -31,6 +31,13 @@
       "baseCommit": "8cbcaa404d2338351dfa978873de7bf88b75d6d7",
       "modules": ["udp", "ingestion"],
       "portableReleaseRecoveryReturn": "PASS",
+      "candidateProfile12f2": {
+        "baseCommit": "5a5871eb8ea06748b7e9ca1d2b63cedd4e75a545",
+        "portableIngestionV21ReviewAndReturn": "PASS_SIMULATED_HISTORY",
+        "fixtureV21ColumnAfterSignal": "PASS_SQLITE",
+        "portableUdpSpringJson": "PASS",
+        "nativeFlywayPostgresV21": "PENDING"
+      },
       "nativeQualification": "PENDING",
       "targetVerification": "NOT_EXECUTED"
     },

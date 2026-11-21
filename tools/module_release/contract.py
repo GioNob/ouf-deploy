@@ -63,10 +63,16 @@ MCP_CI_COORDINATES = COMMON_CI_COORDINATES + ("publisherFormat", "artifactPrefix
 GATE = ('OUF_APPLICATION_GATE=0; trap "OUF_APPLICATION_GATE=1" USR1; '
         'while [ "$OUF_APPLICATION_GATE" = 0 ]; do sleep 1 & wait "$!"; done; exec "$@"')
 ENTRY = ["/bin/sh", "-c", GATE, "ouf-gated-application"]
+INGESTION_STARTUP_FLAGS = ("--spring.flyway.enabled=false", "--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY")
 
 
 def argv(value):
     return isinstance(value, list) and value and all(isinstance(v, str) and v and "\0" not in v for v in value)
+
+
+def candidate_command(command, candidate):
+    removed = candidate.get("removeArgs", [])
+    return [arg for arg in command if arg not in removed]
 
 
 def validate(p):
@@ -91,6 +97,19 @@ def validate(p):
             and ready["acceptStatus"] and all(type(s) is int and 200 <= s < 300 for s in ready["acceptStatus"])
             and ("jsonStatus" not in ready or isinstance(ready["jsonStatus"], str)), "INVALID_READINESS")
     migration = p["migration"]
+    if "candidate" in p:
+        candidate = p["candidate"]
+        require(migration["mode"] == "spring-flyway"
+                and isinstance(candidate, dict) and candidate and set(candidate) <= {"removeArgs", "enableFlyway"},
+                "INVALID_CANDIDATE_PROFILE")
+        removed = candidate.get("removeArgs", [])
+        command = p["gate"]["command"]
+        jar_name(command)
+        options = command[command.index("-jar") + 2:]
+        require(isinstance(removed, list) and ("removeArgs" not in candidate or removed)
+                and all(matches(r"--[a-z][a-z0-9.-]*=[^\x00\r\n]+", arg) and arg in options
+                        and removed.count(arg) == command.count(arg) == 1 for arg in removed)
+                and candidate.get("enableFlyway", True) is True, "INVALID_CANDIDATE_PROFILE")
     require(migration["mode"] in ("none", "spring-flyway", "dedicated")
             and type(migration["rollbackCompatible"]) is bool, "INVALID_MIGRATION")
     require(("command" in migration) == (migration["mode"] == "dedicated")
@@ -106,6 +125,8 @@ def validate(p):
                 and all(matches(ident, db.get(k)) for k in ("database", "schema"))
                 and all(matches(r"[A-Z_][A-Z_0-9]*", db.get(k)) for k in ("urlEnv", "userEnv"))
                 and db["urlEnv"] != db["userEnv"], "INVALID_FLYWAY_BINDING")
+        require("effectiveDatasource" not in db or db["effectiveDatasource"] == "profile-env",
+                "INVALID_FLYWAY_BINDING")
         jar_name(p["gate"]["command"])
     if p["module"] in ("udp", "ingestion"):
         require(matches(NAME, ci.get("artifactPrefix")) and matches(NAME, ci.get("manifestSchema"))
@@ -180,7 +201,7 @@ def image_metadata(archive, verify_blobs):
     return metadata, blob_sizes
 
 
-def image_ids(archive, tag, repository, tested, *, publisher_config=None):
+def image_ids(archive, tag, repository, tested, *, publisher_config=None, image_defaults=None):
     """Bind both Docker store identities to the single CI image, without extracting files."""
     metadata, blob_sizes = image_metadata(archive, verify_blobs=publisher_config is not None)
     entry, = json.loads(metadata["manifest.json"])
@@ -189,6 +210,8 @@ def image_ids(archive, tag, repository, tested, *, publisher_config=None):
     config_hash = hashlib.sha256(raw).hexdigest()
     require(entry["Config"] in ("blobs/sha256/" + config_hash, config_hash + ".json"), "IMAGE_CONFIG_DIGEST_CHANGED")
     config = json.loads(raw)["config"]
+    if image_defaults is not None:
+        image_defaults.update(config)
     labels = config.get("Labels") or {}
     verify_labels(labels, repository, tested, optional=publisher_config is not None)
     if publisher_config is not None:
@@ -220,7 +243,7 @@ def verify_labels(labels, repository, tested, *, optional):
             "IMAGE_LABELS_CHANGED")
 
 
-def package(p, target=None, *, transport=False, migrations_field=None):
+def package(p, target=None, *, transport=False, migrations_field=None, image_defaults=None):
     """Hash the exact open ZIP and inner payload. Only copy verified bytes to private custody."""
     ci = p["ci"]
     path = Path(p["inbox"]) / (ci["zipSha256"] + ".zip")
@@ -263,7 +286,7 @@ def package(p, target=None, *, transport=False, migrations_field=None):
             require(manifest["archiveSha256"] == archive_hash and
                     z.read("SHA256SUMS") == (archive_hash + "  image.tar.gz\n").encode(), "IMAGE_ARCHIVE_DIGEST_CHANGED")
             with z.open("image.tar.gz") as archive:
-                ids = image_ids(archive, tag, ci["repository"], tested)
+                ids = image_ids(archive, tag, ci["repository"], tested, image_defaults=image_defaults)
             require(manifest["imageId"] in ids and (transport or ci["imageId"] in ids), "IMAGE_ID_CHANGED")
             require(os.fstat(stream.fileno()).st_ctime_ns == info.st_ctime_ns, "ARTIFACT_CHANGED_DURING_READ")
             facts = {"archiveSha256": archive_hash, "imageTag": tag, "testedCommit": tested,

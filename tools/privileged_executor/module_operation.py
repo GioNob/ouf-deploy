@@ -49,6 +49,8 @@ class ModuleRelease:
             save(path / "plan", proposal)
             need(proposal["status"] == "PLANNED", proposal.get("reason", "MODULE_PLAN_HELD"))
             response = {"digest": proposal["planSha256"], "status": "PLANNED"}
+            if "candidateReview" in proposal["plan"]:
+                response["candidateReview"] = proposal["plan"]["candidateReview"]
             if "sourcePlan" in proposal["plan"]:
                 response["sourcePlan"] = proposal["plan"]["sourcePlan"]
             if "migrations" in proposal["plan"]:

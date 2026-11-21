@@ -58,8 +58,10 @@ class Bootstrap(unittest.TestCase):
         mcp["migration"]["database"].update(postgresCid="d"*64, socket="/run/postgresql")
         for name in ("udp", "ingestion"):
             java = cfg["modules"][name]
-            for key in ("inbox", "journal", "dockerSocket", "nsenter", "oldImage", "networks", "readiness", "gate"):
+            for key in ("inbox", "journal", "dockerSocket", "nsenter", "oldImage", "networks", "readiness"):
                 java[key] = module[key]
+            if name == "udp":
+                java["gate"] = module["gate"]
             java["ci"] = dict(module["ci"], artifactPrefix="fixture-" + name)
             java["migration"]["flyway"].update(postgresCid="d"*64, socket="/tmp", urlEnv="APP_URL",
                                                userEnv="APP_USER", database="fixture", schema=name)

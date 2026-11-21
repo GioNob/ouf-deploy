@@ -84,9 +84,10 @@ jobs:
           next_phase = {"PLANNED": "apply", "GATED": "migrate", "READY": None, "ROLLED_BACK": None}[status]
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
               print(e["MODULE"], status, file=f)
-              if "databaseReview" in result:
-                  print(chr(96) * 3 + "json", json.dumps(result["databaseReview"], indent=2),
-                        chr(96) * 3, sep=chr(10), file=f)
+              for field in ("candidateReview", "databaseReview"):
+                  if field in result:
+                      print(chr(96) * 3 + "json", json.dumps(result[field], indent=2),
+                            chr(96) * 3, sep=chr(10), file=f)
               if next_phase:
                   print(f"Job `{next_phase} {stamp}`", file=f)
                   print("Approvare il job (nessun commento richiesto)", file=f)

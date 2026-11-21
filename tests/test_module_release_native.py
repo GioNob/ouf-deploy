@@ -43,9 +43,12 @@ class NativeRelease(unittest.TestCase):
         self.exercise_release(busybox=False, interruption="flyway")
 
     def test_udp_real_flyway_release_reconciliation_and_return(self):
-        self.exercise_release(busybox=False, interruption="jdbc")
+        self.exercise_release(busybox=False, interruption="jdbc", module="udp")
 
-    def exercise_release(self, busybox, interruption=None):
+    def test_ingestion_v21_from_validate_only_and_return(self):
+        self.exercise_release(busybox=False, interruption="jdbc", module="ingestion")
+
+    def exercise_release(self, busybox, interruption=None, module=None):
         self.assertEqual(os.geteuid(), 0)
         socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
         cli = ["/usr/bin/docker", "--host", "unix://" + socket]
@@ -62,8 +65,11 @@ class NativeRelease(unittest.TestCase):
             image_name = "ouf-ci-flyway"
             old_image = rt.api("GET", "/images/" + image_name + ":old/json")["Id"]
             command = ["java", "-jar", "/app/flyway.jar"]
-            p["module"] = "udp"
-            p["ci"]["artifactPrefix"] = "fixture-udp"
+            p["module"] = module
+            p["ci"]["artifactPrefix"] = "fixture-" + module
+            if module == "ingestion":
+                p["candidate"] = json.loads(PROFILE.with_name("ingestion.example.json").read_bytes())["candidate"]
+                command += p["candidate"]["removeArgs"]
         if busybox:
             old_image = rt.api("GET", "/images/" + image_name + ":old/json")["Id"]
             command = ["/usr/local/bin/ouf-mcp", "server"]
@@ -116,8 +122,17 @@ class NativeRelease(unittest.TestCase):
                 if interruption == "jdbc":
                     p["migration"] = dict(mode="spring-flyway", rollbackCompatible=True, flyway=dict(
                         postgresCid=rt.inspect(pg)["Id"], socket="/tmp", urlEnv="FIXTURE_URL",
-                        userEnv="FIXTURE_USER", database="postgres", schema="release_fixture"))
+                        userEnv="FIXTURE_USER", database="postgres", schema="release_fixture",
+                        effectiveDatasource="profile-env"))
                     env = [f"FIXTURE_URL=jdbc:postgresql://{pg}/postgres", "FIXTURE_USER=fixture"]
+                    if module == "ingestion":
+                        seed_env = dict(item.split("=", 1) for item in env)
+                        subprocess.run([*cli, "run", "--rm", "--network", net, "-e", "FIXTURE_URL", "-e", "FIXTURE_USER",
+                                        old_image, *command[:3], "--migrate-only"], env={**os.environ, **seed_env},
+                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                        env += ["SPRING_FLYWAY_ENABLED=false", "SPRING_CONFIG_ADDITIONAL_LOCATION=file:/app/fixture.yml"]
+                    else:
+                        env.append('SPRING_APPLICATION_JSON={"ouf.udp.fixture":true}')
                 elif interruption == "database":
                     sql("""CREATE SCHEMA ouf_mcp;
                         CREATE TABLE ouf_mcp.profile_analysis(id int);
@@ -165,14 +180,19 @@ class NativeRelease(unittest.TestCase):
             self.assertEqual(proposal["status"], "PLANNED", proposal)
             stamp = proposal["planSha256"]
             if interruption == "jdbc":
+                before = rt.inspect(old)["Config"]
                 stage = apply(p, stamp, rt, defer_migration=True)
                 self.assertEqual(stage["status"], "GATED", stage)
                 config = rt.inspect(stage["successorCid"])["Config"]
                 self.assertEqual(config["Entrypoint"], ENTRY)
-                self.assertIn("FIXTURE_JAVA_IMAGE=successor", config["Env"])
+                self.assertTrue("FIXTURE_JAVA_IMAGE=successor" in config["Env"])
                 self.assertEqual(config["Labels"]["fixture.java.successor"], "yes")
                 review = json.loads((root / stamp / "migration-plan.json").read_bytes())["flywayReview"]
-                self.assertEqual([r["script"] for r in review["pending"]], ["V2__added.sql"])
+                self.assertEqual([r["script"] for r in review["pending"]], ["V21__add_repeat_key.sql"])
+                if module == "ingestion":
+                    self.assertEqual(proposal["plan"]["candidateReview"]["removedArgs"], command[3:])
+                    self.assertEqual(config["Cmd"], command[:3])
+                    self.assertTrue("SPRING_FLYWAY_ENABLED=true" in config["Env"])
                 send = rt.signal
                 def interrupt_after_delivery(cid):
                     send(cid)
@@ -183,10 +203,13 @@ class NativeRelease(unittest.TestCase):
                 with patch.object(runtime, "signal", side_effect=AssertionError("duplicate signal")):
                     final = recovery.resume(p, runtime, recovery.proposal(p, runtime))
                 self.assertEqual((final["status"], final["readyHttp"]), ("READY", 200))
-                table = subprocess.check_output(setup + ["-Atc", "SELECT to_regclass('release_fixture.added_row')"])
-                self.assertIn(b"added_row", table)
+                column = subprocess.check_output(setup + ["-Atc", "SELECT data_type FROM information_schema.columns "
+                    "WHERE table_schema='release_fixture' AND table_name='base_row' AND column_name='repeat_key'"])
+                self.assertEqual(column.strip(), b"text")
                 restored = return_operation.run(p, stamp, rt)
                 self.assertEqual((restored.get("restoredCid"), restored.get("predecessorReadyHttp")), (old, 200), restored)
+                self.assertEqual(rt.inspect(old)["Config"]["Cmd"], before["Cmd"])
+                self.assertTrue(rt.inspect(old)["Config"]["Env"] == before["Env"])
                 return
             if interruption == "database":
                 stage = apply(p, stamp, rt, defer_migration=True)

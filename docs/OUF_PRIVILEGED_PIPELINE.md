@@ -161,4 +161,26 @@ Ogni modulo ha un profilo facoltativo in `modules`. Copiare il relativo esempio 
 
 Sul VPS ricavare nome e image ID del predecessore con `docker inspect --format '{{.Name}} {{.Image}}'`. Per ciascuna rete leggere soltanto nome, IPv4 e alias funzionali. Confrontare localmente entrypoint, comando e nome dell’eseguibile con il gate R-039. Acquisire nomi di custodia, inbox, journal privato, socket Docker, nsenter e contratto di readiness dal profilo installato. Per PostgreSQL verificare CID, directory del socket, nomi delle variabili JDBC e utente, database e schema della history. Confermare i binding sulla configurazione applicativa revisionata e con una SELECT in transazione read-only. Conservare i valori delle variabili d’ambiente sul VPS.
 
-Una configurazione Spring aggiuntiva che può cambiare datasource o attivazione Flyway richiede riconciliazione. Le ricevute storiche riportano una configurazione aggiuntiva e Flyway disabilitato per Ingestion, e la presenza di Spring Application JSON per UDP. Il lettore restituisce HELD quando il binding effettivo resta ambiguo. [Ricevuta Ingestion](../evidence/ingestion-wide-preflight-operator-extract-20261108.json) · [Ricevuta UDP](../evidence/udp-wide-preflight-operator-20261109.json)
+### Argomenti di Ingestion e verifica di V21
+
+In `modules.ingestion`, `gate.command` deve coincidere con il comando completo del predecessore. L’esempio recepisce il comando osservato il 21 novembre e dichiara il seguente delta. [Profilo Ingestion](../config/module-release/ingestion.example.json) · [Profilo dell’esecutore](privileged-executor.example.json)
+
+| Campo | Valore nell’esempio | Effetto |
+|---|---|---|
+| `gate.command` | `["java","-jar","/app/app.jar","--spring.flyway.enabled=false","--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY"]` | Identifica il processo originale anche durante il ritorno |
+| `candidate.removeArgs` | `["--spring.flyway.enabled=false","--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY"]` | Il candidato esegue `java -jar /app/app.jar` |
+| `candidate.enableFlyway` | `true` | Imposta `SPRING_FLYWAY_ENABLED` sul candidato dopo il merge con i default dell’immagine |
+
+Il blocco `candidate` è facoltativo per i profili Java con `migration.mode` uguale a `spring-flyway`. Ogni rimozione identifica una sola opzione completa `--nome=valore` dopo il JAR. Il riepilogo del plan mostra le rimozioni, le impronte dei due argv e l’operazione sull’ambiente. Per opzioni diverse dalle due costanti documentate espone solo il nome. Il digest approvato copre il delta e la richiesta CREATE. Il ritorno riavvia il CID trattenuto con argv e ambiente originali.
+
+Per UDP completare `gate.command` nel profilo privato con tutti gli argomenti osservati, compresi quelli del lake S3. Il profilo UDP d’esempio eredita il comando completo.
+
+Per l’immagine del task-12c, verificare nella review di `migrate` che la lista degli script pendenti contenga V21 con il checksum atteso. Con il candidato ancora al gate, la storia deve coincidere con la baseline del plan. Dopo il segnale, `READY` richiede sia la storia attesa sul database fissato sia la readiness HTTP dello stesso processo. Il ritorno richiede la compatibilità del predecessore con V21 già applicata.
+
+### Dichiarazione del datasource effettivo
+
+Per UDP e Ingestion gli esempi adottano l’opzione 1. Nel blocco `migration.flyway`, `effectiveDatasource` uguale a `profile-env` dichiara che applicazione e Flyway usano effettivamente URL e utente identificati da `urlEnv` e `userEnv`, e la history nel database e nello schema dichiarati. Nel profilo privato inserire i **nomi** delle variabili `OUF_*_DB_URL` e `OUF_*_DB_USER` del modulo. Chi firma il profilo deve verificare questa corrispondenza anche per le sorgenti caricate da `SPRING_CONFIG_ADDITIONAL_LOCATION` e per entrambe le immagini durante il rilascio. Il contenuto dei file esterni è coperto dalla dichiarazione dell’operatore. Il lettore non interpreta quei file.
+
+Il lettore controlla `SPRING_APPLICATION_JSON` in memoria, dal `Config.Env` del predecessore, dalla configurazione prevista nel plan e dal candidato effettivo prima del segnale. JSON malformato, chiavi duplicate, override del datasource o di Flyway (anche annidati, puntati o con grafia alternativa) e selettori di configurazione ambigui portano a `HELD`. Il plan e i messaggi di errore omettono i valori dell’ambiente. Senza la dichiarazione rimangono i controlli restrittivi del lettore.
+
+Per Onboarding si può dichiarare lo stesso binding dopo aver verificato la configurazione esterna. Il suo profilo esistente senza blocco `migration.flyway` mantiene il percorso del 20 novembre, con avvio Spring e readiness. In quel percorso un esito incerto del segnale richiede comunque una prova Flyway per la riconciliazione.

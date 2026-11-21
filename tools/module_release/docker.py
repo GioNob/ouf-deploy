@@ -14,7 +14,7 @@ import sys
 import time
 from urllib.parse import quote
 
-from .contract import ENTRY, Held, require, verify_labels
+from .contract import ENTRY, Held, candidate_command, require, verify_labels
 from .postgres import database_snapshot
 
 
@@ -143,6 +143,8 @@ class Docker:
 
     def process(self, doc, gated):
         command = self.p["gate"]["command"]
+        if "candidate" in self.p and doc["Image"] == self.p["ci"]["imageId"]:
+            command = candidate_command(command, self.p["candidate"])
         pid = doc["State"]["Pid"]
         if not doc["State"]["Running"] or pid <= 0:
             return False

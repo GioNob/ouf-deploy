@@ -17,8 +17,17 @@
     "command": [
       "java",
       "-jar",
-      "/app/<approved jar>.jar"
+      "/app/app.jar",
+      "--spring.flyway.enabled=false",
+      "--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY"
     ]
+  },
+  "candidate": {
+    "removeArgs": [
+      "--spring.flyway.enabled=false",
+      "--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY"
+    ],
+    "enableFlyway": true
   },
   "migration": {
     "mode": "spring-flyway",
@@ -29,7 +38,8 @@
       "urlEnv": "<JDBC URL variable name>",
       "userEnv": "<database user variable name>",
       "database": "<database identifier>",
-      "schema": "<Flyway schema identifier>"
+      "schema": "<Flyway schema identifier>",
+      "effectiveDatasource": "profile-env"
     }
   },
   "readiness": {

@@ -2,6 +2,8 @@
 
 ## Rilascio UDP e Ingestion · 21 novembre 2026
 
+Il task sprint-03/12f2 porta nel plan le due rimozioni dal comando Ingestion e l’attivazione di Flyway sul candidato. La prova portabile esegue la V21 sintetica su SQLite e verifica la nuova colonna dopo il segnale, con storia Flyway simulata. Le prove coprono anche il JSON UDP e il ritorno alla configurazione originale. Restano da eseguire la fixture Linux con Flyway e PostgreSQL e da confermare il datasource dei profili privati. [Contratto del candidato](OUF_PRIVILEGED_PIPELINE.md#argomenti-di-ingestion-e-verifica-di-v21)
+
 Il task sprint-03/12f estende l’esecutore privilegiato ai due moduli. Le prove locali coprono rilascio, interruzioni e ritorno. Restano da qualificare la fixture Linux e gli ZIP dei PR reali. L’operatore deve completare i due binding privati e verificare la configurazione Spring effettiva. [Procedura di rilascio](OUF_PRIVILEGED_PIPELINE.md#rilascio-di-udp-e-ingestion)
 
 ## Ripresa rilasci moduli e Gateway · 21 novembre 2026

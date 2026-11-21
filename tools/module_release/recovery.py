@@ -36,8 +36,11 @@ def proposal(p, rt):
         doc = rt.inspect(p[role], missing=True)
         frames[role] = snapshot(doc) if doc else None
     journal = {f.name: digest(op.read(root, f.name)) for f in root.glob("*.json")}
-    return {"operation": "module-recovery", "sourcePlan": stamp, "profileSha256": digest(p),
-            "journal": journal, "frames": frames}
+    proposal = {"operation": "module-recovery", "sourcePlan": stamp, "profileSha256": digest(p),
+                "journal": journal, "frames": frames}
+    if "candidateReview" in body:
+        proposal["candidateReview"] = body["candidateReview"]
+    return proposal
 
 
 def verify_stop_claim(rt, old, body, root):

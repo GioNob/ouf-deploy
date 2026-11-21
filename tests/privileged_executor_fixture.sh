@@ -74,7 +74,7 @@ for revision in old "$tested"; do
     defaults=()
     echo 'CREATE TABLE release_fixture.base_row(id integer);' > "$resources/V1__base.sql"
     if [[ "$revision" == "$tested" ]]; then
-        echo 'CREATE TABLE release_fixture.added_row(id integer);' > "$resources/V2__added.sql"
+        cp "$fixtures/module-release-flyway/V21__add_repeat_key.sql" "$resources/"
         defaults=(--change 'ENV FIXTURE_JAVA_IMAGE=successor' --change 'LABEL fixture.java.successor=yes')
     fi
     jar --create --file root/app/flyway.jar --manifest flyway.mf Fixture.class FlywayFixture.class BOOT-INF
