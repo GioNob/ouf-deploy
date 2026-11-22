@@ -47,16 +47,16 @@
   "ci": {
     "repository": "GioNob/ouf-udp-object-resolution",
     "workflow": "module-ci.yml",
-    "pullRequest": 52,
-    "sourceCommit": "ebc5a3221a9071b158a233441abf4db99270fee3",
-    "sourceTree": "ba8074c49ce1d4b0630c24d1166051ee56b1d171",
+    "pullRequest": 55,
+    "sourceCommit": "e18f703263c5e3727f7e623cd59cbfcde3ed3d7d",
+    "sourceTree": "87d46aeeee6ea52a5a699622e4317544147b576a",
     "manifestSchema": "ouf.udp-tested-image.v1",
     "imageName": "ouf-udp",
-    "runId": 44941888236,
-    "runAttempt": 1,
-    "artifactId": 14722112241,
-    "zipSha256": "62338813272ac928c4e152d685f5d0d5f785436acdf69b9d3646debc99ec2787",
-    "imageId": "sha256:5d7dee12335561dc132f442e0297edded4cdbcde49a1d8fbd225263791fee333",
+    "runId": 45056052700,
+    "runAttempt": 4,
+    "artifactId": 14769705134,
+    "zipSha256": "0d2d9e7f82ee5e794acb7cf7e6ef29b987f33ee9d1f05758cf2b75dcd8419b04",
+    "imageId": "sha256:bbde49b8c32c6b8a5d3941611ed61ec4b2807a04fd6857209fd34434a43c972a",
     "artifactPrefix": "udp-governed-image"
   }
 }
