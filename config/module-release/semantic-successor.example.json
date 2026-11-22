@@ -2,9 +2,9 @@
   "ci": {
     "repository": "GioNob/ouf-semantic-registry",
     "workflow": "module-ci.yml",
-    "pullRequest": 52,
-    "sourceCommit": "528881d59a018d5fd3ad4ff62b2b3b95a2b62cd3",
-    "sourceTree": "f5ed81782a2efc10919f54f9402a8a614fad0250",
+    "pullRequest": 58,
+    "sourceCommit": "b7b220166fa732abb5a8abcefd6ecf722ae253e7",
+    "sourceTree": "80dab85f102a58dd8b5ec32a9845924909d6a42d",
     "imageName": "ouf-semantic-registry",
     "manifestSchema": "ouf.semantic-tested-image.v1",
     "artifactPrefix": "semantic-registry-governed-image"
