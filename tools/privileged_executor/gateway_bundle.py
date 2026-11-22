@@ -8,14 +8,13 @@ import stat
 import zipfile
 from urllib.parse import urlsplit
 
+from gateway_policy import ID, KINDS
 from mandate import Held, canonical, digest, github_reader, need
 from module_release.contract import Held as SourceHeld
 from module_release.provenance import select_artifact
 
 
-KINDS = ("upstreams", "services", "plugin_configs", "plugin_metadata", "global_rules", "routes")
 NAME = r"[A-Za-z][A-Za-z0-9_.-]{0,127}"  # contratto v1 rev. 1: nomi del registro D-065
-ID = r"[A-Za-z0-9._-]{1,64}"
 LIMIT = 32 << 20
 
 

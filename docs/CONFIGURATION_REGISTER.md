@@ -6,6 +6,16 @@
 
 Nel dispatch `release`, indicare run CI, artifact ID, PR e SHA della testa revisionata. Il plan scarica lo ZIP originale, verifica i tre file v1 e pubblica i conteggi per azione con l'impronta da approvare. L'apply ripete la verifica e confronta lo stato vivo prima delle scritture. Il journal privato conserva il piano, lo snapshot, le review, gli intenti e il risultato. La ricevuta APPLIED fornisce `releaseRun` e `receipt` per un dispatch `return` con una nuova review. Il ritorno controlla il rilascio corrente, la generazione e i corpi prima di ripristinare lo snapshot. [Workflow di rilascio](../.github/workflows/gateway-release.yml)
 
+Prima di approvare il job `apply`, leggere il riepilogo del job `plan`. Dopo i conteggi, la tabella elenca tutte le risorse nell’ordine del bundle. Questo esempio usa rotte illustrative.
+
+| Risorsa | Azione | Campi che cambiano |
+|---|---|---|
+| `routes/a` | nuova | — |
+| `routes/b` | modificata | `upstream.nodes[0].port`, `uri` |
+| `routes/c` | invariata | — |
+
+Per ogni risorsa modificata il riepilogo pubblica solo i percorsi dei campi, fino a 64. La voce finale `… N altri` indica quanti percorsi ulteriori sono stati omessi. Con un esecutore precedente che restituisce solo i conteggi, il riepilogo passa dai conteggi direttamente al job da approvare.
+
 Per il recupero, acquisire sotto lock profilo, journal per run e `gateway-head` come insieme coerente e cifrato. Ripristinarli dopo il bootstrap dello stesso commit. Una testa `PENDING` conserva l'esclusione dopo un'interruzione o una compensazione non verificabile. Il custode riconcilia gli intenti e le risorse coinvolte prima di riaprire il rilascio. La prova nativa copre ritorno, rifiuto di una rotta e ripristino su APISIX temporaneo. [Prova nativa](../tests/test_gateway_release_native.py)
 
 ## Rilascio dei moduli applicativi

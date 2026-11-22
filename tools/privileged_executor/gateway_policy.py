@@ -4,6 +4,11 @@ from pathlib import Path
 import re
 
 
+KINDS = ("upstreams", "services", "plugin_configs", "plugin_metadata", "global_rules", "routes")
+ID = r"[A-Za-z0-9._-]{1,64}"
+MAX_CHANGE_PATHS = 64
+
+
 def match(pattern, value):
     return isinstance(value, str) and re.fullmatch(pattern, value) is not None
 
