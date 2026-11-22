@@ -1,12 +1,69 @@
-"""Unprivileged workflow client. Summarizes the job to approve and public release counts."""
+"""Unprivileged workflow client. Summarizes the Gateway plan for approval."""
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools/privileged_executor"))
+from gateway_policy import ID, KINDS, MAX_CHANGE_PATHS, match
 from mandate import hex64, intent, validate
+
+
+ACTIONS = {"create": "nuova", "update": "modificata", "unchanged": "invariata"}
+# field_differences uses dot names, list indices, and JSON-quoted map keys.
+NAME = r"[A-Za-z0-9_-]+"
+STRING = r'"(?:[\x20-\x21\x23-\x5b\x5d-\x7e]|\\(?:["\\bfnrt]|u[0-9a-f]{4}))*"'
+BRACKET = rf"\[(?:0|[1-9][0-9]*|{STRING})\]"
+FIELD_PATH = rf"\$|(?:{NAME}|{BRACKET})(?:\.{NAME}|{BRACKET})*"
+
+
+def path_cell(paths):
+    if not isinstance(paths, list) or not 1 <= len(paths) <= MAX_CHANGE_PATHS + 1:
+        raise ValueError
+    cells = []
+    for index, path in enumerate(paths):
+        if index == MAX_CHANGE_PATHS:
+            if not match(r"… [1-9][0-9]* altri", path):
+                raise ValueError
+            cells.append(path)
+        else:
+            if not match(FIELD_PATH, path):
+                raise ValueError
+            # GitHub tables split on pipes even within Markdown code spans.
+            fence = "`" * (1 + max((len(run) for run in re.findall(r"`+", path)), default=0))
+            cells.append(fence + path.replace("|", r"\|") + fence)
+    if len(set(paths)) != len(paths):
+        raise ValueError
+    return ", ".join(cells)
+
+
+def changes_table(changes, counts):
+    if not isinstance(changes, list):
+        raise ValueError
+    tally = dict.fromkeys(ACTIONS, 0)
+    lines = ["| Risorsa | Azione | Campi che cambiano |", "|---|---|---|"]
+    previous = (-1, "")
+    for change in changes:
+        if not isinstance(change, dict):
+            raise ValueError
+        kind, ident, action = change["kind"], change["id"], change["action"]
+        if kind not in KINDS or not match(ID, ident) or ident in (".", "..") or action not in ACTIONS:
+            raise ValueError
+        fields = {"kind", "id", "action"}
+        if action == "update":
+            fields.add("paths")
+        key = KINDS.index(kind), ident
+        if set(change) != fields or key <= previous:
+            raise ValueError
+        previous = key
+        tally[action] += 1
+        paths = path_cell(change["paths"]) if action == "update" else "—"
+        lines.append(f"| `{kind}/{ident}` | {ACTIONS[action]} | {paths} |")
+    if tally != counts:
+        raise ValueError
+    return "\n".join(lines)
 
 
 def main():
@@ -44,10 +101,12 @@ def main():
             if "recoveringRun" in result:
                 summary.append(f"Live resources match the before or after state of pending run {result['recoveringRun']}.")
             counts = result["counts"]
-            for key in ("create", "update", "unchanged"):
+            for key in ACTIONS:
                 if type(counts[key]) is not int or counts[key] < 0:
                     raise ValueError
                 summary.append(f"{key} {counts[key]}")
+            if "changes" in result:
+                summary.append(changes_table(result["changes"], counts))
             phase = "apply"
         if status == "APPLIED":
             summary.append(f"Return inputs: releaseRun `{req['run']}`, receipt `{stamp}`.")
@@ -55,7 +114,7 @@ def main():
         summary.append(f"Job `{phase} {stamp}`")
         if phase != "plan":
             summary.append("Approvare il job (nessun commento richiesto)")
-    with open(env["GITHUB_STEP_SUMMARY"], "a") as stream:
+    with open(env["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
         print(*summary, sep="\n\n", file=stream)
     with open(env["GITHUB_OUTPUT"], "a") as stream:
         print("digest=" + stamp, "phase=" + phase, sep="\n", file=stream)

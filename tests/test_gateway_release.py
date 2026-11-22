@@ -77,6 +77,16 @@ def verify(pair):
     return bundle.verify(raw, ci, {"binding": SECRET})
 
 
+def invoke_client(planned, summary, output):
+    inputs = {key: REQ[key] for key in ("sourceRun", "sourcePr", "sourceCommit", "artifact")}
+    env = dict(GITHUB_RUN_ID=REQ["run"], GITHUB_RUN_ATTEMPT="1", GITHUB_SHA=REQ["commit"],
+               DISPATCH_INPUTS=json.dumps(dict(inputs, action="release")), REVIEW_TOKEN=SECRET,
+               GITHUB_STEP_SUMMARY=str(summary), GITHUB_OUTPUT=str(output))
+    with patch.dict(os.environ, env, clear=True), patch.object(sys, "argv", ["client", "invoke"]), \
+            patch("subprocess.run", return_value=Mock(stdout=encoded(planned))):
+        runpy.run_path(str(ROOT/".github/scripts/gateway-release.py"), run_name="__main__")
+
+
 class Contract(unittest.TestCase):
     def test_only_declared_encrypted_path_accepts_opaque_readback(self):
         desired = {"plugins": {"openid-connect": {"client_secret": SECRET, "client_id": "id"},
@@ -156,10 +166,7 @@ class Contract(unittest.TestCase):
             self.assertIn("digest=" + REQ["digest"], output.read_text())
             planned = {"status": "PLANNED", "digest": "c"*64, "recoveringRun": "69",
                        "counts": {"create": 0, "update": 6, "unchanged": 1}}
-            with patch.dict(os.environ, dict(env, REVIEW_TOKEN=SECRET), clear=True), \
-                    patch.object(sys, "argv", ["client", "invoke"]), \
-                    patch("subprocess.run", return_value=Mock(stdout=encoded(planned))):
-                runpy.run_path(str(ROOT/".github/scripts/gateway-release.py"), run_name="__main__")
+            invoke_client(planned, summary, output)
             self.assertIn("pending run 69", summary.read_text())
             self.assertNotIn(SECRET, summary.read_text())
         workflow = ".github/workflows/gateway-release.yml"
@@ -189,6 +196,33 @@ class Contract(unittest.TestCase):
         with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
             authorize(rollback, dict(run, id=71))
         self.assertTrue(mandate.hex64(authorize(rollback, dict(run, id=71), [review])))
+
+    def test_legacy_plan_summary_has_only_counts_before_approval(self):
+        root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        planned = dict(status="PLANNED", digest="c"*64, counts=dict(create=1, update=2, unchanged=3))
+        invoke_client(planned, root/"summary", root/"output")
+        self.assertEqual((root/"summary").read_text(encoding="utf-8").split("\n\n")[:-2],
+                         ["Gateway PLANNED", "create 1", "update 2", "unchanged 3"])
+
+    def test_malformed_changes_fail_before_publishing_approval(self):
+        root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        counts = dict(create=0, update=1, unchanged=0)
+        changed = dict(kind="routes", id="one", action="update", paths=["uri"])
+        invalid = [None, {}, [], [None], [changed, changed], [dict(changed, kind="route")],
+                   [dict(changed, id="..")], [dict(changed, action="delete")],
+                   [dict(changed, action="create")], [dict(changed, body=SECRET)],
+                   [{"kind": "routes", "id": "one", "action": "update"}],
+                   [{"kind": "routes", "id": "one", "action": "unchanged"}]]
+        bad_paths = [None, [], "uri", [1], [""], ["uri\nrow"], ["uri: " + SECRET], ["… 1 altri"],
+                     ["uri", "uri"], [f"f{i}" for i in range(65)],
+                     [f"f{i}" for i in range(64)] + ["… 0 altri"]]
+        invalid.extend([dict(changed, paths=paths)] for paths in bad_paths)
+        for changes in invalid:
+            with self.subTest(changes=changes), self.assertRaisesRegex(SystemExit, "^GATEWAY_WORKFLOW_REQUEST_FAILED$"):
+                invoke_client(dict(status="PLANNED", digest="c"*64, counts=counts, changes=changes),
+                              root/"summary", root/"output")
+            self.assertFalse((root/"summary").exists())
+            self.assertFalse((root/"output").exists())
 
     def test_contract_and_recursive_substitution(self):
         rows = deepcopy(ROWS)
@@ -321,6 +355,60 @@ class Phases(unittest.TestCase):
     def new_plan_request(self, run):
         req = dict(REQ, run=run)
         return dict(req, digest=mandate.intent(req))
+
+    def test_plan_changes_and_summary_show_only_changed_paths_in_bundle_order(self):
+        desired = deepcopy(ROWS)
+        desired[2]["body"] = {"uri": "/recognizable-desired-uri", "upstream": {"nodes": [MARKER]},
+                              "plugins": {"openid-connect": {"client_secret": MARKER}}}
+        self.select(desired)
+        live = dict(uri="/recognizable-live-uri", upstream={"nodes": ["recognizable-live-node"]},
+                    plugins={"openid-connect": {"client_secret": "opaque-fixture"}})
+        self.admin.data["routes", "one"] = live
+        planned = self.phase(REQ)
+        self.assertEqual(planned["counts"], dict(create=1, update=1, unchanged=1))
+        self.assertEqual(planned["changes"], [
+            dict(kind="upstreams", id="one", action="create"),
+            dict(kind="plugin_configs", id="cfg", action="unchanged"),
+            dict(kind="routes", id="one", action="update", paths=["upstream.nodes[0]", "uri"])])
+        summary = self.root/"summary"
+        invoke_client(planned, summary, self.root/"output")
+        report = summary.read_text(encoding="utf-8")
+        self.assertIn("unchanged 1\n\n| Risorsa | Azione | Campi che cambiano |\n|---|---|---|\n"
+                      "| `upstreams/one` | nuova | — |\n| `plugin_configs/cfg` | invariata | — |\n"
+                      "| `routes/one` | modificata | `upstream.nodes[0]`, `uri` |\n\nJob `apply ", report)
+        for marker in (SECRET, "recognizable", "opaque-fixture"):
+            self.assertNotIn(marker, report)
+            self.assertNotIn(marker, json.dumps(planned))
+
+    def test_plan_digest_matches_original_snapshot_contract(self):
+        nonce = "e" * 64
+        with patch.object(operation.secrets, "token_hex", return_value=nonce):
+            planned = self.phase(REQ)
+        ci, resources = self.package.return_value
+        rows = [dict(kind=r["kind"], id=r["id"], before=self.before.get((r["kind"], r["id"])),
+                     after=r["body"], action=action)
+                for r, action in zip(resources, ("create", "unchanged", "update"))]
+        original = dict(scope=REQ["digest"], profile=sha(encoded(self.cfg["gateway"])), generation="generation",
+                        ci=ci, rows=rows, parent=None, nonce=nonce)
+        self.assertEqual(store.read(self.root/"70/gateway.plan"), original)
+        self.assertEqual(planned["digest"], sha(encoded(original)))
+
+    def test_path_limit_and_quoted_keys_in_summary(self):
+        key = "a: `|b"
+        for size in (64, 67):
+            with self.subTest(size=size):
+                fields = {key: MARKER, **{f"f{i:02}": MARKER for i in range(1, size)}}
+                self.select([row("routes", "one", fields)])
+                planned = self.phase(self.new_plan_request(str(100 + size)))
+                expected = ['["a: `|b"]', *sorted(fields)[1:64]]
+                if size > 64:
+                    expected.append("… 3 altri")
+                self.assertEqual(planned["changes"][0]["paths"], expected)
+                summary = self.root/f"summary-{size}"
+                invoke_client(planned, summary, self.root/"output")
+                report = summary.read_text(encoding="utf-8")
+                self.assertIn(r'``["a: `\|b"]``', report)
+                self.assertEqual("… 3 altri" in report, size > 64)
 
     def test_plugin_defaults_in_ack_and_get_and_replacement_of_old_fields(self):
         key = ("routes", "one")

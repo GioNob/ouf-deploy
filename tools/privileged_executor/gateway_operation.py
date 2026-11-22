@@ -5,6 +5,7 @@ import secrets
 
 from gateway_admin import AdminRequestError, connect
 from gateway_bundle import package
+from gateway_policy import MAX_CHANGE_PATHS
 from module_release.contract import diagnostic
 from mandate import Held, canonical, digest, intent, need
 from store import Journal, read, save
@@ -103,7 +104,7 @@ class GatewayRelease:
             live = self.observe(stage, row, admin.get)
             self.verify(stage, row, live, row[side], "GATEWAY_LIVE_DRIFT", exact=side == "before")
 
-    def plan_rows(self, admin, resources, interrupted):
+    def plan_rows(self, admin, resources, interrupted, changes=None):
         rows = []
         if interrupted is not None:
             need(len(interrupted) == len(resources), "GATEWAY_PENDING_PACKAGE_DRIFT")
@@ -126,6 +127,15 @@ class GatewayRelease:
                 self.verify("pending-before", resource, before, previous["before"], "GATEWAY_PENDING_LIVE_DRIFT", exact=True)
             action = "unchanged" if not diff else "create" if before is None else "update"
             rows.append(dict(kind=resource["kind"], id=resource["id"], before=before, after=after, action=action))
+            if changes is not None:
+                change = dict(kind=resource["kind"], id=resource["id"], action=action)
+                if action == "update":
+                    # Diagnostics end with ": reason"; a quoted JSON key can itself contain ": ".
+                    paths = [entry.rsplit(": ", 1)[0] for entry in diff[:MAX_CHANGE_PATHS]]
+                    if len(diff) > MAX_CHANGE_PATHS:
+                        paths.append(f"… {len(diff) - MAX_CHANGE_PATHS} altri")
+                    change["paths"] = paths
+                changes.append(change)
         return rows
 
     def current(self):
@@ -236,7 +246,8 @@ class GatewayRelease:
             original = self.original_snapshot(self.interrupted_snapshot(current, identity), identity) if pending else None
             if pending:
                 need(original["ci"] == ci, "GATEWAY_PENDING_PACKAGE_DRIFT")
-            rows = self.plan_rows(admin, resources, original["rows"] if pending else None)
+            changes = [] if phase == "plan" else None
+            rows = self.plan_rows(admin, resources, original["rows"] if pending else None, changes)
             plan = dict(scope=intent(req), profile=digest(self.profile), generation=identity, ci=ci,
                         rows=rows, parent=current, nonce=nonce)
             if pending:
@@ -246,7 +257,7 @@ class GatewayRelease:
                 save(self.path / "gateway.plan.review", {"request": req, "review": review})
                 save(self.path / "gateway.plan", plan)
                 counts = {k: sum(r["action"] == k for r in rows) for k in ("create", "update", "unchanged")}
-                result = {"status": "PLANNED", "digest": stamp, "counts": counts}
+                result = {"status": "PLANNED", "digest": stamp, "counts": counts, "changes": changes}
                 if pending:
                     result["recoveringRun"] = current["run"]
                 return result
