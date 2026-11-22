@@ -6,7 +6,7 @@
 
 Nel dispatch `release`, indicare run CI, artifact ID, PR e SHA della testa revisionata. Il plan scarica lo ZIP originale, verifica i tre file v1 e pubblica i conteggi per azione con l'impronta da approvare. L'apply ripete la verifica e confronta lo stato vivo prima delle scritture. Il journal privato conserva il piano, lo snapshot, le review, gli intenti e il risultato. La ricevuta APPLIED fornisce `releaseRun` e `receipt` per un dispatch `return` con una nuova review. Il ritorno controlla il rilascio corrente, la generazione e i corpi prima di ripristinare lo snapshot. [Workflow di rilascio](../.github/workflows/gateway-release.yml)
 
-Prima di approvare il job `apply`, leggere il riepilogo del job `plan`. Dopo i conteggi, la tabella elenca tutte le risorse nell’ordine del bundle. Questo esempio usa rotte illustrative.
+Prima di approvare, aprire **Annotations** in cima alla pagina del run e leggere **Da approvare: apply** oppure **Da approvare: return**. Confrontare il digest con il nome del job. Se l’annotazione è troncata, la sezione **Cosa approvi** in testa al riepilogo del job precedente contiene l’elenco completo. Dopo i conteggi, la tabella elenca tutte le risorse nell’ordine del bundle. Questo esempio usa rotte illustrative.
 
 | Risorsa | Azione | Campi che cambiano |
 |---|---|---|

@@ -1,5 +1,9 @@
 # Stato corrente OUF
 
+## Sprint 03/38 · approvazioni dei rilasci
+
+Le prove offline dei sette workflow verificano l’annotazione **Da approvare** e la sezione **Cosa approvi** nel job precedente a ogni review. Resta aperta la pubblicazione degli ID immagine per i quattro moduli. L’esecutore li registra nel piano privato. [Prove dei client](../tests/test_release_approval.py)
+
 ## Sprint 03/24 · stop R3 e predecessore dei moduli
 
 La qualifica locale copre il ritentativo dello stop dopo il rinnovo e due rilasci consecutivi dello stesso modulo con `oldImage` invariato. Il percorso da ricevuta richiede la firma Ed25519 del completamento e la corrispondenza con la review, il CID e il frame in esercizio. Il prossimo passaggio è la review del codice. [Contratto e binding del firmatario](OUF_PRIVILEGED_PIPELINE.md#stop-r3-durante-il-rinnovo-e-successione-dei-moduli)

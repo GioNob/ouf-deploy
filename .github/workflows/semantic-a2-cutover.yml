@@ -69,8 +69,14 @@ jobs:
       PHASE: plan
       DIGEST: ${{ needs.intent.outputs.digest }}
     outputs:
+      context: ${{ steps.call.outputs.context }}
       digest: ${{ steps.call.outputs.digest }}
     steps:
+      - &client
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
       - &invoke
         id: call
         env:
@@ -78,7 +84,7 @@ jobs:
         shell: bash
         run: |
           /usr/bin/python3 -I - <<'PY'
-          import json, os, re, subprocess
+          import json, os, re, runpy, subprocess
           e = os.environ
           req = dict(run=e["GITHUB_RUN_ID"], attempt=e["GITHUB_RUN_ATTEMPT"], commit=e["GITHUB_SHA"],
                      direction=e["DIRECTION"], queue=e["QUEUE"], phase=e["PHASE"], digest=e["DIGEST"])
@@ -95,32 +101,13 @@ jobs:
           next_phase = {"plan": "apply", "apply": "migrate" if migration else "sign", "migrate": "sign"}.get(req["phase"])
           if req["phase"] == "sign" and req["direction"] == "forward" and e["WORKER_PROOF"] == "true":
               next_phase = "proof"
-          with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
-              if result.get("returnAfterIssue") == "available":
-                  print("Ritorno al CID predecessore dopo la firma con emissione", result["returnSequence"], file=f)
-              if "zipSha256" in result:
-                  print("Semantic", result["imageId"], "· ZIP SHA-256", result["zipSha256"],
-                        "· inventario Flyway SHA-256", result["inventorySha256"], file=f)
-              if migration:
-                  print("Review Flyway · immagine", result["imageId"], "· migrazioni nuove", result["migrationCount"],
-                        "· SHA-256 elenco", result["migrationsSha256"], file=f)
-              if "migrationMode" in result:
-                  print("Modalità di migrazione", result["migrationMode"], file=f)
-              for row in result.get("pending", []):
-                  print(f"- `{row['script']}` · CRC32 Flyway `{row['checksum']}`", file=f)
-              if "ingress" in result:
-                  print("Ingresso", result["ingress"], "· readiness", result["readiness"], "· worker", result["worker"], file=f)
-              if "queueCount" in result:
-                  print("Job in coda", result["queueCount"], "· SHA-256", result["queueDigest"], file=f)
-                  for row in result["queue"]:
-                      print("`" + json.dumps(row, sort_keys=True) + "`", file=f)
-              if next_phase:
-                  print(f"Job `{next_phase} {stamp}`", file=f)
-                  print("Approvare il job (nessun commento richiesto)", file=f)
-              elif "proof" in result:
-                  print("Prova chatbot", result["proof"], file=f)
+          review = runpy.run_path(".github/scripts/semantic_review.py")
+          context = json.loads(e.get("PLAN_REVIEW") or "{}")
+          with open(e["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              context = review["cutover"](f, req, result, next_phase, context)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + stamp, file=f)
+              print("context=" + json.dumps(context), file=f)
               print("migration=" + str(migration).lower(), file=f)
           PY
 
@@ -132,12 +119,15 @@ jobs:
     permissions: {contents: read, actions: read, deployments: read}
     timeout-minutes: 40
     env:
+      PLAN_REVIEW: ${{ needs.plan.outputs.context }}
       PHASE: apply
       DIGEST: ${{ needs.plan.outputs.digest }}
     outputs:
+      context: ${{ steps.call.outputs.context }}
       digest: ${{ steps.call.outputs.digest }}
       migration: ${{ steps.call.outputs.migration }}
     steps:
+      - *client
       - *invoke
 
   migrate:
@@ -149,11 +139,13 @@ jobs:
     permissions: {contents: read, actions: read, deployments: read}
     timeout-minutes: 10
     env:
+      PLAN_REVIEW: ${{ needs.apply.outputs.context }}
       PHASE: migrate
       DIGEST: ${{ needs.apply.outputs.digest }}
     outputs:
       digest: ${{ steps.call.outputs.digest }}
     steps:
+      - *client
       - *invoke
 
   sign:
@@ -168,11 +160,13 @@ jobs:
     permissions: {contents: read, actions: read, deployments: read}
     timeout-minutes: 75
     env:
+      PLAN_REVIEW: ${{ needs.apply.outputs.context }}
       PHASE: sign
       DIGEST: ${{ needs.migrate.outputs.digest || needs.apply.outputs.digest }}
     outputs:
       digest: ${{ steps.call.outputs.digest }}
     steps:
+      - *client
       - *invoke
 
   proof:
@@ -187,4 +181,5 @@ jobs:
       PHASE: proof
       DIGEST: ${{ needs.sign.outputs.digest }}
     steps:
+      - *client
       - *invoke

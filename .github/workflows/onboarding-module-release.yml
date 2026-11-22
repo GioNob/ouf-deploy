@@ -43,39 +43,18 @@ jobs:
       DIGEST: ${{ needs.intent.outputs.digest }}
     outputs:
       digest: ${{ steps.call.outputs.digest }}
+      migrations: ${{ steps.call.outputs.migrations }}
     steps:
+      - &client
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
       - &invoke
         id: call
         env:
           REVIEW_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          /usr/bin/python3 -I - <<'PY'
-          import json, os, re, subprocess
-          e = os.environ
-          req = dict(run=e["GITHUB_RUN_ID"], attempt=e["GITHUB_RUN_ATTEMPT"], commit=e["GITHUB_SHA"],
-                     operation="module-release", module=e["MODULE"], phase=e["PHASE"], digest=e["DIGEST"])
-          wire = json.dumps({"request": req, "token": e.pop("REVIEW_TOKEN")}).encode()
-          out = subprocess.run(["/usr/bin/sudo", "-n", "--", "/usr/local/sbin/ouf-a2"],
-                               input=wire, stdout=subprocess.PIPE, check=True)
-          result = json.loads(out.stdout)
-          stamp = result["digest"]
-          if not re.fullmatch("[0-9a-f]{64}", stamp):
-              raise SystemExit("Risposta esecutore non valida")
-          status = result["status"]
-          next_phase = {"PLANNED": "apply", "GATED": "migrate", "READY": None}[status]
-          with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
-              print("Onboarding", status, file=f)
-              for field in ("candidateReview", "databaseReview"):
-                  if field in result:
-                      print(chr(96) * 3 + "json", json.dumps(result[field], indent=2),
-                            chr(96) * 3, sep=chr(10), file=f)
-              if next_phase:
-                  print(f"Job `{next_phase} {stamp}`", file=f)
-                  print("Approvare il job (nessun commento richiesto)", file=f)
-          with open(e["GITHUB_OUTPUT"], "a") as f:
-              print("digest=" + stamp, "status=" + status, sep=chr(10), file=f)
-          PY
+        run: /usr/bin/python3 -I -B .github/scripts/module-release.py
 
   apply:
     name: apply ${{ needs.plan.outputs.digest }}
@@ -85,12 +64,14 @@ jobs:
     permissions: {contents: read, actions: read, deployments: read}
     timeout-minutes: 40
     env:
+      PLAN_MIGRATIONS: ${{ needs.plan.outputs.migrations }}
       PHASE: apply
       DIGEST: ${{ needs.plan.outputs.digest }}
     outputs:
       status: ${{ steps.call.outputs.status }}
       digest: ${{ steps.call.outputs.digest }}
     steps:
+      - *client
       - *invoke
 
   migrate:
@@ -105,4 +86,5 @@ jobs:
       PHASE: migrate
       DIGEST: ${{ needs.apply.outputs.digest }}
     steps:
+      - *client
       - *invoke

@@ -554,7 +554,7 @@ class Protocol(unittest.TestCase):
                 self.assertNotIn("environment", job)
             else:
                 self.assertEqual(job["environment"], "ouf-vps-privileged")
-            script = job["steps"][0]["run"]
+            script = next(step["run"] for step in job["steps"] if step.get("id") == "call")
             self.assertEqual(script.count("/usr/bin/sudo"), 1)
             self.assertNotIn("checkout", script)
             self.assertNotIn("docker", script)

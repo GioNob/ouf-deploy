@@ -5,6 +5,12 @@
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
   "status": "F1_PASS_WIDE_COMPONENTS_READY_DISCOVERY_ACTIVATION_PENDING",
+  "releaseApprovalTask38": {
+    "qualification": "Offline workflow clients for all seven release workflows and their conditional approval gates.",
+    "test": "tests/test_release_approval.py",
+    "moduleImageIdsPublic": false,
+    "runtimeApply": false
+  },
   "executorTask24": {
     "qualification": "Offline stop renewal collision and consecutive module releases with a signed READY receipt.",
     "runtimeApply": false,

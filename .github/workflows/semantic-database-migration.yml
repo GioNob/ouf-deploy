@@ -39,6 +39,10 @@ jobs:
     outputs:
       digest: ${{ steps.call.outputs.digest }}
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
       - &invoke
         id: call
         env:
@@ -46,7 +50,7 @@ jobs:
         shell: bash
         run: |
           /usr/bin/python3 -I - <<'PY'
-          import json, os, re, subprocess
+          import json, os, re, runpy, subprocess
           e = os.environ
           req = dict(run=e["GITHUB_RUN_ID"], attempt=e["GITHUB_RUN_ATTEMPT"], commit=e["GITHUB_SHA"],
                      operation=e["OPERATION"], phase=e["PHASE"], digest=e["DIGEST"])
@@ -59,6 +63,10 @@ jobs:
               raise SystemExit("Digest esecutore non valido")
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
               if req["phase"] == "plan":
+                  facts = [f"Database Semantic · testa R3 {result['head']} · migrazioni pendenti: {len(result['pending'])}"]
+                  facts.extend(f"{row['script']} · CRC32 Flyway {row['checksum']}" for row in result["pending"])
+                  approval = runpy.run_path(".github/scripts/release_review.py")["approval"]
+                  approval(f, "apply", stamp, facts)
                   print(f"Piano `{stamp}` · testa R3 {result['head']} · {len(result['pending'])} pendenti", file=f)
                   for row in result["pending"]:
                       print(f"- `{row['script']}` · CRC32 Flyway `{row['checksum']}`", file=f)

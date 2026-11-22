@@ -705,3 +705,7 @@ La prova portabile concatena i forward dalla 27 alla 30. Il ritorno firma la 31 
 ## 21 novembre 2026 · sprint-03/24 · stop R3 e successione dei moduli
 
 Prova locale dello stop riuscito al secondo tentativo, della nuova review per deriva dello scope e del limite di tre collisioni. Due rilasci Onboarding sintetici hanno usato lo stesso pin iniziale e una chiave di fixture temporanea. La selezione del secondo predecessore ha verificato il completamento firmato del primo. [Dettagli](OUF_PRIVILEGED_PIPELINE.md#stop-r3-durante-il-rinnovo-e-successione-dei-moduli)
+
+## 22 novembre 2026 · sprint-03/38 · annotazioni di approvazione
+
+Le fixture offline dei sette workflow verificano titolo, fase, fatti pubblici, escape e troncamento. Il riepilogo conserva l’elenco completo. La verifica della pagina GitHub resta aperta. [Test dei client](../tests/test_release_approval.py)
