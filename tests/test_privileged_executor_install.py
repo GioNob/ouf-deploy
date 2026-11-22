@@ -145,7 +145,7 @@ class Bootstrap(unittest.TestCase):
         filenames = {"start": "r3-operate", "stop": "r3-operate", "probe": "c-probe"}
         source = "c58515e8d4567742fc9dad988b4871966ce49563"
         artifact = "d" * 40
-        for version in (30, 31, 32, 33, 34):
+        for version in (30, 31, 32, 33, 34, 35):
             for op in ("start", "stop", "issue", "upgrade", "probe"):
                 name = filenames.get(op, f"r3-{op}-v{version}")
                 path = f"ops/vps/{name}.sh"
