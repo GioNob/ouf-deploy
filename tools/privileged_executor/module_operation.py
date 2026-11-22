@@ -18,6 +18,14 @@ class ModuleRelease:
         if req["module"] == "onboarding" and peer.get("dockerSocket") == self.profile["dockerSocket"]:
             self.runtime.flyway_peer = peer.get("migration", {}).get("database")
 
+    def image_ids(self, plan):
+        if "sourcePlan" in plan:
+            source = plan["sourcePlan"]
+            need(hex64(source), "MODULE_PARENT_DRIFT")
+            plan = read(Path(self.profile["journal"]) / source / "plan.json")
+            need(digest(plan) == source, "MODULE_PARENT_DRIFT")
+        return {"candidateImageId": plan["ci"]["imageId"], "predecessorImageId": plan["oldImage"]}
+
     def previous_release(self):
         """Read the last completion published under the executor lock for this module."""
         module = self.req["module"]
@@ -87,7 +95,7 @@ class ModuleRelease:
                 proposal = operation.plan(self.profile, self.runtime, previous_release=self.previous_release)
             save(path / "plan", proposal)
             need(proposal["status"] == "PLANNED", proposal.get("reason", "MODULE_PLAN_HELD"))
-            response = {"digest": proposal["planSha256"], "status": "PLANNED"}
+            response = {"digest": proposal["planSha256"], "status": "PLANNED", **self.image_ids(proposal["plan"])}
             if "candidateReview" in proposal["plan"]:
                 response["candidateReview"] = proposal["plan"]["candidateReview"]
             if "sourcePlan" in proposal["plan"]:
@@ -103,8 +111,10 @@ class ModuleRelease:
         need(intent(req) == approved["digest"] == intent(approved)
              and stamp == digest(proposal["plan"]) and proposal["plan"]["profileSha256"] == digest(self.profile),
              "MODULE_PARENT_DRIFT")
+        image_ids = {}
         if phase == "apply":
             need(req["digest"] == stamp, "APPROVED_PLAN_DRIFT")
+            image_ids = self.image_ids(proposal["plan"])
             save(path / "apply.review", {"request": req, "review": review})
             if "receiptSigning" in self.profile:
                 module_receipt.signing_key(self.profile["receiptSigning"])
@@ -136,7 +146,7 @@ class ModuleRelease:
             raise Held(rollback_reason if rollback_reason == cause else f"{rollback_reason} cause={cause}")
         if result["status"] == "GATED":
             stage = operation.read(Path(self.profile["journal"]) / result["planSha256"], "migration-plan.json")
-            response = {"status": "GATED", "digest": result["migrationSha256"]}
+            response = {"status": "GATED", "digest": result["migrationSha256"], **image_ids}
             if "flywayReview" in stage:
                 proof = stage["flywayReview"]
                 response["databaseReview"] = {k: proof[k] for k in ("before", "after", "pending")}
@@ -149,4 +159,4 @@ class ModuleRelease:
              {"run": req["run"], "phase": phase, "planSha256": source}, replace=True)
         if "receiptSigning" in self.profile:
             module_receipt.attest(self.profile["receiptSigning"], directory, issue=True)
-        return {"status": result["status"], "digest": source}
+        return {"status": result["status"], "digest": source, **image_ids}

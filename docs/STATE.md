@@ -1,5 +1,9 @@
 # Stato corrente OUF
 
+## Sprint 03/38 · approvazioni dei rilasci
+
+Le prove offline dei sette workflow verificano l’annotazione **Da approvare** e la sezione **Cosa approvi** nel job precedente a ogni review. Per Onboarding, MCP, UDP e Ingestion il task 38b mostra in entrambe le sedi gli ID delle immagini candidata e predecessore prima di approvare `apply` o `migrate`. La prova dell’esecutore copre anche il recupero e il predecessore selezionato dalla ricevuta del rilascio precedente. [Prove dei client](../tests/test_release_approval.py) · [Prove dell’esecutore](../tests/test_module_release.py)
+
 ## Sprint 03/24 · stop R3 e predecessore dei moduli
 
 La qualifica locale copre il ritentativo dello stop dopo il rinnovo e due rilasci consecutivi dello stesso modulo con `oldImage` invariato. Il percorso da ricevuta richiede la firma Ed25519 del completamento e la corrispondenza con la review, il CID e il frame in esercizio. Il prossimo passaggio è la review del codice. [Contratto e binding del firmatario](OUF_PRIVILEGED_PIPELINE.md#stop-r3-durante-il-rinnovo-e-successione-dei-moduli)

@@ -201,7 +201,10 @@ class Contract(unittest.TestCase):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))
         planned = dict(status="PLANNED", digest="c"*64, counts=dict(create=1, update=2, unchanged=3))
         invoke_client(planned, root/"summary", root/"output")
-        self.assertEqual((root/"summary").read_text(encoding="utf-8").split("\n\n")[:-2],
+        report = (root/"summary").read_text(encoding="utf-8")
+        self.assertTrue(report.startswith("**Cosa approvi con il job apply**"))
+        self.assertNotIn("| Risorsa |", report)
+        self.assertEqual(report[report.index("Gateway PLANNED"):].split("\n\n")[:-2],
                          ["Gateway PLANNED", "create 1", "update 2", "unchanged 3"])
 
     def test_malformed_changes_fail_before_publishing_approval(self):

@@ -306,6 +306,38 @@ class ReleaseTest(unittest.TestCase):
         self.enterContext(patch.object(module_operation.operation, "Docker", return_value=self.rt))
         return call, req
 
+    def test_public_image_ids_follow_release_and_recovery_plans(self):
+        import mandate
+        import store
+        from module_release import recovery
+
+        baseline = plan(self.p, self.rt)
+        body = baseline["plan"]
+        images = {"candidateImageId": body["ci"]["imageId"], "predecessorImageId": body["oldImage"]}
+        for image in images.values():
+            self.assertRegex(image, r"\Asha256:[0-9a-f]{64}\Z")
+        call, req = self.governed_dispatch()
+        planned = call(0)
+        self.assertEqual(planned, {"status": "PLANNED", "digest": baseline["planSha256"], **images})
+        self.assertEqual(store.read(self.root / "1" / "plan"), baseline)
+        req.update(phase="apply", digest=planned["digest"])
+        gated = call(1)
+        stage = store.read(self.root / planned["digest"] / "migration-plan.json")
+        self.assertEqual(gated, {"status": "GATED", "digest": mandate.digest(stage), **images})
+
+        # An interrupted dispatch approves a new proposal bound to the original release.
+        expected = recovery.proposal(self.p, self.rt)
+        req.update(run="2", phase="plan")
+        req["digest"] = mandate.intent(req)
+        resumed = call(0)
+        self.assertEqual(resumed, {"status": "PLANNED", "digest": mandate.digest(expected),
+                                   "sourcePlan": planned["digest"], **images})
+        self.assertEqual(store.read(self.root / "2" / "plan")["plan"], expected)
+        req.update(phase="apply", digest=resumed["digest"])
+        self.assertEqual(call(1), gated)
+        req.update(phase="migrate", digest=gated["digest"])
+        self.assertEqual(call(2), {"status": "READY", "digest": planned["digest"]})
+
     def test_executor_enforces_each_review_through_onboarding_readiness(self):
         import mandate
         command = self.p["gate"]["command"] + ["--fixture.option=private-marker"]
@@ -405,6 +437,10 @@ class ReleaseTest(unittest.TestCase):
         planned_run = req["run"]
         approved = store.read(self.root / planned_run / "plan")["plan"]
         self.assertEqual(approved["oldImage"], self.rt.docs[NEW]["Image"])
+        self.assertNotEqual(approved["oldImage"], pinned)
+        self.assertEqual(second["predecessorImageId"], plan_result["candidateImageId"])
+        self.assertEqual(second["predecessorImageId"], approved["oldImage"])
+        self.assertEqual(second["candidateImageId"], approved["ci"]["imageId"])
         self.assertEqual(approved["predecessorPlanSha256"], plan_result["digest"])
         first_live = copy.deepcopy(self.rt.docs[NEW])
         for fields in ({"Id": "4" * 64}, {"Image": "sha256:" + "5" * 64}, {"RestartCount": 1}):
@@ -421,7 +457,9 @@ class ReleaseTest(unittest.TestCase):
         second = next_plan()
         req.update(phase="apply", digest=second["digest"])
         with patch.multiple(sys.modules[__name__], OLD=NEW, NEW="3" * 64):
-            self.assertEqual(call(1)["status"], "READY")
+            self.assertEqual(call(1), {"status": "READY", "digest": second["digest"],
+                                       "candidateImageId": approved["ci"]["imageId"],
+                                       "predecessorImageId": approved["oldImage"]})
         # Even a byte-for-byte match for the earlier signed release is stale.
         self.assertEqual(store.read(self.root / "module-onboarding.ready")["planSha256"], second["digest"])
         with patch.dict(self.rt.docs, {NEW: first_live}):

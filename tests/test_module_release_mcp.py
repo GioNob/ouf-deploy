@@ -107,7 +107,10 @@ class Release(unittest.TestCase):
             raise KeyboardInterrupt
         with patch.object(self.rt, "signal", side_effect=lost_response), self.assertRaises(KeyboardInterrupt):
             self.recover()
-        self.assertEqual(self.recover("3"), {"status": "READY", "digest": stamp})
+        source = operation.read(self.root / stamp, "plan.json")
+        self.assertEqual(self.recover("3"), {"status": "READY", "digest": stamp,
+                                             "candidateImageId": source["ci"]["imageId"],
+                                             "predecessorImageId": source["oldImage"]})
         self.assertEqual(self.rt.events.count("create"), 1)
         self.assertEqual(self.rt.events.count("signal:2"), 1)
         self.assertEqual(operation.read(self.root / stamp, "receipt.json")["readyHttp"], 204)

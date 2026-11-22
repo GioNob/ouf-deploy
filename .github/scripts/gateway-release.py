@@ -7,6 +7,8 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools/privileged_executor"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from release_review import approval
 from gateway_policy import ID, KINDS, MAX_CHANGE_PATHS, match
 from mandate import hex64, intent, validate
 
@@ -44,6 +46,7 @@ def changes_table(changes, counts):
         raise ValueError
     tally = dict.fromkeys(ACTIONS, 0)
     lines = ["| Risorsa | Azione | Campi che cambiano |", "|---|---|---|"]
+    resources = []
     previous = (-1, "")
     for change in changes:
         if not isinstance(change, dict):
@@ -60,10 +63,12 @@ def changes_table(changes, counts):
         previous = key
         tally[action] += 1
         paths = path_cell(change["paths"]) if action == "update" else "—"
+        detail = " (" + ", ".join(change["paths"]) + ")" if action == "update" else ""
+        resources.append(f"{kind}/{ident}: {ACTIONS[action]}{detail}")
         lines.append(f"| `{kind}/{ident}` | {ACTIONS[action]} | {paths} |")
     if tally != counts:
         raise ValueError
-    return "\n".join(lines)
+    return "\n".join(lines), resources
 
 
 def main():
@@ -79,12 +84,14 @@ def main():
         req["digest"] = env.get("DIGEST") or intent(req)
     validate(req, {"gateway": {}, "commit": env["GITHUB_SHA"]})
     summary = []
+    facts = []
     if sys.argv[1] == "intent":
         stamp, phase = req["digest"], req["phase"]
         if phase == "plan":
             summary.append("Source PR {sourcePr}, commit `{sourceCommit}`, CI run {sourceRun}, artifact {artifact}."
                            .format(**req))
         else:
+            facts.append("Ripristino dello snapshot del rilascio " + req["releaseRun"])
             summary.append("Return of release run " + req["releaseRun"] + ".")
     else:
         wire = json.dumps({"request": req, "token": env.pop("REVIEW_TOKEN")}).encode()
@@ -98,15 +105,20 @@ def main():
         summary.append("Gateway " + status)
         phase = ""
         if status == "PLANNED":
+            facts.append("Gateway · stato PLANNED")
             if "recoveringRun" in result:
+                facts.append(f"Le risorse corrispondono allo stato precedente o successivo del run sospeso {result['recoveringRun']}.")
                 summary.append(f"Live resources match the before or after state of pending run {result['recoveringRun']}.")
             counts = result["counts"]
             for key in ACTIONS:
                 if type(counts[key]) is not int or counts[key] < 0:
                     raise ValueError
                 summary.append(f"{key} {counts[key]}")
+            facts.append("Risorse: {create} nuove, {update} modificate, {unchanged} invariate".format(**counts))
             if "changes" in result:
-                summary.append(changes_table(result["changes"], counts))
+                table, resources = changes_table(result["changes"], counts)
+                summary.append(table)
+                facts.extend(resources)
             phase = "apply"
         if status == "APPLIED":
             summary.append(f"Return inputs: releaseRun `{req['run']}`, receipt `{stamp}`.")
@@ -115,6 +127,8 @@ def main():
         if phase != "plan":
             summary.append("Approvare il job (nessun commento richiesto)")
     with open(env["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
+        if phase in ("apply", "return"):
+            approval(stream, phase, stamp, facts)
         print(*summary, sep="\n\n", file=stream)
     with open(env["GITHUB_OUTPUT"], "a") as stream:
         print("digest=" + stamp, "phase=" + phase, sep="\n", file=stream)
