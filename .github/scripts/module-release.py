@@ -17,7 +17,21 @@ def public_fields(source, fields):
     return {key: source[key] for key in fields if key in source}
 
 
-def module_review(summary, module, result, next_phase, plan_migrations):
+def image_facts(result):
+    labels = (("candidateImageId", "Immagine candidata"),
+              ("predecessorImageId", "Immagine in esercizio da sostituire"))
+    if not any(key in result for key, _ in labels):
+        return ["ID immagine candidata e predecessore: non esposti dall’esecutore"]
+    lines = []
+    for key, label in labels:
+        value = result.get(key)
+        if not isinstance(value, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", value):
+            raise SystemExit(f"Risposta esecutore non valida ({key})")
+        lines.append(f"{label}: {value}")
+    return lines
+
+
+def module_review(summary, module, phase, result, next_phase, plan_migrations):
     status = result["status"]
     candidate = public_fields(result.get("candidateReview", {}),
                               ("candidateCmdSha256", "predecessorCmdSha256", "removedArgs", "envOperations"))
@@ -29,8 +43,8 @@ def module_review(summary, module, result, next_phase, plan_migrations):
     for key in ("migrations", "pending"):
         if key in database:
             database[key] = [public_fields(row, MIGRATION_FIELDS) for row in database[key]]
-    facts = [f"Modulo {module} · stato {status}",
-             "ID immagine candidata e predecessore: non esposti dall’esecutore"]
+    images = image_facts(result) if phase in ("plan", "apply") else []
+    facts = [f"Modulo {module} · stato {status}", *images]
     for key, label in (("predecessorCmdSha256", "SHA-256 comando predecessore"),
                        ("candidateCmdSha256", "SHA-256 comando candidato")):
         if key in candidate:
@@ -56,6 +70,9 @@ def module_review(summary, module, result, next_phase, plan_migrations):
     if next_phase:
         approval(summary, next_phase, result["digest"], facts)
     print(module, status, file=summary)
+    if not next_phase:
+        for line in images:
+            print(f"- {line}", file=summary)
     for review in (candidate, database):
         if review:
             print("```json", json.dumps(review, indent=2), "```", sep="\n", file=summary)
@@ -83,7 +100,7 @@ def main():
     next_phase = following[req["phase"]][status]
     previous = json.loads(e.get("PLAN_MIGRATIONS") or "null")
     with open(e["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
-        module_review(f, e["MODULE"], result, next_phase, previous)
+        module_review(f, e["MODULE"], req["phase"], result, next_phase, previous)
     with open(e["GITHUB_OUTPUT"], "a") as f:
         print("digest=" + stamp, "status=" + status, sep=chr(10), file=f)
         if req["phase"] == "plan":

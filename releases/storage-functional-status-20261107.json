@@ -6,9 +6,9 @@
   "document": "docs/OUF_STORAGE_MINIPET.md",
   "status": "F1_PASS_WIDE_COMPONENTS_READY_DISCOVERY_ACTIVATION_PENDING",
   "releaseApprovalTask38": {
-    "qualification": "Offline workflow clients for all seven release workflows and their conditional approval gates.",
+    "qualification": "Offline workflow clients for all seven release workflows and their conditional approval gates. Module plan and apply responses expose both image IDs from the approved release plan, including recovery and receipt-selected predecessors.",
     "test": "tests/test_release_approval.py",
-    "moduleImageIdsPublic": false,
+    "moduleImageIdsPublic": true,
     "runtimeApply": false
   },
   "executorTask24": {

@@ -123,6 +123,44 @@ class Approval(unittest.TestCase):
                     rolled = dict(status="ROLLED_BACK", digest=STAMP)
                     self.assertEqual(self.client(wf, "rollback", rolled, MODULE=module)[0], [])
 
+    def test_module_image_ids_in_approval_and_summary(self):
+        images = dict(candidateImageId="sha256:" + "1" * 64, predecessorImageId="sha256:" + "2" * 64)
+        labels = ("Immagine candidata: " + images["candidateImageId"],
+                  "Immagine in esercizio da sostituire: " + images["predecessorImageId"])
+        for module in ("onboarding", "mcp", "udp", "ingestion"):
+            wf = module + "-module-release"
+            for phase, status, gate in (("plan", "PLANNED", "apply"), ("apply", "GATED", "migrate"),
+                                        ("apply", "READY", None)):
+                with self.subTest(module=module, status=status):
+                    run = self.client(wf, phase, dict(status=status, digest=STAMP, **images), MODULE=module)
+                    if gate:
+                        self.review(run, gate, *labels)
+                    else:
+                        self.assertEqual(run[0], [])
+                        for label in labels:
+                            self.assertIn(label, run[1])
+
+    def test_module_image_ids_reject_malformed_or_incomplete_pair(self):
+        valid = "sha256:" + "a" * 64
+        plan = dict(status="PLANNED", digest=STAMP, candidateImageId=valid, predecessorImageId=valid)
+        for key in ("candidateImageId", "predecessorImageId"):
+            for value in (None, 42, STAMP, "sha256:" + "A" * 64, valid[:-1], valid + "a", valid + "\n"):
+                with self.subTest(key=key, value=value):
+                    result = {**plan, key: value}
+                    with self.assertRaisesRegex(SystemExit, key):
+                        self.client("udp-module-release", "plan", result, MODULE="udp")
+            with self.assertRaisesRegex(SystemExit, key):
+                partial = {k: v for k, v in plan.items() if k != key}
+                self.client("udp-module-release", "plan", partial, MODULE="udp")
+
+    def test_legacy_module_executor_reports_missing_images(self):
+        message = "ID immagine candidata e predecessore: non esposti dall’esecutore"
+        for phase, status, gate in (("plan", "PLANNED", "apply"), ("apply", "GATED", "migrate")):
+            run = self.client("udp-module-release", phase, dict(status=status, digest=STAMP), MODULE="udp")
+            self.review(run, gate, message)
+        run = self.client("udp-module-release", "apply", dict(status="READY", digest=STAMP), MODULE="udp")
+        self.assertIn(message, run[1])
+
     def test_semantic_cutover_all_gates(self):
         wf = "semantic-a2-cutover"
         env = dict(RELEASE="next", DIRECTION="forward", QUEUE="inventory", WORKER_PROOF="true")
