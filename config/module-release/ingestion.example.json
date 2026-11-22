@@ -57,15 +57,15 @@
     "repository": "GioNob/ouf-ingestion-runtime",
     "workflow": "module-ci.yml",
     "pullRequest": 54,
-    "sourceCommit": "04b16feab2ce5d73d6a0f94b45aff23fe1dd61ee",
-    "sourceTree": "056c4b92f7c531be74c75e2dd841c5c18f98cc89",
+    "sourceCommit": "aafeb5683b5b00b7730e6491ff9956a9fb914231",
+    "sourceTree": "1a114a4e416966d542241ab521f5457b2ba7d522",
     "manifestSchema": "ouf.ingestion-tested-image.v1",
     "imageName": "ouf-ingestion",
-    "runId": 45048980598,
+    "runId": 45057321246,
     "runAttempt": 1,
-    "artifactId": 14763834563,
-    "zipSha256": "bc5db291d7a1180d3ef64cdf242adebf38ccb1fcb393bd4b47a85568b487cec2",
-    "imageId": "sha256:20291e24d08dcc44c209aca19f2eb6d46588b609ef1e5573dbab7b1eb4dfa54f",
+    "artifactId": 14768470310,
+    "zipSha256": "546c98f10949586643384325322a5e4268e6286ed7e54d3e173899743d7a9f49",
+    "imageId": "sha256:aae0b2ddf49d6426b68f2ec494c02f051d7e7ee86e730da2dc03c3cb92980fc1",
     "artifactPrefix": "ingestion-governed-image"
   }
 }
