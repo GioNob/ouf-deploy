@@ -11,7 +11,7 @@ import time
 import unittest
 from unittest.mock import Mock, patch
 
-from test_gateway_release import MARKER, REQ, ROOT, SECRET, artifact, bundle, mandate, operation, row, verify
+from test_gateway_release import LEGACY_VARS, MARKER, REQ, ROOT, SECRET, artifact, bundle, mandate, operation, retirement, row, verify
 from gateway_admin import Admin, AdminRequestError, connect
 
 
@@ -61,7 +61,9 @@ def publisher_profile():
 class PublishedBundle(unittest.TestCase):
     def test_verified_fixture_has_seven_plugin_routes_and_integer_ports(self):
         with local_publisher():
-            _, routes = bundle.package(publisher_profile(), published_request("70"), SECRET)
+            _, verified = bundle.package(publisher_profile(), published_request("70"), SECRET)
+        self.assertNotIn("retired", verified)
+        routes = verified["resources"]
         self.assertEqual(len(routes), 7)
         for route in routes:
             with self.subTest(route=route["id"]):
@@ -210,12 +212,12 @@ class NativeRelease(unittest.TestCase):
         return result
 
     @contextmanager
-    def selected(self, invalid=False):
+    def selected(self, invalid=False, *, retired=None):
         body = dict(self.baseline, desc=MARKER, plugin_config_id="settings",
                     plugins={"limit-count": {"count": 5, "time_window": 60, "key": "remote_addr"}})
         if invalid:
             body["methods"] = "invalid-method-list"
-        pair = artifact([self.plugins, row("routes", "target", body)])
+        pair = artifact([self.plugins, row("routes", "target", body)], retired=retired)
         with patch.object(operation, "package", side_effect=lambda *_: (pair[0], verify(pair))):
             yield
 
@@ -269,7 +271,8 @@ class NativeRelease(unittest.TestCase):
                 self.assertEqual(json.load(response)["issuer"], ISSUER)
             finally:
                 conn.close()
-        _, routes = bundle.package(self.profile, published_request("70"), SECRET)
+        _, verified = bundle.package(self.profile, published_request("70"), SECRET)
+        routes = verified["resources"]
         self.assertEqual(len(routes), 7)
         return routes
 
@@ -302,6 +305,25 @@ class NativeRelease(unittest.TestCase):
         plan = self.phase(req)
         self.assertEqual(plan["counts"], dict(create=7, update=0, unchanged=0))
         self.apply_readback_return(req, plan, routes, [None] * len(routes), None)
+
+    def test_v2_delete_and_return_on_apisix(self):
+        legacy = row("routes", "legacy", {})
+        with connect(self.profile) as (admin, _):
+            admin.write(legacy, dict(self.baseline, desc="legacy fixture", vars=LEGACY_VARS))
+            before = admin.get(legacy)
+        with self.selected(retired=[retirement("legacy", "target")]):
+            plan = self.phase(REQ)
+            self.assertEqual(plan["counts"], dict(create=1, update=1, unchanged=0, delete=1))
+            receipt = self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        back = dict(operation="gateway-release", run="71", attempt="1", commit=REQ["commit"],
+                    phase="return", releaseRun=REQ["run"], digest=receipt["digest"])
+        with connect(self.profile) as (admin, _):
+            self.assertIsNone(admin.get(legacy))
+        self.assertEqual(self.phase(back)["status"], "RETURNED")
+        with connect(self.profile) as (admin, _):
+            assert_readback(admin.get(legacy), before, exact=True)
+            assert_readback(admin.get(self.route), self.baseline, exact=True)
+            assert_readback(admin.get(self.outside), self.foreign, exact=True)
 
     def test_published_release_recovers_first_put_and_returns_to_original_snapshot(self):
         routes = self.published_routes()

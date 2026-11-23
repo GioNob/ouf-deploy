@@ -62,8 +62,28 @@ def field_differences(live, desired, *, exact=False):
     return differences
 
 
-def conforms(live, desired):
-    return not field_differences(live, desired)
+def conforms(live, desired, *, exact=False):
+    return not field_differences(live, desired, exact=exact)
+
+
+def route_selectors(body):
+    def strings(field):
+        values = body.get(field)
+        return {value for value in values if isinstance(value, str)} if isinstance(values, list) else set()
+
+    uris, methods, hosts = strings("uris"), strings("methods"), strings("hosts")
+    for field, values in (("uri", uris), ("host", hosts)):
+        value = body.get(field)
+        if isinstance(value, str):
+            values.add(value)
+    return uris, methods, hosts
+
+
+def selectors_overlap(left, right):
+    uris, methods, hosts = left
+    other_uris, other_methods, other_hosts = right
+    return bool(uris & other_uris and (not methods or not other_methods or methods & other_methods)
+                and (not hosts or not other_hosts or hosts & other_hosts))
 
 
 class GatewayRelease:
@@ -104,10 +124,10 @@ class GatewayRelease:
             live = self.observe(stage, row, admin.get)
             self.verify(stage, row, live, row[side], "GATEWAY_LIVE_DRIFT", exact=side == "before")
 
-    def plan_rows(self, admin, resources, interrupted, changes=None):
+    def plan_rows(self, admin, resources, retired, interrupted, changes=None):
         rows = []
         if interrupted is not None:
-            need(len(interrupted) == len(resources), "GATEWAY_PENDING_PACKAGE_DRIFT")
+            need(len(interrupted) == len(resources) + len(retired), "GATEWAY_PENDING_PACKAGE_DRIFT")
         for index, resource in enumerate(resources):
             after = resource["body"]
             if interrupted is not None:
@@ -136,7 +156,53 @@ class GatewayRelease:
                         paths.append(f"… {len(diff) - MAX_CHANGE_PATHS} altri")
                     change["paths"] = paths
                 changes.append(change)
+        desired = {row["id"]: row["after"] for row in rows if row["kind"] == "routes"}
+        for index, entry in enumerate(retired, start=len(resources)):
+            kind, ident, successor = entry["kind"], entry["id"], entry["supersededBy"]
+            if interrupted is not None:
+                previous = interrupted[index]
+                need((kind, ident) == (previous["kind"], previous["id"]) and previous["after"] is None,
+                     "GATEWAY_PENDING_PACKAGE_DRIFT")
+            before = self.observe("plan-get", entry, admin.get)
+            if before is not None:
+                replacement = desired[successor]
+                # Delete only the declared duplicate: same selectors as the replacement and the exact
+                # literal vars published in the bundle.
+                if (not selectors_overlap(route_selectors(before), route_selectors(replacement))
+                        or "vars" not in before or canonical(before["vars"]) != canonical(entry["vars"])):
+                    error = Held("GATEWAY_RETIRE_MISMATCH")
+                    error.public_context = f"retirement={ident}~{successor}"
+                    raise error
+                if interrupted is not None:
+                    self.verify("pending-before", entry, before, previous["before"],
+                                "GATEWAY_PENDING_LIVE_DRIFT", exact=True)
+            action = "absent" if before is None else "delete"
+            rows.append(dict(kind=kind, id=ident, before=before, after=None, action=action))
+            if changes is not None:
+                change = dict(kind=kind, id=ident, action=action)
+                if action == "delete":
+                    change["supersededBy"] = successor
+                changes.append(change)
         return rows
+
+    def check_route_conflicts(self, admin, rows):
+        desired = {row["id"]: row["after"] for row in rows if row["kind"] == "routes" and row["after"] is not None}
+        removals = {row["id"] for row in rows if row["action"] == "delete"}
+        live = admin.list_routes()
+        unmanaged = [(ident, route_selectors(live[ident])) for ident in sorted(live.keys() - desired.keys() - removals)]
+        pairs = []
+        count = 0
+        for ident, body in desired.items():
+            selectors = route_selectors(body)
+            for live_id, live_selectors in unmanaged:
+                if selectors_overlap(selectors, live_selectors):
+                    count += 1
+                    if len(pairs) < 10:
+                        pairs.append(f"{ident}~{live_id}")
+        if pairs:
+            error = Held("GATEWAY_ROUTE_CONFLICT")
+            error.public_context = f"conflicts={','.join(pairs)} remaining={count - len(pairs)}"
+            raise error
 
     def current(self):
         head = read(self.head) if self.head.exists() else None
@@ -195,6 +261,8 @@ class GatewayRelease:
             error.public_context = "owner=gateway residual=" + residual
             if self.error_location:
                 error.public_context += " " + self.error_location
+            if isinstance(exc, Held) and getattr(exc, "public_context", None):
+                error.public_context += " " + exc.public_context
             raise error from None
 
     def residual(self):
@@ -240,14 +308,16 @@ class GatewayRelease:
             need(intent(req) == approved["digest"] == intent(approved)
                  and digest(prepared) == req["digest"], "GATEWAY_PLAN_DRIFT")
             nonce = prepared["nonce"]
-        ci, resources = package(self.profile, req, token)
+        ci, verified = package(self.profile, req, token)
         with connect(self.profile) as (admin, identity):
             pending = current is not None and current["status"] == "PENDING"
             original = self.original_snapshot(self.interrupted_snapshot(current, identity), identity) if pending else None
             if pending:
                 need(original["ci"] == ci, "GATEWAY_PENDING_PACKAGE_DRIFT")
             changes = [] if phase == "plan" else None
-            rows = self.plan_rows(admin, resources, original["rows"] if pending else None, changes)
+            rows = self.plan_rows(admin, verified["resources"], verified.get("retired", []),
+                                  original["rows"] if pending else None, changes)
+            self.check_route_conflicts(admin, rows)
             plan = dict(scope=intent(req), profile=digest(self.profile), generation=identity, ci=ci,
                         rows=rows, parent=current, nonce=nonce)
             if pending:
@@ -257,6 +327,8 @@ class GatewayRelease:
                 save(self.path / "gateway.plan.review", {"request": req, "review": review})
                 save(self.path / "gateway.plan", plan)
                 counts = {k: sum(r["action"] == k for r in rows) for k in ("create", "update", "unchanged")}
+                if "retired" in verified:
+                    counts["delete"] = sum(row["action"] == "delete" for row in rows)
                 result = {"status": "PLANNED", "digest": stamp, "counts": counts, "changes": changes}
                 if pending:
                     result["recoveringRun"] = current["run"]
@@ -290,10 +362,11 @@ class GatewayRelease:
         attempted = []
         try:
             for index, row in enumerate(rows if forward else reversed(rows)):
-                if row["action"] == "unchanged":
+                if row["action"] in ("unchanged", "absent"):
                     continue
+                exact = row["action"] == "delete"
                 live = self.observe("pre-write-get", row, admin.get)
-                self.verify("pre-write-get", row, live, row[old], "GATEWAY_LIVE_DRIFT")
+                self.verify("pre-write-get", row, live, row[old], "GATEWAY_LIVE_DRIFT", exact=exact)
                 claim = self.path / f"{prefix}.{index}.intent"
                 save(claim, {"kind": row["kind"], "id": row["id"]})
                 attempted.append((row, row[new]))
@@ -301,7 +374,7 @@ class GatewayRelease:
                 attempted[-1] = (row, ack)
                 self.verify("write-ack", row, ack, row[new], "GATEWAY_WRITE_READBACK")
                 live = self.observe("write-get", row, admin.get)
-                self.verify("write-get", row, live, row[new], "GATEWAY_WRITE_READBACK")
+                self.verify("write-get", row, live, row[new], "GATEWAY_WRITE_READBACK", exact=exact)
                 save(self.path / f"{prefix}.{index}.receipt", {"kind": row["kind"], "id": row["id"]})
             self.check_state(admin, rows, new)
         except Exception as exc:
@@ -309,17 +382,18 @@ class GatewayRelease:
                 self.error_location = diagnostic("GATEWAY_EVIDENCE_UNPROVEN", exc)
             try:
                 for row, ack in reversed(attempted):
+                    exact = row["action"] == "delete"
                     live = self.observe("compensation-get", row, admin.get)
                     # GET and PUT may expose different defaults. Even if the old
                     # body is a subset of the new one, PUT it back to remove additions.
                     # A nonconforming ACK can identify only its exact observed body.
-                    if not conforms(live, row[new]) and canonical(live) != canonical(ack):
-                        self.verify("compensation-drift", row, live, row[old], "GATEWAY_COMPENSATION_DRIFT")
+                    if not conforms(live, row[new], exact=exact) and canonical(live) != canonical(ack):
+                        self.verify("compensation-drift", row, live, row[old], "GATEWAY_COMPENSATION_DRIFT", exact=exact)
                         continue
                     # A missing old body selects DELETE; GET must then prove absence.
                     self.observe("compensation-write", row, admin.write, row[old])
                     live = self.observe("compensation-readback", row, admin.get)
-                    self.verify("compensation-readback", row, live, row[old], "GATEWAY_COMPENSATION_READBACK")
+                    self.verify("compensation-readback", row, live, row[old], "GATEWAY_COMPENSATION_READBACK", exact=exact)
                 self.check_state(admin, rows, old)
                 save(self.path / (prefix + ".failure"), {"status": "RESTORED"})
                 save(self.head, parent, replace=True)

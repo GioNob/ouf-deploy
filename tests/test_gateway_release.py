@@ -10,13 +10,13 @@ import runpy
 import sys
 import tempfile
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, call, patch
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "tools/privileged_executor"), str(ROOT / "tools")]
 import gateway_bundle as bundle
-from gateway_admin import Admin
+from gateway_admin import Admin, AdminRequestError
 import gateway_operation as operation
 import mandate
 import store
@@ -40,18 +40,25 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def artifact(resources, *, declarations=None, change_bundle=None, change_manifest=None, change_files=None):
+def artifact(resources, *, declarations=None, retired=None, change_bundle=None, change_manifest=None,
+             change_files=None):
     declarations = DECL if declarations is None else declarations
     resources_sha = sha(encoded(resources))
     doc = dict(schema="ouf.gateway-release-bundle.v1", sourceRepository=CI["repository"],
                sourceCommit=CI["sourceCommit"], resources=resources, placeholders=declarations,
                resourcesSha256=resources_sha)
+    version = "v1" if retired is None else "v2"
+    if retired is not None:
+        doc.update(schema=f"ouf.gateway-release-bundle.{version}", retired=retired,
+                   retiredSha256=sha(encoded(retired)))
     doc.update(change_bundle or {})
     body = encoded(doc)
-    manifest = dict(schema="ouf.gateway-release-manifest.v1", sourceRepository=CI["repository"],
+    manifest = dict(schema=f"ouf.gateway-release-manifest.{version}", sourceRepository=CI["repository"],
                     sourceCommit=CI["sourceCommit"], workflowPath=".github/workflows/" + CI["workflow"],
                     runId="11", bundleSha256=sha(body), resourcesSha256=resources_sha,
                     placeholders=[item["name"] for item in declarations])
+    if retired is not None:
+        manifest["retiredSha256"] = doc["retiredSha256"]
     manifest.update(change_manifest or {})
     files = {"bundle.json": body, "manifest.json": encoded(manifest)}
     files["SHA256SUMS"] = "".join(f"{sha(v)}  {k}\n" for k, v in files.items()).encode()
@@ -66,6 +73,14 @@ def artifact(resources, *, declarations=None, change_bundle=None, change_manifes
 
 def row(kind, ident, body):
     return {"kind": kind, "id": ident, "body": body}
+
+
+LEGACY_VARS = [["http_x_review", "==", "legacy-review"]]
+
+
+def retirement(ident, successor="one", conditions=None):
+    return dict(kind="routes", id=ident, supersededBy=successor,
+                vars=LEGACY_VARS if conditions is None else conditions)
 
 
 ROWS = [row("upstreams", "one", {"desc": MARKER}), row("plugin_configs", "cfg", {"plugins": {}}),
@@ -150,6 +165,63 @@ class Contract(unittest.TestCase):
                 with self.assertRaisesRegex(mandate.Held, "^GATEWAY_RESOURCE_PATH$"):
                     admin.get(dict(target, id=ident))
 
+    def test_admin_route_list_reads_complete_inventory_under_guard(self):
+        transport = Mock()
+        admin = Admin("127.0.0.1", 9180, "/fixture", SECRET, transport.guard)
+        conn = transport.connection.return_value
+        response = conn.getresponse.return_value
+        routes = {"first": {"uri": "/one"}, "2": {"id": 2, "uris": ["/two"], "update_time": 1}}
+        response.status = 200
+        response.read.return_value = encoded({"total": len(routes), "list": [
+            {"key": f"/apisix/routes/{ident}", "value": value} for ident, value in routes.items()]})
+        with patch("gateway_admin.http.client.HTTPConnection", transport.connection):
+            self.assertEqual(admin.list_routes(), routes)
+            self.assertEqual(transport.mock_calls, [
+                call.guard(), call.connection("127.0.0.1", 9180, timeout=10),
+                call.connection().request("GET", "/fixture/routes", None,
+                                          {"X-API-KEY": SECRET, "Content-Type": "application/json"}),
+                call.connection().getresponse(), call.connection().getresponse().read(bundle.LIMIT + 1),
+                call.guard(), call.connection().close(),
+            ])
+            response.read.return_value = encoded({"total": 0, "list": []})
+            self.assertEqual(admin.list_routes(), {})
+            response.read.return_value = encoded({"total": 1, "list": [
+                {"key": "/fixture-store/routes/first", "value": routes["first"]}]})
+            self.assertEqual(admin.list_routes(), {"first": routes["first"]})
+
+    def test_admin_route_list_requires_200_and_limits_response(self):
+        admin = Admin("127.0.0.1", 9180, "/fixture", SECRET, Mock())
+        with patch("gateway_admin.http.client.HTTPConnection") as factory:
+            response = factory.return_value.getresponse.return_value
+            response.read.return_value = b'{"message":"Key not found"}'
+            for status in (201, 404, 500):
+                with self.subTest(status=status), self.assertRaises(AdminRequestError) as denied:
+                    response.status = status
+                    admin.list_routes()
+                self.assertEqual(denied.exception.status, status)
+            response.status = 200
+            with patch("gateway_admin.LIMIT", 16), self.assertRaisesRegex(mandate.Held, "^GATEWAY_ADMIN_RESPONSE$"):
+                admin.list_routes()
+            response.read.assert_called_with(17)
+
+    def test_admin_route_list_rejects_malformed_or_incomplete_inventory(self):
+        admin = Admin("127.0.0.1", 9180, "/fixture", SECRET, Mock())
+        entry = {"key": "/apisix/routes/live", "value": {"id": "live"}}
+        documents = [None, {"list": []}, {"total": 0, "list": {}}, {"total": True, "list": [entry]},
+                     {"total": 2, "list": [entry]}, {"total": 2, "list": [entry, entry]}]
+        for invalid in (None, {}, dict(entry, key=12), dict(entry, key="/apisix/services/live"),
+                        dict(entry, key="apisix/routes/live"),
+                        dict(entry, key="/apisix/routes/"), dict(entry, key="/apisix/routes/secret~marker"),
+                        dict(entry, value=[]), dict(entry, value={"id": "other"})):
+            documents.append({"total": 1, "list": [invalid]})
+        with patch("gateway_admin.http.client.HTTPConnection") as factory:
+            response = factory.return_value.getresponse.return_value
+            response.status = 200
+            for index, payload in enumerate([b"not JSON", b"\xff", *map(encoded, documents)]):
+                with self.subTest(case=index), self.assertRaisesRegex(mandate.Held, "^GATEWAY_ADMIN_RESOURCE$"):
+                    response.read.return_value = payload
+                    admin.list_routes()
+
     def test_workflow_summary_and_deploy_mandate_agree(self):
         cfg = dict(repositoryId=5, branch="main", commit=REQ["commit"], environmentId=6,
                    environment="ouf-vps-privileged", reviewerIds=[7], runner="fixture", gateway={})
@@ -230,7 +302,9 @@ class Contract(unittest.TestCase):
     def test_contract_and_recursive_substitution(self):
         rows = deepcopy(ROWS)
         rows[0]["body"] = {"nested": [MARKER, {"unchanged": "$installation"}]}
-        self.assertEqual(verify(artifact(rows))[0]["body"], {"nested": [SECRET, {"unchanged": "$installation"}]})
+        verified = verify(artifact(rows))
+        self.assertEqual(set(verified), {"resources"})
+        self.assertEqual(verified["resources"][0]["body"], {"nested": [SECRET, {"unchanged": "$installation"}]})
         ci, raw = artifact(ROWS)
         with self.assertRaisesRegex(mandate.Held, "ZIP_DIGEST"):
             verify((dict(ci, zipSha256="0" * 64), raw))
@@ -241,7 +315,7 @@ class Contract(unittest.TestCase):
         body = {"upstream": {"nodes": [{"host": MARKER, "port": {"$installation": "services.ports.Owner"}, "weight": 1}]}}
         ci, raw = artifact([row("routes", "r", body)], declarations=decl)
         out = bundle.verify(raw, ci, {"binding": SECRET, "services.ports.Owner": 8080})
-        self.assertEqual(out[0]["body"]["upstream"]["nodes"][0]["port"], 8080)
+        self.assertEqual(out["resources"][0]["body"]["upstream"]["nodes"][0]["port"], 8080)
         for wrong in ("8080", True, 8080.0):
             with self.assertRaisesRegex(mandate.Held, "GATEWAY_INSTALLATION_VALUE"):
                 bundle.verify(raw, ci, {"binding": SECRET, "services.ports.Owner": wrong})
@@ -273,6 +347,49 @@ class Contract(unittest.TestCase):
         for index, pair in enumerate(cases):
             with self.subTest(index=index), self.assertRaises(mandate.Held):
                 verify(pair)
+
+    def test_v2_bundle_binds_retirements_and_preserves_resources(self):
+        verified_v1 = verify(artifact(ROWS))
+        for retired in ([], [retirement("legacy-a"), retirement("legacy-z")]):
+            with self.subTest(retired=retired):
+                self.assertEqual(verify(artifact(ROWS, retired=retired)), dict(verified_v1, retired=retired))
+        valid = [retirement("legacy-a")]
+        for code, pair in (
+            ("GATEWAY_BUNDLE_SCHEMA", artifact(ROWS, change_bundle={"schema": "ouf.gateway-release-bundle.v2", "retired": valid})),
+            ("GATEWAY_BUNDLE_SCHEMA", artifact(ROWS, retired=valid, change_bundle={"extra": True})),
+            ("GATEWAY_MANIFEST", artifact(ROWS, retired=valid, change_manifest={"schema": "ouf.gateway-release-manifest.v1"})),
+            ("GATEWAY_MANIFEST", artifact(ROWS, retired=valid, change_manifest={"retiredSha256": "0" * 64})),
+            ("GATEWAY_MANIFEST", artifact(ROWS, retired=valid, change_manifest={"extra": True})),
+        ):
+            with self.subTest(code=code, artifact=pair[0]["zipSha256"]), self.assertRaisesRegex(mandate.Held, f"^{code}$"):
+                verify(pair)
+
+    def test_v2_bundle_rejects_malformed_retired(self):
+        valid = retirement("legacy-a")
+        cases = {
+            "not-list": {"retired": None, "retiredSha256": sha(encoded(None))},
+            "unsorted": {"retired": [retirement("legacy-z"), valid]},
+            "duplicate": {"retired": [valid, valid]},
+            "non-route": {"retired": [dict(valid, kind="services")]},
+            "invalid-id": {"retired": [retirement("legacy/route")]},
+            "dot-id": {"retired": [retirement("..")]},
+            "route-id-in-resources": {"retired": [retirement("one")]},
+            "other-id-in-resources": {"retired": [retirement("cfg")]},
+            "missing-target": {"retired": [retirement("legacy-a", "unknown")]},
+            "non-route-target": {"retired": [retirement("legacy-a", "cfg")]},
+            "invalid-target": {"retired": [retirement("legacy-a", [])]},
+            "missing-field": {"retired": [{"kind": "routes", "id": "legacy-a", "supersededBy": "one"}]},
+            "empty-vars": {"retired": [retirement("legacy-a", conditions=[])]},
+            "non-list-vars": {"retired": [retirement("legacy-a", conditions="uri")]},
+            "non-string-condition": {"retired": [retirement("legacy-a", conditions=[["uri", 1]])]},
+            "unexpected-field": {"retired": [dict(valid, body={})]},
+            "bad-digest": {"retiredSha256": "0" * 64},
+        }
+        for name, changes in cases.items():
+            retired = changes.get("retired", [valid])
+            changes.setdefault("retiredSha256", sha(encoded(retired)))
+            with self.subTest(case=name), self.assertRaisesRegex(mandate.Held, "^GATEWAY_RETIRED$"):
+                verify(artifact(ROWS, retired=[valid], change_bundle=changes))
 
     def test_real_selector_runs_before_zip_download(self):
         ci, raw = artifact(ROWS)
@@ -311,6 +428,9 @@ class MemoryAdmin:
         key = resource["kind"], resource["id"]
         self.reads.append(key)
         return deepcopy(self.data.get(key))
+
+    def list_routes(self):
+        return {ident: deepcopy(body) for (kind, ident), body in self.data.items() if kind == "routes"}
 
     def write(self, resource, value):
         key = resource["kind"], resource["id"]
@@ -351,13 +471,286 @@ class Phases(unittest.TestCase):
         return dict(operation="gateway-release", phase="return", commit=REQ["commit"], run="71",
                     attempt="1", releaseRun=REQ["run"], digest=receipt["digest"])
 
-    def select(self, resources):
-        pair = artifact(resources)
+    def select(self, resources, *, declarations=None, retired=None):
+        pair = artifact(resources, declarations=declarations, retired=retired)
         self.package.return_value = pair[0], verify(pair)
+
+    def select_retirements(self, *ids):
+        resources = deepcopy(ROWS)
+        resources[-1]["body"].update(methods=["GET", "POST"], host="fixture.invalid",
+                                     vars=[["http_x_review", "==", MARKER]])
+        self.select(resources, retired=[retirement(ident) for ident in ids])
+        return dict(uris=["/new"], methods=["POST"], hosts=["fixture.invalid"],
+                    vars=LEGACY_VARS, priority=12, desc="legacy fixture")
 
     def new_plan_request(self, run):
         req = dict(REQ, run=run)
         return dict(req, digest=mandate.intent(req))
+
+    def assert_route_conflict(self, req, pairs, remaining=0):
+        with self.assertRaisesRegex(mandate.Held, "^GATEWAY_ROUTE_CONFLICT$") as denied:
+            self.phase(req)
+        self.assertEqual(denied.exception.public_context,
+                         f"owner=gateway residual=no-head conflicts={','.join(pairs)} remaining={remaining}")
+        directory = self.root / req["run"]
+        self.assertEqual(store.read(directory / f"gateway.{req['phase']}.held"),
+                         {"status": "HELD", "reason": "GATEWAY_ROUTE_CONFLICT", "owner": "gateway",
+                          "residual": "no-head"})
+        self.assertFalse((directory / "gateway.snapshot").exists())
+        self.assertFalse((self.root / "gateway-head").exists())
+        self.assertEqual(self.admin.writes, [])
+
+    def test_plan_blocks_route_conflict_on_create(self):
+        self.select([row("routes", "new", {"uri": "/same", "methods": ["GET"]})], declarations=[])
+        self.admin.data["routes", "foreign"] = {"uri": "/same", "methods": ["GET"], "desc": SECRET}
+        self.assert_route_conflict(REQ, ["new~foreign"])
+        self.assertFalse((self.root / REQ["run"] / "gateway.plan").exists())
+
+    def test_plan_blocks_route_conflict_on_update_using_desired_selectors(self):
+        desired = {"uri": "/one", "uris": ["/shared"], "methods": ["GET", "POST"],
+                   "host": "first.invalid", "hosts": ["shared.invalid"], "priority": 1}
+        self.select([row("routes", "one", desired)], declarations=[])
+        self.admin.data["routes", "foreign"] = {
+            "uri": "/shared", "methods": ["POST"], "host": "shared.invalid", "priority": 10, "status": 0,
+            "vars": [["fixture_variable", "==", SECRET]], "filter_func": SECRET,
+        }
+        self.assert_route_conflict(REQ, ["one~foreign"])
+
+    def test_plan_accepts_disjoint_selectors_and_all_bundle_route_ids(self):
+        desired = {"uri": "/a/*", "methods": ["GET"], "hosts": ["one.invalid"]}
+        self.select([row("routes", "one", desired), row("routes", "two", {"uri": "/replacement"})],
+                    declarations=[])
+        self.admin.data["routes", "one"] = dict(desired, desc="before")
+        self.admin.data["routes", "two"] = desired.copy()
+        for index, (name, foreign) in enumerate((
+            ("methods", dict(desired, methods=["POST"])),
+            ("hosts", dict(desired, hosts=["two.invalid"])),
+            ("different_uri", dict(desired, uri="/other")),
+            ("literal_wildcard", dict(desired, uri="/a/b")),
+        ), start=80):
+            with self.subTest(selector=name):
+                self.admin.data["routes", "foreign"] = foreign
+                result = self.phase(self.new_plan_request(str(index)))
+                self.assertEqual(result["counts"], {"create": 0, "update": 1, "unchanged": 1})
+        self.assertEqual(self.admin.writes, [])
+
+    def test_plan_treats_unrestricted_methods_and_hosts_as_all(self):
+        desired = {"uri": "/same", "methods": ["GET"], "host": "one.invalid"}
+        self.select([row("routes", "new", desired)], declarations=[])
+        for index, foreign in enumerate(({"uri": "/same"}, {"uri": "/same", "methods": []}), start=80):
+            with self.subTest(case=index):
+                self.admin.data["routes", "foreign"] = foreign
+                self.assert_route_conflict(self.new_plan_request(str(index)), ["new~foreign"])
+
+    def test_plan_reports_at_most_ten_route_conflict_pairs(self):
+        desired = {"uri": "/same", "desc": SECRET}
+        self.select([row("routes", "new", dict(desired, desc=MARKER))])
+        for index in reversed(range(12)):
+            self.admin.data["routes", f"live-{index:02}"] = desired.copy()
+        self.assert_route_conflict(REQ, [f"new~live-{index:02}" for index in range(10)], remaining=2)
+
+    def test_apply_blocks_route_added_after_plan_before_any_write(self):
+        req = self.plan()
+        self.admin.data["routes", "late"] = {"uri": "/new", "methods": ["GET"]}
+        self.assert_route_conflict(req, ["one~late"])
+
+    def test_return_restores_previous_route_without_reading_inventory(self):
+        receipt = self.phase(self.plan())
+        late = {"uri": "/old", "methods": ["GET"]}
+        self.admin.data["routes", "late"] = late.copy()
+        with patch.object(self.admin, "list_routes") as inventory:
+            self.assertEqual(self.phase(self.return_req(receipt))["status"], "RETURNED")
+            inventory.assert_not_called()
+        self.assertEqual(self.admin.data, self.before | {("routes", "late"): late})
+
+    def test_v2_deletes_after_updates_and_return_restores_exact_body(self):
+        legacy = ("routes", "a-legacy")
+        before = self.select_retirements(legacy[1])
+        self.admin.data[legacy] = deepcopy(before)
+        baseline = deepcopy(self.admin.data)
+        plan = self.phase(REQ)
+        self.assertEqual(plan["counts"], dict(create=1, update=1, unchanged=1, delete=1))
+        snapshot = store.read(self.root / "70/gateway.plan")
+        self.assertEqual(snapshot["rows"][-1], dict(kind="routes", id=legacy[1], before=before,
+                                                   after=None, action="delete"))
+        self.assertEqual(plan["digest"], sha(encoded(snapshot)))
+        self.assertEqual(self.admin.writes, [])
+        with patch.object(self.admin, "write", wraps=self.admin.write) as writes:
+            receipt = self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+            self.assertEqual(receipt["status"], "APPLIED")
+            self.assertEqual(self.admin.writes, [("upstreams", "one"), ("routes", "one"), legacy])
+            self.assertEqual(writes.call_args, call(snapshot["rows"][-1], None))
+            self.assertNotIn(legacy, self.admin.data)
+            self.assertEqual(store.read(self.root / "70/gateway.snapshot"), snapshot)
+            self.assertTrue((self.root / "70/gateway.apply.3.receipt").is_file())
+            writes.reset_mock()
+            self.assertEqual(self.phase(self.return_req(receipt))["status"], "RETURNED")
+            self.assertEqual(writes.call_args_list[0], call(snapshot["rows"][-1], before))
+        self.assertEqual(self.admin.data, baseline)
+        self.assertTrue((self.root / "71/gateway.return.0.receipt").is_file())
+
+    def test_v2_absent_retirement_is_visible_and_never_written(self):
+        missing = ("routes", "a-missing")
+        self.select_retirements(missing[1])
+        plan = self.phase(REQ)
+        self.assertEqual(plan["counts"], dict(create=1, update=1, unchanged=1, delete=0))
+        self.assertEqual(plan["changes"][-1], dict(kind="routes", id=missing[1], action="absent"))
+        snapshot = store.read(self.root / "70/gateway.plan")
+        self.assertEqual(snapshot["rows"][-1], dict(kind="routes", id=missing[1], before=None,
+                                                   after=None, action="absent"))
+        summary = self.root / "summary"
+        invoke_client(plan, summary, self.root / "output")
+        self.assertIn(", 0 da rimuovere", summary.read_text(encoding="utf-8"))
+        receipt = self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        self.phase(self.return_req(receipt))
+        self.assertIn(missing, self.admin.reads)
+        self.assertNotIn(missing, self.admin.writes)
+        self.assertEqual(self.admin.data, self.before)
+
+    def test_v2_plan_reports_retirements_in_summary_and_annotation(self):
+        self.admin.data["routes", "a-legacy"] = self.select_retirements("a-legacy", "z-absent")
+        planned = self.phase(REQ)
+        self.assertEqual(planned["changes"][-2:], [
+            dict(kind="routes", id="a-legacy", action="delete", supersededBy="one"),
+            dict(kind="routes", id="z-absent", action="absent")])
+        summary = self.root / "summary"
+        stdout = io.StringIO()
+        with patch.object(sys, "stdout", stdout):
+            invoke_client(planned, summary, self.root / "output")
+        report = summary.read_text(encoding="utf-8")
+        facts = ("Risorse: 1 nuove, 1 modificate, 1 invariate, 1 da rimuovere",
+                 "routes/a-legacy: da rimuovere (sostituita da one)", "routes/z-absent: già assente")
+        for fact in facts:
+            self.assertIn(fact, report)
+            self.assertIn(fact, stdout.getvalue())
+        self.assertIn("| `routes/a-legacy` | da rimuovere (sostituita da one) | — |\n"
+                      "| `routes/z-absent` | già assente | — |", report)
+        self.assertNotIn(SECRET, report + stdout.getvalue())
+
+    def test_v2_retirement_rejects_disjoint_selectors_and_different_vars(self):
+        legacy = ("routes", "a-legacy")
+        before = self.select_retirements(legacy[1])
+        cases = {
+            "uri": dict(before, uris=["/other"]),
+            "method": dict(before, methods=["DELETE"]),
+            "host": dict(before, hosts=["other.invalid"]),
+            "vars": dict(before, vars=[["http_x_review", "!=", "legacy-review"]]),
+            "vars-absent": {k: v for k, v in before.items() if k != "vars"},
+        }
+        for run, (case, body) in enumerate(cases.items(), start=80):
+            with self.subTest(case=case), self.assertRaisesRegex(mandate.Held, "^GATEWAY_RETIRE_MISMATCH$") as error:
+                self.admin.data[legacy] = body
+                self.phase(self.new_plan_request(str(run)))
+            self.assertEqual(error.exception.public_context, "owner=gateway residual=no-head retirement=a-legacy~one")
+        self.assertEqual(self.admin.writes, [])
+
+    def test_v2_apply_rechecks_retirement_before_any_writes(self):
+        legacy = ("routes", "a-legacy")
+        self.admin.data[legacy] = self.select_retirements(legacy[1])
+        plan = self.phase(REQ)
+        req = dict(REQ, phase="apply", digest=plan["digest"])
+        with patch.dict(self.admin.data[legacy], vars=[]), \
+                self.assertRaisesRegex(mandate.Held, "^GATEWAY_RETIRE_MISMATCH$"):
+            self.phase(req)
+        with patch.dict(self.admin.data[legacy], desc="changed after plan"), \
+                self.assertRaisesRegex(mandate.Held, "^GATEWAY_PLAN_DRIFT$"):
+            self.phase(req)
+        self.assertEqual(self.admin.writes, [])
+
+    def test_v2_keeps_conflict_for_undeclared_legacy_route(self):
+        before = self.select_retirements("a-legacy")
+        self.admin.data["routes", "a-legacy"] = before
+        self.admin.data["routes", "z-undeclared"] = deepcopy(before)
+        self.assert_route_conflict(REQ, ["one~z-undeclared"])
+
+    def test_v2_failed_second_delete_compensates_first_delete(self):
+        first, second = ("routes", "a-legacy"), ("routes", "z-legacy")
+        before = self.select_retirements(first[1], second[1])
+        self.admin.data.update({first: deepcopy(before), second: deepcopy(before)})
+        baseline = deepcopy(self.admin.data)
+        plan = self.phase(REQ)
+        write = self.admin.write
+
+        def fail_second_delete(resource, body):
+            if resource["id"] == second[1] and body is None:
+                self.assertNotIn(first, self.admin.data)
+                raise AdminRequestError(500)
+            return write(resource, body)
+
+        with patch.object(self.admin, "write", side_effect=fail_second_delete) as writes, \
+                self.assertRaisesRegex(mandate.Held, "^GATEWAY_WRITE_FAILED_RESTORED$"):
+            self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        attempts = [(args[0]["id"], args[1]) for args, _ in writes.call_args_list]
+        self.assertEqual(attempts[2:5], [(first[1], None), (second[1], None), (first[1], before)])
+        self.assertEqual(self.admin.data, baseline)
+        self.assertEqual(store.read(self.root / "70/gateway.apply.failure"), {"status": "RESTORED"})
+        self.assertIsNone(store.read(self.root / "gateway-head"))
+
+    def test_v2_requires_absence_after_delete_ack(self):
+        legacy = ("routes", "a-legacy")
+        self.admin.data[legacy] = self.select_retirements(legacy[1])
+        baseline = deepcopy(self.admin.data)
+        plan = self.phase(REQ)
+        write = self.admin.write
+
+        def ignore_legacy_delete(resource, body):
+            if resource["id"] == legacy[1] and body is None:
+                return None
+            return write(resource, body)
+
+        with patch.object(self.admin, "write", side_effect=ignore_legacy_delete), \
+                self.assertRaisesRegex(mandate.Held, "^GATEWAY_WRITE_FAILED_RESTORED$"):
+            self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        self.assertEqual(self.admin.data, baseline)
+        self.assertEqual(store.read(self.root / "70/gateway.apply.diagnostics"), [
+            dict(stage="write-get", kind="routes", id=legacy[1], paths=["$: changed"])])
+        self.assertFalse((self.root / "70/gateway.apply.3.receipt").exists())
+
+    def test_v2_pending_apply_resumes_after_delete_and_keeps_return_baseline(self):
+        first, second = ("routes", "a-legacy"), ("routes", "z-legacy")
+        before = self.select_retirements(first[1], second[1])
+        self.admin.data.update({first: deepcopy(before), second: deepcopy(before)})
+        baseline = deepcopy(self.admin.data)
+        plan = self.phase(REQ)
+
+        def interrupt_after_delete(key, body):
+            if key == first and body is None:
+                raise KeyboardInterrupt
+
+        with patch.object(self.admin, "on_write", side_effect=interrupt_after_delete), self.assertRaises(KeyboardInterrupt):
+            self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        self.assertNotIn(first, self.admin.data)
+        self.assertIn(second, self.admin.data)
+        recovery = self.new_plan_request("72")
+        with patch.dict(self.admin.data[second], desc="different live body"), \
+                self.assertRaisesRegex(mandate.Held, "^GATEWAY_PENDING_LIVE_DRIFT$"):
+            self.phase(recovery)
+        resumed = self.phase(recovery)
+        self.assertEqual(resumed["recoveringRun"], REQ["run"])
+        self.assertEqual([change["action"] for change in resumed["changes"][-2:]], ["absent", "delete"])
+        receipt = self.phase(dict(recovery, phase="apply", digest=resumed["digest"]))
+        self.assertEqual(self.admin.writes.count(first), 1)
+        self.assertEqual(self.admin.writes.count(second), 1)
+        self.phase(dict(self.return_req(receipt), releaseRun=recovery["run"]))
+        self.assertEqual(self.admin.data, baseline)
+
+    def test_v2_pending_return_redeletes_restored_route_on_recovery(self):
+        legacy = ("routes", "a-legacy")
+        self.admin.data[legacy] = self.select_retirements(legacy[1])
+        baseline = deepcopy(self.admin.data)
+        plan = self.phase(REQ)
+        receipt = self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        with patch.object(self.admin, "on_write", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            self.phase(self.return_req(receipt))
+        self.assertEqual(self.admin.data[legacy], baseline[legacy])
+        recovery = self.new_plan_request("72")
+        resumed = self.phase(recovery)
+        self.assertEqual(resumed["recoveringRun"], "71")
+        self.assertEqual(resumed["counts"]["delete"], 1)
+        receipt = self.phase(dict(recovery, phase="apply", digest=resumed["digest"]))
+        self.assertNotIn(legacy, self.admin.data)
+        self.phase(dict(self.return_req(receipt), run="73", releaseRun=recovery["run"]))
+        self.assertEqual(self.admin.data, baseline)
 
     def test_plan_changes_and_summary_show_only_changed_paths_in_bundle_order(self):
         desired = deepcopy(ROWS)
@@ -385,16 +778,19 @@ class Phases(unittest.TestCase):
 
     def test_plan_digest_matches_original_snapshot_contract(self):
         nonce = "e" * 64
+        self.admin.data["routes", "unrelated"] = {"uri": "/elsewhere"}
         with patch.object(operation.secrets, "token_hex", return_value=nonce):
             planned = self.phase(REQ)
-        ci, resources = self.package.return_value
+        ci, verified = self.package.return_value
         rows = [dict(kind=r["kind"], id=r["id"], before=self.before.get((r["kind"], r["id"])),
                      after=r["body"], action=action)
-                for r, action in zip(resources, ("create", "unchanged", "update"))]
+                for r, action in zip(verified["resources"], ("create", "unchanged", "update"))]
         original = dict(scope=REQ["digest"], profile=sha(encoded(self.cfg["gateway"])), generation="generation",
                         ci=ci, rows=rows, parent=None, nonce=nonce)
         self.assertEqual(store.read(self.root/"70/gateway.plan"), original)
         self.assertEqual(planned["digest"], sha(encoded(original)))
+        self.admin.data["routes", "unrelated"]["uri"] = "/still-unrelated"
+        self.assertEqual(self.phase(dict(REQ, phase="apply", digest=planned["digest"]))["status"], "APPLIED")
 
     def test_path_limit_and_quoted_keys_in_summary(self):
         key = "a: `|b"
@@ -461,7 +857,7 @@ class Phases(unittest.TestCase):
         original = deepcopy(self.admin.data)
         published = deepcopy(self.package.return_value)
         # The old executor added priority/status to the snapshot and PUT body.
-        for resource in self.package.return_value[1]:
+        for resource in self.package.return_value[1]["resources"]:
             resource["body"].update(priority=0, status=1)
         plan = self.phase(REQ)
         def crash(key, body):
