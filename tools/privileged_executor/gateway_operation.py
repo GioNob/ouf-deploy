@@ -66,6 +66,19 @@ def conforms(live, desired):
     return not field_differences(live, desired)
 
 
+def route_selectors(body):
+    def strings(field):
+        values = body.get(field)
+        return {value for value in values if isinstance(value, str)} if isinstance(values, list) else set()
+
+    uris, methods, hosts = strings("uris"), strings("methods"), strings("hosts")
+    for field, values in (("uri", uris), ("host", hosts)):
+        value = body.get(field)
+        if isinstance(value, str):
+            values.add(value)
+    return uris, methods, hosts
+
+
 class GatewayRelease:
     def __init__(self, cfg, root, req):
         self.profile = cfg["gateway"]
@@ -138,6 +151,25 @@ class GatewayRelease:
                 changes.append(change)
         return rows
 
+    def check_route_conflicts(self, admin, rows):
+        desired = {row["id"]: row["after"] for row in rows if row["kind"] == "routes"}
+        live = admin.list_routes()
+        unmanaged = [(ident, route_selectors(live[ident])) for ident in sorted(live.keys() - desired.keys())]
+        pairs = []
+        count = 0
+        for ident, body in desired.items():
+            uris, methods, hosts = route_selectors(body)
+            for live_id, (live_uris, live_methods, live_hosts) in unmanaged:
+                if (uris & live_uris and (not methods or not live_methods or methods & live_methods)
+                        and (not hosts or not live_hosts or hosts & live_hosts)):
+                    count += 1
+                    if len(pairs) < 10:
+                        pairs.append(f"{ident}~{live_id}")
+        if pairs:
+            error = Held("GATEWAY_ROUTE_CONFLICT")
+            error.public_context = f"conflicts={','.join(pairs)} remaining={count - len(pairs)}"
+            raise error
+
     def current(self):
         head = read(self.head) if self.head.exists() else None
         if head is not None:
@@ -195,6 +227,8 @@ class GatewayRelease:
             error.public_context = "owner=gateway residual=" + residual
             if self.error_location:
                 error.public_context += " " + self.error_location
+            if isinstance(exc, Held) and getattr(exc, "public_context", None):
+                error.public_context += " " + exc.public_context
             raise error from None
 
     def residual(self):
@@ -248,6 +282,7 @@ class GatewayRelease:
                 need(original["ci"] == ci, "GATEWAY_PENDING_PACKAGE_DRIFT")
             changes = [] if phase == "plan" else None
             rows = self.plan_rows(admin, resources, original["rows"] if pending else None, changes)
+            self.check_route_conflicts(admin, rows)
             plan = dict(scope=intent(req), profile=digest(self.profile), generation=identity, ci=ci,
                         rows=rows, parent=current, nonce=nonce)
             if pending:

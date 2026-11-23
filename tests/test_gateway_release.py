@@ -10,13 +10,13 @@ import runpy
 import sys
 import tempfile
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, call, patch
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "tools/privileged_executor"), str(ROOT / "tools")]
 import gateway_bundle as bundle
-from gateway_admin import Admin
+from gateway_admin import Admin, AdminRequestError
 import gateway_operation as operation
 import mandate
 import store
@@ -149,6 +149,63 @@ class Contract(unittest.TestCase):
             for ident in (".", "..", "x/y"):
                 with self.assertRaisesRegex(mandate.Held, "^GATEWAY_RESOURCE_PATH$"):
                     admin.get(dict(target, id=ident))
+
+    def test_admin_route_list_reads_complete_inventory_under_guard(self):
+        transport = Mock()
+        admin = Admin("127.0.0.1", 9180, "/fixture", SECRET, transport.guard)
+        conn = transport.connection.return_value
+        response = conn.getresponse.return_value
+        routes = {"first": {"uri": "/one"}, "2": {"id": 2, "uris": ["/two"], "update_time": 1}}
+        response.status = 200
+        response.read.return_value = encoded({"total": len(routes), "list": [
+            {"key": f"/apisix/routes/{ident}", "value": value} for ident, value in routes.items()]})
+        with patch("gateway_admin.http.client.HTTPConnection", transport.connection):
+            self.assertEqual(admin.list_routes(), routes)
+            self.assertEqual(transport.mock_calls, [
+                call.guard(), call.connection("127.0.0.1", 9180, timeout=10),
+                call.connection().request("GET", "/fixture/routes", None,
+                                          {"X-API-KEY": SECRET, "Content-Type": "application/json"}),
+                call.connection().getresponse(), call.connection().getresponse().read(bundle.LIMIT + 1),
+                call.guard(), call.connection().close(),
+            ])
+            response.read.return_value = encoded({"total": 0, "list": []})
+            self.assertEqual(admin.list_routes(), {})
+            response.read.return_value = encoded({"total": 1, "list": [
+                {"key": "/fixture-store/routes/first", "value": routes["first"]}]})
+            self.assertEqual(admin.list_routes(), {"first": routes["first"]})
+
+    def test_admin_route_list_requires_200_and_limits_response(self):
+        admin = Admin("127.0.0.1", 9180, "/fixture", SECRET, Mock())
+        with patch("gateway_admin.http.client.HTTPConnection") as factory:
+            response = factory.return_value.getresponse.return_value
+            response.read.return_value = b'{"message":"Key not found"}'
+            for status in (201, 404, 500):
+                with self.subTest(status=status), self.assertRaises(AdminRequestError) as denied:
+                    response.status = status
+                    admin.list_routes()
+                self.assertEqual(denied.exception.status, status)
+            response.status = 200
+            with patch("gateway_admin.LIMIT", 16), self.assertRaisesRegex(mandate.Held, "^GATEWAY_ADMIN_RESPONSE$"):
+                admin.list_routes()
+            response.read.assert_called_with(17)
+
+    def test_admin_route_list_rejects_malformed_or_incomplete_inventory(self):
+        admin = Admin("127.0.0.1", 9180, "/fixture", SECRET, Mock())
+        entry = {"key": "/apisix/routes/live", "value": {"id": "live"}}
+        documents = [None, {"list": []}, {"total": 0, "list": {}}, {"total": True, "list": [entry]},
+                     {"total": 2, "list": [entry]}, {"total": 2, "list": [entry, entry]}]
+        for invalid in (None, {}, dict(entry, key=12), dict(entry, key="/apisix/services/live"),
+                        dict(entry, key="apisix/routes/live"),
+                        dict(entry, key="/apisix/routes/"), dict(entry, key="/apisix/routes/secret~marker"),
+                        dict(entry, value=[]), dict(entry, value={"id": "other"})):
+            documents.append({"total": 1, "list": [invalid]})
+        with patch("gateway_admin.http.client.HTTPConnection") as factory:
+            response = factory.return_value.getresponse.return_value
+            response.status = 200
+            for index, payload in enumerate([b"not JSON", b"\xff", *map(encoded, documents)]):
+                with self.subTest(case=index), self.assertRaisesRegex(mandate.Held, "^GATEWAY_ADMIN_RESOURCE$"):
+                    response.read.return_value = payload
+                    admin.list_routes()
 
     def test_workflow_summary_and_deploy_mandate_agree(self):
         cfg = dict(repositoryId=5, branch="main", commit=REQ["commit"], environmentId=6,
@@ -312,6 +369,9 @@ class MemoryAdmin:
         self.reads.append(key)
         return deepcopy(self.data.get(key))
 
+    def list_routes(self):
+        return {ident: deepcopy(body) for (kind, ident), body in self.data.items() if kind == "routes"}
+
     def write(self, resource, value):
         key = resource["kind"], resource["id"]
         self.writes.append(key)
@@ -351,13 +411,89 @@ class Phases(unittest.TestCase):
         return dict(operation="gateway-release", phase="return", commit=REQ["commit"], run="71",
                     attempt="1", releaseRun=REQ["run"], digest=receipt["digest"])
 
-    def select(self, resources):
-        pair = artifact(resources)
+    def select(self, resources, *, declarations=None):
+        pair = artifact(resources, declarations=declarations)
         self.package.return_value = pair[0], verify(pair)
 
     def new_plan_request(self, run):
         req = dict(REQ, run=run)
         return dict(req, digest=mandate.intent(req))
+
+    def assert_route_conflict(self, req, pairs, remaining=0):
+        with self.assertRaisesRegex(mandate.Held, "^GATEWAY_ROUTE_CONFLICT$") as denied:
+            self.phase(req)
+        self.assertEqual(denied.exception.public_context,
+                         f"owner=gateway residual=no-head conflicts={','.join(pairs)} remaining={remaining}")
+        directory = self.root / req["run"]
+        self.assertEqual(store.read(directory / f"gateway.{req['phase']}.held"),
+                         {"status": "HELD", "reason": "GATEWAY_ROUTE_CONFLICT", "owner": "gateway",
+                          "residual": "no-head"})
+        self.assertFalse((directory / "gateway.snapshot").exists())
+        self.assertFalse((self.root / "gateway-head").exists())
+        self.assertEqual(self.admin.writes, [])
+
+    def test_plan_blocks_route_conflict_on_create(self):
+        self.select([row("routes", "new", {"uri": "/same", "methods": ["GET"]})], declarations=[])
+        self.admin.data["routes", "foreign"] = {"uri": "/same", "methods": ["GET"], "desc": SECRET}
+        self.assert_route_conflict(REQ, ["new~foreign"])
+        self.assertFalse((self.root / REQ["run"] / "gateway.plan").exists())
+
+    def test_plan_blocks_route_conflict_on_update_using_desired_selectors(self):
+        desired = {"uri": "/one", "uris": ["/shared"], "methods": ["GET", "POST"],
+                   "host": "first.invalid", "hosts": ["shared.invalid"], "priority": 1}
+        self.select([row("routes", "one", desired)], declarations=[])
+        self.admin.data["routes", "foreign"] = {
+            "uri": "/shared", "methods": ["POST"], "host": "shared.invalid", "priority": 10, "status": 0,
+            "vars": [["fixture_variable", "==", SECRET]], "filter_func": SECRET,
+        }
+        self.assert_route_conflict(REQ, ["one~foreign"])
+
+    def test_plan_accepts_disjoint_selectors_and_all_bundle_route_ids(self):
+        desired = {"uri": "/a/*", "methods": ["GET"], "hosts": ["one.invalid"]}
+        self.select([row("routes", "one", desired), row("routes", "two", {"uri": "/replacement"})],
+                    declarations=[])
+        self.admin.data["routes", "one"] = dict(desired, desc="before")
+        self.admin.data["routes", "two"] = desired.copy()
+        for index, (name, foreign) in enumerate((
+            ("methods", dict(desired, methods=["POST"])),
+            ("hosts", dict(desired, hosts=["two.invalid"])),
+            ("different_uri", dict(desired, uri="/other")),
+            ("literal_wildcard", dict(desired, uri="/a/b")),
+        ), start=80):
+            with self.subTest(selector=name):
+                self.admin.data["routes", "foreign"] = foreign
+                result = self.phase(self.new_plan_request(str(index)))
+                self.assertEqual(result["counts"], {"create": 0, "update": 1, "unchanged": 1})
+        self.assertEqual(self.admin.writes, [])
+
+    def test_plan_treats_unrestricted_methods_and_hosts_as_all(self):
+        desired = {"uri": "/same", "methods": ["GET"], "host": "one.invalid"}
+        self.select([row("routes", "new", desired)], declarations=[])
+        for index, foreign in enumerate(({"uri": "/same"}, {"uri": "/same", "methods": []}), start=80):
+            with self.subTest(case=index):
+                self.admin.data["routes", "foreign"] = foreign
+                self.assert_route_conflict(self.new_plan_request(str(index)), ["new~foreign"])
+
+    def test_plan_reports_at_most_ten_route_conflict_pairs(self):
+        desired = {"uri": "/same", "desc": SECRET}
+        self.select([row("routes", "new", dict(desired, desc=MARKER))])
+        for index in reversed(range(12)):
+            self.admin.data["routes", f"live-{index:02}"] = desired.copy()
+        self.assert_route_conflict(REQ, [f"new~live-{index:02}" for index in range(10)], remaining=2)
+
+    def test_apply_blocks_route_added_after_plan_before_any_write(self):
+        req = self.plan()
+        self.admin.data["routes", "late"] = {"uri": "/new", "methods": ["GET"]}
+        self.assert_route_conflict(req, ["one~late"])
+
+    def test_return_restores_previous_route_without_reading_inventory(self):
+        receipt = self.phase(self.plan())
+        late = {"uri": "/old", "methods": ["GET"]}
+        self.admin.data["routes", "late"] = late.copy()
+        with patch.object(self.admin, "list_routes") as inventory:
+            self.assertEqual(self.phase(self.return_req(receipt))["status"], "RETURNED")
+            inventory.assert_not_called()
+        self.assertEqual(self.admin.data, self.before | {("routes", "late"): late})
 
     def test_plan_changes_and_summary_show_only_changed_paths_in_bundle_order(self):
         desired = deepcopy(ROWS)
@@ -385,6 +521,7 @@ class Phases(unittest.TestCase):
 
     def test_plan_digest_matches_original_snapshot_contract(self):
         nonce = "e" * 64
+        self.admin.data["routes", "unrelated"] = {"uri": "/elsewhere"}
         with patch.object(operation.secrets, "token_hex", return_value=nonce):
             planned = self.phase(REQ)
         ci, resources = self.package.return_value
@@ -395,6 +532,8 @@ class Phases(unittest.TestCase):
                         ci=ci, rows=rows, parent=None, nonce=nonce)
         self.assertEqual(store.read(self.root/"70/gateway.plan"), original)
         self.assertEqual(planned["digest"], sha(encoded(original)))
+        self.admin.data["routes", "unrelated"]["uri"] = "/still-unrelated"
+        self.assertEqual(self.phase(dict(REQ, phase="apply", digest=planned["digest"]))["status"], "APPLIED")
 
     def test_path_limit_and_quoted_keys_in_summary(self):
         key = "a: `|b"

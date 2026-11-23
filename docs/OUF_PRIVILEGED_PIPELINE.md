@@ -200,6 +200,10 @@ I vecchi lock privi di un collegamento dimostrabile al plan e i claim CREATE pri
 
 La readiness della transazione Gateway consiste nella rilettura Admin API di tutte le risorse della release, sotto guardia di generazione. Il ritorno verifica anche l'assenza per le risorse create. I corpi e gli eventuali valori opachi restano nel journal privato.
 
+Per il rilascio governato del Gateway (D-081), `plan` e `apply` leggono l'inventario completo delle rotte APISIX dopo i GET per ID. Il confronto usa le URI letterali, compresi eventuali caratteri jolly, e richiede che anche metodi e host si intersechino. Metodi assenti o vuoti e host assenti ammettono qualsiasi valore. Il confronto prescinde da `vars`, `priority`, `status` e `filter_func`.
+
+Una sovrapposizione tra una rotta desiderata e una rotta con ID estraneo al bundle interrompe la fase con `GATEWAY_ROUTE_CONFLICT` prima di ogni scrittura su APISIX. Il contesto pubblico contiene fino a dieci coppie `idBundle~idEsercizio` e il conteggio delle altre. L'inventario resta fuori dal digest del plan. `return` ripristina lo snapshot precedente senza questo controllo.
+
 | Fase, claim → effetto → ricezione | Dopo il claim | Dopo l'effetto, prima della ricevuta | Dopo la ricevuta |
 |---|---|---|---|
 | Plan · prenotazione run → verifica bundle e GET di ogni risorsa → `gateway.plan.review`, `gateway.plan` | Nuovo plan | Ripete le letture, verifica generazione, package e stato rispetto a prima/dopo | Snapshot approvabile con nonce, parent e digest |
