@@ -202,7 +202,11 @@ La readiness della transazione Gateway consiste nella rilettura Admin API di tut
 
 Per il rilascio governato del Gateway (D-081), `plan` e `apply` leggono l'inventario completo delle rotte APISIX dopo i GET per ID. Il confronto usa le URI letterali, compresi eventuali caratteri jolly, e richiede che anche metodi e host si intersechino. Metodi assenti o vuoti e host assenti ammettono qualsiasi valore. Il confronto prescinde da `vars`, `priority`, `status` e `filter_func`.
 
-Una sovrapposizione tra una rotta desiderata e una rotta con ID estraneo al bundle interrompe la fase con `GATEWAY_ROUTE_CONFLICT` prima di ogni scrittura su APISIX. Il contesto pubblico contiene fino a dieci coppie `idBundle~idEsercizio` e il conteggio delle altre. L'inventario resta fuori dal digest del plan. `return` ripristina lo snapshot precedente senza questo controllo.
+I bundle e i manifest v2 aggiungono `retiredSha256`, il digest del JSON canonico di `retired`. Il bundle elenca in `retired` soltanto rotte, con ID univoci ordinati e distinti dagli ID delle risorse. Ogni voce indica in `supersededBy` l'ID di una rotta desiderata nello stesso bundle. La v1 equivale a una lista di rimozioni vuota e conserva il formato del plan e il relativo digest.
+
+La rotta da rimuovere viene letta per ID. Se presente, deve sovrapporsi alla sostitutiva secondo le regole sopra e avere gli stessi `vars` in JSON canonico. Altrimenti la fase si ferma con `GATEWAY_RETIRE_MISMATCH` e la coppia di ID. Le rotte con azione `delete` sono escluse dal controllo delle rotte non gestite. Una sovrapposizione con un'altra rotta non gestita interrompe la fase con `GATEWAY_ROUTE_CONFLICT` prima di ogni scrittura su APISIX. Il contesto pubblico contiene fino a dieci coppie `idBundle~idEsercizio` e il conteggio delle altre. L'inventario resta fuori dal digest del plan.
+
+Il plan v2 mostra quante rotte sono da rimuovere, la sostitutiva di ciascuna e quali rotte sono già assenti. `apply` ricalcola le righe e verifica il digest approvato. Dopo creazioni e aggiornamenti, esegue `DELETE` per ogni rimozione e ne rilegge l'assenza. `return` e compensazione ricreano le rotte rimosse con il corpo `before` del journal e lo verificano con una rilettura esatta. La ripresa da `PENDING` riconcilia ogni rimozione con l'assenza o con il corpo precedente conservato nello snapshot e mantiene la baseline per il ritorno.
 
 | Fase, claim → effetto → ricezione | Dopo il claim | Dopo l'effetto, prima della ricevuta | Dopo la ricevuta |
 |---|---|---|---|
@@ -215,6 +219,16 @@ Una sovrapposizione tra una rotta desiderata e una rotta con ID estraneo al bund
 | Perdita dopo la ricevuta finale e prima della testa | La ricevuta resta immutabile | Finché la testa è PENDING, il nuovo plan riconcilia le risorse sulla stessa generazione | Dopo la pubblicazione la testa determina la transizione disponibile |
 
 La compensazione di un apply di recupero riporta al punto di partenza di quell'apply. Il ritorno approvato di una release recuperata usa la baseline completa autenticata da `returnBaseline`. Il diniego pubblico riporta `owner=gateway`, stato della testa e, se disponibile, l'ultima risorsa reclamata e la presenza della sua rilettura registrata. Gli errori inattesi di moduli e Gateway riportano tipo, basename del file e riga. [Transizioni Gateway](../tools/privileged_executor/gateway_operation.py) · [Prova di interruzione APISIX](../tests/test_gateway_release_native.py)
+
+Nel PET del rilascio governato del Gateway (D-081, D-082), `Phases.test_plan_digest_matches_original_snapshot_contract` verifica il digest v1 e `PublishedBundle.test_verified_fixture_has_seven_plugin_routes_and_integer_ports` verifica la fixture del publisher.
+
+| Verifica | ID dei test |
+|---|---|
+| Bundle e manifest | `Contract.test_v2_bundle_binds_retirements_and_preserves_resources`, `Contract.test_v2_bundle_rejects_malformed_retired` |
+| Rimozione, ritorno, assenza e annotazioni | `Phases.test_v2_deletes_after_updates_and_return_restores_exact_body`, `Phases.test_v2_requires_absence_after_delete_ack`, `Phases.test_v2_absent_retirement_is_visible_and_never_written`, `Phases.test_v2_plan_reports_retirements_in_summary_and_annotation` |
+| Selettori e `vars`, deriva tra plan e apply, conflitto estraneo | `Phases.test_v2_retirement_rejects_disjoint_selectors_and_different_vars`, `Phases.test_v2_apply_rechecks_retirement_before_any_writes`, `Phases.test_v2_keeps_conflict_for_undeclared_legacy_route` |
+| Compensazione e ripresa | `Phases.test_v2_failed_second_delete_compensates_first_delete`, `Phases.test_v2_pending_apply_resumes_after_delete_and_keeps_return_baseline`, `Phases.test_v2_pending_return_redeletes_restored_route_on_recovery` |
+| Rilettura nell'APISIX usa e getta | `NativeRelease.test_v2_delete_and_return_on_apisix` (`OUF_GATEWAY_RELEASE_NATIVE=1`) |
 
 ## Rilascio di UDP e Ingestion
 

@@ -1,4 +1,4 @@
-"""Gateway v1 publisher contract. Only verified canonical bytes reach the planner."""
+"""Gateway publisher contract. Only verified canonical bytes reach the planner."""
 import hashlib
 import http.client
 import io
@@ -68,8 +68,12 @@ def verify(raw, ci, values):
         need(archive.read("SHA256SUMS") == sums.encode("ascii"), "GATEWAY_CHECKSUMS")
     bundle, manifest = json.loads(bundle_raw), json.loads(manifest_raw)
     need(canonical(bundle) == bundle_raw and canonical(manifest) == manifest_raw, "GATEWAY_CANONICAL_JSON")
-    need(fields(bundle, "schema sourceRepository sourceCommit resources placeholders resourcesSha256")
-         and bundle["schema"] == "ouf.gateway-release-bundle.v1"
+    v2 = type(bundle) is dict and bundle.get("schema") == "ouf.gateway-release-bundle.v2"
+    version = "v2" if v2 else "v1"
+    names = "schema sourceRepository sourceCommit resources placeholders resourcesSha256"
+    if v2:
+        names += " retired retiredSha256"
+    need(fields(bundle, names) and bundle["schema"] == f"ouf.gateway-release-bundle.{version}"
          and bundle["sourceRepository"] == ci["repository"] and bundle["sourceCommit"] == ci["sourceCommit"],
          "GATEWAY_BUNDLE_SCHEMA")
     resources, declarations = bundle["resources"], bundle["placeholders"]
@@ -80,11 +84,16 @@ def verify(raw, ci, values):
         need(fields(item, "name type") and matches(NAME, item["name"])
              and item["name"] not in types and item["type"] in ("string", "url", "secret", "integer"), "GATEWAY_DECLARATION")
         types[item["name"]] = item["type"]
-    need(list(types) == sorted(types) and manifest == {
-        "schema": "ouf.gateway-release-manifest.v1", "sourceRepository": ci["repository"],
+    expected_manifest = {
+        "schema": f"ouf.gateway-release-manifest.{version}", "sourceRepository": ci["repository"],
         "sourceCommit": ci["sourceCommit"], "workflowPath": ".github/workflows/" + ci["workflow"],
         "runId": str(ci["runId"]), "bundleSha256": sha(bundle_raw), "resourcesSha256": digest(resources),
-        "placeholders": list(types)}, "GATEWAY_MANIFEST")
+        "placeholders": list(types)}
+    if v2:
+        retired = bundle["retired"]
+        need(type(retired) is list and digest(retired) == bundle["retiredSha256"], "GATEWAY_RETIRED")
+        expected_manifest["retiredSha256"] = bundle["retiredSha256"]
+    need(list(types) == sorted(types) and manifest == expected_manifest, "GATEWAY_MANIFEST")
     result, used = [], set()
     previous = (-1, "")
     for row in resources:
@@ -97,7 +106,25 @@ def verify(raw, ci, values):
         previous = key
         result.append({**row, "body": substitute(row["body"], types, values, used)})
     need(used == set(types), "GATEWAY_UNUSED_PLACEHOLDER")
-    return result
+    verified = {"resources": result}
+    if v2:
+        resource_ids = {row["id"] for row in result}
+        route_ids = {row["id"] for row in result if row["kind"] == "routes"}
+        previous_id = ""
+        for entry in retired:
+            # The literal APISIX vars of the live route to delete: equivalent regexes can differ in text.
+            conditions = entry.get("vars") if type(entry) is dict else None
+            need(type(conditions) is list and conditions
+                 and all(type(c) is list and c and all(isinstance(x, str) for x in c) for c in conditions),
+                 "GATEWAY_RETIRED")
+            need(fields(entry, "kind id supersededBy vars") and entry["kind"] == "routes"
+                 and matches(ID, entry["id"]) and entry["id"] not in (".", "..")
+                 and entry["id"] > previous_id and entry["id"] not in resource_ids
+                 and matches(ID, entry["supersededBy"]) and entry["supersededBy"] in route_ids,
+                 "GATEWAY_RETIRED")
+            previous_id = entry["id"]
+        verified["retired"] = retired
+    return verified
 
 
 def download(ci, token):

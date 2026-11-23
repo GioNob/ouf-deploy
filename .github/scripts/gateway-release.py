@@ -13,7 +13,9 @@ from gateway_policy import ID, KINDS, MAX_CHANGE_PATHS, match
 from mandate import hex64, intent, validate
 
 
-ACTIONS = {"create": "nuova", "update": "modificata", "unchanged": "invariata"}
+RESOURCE_ACTIONS = {"create": "nuova", "update": "modificata", "unchanged": "invariata"}
+RETIRE_ACTIONS = {"delete": "da rimuovere", "absent": "già assente"}
+ACTIONS = RESOURCE_ACTIONS | RETIRE_ACTIONS
 # field_differences uses dot names, list indices, and JSON-quoted map keys.
 NAME = r"[A-Za-z0-9_-]+"
 STRING = r'"(?:[\x20-\x21\x23-\x5b\x5d-\x7e]|\\(?:["\\bfnrt]|u[0-9a-f]{4}))*"'
@@ -44,10 +46,13 @@ def path_cell(paths):
 def changes_table(changes, counts):
     if not isinstance(changes, list):
         raise ValueError
-    tally = dict.fromkeys(ACTIONS, 0)
+    tally = dict.fromkeys(RESOURCE_ACTIONS, 0)
+    if "delete" in counts:
+        tally["delete"] = 0
     lines = ["| Risorsa | Azione | Campi che cambiano |", "|---|---|---|"]
     resources = []
-    previous = (-1, "")
+    previous = (False, -1, "")
+    managed_ids, route_ids = set(), set()
     for change in changes:
         if not isinstance(change, dict):
             raise ValueError
@@ -57,15 +62,30 @@ def changes_table(changes, counts):
         fields = {"kind", "id", "action"}
         if action == "update":
             fields.add("paths")
-        key = KINDS.index(kind), ident
+        retired = action in RETIRE_ACTIONS
+        if retired and ("delete" not in counts or kind != "routes" or ident in managed_ids):
+            raise ValueError
+        if action == "delete":
+            fields.add("supersededBy")
+            if not match(ID, change["supersededBy"]) or change["supersededBy"] not in route_ids:
+                raise ValueError
+        key = retired, KINDS.index(kind), ident
         if set(change) != fields or key <= previous:
             raise ValueError
         previous = key
-        tally[action] += 1
+        if not retired:
+            managed_ids.add(ident)
+            if kind == "routes":
+                route_ids.add(ident)
+        if action in tally:
+            tally[action] += 1
         paths = path_cell(change["paths"]) if action == "update" else "—"
+        label = ACTIONS[action]
+        if action == "delete":
+            label += f" (sostituita da {change['supersededBy']})"
         detail = " (" + ", ".join(change["paths"]) + ")" if action == "update" else ""
-        resources.append(f"{kind}/{ident}: {ACTIONS[action]}{detail}")
-        lines.append(f"| `{kind}/{ident}` | {ACTIONS[action]} | {paths} |")
+        resources.append(f"{kind}/{ident}: {label}{detail}")
+        lines.append(f"| `{kind}/{ident}` | {label} | {paths} |")
     if tally != counts:
         raise ValueError
     return "\n".join(lines), resources
@@ -110,12 +130,17 @@ def main():
                 facts.append(f"Le risorse corrispondono allo stato precedente o successivo del run sospeso {result['recoveringRun']}.")
                 summary.append(f"Live resources match the before or after state of pending run {result['recoveringRun']}.")
             counts = result["counts"]
-            for key in ACTIONS:
+            count_keys = list(RESOURCE_ACTIONS)
+            count_line = "Risorse: {create} nuove, {update} modificate, {unchanged} invariate"
+            if "delete" in counts:
+                count_keys.append("delete")
+                count_line += ", {delete} da rimuovere"
+            for key in count_keys:
                 if type(counts[key]) is not int or counts[key] < 0:
                     raise ValueError
                 summary.append(f"{key} {counts[key]}")
-            facts.append("Risorse: {create} nuove, {update} modificate, {unchanged} invariate".format(**counts))
-            if "changes" in result:
+            facts.append(count_line.format(**counts))
+            if "changes" in result or "delete" in counts:
                 table, resources = changes_table(result["changes"], counts)
                 summary.append(table)
                 facts.extend(resources)
