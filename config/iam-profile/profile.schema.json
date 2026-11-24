@@ -1,0 +1,470 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ouf.iam-profile.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "kind",
+    "installationId",
+    "providerId",
+    "trust",
+    "clients",
+    "grant",
+    "capacity",
+    "session",
+    "iam",
+    "pools"
+  ],
+  "properties": {
+    "contract": {
+      "const": "ouf.iam-profile.v1"
+    },
+    "kind": {
+      "enum": [
+        "keycloak-ouf",
+        "existing-iam"
+      ]
+    },
+    "installationId": {
+      "$ref": "#/$defs/id"
+    },
+    "providerId": {
+      "$ref": "#/$defs/id"
+    },
+    "trust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer",
+        "introspection",
+        "jwks",
+        "decisions",
+        "gatewayOrigin",
+        "caRef",
+        "gatewayAudience"
+      ],
+      "properties": {
+        "issuer": {
+          "$ref": "#/$defs/https"
+        },
+        "introspection": {
+          "$ref": "#/$defs/https"
+        },
+        "jwks": {
+          "$ref": "#/$defs/https"
+        },
+        "decisions": {
+          "$ref": "#/$defs/https"
+        },
+        "gatewayOrigin": {
+          "$ref": "#/$defs/https"
+        },
+        "caRef": {
+          "$ref": "#/$defs/reference"
+        },
+        "gatewayAudience": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "clients": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mcp",
+        "ths"
+      ],
+      "properties": {
+        "mcp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "clientId",
+            "secretRef",
+            "actor",
+            "audience",
+            "scopes",
+            "mappers"
+          ],
+          "properties": {
+            "clientId": {
+              "$ref": "#/$defs/id"
+            },
+            "secretRef": {
+              "$ref": "#/$defs/reference"
+            },
+            "actor": {
+              "const": "SERVICE"
+            },
+            "audience": {
+              "$ref": "#/$defs/id"
+            },
+            "scopes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/scope"
+              },
+              "uniqueItems": true,
+              "minItems": 1,
+              "contains": {
+                "const": "ouf.analysis.mandate.renewal-check"
+              },
+              "maxItems": 5
+            },
+            "mappers": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "client_id",
+                "acr",
+                "tenant_id",
+                "sub",
+                "aud",
+                "ouf_actor_type"
+              ],
+              "properties": {
+                "client_id": {
+                  "const": "authenticated-client"
+                },
+                "acr": {
+                  "const": "authentication-context"
+                },
+                "tenant_id": {
+                  "const": "verified-tenant"
+                },
+                "sub": {
+                  "const": "authenticated-subject"
+                },
+                "aud": {
+                  "const": "gateway-audience"
+                },
+                "ouf_actor_type": {
+                  "const": "actor-type"
+                }
+              }
+            }
+          }
+        },
+        "ths": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "clientId",
+            "secretRef",
+            "actor",
+            "audience",
+            "scopes",
+            "mappers"
+          ],
+          "properties": {
+            "clientId": {
+              "$ref": "#/$defs/id"
+            },
+            "secretRef": {
+              "$ref": "#/$defs/reference"
+            },
+            "actor": {
+              "const": "HUMAN"
+            },
+            "audience": {
+              "$ref": "#/$defs/id"
+            },
+            "scopes": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "ouf.analysis.renewal.read",
+                  "ouf.analysis.renewal.decide"
+                ]
+              },
+              "uniqueItems": true,
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "mappers": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "client_id",
+                "acr",
+                "tenant_id",
+                "sub",
+                "aud",
+                "ouf_actor_type"
+              ],
+              "properties": {
+                "client_id": {
+                  "const": "authenticated-client"
+                },
+                "acr": {
+                  "const": "authentication-context"
+                },
+                "tenant_id": {
+                  "const": "verified-tenant"
+                },
+                "sub": {
+                  "const": "authenticated-subject"
+                },
+                "aud": {
+                  "const": "gateway-audience"
+                },
+                "ouf_actor_type": {
+                  "const": "actor-type"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mechanism",
+        "resourceType",
+        "grantRef",
+        "lookup",
+        "revocation",
+        "revocationTtlSeconds",
+        "decisionContract",
+        "introspectionProtocol"
+      ],
+      "properties": {
+        "mechanism": {
+          "const": "authorization-resource"
+        },
+        "resourceType": {
+          "$ref": "#/$defs/id"
+        },
+        "grantRef": {
+          "const": "iam-resource-id"
+        },
+        "lookup": {
+          "const": "current-resource-permission"
+        },
+        "revocation": {
+          "const": "withdraw-permission-and-invalidate-assignment-credential"
+        },
+        "revocationTtlSeconds": {
+          "$ref": "#/$defs/limit"
+        },
+        "decisionContract": {
+          "const": "ouf.analysis.authority-check.v1"
+        },
+        "introspectionProtocol": {
+          "const": "RFC7662"
+        }
+      }
+    },
+    "capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ActivePlans",
+        "ProviderSlots",
+        "InstallationActivePlans",
+        "InstallationProviderInFlight",
+        "ControlReservedSlots"
+      ],
+      "properties": {
+        "ActivePlans": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1,
+          "default": 1
+        },
+        "ProviderSlots": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1,
+          "default": 1
+        },
+        "InstallationActivePlans": {
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 4,
+          "default": 4
+        },
+        "InstallationProviderInFlight": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1,
+          "default": 1
+        },
+        "ControlReservedSlots": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 2,
+          "default": 2
+        }
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Calls",
+        "Attempts",
+        "Objects",
+        "Bytes",
+        "Millis",
+        "absoluteSeconds",
+        "attemptsPerIntent",
+        "publicWaitSeconds"
+      ],
+      "properties": {
+        "Calls": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096,
+          "default": 4096
+        },
+        "Attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096,
+          "default": 4096
+        },
+        "Objects": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 409600,
+          "default": 409600
+        },
+        "Bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864,
+          "default": 67108864
+        },
+        "Millis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600000,
+          "default": 3600000
+        },
+        "absoluteSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 86400,
+          "default": 86400
+        },
+        "attemptsPerIntent": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128,
+          "default": 128
+        },
+        "publicWaitSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600,
+          "default": 3600
+        }
+      }
+    },
+    "iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "introspectionsPerMinute",
+        "decisionsPerMinute"
+      ],
+      "properties": {
+        "introspectionsPerMinute": {
+          "$ref": "#/$defs/limit"
+        },
+        "decisionsPerMinute": {
+          "$ref": "#/$defs/limit"
+        }
+      }
+    },
+    "pools": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Gateway",
+        "MCP",
+        "DB",
+        "Semantic"
+      ],
+      "properties": {
+        "Gateway": {
+          "$ref": "#/$defs/pool"
+        },
+        "MCP": {
+          "$ref": "#/$defs/pool"
+        },
+        "DB": {
+          "$ref": "#/$defs/pool"
+        },
+        "Semantic": {
+          "$ref": "#/$defs/pool"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+    },
+    "scope": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+    },
+    "reference": {
+      "type": "string",
+      "pattern": "^ref:[A-Za-z0-9][A-Za-z0-9_./-]*$"
+    },
+    "https": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "limit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "default",
+        "maximum"
+      ],
+      "properties": {
+        "value": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "default": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maximum": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "pool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dataSlots",
+        "controlReservedSlots"
+      ],
+      "properties": {
+        "dataSlots": {
+          "$ref": "#/$defs/limit"
+        },
+        "controlReservedSlots": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 2,
+          "default": 2
+        }
+      }
+    }
+  }
+}
