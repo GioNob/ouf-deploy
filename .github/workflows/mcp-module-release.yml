@@ -2,6 +2,10 @@ name: Governed MCP release
 on:
   workflow_dispatch:
     inputs:
+      retention_plan:
+        description: SHA-256 del piano MCP corrente per riconciliare la retention interrotta
+        type: string
+        required: false
       return_plan:
         description: SHA-256 del plan READY da ritirare (vuoto per il rilascio)
         type: string
@@ -25,6 +29,7 @@ jobs:
       - id: intent
         env:
           RETURN_PLAN: ${{ inputs.return_plan }}
+          RETENTION_PLAN: ${{ inputs.retention_plan }}
         shell: bash
         run: |
           /usr/bin/python3 -I - <<'PY'
@@ -34,18 +39,28 @@ jobs:
                        operation="module-release", module=e["MODULE"])
           digest = hashlib.sha256(json.dumps(scope, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
           phase = "plan"
+          if e["RETENTION_PLAN"]:
+              digest = e["RETENTION_PLAN"]
+              if e["RETURN_PLAN"] or not re.fullmatch("[0-9a-f]{64}", digest):
+                  raise SystemExit("INVALID_RETENTION_PLAN")
+              phase = "mcp-retention-admin-019"
           if e["RETURN_PLAN"]:
               digest = e["RETURN_PLAN"]
               if not re.fullmatch("[0-9a-f]{64}", digest):
                   raise SystemExit("INVALID_RETURN_PLAN")
               phase = "rollback"
           with open(e["GITHUB_STEP_SUMMARY"], "a") as f:
+              if phase == "mcp-retention-admin-019":
+                  facts = [f"Job {phase} {digest}", "Ripresa della fase amministrativa di retention 019 per il piano indicato.",
+                           "Verifica delle due funzioni, del proprietario e dei permessi sul database del piano."]
+                  print(f"**Cosa approvi con il job {phase}**", "", *facts, "", sep=chr(10), file=f)
+                  print(f"::notice title=Da approvare: {phase}::" + "%0A".join(facts))
               if phase == "rollback":
                   facts = [f"Modulo {e['MODULE']}", f"Ritorno al predecessore del piano {digest}"]
                   print("**Cosa approvi con il job rollback**", "", *facts, "", sep=chr(10), file=f)
                   print("::notice title=Da approvare: rollback::" + "%0A".join(facts))
               print(f"Job `{phase} {digest}`", file=f)
-              if phase == "rollback":
+              if phase in ("rollback", "mcp-retention-admin-019"):
                   print("Approvare il job (nessun commento richiesto)", file=f)
           with open(e["GITHUB_OUTPUT"], "a") as f:
               print("digest=" + digest, file=f)
@@ -54,7 +69,7 @@ jobs:
   plan:
     name: plan ${{ needs.intent.outputs.digest }}
     needs: intent
-    if: inputs.return_plan == ''
+    if: inputs.return_plan == '' && inputs.retention_plan == ''
     runs-on: &vps [self-hosted, Linux, X64, ouf-vps-test]
     permissions: {contents: read, actions: read, deployments: read}
     timeout-minutes: 40
@@ -64,17 +79,21 @@ jobs:
     outputs:
       digest: ${{ steps.call.outputs.digest }}
       migrations: ${{ steps.call.outputs.migrations }}
+      retention: ${{ steps.call.outputs.retention }}
     steps:
       - &client
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-          sparse-checkout: .github/scripts
-      - &invoke
+          sparse-checkout: |
+            /.github/scripts/
+            /scripts/mcp-retention-release.py
+          sparse-checkout-cone-mode: false
+      - &retention-client
         id: call
         env:
           REVIEW_TOKEN: ${{ github.token }}
-        run: /usr/bin/python3 -I -B .github/scripts/module-release.py
+        run: /usr/bin/python3 -I -B scripts/mcp-retention-release.py
 
   apply:
     name: apply ${{ needs.plan.outputs.digest }}
@@ -92,7 +111,11 @@ jobs:
       digest: ${{ steps.call.outputs.digest }}
     steps:
       - *client
-      - *invoke
+      - &invoke
+        id: call
+        env:
+          REVIEW_TOKEN: ${{ github.token }}
+        run: /usr/bin/python3 -I -B .github/scripts/module-release.py
 
   migrate:
     if: needs.apply.outputs.status == 'GATED'
@@ -105,9 +128,48 @@ jobs:
     env:
       PHASE: migrate
       DIGEST: ${{ needs.apply.outputs.digest }}
+    outputs:
+      digest: ${{ steps.call.outputs.digest }}
     steps:
       - *client
       - *invoke
+
+  mcp-retention-admin-019:
+    needs: [intent, plan, apply, migrate]
+    if: >-
+      always() && !cancelled() && needs.intent.result == 'success' &&
+      (inputs.retention_plan != '' ||
+       (needs.plan.outputs.retention == 'true' && needs.apply.result == 'success' &&
+        (needs.migrate.result == 'success' || needs.apply.outputs.status == 'READY')))
+    name: mcp-retention-admin-019 ${{ inputs.retention_plan || needs.migrate.outputs.digest || needs.apply.outputs.digest }}
+    runs-on: *vps
+    environment: ouf-vps-privileged
+    permissions: {contents: read, actions: read, deployments: read}
+    timeout-minutes: 40
+    env:
+      PHASE: mcp-retention-admin-019
+      DIGEST: ${{ inputs.retention_plan || needs.migrate.outputs.digest || needs.apply.outputs.digest }}
+    outputs:
+      digest: ${{ steps.call.outputs.digest }}
+      status: ${{ steps.call.outputs.status }}
+    steps:
+      - *client
+      - *retention-client
+
+  analysis-retention-once:
+    needs: mcp-retention-admin-019
+    if: always() && !cancelled() && needs.mcp-retention-admin-019.result == 'success' && needs.mcp-retention-admin-019.outputs.status == 'VERIFIED'
+    name: analysis-retention-once ${{ needs.mcp-retention-admin-019.outputs.digest }}
+    runs-on: *vps
+    environment: ouf-vps-privileged
+    permissions: {contents: read, actions: read, deployments: read}
+    timeout-minutes: 40
+    env:
+      PHASE: analysis-retention-once
+      DIGEST: ${{ needs.mcp-retention-admin-019.outputs.digest }}
+    steps:
+      - *client
+      - *retention-client
 
   rollback:
     name: rollback ${{ needs.intent.outputs.digest }}

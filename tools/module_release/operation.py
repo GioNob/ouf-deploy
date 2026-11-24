@@ -89,6 +89,10 @@ def observe(p, rt, previous_release=None):
                     migrations=migration["migrations"], migrationsSha256=digest(migration["migrations"]))
         if migration["migrations"]:
             body["targetSchemaSha256"] = migration["targetSchemaSha256"]
+        if "retentionAdmin019" in migration:
+            from . import retention
+            reference, _ = retention.catalog(rt, old)
+            body[retention.ADMIN] = retention.binding(p, reference)
     if "artifactPrefix" in p["ci"]:
         body["ci"]["artifactPrefix"] = p["ci"]["artifactPrefix"]
     if "flyway" in p["migration"]:
@@ -388,10 +392,14 @@ def restore(p, rt, old, new, root):
     return release(p, rt, old, cid, root, restoring=True)["readyHttp"]
 
 
-def verify_never_started(p, rt, old, doc, root):
+def never_started(doc):
     state = doc["State"]
-    require(state["Status"] == "created" and not state["Running"] and state["Pid"] == 0 and doc["RestartCount"] == 0
-            and state["StartedAt"] == state["FinishedAt"] == "0001-01-01T00:00:00Z"
+    return (state["Status"] == "created" and state.get("Running") is False and state.get("Pid") == 0
+            and doc["RestartCount"] == 0 and state.get("StartedAt") == state.get("FinishedAt") == "0001-01-01T00:00:00Z")
+
+
+def verify_never_started(p, rt, old, doc, root):
+    require(never_started(doc)
             and not any((root / f).exists() for f in ("start-generation.json", "migration-plan.json", "release-signal.json")),
             "NEVER_STARTED_UNPROVEN")
     image = p["ci"]["imageId"]

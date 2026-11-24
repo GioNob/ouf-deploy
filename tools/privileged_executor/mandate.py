@@ -40,6 +40,8 @@ def validate(req, policy):
     if req.get("operation") == "module-release":
         need(set(req) == common | {"operation", "module"} and isinstance(req["module"], str)
              and req["module"] in policy["modules"] and (req["phase"] in ("plan", "apply", "migrate")
+             or (req["module"] == "mcp" and req["phase"] in ("mcp-retention-admin-019", "analysis-retention-once")
+                 and "retentionAdmin019" in policy["modules"]["mcp"]["migration"])
              or (req["phase"] == "rollback" and {"database", "flyway"}.intersection(
                  policy["modules"][req["module"]]["migration"]))),
              "MODULE_REQUEST_SCOPE")

@@ -166,6 +166,26 @@ def validate(p):
                 for i, item in enumerate(items, db["version"] + 1)), "INVALID_MIGRATION_LIST")
         require(migration["mode"] == ("dedicated" if items else "none")
                 and (not items or matches(SHA, migration.get("targetSchemaSha256"))), "MIGRATION_MODE_MISMATCH")
+        if p["module"] == "mcp" and db["version"] + len(items) >= 19:
+            require("retentionAdmin019" in migration, "RETENTION_PROFILE_REQUIRED")
+    if "retentionAdmin019" in migration:
+        spec = migration["retentionAdmin019"]
+        require(p["module"] == "mcp" and ci.get("publisherFormat") == "acquisition-mcp"
+                and db["version"] + len(items) >= 19
+                and isinstance(spec, dict) and spec.keys() - {"adminUrlEnv", "maintenanceUrlEnv"} == {
+                    "functionName", "functionSha256", "sqlSha256", "ownerAclSha256",
+                    "adminRole", "maintenanceRole", "maintenanceLogin", "adminPassfile", "maintenancePassfile"}
+                and all(matches(SHA, spec[k]) for k in ("sqlSha256", "ownerAclSha256", "functionSha256"))
+                and spec["functionName"] == "purge_analysis_run_history"
+                and all(matches(r"[a-z_][a-z0-9_]{0,62}", spec[k])
+                        for k in ("functionName", "adminRole", "maintenanceRole", "maintenanceLogin"))
+                and spec["maintenanceLogin"] not in (spec["adminRole"], "ouf_mcp_retention_owner")
+                and all(matches(r"[A-Z_][A-Z_0-9]*", spec[key]) and spec[key] != "PGPASSFILE"
+                        for key in ("adminUrlEnv", "maintenanceUrlEnv") if key in spec)
+                and len({spec["adminRole"], spec["maintenanceRole"], "ouf_mcp_retention_owner"}) == 3
+                and all(Path(spec[k]).is_absolute() and ".." not in Path(spec[k]).parts
+                        for k in ("adminPassfile", "maintenancePassfile"))
+                and spec["adminPassfile"] != spec["maintenancePassfile"], "INVALID_RETENTION_PROFILE")
 
 
 def jar_name(command):
