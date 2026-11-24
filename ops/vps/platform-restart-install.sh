@@ -3,7 +3,7 @@
 set -euo pipefail
 umask 077
 # Claude fills this delivery commit after review (D-001).
-C=62ab51544e32f22ca69d2992695fb2415ab0a108
+C=f04d9903dfed84503d8f440909cec1765a81229a
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] ||
   { echo 'Pin della consegna mancante' >&2; exit 2; }
 [[ $EUID == 0 && ${OUF_PYTHON:?absolute Python 3.13 executable} == /* ]]
