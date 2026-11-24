@@ -3,6 +3,7 @@ import argparse
 import http.client
 import sys
 
+from .kcadm import kcadm_plan
 from .plan import gate, plan, receipt
 from .profile import Invalid, canonical, materialize, read_json, require, validate
 from .qualify import LiveProbe, operator_signal, qualify
@@ -10,7 +11,7 @@ from .qualify import LiveProbe, operator_signal, qualify
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("validate", "plan", "receipt", "gate", "qualify"))
+    parser.add_argument("action", choices=("validate", "plan", "kcadm-plan", "receipt", "gate", "qualify"))
     parser.add_argument("profile")
     parser.add_argument("snapshot")
     parser.add_argument("evidence", nargs="?", help="receipt for gate or private probe settings for qualify")
@@ -27,6 +28,9 @@ def main():
             result = gate(profile, snapshot, evidence)
         elif args.action == "receipt":
             result = receipt(profile, snapshot)
+        elif args.action == "kcadm-plan":
+            sys.stdout.buffer.write(kcadm_plan(profile, snapshot).encode("utf-8"))
+            return 0
         elif args.action == "plan":
             result = plan(profile, snapshot)
         elif args.action == "validate":

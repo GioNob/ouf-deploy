@@ -5,10 +5,10 @@
   "gatewayBindings": {
     "gatewayAudience": "gateway.invalid",
     "scopeByAction": {
-      "issue": "fixture.issue",
-      "dispatch": "fixture.dispatch",
-      "revoke": "fixture.revoke",
-      "status": "fixture.status"
+      "issue": "ouf.analysis.mandate.issue",
+      "dispatch": "ouf.analysis.mandate.dispatch",
+      "revoke": "ouf.analysis.mandate.revoke",
+      "status": "ouf.analysis.mandate.status"
     }
   },
   "managed": {
@@ -16,9 +16,9 @@
     "kind": "keycloak-ouf",
     "installationId": "installation.invalid",
     "providerId": "provider.invalid",
-    "trust.issuer": "https://iam.invalid/issuer",
-    "trust.introspection": "https://iam.invalid/introspect",
-    "trust.jwks": "https://iam.invalid/keys",
+    "trust.issuer": "https://iam.invalid/realms/example",
+    "trust.introspection": "https://iam.invalid/realms/example/protocol/openid-connect/token/introspect",
+    "trust.jwks": "https://iam.invalid/realms/example/protocol/openid-connect/certs",
     "trust.decisions": "https://authority.invalid/check",
     "trust.gatewayOrigin": "https://gateway.invalid",
     "trust.caRef": "ref:fixture/ca",
@@ -28,10 +28,10 @@
     "clients.mcp.actor": "SERVICE",
     "clients.mcp.audience": "gateway.invalid",
     "clients.mcp.scopes": [
-      "fixture.issue",
-      "fixture.dispatch",
-      "fixture.revoke",
-      "fixture.status",
+      "ouf.analysis.mandate.issue",
+      "ouf.analysis.mandate.dispatch",
+      "ouf.analysis.mandate.revoke",
+      "ouf.analysis.mandate.status",
       "ouf.analysis.mandate.renewal-check"
     ],
     "clients.mcp.mappers.client_id": "authenticated-client",
@@ -82,9 +82,9 @@
     "iam.introspectionsPerMinute.value": 120,
     "iam.introspectionsPerMinute.default": 120,
     "iam.introspectionsPerMinute.maximum": 120,
-    "iam.decisionsPerMinute.value": 2,
-    "iam.decisionsPerMinute.default": 2,
-    "iam.decisionsPerMinute.maximum": 8,
+    "iam.decisionsPerMinute.value": 60,
+    "iam.decisionsPerMinute.default": 60,
+    "iam.decisionsPerMinute.maximum": 60,
     "pools.Gateway.dataSlots.value": 2,
     "pools.Gateway.dataSlots.default": 2,
     "pools.Gateway.dataSlots.maximum": 8,
@@ -109,7 +109,7 @@
     }
   ],
   "controlProof": {
-    "profileSha256": "f7fc03fd387c6c176bf11b00c89f14cebf61824ae0ff5c306ae6748685669c9e",
+    "profileSha256": "5bf4752247902af4ed6270153376eaa9cae6e4b2ff95f45e712b1468da4da7ef",
     "pet": "55g",
     "sourceTraceSha256": "85815f6030762d034249a8aae69044496667dc32371b4e02e2db9d7ae38891ed",
     "pools": {
@@ -131,7 +131,7 @@
         "concurrentControlServed": 2
       }
     },
-    "traceSha256": "25258e790404cf7f81f701aeb35e57262bdf4b4f90fb0ceb105959015a6fc0b0"
+    "traceSha256": "cfbf43c0a22266189888037aa015a9e02ac7e494f28cd2f11390c6184a67bd6e"
   },
   "complete": true
 }

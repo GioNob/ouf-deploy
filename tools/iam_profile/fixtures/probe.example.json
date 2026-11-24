@@ -30,9 +30,9 @@
   },
   "deniedForward": {
     "pet": "55h",
-    "profileSha256": "f7fc03fd387c6c176bf11b00c89f14cebf61824ae0ff5c306ae6748685669c9e",
+    "profileSha256": "5bf4752247902af4ed6270153376eaa9cae6e4b2ff95f45e712b1468da4da7ef",
     "action": "dispatch",
-    "issuer": "https://iam.invalid/issuer",
+    "issuer": "https://iam.invalid/realms/example",
     "workload": "mcp.invalid",
     "workloadSubject": "assignment-A.invalid",
     "tenant": "tenant.invalid",
@@ -46,6 +46,6 @@
     "decision": "DENIED",
     "ownerForwards": 0,
     "sourceTraceSha256": "76909e559d878ecbfff39d90d3ade2100e154d0f521ec61ae75b78a7d54d7941",
-    "traceSha256": "29d29849e880593264e9ff956d11c66f3168dabba75e390ecd52787f794c7944"
+    "traceSha256": "daaf2a7acecc183fe1561ccfb14da3a81a555f80186dc5fd6eba7d5f236e2c61"
   }
 }
