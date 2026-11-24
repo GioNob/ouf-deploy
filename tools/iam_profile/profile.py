@@ -132,6 +132,9 @@ def validate(profile, bindings):
     require(not (set(actions.values()) & (THS | {RENEW})), "BINDINGS_INVALID")
     mcp, ths = (profile["clients"][key] for key in ("mcp", "ths"))
     require(mcp["clientId"] != ths["clientId"], "CLIENTS_NOT_DISTINCT")
+    # The assignment resource-server (55h verifier) has its own service account.
+    require(profile["grant"]["resourceServer"]["clientId"] not in (mcp["clientId"], ths["clientId"]),
+            "CLIENTS_NOT_DISTINCT")
     require(set(mcp["scopes"]) == set(actions.values()) | {RENEW}, "SCOPES_INVALID")
     audience = profile["trust"]["gatewayAudience"]
     require(audience == bindings["gatewayAudience"] == mcp["audience"] == ths["audience"],

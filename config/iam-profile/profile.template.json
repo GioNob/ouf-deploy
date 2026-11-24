@@ -56,6 +56,10 @@
   "grant": {
     "mechanism": "authorization-resource",
     "resourceType": "${GRANT_RESOURCE_TYPE}",
+    "resourceServer": {
+      "clientId": "${RESOURCE_SERVER_CLIENT}",
+      "secretRef": "${RESOURCE_SERVER_SECRET_REF}"
+    },
     "grantRef": "iam-resource-id",
     "lookup": "current-resource-permission",
     "revocation": "withdraw-permission-and-invalidate-assignment-credential",

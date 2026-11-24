@@ -10,6 +10,8 @@
   "caRef": "ref:fixture/ca",
   "gatewayAudience": "gateway.invalid",
   "GRANT_RESOURCE_TYPE": "assignment.invalid",
+  "RESOURCE_SERVER_CLIENT": "assignments.invalid",
+  "RESOURCE_SERVER_SECRET_REF": "ref:fixture/assignments",
   "mcp_CLIENT": "mcp.invalid",
   "mcp_SECRET_REF": "ref:fixture/mcp",
   "ths_CLIENT": "ths.invalid",

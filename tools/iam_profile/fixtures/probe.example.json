@@ -30,7 +30,7 @@
   },
   "deniedForward": {
     "pet": "55h",
-    "profileSha256": "114d69cfacfb19f5d05220445697e1e6bc00647c32665eab0de70cfa339a0c06",
+    "profileSha256": "f7fc03fd387c6c176bf11b00c89f14cebf61824ae0ff5c306ae6748685669c9e",
     "action": "dispatch",
     "issuer": "https://iam.invalid/issuer",
     "workload": "mcp.invalid",
@@ -46,6 +46,6 @@
     "decision": "DENIED",
     "ownerForwards": 0,
     "sourceTraceSha256": "76909e559d878ecbfff39d90d3ade2100e154d0f521ec61ae75b78a7d54d7941",
-    "traceSha256": "0cf8f6b2197b12c6527bb09e9970a9d1c4208607a94549ee6862dd1639ade7a0"
+    "traceSha256": "29d29849e880593264e9ff956d11c66f3168dabba75e390ecd52787f794c7944"
   }
 }

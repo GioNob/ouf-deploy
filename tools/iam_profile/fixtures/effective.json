@@ -56,6 +56,8 @@
     "clients.ths.mappers.ouf_actor_type": "actor-type",
     "grant.mechanism": "authorization-resource",
     "grant.resourceType": "assignment.invalid",
+    "grant.resourceServer.clientId": "assignments.invalid",
+    "grant.resourceServer.secretRef": "ref:fixture/assignments",
     "grant.grantRef": "iam-resource-id",
     "grant.lookup": "current-resource-permission",
     "grant.revocation": "withdraw-permission-and-invalidate-assignment-credential",
@@ -107,7 +109,7 @@
     }
   ],
   "controlProof": {
-    "profileSha256": "114d69cfacfb19f5d05220445697e1e6bc00647c32665eab0de70cfa339a0c06",
+    "profileSha256": "f7fc03fd387c6c176bf11b00c89f14cebf61824ae0ff5c306ae6748685669c9e",
     "pet": "55g",
     "sourceTraceSha256": "85815f6030762d034249a8aae69044496667dc32371b4e02e2db9d7ae38891ed",
     "pools": {
@@ -129,7 +131,7 @@
         "concurrentControlServed": 2
       }
     },
-    "traceSha256": "1a99d1b64730e68712849b6b2f5dacd2e5ffde9d01efb3282c9a0e7dac63bb76"
+    "traceSha256": "25258e790404cf7f81f701aeb35e57262bdf4b4f90fb0ceb105959015a6fc0b0"
   },
   "complete": true
 }

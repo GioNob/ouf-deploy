@@ -224,6 +224,7 @@
       "required": [
         "mechanism",
         "resourceType",
+        "resourceServer",
         "grantRef",
         "lookup",
         "revocation",
@@ -237,6 +238,22 @@
         },
         "resourceType": {
           "$ref": "#/$defs/id"
+        },
+        "resourceServer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "clientId",
+            "secretRef"
+          ],
+          "properties": {
+            "clientId": {
+              "$ref": "#/$defs/id"
+            },
+            "secretRef": {
+              "$ref": "#/$defs/reference"
+            }
+          }
         },
         "grantRef": {
           "const": "iam-resource-id"

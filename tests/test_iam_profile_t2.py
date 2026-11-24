@@ -165,6 +165,16 @@ class ProfileTests(unittest.TestCase):
         self.p["clients"]["ths"]["clientId"] = self.p["clients"]["mcp"]["clientId"]
         self.rejected("CLIENTS_NOT_DISTINCT")
 
+    def test_resource_server_is_a_separate_client(self):
+        """55h: the assignment resource-server never reuses the MCP or THS client."""
+        for role in ("mcp", "ths"):
+            self.setUp()
+            self.p["grant"]["resourceServer"]["clientId"] = self.p["clients"][role]["clientId"]
+            self.rejected("CLIENTS_NOT_DISTINCT")
+        self.setUp()
+        self.p["grant"]["resourceServer"]["secretRef"] = "plain-secret"
+        self.rejected("PROFILE_INVALID")
+
     def test_missing_and_extra_scopes_both_clients(self):
         for role in ("mcp", "ths"):
             for operation in ("missing", "extra", "duplicate", "substitution"):
