@@ -121,9 +121,35 @@ def check_schema(value, rule, code="PROFILE_INVALID"):
             require(rule["contains"]["const"] in value, "SCOPES_INVALID")
 
 
+def keycloak_limits(profile):
+    """Give Keycloak-specific failures their public codes before generic schema checks."""
+    trust = profile.get("trust")
+    if isinstance(trust, dict) and "issuer" in trust:
+        issuer = trust["issuer"]
+        require(isinstance(issuer, str) and https(issuer)
+                and re.search(r"/realms/[^/]+\Z", urlsplit(issuer).path)
+                and urlsplit(issuer).path.rsplit("/", 1)[1] not in (".", ".."),
+                "KEYCLOAK_ISSUER_INVALID")
+    rates = profile.get("iam")
+    if isinstance(rates, dict):
+        for name, minimum in (("decisionsPerMinute", 5), ("introspectionsPerMinute", 2)):
+            limit = rates.get(name)
+            if isinstance(limit, dict):
+                for key in ("value", "default"):
+                    if type(limit.get(key)) is int:
+                        require(limit[key] >= minimum, "IAM_RATE_BELOW_OPERATION")
+
+
 def validate(profile, bindings):
     """Validate against the independent Gateway scope/audience projection."""
+    keycloak = isinstance(profile, dict) and profile.get("kind") == "keycloak-ouf"
+    if keycloak:
+        keycloak_limits(profile)
     check_schema(profile, SCHEMA)
+    if keycloak:
+        trust = profile["trust"]
+        require((urlsplit(trust["decisions"]).path or "/") !=
+                (urlsplit(trust["introspection"]).path or "/"), "ENDPOINTS_NOT_DISTINCT")
     exact(bindings, ("gatewayAudience", "scopeByAction"), "BINDINGS_INVALID")
     actions = bindings["scopeByAction"]
     exact(actions, ACTIONS, "BINDINGS_INVALID")

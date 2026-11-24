@@ -204,7 +204,7 @@ class ProfileTests(unittest.TestCase):
                 with self.subTest(field=key, value=bad):
                     self.p, _ = setup()
                     self.p["trust"][key] = bad
-                    self.rejected("HTTPS_REQUIRED")
+                    self.rejected("KEYCLOAK_ISSUER_INVALID" if key == "issuer" else "HTTPS_REQUIRED")
 
     def test_all_installation_limits_and_reserve(self):
         for key in self.p["capacity"]:
@@ -285,7 +285,7 @@ class ProfileTests(unittest.TestCase):
         self.assertEqual(gate(self.p, self.s, signed_off)["code"], "CONTROL_UNPROVEN")
         self.s["controlProof"] = None
         self.assertEqual(gate(self.p, self.s, signed_off)["code"], "CONTROL_UNPROVEN")
-        self.p["trust"]["issuer"] = "https://changed.invalid"
+        self.p["trust"]["issuer"] = "https://changed.invalid/realms/example"
         self.assertEqual(gate(self.p, self.s, signed_off)["code"], "PROFILE_DRIFT")
 
     def test_IAM_55M_04_round_trip(self):
@@ -367,7 +367,7 @@ class ProfileTests(unittest.TestCase):
         result = canonical(plan(self.p, self.s))
         self.assertNotIn(b"ref:fixture", result)
         self.assertNotIn(b"mcp.invalid", result)
-        self.assertNotIn(b"fixture.status", result)
+        self.assertNotIn(b"ouf.analysis.mandate.status", result)
         self.s["managed"]["clients.mcp.secret"] = "synthetic-canary"
         with self.assertRaisesRegex(Invalid, "^OBSERVATION_INVALID$"):
             plan(self.p, self.s)

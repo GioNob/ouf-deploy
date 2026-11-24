@@ -36,7 +36,10 @@ def observation(profile, snapshot):
         require(sha(ref) and sha(item["stateSha256"]) and ref not in occupied,
                 "OBSERVATION_INVALID")
         occupied.add(ref)
-    for client in profile["clients"].values():
+    clients = list(profile["clients"].values())
+    if profile["kind"] == "keycloak-ouf":
+        clients.append(profile["grant"]["resourceServer"])
+    for client in clients:
         require(digest(["client", client["clientId"]]) not in occupied, "FOREIGN_CLIENT")
     return desired
 

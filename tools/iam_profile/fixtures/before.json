@@ -5,16 +5,16 @@
   "gatewayBindings": {
     "gatewayAudience": "gateway.invalid",
     "scopeByAction": {
-      "issue": "fixture.issue",
-      "dispatch": "fixture.dispatch",
-      "revoke": "fixture.revoke",
-      "status": "fixture.status"
+      "issue": "ouf.analysis.mandate.issue",
+      "dispatch": "ouf.analysis.mandate.dispatch",
+      "revoke": "ouf.analysis.mandate.revoke",
+      "status": "ouf.analysis.mandate.status"
     }
   },
   "managed": {
     "clients.mcp.clientId": "mcp.invalid",
     "clients.mcp.scopes": [
-      "fixture.status"
+      "ouf.analysis.mandate.status"
     ],
     "pools.DB.controlReservedSlots": 1
   },

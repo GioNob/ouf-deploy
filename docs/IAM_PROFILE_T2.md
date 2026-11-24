@@ -15,7 +15,13 @@ Usare Python 3.10 o successivo. Lo schema chiuso `ouf.iam-profile.v1` vale per `
 | Decisioni e THS | L’adapter serve `ouf.analysis.authority-check.v1`. La decisione vincola nonce e byte della richiesta con `requestHash`. Per `renew-budget` verifica anche titolare, grant, mandato, generazione, incidente, versione e hash della proposta e comando THS. Il Gateway restituisce al MCP `requestHash, decisionRef, grantRef, validUntil`. MCP ricontrolla validità, fence e stato al commit. |
 | Capacità | Identificatori logici di installazione e provider comuni alle repliche. D-091 fissa rispettivamente 1, 1, 4, 1, 2 per `ActivePlans, ProviderSlots, InstallationActivePlans, InstallationProviderInFlight, ControlReservedSlots`. Il profilo comprende anche i tetti di sessione C.3. Per i rate IAM (richieste/minuto sull’installazione), il TTL di revoca (secondi) e gli slot dati di ciascun pool specificare `value, default, maximum` positivi, con default e valore entro il massimo. I valori operativi vengono approvati sul profilo misurato. |
 
-I riferimenti disponibili nominano le quattro azioni senza specificarne le quattro stringhe OAuth. I nomi `fixture.*` servono esclusivamente ai test. Il confronto usa `gatewayBindings` proveniente dal bundle approvato indipendentemente dal desiderato.
+La fixture usa `ouf.analysis.mandate.{issue,dispatch,revoke,status}`. In installazione il confronto usa sempre `gatewayBindings` del bundle Gateway approvato indipendentemente dal desiderato.
+
+### Contratto D-065 · `deploy.iam-profile.t2@1`
+
+Per `keycloak-ouf` l’issuer HTTPS deve terminare in `/realms/<realm>`, anche dietro un prefisso di percorso. Il rifiuto è `KEYCLOAK_ISSUER_INVALID`. Introspezione e decisioni devono avere percorsi diversi anche quando cambiano gli host (`ENDPOINTS_NOT_DISTINCT`). Per `value` e `default` il minimo è 5 decisioni e 2 introspezioni al minuto (`IAM_RATE_BELOW_OPERATION`). La fixture offre 60 decisioni e 120 introspezioni al minuto. Due emissioni e i tre status di `qualify` richiedono fino a 19 chiamate decisionali al costo di esempio. Per `existing-iam` valgono i controlli HTTPS e i limiti positivi del contratto 55m.
+
+Il comando locale `kcadm-plan` aggiunge un prospetto testuale ai comandi JSON esistenti. Usa gli stessi input di `plan` e accetta il solo tipo `keycloak-ouf`. I campi C5 sono `grant.resourceServer.clientId` e `grant.resourceServer.secretRef`.
 
 ## Esportare uno snapshot
 
@@ -35,7 +41,7 @@ Dalla radice del checkout, la prova senza rete si esegue con questi comandi.
 
 ```sh
 python -B -m tools.iam_profile plan config/iam-profile/profile.template.json tools/iam_profile/fixtures/before.json --parameters tools/iam_profile/fixtures/parameters.json
-python -m unittest discover -s tests -p 'test_iam_profile_*.py' -v
+python -B -m unittest discover -s tests -p 'test_iam_profile_*.py' -v
 ```
 
 Per i file privati, il seguente esempio usa una shell POSIX e JSON UTF-8.
@@ -55,6 +61,23 @@ Per le prove 55g e 55h, `sourceTraceSha256` identifica i byte della traccia orig
 I digest si calcolano sul JSON UTF-8 compatto, con chiavi ordinate, array nell’ordine fornito e Unicode preservato. `planSha256` copre l’intero documento escluso il campo stesso. L’identità del profilo e dello snapshot include tutti i loro campi. La ricevuta `ouf.iam-profile-receipt.v1` lega questi digest a issuer, tipo IAM, client, scope, digest della prova 55g e stato `VERIFIED`.
 
 **Aggancio per il rilascio.** Prima di abilitare l’esecuzione autonoma T2, il futuro chiamante invoca `tools.iam_profile.plan.gate(profile, snapshot, receipt)` con input recuperati dalla custodia del rilascio. Deve esigere `status == "VERIFIED"`. La funzione ricalcola la ricevuta e confronta l’intero documento. Codici tipici sono `RECEIPT_MISSING`, `RECEIPT_MISMATCH`, `PROFILE_DRIFT` e `CONTROL_UNPROVEN`. La provenienza e l’attualità dei tre documenti e della traccia dipendono dalla pipeline umana. Il rilascio verifica separatamente la qualifica IAM 55h e gli altri gate D-091. L’integrazione con module release segue la PR #182.
+
+## Rivedere i comandi Keycloak
+
+```sh
+python -B -m tools.iam_profile plan "$PROFILE" "$BEFORE" > "$PLAN"
+python -B -m tools.iam_profile kcadm-plan "$PROFILE" "$BEFORE" > "$REVIEW"
+```
+
+Confrontare l’hash in testa a `$REVIEW` con `planSha256` e **rivedere ogni comando sul plan stampato**, inclusa la riga corrispondente di `returnDiff`. Ogni coppia `andata_N` e `ritorno_N` contiene una scrittura e il successivo `kcadm.sh get`. Le definizioni delle funzioni shell permettono di copiare un singolo verso. Il custode esegue le andate selezionate in ordine, controlla nel GET identità, presenza o assenza e valori, e conserva gli UUID. Per ripristinare la preimmagine esegue in ordine inverso solo i ritorni delle scritture effettivamente applicate. Se un GET fallisce dopo una scrittura, riconciliare l’oggetto prima di ripetere il comando.
+
+Compilare il preambolo con i valori del profilo materializzato, della preimmagine e dell’inventario nativo del realm. Gli indici degli scope partono da zero. Usare una sessione amministrativa già autenticata sul server dell’issuer. Confermare il realm, gli UUID interni dei client, la proprietà dei binding e l’assenza di drift prima di ogni scrittura.
+
+- **Scope MCP e THS.** Per ogni appartenenza aggiunta, risolvere il nome nel realm. Se lo scope gestito esiste, usare il suo UUID per il solo binding. Se l’assenza è confermata, la prima coppia crea lo scope OIDC e conserva l’UUID restituito da `-i`. Copiarlo nella variabile `_ID` prima di assegnarlo. Per le rimozioni usare la modalità osservata in BEFORE. Per le aggiunte verificare con il custode se il binding approvato è `default` od `optional`. Il ritorno di un’assegnazione conserva lo scope del realm. Prima del ritorno di una creazione verificare che lo scope sia ancora quello creato e privo di altri utilizzatori.
+- **Resource-server.** La creazione abilita Authorization Services e service account per il client C5. Il ritorno usa l’UUID creato. Per una rinomina, entrambe le direzioni aggiornano il solo `clientId` sullo stesso UUID. La proiezione non registra i due flag precedenti. Il custode verifica i flag e il binding privato del riferimento al segreto.
+- **Foglie `# DA VERIFICARE`.** I mapper `client_id, acr, tenant_id, sub, aud, ouf_actor_type` descrivono effetti. Per tradurli servono provider, configurazione, sede del mapper e preimmagine nativa. Per `grant.resourceType` serve il binding alla risorsa dell’incarico specifico. Il solo tipo non identifica un oggetto Keycloak da creare o cancellare. Per gli altri campi di trust, contratto, client, quote e pool il custode identifica il componente proprietario prima di definire il comando.
+
+Il percorso governato di applicazione in pipeline resta un lavoro successivo. La verifica offline si esegue nel workflow `IAM profile tools`. Il comando di test nella sezione precedente riproduce il job. Per D-082, `IAM-58H-01…03` coprono issuer, endpoint e quote, `IAM-58H-04` copre fixture e ricevuta, `IAM-58H-05…06` coprono stampa e ritorno. Le prove sono collegate a `PET-authorization-121`, `PET-authorization-126` e `PET-semantic-306`. La qualifica effettiva usa la procedura seguente.
 
 ## PET dopo l’apply umano
 
