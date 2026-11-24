@@ -35,3 +35,12 @@ Il profilo `modules.mcp` aggiunge eseguibile, argv, readiness 204, pin del trasp
 La voce `deploy.a2.successor-image@1` copre lo ZIP Semantic selezionato, entrambi gli image ID, gli inventari Flyway e la review sul CID al cancello. La restituzione del CID originario presuppone la compatibilità dello schema applicato con l’immagine conservata, qualificata nel task-24c. [Custodia e prova di ripristino](../tools/privileged_executor/host-register.json)
 
 Le voci `deploy.a2.executor@2`, `deploy.a2.profile@2` e `deploy.a2.journal@2` registrano sorgenti, custode, cattura, ordine di ripristino e prova. Ripristinare insieme il journal del run e quello del modulo per riconciliare la terza approvazione con il CID al cancello. La configurazione dell’inventario contiene container, socket locale, ruolo, database e mappa IAM. La ricevuta della prova chatbot segue la ricevuta del cutover. [Registro host](../tools/privileged_executor/host-register.json)
+
+
+## Configurazione IAM T2
+
+| Tipo di archivio | Componente responsabile e segreti | Cattura | Ripristino | Prova |
+|---|---|---|---|---|
+| `deploy.iam-profile.t2@1` | IAM dell’installazione e custode della pipeline, con Gateway per i binding di autorità e owner di Gateway, MCP, DB e Semantic per i pool. Configurazione privata con soli riferimenti ai segreti e alla CA. Il materiale di autenticazione resta in custodia separata. | Acquisire profilo parametrizzato e risolto, binding Gateway revisionati, snapshot completo in lettura, inventario estraneo, plan e digest. Dopo apply acquisire nuova osservazione, misure di saturazione 55g, tracce di qualifica 55h e ricevuta verificata. Conservare data e revisione del rilascio. | Ricostituire prima trust e riferimenti privati. Confrontare identità e preimmagini con la cattura approvata. L’umano applica tramite pipeline il diff inverso verso lo snapshot originario e verifica la nuova lettura e i digest degli elementi estranei. | IAM-55M-04 verifica il ritorno offline. IAM-55M-01/02 qualificano isolamento e revoca sull’IAM effettivo. IAM-55M-03 qualifica il gate. Collegare PET-semantic-306 e PET-authorization-126 alla revisione in esame. |
+
+Il formato di cattura, il punto di aggancio T2 e i comandi in sola lettura sono nella [guida IAM T2](IAM_PROFILE_T2.md).
