@@ -1,0 +1,88 @@
+{
+  "schema": "ouf.pet-c-manifest.v1",
+  "site": "B",
+  "runId": "${RUN_UUID_V4}",
+  "createdAt": "${CREATED_AT_UTC}",
+  "expiresAt": "${EXPIRES_AT_UTC}",
+  "candidates": {
+    "mcp": "${mcp}",
+    "onboarding": "${onboarding}",
+    "semantic": "${semantic}",
+    "resourcesSha256": "${resourcesSha256}",
+    "iamProfileSha256": "${iamProfileSha256}",
+    "executorProfileSha256": "${executorProfileSha256}"
+  },
+  "capacity": {
+    "ActivePlans": 1,
+    "ProviderSlots": 1,
+    "InstallationActivePlans": 4,
+    "InstallationProviderInFlight": 1,
+    "ControlReservedSlots": 2,
+    "count": 20,
+    "windowSeconds": 60
+  },
+  "provider": {
+    "mode": "simulator",
+    "baseUrl": "${SIMULATOR_BASE_URL}",
+    "seed": 42,
+    "latencyMs": {
+      "search": 10,
+      "fetch": 20
+    },
+    "outages": []
+  },
+  "load": {
+    "subjects": 100,
+    "tenants": 2,
+    "workflows": 3000,
+    "seed": 42,
+    "mix": {
+      "start": 0.2,
+      "poll": 0.3,
+      "wait": 0.2,
+      "retry": 0.1,
+      "status": 0.15,
+      "renewal": 0.05
+    }
+  },
+  "thresholds": {
+    "inFlightMax": 1,
+    "routePeakMax": 20,
+    "slotP95Seconds": 30,
+    "lockWaitP99Ms": 250,
+    "lockHeldP99Ms": 50,
+    "iamIntrospections": 2,
+    "iamDecisions": 3,
+    "iamQuotaFraction": 0.8,
+    "controlP99Ms": 2000,
+    "controlTimeoutsMax": 0,
+    "scrapeIncreaseFraction": 0.1,
+    "scrapeP99Seconds": 2,
+    "e2e50Seconds": 600,
+    "e2e80Seconds": 900,
+    "minP95": 20,
+    "minP99": 100,
+    "iamIntrospectionQuota": "${IAM_INTROSPECTIONS_PER_MINUTE}",
+    "iamDecisionQuota": "${IAM_DECISIONS_PER_MINUTE}"
+  },
+  "scenarios": [
+    "55n-01",
+    "55n-02",
+    "55n-03",
+    "55n-04",
+    "55n-05",
+    "55n-06",
+    "55n-07"
+  ],
+  "cleanup": {
+    "tenants": [
+      "${PET_TENANT_A}",
+      "${PET_TENANT_B}"
+    ],
+    "sources": [
+      "${PET_SOURCE}"
+    ],
+    "idPrefix": "${PET_PREFIX}",
+    "objectsManifest": "${CREATED_OBJECTS_MANIFEST}"
+  }
+}

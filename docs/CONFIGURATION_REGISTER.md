@@ -1,5 +1,12 @@
 # Registro della configurazione dell'host
 
+## PET C della T2
+
+| Voce D-065 | Custodia e cattura | Ripristino e prova |
+|---|---|---|
+| `ouf.pet-c-manifest.v1` | Il custode PET conserva il manifesto privato compilato prima della prova con digest dei candidati, quote, soglie e scope del run. Segreti esclusi. | Ripristinare prima delle tracce, validare offline e confrontare lo SHA-256 del JSON canonico con il rapporto. |
+| `deploy.pet-c.traces@1` | Il custode PET esporta il fascicolo JSONL depurato, le ricevute owner e l'inventario privato degli oggetti. Conservare i byte originali e il rapporto D-082 secondo la retention del run. | Verificare lo SHA-256 del fascicolo e delle ricevute, ricalcolare le misure con lo stesso manifesto e confrontare le righe per sede. [Procedura PET C](PET_C_T2.md) |
+
 ## Rilascio della configurazione APISIX
 
 `deploy.gateway-release@2` registra il profilo privato, la chiave Admin di APISIX, lo stato per run e il puntatore all'ultimo rilascio. Il custode configura `gateway.source` con i soli campi `repository` e `workflow`. Per aggiornare un profilo precedente, rimuovere `gateway.source.tokenFile` dal JSON prima del bootstrap. Il plan e l’apply leggono i metadati e scaricano lo ZIP del repository pubblico con il token temporaneo che il workflow passa su stdin. Il bearer viene inviato solo ad `api.github.com`. Il profilo contiene anche socket Docker, container, IP di loopback e porta nel namespace APISIX, percorso della chiave Admin e dizionario `values` per i segnaposto. Il file della chiave resta privato, di proprietà di root e con antenati in custodia root. [Profilo di esempio](privileged-executor.example.json) · [Registro host](../tools/privileged_executor/host-register.json)
