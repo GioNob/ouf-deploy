@@ -1,0 +1,524 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "ouf.pet-c-manifest.v1"
+    },
+    "site": {
+      "enum": [
+        "B",
+        "A"
+      ]
+    },
+    "runId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?(Z|\\+00:00)$",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?(Z|\\+00:00)$",
+      "format": "date-time"
+    },
+    "candidates": {
+      "type": "object",
+      "properties": {
+        "mcp": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "onboarding": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "semantic": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "resourcesSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "iamProfileSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "executorProfileSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "capacity": {
+      "type": "object",
+      "properties": {
+        "ActivePlans": {
+          "const": 1
+        },
+        "ProviderSlots": {
+          "const": 1
+        },
+        "InstallationActivePlans": {
+          "const": 4
+        },
+        "InstallationProviderInFlight": {
+          "const": 1
+        },
+        "ControlReservedSlots": {
+          "const": 2
+        },
+        "count": {
+          "const": 20
+        },
+        "windowSeconds": {
+          "const": 60
+        }
+      },
+      "required": [
+        "ActivePlans",
+        "ProviderSlots",
+        "InstallationActivePlans",
+        "InstallationProviderInFlight",
+        "ControlReservedSlots",
+        "count",
+        "windowSeconds"
+      ],
+      "additionalProperties": false
+    },
+    "provider": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "simulator"
+            },
+            "baseUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "latencyMs": {
+              "type": "object",
+              "properties": {
+                "search": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "fetch": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "search",
+                "fetch"
+              ],
+              "additionalProperties": false
+            },
+            "outages": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startSeconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "durationSeconds": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "route": {
+                    "enum": [
+                      "search",
+                      "fetch",
+                      "both"
+                    ]
+                  },
+                  "effect": {
+                    "enum": [
+                      "upstream429",
+                      "timeout",
+                      "late",
+                      "503",
+                      "close"
+                    ]
+                  },
+                  "delayMs": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "retryAfterSeconds": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "startSeconds",
+                  "durationSeconds",
+                  "route",
+                  "effect",
+                  "delayMs",
+                  "retryAfterSeconds"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "mode",
+            "baseUrl",
+            "seed",
+            "latencyMs",
+            "outages"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "real-probe"
+            },
+            "search": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "fetch": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            }
+          },
+          "required": [
+            "mode",
+            "search",
+            "fetch"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "load": {
+      "type": "object",
+      "properties": {
+        "subjects": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "tenants": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "workflows": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3000
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mix": {
+          "type": "object",
+          "properties": {
+            "start": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "poll": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "wait": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "retry": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "status": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "renewal": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "start",
+            "poll",
+            "wait",
+            "retry",
+            "status",
+            "renewal"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "subjects",
+        "tenants",
+        "workflows",
+        "seed",
+        "mix"
+      ],
+      "additionalProperties": false
+    },
+    "thresholds": {
+      "type": "object",
+      "properties": {
+        "inFlightMax": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "routePeakMax": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "slotP95Seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "lockWaitP99Ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "lockHeldP99Ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "iamIntrospections": {
+          "const": 2
+        },
+        "iamDecisions": {
+          "const": 3
+        },
+        "iamQuotaFraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "controlP99Ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "controlTimeoutsMax": {
+          "const": 0
+        },
+        "scrapeIncreaseFraction": {
+          "type": "number",
+          "minimum": 0
+        },
+        "scrapeP99Seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "e2e50Seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "e2e80Seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "minP95": {
+          "type": "integer",
+          "minimum": 20
+        },
+        "minP99": {
+          "type": "integer",
+          "minimum": 100
+        },
+        "iamIntrospectionQuota": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "iamDecisionQuota": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "inFlightMax",
+        "routePeakMax",
+        "slotP95Seconds",
+        "lockWaitP99Ms",
+        "lockHeldP99Ms",
+        "iamIntrospections",
+        "iamDecisions",
+        "iamQuotaFraction",
+        "controlP99Ms",
+        "controlTimeoutsMax",
+        "scrapeIncreaseFraction",
+        "scrapeP99Seconds",
+        "e2e50Seconds",
+        "e2e80Seconds",
+        "minP95",
+        "minP99",
+        "iamIntrospectionQuota",
+        "iamDecisionQuota"
+      ],
+      "additionalProperties": false
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "55n-01",
+          "55n-02",
+          "55n-03",
+          "55n-04",
+          "55n-05",
+          "55n-06",
+          "55n-07",
+          "55n-08"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "cleanup": {
+      "type": "object",
+      "properties": {
+        "tenants": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^pet-[a-z][a-z0-9-]{0,48}$"
+          },
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^pet-[a-z][a-z0-9-]{0,48}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "idPrefix": {
+          "type": "string",
+          "pattern": "^pet-[a-z][a-z0-9-]{0,48}$"
+        },
+        "objectsManifest": {
+          "type": "string",
+          "pattern": "^(?:[a-zA-Z0-9_-]+/)*[a-zA-Z0-9_-]+\\.json$"
+        }
+      },
+      "required": [
+        "tenants",
+        "sources",
+        "idPrefix",
+        "objectsManifest"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema",
+    "site",
+    "runId",
+    "createdAt",
+    "expiresAt",
+    "candidates",
+    "capacity",
+    "provider",
+    "load",
+    "thresholds",
+    "scenarios",
+    "cleanup"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "site": {
+            "const": "A"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "candidates": {
+            "required": [
+              "mcp",
+              "onboarding",
+              "semantic",
+              "resourcesSha256",
+              "iamProfileSha256",
+              "executorProfileSha256"
+            ]
+          },
+          "scenarios": {
+            "items": {
+              "enum": [
+                "55n-06",
+                "55n-07",
+                "55n-08"
+              ]
+            }
+          },
+          "provider": {
+            "properties": {
+              "baseUrl": {
+                "pattern": "^https://"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "provider": {
+            "properties": {
+              "mode": {
+                "const": "simulator"
+              }
+            }
+          },
+          "scenarios": {
+            "items": {
+              "enum": [
+                "55n-01",
+                "55n-02",
+                "55n-03",
+                "55n-04",
+                "55n-05",
+                "55n-06",
+                "55n-07"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}
