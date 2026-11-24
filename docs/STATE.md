@@ -1,5 +1,9 @@
 # Stato corrente OUF
 
+## Sprint 03/55j · retention amministrativa MCP
+
+La fase `mcp-retention-admin-019` usa OID e ruolo applicativo osservati nel catalogo. Il profilo deve fissare `functionSha256` con `digest(sorted(definizioni))`, usando le due definizioni integrali di `pg_get_functiondef` con `search_path=pg_catalog`. Il confronto copre gli overload a quattro e cinque argomenti. I PET offline verificano il blocco prima dell’avvio su catalogo parziale o TTL mancante e la ripresa del worker già creato. La prova nativa (`test_retention_permissions_and_batch_session`) è affidata alla CI `privileged-executor-native`. La review 55j ha ripetuto catalogo, DSN e comandi su PostgreSQL 17 con il binario del task 55i. [PET 55j](../tests/test_module_release_retention_019.py)
+
 ## Sprint 03/38 · approvazioni dei rilasci
 
 Le prove offline dei sette workflow verificano l’annotazione **Da approvare** e la sezione **Cosa approvi** nel job precedente a ogni review. Per Onboarding, MCP, UDP e Ingestion il task 38b mostra in entrambe le sedi gli ID delle immagini candidata e predecessore prima di approvare `apply` o `migrate`. La prova dell’esecutore copre anche il recupero e il predecessore selezionato dalla ricevuta del rilascio precedente. [Prove dei client](../tests/test_release_approval.py) · [Prove dell’esecutore](../tests/test_module_release.py)
