@@ -531,6 +531,7 @@ class PortableTests(unittest.TestCase):
                 epoch["authorizationSha256"] = "0"*64
                 with self.assertRaisesRegex(O.A.OperationDenied,"EPOCH_AUTHORIZATION_DRIFT"): O.observe(args)
                 epoch["authorizationSha256"] = head["sha256"]
+                args.action = "stop"  # abandonment belongs only to a start plan
                 epoch["bootId"] = "other"
                 with self.assertRaisesRegex(O.A.OperationDenied,"EPOCH_BOOT_DRIFT"): O.observe(args)
 

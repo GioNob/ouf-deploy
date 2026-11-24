@@ -65,10 +65,10 @@ Ogni plan, il controllo prima degli effetti e ogni lettura dopo l'azione:
   v2 contiene `authorizationSha256`, **non** un campo sequence: il confronto
   con l'hash della testa autenticata vincola anche la sua sequenza;
 - leggono `epochs.current` dalla copia installata e riportano numero, stato,
-  bootId, failure pubblico e generazione viva sì/no. Ogni epoca esistente deve
-  appartenere al boot corrente, all'hash della configurazione e della testa.
-  Per la ripartenza leggono anche il journal immediatamente precedente con
-  il validatore installato, esponendone soltanto numero e stato;
+  bootId, failure pubblico e generazione viva sì/no. Le epoche terminali conservano il legame con la loro autorizzazione storica.
+  Per quelle aperte valgono la testa e la configurazione correnti. Lo start tratta
+  il cambio di boot secondo le condizioni sotto riportate. La lettura del journal
+  precedente usa il validatore installato e, per `ABANDONED`, riporta anche il digest;
 - eseguono `docker inspect` per CID e selezionano Status, Running, Pid,
   StartedAt, RestartCount, Runtime e nome RestartPolicy. Runtime diverso da
   `ouf-semantic-admitted-v2` dà HELD. Non confrontano né normalizzano Config,
@@ -80,17 +80,69 @@ Ogni plan, il controllo prima degli effetti e ogni lettura dopo l'azione:
   authorizationSequence;
 - leggono il journal del coordinatore dal path della medesima configurazione,
   con custodia root, selezionando state e leaseAuthorized;
-- eseguono soltanto `nft -j list tables`, riportando presenza delle tabelle
-  inet/bridge per i nomi dei due candidati dalla testa autenticata.
+- leggono la presenza delle tabelle inet/bridge dei due ruoli. Dalla v12 il gate di
+  start legge anche le due tabelle condivise e ne verifica il sigillo strutturale.
 
 I contenuti dei documenti privati e lo stdout/stderr dei processi non vengono
 copiati nelle ricevute. PID e boot sono osservazioni pubbliche selezionate.
+
+## Stato dopo un reboot
+
+| Stato letto | Persistenza e condizione per lo start |
+| --- | --- |
+| Testa, CID, ruoli ed epoche | Restano su disco. Cambia il boot ID. Un’epoca aperta del boot precedente richiede la prova descritta sotto. |
+| Processi, stato runc e frame Docker | Il reset perde i processi e lo stato volatile. Docker deve attestare il fermo di entrambi i CID. Per ciascuna epoca da abbandonare, runc deve attestare l’assenza nella radice registrata. |
+| Tabelle e set nft | Si perdono al reboot. Il guard ricostruisce le tabelle condivise vuote. Il gate di start verifica ancora il sigillo dell’owner, inclusi gli handle. |
+| Coordinatore e supervisore | Il journal del coordinatore, lo stato del supervisore e la cronologia delle attivazioni persistono. Serve una nuova osservazione di quiescenza e del servizio attivo in `WAITING` sulla testa corrente. |
+| Namespace, mount e veth | Gli oggetti kernel scompaiono. Possono restare ricevute e punti di mount. Servono un peer Semantic verificabile e un overlay smontato per il ripristino. |
+| Upper, PID file e socket | Persistono. D-047 qualifica i residui nominati prima della rimozione e verifica entrambi i sigilli accettati. |
+| Lock, consegne, output e claim | Il kernel libera i lock. Il guard verifica il lock comune ripredisposto al boot e il runtime usa quelli per CID. Consegne, claim e marcatori dell’autostart restano leggibili. Un tentativo consumato conserva il proprio output. |
+
+Con stop R3 governato, il readback prima dell’arresto attesta epoche terminali,
+lease quiescente e tabelle dei ruoli assenti. L’autostart rispetta l’intento di stop.
+Con spegnimento ordinato a R3 attivo, il supervisore su SIGTERM revoca il lease,
+verifica la quiescenza e solo allora pubblica `STOPPED`. La chiusura delle epoche
+dipende dal completamento del delete. Con reset improvviso il disco può conservare
+`LEASE_READY` e un’epoca `STARTED`. Il guard richiesto prima di Docker può
+rifiutare quel journal prima della ricostruzione nft.
+
+Dopo un boot ammesso, il guard lascia `BLOCKED`. Il supervisore al riavvio
+esegue la quiescenza. Solo se verifica ownership e set vuoti può riportare il
+coordinatore a `QUIESCED` e raggiungere `WAITING`. Journal ancora bloccato
+o sigillo diverso conservano rispettivamente i dinieghi
+`R3_LEASE_KERNEL_JOURNAL_BLOCKED` e `R3_LEASE_KERNEL_STRUCTURE_DRIFT`.
+
+Per lo start, sotto i lock dei CID e del coordinatore, il plan confronta il
+boot ID del runtime, testa autorizzata, configurazione, CID e ruolo. Richiede
+Docker fermo con PID zero, prova di assenza runc nella radice dell’epoca,
+coordinatore quiescente, tabelle dei ruoli assenti e set del lease vuoti.
+La scadenza è provata quando l’elemento è scomparso dalla lettura nft.
+Una radice ignota o un errore generico di runc danno `HELD`.
+Un’epoca aperta dello stesso boot continua a impedire lo start.
+
+Il digest del plan lega il boot corrente (`recoveryBootId`) e la mappa
+`epochsToAbandon` al numero e al digest atteso di ogni journal dopo l’abbandono. La `create` del runtime pubblica
+`ABANDONED` e apre l’epoca seguente. Il readback richiede il journal storico
+previsto e la nuova epoca viva `STARTED` con numero incrementato di uno.
+Dopo un’interruzione il claim resta consultabile. Un nuovo plan legge lo stato
+corrente e richiede una nuova destinazione. Una coorte già partita impedisce
+un secondo start.
+
+**R-025 resta aperto.** Il recupero pre-Docker e del kernel del lease con nuovi
+handle spetta ai task successivi. Per chiudere il rischio serve anche la
+qualifica in esercizio del reboot completo.
+
+Riferimenti al codice del boot e della quiescenza al commit base del task:
+[precondizione del guard](../tools/semantic_lease_kernel_migration/boot_runner_v2.py#L17),
+[avvio e arresto del supervisore](../tools/semantic_provider_operation/lease_supervisor_v2.py#L398),
+[transizione del coordinatore](../tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_coordination.py#L231),
+[abbandono in create](../tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py#L650).
 
 ## Azioni e traguardi
 
 | Azione | Precondizioni | Effetti diretti e readback |
 | --- | --- | --- |
-| `start` | Due CID created/exited, Running false/PID 0, RestartPolicy `no` su entrambi, epoca assente o terminale; servizio attivo WAITING sulla sequenza corrente; lease QUIESCED/non autorizzato | Due `docker start` concorrenti, ciascuno con timeout, senza `docker update`. Entrambi running con policy ancora `no`, epoche STARTED vive incrementate esattamente di 1 (assente = 0), supervisore ACTIVE sulle stesse epoche, lease LEASE_READY/autorizzato, quattro tabelle presenti. |
+| `start` | Due CID created/exited, Running false/PID 0, RestartPolicy `no` su entrambi, epoca assente, terminale o del boot precedente con le prove sotto indicate; servizio attivo WAITING sulla sequenza corrente; lease QUIESCED/non autorizzato | Due `docker start` concorrenti, ciascuno con timeout, senza `docker update`. Entrambi running con policy ancora `no`, epoche STARTED vive incrementate esattamente di 1 (assente = 0), supervisore ACTIVE sulle stesse epoche, lease LEASE_READY/autorizzato, quattro tabelle presenti. |
 | `restart-policy` | Disattivata da D-045: plan sempre negato con `R3_RESTART_POLICY_DISABLED_D045`, qualunque sia lo stato dei CID | Nessun effetto, nessun update. L'argomento resta disponibile per rendere esplicito il diniego. |
 | `restart-one` | Due CID running, epoche STARTED vive; supervisore ACTIVE sulle stesse epoche e sequenza | `docker restart --time 30 CID` del solo ruolo. Nuova epoca esattamente +1 STARTED viva, precedente DELETED, testa invariata, altro ruolo con stessa epoca/PID; supervisore nuovamente ACTIVE, lease pronto e tabelle presenti. |
 | `stop` | Almeno un CID running | `docker stop --time 30 CID` dei soli ruoli running, in parallelo. Entrambi exited/PID 0, epoche terminali, supervisore attivo WAITING, lease QUIESCED/non autorizzato e quattro tabelle assenti. |
