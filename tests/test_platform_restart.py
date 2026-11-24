@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 
 from tools.platform_restart.controller import Controller, http_ready
+from tools.module_release import frame as release_frame
 from tools.platform_restart.docker import Docker, GATE_INSPECT, pid1_state
 from tools.platform_restart import identity, install
 from tools.platform_restart.profile import GATE_LOOP, Held, canonical, load_profile, sha
@@ -749,7 +750,7 @@ def sign(path, binding, private):
 
 class ReleaseJournal:
     """Private emitter of producer-format terminal fixtures, also used against a real Engine."""
-    def __init__(self, root, old, new, socket_path, *, signing=True):
+    def __init__(self, root, old, new, socket_path, create_request, *, candidate=None, signing=True, ready=True):
         root.mkdir()
         self.root = root
         self.state = root / "state"
@@ -761,18 +762,23 @@ class ReleaseJournal:
         (root / "lock").touch()
         self.binding = dict(source="module-release", module="example", executorRoot=str(root), journalRoot=str(journal))
         profile = dict(container=old["Name"][1:], dockerSocket=socket_path, journal=str(journal))
+        if candidate:
+            profile["candidate"] = candidate
         if signing:
             signer = self.binding["receiptSigning"] = signing_fixture(root)
             profile["receiptSigning"] = dict(publicKey=signer["publicKey"], privateKey=str(root / "fixture-key"))
         store_json(root / "profile.json", {"modules": {"example": profile}})
         plan = dict(module="example", operation="module-release", oldCid=old["Id"], oldImage=old["Image"],
-                    oldFrameSha256=identity.snapshot(old), ci=dict(imageId=new["Image"]),
-                    candidateReview=dict(predecessorCmdSha256=identity.digest(old["Config"]["Cmd"]),
-                                         candidateCmdSha256=identity.digest(new["Config"]["Cmd"])))
+                    oldFrameSha256=identity.snapshot(old), ci=dict(imageId=create_request["Image"]),
+                    requestSha256=identity.digest(create_request))
+        if candidate:
+            plan["candidateReview"] = dict(predecessorCmdSha256=identity.digest(old["Config"]["Cmd"]),
+                                           candidateCmdSha256=identity.digest(create_request["Cmd"]))
         self.source = identity.digest(plan)
         self.tx = journal / self.source
         self.tx.mkdir()
         self.old, self.new = old, new
+        store_json(self.tx / "create-intent.json", dict(requestSha256=plan["requestSha256"]))
         store_json(self.tx / "created.json", dict(cid=new["Id"]))
         store_json(self.tx / "plan.json", plan)
         store_json(self.tx / "baseline.private.json", {k: old[k] for k in
@@ -780,12 +786,17 @@ class ReleaseJournal:
         store_json(run / "approvals", ["apply"])
         store_json(run / "plan", dict(plan=plan, planSha256=self.source))
         store_json(run / "apply.review", self.review("apply", run.name))
+        if ready:
+            self.publish_ready(new)
+
+    def publish_ready(self, new):
+        run = self.state / "1"
         terminal = dict(operation="module-release", readiness="UP", status="READY", planSha256=self.source,
-                        successorCid=new["Id"], predecessorCid=old["Id"], successorFrameSha256=identity.snapshot(new))
+                        successorCid=new["Id"], predecessorCid=self.old["Id"], successorFrameSha256=identity.snapshot(new))
         store_json(self.tx / "receipt.json", terminal)
         store_json(run / "apply.result", terminal)
         store_json(self.state / "module-example.ready", dict(run=run.name, phase="apply", planSha256=self.source))
-        if signing:
+        if "receiptSigning" in self.binding:
             self.sign("receipt.json")
 
     def review(self, phase, run):
@@ -823,17 +834,27 @@ class ReleaseTests(unittest.TestCase):
         self.engine.cfg = self.ctrl.cfg
         self.member = self.ctrl.members["sample-0"]
         gate = self.member["gate"]
-        def frame(cid, cmd):
-            return dict(Id=cid, Name="/sample-0", Image=gate["imageId"], Path=gate["entrypoint"][0],
-                        Args=gate["entrypoint"][1:] + cmd, Config=dict(Entrypoint=gate["entrypoint"], Cmd=cmd),
+        entry = release_frame.ENTRY
+        self.engine.config["entrypoint"] = entry
+        old_cmd = gate["command"] + ["--spring.flyway.enabled=false"]
+        self.old = dict(Id="a" * 64, Name="/sample-0", Image="sha256:" + "1" * 64, Path=entry[0],
+                        Args=entry[1:] + old_cmd, Config=dict(Entrypoint=entry, Cmd=old_cmd),
                         HostConfig={}, Mounts=[], NetworkSettings={"Networks": {}}, RestartCount=0,
                         State=dict(Pid=20, StartedAt="baseline", Running=True))
-        self.old = frame("a" * 64, gate["command"] + ["--old"])
-        self.new = frame(self.engine.rows["sample-0"]["cid"], gate["command"])
+        defaults = dict(Entrypoint=["/fixture"], Labels={"ouf.fixture": "gate"}, Env=["HTTP_READY=yes"])
+        self.engine.image_defaults = lambda image: defaults
+        candidate = dict(removeArgs=["--spring.flyway.enabled=false"])
+        create_request = release_frame.request(self.old, gate["imageId"], candidate=candidate, image_defaults=defaults)
+        config = copy.deepcopy(create_request)
+        host = config.pop("HostConfig")
+        config.pop("NetworkingConfig")
+        release_frame.merge_image(config, defaults)
+        self.new = dict(self.old, Id=self.engine.rows["sample-0"]["cid"], Image=config["Image"], Config=config,
+                        Path=config["Entrypoint"][0], Args=config["Entrypoint"][1:] + config["Cmd"], HostConfig=host)
         self.live = self.new
         self.journal = ReleaseJournal(Path(self.ctrl.cfg["receipts"]).parent / "executor", self.old, self.new,
-                                      self.ctrl.cfg["dockerSocket"])
-        self.member["gate"] = dict(identity=self.journal.binding, entrypoint=gate["entrypoint"])
+                                      self.ctrl.cfg["dockerSocket"], create_request, candidate=candidate)
+        self.member["gate"] = dict(identity=self.journal.binding, entrypoint=entry)
         self.enterContext(patch.object(identity, "custody"))
         self.enterContext(patch.object(identity, "release_locks", return_value=contextlib.nullcontext()))
         self.engine.release_frame = lambda cid: copy.deepcopy(self.live if cid == self.live["Id"] else self.old)
@@ -848,6 +869,7 @@ class ReleaseTests(unittest.TestCase):
         self.live = self.old
         self.engine.rows["sample-0"]["cid"] = self.old["Id"]
         self.engine.config["command"] = self.old["Config"]["Cmd"]
+        self.engine.config["imageId"] = self.old["Image"]
 
     def test_semantic_completed_forward_and_pending_successor(self):
         root, state = self.journal.root, self.journal.state
@@ -911,6 +933,34 @@ class ReleaseTests(unittest.TestCase):
         result = self.start()
         self.assertEqual(result["status"], "SUCCEEDED", result)
         self.assertEqual(result["plan"]["steps"][0]["release"]["readySignature"], "verified")
+
+    def test_ready_requires_approved_create_with_image_defaults(self):
+        config = self.live["Config"]
+        self.assertEqual(config["Entrypoint"], release_frame.ENTRY)
+        self.assertEqual(config["Cmd"], self.old["Config"]["Cmd"][:-1])
+        self.assertEqual(config["Labels"], {"ouf.fixture": "gate"})
+        self.assertEqual(config["Env"], ["HTTP_READY=yes"])
+        plan = self.ctrl.run("plan", "start")
+        self.assertEqual(plan["status"], "PLAN_READY", plan)
+
+        # The live launch and its command review still match. This change in
+        # the release profile would build a different CREATE (including Env).
+        path = self.journal.root / "profile.json"
+        policy = json.loads(path.read_bytes())
+        policy["modules"]["example"]["candidate"]["enableFlyway"] = True
+        store_json(path, policy)
+        result = self.ctrl.run("apply", "start", plan["planSha256"])
+        self.assertEqual((result["status"], result.get("reason")), ("HELD", "MODULE_CREATE_DRIFT"))
+        self.assertEqual(self.engine.trace, [])
+
+    def test_ready_rejects_gate_split_across_entrypoint_and_cmd(self):
+        self.live = copy.deepcopy(self.new)
+        cfg = self.live["Config"]
+        entry = cfg["Entrypoint"]
+        cfg["Entrypoint"], cfg["Cmd"] = entry[:1], entry[1:] + cfg["Cmd"]
+        self.assertEqual([self.live["Path"], *self.live["Args"]], cfg["Entrypoint"] + cfg["Cmd"])
+        self.assertEqual(self.start()["reason"], "RELEASE_ENTRYPOINT_MISMATCH")
+        self.assertEqual(self.engine.trace, [])
 
     def test_unsigned_ready_held(self):
         (self.journal.tx / "receipt.ed25519").unlink()

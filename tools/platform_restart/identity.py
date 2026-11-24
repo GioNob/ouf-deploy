@@ -8,9 +8,9 @@ import stat
 import subprocess
 
 if __package__ == "platform_restart":  # Installed archive or staged operator entry point.
-    from module_release.frame import snapshot
+    from module_release.frame import provenance_labels, request, snapshot
 else:
-    from ..module_release.frame import snapshot
+    from ..module_release.frame import provenance_labels, request, snapshot
 from .profile import HEX, Held, canonical, custody, require, sha, unique, validate_command
 
 RUN = re.compile(r"[1-9][0-9]{0,19}")
@@ -245,13 +245,22 @@ def module_gate(identity, state, profile, transaction, name, live, docker, conte
         baseline = {**old, **baseline}
     require(baseline["Image"] == plan["oldImage"] and snapshot(baseline) == plan["oldFrameSha256"],
             "MODULE_BASELINE_DRIFT")
-    entry, cmd = baseline["Config"]["Entrypoint"], baseline["Config"]["Cmd"]
-    if not returning and "candidateReview" in plan:
+    if returning:
+        return baseline["Config"]["Entrypoint"], baseline["Config"]["Cmd"]
+
+    # execute() journals the digest, not the private CREATE body. Rebuild that
+    # body with the producer's builder and the CI coordinates of this release.
+    candidate = profile["candidate"] if "candidateReview" in plan else None
+    approved = request(baseline, image, provenance_labels({**profile, "ci": plan["ci"]}),
+                       candidate=candidate, image_defaults=docker.image_defaults(image) if candidate else None)
+    require(digest(approved) == plan["requestSha256"]
+            and read(path.parent / "create-intent.json") == {"requestSha256": plan["requestSha256"]}
+            and read(path.parent / "created.json") == {"cid": cid}, "MODULE_CREATE_DRIFT")
+    if "candidateReview" in plan:
         review = plan["candidateReview"]
-        require(review["predecessorCmdSha256"] == digest(cmd)
-                and review["candidateCmdSha256"] == digest(live["Config"]["Cmd"]), "RELEASE_COMMAND_MISMATCH")
-        cmd = live["Config"]["Cmd"]
-    return entry, cmd
+        require(review["predecessorCmdSha256"] == digest(baseline["Config"]["Cmd"])
+                and review["candidateCmdSha256"] == digest(approved["Cmd"]), "RELEASE_COMMAND_MISMATCH")
+    return approved["Entrypoint"], approved["Cmd"]
 
 
 def semantic_gate(state, name, context):

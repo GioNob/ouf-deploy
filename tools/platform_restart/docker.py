@@ -146,13 +146,23 @@ class Docker:
         # Rehydrate the immutable fields for the producer's API 1.44 snapshot.
         # The complete private document stays in memory.
         require(isinstance(cid, str) and HEX.fullmatch(cid), "INVALID_CID")
+        return self._release_inspect("/containers/" + cid)
+
+    def image_defaults(self, image):
+        require(isinstance(image, str) and image.startswith("sha256:") and HEX.fullmatch(image[7:]),
+                "RELEASE_IMAGE_MISMATCH")
+        doc = self._release_inspect("/images/" + image)
+        require(doc["Id"] == image and isinstance(doc["Config"], dict), "RELEASE_IMAGE_MISMATCH")
+        return doc["Config"]
+
+    def _release_inspect(self, resource):
         self.verify()
         conn = http.client.HTTPConnection("localhost", timeout=self.cfg["inventoryTimeoutSeconds"])
         try:
             conn.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             conn.sock.settimeout(conn.timeout)
             conn.sock.connect(self.cfg["dockerSocket"])
-            conn.request("GET", "/v1.44/containers/" + cid + "/json", headers={"Connection": "close"})
+            conn.request("GET", "/v1.44" + resource + "/json", headers={"Connection": "close"})
             response = conn.getresponse()
             raw = response.read((4 << 20) + 1)
             require(response.status == 200 and len(raw) <= 4 << 20, "RELEASE_FRAME_UNAVAILABLE")
