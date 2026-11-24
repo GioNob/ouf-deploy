@@ -208,6 +208,18 @@ La rotta da rimuovere viene letta per ID. Se presente, deve sovrapporsi alla sos
 
 Il plan v2 mostra quante rotte sono da rimuovere, la sostitutiva di ciascuna e quali rotte sono già assenti. `apply` ricalcola le righe e verifica il digest approvato. Dopo creazioni e aggiornamenti, esegue `DELETE` per ogni rimozione e ne rilegge l'assenza. `return` e compensazione ricreano le rotte rimosse con il corpo `before` del journal e lo verificano con una rilettura esatta. La ripresa da `PENDING` riconcilia ogni rimozione con l'assenza o con il corpo precedente conservato nello snapshot e mantiene la baseline per il ritorno.
 
+**Ordine di rilascio (D-087).** Installare prima l’esecutore compatibile con v1, v2 e v3. Aggiornare quindi il binding DNS di Semantic nel profilo privato e avviare il plan del primo bundle v3. Il controllo sugli upstream si applica anche ai bundle v1 e v2.
+
+La v3 accetta nello stesso elenco ordinato le sostitutive v2 e le obsolete. Per un’obsoleta sono obbligatori `supersededBy: null`, un motivo pubblico e il `match` completo. Lo schema del bundle, il manifest e le dichiarazioni di ritiro hanno rispettivamente i codici `GATEWAY_BUNDLE_SCHEMA`, `GATEWAY_MANIFEST` e `GATEWAY_RETIRED`. Il digest canonico di `retired` comprende anche motivo e match.
+
+Per ogni obsoleta presente, il GET deve coincidere con tutti gli undici campi dichiarati. Un valore nullo nel match richiede l’assenza della chiave. Il confronto conserva tipi e ordine dei `vars` e verifica tutte le etichette. Una differenza dà `GATEWAY_RETIRE_MISMATCH` con l’ID. Un selettore uguale a quello di una rotta governata corrente o desiderata dà `GATEWAY_RETIRE_SUPERSEDED`. Il confronto considera URI, metodi, host, indirizzi remoti, `vars` e `filter_func`, anche per rotte disattivate.
+
+Il plan annota `routes/<id>: da rimuovere (obsoleta: <reason>)` oppure `routes/<id>: già assente`. Prima del DELETE l’apply confronta l’intero corpo con quello approvato. Ritorno e compensazione controllano che l’ID sia libero prima del PUT e rileggono il corpo ripristinato. Se un altro corpo occupa l’ID, `GATEWAY_RECONCILIATION_REQUIRED` conserva lo stato trovato. La catena degli snapshot permette di tornare al corpo del primo plan anche dopo più riprese.
+
+**Upstream (R-050).** Dopo la sostituzione dei segnaposto, plan e apply verificano gli host degli upstream incorporati e delle risorse `upstreams`. `GATEWAY_UPSTREAM_LITERAL_IP` segnala un host che non soddisfa il requisito DNS, inclusi IPv4 e IPv6 letterali. Il contesto pubblico indica la risorsa. Per un nome a etichetta singola l’esecutore legge dall’Engine i container in esecuzione sulle reti della generazione APISIX indicata nel profilo. Conta i CID distinti che espongono il nome del container, un alias o un `DNSNames` su un endpoint condiviso. Zero corrispondenze danno `GATEWAY_UPSTREAM_UNRESOLVED`, più CID danno `GATEWAY_UPSTREAM_AMBIGUOUS`.
+
+Per `services.bindings.ouf-semantic-registry`, il proprietario locale deve coincidere con il container attivo individuato da `originalProfile.containerName`. Il suo IPv4 su ciascun endpoint corrispondente deve coincidere con la riserva `IPAMConfig.IPv4Address` della stessa rete. Una discordanza dà `GATEWAY_UPSTREAM_MISMATCH`. Il plan annota i nomi con più etichette come «risoluzione esterna». Le osservazioni Docker e l’annotazione restano fuori dal digest. Il ritorno usa la generazione e lo snapshot approvati senza ripetere la verifica degli upstream.
+
 | Fase, claim → effetto → ricezione | Dopo il claim | Dopo l'effetto, prima della ricevuta | Dopo la ricevuta |
 |---|---|---|---|
 | Plan · prenotazione run → verifica bundle e GET di ogni risorsa → `gateway.plan.review`, `gateway.plan` | Nuovo plan | Ripete le letture, verifica generazione, package e stato rispetto a prima/dopo | Snapshot approvabile con nonce, parent e digest |
@@ -229,6 +241,13 @@ Nel PET del rilascio governato del Gateway (D-081, D-082), `Phases.test_plan_dig
 | Selettori e `vars`, deriva tra plan e apply, conflitto estraneo | `Phases.test_v2_retirement_rejects_disjoint_selectors_and_different_vars`, `Phases.test_v2_apply_rechecks_retirement_before_any_writes`, `Phases.test_v2_keeps_conflict_for_undeclared_legacy_route` |
 | Compensazione e ripresa | `Phases.test_v2_failed_second_delete_compensates_first_delete`, `Phases.test_v2_pending_apply_resumes_after_delete_and_keeps_return_baseline`, `Phases.test_v2_pending_return_redeletes_restored_route_on_recovery` |
 | Rilettura nell'APISIX usa e getta | `NativeRelease.test_v2_delete_and_return_on_apisix` (`OUF_GATEWAY_RELEASE_NATIVE=1`) |
+| Schema v3 e compatibilità del digest v2 | `Contract.test_v3_closed_bundle_manifest_and_retirements`, `Phases.test_v2_plan_digest_matches_original_retirement_contract` |
+| Obsoleta presente o assente, motivo, deriva fuori dal match, ritorno e ID rioccupato | `Phases.test_v3_delete_absent_annotation_and_exact_return` |
+| Undici chiavi del match, selettori governati e conflitto estraneo | `Phases.test_v3_literal_match_each_key_and_absence`, `Phases.test_v3_superseded_live_or_desired_and_undeclared_conflict` |
+| Snapshot, PENDING, intent, DELETE, risposta, GET, ricevuta e risultato | `Phases.test_v3_crash_boundaries_recover_first_snapshot` |
+| Seconda interruzione, ritorno fra due ID e compensazione con ID rioccupato | `Phases.test_v3_second_interruption_and_partial_return`, `Phases.test_v3_compensates_lost_delete_response_and_preserves_occupied_id`, `Phases.test_v3_interrupted_compensation_checks_package_and_generation` |
+| Host materializzati, DNS esterno, proprietà Docker e riserva Semantic | `Phases.test_upstream_literals_and_external_resolution`, `Phases.test_upstream_docker_ownership_and_semantic_reservation`, `Phases.test_upstream_map_form_keeps_addresses_private` |
+| DELETE e ripristino integrale su APISIX usa e getta | `NativeRelease.test_v3_obsolete_delete_and_return_on_apisix` (`OUF_GATEWAY_RELEASE_NATIVE=1`) |
 
 ## Rilascio di UDP e Ingestion
 

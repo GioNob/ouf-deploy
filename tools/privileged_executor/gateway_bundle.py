@@ -16,6 +16,7 @@ from module_release.provenance import select_artifact
 
 NAME = r"[A-Za-z][A-Za-z0-9_.-]{0,127}"  # contratto v1 rev. 1: nomi del registro D-065
 LIMIT = 32 << 20
+MATCH_FIELDS = "uri uris methods host hosts vars remote_addrs priority filter_func status labels"
 
 
 def sha(raw):
@@ -28,6 +29,53 @@ def matches(pattern, value):
 
 def fields(obj, names):
     return type(obj) is dict and set(obj) == set(names.split())
+
+
+def has_placeholder(value):
+    if isinstance(value, dict):
+        return "$installation" in value or any(has_placeholder(item) for item in value.values())
+    return isinstance(value, list) and any(has_placeholder(item) for item in value)
+
+
+def valid_obsolete_match(obj):
+    if not fields(obj, MATCH_FIELDS) or has_placeholder(obj):
+        return False
+    for key, value in obj.items():
+        if value is None:  # Explicitly require the field to be absent on GET.
+            continue
+        if key in ("uri", "host", "filter_func"):
+            valid = isinstance(value, str)
+        elif key in ("uris", "methods", "hosts", "remote_addrs"):
+            valid = isinstance(value, list) and all(isinstance(item, str) for item in value)
+        elif key == "vars":
+            valid = isinstance(value, list) and all(isinstance(clause, list) for clause in value)
+        elif key == "labels":
+            valid = isinstance(value, dict) and all(isinstance(item, str) for item in value.values())
+        else:
+            valid = type(value) is int and (key == "priority" or value in (0, 1))
+        if not valid:
+            return False
+    return True
+
+
+def verify_retired(retired, resources, version):
+    resource_ids = {row["id"] for row in resources}
+    route_ids = {row["id"] for row in resources if row["kind"] == "routes"}
+    previous = ""
+    for entry in retired:
+        need(type(entry) is dict and entry.get("kind") == "routes" and matches(ID, entry.get("id"))
+             and entry["id"] not in (".", "..") and entry["id"] > previous
+             and entry["id"] not in resource_ids, "GATEWAY_RETIRED")
+        previous = entry["id"]
+        if version == "v3" and entry.get("supersededBy") is None:
+            need(fields(entry, "kind id supersededBy reason match")
+                 and isinstance(entry["reason"], str) and entry["reason"].strip()
+                 and valid_obsolete_match(entry["match"]), "GATEWAY_RETIRED")
+        else:
+            need(fields(entry, "kind id supersededBy vars") and matches(ID, entry["supersededBy"])
+                 and entry["supersededBy"] in route_ids and type(entry["vars"]) is list and entry["vars"]
+                 and all(type(c) is list and c and all(isinstance(x, str) for x in c) for c in entry["vars"]),
+                 "GATEWAY_RETIRED")
 
 
 def substitute(value, types, values, used):
@@ -68,12 +116,13 @@ def verify(raw, ci, values):
         need(archive.read("SHA256SUMS") == sums.encode("ascii"), "GATEWAY_CHECKSUMS")
     bundle, manifest = json.loads(bundle_raw), json.loads(manifest_raw)
     need(canonical(bundle) == bundle_raw and canonical(manifest) == manifest_raw, "GATEWAY_CANONICAL_JSON")
-    v2 = type(bundle) is dict and bundle.get("schema") == "ouf.gateway-release-bundle.v2"
-    version = "v2" if v2 else "v1"
+    need(type(bundle) is dict and matches(r"ouf\.gateway-release-bundle\.v[123]", bundle.get("schema")),
+         "GATEWAY_BUNDLE_SCHEMA")
+    version = bundle["schema"].rsplit(".", 1)[1]
     names = "schema sourceRepository sourceCommit resources placeholders resourcesSha256"
-    if v2:
+    if version != "v1":
         names += " retired retiredSha256"
-    need(fields(bundle, names) and bundle["schema"] == f"ouf.gateway-release-bundle.{version}"
+    need(fields(bundle, names)
          and bundle["sourceRepository"] == ci["repository"] and bundle["sourceCommit"] == ci["sourceCommit"],
          "GATEWAY_BUNDLE_SCHEMA")
     resources, declarations = bundle["resources"], bundle["placeholders"]
@@ -89,7 +138,7 @@ def verify(raw, ci, values):
         "sourceCommit": ci["sourceCommit"], "workflowPath": ".github/workflows/" + ci["workflow"],
         "runId": str(ci["runId"]), "bundleSha256": sha(bundle_raw), "resourcesSha256": digest(resources),
         "placeholders": list(types)}
-    if v2:
+    if version != "v1":
         retired = bundle["retired"]
         need(type(retired) is list and digest(retired) == bundle["retiredSha256"], "GATEWAY_RETIRED")
         expected_manifest["retiredSha256"] = bundle["retiredSha256"]
@@ -107,22 +156,8 @@ def verify(raw, ci, values):
         result.append({**row, "body": substitute(row["body"], types, values, used)})
     need(used == set(types), "GATEWAY_UNUSED_PLACEHOLDER")
     verified = {"resources": result}
-    if v2:
-        resource_ids = {row["id"] for row in result}
-        route_ids = {row["id"] for row in result if row["kind"] == "routes"}
-        previous_id = ""
-        for entry in retired:
-            # The literal APISIX vars of the live route to delete: equivalent regexes can differ in text.
-            conditions = entry.get("vars") if type(entry) is dict else None
-            need(type(conditions) is list and conditions
-                 and all(type(c) is list and c and all(isinstance(x, str) for x in c) for c in conditions),
-                 "GATEWAY_RETIRED")
-            need(fields(entry, "kind id supersededBy vars") and entry["kind"] == "routes"
-                 and matches(ID, entry["id"]) and entry["id"] not in (".", "..")
-                 and entry["id"] > previous_id and entry["id"] not in resource_ids
-                 and matches(ID, entry["supersededBy"]) and entry["supersededBy"] in route_ids,
-                 "GATEWAY_RETIRED")
-            previous_id = entry["id"]
+    if version != "v1":
+        verify_retired(retired, result, version)
         verified["retired"] = retired
     return verified
 

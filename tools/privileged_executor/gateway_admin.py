@@ -6,6 +6,8 @@ import ipaddress
 import json
 import os
 from pathlib import Path
+import re
+import socket
 
 from gateway_bundle import ID, KINDS, LIMIT, matches
 from mandate import Held, canonical, need
@@ -24,6 +26,102 @@ def generation(engine, container):
     state = doc["State"]
     need(state["Running"] is True and state["Pid"] > 0, "GATEWAY_NOT_RUNNING")
     return {"cid": doc["Id"], "started": state["StartedAt"], "pid": state["Pid"]}
+
+
+DNS_LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", re.ASCII | re.I)
+SEMANTIC_BINDING = "services.bindings.ouf-semantic-registry"
+
+
+def upstream_error(code, resource):
+    error = Held(code)
+    error.public_context = f"resource={resource['kind']}/{resource['id']}"
+    return error
+
+
+def dns_host(value, resource):
+    if isinstance(value, str):
+        name = value.removesuffix(".")
+        if len(name) <= 253 and all(DNS_LABEL.fullmatch(label) for label in name.split(".")):
+            try:
+                # Also reject IPv4 spellings accepted by libc, e.g. 127.1.
+                socket.inet_aton(name)
+            except OSError:
+                return name.lower()
+    raise upstream_error("GATEWAY_UPSTREAM_LITERAL_IP", resource)
+
+
+def shared_endpoints(engine, gateway_cid):
+    gateway = engine.inspect(gateway_cid)
+    networks = {ep["NetworkID"] for ep in gateway["NetworkSettings"]["Networks"].values() if ep["NetworkID"]}
+    owners = {}
+    for summary in engine.api("GET", "/containers/json"):
+        if not any(ep["NetworkID"] in networks for ep in summary["NetworkSettings"]["Networks"].values()):
+            continue
+        peer = engine.inspect(summary["Id"])
+        if peer["State"]["Running"] is not True:
+            continue
+        for ep in peer["NetworkSettings"]["Networks"].values():
+            if ep["NetworkID"] in networks:
+                names = [peer["Name"].removeprefix("/"), *(ep.get("Aliases") or []), *(ep.get("DNSNames") or [])]
+                for name in names:
+                    owners.setdefault(name.lower(), {}).setdefault(peer["Id"], {})[ep["NetworkID"]] = ep["IPAddress"]
+    return owners
+
+
+def check_semantic_owner(engine, name, candidates, resource):
+    active = engine.inspect(name, missing=True) if name else None
+    if (not active or active["Name"] != "/" + name or active["State"]["Running"] is not True
+            or active["Id"] not in candidates):
+        raise upstream_error("GATEWAY_UPSTREAM_MISMATCH", resource)
+    endpoints = {ep["NetworkID"]: ep for ep in active["NetworkSettings"]["Networks"].values()}
+    for network, ipv4 in candidates[active["Id"]].items():
+        endpoint = endpoints.get(network, {})
+        reserved = (endpoint.get("IPAMConfig") or {}).get("IPv4Address")
+        if not ipv4 or ipv4 != reserved or ipv4 != endpoint.get("IPAddress"):
+            raise upstream_error("GATEWAY_UPSTREAM_MISMATCH", resource)
+
+
+def node_hosts(resource):
+    body = resource["body"]
+    upstream = body if resource["kind"] == "upstreams" else body.get("upstream", {})
+    if not isinstance(upstream, dict):
+        raise upstream_error("GATEWAY_UPSTREAM_LITERAL_IP", resource)
+    nodes = upstream.get("nodes", [])
+    if isinstance(nodes, dict):
+        # APISIX also accepts a map keyed by host:port.
+        for address in nodes:
+            host, port_separator, _ = address.rpartition(":")
+            yield dns_host(host if port_separator else address, resource)
+    elif isinstance(nodes, list):
+        for node in nodes:
+            yield dns_host(node.get("host") if isinstance(node, dict) else None, resource)
+    else:
+        raise upstream_error("GATEWAY_UPSTREAM_LITERAL_IP", resource)
+
+
+def check_upstreams(profile, semantic_profile, identity, resources):
+    local, external = {}, set()
+    for resource in resources:
+        for host in node_hosts(resource):
+            if "." in host:
+                external.add((resource["kind"], resource["id"]))
+            else:
+                local.setdefault(host, resource)
+    if not local:
+        return external
+
+    engine = Docker(profile)
+    owners = shared_endpoints(engine, identity["cid"])
+    semantic = profile["values"].get(SEMANTIC_BINDING)
+    for host, resource in local.items():
+        candidates = owners.get(host, {})
+        if not candidates:
+            raise upstream_error("GATEWAY_UPSTREAM_UNRESOLVED", resource)
+        if len(candidates) != 1:
+            raise upstream_error("GATEWAY_UPSTREAM_AMBIGUOUS", resource)
+        if isinstance(semantic, str) and host == semantic.removesuffix(".").lower():
+            check_semantic_owner(engine, semantic_profile.get("containerName"), candidates, resource)
+    return external
 
 
 @contextmanager

@@ -11,7 +11,7 @@ import time
 import unittest
 from unittest.mock import Mock, patch
 
-from test_gateway_release import LEGACY_VARS, MARKER, REQ, ROOT, SECRET, artifact, bundle, mandate, operation, retirement, row, verify
+from test_gateway_release import LEGACY_VARS, MARKER, REQ, ROOT, SECRET, artifact, bundle, mandate, operation, obsolete, retirement, row, verify
 from gateway_admin import Admin, AdminRequestError, connect
 
 
@@ -33,8 +33,8 @@ VALUES = {
     "iam.workloadClients.mcpServer": "fixture-mcp",
     "installationId": "fixture",
     "revision": "fixture-revision",
-    "services.bindings.ouf-onboarding": "127.0.0.1",
-    "services.bindings.ouf-semantic-registry": "127.0.0.1",
+    "services.bindings.ouf-onboarding": "upstream.fixture.test",
+    "services.bindings.ouf-semantic-registry": "upstream.fixture.test",
     "services.ports.ouf-onboarding": 18080,
     "services.ports.ouf-semantic-registry": 18081,
 }
@@ -92,7 +92,7 @@ def assert_readback(live, desired, *, exact=False):
 def seed_route(admin, target):
     # A standalone route needs routing or plugin configuration in addition to its URI.
     body = {"uri": "/" + target["id"], "status": 1, "priority": 0,
-            "upstream": {"type": "roundrobin", "nodes": {"127.0.0.1:8080": 1}}}
+            "upstream": {"type": "roundrobin", "nodes": {"upstream.fixture.test:8080": 1}}}
     written = admin.write(target, body)
     live = admin.get(target)
     assert_readback(written, body)
@@ -121,7 +121,7 @@ class WriteReadiness(unittest.TestCase):
     def test_retries_startup_then_reads_back_same_route(self):
         admin = Mock()
         written = {"uri": "/target", "status": 1, "priority": 0,
-                   "upstream": {"type": "roundrobin", "nodes": {"127.0.0.1:8080": 1}}}
+                   "upstream": {"type": "roundrobin", "nodes": {"upstream.fixture.test:8080": 1}}}
         admin.write.side_effect = [AdminRequestError(503), written]
         admin.get.return_value = written
         with patch(__name__ + ".connect", return_value=nullcontext((admin, None))), patch.object(time, "sleep"):
@@ -180,7 +180,7 @@ class NativeRelease(unittest.TestCase):
             "admin": {"admin_listen": {"ip": "127.0.0.1", "port": 9180}, "allow_admin": ["127.0.0.1/32"],
                       "admin_key": [{"name": "admin", "key": key, "role": "admin"}]},
             "etcd": {"host": ["http://" + name + "-etcd:2379"]}}}))
-        cid = docker("run", "-d", "--network", net, "--name", name, "-v",
+        cid = docker("run", "-d", "--network", net, "--network-alias", "upstream.fixture.test", "--name", name, "-v",
                      str(config)+":/usr/local/apisix/conf/config.yaml:ro",
                      "-v", str(assets / "ouf_json_precision.lua")+":/usr/local/apisix/conf/ouf_json_precision.lua:ro",
                      "-v", str(assets / "jsonschema.lua")+":/usr/local/apisix/deps/share/lua/5.1/jsonschema.lua:ro",
@@ -212,12 +212,12 @@ class NativeRelease(unittest.TestCase):
         return result
 
     @contextmanager
-    def selected(self, invalid=False, *, retired=None):
+    def selected(self, invalid=False, *, retired=None, version=None):
         body = dict(self.baseline, desc=MARKER, plugin_config_id="settings",
                     plugins={"limit-count": {"count": 5, "time_window": 60, "key": "remote_addr"}})
         if invalid:
             body["methods"] = "invalid-method-list"
-        pair = artifact([self.plugins, row("routes", "target", body)], retired=retired)
+        pair = artifact([self.plugins, row("routes", "target", body)], retired=retired, version=version)
         with patch.object(operation, "package", side_effect=lambda *_: (pair[0], verify(pair))):
             yield
 
@@ -323,6 +323,23 @@ class NativeRelease(unittest.TestCase):
         with connect(self.profile) as (admin, _):
             assert_readback(admin.get(legacy), before, exact=True)
             assert_readback(admin.get(self.route), self.baseline, exact=True)
+            assert_readback(admin.get(self.outside), self.foreign, exact=True)
+
+    def test_v3_obsolete_delete_and_return_on_apisix(self):
+        target = row("routes", "obsolete", {})
+        with connect(self.profile) as (admin, _):
+            before = seed_route(admin, target)
+        with self.selected(retired=[obsolete("obsolete", before)], version="v3"):
+            plan = self.phase(REQ)
+            self.assertEqual(plan["changes"][-1]["action"], "delete")
+            receipt = self.phase(dict(REQ, phase="apply", digest=plan["digest"]))
+        with connect(self.profile) as (admin, _):
+            self.assertIsNone(admin.get(target))
+        back = dict(operation="gateway-release", run="71", attempt="1", commit=REQ["commit"],
+                    phase="return", releaseRun=REQ["run"], digest=receipt["digest"])
+        self.assertEqual(self.phase(back)["status"], "RETURNED")
+        with connect(self.profile) as (admin, _):
+            assert_readback(admin.get(target), before, exact=True)
             assert_readback(admin.get(self.outside), self.foreign, exact=True)
 
     def test_published_release_recovers_first_put_and_returns_to_original_snapshot(self):

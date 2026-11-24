@@ -3,7 +3,7 @@ import json
 import re
 import secrets
 
-from gateway_admin import AdminRequestError, connect
+from gateway_admin import AdminRequestError, check_upstreams, connect
 from gateway_bundle import package
 from gateway_policy import MAX_CHANGE_PATHS
 from module_release.contract import diagnostic
@@ -86,9 +86,46 @@ def selectors_overlap(left, right):
                 and (not hosts or not other_hosts or hosts & other_hosts))
 
 
+def effective_selector(body):
+    # Priority and status affect route precedence/activation, not which requests match.
+    addresses = set(body.get("remote_addrs") or [])
+    if body.get("remote_addr"):
+        addresses.add(body["remote_addr"])
+    uris, methods, hosts = route_selectors(body)
+    return (uris, methods, {host.lower() for host in hosts}, addresses,
+            canonical(body.get("vars") or []), body.get("filter_func") or "")
+
+
+def check_retirement(entry, before, desired, governed):
+    successor = entry["supersededBy"]
+    if successor is None:
+        match = entry["match"]
+        # Null in the declaration requires absence, even a live null is different.
+        expected = {key: value for key, value in match.items() if value is not None}
+        actual = {key: before[key] for key in match if key in before}
+        # A singular remote_addr is an additional selector outside the closed match.
+        code = "GATEWAY_RETIRE_MISMATCH"
+        if canonical(actual) == canonical(expected) and "remote_addr" not in before:
+            selector = effective_selector(before)
+            if all(selector != effective_selector(body) for body in governed):
+                return
+            code = "GATEWAY_RETIRE_SUPERSEDED"
+        context = "retirement=" + entry["id"]
+    else:
+        if (selectors_overlap(route_selectors(before), route_selectors(desired[successor]))
+                and "vars" in before and canonical(before["vars"]) == canonical(entry["vars"])):
+            return
+        code = "GATEWAY_RETIRE_MISMATCH"
+        context = f"retirement={entry['id']}~{successor}"
+    error = Held(code)
+    error.public_context = context
+    raise error
+
+
 class GatewayRelease:
     def __init__(self, cfg, root, req):
         self.profile = cfg["gateway"]
+        self.semantic_profile = cfg.get("originalProfile", {})
         self.req = req
         self.root = root
         self.path = Journal(root / req["run"]).path
@@ -118,11 +155,14 @@ class GatewayRelease:
             self.diagnose(stage, row, paths)
             raise Held(code)
 
-    def check_state(self, admin, rows, side):
+    def check_state(self, admin, rows, side, obsolete=()):
         for row in rows:
             stage = "check-" + side
             live = self.observe(stage, row, admin.get)
-            self.verify(stage, row, live, row[side], "GATEWAY_LIVE_DRIFT", exact=side == "before")
+            code = "GATEWAY_LIVE_DRIFT"
+            if side == "after" and row["kind"] == "routes" and row["id"] in obsolete:
+                code = "GATEWAY_RECONCILIATION_REQUIRED"
+            self.verify(stage, row, live, row[side], code, exact=side == "before")
 
     def plan_rows(self, admin, resources, retired, interrupted, changes=None):
         rows = []
@@ -151,12 +191,22 @@ class GatewayRelease:
                 change = dict(kind=resource["kind"], id=resource["id"], action=action)
                 if action == "update":
                     # Diagnostics end with ": reason"; a quoted JSON key can itself contain ": ".
-                    paths = [entry.rsplit(": ", 1)[0] for entry in diff[:MAX_CHANGE_PATHS]]
-                    if len(diff) > MAX_CHANGE_PATHS:
-                        paths.append(f"… {len(diff) - MAX_CHANGE_PATHS} altri")
+                    # In the APISIX map form each node key contains an installation address.
+                    nodes_path = "nodes" if resource["kind"] == "upstreams" else "upstream.nodes"
+                    upstream = after if resource["kind"] == "upstreams" else after.get("upstream", {})
+                    paths = [entry.rsplit(": ", 1)[0] for entry in diff]
+                    if isinstance(upstream, dict) and isinstance(upstream.get("nodes"), dict):
+                        paths = list(dict.fromkeys(nodes_path if path.startswith((nodes_path + "[", nodes_path + "."))
+                                                   else path for path in paths))
+                    count = len(paths)
+                    paths = paths[:MAX_CHANGE_PATHS]
+                    if count > MAX_CHANGE_PATHS:
+                        paths.append(f"… {count - MAX_CHANGE_PATHS} altri")
                     change["paths"] = paths
                 changes.append(change)
         desired = {row["id"]: row["after"] for row in rows if row["kind"] == "routes"}
+        governed = list(desired.values()) + [row["before"] for row in rows
+                                             if row["kind"] == "routes" and row["before"] is not None]
         for index, entry in enumerate(retired, start=len(resources)):
             kind, ident, successor = entry["kind"], entry["id"], entry["supersededBy"]
             if interrupted is not None:
@@ -165,14 +215,7 @@ class GatewayRelease:
                      "GATEWAY_PENDING_PACKAGE_DRIFT")
             before = self.observe("plan-get", entry, admin.get)
             if before is not None:
-                replacement = desired[successor]
-                # Delete only the declared duplicate: same selectors as the replacement and the exact
-                # literal vars published in the bundle.
-                if (not selectors_overlap(route_selectors(before), route_selectors(replacement))
-                        or "vars" not in before or canonical(before["vars"]) != canonical(entry["vars"])):
-                    error = Held("GATEWAY_RETIRE_MISMATCH")
-                    error.public_context = f"retirement={ident}~{successor}"
-                    raise error
+                check_retirement(entry, before, desired, governed)
                 if interrupted is not None:
                     self.verify("pending-before", entry, before, previous["before"],
                                 "GATEWAY_PENDING_LIVE_DRIFT", exact=True)
@@ -181,7 +224,10 @@ class GatewayRelease:
             if changes is not None:
                 change = dict(kind=kind, id=ident, action=action)
                 if action == "delete":
-                    change["supersededBy"] = successor
+                    if successor is None:
+                        change["reason"] = entry["reason"]
+                    else:
+                        change["supersededBy"] = successor
                 changes.append(change)
         return rows
 
@@ -296,7 +342,7 @@ class GatewayRelease:
                 original = self.original_snapshot(plan, identity)
                 if "returnBaseline" in plan:
                     need(digest(original) == plan["returnBaseline"], "GATEWAY_RETURN_DRIFT")
-                self.check_state(admin, original["rows"], "after")
+                self.check_state(admin, original["rows"], "after", original.get("obsolete", ()))
                 self.transition(admin, original, review, current, original["parent"])
             return {"status": "RETURNED", "digest": req["digest"]}
 
@@ -315,11 +361,15 @@ class GatewayRelease:
             if pending:
                 need(original["ci"] == ci, "GATEWAY_PENDING_PACKAGE_DRIFT")
             changes = [] if phase == "plan" else None
+            external = check_upstreams(self.profile, self.semantic_profile, identity, verified["resources"])
             rows = self.plan_rows(admin, verified["resources"], verified.get("retired", []),
                                   original["rows"] if pending else None, changes)
             self.check_route_conflicts(admin, rows)
             plan = dict(scope=intent(req), profile=digest(self.profile), generation=identity, ci=ci,
                         rows=rows, parent=current, nonce=nonce)
+            obsolete = [entry["id"] for entry in verified.get("retired", []) if entry["supersededBy"] is None]
+            if obsolete:
+                plan["obsolete"] = obsolete
             if pending:
                 plan["returnBaseline"] = digest(original)
             stamp = digest(plan)
@@ -329,6 +379,9 @@ class GatewayRelease:
                 counts = {k: sum(r["action"] == k for r in rows) for k in ("create", "update", "unchanged")}
                 if "retired" in verified:
                     counts["delete"] = sum(row["action"] == "delete" for row in rows)
+                for change in changes:
+                    if (change["kind"], change["id"]) in external:
+                        change["externalResolution"] = True
                 result = {"status": "PLANNED", "digest": stamp, "counts": counts, "changes": changes}
                 if pending:
                     result["recoveringRun"] = current["run"]
@@ -387,7 +440,8 @@ class GatewayRelease:
                     # GET and PUT may expose different defaults. Even if the old
                     # body is a subset of the new one, PUT it back to remove additions.
                     # A nonconforming ACK can identify only its exact observed body.
-                    if not conforms(live, row[new], exact=exact) and canonical(live) != canonical(ack):
+                    obsolete = exact and row["id"] in plan.get("obsolete", ())
+                    if not conforms(live, row[new], exact=exact) and (obsolete or canonical(live) != canonical(ack)):
                         self.verify("compensation-drift", row, live, row[old], "GATEWAY_COMPENSATION_DRIFT", exact=exact)
                         continue
                     # A missing old body selects DELETE; GET must then prove absence.
