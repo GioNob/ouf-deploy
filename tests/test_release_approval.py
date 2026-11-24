@@ -20,6 +20,7 @@ STAMP = "a" * 64
 SECRET = "private-fixture-marker"
 ROW = dict(version="21", script="V21__change.sql", type="SQL", checksum=-7, success=True)
 SUFFIX = "… vedi il riepilogo del job"
+RETENTION = dict(imageDigest="sha256:" + "a"*64, databaseRef="b"*64, sqlSha256="c"*64, ownerAclSha256="d"*64)
 
 
 class Approval(unittest.TestCase):
@@ -28,7 +29,7 @@ class Approval(unittest.TestCase):
         steps = spec["jobs"][phase]["steps"]
         command = next(step["run"] for step in steps if step.get("id") in ("intent", "call"))
         env = dict(GITHUB_RUN_ID="70", GITHUB_RUN_ATTEMPT="1", GITHUB_SHA="b" * 40,
-                   DIGEST=STAMP, PHASE=phase, REVIEW_TOKEN=SECRET) | env
+                   DIGEST=STAMP, PHASE=phase, REVIEW_TOKEN=SECRET, RETENTION_PLAN="") | env
         with tempfile.TemporaryDirectory() as tmp, chdir(ROOT):
             summary, output = Path(tmp, "summary"), Path(tmp, "output")
             env.update(GITHUB_STEP_SUMMARY=str(summary), GITHUB_OUTPUT=str(output))
@@ -105,6 +106,8 @@ class Approval(unittest.TestCase):
                             databaseReview=dict(migrations=[dict(version=21, checksum=STAMP, body=SECRET)], migrationsSha256=STAMP),
                             candidateReview=dict(candidateCmdSha256="c"*64, predecessorCmdSha256="d"*64,
                                                  removedArgs=[], envOperations={"OTHER": SECRET}, account=SECRET))
+                if module == "mcp":
+                    plan["retentionReview"] = RETENTION
                 outputs = self.review(self.client(wf, "plan", plan, MODULE=module), "apply",
                                       f"Modulo {module} · stato PLANNED", "version=21", "c"*64, "d"*64,
                                       "ID immagine candidata e predecessore: non esposti")
@@ -122,6 +125,28 @@ class Approval(unittest.TestCase):
                     self.assertEqual(self.client(wf, "intent", MODULE=module, RETURN_PLAN="")[0], [])
                     rolled = dict(status="ROLLED_BACK", digest=STAMP)
                     self.assertEqual(self.client(wf, "rollback", rolled, MODULE=module)[0], [])
+
+    def test_mcp_retention_client_and_approval_paths(self):
+        wf, admin, batch = "mcp-module-release", "mcp-retention-admin-019", "analysis-retention-once"
+        env = dict(MODULE="mcp")
+        facts = [f"{key} = {value}" for key, value in RETENTION.items()]
+        plan = dict(status="PLANNED", digest=STAMP, retentionReview=RETENTION,
+                    databaseReview=dict(migrations=[dict(version=19, checksum=STAMP)]))
+        self.assertEqual(self.client(wf, "plan", plan, **env)[2]["retention"], "true")
+        for phase in ("apply", "migrate"):
+            ready = dict(status="READY", digest=STAMP, retentionReview=RETENTION)
+            self.review(self.client(wf, phase, ready, **env), admin, *facts)
+        self.review(self.client(wf, "intent", RETURN_PLAN="", RETENTION_PLAN=STAMP, **env), admin, STAMP)
+        receipt = dict(**RETENTION, status="VERIFIED", planSha256=STAMP)
+        response = dict(digest=STAMP, status="VERIFIED", retentionReview=receipt)
+        self.review(self.client(wf, admin, response, **env), batch, "Un solo batch di retention", *facts)
+        done = dict(response, status="SUCCEEDED")
+        self.assertEqual(self.client(wf, batch, done, **env)[2], {"digest": STAMP, "status": "SUCCEEDED"})
+        for phase, result in (("plan", dict(plan, retentionReview=None)), (admin, dict(response, status="READY")),
+                              (admin, dict(response, retentionReview=dict(receipt, planSha256="f"*64))),
+                              (batch, dict(done, retentionReview=dict(receipt, status="HELD")))):
+            with self.subTest(phase=phase), self.assertRaises(SystemExit):
+                self.client(wf, phase, result, **env)
 
     def test_module_image_ids_in_approval_and_summary(self):
         images = dict(candidateImageId="sha256:" + "1" * 64, predecessorImageId="sha256:" + "2" * 64)

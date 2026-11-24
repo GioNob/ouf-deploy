@@ -46,7 +46,7 @@ SELECT json_build_object('databaseOid',(SELECT oid::text FROM pg_database WHERE 
 ROLLBACK;"""
 
 
-def database_snapshot(engine_socket, binding, old, pg):
+def database_target(binding, old, pg):
     require(pg["Id"] == binding["postgresCid"] and pg["State"]["Running"], "POSTGRES_CHANGED")
     values = [v.partition("=")[2] for v in old["Config"]["Env"] if v.partition("=")[0] == binding["urlEnv"]]
     require(len(values) == 1, "DATABASE_BINDING_REQUIRED")
@@ -61,10 +61,15 @@ def database_snapshot(engine_socket, binding, old, pg):
     require(any(ep["NetworkID"] in networks and url.hostname in
                 [pg["Name"].lstrip("/"), ep["IPAddress"], *(ep.get("Aliases") or []), *(ep.get("DNSNames") or [])]
                 for ep in pg["NetworkSettings"]["Networks"].values()), "DATABASE_HOST_CHANGED")
+    return url, role, name
+
+
+def database_snapshot(engine_socket, binding, old, pg, *, sql=SQL):
+    url, role, name = database_target(binding, old, pg)
     args = ["/usr/bin/docker", "--host", "unix://" + engine_socket, "exec", "-i", pg["Id"], "psql",
             "-XwqAt", "-v", "ON_ERROR_STOP=1", "-h", binding["socket"], "-p", str(url.port or 5432),
             "-U", role, "-d", name]
-    result = subprocess.run(args, input=SQL.encode(), stdout=subprocess.PIPE,
+    result = subprocess.run(args, input=sql.encode(), stdout=subprocess.PIPE,
                             stderr=subprocess.DEVNULL, timeout=12)
     require(result.returncode == 0 and len(result.stdout) <= 4 << 20, "DATABASE_READ_FAILED")
     return json.loads(result.stdout)
@@ -81,9 +86,15 @@ def observe(rt, old):
     return {"databaseOid": value["databaseOid"], "history": rows, "schema": sorted(map(digest, value["schema"]))}
 
 
-def verify(rt, old, baseline, migration, *, migrated=False):
+def verify(rt, old, baseline, migration, *, migrated=False, additive_routines=()):
     now = observe(rt, old)
     items = migration["migrations"] if migrated else []
+    if additive_routines:
+        require(all(item in now["schema"] for item in additive_routines), "DATABASE_CHANGED")
+        expected = migration["targetSchemaSha256"] if items else digest(baseline["schema"])
+        if digest(now["schema"]) != expected:
+            for item in additive_routines:
+                now["schema"].remove(item)
     if not items:
         require(now == baseline, "DATABASE_CHANGED")
         return

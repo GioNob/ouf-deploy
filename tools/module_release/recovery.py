@@ -40,6 +40,8 @@ def proposal(p, rt):
                 "journal": journal, "frames": frames}
     if "candidateReview" in body:
         proposal["candidateReview"] = body["candidateReview"]
+    if "mcp-retention-admin-019" in body:
+        proposal["mcp-retention-admin-019"] = body["mcp-retention-admin-019"]
     return proposal
 
 
