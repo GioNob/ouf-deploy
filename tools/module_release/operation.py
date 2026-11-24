@@ -382,7 +382,12 @@ def restore(p, rt, old, new, root):
         ep = networks[name]
         if name not in attached:
             rt.connect(cid, ep["NetworkID"], endpoint(ep))
-    record(root, "restore-start.json", {"cid": cid})
+    if (root / "restore-start.json").exists():
+        require(doc["State"]["Status"] == "exited" and doc["State"]["Pid"] == 0
+                and doc["State"]["StartedAt"] == old["State"]["StartedAt"]
+                and doc["RestartCount"] == old["RestartCount"] and not (root / "restore-generation.json").exists(),
+                "RESTORE_GENERATION_UNCONFIRMED")
+    confirm(root, "restore-start.json", {"cid": cid})
     rt.start(cid)
     record(root, "restore-generation.json", {"generation": snapshot(rt.inspect(cid))})
     return release(p, rt, old, cid, root, restoring=True)["readyHttp"]

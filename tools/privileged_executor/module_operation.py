@@ -64,17 +64,54 @@ class ModuleRelease:
         return {"planSha256": source, "imageId": plan["ci"]["imageId"], "successorCid": receipt["successorCid"],
                 "successorFrameSha256": receipt["successorFrameSha256"]}
 
+    def last_claim(self, live):
+        parent = Path(self.profile["journal"])
+        lock = parent / (self.req["module"] + ".lock")
+        owner = lock / "owner.json"
+        if owner.is_file():
+            stamp = read(owner)["planSha256"]
+        elif self.req["phase"] == "rollback":
+            stamp = self.req["digest"]
+        elif (self.path / "plan").is_file():
+            proposal = read(self.path / "plan")
+            stamp = proposal.get("plan", {}).get("sourcePlan", proposal.get("planSha256"))
+        else:
+            stamp = None
+        if not hex64(stamp):
+            # A crash can release the module lock before publishing the ready pointer.
+            # For diagnostics only, match the live CID to its immutable CREATE receipt.
+            cids = {row["cid"] for row in live.values() if isinstance(row, dict)}
+            matches = []
+            for receipt in parent.glob("*/created.json"):
+                source = receipt.parent.name
+                if hex64(source) and read(receipt)["cid"] in cids:
+                    plan = read(receipt.parent / "plan.json")
+                    if plan["module"] == self.req["module"] and digest(plan) == source:
+                        matches.append(source)
+            if len(matches) != 1:
+                return "unobserved" if matches else "none"
+            stamp, = matches
+        directory = parent / stamp
+        intents = [p for p in directory.glob("*.json") if p.name.endswith(("-intent.json", "-signal.json"))
+                   or p.name in ("restore-start.json", "migration-review-consumed.json")]
+        latest = max(intents, key=lambda p: (p.stat().st_mtime_ns, p.name), default=None)
+        return latest.name if latest else "none"
+
     def execute(self, review):
         try:
             return self.execute_phase(review)
         except Exception as error:
             code = str(error) if isinstance(error, (Held, ReleaseHeld)) else operation.reason(error)
             live = recovery.residual(self.profile, self.runtime)
-            result = dict(status="HELD", reason=code, owner=self.req["module"], residual=live)
+            try:
+                claim = self.last_claim(live)
+            except (OSError, ValueError, KeyError, TypeError, AttributeError, Held):
+                claim = "unobserved"
+            result = dict(status="HELD", reason=code, owner=self.req["module"], residual=live, lastClaim=claim)
             save(self.path / (self.req["phase"] + ".held"), result)
             residual = ",".join(f"{role}={row['state']}({row['cid']},nets={row['networks']})"
                                 if isinstance(row, dict) else f"{role}={row}" for role, row in live.items())
-            raise Held(f"{code} owner={self.req['module']} residual={residual}") from None
+            raise Held(f"{code} owner={self.req['module']} residual={residual} claim={claim}") from None
 
     def execute_phase(self, review):
         req, path = self.req, self.path
