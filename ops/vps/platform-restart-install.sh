@@ -14,7 +14,10 @@ repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P)
 stage=$(mktemp -d)
 trap 'rm -rf -- "$stage"' EXIT
 files=(scripts/platform-restart.py ops/vps/systemd/ouf-platform-start.service
-       tools/platform_restart/{__init__,controller,docker,install,profile}.py)
+       tools/platform_restart/__init__.py tools/platform_restart/controller.py
+       tools/platform_restart/docker.py tools/platform_restart/identity.py
+       tools/platform_restart/install.py tools/platform_restart/profile.py
+       tools/module_release/__init__.py tools/module_release/contract.py tools/module_release/frame.py)
 for file in "${files[@]}"; do
   mkdir -p -- "$stage/$(dirname -- "$file")"
   GIT_ALLOW_PROTOCOL='' GIT_NO_LAZY_FETCH=1 git --no-replace-objects -C "$repo" cat-file blob "$C:$file" > "$stage/$file"

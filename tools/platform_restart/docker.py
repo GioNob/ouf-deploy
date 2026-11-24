@@ -1,5 +1,7 @@
 """Local Engine adapter. Project inspect fields inside Docker's formatter."""
 import hashlib
+import http.client
+import socket
 import ipaddress
 import json
 import os
@@ -133,6 +135,32 @@ class Docker:
         else:
             require(action == "start", "ACTION_INVALID")
             self.command("start", cid, deadline=deadline)
+
+    def release_launch(self, cid):
+        require(isinstance(cid, str) and HEX.fullmatch(cid), "INVALID_CID")
+        raw = self.command("inspect", "--type", "container", "--format", GATE_INSPECT, cid)
+        found, name, _, _, _, image, entry, cmd = json.loads(raw)
+        return dict(Id=found, Name=name, Image=image, Config=dict(Entrypoint=entry, Cmd=cmd))
+
+    def release_frame(self, cid):
+        # Rehydrate the immutable fields for the producer's API 1.44 snapshot.
+        # The complete private document stays in memory.
+        require(isinstance(cid, str) and HEX.fullmatch(cid), "INVALID_CID")
+        self.verify()
+        conn = http.client.HTTPConnection("localhost", timeout=self.cfg["inventoryTimeoutSeconds"])
+        try:
+            conn.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            conn.sock.settimeout(conn.timeout)
+            conn.sock.connect(self.cfg["dockerSocket"])
+            conn.request("GET", "/v1.44/containers/" + cid + "/json", headers={"Connection": "close"})
+            response = conn.getresponse()
+            raw = response.read((4 << 20) + 1)
+            require(response.status == 200 and len(raw) <= 4 << 20, "RELEASE_FRAME_UNAVAILABLE")
+            return json.loads(raw)
+        except (http.client.HTTPException, OSError, ValueError):
+            raise Held("RELEASE_FRAME_UNAVAILABLE") from None
+        finally:
+            conn.close()
 
     def gate_state(self, step, gate, deadline):
         cid = step["observation"]["cid"]

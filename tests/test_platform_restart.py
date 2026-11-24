@@ -3,6 +3,9 @@ import copy
 import io
 import json
 import os
+import re
+import shlex
+import shutil
 from pathlib import Path
 import stat
 import subprocess
@@ -13,9 +16,12 @@ from unittest.mock import patch
 from types import SimpleNamespace
 import uuid
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
+
 from tools.platform_restart.controller import Controller, http_ready
 from tools.platform_restart.docker import Docker, GATE_INSPECT, pid1_state
-from tools.platform_restart import install
+from tools.platform_restart import identity, install
 from tools.platform_restart.profile import GATE_LOOP, Held, canonical, load_profile, sha
 
 
@@ -245,6 +251,26 @@ class PlatformTests(unittest.TestCase):
         self.assertTrue(self.controller.ready(row, probe, 9, stability))
         row["restarting"] = True
         self.assertFalse(self.controller.ready(row, probe, 9, stability))
+
+    def test_delivery_pin_matches_current_commit(self):
+        installer, operator = [(ROOT / "ops/vps" / name).read_text() for name in
+                               ("platform-restart-install.sh", "platform-restart.sh")]
+        def pin(script):
+            return re.search(r"(?m)^C=([0-9a-f]{40})$", script)[1]
+        commit = pin(installer)
+        self.assertEqual(commit, pin(operator))
+        files = shlex.split(re.search(r"(?s)\nfiles=\(([^)]+)\)", installer)[1])
+        def blob(revision, path):
+            run = subprocess.run(["git", "--no-replace-objects", "rev-parse", "--verify", revision + ":" + path],
+                                 cwd=ROOT, capture_output=True, env={**os.environ, "GIT_NO_LAZY_FETCH": "1",
+                                                                     "GIT_ALLOW_PROTOCOL": ""})
+            return run.stdout.strip() if run.returncode == 0 else None
+        mismatched = []
+        for path in files:
+            expected = blob(commit, path)
+            if not expected or expected != blob("HEAD", path):
+                mismatched.append(path)
+        self.assertEqual(mismatched, [], "Update both launcher pins after review")
 
     def test_installed_archive_and_enable_proof(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -529,6 +555,59 @@ class GatedRestartTests(unittest.TestCase):
         self.assertEqual(signals, [self.engine.rows[n]["cid"] for n in ("sample-0", "sample-1")])
         self.assertEqual(self.engine.changes, [("start", "sample-0"), ("start", "sample-1")])
 
+    def test_interruptions_resume_or_hold_without_repeating_effects(self):
+        class Interrupted(BaseException):
+            pass
+
+        for mode, action, cuts in (("apply", "start", ("change", "signal", "verified")),
+                                   ("boot", "start", ("change", "signal", "verified")),
+                                   ("apply", "stop", ("change", "verified"))):
+            for cut in cuts:
+                with self.subTest(mode=mode, action=action, cut=cut):
+                    fixture = GatedRestartTests()
+                    try:
+                        fixture.setUp()
+                        ctrl, engine = fixture.ctrl, fixture.engine
+                        if action == "stop":
+                            self.assertEqual(fixture.start()["status"], "SUCCEEDED")
+                        engine.trace.clear()
+                        engine.changes.clear()
+                        obj, method = {"change": (engine, "change"), "signal": (engine, "command"),
+                                       "verified": (ctrl, "level")}[cut]
+                        original = getattr(obj, method)
+                        def interrupt(*args, **kwargs):
+                            result = original(*args, **kwargs)
+                            if cut != "signal" or args[0] == "kill":
+                                raise Interrupted
+                            return result
+                        def invoke(driver, boot):
+                            if mode == "boot":
+                                return driver.run(mode, action, boot_id=boot)
+                            plan = driver.run("plan", action)
+                            return driver.run(mode, action, plan["planSha256"])
+                        boot = str(uuid.uuid4())
+                        with patch.object(obj, method, side_effect=interrupt), self.assertRaises(Interrupted):
+                            invoke(ctrl, boot)
+                        resumed = Controller(ctrl.cfg, ctrl.profile_hash, engine, clock=ctrl.clock,
+                                             sleep=ctrl.sleep, tcp=ctrl.tcp)
+                        if mode == "boot":
+                            self.assertEqual(invoke(resumed, boot)["reason"], "BOOT_ALREADY_ATTEMPTED")
+                        with contextlib.redirect_stderr(io.StringIO()):
+                            result = invoke(resumed, str(uuid.uuid4()))
+                        if action == "start" and cut == "change":
+                            self.assertEqual((result["status"], result["gateReason"], result["container"]),
+                                             ("HELD", "GATE_START_NOT_OWNED", "sample-0"))
+                            self.assertTrue(result["plan"]["steps"][0]["observation"]["running"])
+                        else:
+                            self.assertEqual(result["status"], "SUCCEEDED", result)
+                            if action == "start":
+                                self.assertIn(("GET", "/sample/ready"), engine.trace)
+                        self.assertTrue(all(engine.changes.count(change) == 1 for change in engine.changes))
+                        self.assertEqual(engine.trace.count(("USR1", "sample-0")),
+                                         int(action == "start" and cut != "change"))
+                    finally:
+                        fixture.doCleanups()
+
     def test_new_container_stays_with_upgrade_owner(self):
         self.engine.rows["sample-0"]["status"] = "created"
         self.assertEqual(self.start()["gateReason"], "FIRST_START_REQUIRES_UPGRADE_OWNER")
@@ -648,6 +727,300 @@ class GatedRestartTests(unittest.TestCase):
             raw = canonical(cfg)
             with self.assertRaises(Held):
                 load_profile(raw, sha(raw))
+
+
+def store_json(path, value):
+    path.write_bytes(canonical(value))
+
+
+def signing_fixture(root):
+    openssl = Path(shutil.which("openssl")).resolve()
+    private, public = root / "fixture-key", root / "public.der"
+    subprocess.run([openssl, "genpkey", "-algorithm", "Ed25519", "-out", private], check=True)
+    subprocess.run([openssl, "pkey", "-in", private, "-pubout", "-outform", "DER", "-out", public], check=True)
+    return dict(publicKey=dict(path=str(public), sha256=sha(public.read_bytes())),
+                openssl=dict(path=str(openssl), sha256=sha(openssl.read_bytes())))
+
+
+def sign(path, binding, private):
+    subprocess.run([binding["openssl"]["path"], "pkeyutl", "-rawin", "-sign", "-inkey", private,
+                    "-in", path, "-out", path.with_suffix(".ed25519")], check=True)
+
+
+class ReleaseJournal:
+    """Private emitter of producer-format terminal fixtures, also used against a real Engine."""
+    def __init__(self, root, old, new, socket_path, *, signing=True):
+        root.mkdir()
+        self.root = root
+        self.state = root / "state"
+        self.state.mkdir()
+        run = self.state / "1"
+        run.mkdir()
+        journal = root / "journal"
+        journal.mkdir()
+        (root / "lock").touch()
+        self.binding = dict(source="module-release", module="example", executorRoot=str(root), journalRoot=str(journal))
+        profile = dict(container=old["Name"][1:], dockerSocket=socket_path, journal=str(journal))
+        if signing:
+            signer = self.binding["receiptSigning"] = signing_fixture(root)
+            profile["receiptSigning"] = dict(publicKey=signer["publicKey"], privateKey=str(root / "fixture-key"))
+        store_json(root / "profile.json", {"modules": {"example": profile}})
+        plan = dict(module="example", operation="module-release", oldCid=old["Id"], oldImage=old["Image"],
+                    oldFrameSha256=identity.snapshot(old), ci=dict(imageId=new["Image"]),
+                    candidateReview=dict(predecessorCmdSha256=identity.digest(old["Config"]["Cmd"]),
+                                         candidateCmdSha256=identity.digest(new["Config"]["Cmd"])))
+        self.source = identity.digest(plan)
+        self.tx = journal / self.source
+        self.tx.mkdir()
+        self.old, self.new = old, new
+        store_json(self.tx / "created.json", dict(cid=new["Id"]))
+        store_json(self.tx / "plan.json", plan)
+        store_json(self.tx / "baseline.private.json", {k: old[k] for k in
+                   ("Id", "Name", "State", "NetworkSettings", "RestartCount")})
+        store_json(run / "approvals", ["apply"])
+        store_json(run / "plan", dict(plan=plan, planSha256=self.source))
+        store_json(run / "apply.review", self.review("apply", run.name))
+        terminal = dict(operation="module-release", readiness="UP", status="READY", planSha256=self.source,
+                        successorCid=new["Id"], predecessorCid=old["Id"], successorFrameSha256=identity.snapshot(new))
+        store_json(self.tx / "receipt.json", terminal)
+        store_json(run / "apply.result", terminal)
+        store_json(self.state / "module-example.ready", dict(run=run.name, phase="apply", planSha256=self.source))
+        if signing:
+            self.sign("receipt.json")
+
+    def review(self, phase, run):
+        return dict(review="c" * 64, request=dict(module="example", operation="module-release", phase=phase,
+                                                  run=run, digest=self.source))
+
+    def sign(self, name):
+        sign(self.tx / name, self.binding["receiptSigning"], self.root / "fixture-key")
+
+    def returned(self, *, restored=None, signed=False, interrupted=False):
+        if interrupted:
+            (self.tx / "receipt.json").unlink()
+            (self.tx / "receipt.ed25519").unlink(missing_ok=True)
+            (self.state / "module-example.ready").unlink()
+            store_json(self.state / "1/apply.result", dict(status="GATED", planSha256=self.source))
+        run = self.state / "2"
+        run.mkdir()
+        store_json(run / "approvals", ["rollback"])
+        store_json(run / "rollback.review", self.review("rollback", run.name))
+        doc = dict(status="ROLLED_BACK", predecessorReadiness="UP", restoredCid=restored or self.old["Id"],
+                   planSha256=self.source, predecessorReadyHttp=200)
+        store_json(self.tx / "return-intent.json", dict(cid=self.new["Id"], planSha256=self.source))
+        store_json(self.tx / "return-receipt.json", doc)
+        store_json(run / "rollback.result", doc)
+        if signed:
+            self.sign("return-receipt.json")
+
+
+class ReleaseTests(unittest.TestCase):
+    def setUp(self):
+        base = GatedRestartTests()
+        self.addCleanup(base.doCleanups)
+        base.setUp()
+        self.ctrl, self.engine = base.ctrl, base.engine
+        self.engine.cfg = self.ctrl.cfg
+        self.member = self.ctrl.members["sample-0"]
+        gate = self.member["gate"]
+        def frame(cid, cmd):
+            return dict(Id=cid, Name="/sample-0", Image=gate["imageId"], Path=gate["entrypoint"][0],
+                        Args=gate["entrypoint"][1:] + cmd, Config=dict(Entrypoint=gate["entrypoint"], Cmd=cmd),
+                        HostConfig={}, Mounts=[], NetworkSettings={"Networks": {}}, RestartCount=0,
+                        State=dict(Pid=20, StartedAt="baseline", Running=True))
+        self.old = frame("a" * 64, gate["command"] + ["--old"])
+        self.new = frame(self.engine.rows["sample-0"]["cid"], gate["command"])
+        self.live = self.new
+        self.journal = ReleaseJournal(Path(self.ctrl.cfg["receipts"]).parent / "executor", self.old, self.new,
+                                      self.ctrl.cfg["dockerSocket"])
+        self.member["gate"] = dict(identity=self.journal.binding, entrypoint=gate["entrypoint"])
+        self.enterContext(patch.object(identity, "custody"))
+        self.enterContext(patch.object(identity, "release_locks", return_value=contextlib.nullcontext()))
+        self.engine.release_frame = lambda cid: copy.deepcopy(self.live if cid == self.live["Id"] else self.old)
+        self.engine.release_launch = self.engine.release_frame
+
+    def start(self):
+        planned = self.ctrl.run("plan", "start")
+        return self.ctrl.run("apply", "start", planned["planSha256"])
+
+    def returned(self, **kwargs):
+        self.journal.returned(**kwargs)
+        self.live = self.old
+        self.engine.rows["sample-0"]["cid"] = self.old["Id"]
+        self.engine.config["command"] = self.old["Config"]["Cmd"]
+
+    def test_semantic_completed_forward_and_pending_successor(self):
+        root, state = self.journal.root, self.journal.state
+        self.member["gate"]["identity"] = dict(source="semantic-a2", executorRoot=str(root))
+        store_json(root / "profile.json", dict(socket=self.ctrl.cfg["dockerSocket"],
+                                               originalProfile=dict(containerName="sample-0")))
+        run = state / "10"
+        run.mkdir()
+        old, live = self.old, self.new
+        target = dict(containerName="sample-0", image=live["Image"])
+        plan = dict(old=old["Id"], request=live["Config"], head=28, sequence=29, target=target)
+        parent = identity.digest(plan)
+        pointers = {"forward": dict(run=run.name, plan=parent), "forward-stage": dict(run=run.name)}
+        claim = dict(request=identity.digest(plan["request"]), parent=parent)
+        result = dict(worker="on", readiness="UP", ingress="VERIFIED", probe="C_PROBE_PASSED")
+        archive = dict(pointers=pointers, result=identity.digest(result), head=29)
+        for key, value in {"plan": plan, "stage": dict(parent=parent, profile=target, cid=live["Id"]),
+                           "create.claim": claim, "create.receipt": dict(planSha256=identity.digest(claim),
+                                                                       result=live["Id"]),
+                           "result": result, "closed-forward": archive}.items():
+            store_json(run / key, value)
+        store_json(state / "completed-forward", dict(run=run.name, archive=identity.digest(archive)))
+        self.assertEqual(self.start()["status"], "SUCCEEDED")
+        signals = self.engine.trace.count(("USR1", "sample-0"))
+        pending = state / "11"
+        pending.mkdir()
+        store_json(pending / "approvals", ["apply"])
+        store_json(pending / "plan.review", dict(request=dict(direction="forward", release="next")))
+        store_json(pending / "plan", dict(head=29, sequence=30))
+        self.assertEqual(self.start()["reason"], "RELEASE_TRANSACTION_OPEN")
+        store_json(state / "forward-stage", {"run": pending.name})
+        self.assertEqual(self.start()["reason"], "RELEASE_TRANSACTION_OPEN")
+        self.assertEqual(self.engine.trace.count(("USR1", "sample-0")), signals)
+
+    def test_new_approval_without_terminal_blocks_prior_return(self):
+        self.returned()
+        pending = self.journal.state / "3"
+        pending.mkdir()
+        store_json(pending / "plan.review", self.journal.review("plan", pending.name))
+        store_json(pending / "approvals", ["apply"])
+        self.assertEqual(self.start()["reason"], "RELEASE_TRANSACTION_OPEN")
+        self.assertEqual(self.engine.trace, [])
+
+    def test_dynamic_and_static_profile_contract(self):
+        cfg = configuration()
+        member = cfg["levels"][0]["containers"][0] = gated_member()
+        for gate in (dict(member["gate"]), dict(entrypoint=member["gate"]["entrypoint"],
+                     identity=dict(source="module-release", executorRoot="/example/executor",
+                                   journalRoot="/example/journal", module="example")),
+                     dict(entrypoint=member["gate"]["entrypoint"],
+                          identity=dict(source="semantic-a2", executorRoot="/example/executor"))):
+            member["gate"] = gate
+            raw = canonical(cfg)
+            self.assertEqual(load_profile(raw, sha(raw)), cfg)
+        member["gate"].update(command=["java"], imageId="sha256:" + "a" * 64)
+        raw = canonical(cfg)
+        with self.assertRaises(Held):
+            load_profile(raw, sha(raw))
+
+    def test_signed_ready_and_candidate_command(self):
+        result = self.start()
+        self.assertEqual(result["status"], "SUCCEEDED", result)
+        self.assertEqual(result["plan"]["steps"][0]["release"]["readySignature"], "verified")
+
+    def test_unsigned_ready_held(self):
+        (self.journal.tx / "receipt.ed25519").unlink()
+        self.assertEqual(self.start()["reason"], "MODULE_RECEIPT_SIGNATURE_REQUIRED")
+        self.assertEqual(self.engine.changes, [])
+
+    def test_signed_return(self):
+        self.returned(signed=True)
+        result = self.start()
+        self.assertEqual(result["status"], "SUCCEEDED", result)
+        self.assertEqual(result["plan"]["steps"][0]["release"]["returnSignature"], "verified")
+
+    def test_altered_signed_return_held(self):
+        self.returned(signed=True)
+        with (self.journal.tx / "return-receipt.json").open("ab") as stream:
+            stream.write(b"\n")
+        self.assertEqual(self.start()["reason"], "MODULE_RECEIPT_SIGNATURE_INVALID")
+        self.assertEqual(self.engine.trace, [])
+
+    def test_unsigned_interrupted_return_starts(self):
+        self.returned(interrupted=True)
+        result = self.start()
+        self.assertEqual(result["status"], "SUCCEEDED", result)
+        self.assertEqual(result["plan"]["steps"][0]["release"]["returnSignature"], "absent")
+        self.assertIn(("USR1", "sample-0"), self.engine.trace)
+
+    def test_unsigned_return_wrong_restored_cid(self):
+        self.returned(restored="e" * 64)
+        self.assertEqual(self.start()["reason"], "MODULE_RETURN_DRIFT")
+        self.assertEqual(self.engine.trace, [])
+
+    def test_unsigned_return_changed_command(self):
+        self.returned()
+        self.live = copy.deepcopy(self.old)
+        self.live["Config"]["Cmd"].append("different")
+        self.assertEqual(self.start()["reason"], "MODULE_BASELINE_DRIFT")
+        self.assertEqual(self.engine.trace, [])
+
+    def test_created_with_open_transaction_never_started_or_signalled(self):
+        planned = self.ctrl.run("plan", "start")
+        self.engine.rows["sample-0"]["status"] = "created"
+        (self.journal.tx / "return-intent.json").touch()
+        with contextlib.redirect_stderr(io.StringIO()):
+            for mode in ("plan", "apply", "boot"):
+                result = self.ctrl.run(mode, "start", planned["planSha256"], str(uuid.uuid4()))
+                self.assertEqual(result["reason"], "RELEASE_TRANSACTION_OPEN", result)
+                info = result["plan"]["steps"][0]["release"]
+                self.assertEqual((info["owner"], info["residual"]), ("example", "return-receipt.json"))
+                self.assertEqual(result["events"], [])
+        self.assertEqual(self.engine.trace, [])
+
+    def test_pending_head_holds_start_and_stop(self):
+        store_json(self.journal.state / "module-example.ready", dict(status="PENDING"))
+        for action in ("start", "stop"):
+            report = self.ctrl.run("plan", action)
+            self.assertEqual(report["reason"], "RELEASE_TRANSACTION_OPEN")
+            info = next(s["release"] for s in report["plan"]["steps"] if "release" in s)
+            self.assertEqual(info["residual"], "module-example.ready")
+        self.assertEqual(self.engine.changes, [])
+
+    def test_later_apply_claim_cannot_reuse_terminal_source(self):
+        self.returned()
+        run = self.journal.state / "3"
+        run.mkdir()
+        (run / "plan").write_bytes((self.journal.state / "1/plan").read_bytes())
+        store_json(run / "approvals", ["apply"])
+        store_json(run / "apply.review", self.journal.review("apply", run.name))
+        self.assertEqual(self.start()["reason"], "RELEASE_TRANSACTION_OPEN")
+        self.assertEqual(self.engine.trace, [])
+
+    def test_open_module_lock_overrides_signed_terminal(self):
+        (self.journal.tx.parent / "example.lock").mkdir()
+        self.assertEqual(self.start()["reason"], "RELEASE_TRANSACTION_OPEN")
+        self.assertEqual(self.engine.trace, [])
+
+    def test_b7_producer_journal_equivalence(self):
+        # Exercise the same governed dispatch and B7 reader used by task-24.
+        import test_module_release as b7
+        producer = b7.ReleaseTest()
+        self.addCleanup(producer.doCleanups)
+        producer.setUp()
+        import module_operation
+        import module_receipt
+        signer = self.journal.binding["receiptSigning"]
+        producer.p["receiptSigning"] = dict(publicKey=signer["publicKey"],
+                                             privateKey=str(self.journal.root / "fixture-key"))
+        call, req = producer.governed_dispatch()
+        self.enterContext(patch.object(module_receipt, "OPENSSL", signer["openssl"]["path"]))
+        self.enterContext(patch.object(module_receipt, "trusted", side_effect=lambda p, **_: Path(p)))
+        req["digest"] = call(0)["digest"]
+        req["phase"] = "apply"
+        req["digest"] = call(1)["digest"]
+        req["phase"] = "migrate"
+        self.assertEqual(call(2)["status"], "READY")
+        adapter = module_operation.ModuleRelease({"modules": {"onboarding": producer.p}}, producer.root, req)
+        tip = adapter.previous_release()
+        plan, path = identity.module_history(producer.root, producer.root, "onboarding")
+        record = identity.read(path)
+        identity.ready_head(producer.root, "onboarding", path.parent.name, plan, record)
+        identity.verify_signature(signer, path, False, {})
+        self.assertEqual((tip["planSha256"], tip["successorCid"], tip["imageId"]),
+                         (path.parent.name, record["successorCid"], plan["ci"]["imageId"]))
+        review_file = producer.root / "1" / "migrate.review"
+        review = identity.read(review_file)
+        review["request"]["digest"] = "0" * 64
+        store_json(review_file, review)
+        with self.assertRaisesRegex(Exception, "MODULE_APPROVAL_DRIFT"):
+            adapter.previous_release()
+        with self.assertRaisesRegex(Held, "MODULE_APPROVAL_DRIFT"):
+            identity.ready_head(producer.root, "onboarding", path.parent.name, plan, record)
 
 
 if __name__ == "__main__":

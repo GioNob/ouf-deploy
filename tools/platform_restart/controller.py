@@ -1,4 +1,5 @@
 """Plan and execute the ordered levels against a narrowly scoped Docker interface."""
+from contextlib import ExitStack
 from datetime import datetime, timezone
 import http.client
 import json
@@ -11,6 +12,7 @@ import time
 import uuid
 
 from .docker import GateHeld
+from . import identity
 from .profile import Held, canonical, require, sha, unique
 
 
@@ -34,7 +36,9 @@ def persist(directory, filename, value):
 
 def receipt(directory, report):
     report["finishedAt"] = stamp()
-    filename = f"{report['mode']}-{uuid.uuid4().hex}.json"
+    token = (uuid.UUID(report["bootId"]) if report["mode"] == "boot" and report["status"] == "SUCCEEDED"
+             else uuid.uuid4())
+    filename = f"{report['mode']}-{token.hex}.json"
     persist(directory, filename, report)
     return filename
 
@@ -117,6 +121,7 @@ class Controller:
                         for member in level["containers"]}
 
     def plan(self, action):
+        self.gates = {}
         require(action in ("start", "stop"), "ACTION_INVALID")
         excluded = set(self.cfg["governedElsewhere"])
         names = self.members.keys() | excluded
@@ -158,13 +163,27 @@ class Controller:
                     op = "skip"
                 step = dict(level=index, levelTimeoutSeconds=level["timeoutSeconds"], containerName=name,
                             exists=target is not None, readiness=member["readiness"], operation=op, observation=target)
-                if action == "start" and "gate" in member:
-                    step["expectedImageId"] = member["gate"]["imageId"]
-                    step["gateOperation"] = "verify_and_signal" if op == "start" else "verify_application"
+                gate = member.get("gate", {})
+                if gate and (action == "start" or "identity" in gate):
+                    if "identity" in gate:
+                        source = gate["identity"]
+                        context = step["release"] = dict(owner=source.get("module", source["source"]))
+                        try:
+                            gate = identity.resolve(gate, name, target, self.docker, context)
+                        except Held as error:
+                            if isinstance(error, identity.OpenTransaction):
+                                context["residual"] = error.residue
+                            reasons.append([str(error), name])
+                            steps.append(step)
+                            continue
+                    self.gates[name] = gate
+                    step["expectedImageId"] = gate["imageId"]
+                    if action == "start":
+                        step["gateOperation"] = "verify_and_signal" if op == "start" else "verify_application"
                 steps.append(step)
         return dict(schema="ouf.platform-restart-plan.v1", profileSha256=self.profile_hash, action=action,
                     steps=steps, governedElsewhere={n: selected.get(n) for n in sorted(excluded)},
-                    reasons=sorted(reasons))
+                    reasons=sorted(reasons, key=lambda r: (r[0] != "RELEASE_TRANSACTION_OPEN", r)))
 
     def observe(self, step, deadline):
         expected = step["observation"]
@@ -191,7 +210,7 @@ class Controller:
         return self.clock() - stability[row["cid"]][1] >= probe["stableSeconds"]
 
     def open_gate(self, step, member, operation, deadline, event):
-        gate = member["gate"]
+        gate = self.gates[step["containerName"]]
         generation, state = self.docker.gate_state(step, gate, deadline)
         since, _ = generation
         previous = step["observation"]["startedAt"]
@@ -229,7 +248,7 @@ class Controller:
     def gated_ready(self, step, member, generation, deadline):
         require(self.clock() < deadline, "READINESS_NOT_UP")
         try:
-            observed, state = self.docker.gate_state(step, member["gate"], deadline)
+            observed, state = self.docker.gate_state(step, self.gates[step["containerName"]], deadline)
         except GateHeld as error:
             if self.clock() >= deadline or error.detail in {
                 "RUNNING_GENERATION_UNVERIFIED", "PID1_COMMAND_MISMATCH", "PROCESS_UNAVAILABLE"
@@ -246,7 +265,7 @@ class Controller:
             return False
         require(self.clock() < deadline, "READINESS_NOT_UP")
         try:
-            confirmed = self.docker.gate_state(step, member["gate"], deadline)
+            confirmed = self.docker.gate_state(step, self.gates[step["containerName"]], deadline)
         except GateHeld:
             require(self.clock() < deadline, "READINESS_NOT_UP")
             raise
@@ -318,7 +337,7 @@ class Controller:
                     if ready and name in gate_deadlines:
                         del gate_deadlines[name]
                         report["events"].append(dict(at=stamp(), level=number, container=name,
-                                                     operation="readiness", pid1=member["gate"]["command"][0], outcome="UP"))
+                                                     operation="readiness", pid1=self.gates[name]["command"][0], outcome="UP"))
                     else:
                         require(self.clock() < limit, "READINESS_NOT_UP")
                 else:
@@ -382,9 +401,18 @@ class Controller:
         report = dict(schema="ouf.platform-restart-receipt.v1", mode=mode, action=action,
                       profileSha256=self.profile_hash, sourceSha256=self.source_hash, startedAt=stamp(), status="HELD", events=[],
                       level=None, container=None)
+        locks = ExitStack()
         try:
             if is_boot:
+                report["bootId"] = boot_id
                 claim_boot(self.cfg["receipts"], boot_id)
+            sources = [m["gate"]["identity"] for m in self.members.values() if "identity" in m.get("gate", {})]
+            try:
+                locks.enter_context(identity.release_locks(sources))
+            except identity.OpenTransaction as error:
+                report.update(owners=sorted({s.get("module", s["source"]) for s in sources}),
+                              residual=error.residue)
+                raise
             plan = self.plan(action)
             report["plan"] = plan
             digest = sha(canonical(plan))
@@ -410,6 +438,8 @@ class Controller:
                 report["gateReason"] = error.detail
         except (ValueError, OSError):
             report["reason"] = "OBSERVATION_OR_IO_FAILED"
+        finally:
+            locks.close()
         if is_boot and report.get("reason") not in (None, "BOOT_ALREADY_ATTEMPTED"):
             incident(self.cfg["incidents"], report)
         filename = receipt(self.cfg["receipts"], report)

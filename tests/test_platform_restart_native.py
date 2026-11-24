@@ -2,14 +2,19 @@
 import hashlib
 import ipaddress
 import os
+import re
 from pathlib import Path
 import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 import unittest
 import uuid
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(ROOT), str(ROOT / "tests"), str(ROOT / "tools")]
 
 from tools.platform_restart.controller import Controller
 from tools.platform_restart.docker import Docker
@@ -40,7 +45,14 @@ int main(int argc, char **argv) {
     signal(SIGTERM, shutdown_server);
     for (;;) {
         int client = accept(fd, NULL, NULL);
-        if (client >= 0) close(client);
+        if (client >= 0) {
+            if (getenv("HTTP_READY")) {
+                char request[1024];
+                const char reply[] = "HTTP/1.1 204 No Content\r\nConnection: close\r\n\r\n";
+                if (read(client, request, sizeof(request)) > 0) write(client, reply, sizeof(reply) - 1);
+            }
+            close(client);
+        }
     }
 }
 """
@@ -48,6 +60,108 @@ int main(int argc, char **argv) {
 
 @unittest.skipUnless(os.environ.get("OUF_PLATFORM_RESTART_NATIVE") == "1", "opt-in Linux Docker fixture")
 class NativeRestart(unittest.TestCase):
+    def test_real_gated_release_receipts(self):
+        from test_platform_restart import ReleaseJournal, configuration
+        from tools.platform_restart.profile import GATE_LOOP
+        if os.geteuid() != 0:
+            # setns and /proc/<pid>/cmdline need the same privileges as the installed unit.
+            subprocess.run(["sudo", "-n", "env", "OUF_PLATFORM_RESTART_NATIVE=1",
+                            "OUF_TEST_DOCKER_SOCKET=" + os.environ.get("OUF_TEST_DOCKER_SOCKET", "/run/docker.sock"),
+                            sys.executable, "-I", "-B", __file__, self.__class__.__name__ + "." + self._testMethodName],
+                           check=True, timeout=180)
+            return
+
+        binary = Path(shutil.which("docker")).resolve(strict=True)
+        sock = Path(os.environ.get("OUF_TEST_DOCKER_SOCKET", "/run/docker.sock")).resolve(strict=True)
+        root = Path(self.enterContext(tempfile.TemporaryDirectory(dir="/var/lib")))
+        prefix = "gate-test-" + uuid.uuid4().hex[:12]
+        def docker(*args):
+            return subprocess.check_output([binary, "--host", "unix://" + str(sock), *args],
+                                           text=True, timeout=90).strip()
+
+        build = root / "build"
+        build.mkdir()
+        fs = build / "rootfs"
+        (fs / "bin").mkdir(parents=True)
+        busybox = Path(shutil.which("busybox") or "/usr/lib/initramfs-tools/bin/busybox")
+        shutil.copyfile(busybox, fs / "bin/busybox")
+        (fs / "bin/busybox").chmod(0o755)
+        for applet in ("sh", "sleep"):
+            (fs / "bin" / applet).symlink_to("/bin/busybox")
+        # Ubuntu also ships a dynamically linked busybox. Include its local loader and libraries.
+        ldd = subprocess.run(["ldd", str(busybox)], capture_output=True, text=True, check=False)
+        for lib in re.findall(r"(/[^\s()]+)", ldd.stdout):
+            target = fs / lib.lstrip("/")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(lib, target)
+        (build / "server.c").write_text(SERVER)
+        subprocess.run(["cc", "-static", "-O2", "-o", fs / "fixture", build / "server.c"], check=True)
+        (build / "Dockerfile").write_text('FROM scratch\nCOPY rootfs /\nENTRYPOINT ["/fixture"]\n'
+                                          'LABEL ouf.fixture="gate"\nENV PORT=12345 HTTP_READY=yes PATH=/bin\n')
+        docker("build", "--network=none", "--pull=false", "-q", "-t", prefix, str(build))
+        self.addCleanup(docker, "image", "rm", prefix)
+
+        entry = ["/bin/sh", "-c", GATE_LOOP, "ouf-gated-application"]
+        name = prefix + "-app"
+        def create(container, *argv):
+            cid = docker("create", "--network=none", "--name", container, "--entrypoint", entry[0],
+                         prefix, *entry[1:], *argv)
+            self.addCleanup(docker, "rm", "-f", cid)
+            return cid
+        cfg = configuration()
+        cfg.update(docker=dict(path=str(binary), sha256=sha(binary.read_bytes())), dockerSocket=str(sock))
+        for key in ("incidents", "receipts"):
+            path = root / key
+            path.mkdir(mode=0o700)
+            cfg[key] = str(path)
+        cfg["governedElsewhere"] = [prefix + "-peer-a", prefix + "-peer-b"]
+        for peer in cfg["governedElsewhere"]:
+            create(peer, "/fixture")
+        adapter = Docker(cfg)
+        old_cid = create(name, "/fixture", "--old")
+        docker("start", old_cid)
+        old = adapter.release_frame(old_cid)
+        docker("stop", "--time", "1", old_cid)
+        docker("rename", old_cid, prefix + "-retained")
+        cid = create(name, "/fixture")
+        new = adapter.release_frame(cid)
+        self.assertEqual(new["Config"]["Labels"]["ouf.fixture"], "gate")
+        self.assertIn("HTTP_READY=yes", new["Config"]["Env"])
+        journal = ReleaseJournal(root / "executor", old, new, str(sock))
+        member = dict(containerName=name, gate=dict(entrypoint=entry, identity=journal.binding),
+                      readiness=dict(type="actuator", address="127.0.0.1", port=12345, path="/ready",
+                                     timeoutSeconds=1, budgetSeconds=12, acceptStatus=[204]))
+        cfg["levels"] = [dict(timeoutSeconds=15, containers=[member])]
+        def controller():
+            raw = canonical(cfg)
+            return Controller(load_profile(raw, sha(raw)), sha(raw), adapter)
+        lock = journal.tx.parent / "example.lock"
+        lock.mkdir()
+        for mode in ("plan", "apply", "boot"):
+            report = controller().run(mode, "start", "0" * 64, str(uuid.uuid4()))
+            self.assertEqual(report["reason"], "RELEASE_TRANSACTION_OPEN", report)
+            self.assertEqual(report["events"], [])
+            self.assertEqual(docker("inspect", "--format", "{{.State.Status}}", cid), "created")
+        lock.rmdir()
+
+        # An exited, previously started generation is eligible for a governed restart.
+        docker("start", cid)
+        docker("stop", "--time", "1", cid)
+        def start(binding):
+            member["gate"]["identity"] = binding
+            ctrl = controller()
+            plan = ctrl.run("plan", "start")
+            return ctrl.run("apply", "start", plan["planSha256"])
+        # The receipt and its plan consistently attest another image for this CID.
+        wrong = ReleaseJournal(root / "different", old, {**new, "Image": "sha256:" + "f" * 64}, str(sock))
+        self.assertEqual(start(wrong.binding)["reason"], "RELEASE_IMAGE_MISMATCH")
+        self.assertEqual(docker("inspect", "--format", "{{.State.Status}}", cid), "exited")
+        for binding in (journal.binding, ReleaseJournal(root / "unsigned", old, new, str(sock), signing=False).binding):
+            result = start(binding)
+            self.assertEqual(result["status"], "SUCCEEDED", result)
+            self.assertTrue(any(e.get("outcome") == "UP" for e in result["events"]))
+            docker("stop", "--time", "1", cid)
+
     def test_real_start_stop_retained_and_collision(self):
         prefix = "restart-test-" + uuid.uuid4().hex[:12]
         binary = Path(shutil.which("docker")).resolve(strict=True)

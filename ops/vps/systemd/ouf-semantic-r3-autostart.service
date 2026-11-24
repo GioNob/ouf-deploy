@@ -1,7 +1,7 @@
 [Unit]
 Description=OUF R3 governed boot start (D-045)
 Wants=docker.service network-online.target ouf-semantic-lease-supervisor-v2.service
-After=docker.service network-online.target ouf-semantic-lease-supervisor-v2.service
+After=ouf-platform-start.service docker.service network-online.target ouf-semantic-lease-supervisor-v2.service
 
 [Service]
 Type=oneshot
