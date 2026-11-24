@@ -13,7 +13,7 @@ case "$mode" in
   *) echo 'uso: plan | apply <planSha256>' >&2; exit 2 ;;
 esac
 # Claude fissa il commit dopo review e commit D-001.
-C=c58515e8d4567742fc9dad988b4871966ce49563
+C=3ce5ccdb8268e7bb5c41ec65671558067ceec9cb
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] || {
   echo 'runbook non ancora fissato a un commit' >&2; exit 2;
 }
@@ -140,12 +140,12 @@ delivery() {
   fetch tools/semantic_provider_r3/driver_denial_overlay_v16.py cc2393eb2bea4b299cd8b0a8cdecb7b6e67b8c83f7e8d3d15bd09d915e3b2009
   fetch tools/semantic_provider_r3/ingress_memo_overlay_v27.py 11473e5b22cbc418045a1bde5810e1ed7318f3b97f483b86049520f72ea18f48
   fetch tools/semantic_provider_r3/install_common.py 7f06c92bb6d824fec2bdf952aa6a71ff597b545dacd76db44b30ea1086927597
-  fetch tools/semantic_provider_r3/operate.py 050804047d3aa3dc9f9a61c333a07be618c5ff0c4987f03863064e6045b78b1d
+  fetch tools/semantic_provider_r3/operate.py b98480ba3f60f7d3b845bfebc585190c448ecc519a517e179e3e2f9c26614878
   fetch tools/semantic_provider_r3/runtime_absent_overlay_v19.py 6fe53b0f9c8e37431bb1c1537d47b8eb450a303b5ef31322eda949963ce58826
   fetch tools/semantic_provider_r3/semantic_identity_v25.py e09aef2977390bca817a1fe297ba92b8b987cb9de530ae3d7a9b2da0c33a7231
   fetch tools/semantic_provider_r3/semantic_overlay_v25.py b74b9c854e76e099663a3a1aa7dde76be574b4ab6a1fbfacf5085fd34d82279d
   fetch tools/semantic_provider_r3/upgrade.py 9635623970aa6c799d9ffde66de35ebdba9fc16f23fafe70ce493025aae7d12d
-  fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
+  fetch tools/semantic_provider_r3/volatile_restore.py 00b6672df09758bb7f5b73f60aed0a17ba59780691ca1713d6a73409f15b4481
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
   fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py 117c9c86bb173742e4da7051d18bdef68526d3a8172cf231c41a27d2ea815911
