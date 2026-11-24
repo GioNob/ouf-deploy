@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
@@ -19,6 +20,7 @@ import test_module_release as modules
 import test_module_release_mcp as mcp
 import test_privileged_executor_database as database
 from test_privileged_executor import mandate, pipeline, store
+from test_privileged_executor_native import NativeGateFixture
 
 MATRIX = Path(__file__).with_name("interruption_matrix.json")
 
@@ -567,40 +569,24 @@ SCENARIOS = {
 
 
 @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_A2_NATIVE_ENGINE") == "1", "isolated Engine opt-in")
-class NativeDetachRecovery(unittest.TestCase):
+class NativeDetachRecovery(NativeGateFixture):
     def test_a2_detach_receipt_then_new_dispatch_to_gate(self):
-        import uuid
         from test_privileged_executor import RoundTrip, semantic
         from interruption_sweep import ProcessLost
 
+        engine, row, baseline, generation = self.start_baseline(worker_enabled=False)
+        old, name, image = row["Id"], baseline["containerName"], baseline["image"]
+        successor = engine.call("GET", "images/ouf-ci-gate:a2-successor/json")
+        base = engine.call("GET", f"images/{image}/json")["Config"]
+        for key in ("Entrypoint", "Labels", "Env"):
+            self.assertNotEqual(base.get(key), successor["Config"].get(key))
+        with tempfile.TemporaryDirectory() as d:
+            semantic.signal_once(engine, store.Journal(Path(d) / "baseline"), old, baseline, generation)
+            java = pipeline.until(lambda: engine.process(old, baseline, "APPLICATION_RUNNING"), 12, "BASELINE_JAVA")
+            self.assertEqual(java, generation)
+
         def exercise(f):
-            engine = semantic.Engine(os.environ["OUF_A2_FIXTURE_SOCKET"])
-            self.assertIn("ouf.a2.fixture=true", engine.call("GET", "info")["Labels"])
-            image = os.environ["OUF_A2_FIXTURE_IMAGE"]
-            successor = engine.call("GET", "images/ouf-ci-gate:a2-successor/json")
-            base = engine.call("GET", f"images/{image}/json")["Config"]
-            for key in ("Entrypoint", "Labels", "Env"):
-                self.assertNotEqual(base.get(key), successor["Config"].get(key))
-            name = "a2-fixture-" + uuid.uuid4().hex
-            net = engine.call("POST", "networks/create", {"Name": name, "Driver": "bridge", "Internal": True,
-                              "IPAM": {"Config": [{"Subnet": "192.0.2.0/27"}]}})["Id"]
-            self.addCleanup(engine.call, "DELETE", "networks/" + net)
-            request = dict(Image=image, User="10001:10001", Entrypoint=semantic.ENTRY,
-                           Cmd=["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/application.jar"],
-                           Env=["OUF_SCHEMA_GOV_ENABLED=true", "OUF_DISCOVERY_WORKER_ENABLED=false"],
-                           HostConfig=dict(NetworkMode=name, RestartPolicy={"Name":"no","MaximumRetryCount":0}),
-                           NetworkingConfig={"EndpointsConfig":{name:{"Aliases":[name],
-                                                               "IPAMConfig":{"IPv4Address":"192.0.2.3"}}}})
-            old = engine.create(name, request, image)
-            self.addCleanup(engine.call, "DELETE", f"containers/{old}?force=1")
-            engine.call("POST", f"containers/{old}/start")
-            row = engine.inspect(old)
-            profile = f.head.profile
-            profile.update(containerName=name, network=name, networkId=net, image=image, ipv4="192.0.2.3",
-                           configurationSha256=semantic.semantic_configuration(row))
-            generation = pipeline.until(lambda: engine.process(old, profile, "GATE_WAITING"), 10, "BASELINE_GATE")
-            semantic.signal_once(engine, store.Journal(f.root / "baseline"), old, profile, generation)
-            pipeline.until(lambda: engine.process(old, profile, "APPLICATION_RUNNING"), 15, "BASELINE_JAVA")
+            f.head.profile.update(baseline)
             f.cfg.update(retainedName=name + "-saved", failedName=name + "-returned")
             f.cfg["successorImage"]["ci"]["imageId"] = successor["Id"]
             creates = []
