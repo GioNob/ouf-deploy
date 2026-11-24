@@ -1,0 +1,16 @@
+{
+  "issuer": "FIXTURE_ISSUER",
+  "roles": [
+    {
+      "roleId": "fixture-role",
+      "displayName": "Fixture",
+      "permissions": [
+        {
+          "capabilityId": "ouf.semantic.search.batch",
+          "constraints": null
+        }
+      ]
+    }
+  ],
+  "assignments": []
+}

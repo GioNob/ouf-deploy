@@ -1,0 +1,164 @@
+{
+  "successorImage": {
+    "ci": {
+      "repository": "fixture-owner/fixture-module",
+      "workflow": "fixture.yml",
+      "pullRequest": 1,
+      "runId": 2,
+      "runAttempt": 1,
+      "artifactId": 3,
+      "zipSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sourceTree": "cccccccccccccccccccccccccccccccccccccccc",
+      "imageName": "fixture-image",
+      "imageId": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "manifestSchema": "ouf.semantic-tested-image.v1"
+    },
+    "inbox": "/fixture/inbox",
+    "migrationsField": "migrations",
+    "predecessorMigrations": []
+  },
+  "nextSuccessorImage": {
+    "ci": {
+      "repository": "fixture-owner/fixture-module",
+      "workflow": "fixture.yml",
+      "pullRequest": 1,
+      "runId": 2,
+      "runAttempt": 1,
+      "artifactId": 3,
+      "zipSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sourceCommit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "sourceTree": "cccccccccccccccccccccccccccccccccccccccc",
+      "imageName": "fixture-image",
+      "imageId": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "manifestSchema": "ouf.semantic-tested-image.v1"
+    },
+    "inbox": "/fixture/inbox",
+    "migrationsField": "migrations",
+    "predecessorMigrations": []
+  },
+  "modules": {
+    "sample": {
+      "schema": "ouf.module-release.v1",
+      "module": "sample",
+      "container": "fixture-current",
+      "retainedName": "fixture-retained",
+      "failedName": "fixture-failed",
+      "oldImage": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "inbox": "/fixture/inbox",
+      "journal": "/fixture/journal",
+      "dockerSocket": "/fixture/socket",
+      "nsenter": "/fixture/nsenter",
+      "networks": {
+        "fixture-network": {
+          "ipv4": "192.0.2.1",
+          "aliases": [
+            "fixture-alias"
+          ]
+        }
+      },
+      "gate": {
+        "command": [
+          "fixture-command"
+        ]
+      },
+      "readiness": {
+        "path": "/fixture",
+        "port": 12345,
+        "attempts": 1,
+        "acceptStatus": [
+          200
+        ]
+      },
+      "migration": {
+        "mode": "none",
+        "rollbackCompatible": true
+      },
+      "ci": {
+        "repository": "fixture-owner/fixture-module",
+        "workflow": "fixture.yml",
+        "pullRequest": 1,
+        "runId": 2,
+        "runAttempt": 1,
+        "artifactId": 3,
+        "zipSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "sourceTree": "cccccccccccccccccccccccccccccccccccccccc",
+        "imageName": "fixture-image",
+        "imageId": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "manifestSchema": "ouf.semantic-tested-image.v1"
+      }
+    }
+  },
+  "semanticDatabase": {
+    "postgresCid": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "socket": "/fixture/socket",
+    "user": "fixture_user",
+    "database": "fixture_database",
+    "schema": "fixture_schema"
+  },
+  "gateway": {
+    "source": {
+      "repository": "fixture-owner/ouf-api-gateway",
+      "workflow": "fixture.yml"
+    },
+    "values": {
+      "rateLimits.semanticSearch.count": 2,
+      "rateLimits.semanticSearch.window": 2,
+      "rateLimits.semanticSearch.key": "FIXTURE_VALUE",
+      "rateLimits.semanticSearchBatch.count": 2,
+      "rateLimits.semanticSearchBatch.window": 2,
+      "rateLimits.semanticSearchBatch.key": "FIXTURE_VALUE",
+      "semanticReadOwnerKeyEnv": "FIXTURE_VALUE",
+      "fixtureCredential": "FIXTURE_SECRET_SENTINEL"
+    },
+    "container": "fixture-gateway",
+    "dockerSocket": "/fixture/socket",
+    "keyFile": "/fixture/key",
+    "host": "::1",
+    "port": 12345,
+    "adminPath": "/fixture"
+  },
+  "runbooks": {
+    "start-11": {
+      "path": "/fixture/start-11",
+      "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "stop-11": {
+      "path": "/fixture/stop-11",
+      "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "probe-11": {
+      "path": "/fixture/probe-11",
+      "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "start-12": {
+      "path": "/fixture/start-12",
+      "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "stop-12": {
+      "path": "/fixture/stop-12",
+      "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "probe-12": {
+      "path": "/fixture/probe-12",
+      "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "issue-12": {
+      "path": "/fixture/issue-12",
+      "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "upgrade-12": {
+      "path": "/fixture/upgrade-12",
+      "sourceCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "ouf.gateway-release-bundle.v1",
+  "placeholders": [
+    {
+      "name": "rateLimits.semanticSearch.count",
+      "type": "integer"
+    },
+    {
+      "name": "rateLimits.semanticSearch.window",
+      "type": "integer"
+    },
+    {
+      "name": "rateLimits.semanticSearch.key",
+      "type": "string"
+    },
+    {
+      "name": "rateLimits.semanticSearchBatch.count",
+      "type": "integer"
+    },
+    {
+      "name": "rateLimits.semanticSearchBatch.window",
+      "type": "integer"
+    },
+    {
+      "name": "rateLimits.semanticSearchBatch.key",
+      "type": "string"
+    },
+    {
+      "name": "semanticReadOwnerKeyEnv",
+      "type": "string"
+    },
+    {
+      "name": "fixtureCredential",
+      "type": "secret"
+    }
+  ],
+  "resources": [
+    {
+      "kind": "routes",
+      "id": "fixture-semantic-batch",
+      "body": {
+        "rateLimits.semanticSearch.count": {
+          "$installation": "rateLimits.semanticSearch.count"
+        },
+        "rateLimits.semanticSearch.window": {
+          "$installation": "rateLimits.semanticSearch.window"
+        },
+        "rateLimits.semanticSearch.key": {
+          "$installation": "rateLimits.semanticSearch.key"
+        },
+        "rateLimits.semanticSearchBatch.count": {
+          "$installation": "rateLimits.semanticSearchBatch.count"
+        },
+        "rateLimits.semanticSearchBatch.window": {
+          "$installation": "rateLimits.semanticSearchBatch.window"
+        },
+        "rateLimits.semanticSearchBatch.key": {
+          "$installation": "rateLimits.semanticSearchBatch.key"
+        },
+        "semanticReadOwnerKeyEnv": {
+          "$installation": "semanticReadOwnerKeyEnv"
+        },
+        "fixtureCredential": {
+          "$installation": "fixtureCredential"
+        }
+      }
+    }
+  ]
+}
