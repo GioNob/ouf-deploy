@@ -1,0 +1,137 @@
+{
+  "contract": "ouf.iam-profile-observation.v1",
+  "installationId": "installation.invalid",
+  "kind": "keycloak-ouf",
+  "gatewayBindings": {
+    "gatewayAudience": "gateway.invalid",
+    "scopeByAction": {
+      "issue": "fixture.issue",
+      "dispatch": "fixture.dispatch",
+      "revoke": "fixture.revoke",
+      "status": "fixture.status"
+    }
+  },
+  "managed": {
+    "contract": "ouf.iam-profile.v1",
+    "kind": "keycloak-ouf",
+    "installationId": "installation.invalid",
+    "providerId": "provider.invalid",
+    "trust.issuer": "https://iam.invalid/issuer",
+    "trust.introspection": "https://iam.invalid/introspect",
+    "trust.jwks": "https://iam.invalid/keys",
+    "trust.decisions": "https://authority.invalid/check",
+    "trust.gatewayOrigin": "https://gateway.invalid",
+    "trust.caRef": "ref:fixture/ca",
+    "trust.gatewayAudience": "gateway.invalid",
+    "clients.mcp.clientId": "mcp.invalid",
+    "clients.mcp.secretRef": "ref:fixture/mcp",
+    "clients.mcp.actor": "SERVICE",
+    "clients.mcp.audience": "gateway.invalid",
+    "clients.mcp.scopes": [
+      "fixture.issue",
+      "fixture.dispatch",
+      "fixture.revoke",
+      "fixture.status",
+      "ouf.analysis.mandate.renewal-check"
+    ],
+    "clients.mcp.mappers.client_id": "authenticated-client",
+    "clients.mcp.mappers.acr": "authentication-context",
+    "clients.mcp.mappers.tenant_id": "verified-tenant",
+    "clients.mcp.mappers.sub": "authenticated-subject",
+    "clients.mcp.mappers.aud": "gateway-audience",
+    "clients.mcp.mappers.ouf_actor_type": "actor-type",
+    "clients.ths.clientId": "ths.invalid",
+    "clients.ths.secretRef": "ref:fixture/ths",
+    "clients.ths.actor": "HUMAN",
+    "clients.ths.audience": "gateway.invalid",
+    "clients.ths.scopes": [
+      "ouf.analysis.renewal.read",
+      "ouf.analysis.renewal.decide"
+    ],
+    "clients.ths.mappers.client_id": "authenticated-client",
+    "clients.ths.mappers.acr": "authentication-context",
+    "clients.ths.mappers.tenant_id": "verified-tenant",
+    "clients.ths.mappers.sub": "authenticated-subject",
+    "clients.ths.mappers.aud": "gateway-audience",
+    "clients.ths.mappers.ouf_actor_type": "actor-type",
+    "grant.mechanism": "authorization-resource",
+    "grant.resourceType": "assignment.invalid",
+    "grant.resourceServer.clientId": "assignments.invalid",
+    "grant.resourceServer.secretRef": "ref:fixture/assignments",
+    "grant.grantRef": "iam-resource-id",
+    "grant.lookup": "current-resource-permission",
+    "grant.revocation": "withdraw-permission-and-invalidate-assignment-credential",
+    "grant.revocationTtlSeconds.value": 30,
+    "grant.revocationTtlSeconds.default": 30,
+    "grant.revocationTtlSeconds.maximum": 30,
+    "grant.decisionContract": "ouf.analysis.authority-check.v1",
+    "grant.introspectionProtocol": "RFC7662",
+    "capacity.ActivePlans": 1,
+    "capacity.ProviderSlots": 1,
+    "capacity.InstallationActivePlans": 4,
+    "capacity.InstallationProviderInFlight": 1,
+    "capacity.ControlReservedSlots": 2,
+    "session.Calls": 4096,
+    "session.Attempts": 4096,
+    "session.Objects": 409600,
+    "session.Bytes": 67108864,
+    "session.Millis": 3600000,
+    "session.absoluteSeconds": 86400,
+    "session.attemptsPerIntent": 128,
+    "session.publicWaitSeconds": 3600,
+    "iam.introspectionsPerMinute.value": 120,
+    "iam.introspectionsPerMinute.default": 120,
+    "iam.introspectionsPerMinute.maximum": 120,
+    "iam.decisionsPerMinute.value": 2,
+    "iam.decisionsPerMinute.default": 2,
+    "iam.decisionsPerMinute.maximum": 8,
+    "pools.Gateway.dataSlots.value": 2,
+    "pools.Gateway.dataSlots.default": 2,
+    "pools.Gateway.dataSlots.maximum": 8,
+    "pools.Gateway.controlReservedSlots": 2,
+    "pools.MCP.dataSlots.value": 2,
+    "pools.MCP.dataSlots.default": 2,
+    "pools.MCP.dataSlots.maximum": 8,
+    "pools.MCP.controlReservedSlots": 2,
+    "pools.DB.dataSlots.value": 2,
+    "pools.DB.dataSlots.default": 2,
+    "pools.DB.dataSlots.maximum": 8,
+    "pools.DB.controlReservedSlots": 2,
+    "pools.Semantic.dataSlots.value": 2,
+    "pools.Semantic.dataSlots.default": 2,
+    "pools.Semantic.dataSlots.maximum": 8,
+    "pools.Semantic.controlReservedSlots": 2
+  },
+  "foreign": [
+    {
+      "idSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "stateSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+  ],
+  "controlProof": {
+    "profileSha256": "f7fc03fd387c6c176bf11b00c89f14cebf61824ae0ff5c306ae6748685669c9e",
+    "pet": "55g",
+    "sourceTraceSha256": "85815f6030762d034249a8aae69044496667dc32371b4e02e2db9d7ae38891ed",
+    "pools": {
+      "Gateway": {
+        "occupiedDataSlots": 2,
+        "concurrentControlServed": 2,
+        "concurrentRenewalRelayRequests": 2
+      },
+      "MCP": {
+        "occupiedDataSlots": 2,
+        "concurrentControlServed": 2
+      },
+      "DB": {
+        "occupiedDataSlots": 2,
+        "concurrentControlServed": 2
+      },
+      "Semantic": {
+        "occupiedDataSlots": 2,
+        "concurrentControlServed": 2
+      }
+    },
+    "traceSha256": "25258e790404cf7f81f701aeb35e57262bdf4b4f90fb0ceb105959015a6fc0b0"
+  },
+  "complete": true
+}

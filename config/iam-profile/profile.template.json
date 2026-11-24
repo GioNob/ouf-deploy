@@ -1,0 +1,137 @@
+{
+  "contract": "ouf.iam-profile.v1",
+  "kind": "${IAM_KIND}",
+  "installationId": "${INSTALLATION_ID}",
+  "providerId": "${PROVIDER_ID}",
+  "trust": {
+    "issuer": "${issuer}",
+    "introspection": "${introspection}",
+    "jwks": "${jwks}",
+    "decisions": "${decisions}",
+    "gatewayOrigin": "${gatewayOrigin}",
+    "caRef": "${caRef}",
+    "gatewayAudience": "${gatewayAudience}"
+  },
+  "clients": {
+    "mcp": {
+      "clientId": "${mcp_CLIENT}",
+      "secretRef": "${mcp_SECRET_REF}",
+      "actor": "SERVICE",
+      "audience": "${gatewayAudience}",
+      "scopes": [
+        "${SCOPE_issue}",
+        "${SCOPE_dispatch}",
+        "${SCOPE_revoke}",
+        "${SCOPE_status}",
+        "ouf.analysis.mandate.renewal-check"
+      ],
+      "mappers": {
+        "client_id": "authenticated-client",
+        "acr": "authentication-context",
+        "tenant_id": "verified-tenant",
+        "sub": "authenticated-subject",
+        "aud": "gateway-audience",
+        "ouf_actor_type": "actor-type"
+      }
+    },
+    "ths": {
+      "clientId": "${ths_CLIENT}",
+      "secretRef": "${ths_SECRET_REF}",
+      "actor": "HUMAN",
+      "audience": "${gatewayAudience}",
+      "scopes": [
+        "ouf.analysis.renewal.read",
+        "ouf.analysis.renewal.decide"
+      ],
+      "mappers": {
+        "client_id": "authenticated-client",
+        "acr": "authentication-context",
+        "tenant_id": "verified-tenant",
+        "sub": "authenticated-subject",
+        "aud": "gateway-audience",
+        "ouf_actor_type": "actor-type"
+      }
+    }
+  },
+  "grant": {
+    "mechanism": "authorization-resource",
+    "resourceType": "${GRANT_RESOURCE_TYPE}",
+    "resourceServer": {
+      "clientId": "${RESOURCE_SERVER_CLIENT}",
+      "secretRef": "${RESOURCE_SERVER_SECRET_REF}"
+    },
+    "grantRef": "iam-resource-id",
+    "lookup": "current-resource-permission",
+    "revocation": "withdraw-permission-and-invalidate-assignment-credential",
+    "revocationTtlSeconds": {
+      "value": "${revocationTtlSeconds_value}",
+      "default": "${revocationTtlSeconds_default}",
+      "maximum": "${revocationTtlSeconds_maximum}"
+    },
+    "decisionContract": "ouf.analysis.authority-check.v1",
+    "introspectionProtocol": "RFC7662"
+  },
+  "capacity": {
+    "ActivePlans": 1,
+    "ProviderSlots": 1,
+    "InstallationActivePlans": 4,
+    "InstallationProviderInFlight": 1,
+    "ControlReservedSlots": 2
+  },
+  "session": {
+    "Calls": 4096,
+    "Attempts": 4096,
+    "Objects": 409600,
+    "Bytes": 67108864,
+    "Millis": 3600000,
+    "absoluteSeconds": 86400,
+    "attemptsPerIntent": 128,
+    "publicWaitSeconds": 3600
+  },
+  "iam": {
+    "introspectionsPerMinute": {
+      "value": "${introspectionsPerMinute_value}",
+      "default": "${introspectionsPerMinute_default}",
+      "maximum": "${introspectionsPerMinute_maximum}"
+    },
+    "decisionsPerMinute": {
+      "value": "${decisionsPerMinute_value}",
+      "default": "${decisionsPerMinute_default}",
+      "maximum": "${decisionsPerMinute_maximum}"
+    }
+  },
+  "pools": {
+    "Gateway": {
+      "dataSlots": {
+        "value": "${Gateway_DATA_value}",
+        "default": "${Gateway_DATA_default}",
+        "maximum": "${Gateway_DATA_maximum}"
+      },
+      "controlReservedSlots": 2
+    },
+    "MCP": {
+      "dataSlots": {
+        "value": "${MCP_DATA_value}",
+        "default": "${MCP_DATA_default}",
+        "maximum": "${MCP_DATA_maximum}"
+      },
+      "controlReservedSlots": 2
+    },
+    "DB": {
+      "dataSlots": {
+        "value": "${DB_DATA_value}",
+        "default": "${DB_DATA_default}",
+        "maximum": "${DB_DATA_maximum}"
+      },
+      "controlReservedSlots": 2
+    },
+    "Semantic": {
+      "dataSlots": {
+        "value": "${Semantic_DATA_value}",
+        "default": "${Semantic_DATA_default}",
+        "maximum": "${Semantic_DATA_maximum}"
+      },
+      "controlReservedSlots": 2
+    }
+  }
+}

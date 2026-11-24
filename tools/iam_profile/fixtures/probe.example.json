@@ -1,0 +1,51 @@
+{
+  "timeoutSeconds": 5,
+  "tls": {
+    "introspection": {
+      "caFile": "private/introspection.ca.pem",
+      "certFile": "private/introspection.cert.pem",
+      "keyFile": "private/introspection.key.pem"
+    },
+    "status": {
+      "caFile": "private/status.ca.pem",
+      "certFile": "private/status.cert.pem",
+      "keyFile": "private/status.key.pem"
+    }
+  },
+  "targets": {
+    "A": {
+      "human": "holder-A.invalid",
+      "grantRef": "grant-A.invalid",
+      "mandateId": "00000000-0000-4000-8000-000000000001",
+      "generation": "1",
+      "tokenFile": "private/assignment-A.token"
+    },
+    "B": {
+      "human": "holder-B.invalid",
+      "grantRef": "grant-B.invalid",
+      "mandateId": "00000000-0000-4000-8000-000000000002",
+      "generation": "1",
+      "tokenFile": "private/assignment-B.token"
+    }
+  },
+  "deniedForward": {
+    "pet": "55h",
+    "profileSha256": "f7fc03fd387c6c176bf11b00c89f14cebf61824ae0ff5c306ae6748685669c9e",
+    "action": "dispatch",
+    "issuer": "https://iam.invalid/issuer",
+    "workload": "mcp.invalid",
+    "workloadSubject": "assignment-A.invalid",
+    "tenant": "tenant.invalid",
+    "credentialGrantRef": "grant-A.invalid",
+    "credentialHuman": "holder-A.invalid",
+    "originMandateId": "00000000-0000-4000-8000-000000000001",
+    "targetGrantRef": "grant-B.invalid",
+    "holder": "holder-B.invalid",
+    "mandateId": "00000000-0000-4000-8000-000000000002",
+    "generation": "1",
+    "decision": "DENIED",
+    "ownerForwards": 0,
+    "sourceTraceSha256": "76909e559d878ecbfff39d90d3ade2100e154d0f521ec61ae75b78a7d54d7941",
+    "traceSha256": "29d29849e880593264e9ff956d11c66f3168dabba75e390ecd52787f794c7944"
+  }
+}
