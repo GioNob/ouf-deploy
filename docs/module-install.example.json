@@ -1,0 +1,19 @@
+{
+  "install": {
+    "user": "<uid>:<gid>",
+    "groupAdd": ["<gid-store>"],
+    "bindRoots": ["<radice-assoluta-dati>", "<radice-assoluta-configurazione>"],
+    "binds": [
+      {"source": "<directory-store-host>", "target": "<directory-store-container>", "mode": "rw"},
+      {"source": "<file-config-host>", "target": "<file-config-container>", "mode": "ro", "sha256": "<digest-file>"},
+      {"source": "<file-identita-host>", "target": "<file-identita-container>", "mode": "ro"}
+    ],
+    "tmpfs": [{"target": "<destinazione-volume-immagine>", "options": "nosuid,nodev,noexec,size=<dimensione>"}],
+    "readonlyRootfs": true,
+    "env": [
+      {"name": "<NOME_ENV_NON_SEGRETA>", "value": "<valore-non-segreto>"},
+      {"name": "<NOME>_FILE", "value": "<file-identita-container>"}
+    ],
+    "failedName": "<nome-isolamento>"
+  }
+}

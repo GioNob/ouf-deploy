@@ -12,6 +12,9 @@ on:
       - 'docs/privileged-executor.example.json'
       - 'tests/test_privileged_executor*.py'
       - 'tests/test_module_release*.py'
+      - 'tests/test_module_install*.py'
+      - 'docs/module-install.example.json'
+      - '.github/workflows/module-install.yml'
       - 'tests/test_gateway_release*.py'
       - 'tests/fixtures/gateway-release-bundle-44815101705.zip'
       - 'tools/chatbot_file_cohort/assets/apisix/*.lua'
@@ -64,7 +67,7 @@ jobs:
           set -euo pipefail
           image=$(docker image inspect --format '{{.Id}}' ouf-ci-gate:old)
           result=0
-          for suite in 'test_privileged_executor*.py' 'test_module_release*.py'; do
+          for suite in 'test_privileged_executor*.py' 'test_module_release*.py' 'test_module_install_native.py'; do
             sudo env OUF_A2_NATIVE=1 OUF_A2_NATIVE_ENGINE=1 OUF_MODULE_RELEASE_NATIVE=1 \
               OUF_A2_FIXTURE_SOCKET=/var/run/docker.sock OUF_A2_FIXTURE_IMAGE="$image" \
               /usr/bin/python3 -I -B -m unittest discover -s tests -p "$suite" -v || result=1
