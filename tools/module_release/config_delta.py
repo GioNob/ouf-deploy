@@ -31,10 +31,11 @@ def inspect_binds(mounts):
 def validate_value(name, value, allowlist=None):
     if value is not None:
         validate_env([{"name": name, "value": value}], allowlist)
-        check(not re.search(r"(?:^|_)AUTHORIZATION$", name)
-              and not re.search(r"\bbasic\s+[A-Za-z0-9+/]+=*|(?:password|passwd|pwd|token|secret)\s*=|"
-                            r"\boracle:thin:[^@\s]+/[^@\s]+@",
-                            unquote(value), re.IGNORECASE), "SECRET_ENV_DENIED")
+        if not name.endswith("_FILE"):
+            check(not re.search(r"(?:^|_)(?:AUTHORIZATION|PWD)(?:_|$)", name), "SECRET_ENV_DENIED")
+        check(not re.search(r"\bbasic\s+[A-Za-z0-9+/]+=*|(?:password|passwd|pwd|token|secret)\s*=|"
+                            r"\boracle:thin:[^@\s]+/[^@\s]+@", unquote(value), re.IGNORECASE),
+              "SECRET_ENV_DENIED")
 
 
 def validate_delta(delta, policy, module, *, predecessor_mounts=()):

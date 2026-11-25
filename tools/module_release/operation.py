@@ -174,12 +174,6 @@ def sync_dir(path):
 
 
 def record(root, name, data):
-    # Apply, migrate and crash recovery all publish their terminal result here.
-    if name == "receipt.json" and data.get("operation") == "module-release" and (root / "plan.json").is_file():
-        plan = read(root, "plan.json")
-        if "configDeltaSha256" in plan:
-            require(digest(plan) == data["planSha256"] == root.name, "JOURNAL_BINDING_CHANGED")
-            data["configDeltaSha256"] = plan["configDeltaSha256"]
     # Never expose a partially written claim or receipt after process loss.
     with tempfile.NamedTemporaryFile(dir=root, delete=False) as out:
         tmp = Path(out.name)
@@ -200,6 +194,17 @@ def record(root, name, data):
 
 def read(root, name):
     return json.loads((root / name).read_bytes())
+
+
+def record_result(p, root, data):
+    if data["status"] == "GATED":
+        record(root, "stage.json", data)
+        return
+    if "configDelta" in p and (root / "plan.json").is_file():
+        plan = read(root, "plan.json")
+        require(digest(plan) == data["planSha256"] == root.name, "JOURNAL_BINDING_CHANGED")
+        data["configDeltaSha256"] = plan["configDeltaSha256"]
+    record(root, "receipt.json", data)
 
 
 def confirm(root, name, data):
@@ -405,78 +410,6 @@ def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
     raise Held("PREDECESSOR_READINESS_NOT_UP" if restoring else "READINESS_NOT_UP")
 
 
-def restore_archive(root, prior):
-    return root / ("restore-after-" + digest(prior))
-
-
-def restore_delta_start(p, rt, old, root):
-    """Keep one signal per generation, retaining each retired run's original journal."""
-    cid = old["Id"]
-    prior = epoch(old)
-    archive = restore_archive(root, prior)
-    while archive.is_dir() or (root / "restore-signal.json").is_file():
-        # Move the signal claim last. Its presence in the archive commits retirement.
-        if (archive / "restore-signal.json").is_file():
-            retired = read(archive, "restore-signal.json")
-            require(retired["cid"] == cid and retired["epoch"][0] == cid and retired["epoch"][1] != prior[1],
-                    "RESTORE_GENERATION_UNCONFIRMED")
-            prior = retired["epoch"]
-            archive = restore_archive(root, prior)
-            continue
-        signal = read(root, "restore-signal.json")
-        generation = read(archive if (archive / "restore-generation.json").exists() else root,
-                          "restore-generation.json")["generation"]
-        if not archive.exists():
-            try:
-                return release(p, rt, old, cid, root, restoring=True, expected_generation=generation)["readyHttp"]
-            except Held as exc:
-                if str(exc) != "PREDECESSOR_READINESS_NOT_UP":
-                    raise
-            # A shell can still be in its trap after delivery. Never signal this generation twice.
-            current, checked = checked_generation(p, rt, old, cid, restoring=True)
-            require(current == generation and process(rt, checked(), gated=True), "RESTORE_GATE_UNCONFIRMED")
-            archive.mkdir(mode=0o700)
-            sync_dir(root)
-        doc = rt.inspect(cid)
-        if doc["State"]["Running"]:
-            current, checked = checked_generation(p, rt, old, cid, restoring=True)
-            require(current == generation and signal == {"cid": cid, "epoch": epoch(doc)}, "SIGNAL_GENERATION_CHANGED")
-            if not process(rt, checked(), gated=True):
-                return release(p, rt, old, cid, root, restoring=True, expected_generation=current)["readyHttp"]
-            rt.stop(cid)
-            doc = rt.inspect(cid)
-        require(not doc["State"]["Running"] and doc["State"]["Status"] == "exited" and doc["State"]["Pid"] == 0
-                and signal["cid"] == doc["Id"] == cid and signal["epoch"][1] == doc["State"]["StartedAt"]
-                and signal["epoch"][3] == doc["RestartCount"], "RESTORE_GENERATION_UNCONFIRMED")
-        for name in ("restore-start.json", "restore-generation.json", "restore-signal.json.failure", "restore-signal.json"):
-            if (root / name).is_file():
-                require(not (archive / name).exists(), "JOURNAL_BINDING_CHANGED")
-                (root / name).rename(archive / name)
-                sync_dir(archive)
-                sync_dir(root)
-
-    start = read(root, "restore-start.json") if (root / "restore-start.json").is_file() else None
-    doc = rt.inspect(cid)
-    state = doc["State"]
-    require(doc["Id"] == cid and doc["Name"] == old["Name"] and doc["RestartCount"] == prior[3]
-            and (start is None or start.get("cid") == cid), "RESTORE_GENERATION_UNCONFIRMED")
-    if not state["Running"]:
-        require(state["Pid"] == 0 and state["StartedAt"] == prior[1] and not (root / "restore-generation.json").exists(),
-                "RESTORE_GENERATION_UNCONFIRMED")
-        intent = {"cid": cid, "finishedAt": state.get("FinishedAt")}
-        confirm(root, "restore-start.json", {"cid": cid} if start == {"cid": cid} else intent)
-        rt.start(cid)
-    elif not (root / "restore-generation.json").exists():
-        require(start is not None and "finishedAt" in start and state.get("FinishedAt") == start["finishedAt"],
-                "RESTORE_GENERATION_UNCONFIRMED")
-    generation, checked = waiting_gate(p, rt, old, cid, restoring=True)
-    state = checked()["State"]
-    require(state["Status"] == "running" and state["StartedAt"] not in ("", None, "0001-01-01T00:00:00Z", prior[1]),
-            "RESTORE_GENERATION_UNCONFIRMED")
-    confirm(root, "restore-generation.json", {"generation": generation})
-    return release(p, rt, old, cid, root, restoring=True, expected_generation=generation)["readyHttp"]
-
-
 def restore(p, rt, old, new, root):
     networks = old["NetworkSettings"]["Networks"]
     cid = old["Id"]
@@ -484,8 +417,7 @@ def restore(p, rt, old, new, root):
     check_body(old, doc, old["Image"], old["Config"]["Image"])
     require(doc["Id"] == cid and doc["Name"] in (old["Name"], "/" + p["retainedName"])
             and (doc["State"]["StartedAt"] == old["State"]["StartedAt"] or
-                 (root / "restore-start.json").exists() or "configDelta" in p and restore_archive(root, epoch(old)).is_dir()),
-            "RESTORE_IDENTITY_CHANGED")
+                 (root / "restore-start.json").exists()), "RESTORE_IDENTITY_CHANGED")
     verify_database(p, rt, old, root)
     verify_flyway_return(p, rt, old, root)
     attached = doc["NetworkSettings"]["Networks"]
@@ -504,8 +436,6 @@ def restore(p, rt, old, new, root):
     require(owner is None or owner["Id"] == cid, "UNKNOWN_SERVICE_OWNER")
     if doc["State"]["Running"]:
         if (root / "restore-start.json").exists():
-            if "configDelta" in p:
-                return restore_delta_start(p, rt, old, root)
             require(read(root, "restore-start.json") == {"cid": cid} and
                     (root / "restore-generation.json").is_file() and read(root, "restore-generation.json") == {"generation": snapshot(doc)},
                     "RESTORE_GENERATION_UNCONFIRMED")
@@ -521,8 +451,6 @@ def restore(p, rt, old, new, root):
         ep = networks[name]
         if name not in attached:
             rt.connect(cid, ep["NetworkID"], endpoint(ep))
-    if "configDelta" in p:
-        return restore_delta_start(p, rt, old, root)
     record(root, "restore-start.json", {"cid": cid})
     rt.start(cid)
     record(root, "restore-generation.json", {"generation": snapshot(rt.inspect(cid))})
@@ -575,10 +503,7 @@ def start_candidate(p, rt, old, cid, root):
             validate_bind(bind, p)
     confirm(root, "start-intent.json", {"cid": cid})
     rt.start(cid)
-    generation, checked = checked_generation(p, rt, old, cid)
-    if "configDelta" in p:
-        from .install_operation import park_proof
-        record(root, "gate-run.json", dict(park_proof(checked()), frameSha256=generation))
+    generation, _ = checked_generation(p, rt, old, cid)
     record(root, "start-generation.json", {"cid": cid, "generation": generation})
 
 
@@ -707,7 +632,7 @@ def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=Fals
             except Exception as exc:
                 result["reason"] = reason(exc)
             gated = result["status"] == "GATED"
-            record(root, "stage.json" if gated else "receipt.json", result)
+            record_result(profile, root, result)
             unlock = not gated and result.get("rollback") != "HELD"
         finally:
             if unlock:
@@ -757,7 +682,7 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
         # An uncertain signal may finish while no executor is running. Retain
         # the reviewed stage for a fresh dispatch to reconcile it read-only.
         return result
-    record(root, "receipt.json", result)
+    record_result(profile, root, result)
     if result.get("rollback") != "HELD":
         unlock_module(lock)
     return result

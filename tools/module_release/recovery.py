@@ -73,6 +73,9 @@ def resume(p, rt, approved):
     # A completed receipt is immutable. Re-attest before releasing a leftover lock.
     if (root / "receipt.json").exists():
         receipt = op.read(root, "receipt.json")
+        if "configDelta" in p:
+            require(receipt.get("planSha256") == root.name and
+                    receipt.get("configDeltaSha256") == body["configDeltaSha256"], "RECOVERY_RECEIPT_CHANGED")
         require(receipt.get("status") == "READY" or receipt.get("rollback") == "ROLLED_BACK",
                 "TERMINAL_HELD_REQUIRES_OWNER")
         forward = receipt["status"] == "READY"
@@ -152,6 +155,6 @@ def resume(p, rt, approved):
         if result["status"] == "GATED":
             op.confirm(root, "stage.json", result)
             return result
-    op.record(root, "receipt.json", result)
+    op.record_result(p, root, result)
     op.unlock_module(lock)
     return result
