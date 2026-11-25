@@ -432,6 +432,11 @@ def check_created(p, rt, old, doc):
 
 
 def start_candidate(p, rt, old, cid, root):
+    binds = p.get("configDelta", {}).get("binds")
+    if binds:
+        from .frame_spec import validate_bind
+        for bind in binds:
+            validate_bind(bind, p)
     confirm(root, "start-intent.json", {"cid": cid})
     rt.start(cid)
     generation, _ = checked_generation(p, rt, old, cid)

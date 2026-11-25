@@ -38,6 +38,12 @@ def proposal(p, rt):
     journal = {f.name: digest(op.read(root, f.name)) for f in root.glob("*.json")}
     proposal = {"operation": "module-recovery", "sourcePlan": stamp, "profileSha256": digest(p),
                 "journal": journal, "frames": frames}
+    if "configDelta" in p:
+        from .config_delta import approval_lines
+        # Older journals may predate current checks on values shown to the reviewer.
+        lines = approval_lines(p["configDelta"], p.get("showValues", []))
+        require(lines == body["approvalLines"], "RECOVERY_PROFILE_CHANGED")
+        proposal["approvalLines"] = lines
     if "candidateReview" in body:
         proposal["candidateReview"] = body["candidateReview"]
     if "mcp-retention-admin-019" in body:

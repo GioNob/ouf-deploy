@@ -6,14 +6,14 @@ from .contract import SHA, digest, matches, require
 from .frame import snapshot
 from .recovery import verify_stop_claim
 from .operation import (Docker, checked_generation, load_predecessor, read as journal_read, reason,
-                        record, restore, retained, unlock_module, verify_flyway_return, verify_never_started)
+                        record, restore, retained, unlock_module, verify_flyway_return, verify_never_started, waiting_gate)
 
 
 def interrupted_successor(profile, rt, old, plan, root):
     """Identify the owned candidate before starting a reviewed return from an open release."""
     if not (root / "created.json").exists():
         require(not (root / "create-intent.json").exists(), "CREATE_OWNERSHIP_UNCONFIRMED")
-        return None
+        return {"cid": None}
     cid = journal_read(root, "created.json")["cid"]
     require(matches(SHA, cid) and cid != old["Id"] and journal_read(root, "create-intent.json") ==
             {"requestSha256": plan["requestSha256"]}, "RECOVERY_CREATE_CHANGED")
@@ -22,11 +22,24 @@ def interrupted_successor(profile, rt, old, plan, root):
     require(new["Id"] == cid, "IMMEDIATE_SUCCESSOR_CHANGED")
     if new["State"]["Status"] == "created":
         verify_never_started(profile, rt, old, new, root)
-    else:
+    elif (root / "start-generation.json").exists():
         generation, _ = checked_generation(profile, rt, old, cid)
         require(journal_read(root, "start-generation.json") == {"cid": cid, "generation": generation},
                 "START_GENERATION_UNCONFIRMED")
-    return cid
+    else:
+        require((root / "start-intent.json").is_file() and journal_read(root, "start-intent.json") == {"cid": cid}
+                and not any((root / name).exists() for name in ("migration-plan.json", "release-signal.json")),
+                "START_GENERATION_UNCONFIRMED")
+        generation, checked = waiting_gate(profile, rt, old, cid)
+        doc = checked()
+        state = doc["State"]
+        zero = "0001-01-01T00:00:00Z"
+        require(doc["RestartCount"] == 0 and state["Status"] == "running" and state["StartedAt"] not in ("", None, zero)
+                and state.get("FinishedAt") == zero,
+                "START_GENERATION_UNCONFIRMED")
+        # Pin this observation to the return only. Forward recovery still needs its own start receipt.
+        return {"cid": cid, "generation": generation}
+    return {"cid": cid}
 
 
 def run(profile, stamp, runtime=None, *, recover=False):
@@ -59,17 +72,20 @@ def run(profile, stamp, runtime=None, *, recover=False):
         rt = runtime or Docker(profile)
         old = load_predecessor(profile, rt, root)
         require(snapshot(old) == plan["oldFrameSha256"] and old["Id"] == plan["oldCid"], "RETURN_BASELINE_CHANGED")
+        claim = {"planSha256": stamp}
         if interrupted:
             verify_stop_claim(rt, old, plan, root)
             if resuming:
                 require(not (root / "create-intent.json").exists() or (root / "created.json").is_file(),
                         "CREATE_OWNERSHIP_UNCONFIRMED")
                 cid = read("created.json")["cid"] if (root / "created.json").exists() else None
-                if cid and rt.inspect(cid)["State"]["Running"]:
-                    require(read("start-generation.json") == {"cid": cid, "generation": snapshot(rt.inspect(cid))},
-                            "START_GENERATION_CHANGED")
+                saved = read("return-intent.json")
+                if "generation" in saved:
+                    require(cid and matches(SHA, saved["generation"]), "RETURN_INTENT_CHANGED")
+                    claim["generation"] = saved["generation"]
             else:
-                cid = interrupted_successor(profile, rt, old, plan, root)
+                claim.update(interrupted_successor(profile, rt, old, plan, root))
+                cid = claim["cid"]
         else:
             receipt = read("receipt.json")
             require(receipt["status"] == "READY" and receipt["planSha256"] == stamp
@@ -79,12 +95,12 @@ def run(profile, stamp, runtime=None, *, recover=False):
             cid = receipt["successorCid"]
         if "database" in profile["migration"]:
             require(digest(read("database.private.json")) == plan["databaseSha256"], "RETURN_BASELINE_CHANGED")
-        claim = {"cid": cid, "planSha256": stamp}
+        claim["cid"] = cid
         verify_flyway_return(profile, rt, old, root)
         if resuming:
             require(read("return-intent.json") == claim, "RETURN_INTENT_CHANGED")
-            new = rt.inspect(cid) if cid else None
-            if new and new["State"]["Running"] and not interrupted:
+            new = rt.inspect(cid) if cid and not interrupted else None
+            if new and new["State"]["Running"]:
                 require(snapshot(new) == receipt["successorFrameSha256"], "IMMEDIATE_SUCCESSOR_CHANGED")
         else:
             if not interrupted:
@@ -95,6 +111,13 @@ def run(profile, stamp, runtime=None, *, recover=False):
                 unlock = False
                 record(lock, "owner.json", {"planSha256": stamp})
             record(root, "return-intent.json", claim)
+        if interrupted and cid:
+            new = rt.inspect(cid)
+            if new["State"]["Running"]:
+                proof = ({"cid": cid, "generation": claim["generation"]} if "generation" in claim
+                         else read("start-generation.json"))
+                require(new["Id"] == cid and proof == {"cid": cid, "generation": snapshot(new)},
+                        "START_GENERATION_CHANGED")
         try:
             status = restore(profile, rt, old, cid, root)
             result.update(status="ROLLED_BACK", restoredCid=old["Id"], predecessorReadiness="UP", predecessorReadyHttp=status)

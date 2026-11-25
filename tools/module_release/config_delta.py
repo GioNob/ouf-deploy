@@ -3,6 +3,8 @@ from copy import deepcopy
 import hashlib
 import json
 from pathlib import PurePosixPath
+import re
+from urllib.parse import unquote
 
 from .contract import NAME, matches
 from .frame_spec import SpecHeld, canonical, check_file_env, disjoint, validate_bind, validate_env
@@ -26,6 +28,14 @@ def inspect_binds(mounts):
     return [{"Type": m["Type"], "Target": m["Destination"], "ReadOnly": m.get("RW") is False} for m in mounts]
 
 
+def validate_value(name, value, allowlist=None):
+    if value is not None:
+        validate_env([{"name": name, "value": value}], allowlist)
+        check(not re.search(r"\b(?:password|sslpassword|passwd|pwd|(?:access[_-]?)?token)\s*=|"
+                            r"\boracle:thin:[^@\s]+/[^@\s]+@",
+                            unquote(value), re.IGNORECASE), "SECRET_ENV_DENIED")
+
+
 def validate_delta(delta, policy, module, *, predecessor_mounts=()):
     """policy is the installed profile for this module, outside configDelta."""
     check(policy.get("module") == module, "DELTA_POLICY_MODULE")
@@ -43,8 +53,7 @@ def validate_delta(delta, policy, module, *, predecessor_mounts=()):
         check(isinstance(name, str) and name not in seen, "AMBIGUOUS_ENV")
         seen.add(name)
         for value in (row["before"], row["after"]):
-            if value is not None:
-                validate_env([{"name": name, "value": value}], allowed)
+            validate_value(name, value, allowed)
         check(row["before"] != row["after"], "EMPTY_DELTA")
     mounts = inspect_binds(predecessor_mounts)
     targets = [PurePosixPath(m["Target"]) for m in mounts]
@@ -141,6 +150,7 @@ def expected_after(predecessor_inspect, delta):
 
 def approval_lines(delta, show_values=()):
     def display(name, value):
+        validate_value(name, value)
         if name in show_values:
             return "assente" if value is None else json.dumps(value, ensure_ascii=False)
         return "sha256 " + delta_digest(value)

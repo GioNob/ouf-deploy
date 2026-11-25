@@ -1,8 +1,13 @@
-"""DEP-58L-01 through DEP-58L-13 exercise isolated Engine inspect and reviewed return."""
+"""Isolated release and review regressions DEP-58L-01…13 and DEP-58LB-01…05."""
 import copy
+from contextlib import redirect_stdout
 import hashlib
+import io
 import json
 from pathlib import Path
+import runpy
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -238,3 +243,126 @@ class ConfigDeltaTest(unittest.TestCase):
         self.assertEqual(self.rt.events.count("create"), 1)
         self.assertEqual(return_operation.run(self.p, stamp, self.rt)["status"], "ROLLED_BACK")
         self.assert_restored()
+
+    def test_DEP_58LB_01_dsn_credentials_never_reach_show_values(self):
+        self.p["envAllowlist"].append("DATABASE_URL")
+        self.p["showValues"].append("DATABASE_URL")
+        for value in ("host=fixture password=synthetic", "jdbc:fixture://db/app?PaSsWoRd=synthetic",
+                      "Server=db;UID=fixture;PWD = synthetic", "postgresql://user:synthetic@db/app"):
+            for side in ("before", "after"):
+                with self.subTest(value=value, side=side):
+                    row = {"name": "DATABASE_URL", "before": None, "after": None, side: value}
+                    self.p["configDelta"] = {"env": [row]}
+                    env = list(self.old["Config"]["Env"])
+                    if side == "before":
+                        env.append("DATABASE_URL=" + value)
+                    with patch.dict(self.rt.docs[fixture.OLD]["Config"], Env=env):
+                        result = operation.plan(self.p, self.rt)
+                    self.assertEqual(result["status"], "HELD")
+                    self.assertEqual(result["reason"], "SECRET_ENV_DENIED")
+                    self.assertNotIn("synthetic", json.dumps(result))
+
+    def test_DEP_58LB_02_return_after_engine_start_before_journal(self):
+        self.install_delta()
+        stamp = self.planned()["planSha256"]
+        root = self.root / stamp
+        start = self.rt.start
+
+        def interrupted(cid):
+            start(cid)
+            raise KeyboardInterrupt
+
+        with patch.object(self.rt, "start", side_effect=interrupted), self.assertRaises(KeyboardInterrupt):
+            operation.apply(self.p, stamp, self.rt)
+        self.assertFalse((root / "start-generation.json").exists())
+        self.assertEqual(operation.read(root, "start-intent.json"), {"cid": fixture.NEW})
+        for changes in ({"RestartCount": 1}, {"Id": "3" * 64}):
+            with self.subTest(changes=changes), patch.dict(self.rt.docs[fixture.NEW], changes):
+                self.assertEqual(return_operation.run(self.p, stamp, self.rt, recover=True)["status"], "HELD")
+                self.assertFalse((root / "return-intent.json").exists())
+                self.assertNotIn("stop:2", self.rt.events)
+        with patch.object(return_operation, "restore", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            return_operation.run(self.p, stamp, self.rt, recover=True)
+        with patch.dict(self.rt.docs[fixture.NEW]["State"], StartedAt="different-generation"):
+            self.assertEqual(return_operation.run(self.p, stamp, self.rt, recover=True)["status"], "HELD")
+            self.assertNotIn("stop:2", self.rt.events)
+        result = return_operation.run(self.p, stamp, self.rt, recover=True)
+        self.assertEqual(result["status"], "ROLLED_BACK", result)
+        self.assertEqual(self.rt.events.count("gate:2"), 1)
+        self.assertNotIn("signal:2", self.rt.events)
+        self.assert_restored()
+
+    def test_DEP_58LB_03_resumed_start_checks_bind_content(self):
+        self.install_delta()
+        stamp = self.planned()["planSha256"]
+        with patch.object(operation, "start_candidate", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            operation.apply(self.p, stamp, self.rt)
+        self.assertTrue(operation.never_started(self.rt.inspect(fixture.NEW)))
+        approved = recovery.proposal(self.p, self.rt)
+        with patch.object(frame_spec, "bind_facts", side_effect=OSError), self.assertRaisesRegex(
+                operation.Held, "BIND_CUSTODY_UNPROVEN"):
+            recovery.resume(self.p, self.rt, approved)
+        self.source_bytes += b"changed after create"
+        with self.assertRaisesRegex(operation.Held, "BIND_DIGEST_CHANGED"):
+            recovery.resume(self.p, self.rt, approved)
+        self.assertNotIn("gate:2", self.rt.events)
+        self.assertEqual(return_operation.run(self.p, stamp, self.rt, recover=True)["status"], "ROLLED_BACK")
+        self.assert_restored()
+
+    def test_DEP_58LB_04_review_displays_authorized_lines_in_both_plans(self):
+        import mandate
+
+        self.p["configDelta"] = {"env": self.delta["env"][:2]}
+        body = self.planned()["plan"]
+        call, req = fixture.ReleaseTest.governed_dispatch(self)
+        render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
+        for run in ("1", "2"):
+            req.update(run=run, phase="plan")
+            req["digest"] = mandate.intent(req)
+            public = call(0)
+            summary, notice = io.StringIO(), io.StringIO()
+            with redirect_stdout(notice):
+                render(summary, self.p["module"], "plan", public, "apply", None)
+            self.assertIn("Cosa approvi con il job apply", summary.getvalue())
+            for line in body["approvalLines"]:
+                self.assertIn("    " + line + "\n", summary.getvalue())
+            for output in (summary.getvalue(), notice.getvalue(), json.dumps(public)):
+                self.assertNotIn("fixture", output)
+                self.assertNotIn("configDelta", output)
+            if run == "1":
+                with patch.object(operation, "finish_apply", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+                    operation.apply(self.p, public["digest"], self.rt)
+            else:
+                self.assertEqual(public["sourcePlan"], operation.digest(body))
+
+    def test_DEP_58LB_05_clean_a2_install_plans_a_delta(self):
+        from test_privileged_executor_install import Bootstrap
+
+        bootstrap = Bootstrap()
+        self.addCleanup(bootstrap.doCleanups)
+        bootstrap.setUp()
+        self.p.update(configDelta={"env": [self.change]}, journal=str(bootstrap.path.parent / "journal"))
+        config = json.loads(bootstrap.path.read_bytes())
+        config["modules"][self.p["module"]] = self.p
+        bootstrap.path.write_text(json.dumps(config))
+        bootstrap.install_fixture()
+        probe = """
+import json, sys
+from pathlib import Path
+root = Path(sys.argv[1])
+sys.path.insert(0, str(root / 'lib'))
+from module_release.operation import plan
+profile = json.loads((root / 'profile.json').read_bytes())['modules']['onboarding']
+old = json.load(sys.stdin)
+class Engine:
+    def inspect(self, name, missing=False):
+        return old if name in (profile['container'], old['Id']) else None
+    def process(self, doc, gated):
+        return not gated
+    def probe(self, doc):
+        return 200, b'{"status":"UP"}'
+print(json.dumps(plan(profile, Engine())))
+"""
+        result = subprocess.run([sys.executable, "-I", "-B", "-c", probe, str(bootstrap.inst.ROOT)],
+                                input=json.dumps(self.old), capture_output=True, text=True, check=True)
+        self.assertEqual(json.loads(result.stdout), self.planned())
