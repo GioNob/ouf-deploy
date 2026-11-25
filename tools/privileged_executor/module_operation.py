@@ -8,6 +8,48 @@ from mandate import Held, digest, hex64, intent, need
 from store import Journal, read, save
 
 
+class ModuleInstall:
+    def __init__(self, cfg, root, req):
+        self.profile = cfg["modules"][req["module"]]
+        self.path = root / req["run"]
+        self.req = req
+
+    def execute(self, review):
+        from module_release import install_operation as install
+        req, path, profile = self.req, self.path, self.profile
+        phase = req["phase"]
+        rt = install.engine(profile)
+        operation.confirm(path, phase + ".review", {"request": req, "review": review})
+        if phase == "plan":
+            result = install.plan(profile, rt, resume=req.get("resumePlan"))
+            save(path / "plan", result)
+            need(result["status"] == "PLANNED", result.get("reason", "MODULE_INSTALL_PLAN_HELD"))
+            return {"status": "PLANNED", "digest": result["planSha256"], "installReview": result["plan"]["review"]}
+        stamp = req["digest"]
+        if phase == "apply":
+            approved = read(path / "plan.review")["request"]
+            proposal = read(path / "plan")
+            need(intent(req) == approved["digest"] == intent(approved)
+                 and proposal["status"] == "PLANNED" and stamp == proposal["planSha256"] == digest(proposal["plan"]),
+                 "MODULE_PARENT_DRIFT")
+            result = install.apply(profile, stamp, rt)
+        else:
+            result = install.rollback(profile, stamp, rt)
+        if result["status"] == "HELD":
+            save(path / (phase + ".held"), result, replace=True)
+            raise Held(result["reason"])
+        operation.confirm(path, phase + ".result", result)
+        if phase == "apply":
+            tip = path.parent / ("module-" + req["module"] + ".installed")
+            pointer = {"run": req["run"], "phase": phase, "planSha256": stamp}
+            if not tip.exists() or read(tip) != pointer:
+                current = rt.inspect(profile["container"], missing=True)
+                need(current and current["Id"] == result["cid"] and install.snapshot(current) == result["frameSha256"],
+                     "INSTALL_POINTER_DRIFT")
+                save(tip, pointer, replace=True)
+        return {"status": result["status"], "digest": stamp, "receipt": result}
+
+
 class ModuleRelease:
     def __init__(self, cfg, root, req):
         self.profile = cfg["modules"][req["module"]]
