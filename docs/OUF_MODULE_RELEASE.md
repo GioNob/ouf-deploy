@@ -38,6 +38,21 @@ La prima versione supporta il cancello storico con trap USR1, restart policy `no
 
 Prima di ogni rilascio il modulo verifica CID, image ID, frame, argomenti del PID 1, eseguibile della shell e handler USR1. Registra l'intento durevole prima dell'unico segnale alla generazione. Per Onboarding verifica quindi Java con comando esatto e `GET /actuator/health/readiness` con HTTP 200 e `status` di primo livello uguale a `UP`, nello stesso namespace di rete e sulla stessa generazione. Come nel task-20c, `acceptStatus` definisce i codici accettati e `jsonStatus` è opzionale per servizi con risposta vuota. [Upgrade storico Onboarding](../scripts/upgrade-onboarding-wide-20261108.py)
 
+## Readiness HTTP e HTTPS
+
+Senza `readiness.tls` la sonda esegue la GET HTTP su `127.0.0.1` nel namespace di rete del container. Per un listener HTTPS, aggiungere al profilo privato l'oggetto `readiness.tls` con questi campi.
+
+| Campo | Significato |
+|---|---|
+| `address` | IPv4 assegnato al modulo in una delle voci `networks` del profilo. La sonda apre qui la connessione TCP sulla porta `readiness.port`. |
+| `serverName` | Nome DNS atteso nel certificato del server, usato anche per SNI e per l'intestazione HTTP `Host`. La connessione per IP evita la dipendenza dal DNS del container. |
+| `caFile` | Percorso assoluto sull'host del file PEM delle CA fidate per questa sonda. |
+| `clientCertFile`, `clientKeyFile` | Per mTLS, indicare entrambi i percorsi assoluti sull'host della catena client PEM e della relativa chiave PEM leggibile senza passphrase. Per la sola autenticazione del server, omettere entrambi. |
+
+L'esecutore passa i riferimenti via stdin. Poiché `nsenter --net` conserva il filesystem dell'host, il processo della sonda apre direttamente i file con i permessi dell'esecutore. La chiave resta sull'host e il suo contenuto non passa negli argomenti, nell'ambiente o nei log.
+
+La sonda richiede TLS 1.3 o successivo e verifica catena e nome prima di inviare la GET a `readiness.path`. Ogni tentativo ha un timeout socket di 2 secondi e un limite complessivo di 4 secondi. Un errore TLS, file illeggibili o un corpo superiore a 65.536 byte danno esito non pronto. Un redirect restituisce il primo stato 3xx e fallisce il controllo `acceptStatus`. I criteri `acceptStatus`, `jsonStatus` e il numero di tentativi valgono per entrambi i trasporti.
+
 ## Ricevute e ritorno
 
 Una ricevuta `READY` identifica piano, entrambi i CID e readiness. Un errore dopo l'intento di stop mantiene lo stato di rilascio `HELD`. Il modulo ferma e isola il successore conosciuto, riconcilia anche distacchi parziali, ripristina nome, reti, IP e alias sul CID originario e controlla configurazione e readiness. Il predecessore riavviato ha una propria generazione al cancello e riceve un proprio segnale. La ricevuta riporta `rollback: ROLLED_BACK`, `restoredCid` e `predecessorReadiness: UP` solo a ripristino verificato. I dati applicativi e le registrazioni già persistite seguono la compatibilità qualificata nel profilo.
@@ -79,3 +94,25 @@ Il custode può aggiungere `configDelta` al profilo privato del modulo per cambi
 Il piano di `module-release` espone `approvalLines` con una riga per operazione. Per le ENV mostra prima e dopo in chiaro solo per i nomi presenti in `showValues`, un sottoinsieme di `envAllowlist` nello stesso profilo. Per le altre mostra il nome e gli SHA-256 dei due valori JSON canonici. Per un bind mostra destinazione, modalità e digest. `configDeltaSha256` è lo SHA-256 del JSON canonico del delta e lega il piano approvato alla ricevuta. Una preimmagine difforme dà `DELTA_PRECONDITION_FAILED`, un nome ENV duplicato dà `AMBIGUOUS_ENV` e un delta vuoto dà `EMPTY_DELTA`.
 
 L'apply confronta configurazione, mount e reti del candidato con il frame del predecessore più le sole modifiche approvate. Il ritorno da `READY` è disponibile anche per `migration.mode` uguale a `none`. La fase `rollback` usa il digest del piano originale, verifica ricevuta e generazione, isola il candidato e riporta in servizio il CID conservato con configurazione e reti originarie. Se una CREATE interrotta ha lasciato un intento senza CID registrato, il ritorno resta `HELD` finché la proprietà del candidato è incerta.
+
+## Prima installazione (`module-install`)
+
+Il custode completa `modules.<modulo>.install` nel profilo A2 privato. La voce del modulo fornisce nome del container, gate, readiness, reti, socket, nsenter, CI, inbox e journal. Usare un UID numerico positivo, ed eventualmente un GID e gruppi supplementari numerici. Ogni dato persistente richiede un bind. Ogni destinazione dichiarata in `Config.Volumes`, compreso `/tmp`, richiede un bind o un tmpfs esplicito. [Sezione di esempio](module-install.example.json)
+
+Gli antenati delle sorgenti sono directory in custodia root. Il mount RO richiede una sorgente di root. Un bind RW ammette anche l’UID del servizio e la scrittura di gruppo con un GID dichiarato. Per i file RO fissati per contenuto indicare `sha256`. Il valore di una variabile `*_FILE` coincide con la destinazione di un bind RO. Il custode inserisce solo configurazione pubblicabile nelle altre variabili. Prima dell’apply acquisisce una copia coerente dello store, inclusi i writer che lo condividono. [Registro di custodia](CONFIGURATION_REGISTER.md)
+
+1. Dopo il trasporto dello ZIP per digest, avviare il workflow manuale con il solo `module`. Il plan legge il pacchetto locale e verifica l’assenza del servizio, la disponibilità dei binding e la custodia dei file. Il riepilogo mostra destinazioni e modalità dei bind, i digest dichiarati e i nomi delle variabili.
+2. Confrontare l’annotazione **Da approvare: apply** con il job protetto. Il digest copre l’intera richiesta CREATE con 64 zeri nella sola label autoreferenziale `ouf.install.plan`. L’apply sostituisce gli zeri con il digest approvato e registra l’impronta della richiesta effettiva prima della CREATE. La ricevuta READY lega CID, immagine, generazione e risposta HTTP. Il puntatore storico è `module-<modulo>.installed`.
+3. Per un’interruzione prima dell’intento usare un plan nuovo. Dopo l’intento indicare `resume_plan` con il digest originale. Il plan verifica il CID per nome, immagine e label. Un esito `CREATE_UNCERTAIN` richiede riconciliazione in lettura nel journal e nell’Engine. Con CID riconciliato, una nuova review consente l’avvio al cancello o la verifica della readiness. Il claim durevole precede il segnale.
+4. Per isolare il candidato indicare `return_plan` con il digest originale e approvare `rollback`. Il journal conserva il CID anche dopo il fermo, il distacco delle reti e la rinomina in `install.failedName`. Dopo un errore di readiness l’apply registra il fallimento e tenta lo stesso isolamento. Il recupero dei dati applicativi usa la cattura dello store.
+5. Per il primo aggiornamento ordinario fissare `oldImage` a `imageId` della ricevuta, preparare i pin del nuovo ZIP e i nomi di custodia liberi e usare il workflow `module-release` del modulo. La linea A inserisce il nuovo servizio nella guardia di boot coordinata, con gate, dipendenze e sonda del relativo profilo.
+
+Il consumatore di `configDelta` passa le radici del delta e i percorsi privati del modulo a `validate_bind(entry, roots, profile=profile)`. La forma a due argomenti accetta una mappa con `bindRoots`, `journal`, `inbox` e `dockerSocket`. Una lista priva del contesto privato dà `BIND_POLICY_REQUIRED` per una sorgente altrimenti ammessa. Dopo la composizione del delta, `check_file_env(env, mounts)` verifica i riferimenti `*_FILE` contro le destinazioni RO del frame risultante.
+
+La verifica della CREATE precede la registrazione del CID, anche nel recupero dalla label. Config eredita i default dell’immagine verificata. L’inspect Linux API 1.44 può materializzare l’hostname dal CID breve, il conteggio zero dei tentativi di restart, raccolte vuote o nulle, la propagazione privata dei bind e i default Engine elencati in `HOST_DEFAULTS`. I mount si confrontano per destinazione e gli alias per nome. A container fermo il NetworkID può essere vuoto. Dopo lo start si verificano ID della rete e IPv4 assegnata. Docker alloca le MAC. Un limite risorse diverso, un’opzione host sconosciuta o un default del daemon fuori dal profilo riconosciuto danno `HELD`.
+
+Un diniego sul frame o sulla generazione lascia il candidato nella posizione osservata. Per isolare dopo il fallimento del gate o della readiness, l’esecutore rilegge intento, CID, frame e generazione prima di registrare l’intento di isolamento. La readiness del modulo passa da `contract.validate(profile)` sia nel bootstrap sia nel mandato. Il contratto e la sonda comuni del 58k introducono insieme la validazione e l’esecuzione TLS.
+
+Prima del claim `USR1`, il cancello registra in `gate-run.json` il CID, `StartedAt`, il contatore di restart, il digest completo della generazione e il digest dei campi del frame che sopravvivono allo stop. Se il processo esce dopo il segnale, l’apply restituisce `HELD`. Il rollback approvato verifica quelle prove, il claim del segnale e gli endpoint previsti dalla CREATE. Se coincidono, scollega il CID già fermo e lo rinomina in `install.failedName`, conservando il bind dati.
+
+Anche alla ripresa da `park-intent.json`, il primo inspect interno a `park` verifica la generazione prima di decidere lo stop. Un cambio già visibile in quella lettura dà `HELD` prima di ogni effetto Docker. Resta una finestra tra l’inspect e il successivo comando per CID, perché l’API Engine esegue le due chiamate separatamente.

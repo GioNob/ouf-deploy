@@ -50,3 +50,12 @@ Il formato di cattura, il punto di aggancio T2 e i comandi in sola lettura sono 
 | Tipo di archivio | Custode e contenuto | Cattura e ripristino | Prova |
 |---|---|---|---|
 | `deploy.module-release.config-delta@1` | Il custode dell'esecutore conserva nel profilo privato `envAllowlist`, `showValues`, `bindRoots` e `configDelta`. Il produttore di ogni file conserva il contenuto approvato e gli eventuali segreti nella propria custodia. | Acquisire profilo, digest dei file RO, riferimenti privati, proprietari e permessi insieme al piano e alla ricevuta identificati da `planSha256` e `configDeltaSha256`. Ripristinare prima i file nelle radici autorizzate, poi riconciliare journal, CID trattenuto e generazione candidata. | Verificare hash dei file, preimmagini ENV e digest del delta. Provare il ritorno sul CID originale, confrontando bind, ENV, reti e readiness con il predecessore. |
+
+## Prima installazione dei moduli
+
+| Voce D-065 | Cattura privata del custode | Ripristino e verifica |
+|---|---|---|
+| `deploy.module-install.profile@1` | Sezione install, campi comuni e pin CI, commit A2, owner e permessi | Ripristinare dopo il bootstrap, validare radici, UID, reti e ZIP per digest |
+| `deploy.module-install.receipt@1` | Ricevuta READY, puntatore `.installed`, review e risultato del run | Riconciliare digest, CID, image ID e frame con il journal e l’eventuale ritorno |
+| `deploy.module-install.journal@1` | Vista coerente cifrata di piano, intenti, CID, generazione, claim USR1 e isolamento | Ripristinare insieme allo stato per run, verificare nome e label prima della ripresa |
+| `deploy.module-install.store@1` | Prima dell’apply acquisire con il proprietario applicativo le directory RW, owner, ACL e copia consistente del DB condiviso, inclusi WAL e SHM quando presenti | Ripristinare con i writer coordinati, verificare consistenza e accessi del servizio, del collector e delle sonde |
