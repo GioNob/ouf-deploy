@@ -86,15 +86,17 @@ class Contract(unittest.TestCase):
                 self.denied(g.SEAL_DRIFT, self.tick, tables)
 
     def test_a3_03_binding_and_receipt(self):
-        self.assertIsNone(g.verify_boot(self.seal, BOOT, HEAD, OWNER, self.empty, self.profile))
+        self.assertIsNone(g.verify_boot(self.seal, BOOT, HEAD, OWNER, self.empty, self.profile,
+                                        self.policy['footprint']))
         for boot, head, owner in ((NEXT, HEAD, OWNER), (BOOT, OWNER, OWNER),
                                   (BOOT, HEAD, HEAD), ('', HEAD, OWNER)):
-            self.denied(g.BINDING, g.verify_boot, self.seal, boot, head, owner, self.empty, self.profile)
+            self.denied(g.BINDING, g.verify_boot, self.seal, boot, head, owner, self.empty, self.profile,
+                        self.policy['footprint'])
         self.policy['bootId'] = NEXT
         self.denied(g.BINDING, self.tick, active(listing()))
         for key, value in (('structureHash', OWNER), ('handles', {}), ('schema', ''), ('extra', 1)):
             self.denied(g.SEAL_DRIFT, g.verify_boot, {**self.seal, key: value},
-                        BOOT, HEAD, OWNER, self.empty, self.profile)
+                        BOOT, HEAD, OWNER, self.empty, self.profile, self.policy['footprint'])
 
     def test_a3_04_rule_order_and_independent_signed_policy(self):
         altered = listing()
@@ -117,7 +119,8 @@ class Contract(unittest.TestCase):
         self.tick(active(tables, 20), now=110)
         self.denied(g.SETS_NOT_EMPTY, g.policy_footprint, tables, self.profile)
         self.denied(g.SETS_NOT_EMPTY, g.local_seal, HEAD, OWNER, 3, BOOT, tables, self.profile)
-        self.denied(g.SETS_NOT_EMPTY, g.verify_boot, self.seal, BOOT, HEAD, OWNER, tables, self.profile)
+        self.denied(g.SETS_NOT_EMPTY, g.verify_boot, self.seal, BOOT, HEAD, OWNER, tables, self.profile,
+                    self.policy['footprint'])
 
     def test_a3_06_members_exact_in_both_families(self):
         for mode in ('foreign', 'missing', 'duplicate', 'wrong-family', 'extra-policy'):
@@ -196,7 +199,7 @@ class Contract(unittest.TestCase):
         compiled = listing(version='1.1.3')
         policy = {**self.policy, 'nftProfile': profile, 'footprint': g.policy_footprint(compiled, profile)}
         seal = g.local_seal(HEAD, OWNER, 3, BOOT, compiled, profile)
-        g.verify_boot(seal, BOOT, HEAD, OWNER, compiled, profile)
+        g.verify_boot(seal, BOOT, HEAD, OWNER, compiled, profile, policy['footprint'])
         g.verify_tick(policy, seal, observed, self.members, 100)
         self.denied(g.NFT_VERSION_DENIED, self.tick, observed)
         observed['bridge']['nftables'][0]['metainfo']['version'] = '1.0.9'
