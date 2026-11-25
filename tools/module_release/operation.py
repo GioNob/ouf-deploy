@@ -9,7 +9,7 @@ from . import flyway, postgres
 from .contract import (CI_COORDINATES, INGESTION_STARTUP_FLAGS, MCP_CI_COORDINATES, Held, SHA, diagnostic,
                        digest, jar_name, matches, package, require, validate)
 from .docker import Docker
-from .frame import (baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, merge_image,
+from .frame import (baseline, check_body, endpoint, epoch, merge_image,
                     provenance_labels, request, snapshot)
 
 
@@ -51,13 +51,19 @@ def observe(p, rt, previous_release=None):
         require(old["Id"] == previous["successorCid"] and snapshot(old) == previous["successorFrameSha256"],
                 "PREDECESSOR_CHANGED")
     baseline(p, old, predecessor_image=previous["imageId"] if previous else None)
-    require(old["Image"] != p["ci"]["imageId"], "ALREADY_INSTALLED")
+    if "configDelta" in p:
+        from .config_delta import approval_lines, delta_digest, validate_delta
+        delta = validate_delta(p["configDelta"], p, p["module"], predecessor_mounts=old["Mounts"])
+        require(not (p.get("candidate", {}).get("enableFlyway") and
+                     any(row["name"] == "SPRING_FLYWAY_ENABLED" for row in delta.get("env", []))),
+                "AMBIGUOUS_ENV")
+    require(old["Image"] != p["ci"]["imageId"] or "configDelta" in p, "ALREADY_INSTALLED")
     require(all(rt.inspect(p[k], missing=True) is None for k in ("retainedName", "failedName")),
             "CUSTODY_NAME_OCCUPIED")
     require(ready(rt, old, p["readiness"]), "PREDECESSOR_NOT_READY")
     coordinates = MCP_CI_COORDINATES if p["ci"].get("publisherFormat") == "acquisition-mcp" else CI_COORDINATES
     create_request = request(old, p["ci"]["imageId"], provenance_labels(p),
-                             candidate=p.get("candidate"), image_defaults=defaults)
+                             candidate=p.get("candidate"), image_defaults=defaults, config_delta=p.get("configDelta"))
     if "effectiveDatasource" in binding:
         prospective = {key: create_request.get(key) for key in ("Entrypoint", "Cmd", "Env")}
         merge_image(prospective, defaults)
@@ -73,6 +79,9 @@ def observe(p, rt, previous_release=None):
     }
     if previous:
         body["predecessorPlanSha256"] = previous["planSha256"]
+    if "configDelta" in p:
+        body["configDeltaSha256"] = delta_digest(delta)
+        body["approvalLines"] = approval_lines(delta, p.get("showValues", []))
     if "candidate" in p:
         removed = p["candidate"].get("removeArgs", [])
         body["candidateReview"] = {
@@ -97,7 +106,10 @@ def observe(p, rt, previous_release=None):
         body["ci"]["artifactPrefix"] = p["ci"]["artifactPrefix"]
     if "flyway" in p["migration"]:
         jar = PurePosixPath("/app", jar_name(p["gate"]["command"]))
-        require(not any(jar.is_relative_to(m["Destination"]) for m in old["Mounts"]), "FLYWAY_JAR_SHADOWED")
+        targets = [m["Destination"] for m in old["Mounts"]]
+        if "configDelta" in p:
+            targets.extend(b["target"] for b in delta.get("binds", []))
+        require(not any(jar.is_relative_to(target) for target in targets), "FLYWAY_JAR_SHADOWED")
         body["flywayBaseline"] = flyway.baseline(flyway.observe(rt, old, predecessor=True))
     return body, old
 
@@ -122,6 +134,12 @@ def sync_dir(path):
 
 
 def record(root, name, data):
+    # Apply, migrate and crash recovery all publish their terminal result here.
+    if name == "receipt.json" and data.get("operation") == "module-release" and (root / "plan.json").is_file():
+        plan = read(root, "plan.json")
+        if "configDeltaSha256" in plan:
+            require(digest(plan) == data["planSha256"] == root.name, "JOURNAL_BINDING_CHANGED")
+            data["configDeltaSha256"] = plan["configDeltaSha256"]
     # Never expose a partially written claim or receipt after process loss.
     with tempfile.NamedTemporaryFile(dir=root, delete=False) as out:
         tmp = Path(out.name)
@@ -194,13 +212,14 @@ def checked_generation(p, rt, old, cid, restoring=False):
     generation = snapshot(first)
 
     defaults = None if restoring else rt.image_defaults(image)
+    delta = None if restoring else p.get("configDelta")
 
     def checked():
         doc = rt.inspect(cid)
         require(doc["Id"] == cid and doc["Name"] == "/" + p["container"], "SERVICE_IDENTITY_CHANGED")
         check_body(old, doc, image, config_image, labels=None if restoring else provenance_labels(p),
-                   image_defaults=defaults, candidate=None if restoring else p.get("candidate"))
-        check_live_networks(old, doc)
+                   image_defaults=defaults, candidate=None if restoring else p.get("candidate"),
+                   config_delta=delta, check_networks=True)
         require(snapshot(doc) == generation, "GENERATION_CHANGED")
         return doc
 
@@ -402,10 +421,14 @@ def verify_never_started(p, rt, old, doc, root):
     require(never_started(doc)
             and not any((root / f).exists() for f in ("start-generation.json", "migration-plan.json", "release-signal.json")),
             "NEVER_STARTED_UNPROVEN")
+    check_created(p, rt, old, doc)
+
+
+def check_created(p, rt, old, doc):
     image = p["ci"]["imageId"]
-    check_body(old, doc, image, image, created=True, labels=provenance_labels(p),
-               image_defaults=rt.image_defaults(image), candidate=p.get("candidate"))
-    check_created_networks(old, doc)
+    delta = p.get("configDelta")
+    check_body(old, doc, image, image, created=True, labels=provenance_labels(p), image_defaults=rt.image_defaults(image),
+               candidate=p.get("candidate"), config_delta=delta, check_networks=True)
 
 
 def start_candidate(p, rt, old, cid, root):
@@ -454,7 +477,7 @@ def execute(p, rt, body, old, root, result, defer_migration):
     require(snapshot(rt.inspect(old["Id"])) == body["oldFrameSha256"], "PRE_STOP_DRIFT")
     image = p["ci"]["imageId"]
     req = request(old, image, provenance_labels(p), candidate=p.get("candidate"),
-                  image_defaults=rt.image_defaults(image) if "candidate" in p else None)
+                  image_defaults=rt.image_defaults(image) if "candidate" in p else None, config_delta=p.get("configDelta"))
     require(digest(req) == body["requestSha256"], "CREATE_REQUEST_CHANGED")
     networks = old["NetworkSettings"]["Networks"]
     if "database" in p["migration"]:
@@ -474,9 +497,7 @@ def execute(p, rt, body, old, root, result, defer_migration):
         doc = rt.inspect(new)
         require(doc["Id"] == new and doc["Name"] == old["Name"] and doc["State"]["Status"] == "created"
                 and not doc["State"]["Running"], "CREATED_IDENTITY_CHANGED")
-        check_body(old, doc, p["ci"]["imageId"], p["ci"]["imageId"], created=True, labels=provenance_labels(p),
-                   image_defaults=rt.image_defaults(image), candidate=p.get("candidate"))
-        check_created_networks(old, doc)
+        check_created(p, rt, old, doc)
         start_candidate(p, rt, old, new, root)
         finish_apply(p, rt, body, old, new, root, result, defer_migration)
     except Exception as exc:

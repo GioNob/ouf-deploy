@@ -65,3 +65,17 @@ Il profilo MCP identifica il PID 1 con `gate.executable` e l'intero argv con `ga
 6. Per il ritorno da `READY` avviare un nuovo dispatch con `return_plan` uguale al digest del plan originale e approvare il job `rollback` del nuovo run. Il mandato verifica il predecessore conservato e il frame della generazione immediatamente successiva. Prima di fermare il candidato, il lettore confronta di nuovo storia e schema con la fotografia iniziale. Se differiscono, la ricevuta riporta `HELD / DATABASE_CHANGED`, il lock resta acquisito e decide l'owner. La stessa condizione protegge il ritorno automatico dopo un errore. Il ritorno riuscito registra `ROLLED_BACK` dopo il controllo del PID 1 e del 204 sul CID originale. Backup e restore dei dati seguono R-041. [Precedente R-033](OUF_MCP_IMAGE_SWAP.md)
 
 La suite portabile usa lo ZIP nel formato R-033 e verifica i mandati sulle fasi. Il job nativo opt-in usa un processo Go al cancello e un PostgreSQL temporaneo per verificare variazioni della storia e dello schema. [Qualifica GitHub-hosted](../.github/workflows/privileged-executor-native.yml)
+
+## Delta di configurazione
+
+Il custode può aggiungere `configDelta` al profilo privato del modulo per cambiare configurazione nella stessa CREATE che seleziona l'immagine CI. Un delta effettivo permette anche di mantenere l'image ID corrente. In sua assenza, la stessa immagine dà `ALREADY_INSTALLED`.
+
+| Campo del delta | Contratto |
+|---|---|
+| `env` | Lista di oggetti con `name`, `before` e `after`. Il nome deve comparire in `envAllowlist` del profilo del modulo. In `before`, JSON `null` richiede una variabile assente e `""` richiede una variabile presente con valore vuoto. In `after`, `null` rimuove la variabile, anche se l'immagine definisce un default. I segreti si referenziano con un nome `*_FILE` che punta alla destinazione esatta di un bind RO. |
+| `binds` | Lista di aggiunte con `source`, `target`, `mode` uguale a `ro` e `sha256` del file. Le sorgenti devono appartenere alle `bindRoots` del profilo e superare i controlli di custodia comuni a `module-install`. Il plan e il ricalcolo sotto lock verificano il contenuto. La destinazione deve essere libera, anche rispetto ai mount sovrapposti. |
+| `aliases` | Oggetto che associa il nome di una rete già presente nel profilo a una lista di alias da aggiungere. Il predecessore conserva i propri alias. |
+
+Il piano di `module-release` espone `approvalLines` con una riga per operazione. Per le ENV mostra prima e dopo in chiaro solo per i nomi presenti in `showValues`, un sottoinsieme di `envAllowlist` nello stesso profilo. Per le altre mostra il nome e gli SHA-256 dei due valori JSON canonici. Per un bind mostra destinazione, modalità e digest. `configDeltaSha256` è lo SHA-256 del JSON canonico del delta e lega il piano approvato alla ricevuta. Una preimmagine difforme dà `DELTA_PRECONDITION_FAILED`, un nome ENV duplicato dà `AMBIGUOUS_ENV` e un delta vuoto dà `EMPTY_DELTA`.
+
+L'apply confronta configurazione, mount e reti del candidato con il frame del predecessore più le sole modifiche approvate. Il ritorno da `READY` è disponibile anche per `migration.mode` uguale a `none`. La fase `rollback` usa il digest del piano originale, verifica ricevuta e generazione, isola il candidato e riporta in servizio il CID conservato con configurazione e reti originarie. Se una CREATE interrotta ha lasciato un intento senza CID registrato, il ritorno resta `HELD` finché la proprietà del candidato è incerta.

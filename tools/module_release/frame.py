@@ -110,7 +110,10 @@ def configure_candidate(cfg, candidate):
         cfg["Env"] = env
 
 
-def request(old, image, labels=None, *, candidate=None, image_defaults=None):
+def request(old, image, labels=None, *, candidate=None, image_defaults=None, config_delta=None):
+    if config_delta is not None:
+        from .config_delta import expected_after
+        old = expected_after(old, config_delta)
     cfg = image_configuration(old, image, labels)
     if candidate:
         launch = {"Cmd": cfg["Cmd"], "Entrypoint": cfg["Entrypoint"], "Env": cfg.get("Env")}
@@ -124,6 +127,12 @@ def request(old, image, labels=None, *, candidate=None, image_defaults=None):
         cfg["HostConfig"]["OomKillDisable"] = False
     cfg["NetworkingConfig"] = {"EndpointsConfig": {
         name: endpoint(ep) for name, ep in old["NetworkSettings"]["Networks"].items()}}
+    if config_delta is not None:
+        # A bare Docker Env key unsets an image default. Omitting the key alone
+        # lets the daemon reintroduce NAME=value from the candidate image.
+        removed = [row["name"] for row in config_delta.get("env", []) if row["after"] is None]
+        if removed:
+            cfg["Env"] = [entry for entry in cfg["Env"] if entry.partition("=")[0] not in removed] + removed
     return cfg
 
 
@@ -131,19 +140,37 @@ def epoch(doc):
     return [doc["Id"], doc["State"]["StartedAt"], doc["State"]["Pid"], doc["RestartCount"]]
 
 
-def check_body(old, doc, image, config_image, *, created=False, labels=None, image_defaults=None, candidate=None):
+def check_body(old, doc, image, config_image, *, created=False, labels=None, image_defaults=None, candidate=None,
+               config_delta=None, check_networks=False):
+    removed = set()
+    if config_delta is not None:
+        from .config_delta import expected_after
+        old = expected_after(old, config_delta)
+        removed = {row["name"] for row in config_delta.get("env", []) if row["after"] is None}
     cfg = image_configuration(old, config_image, labels)
     if image_defaults is not None:
         merge_image(cfg, image_defaults)
     if candidate:
         configure_candidate(cfg, candidate)
+    actual = configuration(doc)
+    if removed:
+        cfg["Env"] = [entry for entry in cfg.get("Env") or [] if entry.partition("=")[0] not in removed]
+        # Engine stores may retain the bare unset marker in Config.Env.
+        observed = actual.get("Env") or []
+        require(len({entry.partition("=")[0] for entry in observed}) == len(observed), "AMBIGUOUS_ENV")
+        actual["Env"] = [entry for entry in observed if entry not in removed]
     host = dict(old["HostConfig"])
     if created and host.get("OomKillDisable") is None:
         host["OomKillDisable"] = False
     mounts = lambda d: sorted(d["Mounts"], key=lambda m: m["Destination"])
-    require(digest(configuration(doc)) == digest(cfg) and doc["Image"] == image
+    require(digest(actual) == digest(cfg) and doc["Image"] == image
             and digest(doc["HostConfig"]) == digest(host) and mounts(doc) == mounts(old)
             and [doc["Path"], *doc["Args"]] == cfg["Entrypoint"] + cfg["Cmd"], "CONFIGURATION_DELTA")
+    if check_networks or config_delta is not None:
+        if created:
+            check_created_networks(old, doc)
+        else:
+            check_live_networks(old, doc)
 
 
 def check_created_networks(old, doc):

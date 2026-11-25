@@ -30,7 +30,8 @@ def interrupted_successor(profile, rt, old, plan, root):
 
 
 def run(profile, stamp, runtime=None, *, recover=False):
-    require(matches(SHA, stamp) and ("database" in profile["migration"] or "flyway" in profile["migration"]),
+    migration = profile["migration"]
+    require(matches(SHA, stamp) and ("database" in migration or "flyway" in migration or migration["mode"] == "none"),
             "INVALID_RETURN_PLAN")
     parent = Path(profile["journal"])
     root = parent / stamp
@@ -45,7 +46,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
         lock.mkdir(mode=0o700)
     except FileExistsError:
         resuming = (root / "return-intent.json").is_file()
-        interrupted = "flyway" in profile["migration"] and not (root / "receipt.json").exists()
+        interrupted = ("flyway" in migration or migration["mode"] == "none") and not (root / "receipt.json").exists()
         if not (recover and (lock / "owner.json").is_file() and json.loads((lock / "owner.json").read_bytes())
                 == {"planSha256": stamp} and (resuming or interrupted) and not (root / "return-receipt.json").exists()):
             return dict(result, reason="OPERATION_IN_PROGRESS_OR_INTERRUPTED")
@@ -53,6 +54,8 @@ def run(profile, stamp, runtime=None, *, recover=False):
     try:
         plan = read("plan.json")
         require(digest(plan) == stamp and plan["profileSha256"] == digest(profile), "RETURN_PLAN_CHANGED")
+        if "configDeltaSha256" in plan:
+            result["configDeltaSha256"] = plan["configDeltaSha256"]
         rt = runtime or Docker(profile)
         old = load_predecessor(profile, rt, root)
         require(snapshot(old) == plan["oldFrameSha256"] and old["Id"] == plan["oldCid"], "RETURN_BASELINE_CHANGED")
@@ -70,6 +73,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
         else:
             receipt = read("receipt.json")
             require(receipt["status"] == "READY" and receipt["planSha256"] == stamp
+                    and receipt.get("configDeltaSha256") == plan.get("configDeltaSha256")
                     and receipt["predecessorCid"] == old["Id"]
                     and (resuming or not (root / "return-intent.json").exists()), "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE")
             cid = receipt["successorCid"]
