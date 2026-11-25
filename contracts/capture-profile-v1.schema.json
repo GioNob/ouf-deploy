@@ -1,0 +1,383 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "ouf.capture-profile.v1"
+    },
+    "recipients": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(?:age1[023456789acdefghjklmnpqrstuvwxyz]{58}|ssh-(?:rsa|ed25519) [A-Za-z0-9+/]+={0,2}(?: [^\\r\\n]+)?)$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "outputDir": {
+      "type": "string",
+      "pattern": "^/(?:[^/\\u0000-\\u001f]+/)*[^/\\u0000-\\u001f]+$"
+    },
+    "maxFileMiB": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "maxTotalGiB": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "minFreeMiB": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "docker": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/(?:[^/\\u0000-\\u001f]+/)*[^/\\u0000-\\u001f]+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ]
+    },
+    "dockerSocket": {
+      "type": "string",
+      "pattern": "^/(?:[^/\\u0000-\\u001f]+/)*[^/\\u0000-\\u001f]+$"
+    },
+    "age": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/(?:[^/\\u0000-\\u001f]+/)*[^/\\u0000-\\u001f]+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ]
+    },
+    "nice": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/(?:[^/\\u0000-\\u001f]+/)*[^/\\u0000-\\u001f]+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ]
+    },
+    "postgres": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "omitTableData": {
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "database", "schema", "table"],
+            "properties": {
+              "id": {"const": "capture.logical-exclusions"},
+              "database": {"type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"},
+              "schema": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+              "table": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"}
+            }
+          }
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+        },
+        "container": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+        },
+        "user": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+        },
+        "database": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+        },
+        "databases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+              },
+              "name": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "container",
+        "user",
+        "database",
+        "omitTableData",
+        "databases"
+      ]
+    },
+    "etcd": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+        },
+        "container": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+        }
+      },
+      "required": [
+        "id",
+        "container"
+      ]
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "images": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "paths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^/(?:[^/\\u0000-\\u001f]+/)*[^/\\u0000-\\u001f]+$"
+          }
+        },
+        "required": [
+          "id",
+          "path"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "excludePaths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^/(?:[^/\\u0000-\\u001f]+/)*[^/\\u0000-\\u001f]+$"
+          }
+        },
+        "required": [
+          "id",
+          "path"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "units": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+          },
+          "pattern": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "pattern"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "volumes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "absent": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+          },
+          "reason": {
+            "enum": [
+              "NOT_INSTALLED",
+              "NO_INSTANCES"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "reason"
+        ]
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "secretOwners": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+          },
+          "custodian": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rotation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "consumers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "custodian",
+          "rotation",
+          "consumers"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema",
+    "recipients",
+    "outputDir",
+    "maxFileMiB",
+    "maxTotalGiB",
+    "minFreeMiB",
+    "docker",
+    "dockerSocket",
+    "age",
+    "nice",
+    "postgres",
+    "etcd",
+    "inventory",
+    "images",
+    "paths",
+    "excludePaths",
+    "units",
+    "volumes",
+    "absent",
+    "secretOwners"
+  ]
+}

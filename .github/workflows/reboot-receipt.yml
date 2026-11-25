@@ -1,0 +1,20 @@
+name: Supervised reboot receipts
+on: [pull_request, push]
+
+permissions:
+  contents: read
+
+jobs:
+  receipts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Portable receipt tests
+        run: |
+          test "$(id -u)" -ne 0
+          python3 -I -B -m unittest discover -s tests -p 'test_reboot_receipt.py' -v
+      - name: Manual-only VPS workflow guard
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_vps_workflows_manual_only.py' -v

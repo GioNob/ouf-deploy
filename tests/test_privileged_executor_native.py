@@ -21,18 +21,8 @@ from semantic_identity_v25 import semantic_configuration
 from store import Journal
 
 
-@unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_A2_NATIVE_ENGINE") == "1", "isolated Engine opt-in")
-class NativeRoundTrip(unittest.TestCase):
-    def test_engine_gate_and_return(self):
-        self.round_trip()
-
-    def test_distinct_successor_and_original_image_on_return(self):
-        self.round_trip("ouf-ci-gate:a2-successor")
-
-    def test_worker_enabled_next_image_and_interrupted_create(self):
-        self.round_trip("ouf-ci-gate:a2-successor", worker_enabled=True)
-
-    def round_trip(self, successor_tag=None, worker_enabled=False):
+class NativeGateFixture(unittest.TestCase):
+    def start_baseline(self, *, worker_enabled):
         self.assertEqual(os.geteuid(), 0)
         engine = Engine(os.environ["OUF_A2_FIXTURE_SOCKET"])
         self.assertIn("ouf.a2.fixture=true", engine.call("GET", "info")["Labels"])
@@ -59,8 +49,26 @@ class NativeRoundTrip(unittest.TestCase):
         self.addCleanup(engine.call, "DELETE", f"containers/{old}?force=1")
         engine.call("POST", f"containers/{old}/start")
         row = engine.inspect(old)
-        original = dict(containerName=name, image=image, configurationSha256=semantic_configuration(row))
-        until(lambda: engine.process(old, original, "GATE_WAITING"), 8, "BASELINE_GATE")
+        original = dict(containerName=name, image=image, configurationSha256=semantic_configuration(row),
+                        network=name, networkId=net, ipv4=ip)
+        generation = until(lambda: engine.process(old, original, "GATE_WAITING"), 8, "BASELINE_GATE")
+        return engine, row, original, generation
+
+
+@unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_A2_NATIVE_ENGINE") == "1", "isolated Engine opt-in")
+class NativeRoundTrip(NativeGateFixture):
+    def test_engine_gate_and_return(self):
+        self.round_trip()
+
+    def test_distinct_successor_and_original_image_on_return(self):
+        self.round_trip("ouf-ci-gate:a2-successor")
+
+    def test_worker_enabled_next_image_and_interrupted_create(self):
+        self.round_trip("ouf-ci-gate:a2-successor", worker_enabled=True)
+
+    def round_trip(self, successor_tag=None, worker_enabled=False):
+        engine, row, original, _ = self.start_baseline(worker_enabled=worker_enabled)
+        old, name, image = row["Id"], original["containerName"], original["image"]
         candidate = candidate_config = None
         if successor_tag:
             inspected = engine.call("GET", f"images/{successor_tag}/json")
@@ -69,7 +77,7 @@ class NativeRoundTrip(unittest.TestCase):
             self.assertNotIn("fixture.a2.successor", row["Config"]["Labels"] or {})
             self.assertNotIn("A2_IMAGE_DEFAULT=yes", row["Config"]["Env"])
         create, proposed = prepare(row, original, candidate, candidate_config, worker_enabled=worker_enabled)
-        nets = {name:net}
+        nets = {name:original["networkId"]}
         engine.detach(old, name+"-saved", nets)
         if candidate:
             # main copied the predecessor Config, then replaced only Image and the worker.

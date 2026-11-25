@@ -18,7 +18,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=c58515e8d4567742fc9dad988b4871966ce49563
+C=3ce5ccdb8268e7bb5c41ec65671558067ceec9cb
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -156,7 +156,7 @@ delivery() {
   fetch tools/semantic_provider_r3/lease_renewal_overlay_v18.py dd2c600df369f8dc6c595d3e65ff739abeced198a3cf3f547aaaadf27f19889a
   fetch tools/semantic_provider_r3/lease_renewal_v18.py c6fefa170903a92bcb706a061c91a3bfd5af560b51447f08dd0ac3135a5a7ecd
   fetch tools/semantic_provider_r3/lease_timing_overlay_v21.py b57c519a4f0785771c22f054bf85d846bab0057b9a0150b5537baecbcf21f583
-  fetch tools/semantic_provider_r3/operate.py 050804047d3aa3dc9f9a61c333a07be618c5ff0c4987f03863064e6045b78b1d
+  fetch tools/semantic_provider_r3/operate.py b98480ba3f60f7d3b845bfebc585190c448ecc519a517e179e3e2f9c26614878
   fetch tools/semantic_provider_r3/read_adapter_v16.py 66b1dd83d4543e4454036489ff64433d16a9a30bb63127b4310431271064de77
   fetch tools/semantic_provider_r3/read_identity_provider_v13.py 7aa1a9067f59d1fb15341d6567bd88af8eac4bbd0b027df6751235190297d4e7
   fetch tools/semantic_provider_r3/read_routes_v15.py e3e62ea885e0a54fb74de591e49891d1b209fae7756296ad74ae2a958506390e
@@ -165,7 +165,7 @@ delivery() {
   fetch tools/semantic_provider_r3/semantic_identity_v25.py e09aef2977390bca817a1fe297ba92b8b987cb9de530ae3d7a9b2da0c33a7231
   fetch tools/semantic_provider_r3/semantic_overlay_v25.py b74b9c854e76e099663a3a1aa7dde76be574b4ab6a1fbfacf5085fd34d82279d
   fetch tools/semantic_provider_r3/upgrade.py 9635623970aa6c799d9ffde66de35ebdba9fc16f23fafe70ce493025aae7d12d
-  fetch tools/semantic_provider_r3/volatile_restore.py 8a8ccc3750f241809d35d949a71ec844d2fdc8e9d7c056bb392cfc1a58b3b0f0
+  fetch tools/semantic_provider_r3/volatile_restore.py 00b6672df09758bb7f5b73f60aed0a17ba59780691ca1713d6a73409f15b4481
   fetch tools/semantic_provider_routes/custody.py 2ab7177f21fb5b330473895798c141282cdabc85c245142f96511fa13e848db3
   fetch tools/semantic_provider_routes/routes.py 305f2535e2cc547de5f242080247d62a43b4bdb93303bf00a03bb36e87097997
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855

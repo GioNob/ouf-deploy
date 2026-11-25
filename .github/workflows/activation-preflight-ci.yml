@@ -1,0 +1,33 @@
+name: Activation preflight
+
+on:
+  pull_request:
+    paths:
+      - 'tools/activation_preflight/**'
+      - 'scripts/activation-preflight.py'
+      - 'tests/test_activation_preflight.py'
+      - 'tests/fixtures/activation_preflight/**'
+      - 'docs/ACTIVATION_PREFLIGHT.md'
+      - '.github/workflows/activation-preflight-ci.yml'
+  push:
+    paths:
+      - 'tools/activation_preflight/**'
+      - 'scripts/activation-preflight.py'
+      - 'tests/test_activation_preflight.py'
+      - 'tests/fixtures/activation_preflight/**'
+      - 'docs/ACTIVATION_PREFLIGHT.md'
+      - '.github/workflows/activation-preflight-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    container: python:3.13-slim
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python -I -m pip install PyYAML==6.0.2 pytest==8.4.2
+      - run: python -I -B -m pytest tests/test_activation_preflight.py

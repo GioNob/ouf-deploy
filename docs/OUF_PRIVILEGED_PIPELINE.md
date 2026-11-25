@@ -168,6 +168,29 @@ I test portabili esercitano la macchina delle fasi 27→28→29→30 e il ritorn
 
 Il workflow delle PR esercita il pidfd, il ritorno Docker A2, la coda su PostgreSQL con grant per colonna, il bootstrap e il rilascio di un modulo su una VM GitHub effimera. Le immagini a cancello derivano dal JDK del runner. La prova della coda usa i binari PostgreSQL locali individuati con `pg_config --bindir` in un container con rete disabilitata. [Prove native](../.github/workflows/privileged-executor-native.yml)
 
+## Matrice delle interruzioni di A2 e del rilascio Semantic
+
+Ogni riga segue una transazione dal digest approvato alla prova osservabile dal dispatch successivo. Il ritorno sulla testa 27 riattiva il predecessore senza firmare. Per `release=next` il ritorno precedente alla firma conserva la testa vigente. Dopo la firma, il ritorno usa la sequenza successiva autorizzata.
+
+| Fase, claim → effetto → ricevuta | Dopo il claim | Dopo l’effetto, prima della ricevuta | Dopo la ricevuta |
+|---|---|---|---|
+| Plan · `approvals`, `plan.review` → preflight e ammissione immagine → `plan` | Il nuovo run prepara il proprio piano | L’import additivo usa archivio e identità CI verificati. Il nuovo plan rilegge il predecessore | L’apply consuma la review del digest |
+| Apply · pubblicazione dei puntatori → `stop.claim` → stop R3 → `stop.receipt` | Il run verifica owner, stop approvato e quiescenza | Può acquisire il risultato dell’owner vincolato a digest e stato. Esito incerto → HELD | La testa e il frame del CID delimitano il distacco |
+| Rinnovo · collisione prima dello stop → nuovo piano → `stop-retry-1` o `stop-retry-2` | Ogni retry richiede scope invariato e lease fresco | Il recupero cerca il risultato nella directory del piano registrato | Uno stop comprovato consente di proseguire |
+| Apply · `detach.claim` → stop, scollegamento e rename del predecessore → `detach.receipt` | Ricostruisce CID, reti presenti e nome dal piano originale | Il frame vivo identifica il distacco da completare o già concluso | Con nome libero, quiescenza provata e nessuna claim CREATE può creare il successore |
+| Apply · `create.claim` → CREATE → `create.receipt` | Esito privo di CID comprovato → HELD | Il solo nome del candidato lascia HELD | Un CID mai avviato può essere riusato dopo verifica del frame e dei binding |
+| Apply o return · `start-gate.claim` → start → `start-gate.receipt`, poi `stage` | Il run verifica il CID e le prove di avvii precedenti | Una generazione priva del riscontro necessario resta HELD | Il processo al gate e la generazione vincolano migrate e sign |
+| Migrazione online · claim SQL e tentativo del run → transazione → ricevuta SQL | Il nuovo piano verifica inventario e prefisso Flyway | Storia esatta con riga committata chiude la ricevuta. Per una riga assente serve un nuovo tentativo approvato | La storia completa e il PID 1 applicativo con HTTP 200 UP chiudono l’apply |
+| Sign · `sign.review`, `issue.claim` → firma → `issue.receipt` | Firma incerta → riconciliazione del payload e della testa | La ripresa post-firma di `next` verifica stage, review e payload della sequenza | Il successivo upgrade resta vincolato al profilo firmato |
+| Avvio R3 · claim upgrade/start → runbook → ricevuta | Il nuovo piano distingue operazione pianificata e applicata | Il risultato durevole del runbook deve avere digest e stato previsti | Il rilascio del gate richiede l’ingresso verificato |
+| Rilascio · `signal.claim` → USR1 al PID 1 → `signal.receipt` | Un segnale reclamato esclude il reinvio | Per la ripresa serve il processo applicativo della stessa generazione | Readiness HTTP, sonda e verifica finale di ingresso attestano il servizio |
+| Return · claim detach/reconnect → isolamento del candidato e ricollegamento del predecessore → ricevute | Si confrontano i CID personali con il piano | Su `next` il nuovo piano registra nome e reti mancanti. Una generazione incerta resta HELD | Anche il predecessore passa da gate, segnale, readiness e ingresso |
+| Chiusura · `result` → archivio dei puntatori → `completed-forward` o `last-closed` | Il nuovo dispatch controlla il risultato della direzione | La chiusura riprende dai puntatori e dall’archivio immutabile | Il riscontro finale lega l’archivio alla generazione verificata |
+
+In HELD il contesto pubblico riporta owner, CID e stato Docker osservati per i tre nomi di custodia e la claim più recente disponibile. Per il Gateway il residuo identifica la risorsa APISIX e lo stato della rilettura.
+
+La fonte vincolante per ogni scenario è [interruption_matrix.json](../tests/interruption_matrix.json). Ogni riga riporta percorso relativo, funzione che pubblica, posizione `prima` o `dopo`, esito e, per `HELD`, codice pubblico. L’ordine distingue pubblicazioni ripetute dello stesso percorso. `<plan>` indica un digest di directory e `<uuid>` l’identificatore di un’invocazione runbook. Per aggiornare la matrice, eseguire `python -I -B tests/test_interruption_matrix.py --write`, verificare nel diff ogni variazione di esito e ripetere la discovery unittest. La CI confronta il file versionato con le pubblicazioni osservate sulle fixture. Quando si introduce un ramo condizionale, aggiungere lo scenario che lo percorre e verificare anche il recupero sul nuovo run.
+
 ## Matrice delle interruzioni di moduli e Gateway
 
 Il nuovo dispatch parte da `plan`. L'esecutore serializza i job con il lock host. Ogni job protetto consuma la propria review nel ledger `approvals` prima di poter produrre effetti. Se il processo muore, il riscontro viene pubblicato dal dispatch successivo. Le colonne della matrice descrivono tre momenti distinti. Quando più effetti condividono un intento, la tabella indica quale osservazione permette di distinguerli.

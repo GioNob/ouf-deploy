@@ -88,6 +88,571 @@
       "capture": "Custode root. Cifrare la configurazione e i journal, registrare versioni, SHA-256 e permessi. Associare ZIP, ricevuta di trasporto, lista delle migrazioni e plan.",
       "restore": "Dopo il bootstrap, ripristinare profilo, inbox e journal in ordine. Riconciliare CID, profilo e database prima del rilascio o del ritorno.",
       "test": "Provare il 204, il ritorno al CID conservato e il rifiuto DATABASE_CHANGED prima del fermo del candidato."
+    },
+    {
+      "id": "capture.postgres",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Cluster PostgreSQL, database collegabili, ruoli e tablespace",
+      "class": "mista",
+      "secrets": true,
+      "capture": "Tutti i ruoli, database, schemi, colonne e chiavi. Conservare tutte le righe salvo le tabelle di payload o sessioni in postgres.omitTableData, archiviate con solo schema e vincoli. Cifrare alla sorgente.",
+      "restore": "Creare il cluster isolato con la stessa major, preparare i tablespace e importare SQL con psql.",
+      "test": "Confrontare database applicativi, ruoli e privilegi con l'inventario protetto.",
+      "kind": "postgres-cluster",
+      "selector": {
+        "dataSelection": "Tutte le colonne e chiavi. Tutte le righe salvo le relazioni elencate in postgres.omitTableData per database, schema e tabella.",
+        "bindings": [
+          "postgres",
+          "excludePaths",
+          "databases",
+          "volumes"
+        ]
+      },
+      "restoreOrder": 3,
+      "dependsOn": [
+        "capture.docker"
+      ],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.iam",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Database di Keycloak nel dump del cluster",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Associare il database IAM per nome al dump completo.",
+      "restore": "Riavviare IAM con issuer e callback isolati, ruotare le credenziali e revocare le sessioni importate.",
+      "test": "Login di fixture con token nuovo, verificare issuer, subject e audience.",
+      "kind": "iam-realm",
+      "selector": {
+        "bindings": [
+          "databases"
+        ]
+      },
+      "restoreOrder": 4,
+      "dependsOn": [
+        "capture.postgres"
+      ],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.etcd",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Snapshot etcd del Gateway",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Snapshot consistente etcdctl dal membro dichiarato, cifrato in streaming.",
+      "restore": "Verificare con etcdutl e ripristinare in un data-dir nuovo con identità di cluster isolata.",
+      "test": "Confrontare revisione, quantità e hash delle rotte con la baseline.",
+      "kind": "etcd-snapshot",
+      "selector": {
+        "bindings": [
+          "etcd",
+          "excludePaths",
+          "volumes"
+        ]
+      },
+      "restoreOrder": 3,
+      "dependsOn": [
+        "capture.docker"
+      ],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.storage",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Dati degli oggetti e copie di lavoro dei volumi di storage e staging",
+      "class": "esclusa",
+      "secrets": false,
+      "capture": "D-064. Enumerare le istanze e i motivi, omettere i payload.",
+      "restore": "Provisionare backend e staging vuoti e isolati.",
+      "test": "Scrivere e rileggere un oggetto di fixture, verificare assenza di oggetti di esercizio.",
+      "kind": "excluded",
+      "selector": {
+        "bindings": [
+          "excludePaths",
+          "volumes"
+        ]
+      },
+      "restoreOrder": 3,
+      "dependsOn": []
+    },
+    {
+      "id": "capture.logical-exclusions",
+      "version": 1,
+      "owner": "Custode PostgreSQL e IAM",
+      "archive": "Righe di payload UDP, esiti, sessioni e token persistiti nelle tabelle dichiarate",
+      "class": "esclusa",
+      "secrets": true,
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": ["secretOwners[id].consumers"],
+      "capture": "D-064. Conservare schema, colonne e chiavi delle tabelle selezionate senza le righe.",
+      "restore": "Importare lo schema e rigenerare sessioni e risultati sull'host isolato.",
+      "test": "Verificare tabelle escluse vuote, vincoli validi e creazione di una nuova sessione.",
+      "kind": "excluded",
+      "selector": {"bindings": ["omitTableData"]},
+      "restoreOrder": 3,
+      "dependsOn": ["capture.postgres"]
+    },
+    {
+      "id": "capture.volumes",
+      "version": 1,
+      "owner": "Custode host",
+      "archive": "Definizioni dei volumi ricreabili senza payload persistente",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Inventariare nome, driver e scope. Riservare questa voce ai volumi privi di stato richiesto.",
+      "restore": "Ricreare i volumi con driver e parametri privati approvati.",
+      "test": "Confrontare driver, scope e mount dei servizi.",
+      "kind": "docker-volume",
+      "selector": {
+        "bindings": [
+          "volumes"
+        ]
+      },
+      "restoreOrder": 2,
+      "dependsOn": [
+        "capture.docker"
+      ]
+    },
+    {
+      "id": "capture.docker",
+      "version": 1,
+      "owner": "Custode host",
+      "archive": "Container, bind, immagini, reti e IPAM",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Proiettare i campi di inventario e cifrare il JSON.",
+      "restore": "Ricreare reti con driver, subnet e gateway rilevati dal piano.",
+      "test": "Confrontare reti e IPAM prima di creare i container.",
+      "kind": "docker-inventory",
+      "selector": {
+        "bindings": [
+          "inventory"
+        ]
+      },
+      "restoreOrder": 1,
+      "dependsOn": []
+    },
+    {
+      "id": "capture.images",
+      "version": 1,
+      "owner": "Custode host",
+      "archive": "Immagini locali dei container attivi senza RepoDigest",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "docker image save per ID immutabile distinto.",
+      "restore": "Caricare ogni tar con docker load e riconciliare gli ID.",
+      "test": "Confrontare ID immagine, configurazione e layer caricati.",
+      "kind": "docker-image",
+      "selector": {
+        "bindings": [
+          "images"
+        ]
+      },
+      "restoreOrder": 2,
+      "dependsOn": [
+        "capture.docker"
+      ]
+    },
+    {
+      "id": "capture.daemon",
+      "version": 1,
+      "owner": "Custode host",
+      "archive": "Configurazione Docker e fonti apt",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Acquisire file e permessi dai prefissi privati.",
+      "restore": "Ripristinare daemon e fonti nel sistema isolato prima di creare le reti.",
+      "test": "Validare la configurazione daemon e verificare i repository autorizzati.",
+      "kind": "host-path",
+      "selector": {
+        "bindings": [
+          "paths"
+        ],
+        "installRoots": [
+          "/etc/docker",
+          "/etc/apt"
+        ]
+      },
+      "restoreOrder": 1,
+      "dependsOn": []
+    },
+    {
+      "id": "capture.proxy",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Configurazione Caddy, stato TLS e catena certificati",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Cifrare configurazione e materiale TLS ammesso dal custode.",
+      "restore": "Installare configurazione, emettere certificati per i nomi di prova.",
+      "test": "Validare Caddy, SNI e catena TLS sulla rete isolata.",
+      "kind": "host-path",
+      "selector": {
+        "bindings": [
+          "paths",
+          "volumes"
+        ]
+      },
+      "restoreOrder": 5,
+      "dependsOn": [
+        "capture.secrets"
+      ],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.bind-sources",
+      "version": 1,
+      "owner": "Custode dei moduli",
+      "archive": "Sorgenti e configurazioni applicative montate dai container",
+      "class": "configurazione",
+      "secrets": true,
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": ["secretOwners[id].consumers"],
+      "capture": "Cifrare file e directory selezionati dal profilo con metadati e link.",
+      "restore": "Ripristinare i sorgenti e le modalità prima di creare i bind dei moduli.",
+      "test": "Confrontare sorgenti, destinazioni, accesso in lettura e readiness di ciascun modulo.",
+      "kind": "host-path",
+      "selector": {"bindings": ["paths", "volumes"]},
+      "restoreOrder": 5,
+      "dependsOn": ["capture.docker"]
+    },
+    {
+      "id": "capture.ephemeral",
+      "version": 1,
+      "owner": "Custode host",
+      "archive": "Socket locali, lock runtime e altri endpoint effimeri montati",
+      "class": "esclusa",
+      "secrets": false,
+      "capture": "Enumerare il bind e il motivo di rigenerazione. Escludere il nodo speciale.",
+      "restore": "Ricreare il servizio proprietario e il suo endpoint locale.",
+      "test": "Verificare tipo, proprietario, permessi e lettura autorizzata.",
+      "kind": "regenerated",
+      "selector": {"bindings": ["excludePaths"]},
+      "restoreOrder": 1,
+      "dependsOn": []
+    },
+    {
+      "id": "capture.secrets",
+      "version": 1,
+      "owner": "Custode host",
+      "archive": "File e directory di segreti ammessi nel profilo",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Archiviare i percorsi dichiarati dopo le esclusioni D-064, preservando uid, gid e modalità.",
+      "restore": "Il custode ripristina i riferimenti e ruota per i consumatori elencati.",
+      "test": "Provare l'accesso dal consumatore autorizzato e il diniego da un account estraneo.",
+      "kind": "host-path",
+      "selector": {
+        "bindings": [
+          "paths"
+        ]
+      },
+      "restoreOrder": 1,
+      "dependsOn": [],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.units",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Unità, timer OUF e drop-in",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Cifrare fragment e directory .d con metadati e destinazioni dei link.",
+      "restore": "Ripristinare in stato disabilitato, daemon-reload e controllo delle dipendenze.",
+      "test": "Verificare fragment e drop-in effettivi e calendario dei timer.",
+      "kind": "systemd-unit",
+      "selector": {
+        "bindings": [
+          "units",
+          "paths"
+        ],
+        "unitPatterns": [
+          "ouf-authority-mandate-renewal.service",
+          "ouf-authority-mandate-renewal.timer"
+        ],
+        "installRoots": [
+          "/etc/systemd/system",
+          "/etc/ouf/authority-mandate-renewal",
+          "/var/lib/ouf-authority-mandate-renewal"
+        ]
+      },
+      "restoreOrder": 8,
+      "dependsOn": [
+        "capture.docker"
+      ]
+    },
+    {
+      "id": "capture.boot-guard",
+      "version": 1,
+      "owner": "Custode host",
+      "archive": "ouf-semantic-boot-guard.service, drop-in docker.service, puntatore e dispatcher del kernel del lease",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Archiviare i quattro binding con la closure verificata e la ricevuta di pubblicazione.",
+      "restore": "Seguire docs/OUF_SEMANTIC_LEASE_KERNEL_MIGRATION.md per puntatore, dispatcher, unità e riconciliazione dei sigilli.",
+      "test": "Applicare i controlli boot e readback in docs/OUF_SEMANTIC_LEASE_KERNEL_MIGRATION.md, verificare set vuoti e lease/start false.",
+      "kind": "systemd-unit",
+      "selector": {
+        "bindings": [
+          "units",
+          "paths"
+        ],
+        "unitPatterns": [
+          "ouf-semantic-boot-guard.service",
+          "docker.service.d"
+        ],
+        "installRoots": [
+          "/etc/ouf/coordinated-boot-installation.json",
+          "/etc/ouf/lease-kernel-boot-dispatcher-v1.py",
+          "/etc/ouf/lease-kernel-generations"
+        ]
+      },
+      "restoreOrder": 1,
+      "dependsOn": []
+    },
+    {
+      "id": "capture.readers",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Sudoers, esecutore e lettori R3/host",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Cifrare i wrapper, i lettori e le regole con proprietà e permessi.",
+      "restore": "Installare il codice dai blob approvati e validare le regole con visudo prima di attivarle.",
+      "test": "Eseguire ogni lettore in sola lettura e provare il rifiuto di argomenti aggiuntivi.",
+      "kind": "host-path",
+      "selector": {
+        "bindings": [
+          "paths"
+        ],
+        "installRoots": [
+          "/etc/sudoers.d",
+          "/usr/local/libexec/ouf-readers",
+          "/usr/local/sbin/ouf-*",
+          "/opt/ouf-a2",
+          "/var/lib/ouf-storage-*.py"
+        ]
+      },
+      "restoreOrder": 8,
+      "dependsOn": []
+    },
+    {
+      "id": "capture.restart",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Riavvio governato, profilo, ricevute, incidenti e unità",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Cifrare l'intero insieme con il servizio quiescente.",
+      "restore": "Ripristinare il profilo e riconciliare gli incidenti prima del boot.",
+      "test": "Verificare readiness e stop in ordine inverso con il controller.",
+      "kind": "host-path",
+      "selector": {
+        "bindings": [
+          "units",
+          "paths"
+        ],
+        "unitPatterns": [
+          "ouf-platform-start.service"
+        ],
+        "profileSchemas": [
+          "platform-restart-profile-v1.schema.json"
+        ]
+      },
+      "restoreOrder": 8,
+      "dependsOn": [
+        "capture.docker"
+      ],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.autostart",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Configurazione, wrapper e unità autostart R3 opzionale",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Registrare assenza se non installato, altrimenti acquisire unità e configurazione.",
+      "restore": "Ripristinare l'unità disabilitata e riassociare alla nuova autorità.",
+      "test": "Verificare WAITING e guard prima dell'avvio governato.",
+      "kind": "systemd-unit",
+      "selector": {
+        "bindings": [
+          "units",
+          "paths"
+        ],
+        "unitPatterns": [
+          "ouf-semantic-r3-autostart.service"
+        ],
+        "installRoots": [
+          "/etc/ouf/semantic-provider-r3-autostart"
+        ]
+      },
+      "restoreOrder": 8,
+      "dependsOn": [
+        "capture.restart"
+      ]
+    },
+    {
+      "id": "capture.r3-evidence",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Catena di ricevute, sorgenti, closure, journal e profili R3",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Cifrare solo l'evidenza e i binding dopo aver escluso il materiale di firma.",
+      "restore": "Importare come storia e verificare firme e hash prima della nuova cerimonia.",
+      "test": "Riconciliare la testa storica e dimostrare la separazione della nuova autorità.",
+      "kind": "host-path",
+      "selector": {
+        "bindings": [
+          "paths"
+        ],
+        "installRoots": [
+          "/etc/ouf/deploy-snapshots",
+          "/etc/ouf/installations",
+          "/var/lib/ouf-storage-migration",
+          "/var/lib/ouf-authority-mandates"
+        ]
+      },
+      "restoreOrder": 9,
+      "dependsOn": [
+        "capture.boot-guard"
+      ],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.r3-keys",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Autorità privata R3, non trasferibile (D-064, report-R2)",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Escludere le radici di tutte le chiavi prima della discesa nel filesystem.",
+      "restore": "Generare chiavi nuove sull'host di prova e riemettere l'autorità.",
+      "test": "Verificare la nuova firma e il diniego di un mandato del vecchio host.",
+      "kind": "regenerated",
+      "selector": {
+        "bindings": [
+          "excludePaths"
+        ]
+      },
+      "restoreOrder": 9,
+      "dependsOn": [
+        "capture.r3-evidence"
+      ],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.runner",
+      "version": 1,
+      "owner": "Custode piattaforma",
+      "archive": "Registrazione runner, sessioni e token locali",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Escludere directory di registrazione e token dal tar.",
+      "restore": "Registrare un runner nuovo per il solo ambiente di prova.",
+      "test": "Provare un job di fixture e revocare la registrazione dopo la prova.",
+      "kind": "regenerated",
+      "selector": {
+        "bindings": [
+          "excludePaths"
+        ]
+      },
+      "restoreOrder": 8,
+      "dependsOn": [],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.profile",
+      "version": 1,
+      "owner": "Custode host",
+      "archive": "Profilo privato della cattura",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Includere il file effettivamente letto, con proprietario e modalità.",
+      "restore": "Installare privatamente e aggiornare i binding del nuovo host.",
+      "test": "Ricalcolare plan e misure con i nuovi percorsi.",
+      "kind": "host-path",
+      "selector": {
+        "bindings": [
+          "profile"
+        ],
+        "profileSchemas": [
+          "capture-profile-v1.schema.json"
+        ]
+      },
+      "restoreOrder": 1,
+      "dependsOn": [],
+      "custodian": "secretOwners[id].custodian",
+      "rotation": "secretOwners[id].rotation",
+      "consumers": [
+        "secretOwners[id].consumers"
+      ]
+    },
+    {
+      "id": "capture.manifest",
+      "version": 1,
+      "owner": "Custode host",
+      "archive": "Manifest parziale e finale della cattura",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Generare con conteggi, esclusioni, digest e versione a ogni checkpoint.",
+      "restore": "Recuperare manifest.json insieme ai cifrati dalla stessa release privata.",
+      "test": "Confrontare digest, completezza e strutture con verify.",
+      "kind": "regenerated",
+      "selector": {
+        "bindings": [
+          "manifest"
+        ]
+      },
+      "restoreOrder": 1,
+      "dependsOn": []
     }
   ]
 }

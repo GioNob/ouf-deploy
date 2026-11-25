@@ -1,0 +1,40 @@
+{
+  "contract": "ouf.activation-request.v1",
+  "capabilities": [
+    {
+      "capabilityId": "ouf.semantic.search.batch",
+      "operation": "READ",
+      "requiredScope": "ouf.semantic.search",
+      "allowedActors": [
+        "HUMAN"
+      ],
+      "owner": "semantic",
+      "ownerConfig": {
+        "file": "src/main/resources/application.yml",
+        "flags": [
+          {
+            "property": "ouf.semantic.published-batch.enabled",
+            "expected": true
+          }
+        ],
+        "limits": [
+          "ouf.semantic.published-batch.max-intents",
+          "ouf.semantic.published-batch.max-hits"
+        ]
+      },
+      "ownerResourceAttributes": [],
+      "gateway": {
+        "capabilityFile": "ouf-config/capabilities/ouf.semantic.search.batch.yaml",
+        "routeIds": [
+          "fixture-semantic-batch"
+        ]
+      },
+      "mcp": {
+        "tool": "semantic.search.batch"
+      },
+      "roles": [
+        "fixture-role"
+      ]
+    }
+  ]
+}

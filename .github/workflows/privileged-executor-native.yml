@@ -11,6 +11,13 @@ on:
       - 'config/module-release/**'
       - 'docs/privileged-executor.example.json'
       - 'tests/test_privileged_executor*.py'
+      - 'ops/vps/r3-operate.sh'
+      - 'ops/vps/c-probe.sh'
+      - 'ops/vps/r3-issue-v*.sh'
+      - 'ops/vps/r3-upgrade-v*.sh'
+      - 'tests/test_interruption_matrix.py'
+      - 'tests/interruption_sweep.py'
+      - 'tests/interruption_matrix.json'
       - 'tests/test_module_release*.py'
       - 'tests/test_gateway_release*.py'
       - 'tests/fixtures/gateway-release-bundle-44815101705.zip'
@@ -42,6 +49,13 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Qualify the interruption matrix within the portable suite time budget
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          for suite in 'test_interruption_matrix.py' 'test_privileged_executor*.py' 'test_module_release*.py' 'test_gateway_release*.py' 'test_vps_workflows_manual_only.py'; do
+            /usr/bin/python3 -I -B -m unittest discover -s tests -p "$suite" -v
+          done
       - name: Normalize the hosted runner's own sudoers modes (the installer runs a full visudo -c)
         run: sudo find /etc/sudoers.d -type f -exec chmod 0440 {} + && sudo /usr/sbin/visudo -c
       - name: Label the disposable hosted Engine and prepare local images
@@ -69,6 +83,8 @@ jobs:
               OUF_A2_FIXTURE_SOCKET=/var/run/docker.sock OUF_A2_FIXTURE_IMAGE="$image" \
               /usr/bin/python3 -I -B -m unittest discover -s tests -p "$suite" -v || result=1
           done
+          sudo env OUF_A2_NATIVE_ENGINE=1 OUF_A2_FIXTURE_SOCKET=/var/run/docker.sock OUF_A2_FIXTURE_IMAGE="$image" \
+            /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_interruption_matrix.py' -k NativeDetachRecovery -v || result=1
           exit "$result"
       - name: Exercise Gateway plan, apply, return and rollback on disposable APISIX
         if: ${{ !cancelled() && steps.fixture.outcome == 'success' }}

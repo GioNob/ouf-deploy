@@ -76,7 +76,7 @@ class Tree:
 
     def info(self, path):
         e = self.records[path]
-        typ = dict(directory=stat.S_IFDIR, file=stat.S_IFREG, symlink=stat.S_IFLNK)[e["kind"]]
+        typ = dict(directory=stat.S_IFDIR, file=stat.S_IFREG, symlink=stat.S_IFLNK, socket=stat.S_IFSOCK)[e["kind"]]
         return SimpleNamespace(st_dev=1, st_ino=self.inodes[path], st_mode=typ | e["mode"], st_uid=e["uid"],
             st_gid=e["gid"], st_nlink=e["links"], st_size=e.get("size", 0), st_mtime_ns=0, st_ctime_ns=0)
 
@@ -221,6 +221,49 @@ class PortableTests(unittest.TestCase):
         tree.records[p] = entry(p, "file"); tree.inodes[p] = 999
         with self.assertRaisesRegex(O.A.OperationDenied, V.DENIED):
             tree.plan()
+
+    def test_socket_metadata_and_image_collision(self):
+        for fields in ({"kind": "file"}, {"kind": "symlink"}, {"uid": 0}, {"gid": 0},
+                       {"mode": 0o1700}, {"links": 2}, {"xattrs": {"security.capability": "00"}}):
+            tree = Tree()
+            tree.records[V.SOCKET] = {**entry(V.SOCKET, fields.get("kind", "socket")), **fields}
+            with self.subTest(fields=fields), self.assertRaisesRegex(O.A.OperationDenied, V.DENIED):
+                tree.plan()
+            self.assertEqual(tree.calls, [])
+        tree = Tree()
+        tree.records[V.SOCKET] = tree.image[V.SOCKET] = entry(V.SOCKET, "socket")
+        with self.assertRaisesRegex(O.A.OperationDenied, V.DENIED):
+            tree.plan()
+
+    def test_interruption_after_socket_unlink_before_receipt(self):
+        tree = Tree()
+        tree.records[V.SOCKET] = entry(V.SOCKET, "socket")
+        tree.inodes[V.SOCKET] = 999
+        tree.context["beforeSeal"] = tree.read()[0]
+        rows = tree.plan()
+        socket_row = {"path": V.SOCKET, "kind": "socket"}
+        self.assertIn(socket_row, rows)
+        receipts = []
+
+        def receipt(path, raw, report):
+            if O.decode(raw) == socket_row:
+                raise InterruptedError()
+            receipts.append(O.decode(raw))
+
+        # The descriptor fixture supplies the preflight inventory. Unlink,
+        # evidence ordering, re-plan and the second removal pass are real code.
+        with tree.descriptors(), patch.object(V, "upper_entries", side_effect=lambda *_: tree.read()), \
+                patch.object(V.I, "write_once", side_effect=receipt):
+            with self.assertRaises(InterruptedError):
+                V.remove(tree.context, rows, Path("/claim"), dict(volatileEntriesRemoved=0))
+            self.assertNotIn(V.SOCKET, tree.records)
+            self.assertNotIn(socket_row, receipts)
+            remaining = tree.plan()
+            self.assertNotIn(socket_row, remaining)
+            tree.context["beforeSeal"] = tree.read()[0]
+            V.remove(tree.context, remaining, Path("/new-claim"), dict(volatileEntriesRemoved=0))
+        self.assertEqual(tree.read()[0], tree.expected)
+        self.assertEqual(tree.calls.count(V.SOCKET), 1)
 
     def test_already_sealed_zero_removals(self):
         tree = Tree(False)

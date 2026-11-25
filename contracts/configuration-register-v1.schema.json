@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "ouf.configuration-register.entries.v1"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "archive": {
+            "type": "string",
+            "minLength": 1
+          },
+          "class": {
+            "type": "string",
+            "minLength": 1
+          },
+          "secrets": {
+            "type": "boolean"
+          },
+          "capture": {
+            "type": "string",
+            "minLength": 1
+          },
+          "restore": {
+            "type": "string",
+            "minLength": 1
+          },
+          "test": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "postgres-cluster",
+              "etcd-snapshot",
+              "docker-volume",
+              "host-path",
+              "systemd-unit",
+              "docker-inventory",
+              "docker-image",
+              "iam-realm",
+              "regenerated",
+              "excluded"
+            ]
+          },
+          "selector": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "dataSelection": {"type": "string", "minLength": 1},
+              "bindings": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "installRoots": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0,
+                "uniqueItems": true
+              },
+              "unitPatterns": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0,
+                "uniqueItems": true
+              },
+              "profileSchemas": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "bindings"
+            ]
+          },
+          "restoreOrder": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "custodian": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rotation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "consumers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "owner",
+          "archive",
+          "class",
+          "secrets",
+          "capture",
+          "restore",
+          "test"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema",
+    "entries"
+  ]
+}

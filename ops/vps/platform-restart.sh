@@ -3,7 +3,7 @@
 set -euo pipefail
 umask 077
 # Claude fills the same delivery pin as the install runbook (D-001).
-C=21c8ddd9e9f1000f121a2222001739ef344fa595
+C=f04d9903dfed84503d8f440909cec1765a81229a
 [[ $C =~ ^[0-9a-f]{40}$ && $C != 0000000000000000000000000000000000000000 ]] ||
   { echo 'Pin della consegna mancante' >&2; exit 2; }
 mode=${1:-}

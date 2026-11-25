@@ -84,11 +84,13 @@ def config(raw):
     cfg = decode(raw)
     required = {"schema", "bindings", "dockerSocket", "installRoot", "volatileRestore", "outputRoot"}
     require(type(cfg) is dict and required <= cfg.keys()
-            and cfg.keys() <= required | {"attempts", "waitSeconds"}
+            and cfg.keys() <= required | {"attempts", "waitSeconds", "platformReceipts"}
             and cfg["schema"] == SCHEMA, "R3_AUTOSTART_CONFIG_INVALID")
     require(type(cfg["bindings"]) is dict and set(cfg["bindings"]) == {"docker", "nft", "systemctl", "wrapper"},
             "R3_AUTOSTART_BINDINGS_INVALID")
     paths = [cfg["installRoot"], cfg["outputRoot"]]
+    if "platformReceipts" in cfg:
+        paths.append(cfg["platformReceipts"])
     for binding in cfg["bindings"].values():
         require(type(binding) is dict and set(binding) == {"path", "sha256"}
                 and type(binding["sha256"]) is str and HEX.fullmatch(binding["sha256"]),
@@ -162,6 +164,23 @@ def desired(cfg):
     return {"action": latest[0][2], "receipt": latest[0][3], "epochs": list(latest[0][1])}
 
 
+def require_platform(cfg, boot):
+    if "platformReceipts" not in cfg:
+        return
+    root = Path(cfg["platformReceipts"])
+    try:
+        custody(root, directory=True)
+        path = root / ("boot-" + boot.replace("-", "") + ".json")
+        record = decode(read(path))
+        if (record.get("schema") == "ouf.platform-restart-receipt.v1"
+                and record.get("mode") == "boot" and record.get("action") == "start"
+                and record.get("bootId") == boot and record.get("status") == "SUCCEEDED"):
+            return
+    except (Denied, OSError, ValueError, AttributeError):
+        pass
+    raise Denied("R3_PLATFORM_NOT_READY")
+
+
 def argv(cfg, output):
     args = ["--action", "start", "--install-root", cfg["installRoot"],
             "--docker-socket", cfg["dockerSocket"], "--output-directory", str(output)]
@@ -227,6 +246,7 @@ def run(cfg, boot, *, operate=invoke, sleep=time.sleep, emit=journal):
         args = argv(cfg, output)
         applying = False
         try:
+            require_platform(cfg, boot)
             plan = operate(["--plan", *args])
             report = plan
             if plan["status"] == "PLAN_READY":

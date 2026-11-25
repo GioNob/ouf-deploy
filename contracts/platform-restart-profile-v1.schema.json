@@ -179,9 +179,7 @@
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
-                    "imageId",
-                    "entrypoint",
-                    "command"
+                    "entrypoint"
                   ],
                   "properties": {
                     "imageId": {
@@ -236,8 +234,102 @@
                         "minLength": 1,
                         "pattern": "^[^\\u0000]+$"
                       }
+                    },
+                    "identity": {
+                      "description": "Executor installation and module journal in root custody. The public key is the DER SPKI bound by the executor.",
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "source": {
+                              "const": "module-release"
+                            },
+                            "executorRoot": {
+                              "$ref": "#/properties/receipts"
+                            },
+                            "journalRoot": {
+                              "$ref": "#/properties/receipts"
+                            },
+                            "module": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+                            },
+                            "receiptSigning": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "publicKey": {
+                                  "$ref": "#/properties/docker"
+                                },
+                                "openssl": {
+                                  "$ref": "#/properties/docker"
+                                }
+                              },
+                              "required": [
+                                "publicKey",
+                                "openssl"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "executorRoot",
+                            "journalRoot",
+                            "module"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "source": {
+                              "const": "semantic-a2"
+                            },
+                            "executorRoot": {
+                              "$ref": "#/properties/receipts"
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "executorRoot"
+                          ]
+                        }
+                      ]
                     }
-                  }
+                  },
+                  "oneOf": [
+                    {
+                      "required": [
+                        "imageId",
+                        "command"
+                      ],
+                      "not": {
+                        "required": [
+                          "identity"
+                        ]
+                      }
+                    },
+                    {
+                      "required": [
+                        "identity"
+                      ],
+                      "not": {
+                        "anyOf": [
+                          {
+                            "required": [
+                              "imageId"
+                            ]
+                          },
+                          {
+                            "required": [
+                              "command"
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
               },
               "if": {

@@ -89,6 +89,26 @@ class AutostartTests(unittest.TestCase):
         self.fake = FakeOperate(replies)
         return A.run(self.cfg, BOOT, operate=self.fake, sleep=self.waits.append, emit=self.incidents.append)
 
+    def test_platform_denial_three_times_without_current_boot_success(self):
+        self.cfg["platformReceipts"] = self.cfg["outputRoot"]
+        path = Path(self.cfg["outputRoot"]) / ("boot-" + BOOT.replace("-", "") + ".json")
+        A.write_once(path, dict(schema="ouf.platform-restart-receipt.v1", mode="boot", action="start",
+                                status="SUCCEEDED", bootId="some-other-boot"))
+        code, report = self.run_driver([])
+        self.assertEqual(code, 1)
+        self.assertEqual([a["reason"] for a in report["attempts"]], ["R3_PLATFORM_NOT_READY"] * 3)
+        self.assertEqual(self.waits, [30, 90, 180])
+        self.assertEqual(self.incidents, [report])
+        self.assertEqual(self.fake.calls, [])
+
+    def test_current_platform_boot_allows_r3(self):
+        self.cfg["platformReceipts"] = self.cfg["outputRoot"]
+        path = Path(self.cfg["outputRoot"]) / ("boot-" + BOOT.replace("-", "") + ".json")
+        A.write_once(path, dict(schema="ouf.platform-restart-receipt.v1", mode="boot", action="start",
+                                status="SUCCEEDED", bootId=BOOT))
+        self.assertEqual(self.run_driver([READY, STARTED])[0], 0)
+        self.assertEqual([args[0] for args in self.fake.calls], ["--plan", "--apply"])
+
     def test_first_attempt_success_and_exact_apply_digest(self):
         code, report = self.run_driver([READY, STARTED])
         self.assertEqual(code, 0)
@@ -293,8 +313,11 @@ class ConfigAndDeliveryTests(unittest.TestCase):
         self.assertEqual(fields["Type"], "oneshot")
         self.assertEqual(fields["Restart"], "no")
         for field in ("After", "Wants"):
-            self.assertEqual(set(fields[field].split()),
-                             {"docker.service", "network-online.target", "ouf-semantic-lease-supervisor-v2.service"})
+            expected = {"docker.service", "network-online.target", "ouf-semantic-lease-supervisor-v2.service"}
+            if field == "After":
+                expected.add("ouf-platform-start.service")
+            self.assertEqual(set(fields[field].split()), expected)
+        self.assertNotIn("Requires", fields)
         self.assertGreaterEqual(int(fields["TimeoutStartSec"]), 3 * 2 * 900 + 300 + 60)
         self.assertEqual(fields["RestrictAddressFamilies"], "AF_UNIX AF_NETLINK")
         self.assertEqual(fields["StandardError"], "journal")

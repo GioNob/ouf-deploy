@@ -571,6 +571,60 @@ class PortableAdmissionSection(unittest.TestCase):
         if phase == 'state': kw['stdout'].write(encoded(self.state))
         return subprocess.CompletedProcess(args, 0)
 
+    def test_previous_started_create_and_start_preserve_history(self):
+        # Exercise the real v5.2 create/start and two-file publication protocol.
+        # The existing fixture supplies custody, clock and subprocess boundaries.
+        self.folder.mkdir(parents=True)
+        next_folder = self.folder.with_name('2')
+        bundle = self.root/'oci'/CID
+        self.cfg['candidates'][CID]['bundleParents'] = [str(bundle.parent)]
+        self.cfg['limits'] = {'maxEpochsPerHour': 6}
+        self.epochs.MAX_EPOCH = 99
+        self.epochs.JOURNAL_SCHEMA = 'fixture'
+        self.epochs.validate_journal = lambda raw, cid, number: json.loads(raw)
+        self.r.time.time = lambda: 2000
+        self.record.update(containerId=CID, state='STARTED', bootId='previous-boot', openedAt=1000,
+                           generation={'pid': 42, 'startTicks': 123})
+        old = self.record.copy()
+        self.files[str(self.folder/'adapter.json')] = encoded(old)
+        self.files[str(self.base/'current')] = encoded({'epoch': 1, 'journalSha256': sha(encoded(old))})
+        oci = {'root': {'path': str(self.root/'rootfs')}, 'linux': {'namespaces': [{'type': 'network'}]}}
+        self.files[str(bundle/'config.json')] = encoded(oci)
+        self.files[str(next_folder/'driver.json')] = self.driver_raw
+        grant = self.validator.validate.return_value
+        grant['operationBinding']['epoch'] = 2
+        grant['profile'].update(bundlePath=str(next_folder/'bundle'), bundleHash=self.r.digest(oci))
+
+        def replace(path, old_raw, raw):
+            self.assertEqual(self.files[str(path)], old_raw)
+            self.files[str(path)] = raw
+            if path == self.base/'current':
+                pointer = json.loads(raw)
+                journal = self.files[str(self.base/'epochs'/str(pointer['epoch'])/'adapter.json')]
+                self.assertEqual(pointer['journalSha256'], sha(journal))
+                self.record = json.loads(journal)
+
+        self.state = None
+        simulate_start = self.simulate
+        def simulate(args, **kwargs):
+            if args[0] == '/runc' and 'state' in args and self.state is None:
+                if hasattr(kwargs['stderr'], 'write'):
+                    kwargs['stderr'].write(b'container does not exist')
+                return subprocess.CompletedProcess(args, 1)
+            if args[0] == '/runc' and 'create' in args:
+                self.state = dict(id=CID, bundle=str(next_folder/'bundle'), status='created', pid=42)
+                return subprocess.CompletedProcess(args, 0)
+            return simulate_start(args, **kwargs)
+
+        self.simulate = simulate
+        publish = self.r.publish_epoch
+        with patch.object(self.r, 'replace_cas', side_effect=replace), patch.object(self.r, 'sync_directory'):
+            self.assertEqual(self.run_op('create', publish_epoch=publish), 0)
+            self.assertEqual(self.run_op('start', publish_epoch=publish), 0)
+        self.assertEqual(json.loads(self.files[str(self.folder/'adapter.json')]), {**old, 'state': 'ABANDONED'})
+        self.assertEqual((self.record['state'], self.record['epoch']), ('STARTED', 2))
+        self.assertEqual(self.record['bootId'], self.epochs.boot_id())
+
     def test_start_keeps_revalidations_and_existing_child_caps(self):
         self.durations = {'prepare': 17, 'hook': 2, 'start': 2}
         self.assertEqual(self.run_op('start'), 0)
@@ -874,6 +928,16 @@ class NativeEpochs(operation_fixture.Fixture):
         self.assertEqual(json.loads((self.registry/CID/'epochs/1/adapter.json').read_bytes())['state'], 'ABANDONED')
         self.assertEqual(self.row()['epoch'], 2)
         self.assertFalse(any(str(self.driver) in argv for argv, _ in self.calls))
+
+    def test_previous_started_history_survives_new_start(self):
+        self.seed(state='STARTED', bootId='6dc087ac-1111-4222-8333-444455556666',
+                  generation={'pid': 42, 'startTicks': 123})
+        old = self.row()
+        self.run_op('create')
+        self.run_op('start')
+        retained = json.loads((self.registry/CID/'epochs/1/adapter.json').read_bytes())
+        self.assertEqual(retained, {**old, 'state': 'ABANDONED'})
+        self.assertEqual((self.row()['state'], self.row()['epoch']), ('STARTED', 2))
 
     def test_old_boot_existing_runc_is_not_abandoned(self):
         self.seed(state='CREATED', bootId='6dc087ac-1111-4222-8333-444455556666'); self.exists = True

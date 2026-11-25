@@ -255,7 +255,7 @@ class Cutover:
 
     def created_plan(self, version):
         origin = self.forward_creation()
-        if self.next_release and not (origin / "create.receipt").is_file():
+        if not (origin / "create.receipt").is_file():
             return self.before_create(version, origin)
         origin, first, row = self.interrupted_creation(version)
         cid = row["Id"]
@@ -401,7 +401,7 @@ class Cutover:
              and (origin / "start-gate.receipt").exists() and not (previous / "start.claim").exists(),
              "GATED_RESUME_UNPROVEN")
         if (previous / "issue.claim").exists():
-            need(read(previous / "issue-no-effect")["plan"] == read(previous / "issue.claim")["plan"],
+            need((previous / "issue-no-effect").is_file() and read(previous / "issue-no-effect")["plan"] == read(previous / "issue.claim")["plan"],
                  "PARTIAL_ISSUANCE_REQUIRES_RECONCILIATION")
         receipt = self.forward_creation() / "create.receipt" if self.forward else origin / "reconnect.receipt"
         cid = read(receipt)["result"]
@@ -582,6 +582,9 @@ class Cutover:
         prior = None
         if (self.root / direction).exists():
             prior = self.owner(direction)
+            if (not self.next_release and not self.forward and version == source_head
+                    and not (self.root / prior / "start-gate.receipt").is_file()):
+                return self.restore_plan(version)
             if self.next_release:
                 if self.forward and version == source_head + 1:
                     return self.committed_plan()
@@ -1044,7 +1047,50 @@ class Cutover:
              and database.route(doc["Config"]) == "governed-sql", "MIGRATION_STAGE_DRIFT")
         return database.reviewed(doc, plan["successorImage"]["migrations"])
 
+    def interruption_context(self):
+        direction = self.req["direction"]
+        runs = {self.path}
+        for key in (direction, direction + "-stage", "forward", "forward-stage"):
+            path = self.root / key
+            if path.is_file():
+                try:
+                    run = read(path)["run"]
+                except (OSError, KeyError, TypeError, ValueError, Held):
+                    continue
+                if isinstance(run, str) and run.isascii() and run.isdigit():
+                    runs.add(self.root / run)
+        claims = (p for run in runs for p in run.glob("*.claim"))
+        latest = max(claims, key=lambda p: (p.stat().st_mtime_ns, p.name), default=None)
+        claim = latest.name if latest else "none"
+        residual = []
+        for role, name in (("service", self.name), ("retained", self.cfg["retainedName"]),
+                           ("failed", self.cfg["failedName"])):
+            try:
+                if role == "retained" and self.next_release:
+                    name = self.retained_name
+                doc = self.engine.inspect(name, True)
+                state = "absent"
+                if doc is not None:
+                    status = doc["State"]["Status"]
+                    state = (f"{status}({doc['Id']})" if hex64(doc["Id"]) and status in
+                             ("created", "running", "paused", "restarting", "removing", "exited", "dead")
+                             else "unobserved")
+            except Exception:
+                state = "unobserved"
+            residual.append(role + "=" + state)
+        return "owner=semantic residual=" + ",".join(residual) + " claim=" + claim
+
     def execute(self, review):
+        try:
+            return self.execute_phase(review)
+        except Held as error:
+            if not any((self.root / key).is_file() for key in ("forward", "return", "completed-forward", "last-closed")):
+                raise
+            prior = getattr(error, "public_context", None)
+            error.public_context = " ".join(filter(None, (self.interruption_context(), prior)))
+            raise
+
+    def execute_phase(self, review):
         phase = self.req["phase"]
         def accept():
             save(self.path / (phase + ".review"), {"request": self.req, "review": review})

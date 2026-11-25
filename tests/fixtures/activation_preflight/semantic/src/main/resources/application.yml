@@ -1,0 +1,9 @@
+ouf:
+  semantic:
+    published-batch:
+      enabled: ${FIXTURE_BATCH:true}
+      max-intents: ${FIXTURE_INTENTS:4}
+      max-hits: 2
+---
+spring.config.activate.on-profile: fixture
+ouf.semantic.published-batch.enabled: false

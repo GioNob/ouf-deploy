@@ -75,20 +75,46 @@ def name(value):
     require(isinstance(value, str) and NAME.fullmatch(value), "INVALID_NAME")
 
 
-def validate_gate(gate, probe, level_timeout):
-    fields(gate, "imageId entrypoint command")
-    require(isinstance(gate["imageId"], str) and re.fullmatch(r"sha256:[0-9a-f]{64}", gate["imageId"]),
-            "INVALID_IMAGE_ID")
-    entry = gate["entrypoint"]
-    require(isinstance(entry, list) and len(entry) == 4 and safe_path(entry[0]).name == "sh"
-            and entry[1:] == ["-c", GATE_LOOP, "ouf-gated-application"], "INVALID_GATE_ENTRYPOINT")
-    cmd = gate["command"]
+def validate_command(cmd):
     require(isinstance(cmd, list) and cmd and all(isinstance(v, str) and v and "\0" not in v for v in cmd),
             "INVALID_GATE_COMMAND")
     if cmd[0].startswith("/"):
         safe_path(cmd[0])
     else:
         name(cmd[0])
+
+
+def validate_gate(gate, probe, level_timeout):
+    require(type(gate) is dict, "INVALID_GATE")
+    if "identity" in gate:
+        fields(gate, "entrypoint identity")
+        identity = gate["identity"]
+        require(type(identity) is dict, "INVALID_IDENTITY")
+        if identity.get("source") == "module-release":
+            keys = "source executorRoot module journalRoot"
+            if "receiptSigning" in identity:
+                keys += " receiptSigning"
+                signer = identity["receiptSigning"]
+                fields(signer, "publicKey openssl")
+                for binding in signer.values():
+                    fields(binding, "path sha256")
+                    safe_path(binding["path"])
+                    require(isinstance(binding["sha256"], str) and HEX.fullmatch(binding["sha256"]), "INVALID_HASH")
+            fields(identity, keys)
+            name(identity["module"])
+            safe_path(identity["journalRoot"])
+        else:
+            fields(identity, "source executorRoot")
+            require(identity["source"] == "semantic-a2", "INVALID_IDENTITY")
+        safe_path(identity["executorRoot"])
+    else:
+        fields(gate, "imageId entrypoint command")
+        require(isinstance(gate["imageId"], str) and re.fullmatch(r"sha256:[0-9a-f]{64}", gate["imageId"]),
+                "INVALID_IMAGE_ID")
+        validate_command(gate["command"])
+    entry = gate["entrypoint"]
+    require(isinstance(entry, list) and len(entry) == 4 and safe_path(entry[0]).name == "sh"
+            and entry[1:] == ["-c", GATE_LOOP, "ouf-gated-application"], "INVALID_GATE_ENTRYPOINT")
     required = "type address port path timeoutSeconds budgetSeconds acceptStatus"
     fields(probe, required + " jsonStatus" if "jsonStatus" in probe else required)
     codes = probe["acceptStatus"]
