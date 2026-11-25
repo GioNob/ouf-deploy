@@ -5,6 +5,7 @@ import importlib.util
 import io
 import itertools
 import json
+import re
 import os
 from pathlib import Path
 import stat
@@ -143,13 +144,15 @@ class Bootstrap(unittest.TestCase):
     def test_complete_extensions_use_reviewed_blobs(self):
         cfg = json.loads(self.path.read_bytes())
         filenames = {"start": "r3-operate", "stop": "r3-operate", "probe": "c-probe"}
-        source = "c58515e8d4567742fc9dad988b4871966ce49563"
         artifact = "d" * 40
         for version in (30, 31, 32, 33, 34, 35, 36, 37):
             for op in ("start", "stop", "issue", "upgrade", "probe"):
                 name = filenames.get(op, f"r3-{op}-v{version}")
                 path = f"ops/vps/{name}.sh"
                 raw = (ROOT / path).read_text(encoding="utf8").encode()
+                # The binding's sourceCommit is the runbook's own delivery pin, as the installer checks
+                # (scripts/install-ouf-a2.py, RUNBOOK_PIN_DRIFT). Runbooks are re-pinned independently.
+                source, = re.findall(r"^C=([0-9a-f]{40})$", raw.decode(), re.M)
                 self.artifacts[f"{artifact}:{path}"] = raw
                 cfg["runbooks"][f"{op}-{version}"] = dict(artifactCommit=artifact, sourceCommit=source,
                                                           sha256=hashlib.sha256(raw).hexdigest())
