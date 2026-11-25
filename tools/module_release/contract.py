@@ -110,6 +110,18 @@ def validate(p):
             and 0 < ready["port"] < 65536 and 0 < ready["attempts"] <= 300
             and ready["acceptStatus"] and all(type(s) is int and 200 <= s < 300 for s in ready["acceptStatus"])
             and ("jsonStatus" not in ready or isinstance(ready["jsonStatus"], str)), "INVALID_READINESS")
+    if "tls" in ready:
+        tls = ready["tls"]
+        required = {"address", "serverName", "caFile"}
+        client = {"clientCertFile", "clientKeyFile"}
+        require(isinstance(tls, dict) and set(tls) in (required, required | client), "INVALID_READINESS_TLS")
+        label = r"[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?"
+        require(isinstance(tls["address"], str)
+                and any(tls["address"] == net["ipv4"] for net in p["networks"].values())
+                and matches(rf"{label}(?:\.{label})*", tls["serverName"]) and len(tls["serverName"]) <= 253
+                and all(isinstance(tls[k], str) and "\0" not in tls[k] and Path(tls[k]).is_absolute()
+                        and ".." not in Path(tls[k]).parts for k in tls.keys() & ({"caFile"} | client)),
+                "INVALID_READINESS_TLS")
     migration = p["migration"]
     if "candidate" in p:
         candidate = p["candidate"]
