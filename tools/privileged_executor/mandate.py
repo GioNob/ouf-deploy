@@ -44,7 +44,8 @@ def validate(req, policy):
                  and "retentionAdmin019" in policy["modules"]["mcp"]["migration"])
              or (req["phase"] == "rollback" and ({"database", "flyway"}.intersection(
                  policy["modules"][req["module"]]["migration"]) or
-                 policy["modules"][req["module"]]["migration"].get("mode") == "none"))),
+                 ("configDelta" in policy["modules"][req["module"]] and
+                  policy["modules"][req["module"]]["migration"].get("mode") == "none")))),
              "MODULE_REQUEST_SCOPE")
     elif req.get("operation") == "module-install":
         from module_release.install_contract import valid_request
