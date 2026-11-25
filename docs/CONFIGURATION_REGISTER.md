@@ -1,5 +1,20 @@
 # Registro della configurazione dell'host
 
+## Cattura e ricostruzione D-065
+
+Il registro macchina aggiunge le voci `capture.*` alle otto voci storiche.
+Il profilo privato associa istanze e percorsi agli ID, conserva la distinta
+di custodia dei segreti e indica le tabelle di cui ripristinare il solo schema.
+Il guard di boot Docker comprende unità, drop-in, puntatore e dispatcher.
+La catena R3 conserva le ricevute e riemette l'autorità sull'host di prova.
+[Registro](../tools/privileged_executor/host-register.json) ·
+[Guard di boot](OUF_SEMANTIC_LEASE_KERNEL_MIGRATION.md)
+
+La CI confronta unità, installer e schemi con i selettori del registro.
+Ogni plan verifica indipendentemente le istanze osservate sull'host.
+Il verbale del secondo host documenta la recuperabilità e l'RTO di ogni livello.
+[Cattura, verifica e ricostruzione](OUF_CAPTURE_AND_REBUILD.md)
+
 ## Rilascio della configurazione APISIX
 
 `deploy.gateway-release@2` registra il profilo privato, la chiave Admin di APISIX, lo stato per run e il puntatore all'ultimo rilascio. Il custode configura `gateway.source` con i soli campi `repository` e `workflow`. Per aggiornare un profilo precedente, rimuovere `gateway.source.tokenFile` dal JSON prima del bootstrap. Il plan e l’apply leggono i metadati e scaricano lo ZIP del repository pubblico con il token temporaneo che il workflow passa su stdin. Il bearer viene inviato solo ad `api.github.com`. Il profilo contiene anche socket Docker, container, IP di loopback e porta nel namespace APISIX, percorso della chiave Admin e dizionario `values` per i segnaposto. Il file della chiave resta privato, di proprietà di root e con antenati in custodia root. [Profilo di esempio](privileged-executor.example.json) · [Registro host](../tools/privileged_executor/host-register.json)
