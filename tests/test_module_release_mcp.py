@@ -14,6 +14,7 @@ import mandate
 import store
 from module_release import operation, postgres, return_operation, transport
 from module_release.contract import Held, digest, package
+from platform_restart import identity
 
 
 class Release(unittest.TestCase):
@@ -230,8 +231,10 @@ class Release(unittest.TestCase):
         self.assertEqual(self.call("rollback", stamp, run="2")["status"], "ROLLED_BACK")
         self.assertEqual(self.rt.inspect(self.p["container"])["Id"], OLD)
         self.assertEqual(self.rt.events.count("signal:1"), 1)
-        with self.assertRaisesRegex(mandate.Held, "RETURN_ALREADY_CONSUMED"):
-            self.call("rollback", stamp, run="3")
+        before = list(self.rt.events)
+        self.assertEqual(self.call("rollback", stamp, run="3")["status"], "ROLLED_BACK")
+        self.assertEqual(store.read(self.root / "3/rollback.result"), store.read(self.root / "2/rollback.result"))
+        self.assertEqual(self.rt.events, before)
 
     def test_apply_with_wrong_digest_consumes_review_before_effect(self):
         self.planned()
@@ -321,14 +324,26 @@ class Release(unittest.TestCase):
             self.call("rollback", stamp, run="2")
         root = self.root / stamp
         published = (root / "return-receipt.json").read_bytes()
+        with patch.object(self.rt, "probe", return_value=(503, b"")), \
+                self.assertRaisesRegex(mandate.Held, "RETURN_READINESS_CHANGED"):
+            self.call("rollback", stamp, run="3")
+        held = self.root / "3/rollback.held"
+        evidence = held.read_bytes()
+        self.assertEqual(json.loads(evidence)["reason"], "RETURN_READINESS_CHANGED")
+        self.assertFalse((self.root / "3/rollback.result").exists())
+        self.assertEqual(store.read(self.root / "mcp.lock/owner.json"), {"planSha256": stamp})
         before = len(self.rt.events)
-        self.assertEqual(self.call("rollback", stamp, run="3")["status"], "ROLLED_BACK")
+        self.assertEqual(self.call("rollback", stamp, run="4")["status"], "ROLLED_BACK")
+        self.assertEqual(held.read_bytes(), evidence)
         self.assertEqual((root / "return-receipt.json").read_bytes(), published)
-        for run in ("2", "3"):
+        for run in ("2", "3", "4"):
             self.assertEqual(store.read(self.root / run / "rollback.result"), json.loads(published))
         self.assertFalse(list(root.glob("*.ed25519")))
         self.assertFalse((self.root / "mcp.lock").exists())
         self.assertEqual(self.rt.events[before:], ["probe:1"])
+        with patch.object(identity, "custody"):
+            _, terminal = identity.module_history(self.root, self.root, "mcp")
+        self.assertEqual(terminal, root / "return-receipt.json")
 
     def test_rollback_refuses_restarted_successor_before_stop(self):
         stamp = self.planned()["digest"]
@@ -337,6 +352,19 @@ class Release(unittest.TestCase):
         with self.assertRaisesRegex(mandate.Held, "IMMEDIATE_SUCCESSOR_CHANGED"):
             self.call("rollback", stamp, run="2")
         self.assertNotIn("stop:2", self.rt.events)
+
+    def test_replay_without_original_approval_cannot_become_a_recovery(self):
+        stamp = self.planned()["digest"]
+        self.call("apply", stamp)
+        self.call("rollback", stamp, run="2")
+        (self.root / "2/rollback.review").unlink()
+        before = list(self.rt.events)
+        for run in ("3", "4"):
+            with self.assertRaisesRegex(mandate.Held, "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE"):
+                self.call("rollback", stamp, run=run)
+            self.assertTrue(store.read(self.root / run / "rollback.review")["returnAlreadyConsumed"])
+            self.assertFalse((self.root / run / "rollback.result").exists())
+        self.assertEqual(self.rt.events, before)
 
     def test_wrong_post_schema_holds_at_gate_before_either_signal(self):
         self.dedicated()

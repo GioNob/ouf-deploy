@@ -791,7 +791,7 @@
     ["<plan>/return-receipt.ed25519", "module_receipt.attest", "prima", "RETURNED"],
     ["<plan>/return-receipt.ed25519", "module_receipt.attest", "dopo", "RETURNED"],
     ["2/rollback.result", "module_operation.ModuleRelease.execute_phase", "prima", "RETURNED"],
-    ["2/rollback.result", "module_operation.ModuleRelease.execute_phase", "dopo", "HELD", "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE"]
+    ["2/rollback.result", "module_operation.ModuleRelease.execute_phase", "dopo", "RETURNED"]
   ],
   "gateway_v1": [
     ["70/approvals", "store.begin_plan", "prima", "RESUMED"],

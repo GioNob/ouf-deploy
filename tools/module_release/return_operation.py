@@ -91,12 +91,7 @@ def run(profile, stamp, runtime=None, *, recover=False, seal=None):
     except FileExistsError:
         owned = recover and (lock / "owner.json").is_file() and journal_read(lock, "owner.json") == {"planSha256": stamp}
         if owned and (root / "return-intent.json").is_file() and (root / "return-receipt.json").is_file():
-            try:
-                receipt = completed_return(profile, runtime or Docker(profile), root, stamp)
-            except Exception as exc:
-                if seal:
-                    raise
-                return dict(result, reason=reason(exc))
+            receipt = completed_return(profile, runtime or Docker(profile), root, stamp)
             if seal:
                 seal(root, "return-receipt")
             unlock_module(lock)

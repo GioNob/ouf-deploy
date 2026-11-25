@@ -973,6 +973,64 @@ class ReleaseTests(unittest.TestCase):
         self.assertEqual(result["status"], "SUCCEEDED", result)
         self.assertEqual(result["plan"]["steps"][0]["release"]["returnSignature"], "verified")
 
+    def test_replay_and_legacy_probe_failure_preserve_terminal_return(self):
+        self.returned(signed=True)
+        journal = self.journal
+        replay = journal.state / "3"
+        replay.mkdir()
+        store_json(replay / "approvals", ["rollback"])
+        review = journal.review("rollback", replay.name)
+        for signed in (True, False):
+            if not signed:
+                (journal.tx / "return-receipt.ed25519").unlink()
+            for reason in (None, "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE", "RETURN_READINESS_CHANGED"):
+                with self.subTest(signed=signed, reason=reason):
+                    if reason is None:
+                        (replay / "rollback.result").unlink(missing_ok=True)
+                    else:
+                        store_json(replay / "rollback.result", dict(status="HELD", planSha256=journal.source,
+                                                                    reason=reason))
+                    entry = review if reason == "RETURN_READINESS_CHANGED" else dict(review, returnAlreadyConsumed=True)
+                    store_json(replay / "rollback.review", entry)
+                    _, terminal = identity.module_history(journal.state, journal.tx.parent, "example")
+                    self.assertEqual(terminal, journal.tx / "return-receipt.json")
+                    plan = self.ctrl.run("plan", "start")
+                    self.assertEqual(plan["status"], "PLAN_READY", plan)
+                    signature = plan["plan"]["steps"][0]["release"]["returnSignature"]
+                    self.assertEqual(signature, "verified" if signed else "absent")
+        # A purported completion must still agree with the module's receipt.
+        store_json(replay / "rollback.result", dict(status="ROLLED_BACK", planSha256=journal.source))
+        self.assertEqual(self.start()["reason"], "MODULE_RETURN_DRIFT")
+
+    def test_replay_marker_cannot_authorize_the_original_return(self):
+        self.returned()
+        review = self.journal.review("rollback", "2")
+        store_json(self.journal.state / "2/rollback.review", dict(review, returnAlreadyConsumed=True))
+        self.assertEqual(self.start()["reason"], "MODULE_RETURN_DRIFT")
+        self.assertEqual(self.engine.trace, [])
+
+    def test_compensation_with_later_held_uses_signed_receipt_and_baseline(self):
+        self.returned(interrupted=True)
+        journal = self.journal
+        returned = json.loads((journal.tx / "return-receipt.json").read_bytes())
+        compensation = dict(returned, status="HELD", rollback="ROLLED_BACK", operation="module-release",
+                            predecessorCid=self.old["Id"], successorCid=self.new["Id"])
+        (journal.tx / "return-receipt.json").unlink()
+        (journal.tx / "return-intent.json").unlink()
+        store_json(journal.tx / "rollback-intent.json", {"cid": self.old["Id"]})
+        store_json(journal.tx / "receipt.json", compensation)
+        store_json(journal.state / "1/apply.result", compensation)
+        journal.sign("receipt.json")
+        store_json(journal.state / "2/rollback.result", dict(status="HELD", planSha256=journal.source,
+                                                             reason="RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE"))
+        result = self.start()
+        self.assertEqual(result["status"], "SUCCEEDED", result)
+        info = result["plan"]["steps"][0]["release"]
+        self.assertEqual((info["terminal"], info["returnSignature"], info["cid"]),
+                         ("receipt.json", "verified", self.old["Id"]))
+        (journal.tx / "receipt.ed25519").unlink()
+        self.assertEqual(self.start()["reason"], "MODULE_RECEIPT_SIGNATURE_REQUIRED")
+
     def test_altered_signed_return_held(self):
         self.returned(signed=True)
         with (self.journal.tx / "return-receipt.json").open("ab") as stream:

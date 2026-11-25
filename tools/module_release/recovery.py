@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from . import operation as op
-from .contract import SHA, digest, matches, require, validate
+from .contract import SHA, Held, digest, matches, require, validate
 from .frame import check_body, check_live_networks, epoch, snapshot
 
 
@@ -56,19 +56,33 @@ def verify_stop_claim(rt, old, body, root):
                 not (root / "create-intent.json").exists(), "PRE_STOP_DRIFT")
 
 
+def verify_compensation_custody(p, rt, receipt):
+    failed = rt.inspect(p["failedName"], missing=True)
+    require(not failed or failed["Id"] == receipt.get("successorCid"), "FAILED_NAME_OCCUPIED")
+    if "successorCid" in receipt:
+        require(failed and not failed["State"]["Running"] and
+                not failed["NetworkSettings"]["Networks"], "PARK_UNCONFIRMED")
+
+
 def resume(p, rt, approved, *, seal=None):
     """The executor has compared the approved recovery plan under its exclusive lock."""
-    require(proposal(p, rt) == approved, "RECOVERY_PLAN_CHANGED")
+    observed = proposal(p, rt)
     parent = Path(p["journal"])
-    root = parent / approved["sourcePlan"]
+    root = parent / observed["sourcePlan"]
+    has_receipt = "receipt.json" in observed["journal"]
+    receipt = op.read(root, "receipt.json") if has_receipt else None
+    if observed != approved:
+        if receipt and receipt.get("rollback") == "ROLLED_BACK":
+            # Diagnose an occupant that arrived between the recovery review and apply.
+            verify_compensation_custody(p, rt, receipt)
+        raise Held("RECOVERY_PLAN_CHANGED")
     lock = parent / (p["module"] + ".lock")
     body = op.read(root, "plan.json")
     old = op.load_predecessor(p, rt, root)
     result = {"operation": "module-release", "status": "HELD", "planSha256": root.name,
               "predecessorCid": old["Id"]}
     # A completed receipt is immutable. Re-attest before releasing a leftover lock.
-    if (root / "receipt.json").exists():
-        receipt = op.read(root, "receipt.json")
+    if has_receipt:
         require(op.terminal_receipt(receipt),
                 "TERMINAL_HELD_REQUIRES_OWNER")
         forward = receipt["status"] == "READY"
@@ -98,10 +112,7 @@ def resume(p, rt, approved, *, seal=None):
                         "TERMINAL_GENERATION_CHANGED")
             else:
                 require(snapshot(doc) == body["oldFrameSha256"], "TERMINAL_GENERATION_CHANGED")
-            if "successorCid" in receipt:
-                failed = rt.inspect(receipt["successorCid"])
-                require(failed["Name"] == "/" + p["failedName"] and not failed["State"]["Running"] and
-                        not failed["NetworkSettings"]["Networks"], "PARK_UNCONFIRMED")
+            verify_compensation_custody(p, rt, receipt)
         op.verify_database(p, rt, old, root, migrated=forward)
         op.verify_flyway_return(p, rt, old, root)
         if seal:

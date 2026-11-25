@@ -213,10 +213,16 @@ class SignedReturn(mcp_tests.Release):
     def test_interrupted_replay_cannot_reopen_a_closed_return(self):
         stamp = self.ready()
         self.call("rollback", stamp, run="2")
-        with patch.object(return_operation, "run", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+        save = module_operation.save
+        def interrupt_result(path, value, **kwargs):
+            if path.name == "rollback.result":
+                raise KeyboardInterrupt
+            save(path, value, **kwargs)
+        with patch.object(module_operation, "save", side_effect=interrupt_result), self.assertRaises(KeyboardInterrupt):
             self.call("rollback", stamp, run="3")
-        with self.assertRaisesRegex(mandate.Held, "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE"):
-            self.call("rollback", stamp, run="4")
+        self.assertTrue(store.read(self.root / "3/rollback.review")["returnAlreadyConsumed"])
+        self.assertEqual(self.call("rollback", stamp, run="4")["status"], "ROLLED_BACK")
+        self.assertEqual(store.read(self.root / "4/rollback.result"), store.read(self.root / "2/rollback.result"))
         self.assertFalse((self.root / "3/rollback.result").exists())
 
     def test_unresolved_create_refuses_signature_and_retains_lock(self):
@@ -317,10 +323,22 @@ class SignedReturn(mcp_tests.Release):
         root = self.root / stamp
         published = (root / "return-receipt.json").read_bytes()
         (root / "return-receipt.ed25519").unlink()
-        with self.assertRaisesRegex(mandate.Held, "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE"):
-            self.call("rollback", stamp, run="3")
+        self.assertEqual(self.call("rollback", stamp, run="3")["status"], "ROLLED_BACK")
         self.assertFalse((root / "return-receipt.ed25519").exists())
         self.assertEqual((root / "return-receipt.json").read_bytes(), published)
+
+    def test_closed_replay_verifies_an_existing_signature_without_effects(self):
+        stamp = self.ready()
+        self.call("rollback", stamp, run="2")
+        recorded = (self.root / "2/rollback.result").read_bytes()
+        (self.root / stamp / "return-receipt.ed25519").write_bytes(bytes(64))
+        before = list(self.rt.events)
+        with self.assertRaisesRegex(mandate.Held, "MODULE_RECEIPT_SIGNATURE_INVALID"):
+            self.call("rollback", stamp, run="3")
+        self.assertTrue(store.read(self.root / "3/rollback.review")["returnAlreadyConsumed"])
+        self.assertFalse((self.root / "3/rollback.result").exists())
+        self.assertEqual((self.root / "2/rollback.result").read_bytes(), recorded)
+        self.assertEqual(self.rt.events, before)
 
     def test_signed_migration_requires_lock_of_approved_plan(self):
         self.dedicated()
@@ -383,6 +401,33 @@ class SignedReturn(mcp_tests.Release):
             self.recover()
         self.assertEqual(self.signed(stamp, "receipt"), published)
         self.assertFalse((self.root / "mcp.lock").exists())
+
+    def test_compensation_recovery_refuses_foreign_failed_name_before_signing(self):
+        stamp = self.planned()["digest"]
+        with patch.object(self.rt, "stop", side_effect=Held("STOP_FAILED")), \
+                patch.object(module_receipt, "sealer", return_value=Mock(side_effect=KeyboardInterrupt)), \
+                self.assertRaises(KeyboardInterrupt):
+            self.call("apply", stamp)
+        directory = self.root / stamp
+        published = (directory / "receipt.json").read_bytes()
+        receipt = json.loads(published)
+        self.assertEqual(receipt["rollback"], "ROLLED_BACK")
+        self.assertNotIn("successorCid", receipt)
+        request = dict(self.req, run="2", phase="plan")
+        approved = self.call("plan", mandate.intent(request), approved=False, run="2")
+        foreign = "f" * 64
+        self.rt.docs[foreign] = dict(self.rt.inspect(OLD), Id=foreign, Name="/" + self.p["failedName"])
+        with self.assertRaisesRegex(mandate.Held, "FAILED_NAME_OCCUPIED"):
+            self.call("apply", approved["digest"], run="2")
+        with self.assertRaisesRegex(mandate.Held, "FAILED_NAME_OCCUPIED"):
+            self.recover("3")
+        for run in ("2", "3"):
+            held = store.read(self.root / run / "apply.held")
+            self.assertEqual((held["reason"], held["residual"]["failedName"]["cid"]), ("FAILED_NAME_OCCUPIED", foreign))
+            self.assertFalse((self.root / run / "apply.result").exists())
+        self.assertEqual(store.read(self.root / "mcp.lock/owner.json"), {"planSha256": stamp})
+        self.assertFalse((directory / "receipt.ed25519").exists())
+        self.assertEqual((directory / "receipt.json").read_bytes(), published)
 
     def test_wrong_private_key_refuses_before_return(self):
         stamp = self.ready()
