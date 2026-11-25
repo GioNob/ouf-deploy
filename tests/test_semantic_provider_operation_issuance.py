@@ -177,6 +177,11 @@ class NativeTests(operation.Fixture):
         settings.update(installationRef="inst", entityRef="ent", issuerRef="installer", installRoot=str(self.install),
             issuedAt=self.now, anchorBinding=self.anchor, mandateRoot=str(self.ledger_root), opensslBinding=self.ssl)
         self.owner = self.root / "owner.json"
+        self.common_lock = self.root / "common.lock"
+        self.write(self.common_lock, b"")
+        owner = C.document(self.inputs["files"]["coordinator"])
+        owner["commonLockFile"] = str(self.common_lock)
+        self.inputs["files"]["coordinator"] = A.canonical(owner)
         self.write(self.owner, self.inputs["files"]["coordinator"])
         settings["coordinatorBinding"] = {"path": str(self.owner), "sha256": A.sha(self.owner.read_bytes())}
         # Bind the real fixture anchor to this public authority profile.
@@ -330,7 +335,7 @@ class NativeTests(operation.Fixture):
             head = read_head(*args, **kwargs)
             if head["sequence"] == 2:
                 locks = [self.install / "registry" / cid / "operation.lock" for cid in self.cids.values()]
-                for path in [*locks, self.chain]:
+                for path in [*locks, self.chain, self.common_lock]:
                     fd = os.open(path, os.O_RDONLY)
                     try:
                         with self.assertRaises(BlockingIOError):

@@ -1,5 +1,6 @@
 """Human-invoked R3 lifecycle; installed runtime remains the sole epoch writer."""
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import ExitStack
 import json
 import os
 from pathlib import Path
@@ -132,7 +133,7 @@ def broker_denials(runtime, registry, cid, current):
     return found
 
 
-def observe(args, *, output_exists=False, deadline=None):
+def observe(args, *, output_exists=False, deadline=None, for_submission=False):
     """Read only. Compile the installed, hash-verified v5.2 and use its loaders."""
     S = I.native_switch()
     root = V.absolute(args.install_root)
@@ -246,12 +247,12 @@ def observe(args, *, output_exists=False, deadline=None):
     kernel_state = {}
     if starting and version >= 12:
         owner = C.document(runtime.bound_bytes(sup['coordinator']['ownerConfiguration']))
-        require(owner['nftPath'] == args.nft and owner['nftSha256'] == args.nft_sha256
-                and all(journal.get(k) == v for k, v in owner['binding'].items()),
+        require(owner['nftPath'] == args.nft and owner['nftSha256'] == args.nft_sha256,
                 'R3_COORDINATOR_BINDING_DRIFT')
         kernel_state['leaseKernel'] = lease_kernel_state(owner, journal, tables,
             lambda family, name: decode(command(args.nft, args.nft_sha256,
-                ['-j', 'list', 'table', family, name], remaining())))
+                ['-j', 'list', 'table', family, name], remaining())),
+            coordinator=sup['coordinator'], head=head)
     present = {}
     for role in ROLES:
         name = head["authorization"]["roles"][role]["tableName"]
@@ -259,20 +260,48 @@ def observe(args, *, output_exists=False, deadline=None):
         present[role] = {"tableName": name, **{family: (family, name) in tables for family in ("inet", "bridge")}}
     runtime.verify_files(cfg)
     require(S.custody(args.wrapper, 0o755)[0] == wrapper, "R3_WRAPPER_DRIFT")
-    for cid in sorted(cfg["candidates"]):
-        require(runtime.authorization_head(cfg, raw, cid, auth) == head,
-                "R3_AUTHORIZATION_CHANGED_DURING_OBSERVATION")
-    return {"configurationSha256": sha(raw), "authorization": authorization,
-            "candidates": candidates, "supervisor": supervisor, "lease": lease, "tables": present, **kernel_state}
+    def authenticate():
+        for cid in sorted(cfg["candidates"]):
+            require(runtime.authorization_head(cfg, raw, cid, auth) == head,
+                    "R3_AUTHORIZATION_CHANGED_DURING_OBSERVATION")
+        return head
+    authenticate()
+    snapshot = {"configurationSha256": sha(raw), "authorization": authorization,
+                "candidates": candidates, "supervisor": supervisor, "lease": lease, "tables": present, **kernel_state}
+    if for_submission:
+        require('leaseKernel' in snapshot, 'R3_LEASE_KERNEL_GENERATION_DRIFT')
+        def authenticate_submission(api):
+            from tools.semantic_lease_kernel_migration import g3_journal
+            # An interrupted issuer may have left a complete, visible signature.
+            chain = Path(cfg['operation']['authorizationRoot'])
+            for suffix in ('json', 'signature.json'):
+                path = chain / f"{head['sequence']}.{suffix}"
+                g3_journal.sync_verified(api, path, api.private(path), 'G3_AUTHORIZATION_CHANGED')
+            return authenticate()
+        return snapshot, (sup['coordinator'], snapshot['leaseKernel'], owner, journal, authenticate_submission)
+    return snapshot
 
 
-def lease_kernel_state(owner, journal, tables, read):
+def lease_kernel_state(owner, journal, tables, read, *, coordinator=None, head=None):
     """Start gate only: no nft writes, seal adoption or migration effects."""
     kernel = owner['kernel']
+    generation = owner.get('generation', kernel.get('generation'))
+    require(type(generation) is int and generation in (2, 3), 'R3_LEASE_KERNEL_GENERATION_DRIFT')
+    if generation == 3:
+        from . import lease_kernel_g3
+        require(type(owner.get('generation')) is int and owner['generation'] == 3
+                and coordinator is not None and head is not None, 'G3_BINDING')
+        try:
+            return lease_kernel_g3.observe(owner, journal, coordinator, head)
+        except (OSError, KeyError, ValueError, TypeError) as exc:
+            code = str(exc) if isinstance(exc, ValueError) and CODE.fullmatch(str(exc)) else 'G3_EVIDENCE'
+            raise A.OperationDenied(code) from exc
     name = kernel['tableName']
     require(type(kernel.get('generation')) is int and kernel['generation'] == 2
             and kernel.get('providerFlowMatch') == 'ORIGINAL_TUPLE' and name.endswith('_g2'),
             'R3_LEASE_KERNEL_GENERATION_DRIFT')
+    if coordinator is not None:
+        require(all(journal.get(k) == v for k, v in owner['binding'].items()), 'R3_COORDINATOR_BINDING_DRIFT')
     require(journal.get('state') != 'BLOCKED', 'R3_LEASE_KERNEL_JOURNAL_BLOCKED')
     require(not any((f, name[:-3]) in tables for f in ('inet', 'bridge')),
             'R3_LEASE_KERNEL_NOT_FINALIZED')
@@ -344,6 +373,8 @@ def proposal(args, observation):
 def reached(args, before, after):
     if any(before[k] != after[k] for k in ("configurationSha256", "authorization")):
         return False
+    if before.get('leaseKernel', {}).get('generation') == 3 and before['leaseKernel'] != after.get('leaseKernel'):
+        return False
     if any(before["candidates"][r]["cid"] != after["candidates"][r]["cid"] for r in ROLES):
         return False
     rows = after["candidates"]
@@ -402,6 +433,43 @@ def poll(args, before, report):
         time.sleep(min(.2, max(0, deadline - time.monotonic())))
 
 
+def submit_governed(args, before, calls, counter, report):
+    from . import lease_kernel_g3
+    errors = []
+    pending = []
+    latest, context = observe(args, output_exists=True, for_submission=True)
+    preconditions(args, latest)
+    with ExitStack() as connections:
+        with lease_kernel_g3.submission_gate(*context) as verify:
+            require(latest['leaseKernel']['generation'] == before['leaseKernel']['generation'],
+                    'R3_LEASE_KERNEL_GENERATION_DRIFT')
+            require(all(latest.get(k) == before[k] for k in
+                        ('configurationSha256', 'authorization', 'leaseKernel', 'lease'))
+                    and requests(args, latest) == calls, 'G3_BINDING')
+            clients = [(role, *lease_kernel_g3.connect_request(args, argv[-1], connections))
+                       for role, argv in calls]
+            for role, client, resource in clients:
+                # No socket bytes or attempted-POST count until admission succeeds.
+                try:
+                    verify()
+                except (OSError, KeyError, ValueError, TypeError) as exc:
+                    code = str(exc) if isinstance(exc, ValueError) and CODE.fullmatch(str(exc)) else 'G3_EVIDENCE'
+                    raise A.OperationDenied(code) from exc
+                report[counter] += 1
+                try:
+                    client.request('POST', resource, body=b'')
+                    pending.append((role, client))
+                except Exception as error:
+                    errors.append({'role': role, **error_fields(error)})
+        for role, client in pending:
+            try:
+                with client.getresponse() as response:
+                    require(response.status == 204, 'R3_DOCKER_REQUEST_FAILED')
+            except Exception as error:
+                errors.append({'role': role, **error_fields(error)})
+    return errors
+
+
 def apply(args, plan, report):
     require(args.plan_sha256 == plan["planSha256"], "R3_PLAN_DIGEST_CHANGED")
     before = observe(args)
@@ -417,10 +485,8 @@ def apply(args, plan, report):
         VR.apply(args, before, plan["volatileRestore"], report,
                  lambda: observe(args, output_exists=True))
     authorization = before['authorization']
-    if args.action in {'start', 'restart-one'} and C.composition_version(authorization['sequence'], authorization) >= 12:
-        # Volatile restore can take time: recheck the v12 gate immediately
-        # before submitting any request that starts a container.
-        preconditions(args, observe(args, output_exists=True))
+    governed = (args.action in {'start', 'restart-one'} and
+                C.composition_version(authorization['sequence'], authorization) >= 12)
     calls = requests(args, before)
     counter = {"start": "dockerStartRequests", "stop": "dockerStopRequests",
                "restart-one": "dockerRestartRequests"}[args.action]
@@ -434,7 +500,9 @@ def apply(args, plan, report):
 
     # Submit BOTH starts before waiting: cohort-ready needs the sibling's runc create.
     errors = []
-    if args.action in {"start", "stop"}:
+    if governed:
+        errors = submit_governed(args, before, calls, counter, report)
+    elif args.action in {"start", "stop"}:
         with ThreadPoolExecutor(max_workers=2) as pool:
             futures = []
             for role, argv in calls:

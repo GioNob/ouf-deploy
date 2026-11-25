@@ -65,7 +65,7 @@ def _execute(pointer, observe, requested, api):
             locks.enter_context(api.lock(path))
         locks.enter_context(api.directory_lock(owner['authorizationDirectory']))
         locks.enter_context(api.lock(owner['commonLockFile']))
-        api.need(selection == api.sealed_receipt(pointer), 'BOOT_POINTER_CHANGED')
+        api.need(selection == journal.confirmed_selection(api, pointer), 'BOOT_POINTER_CHANGED')
         state = journal.BootState(receipt, api)
         plan, seal = _inspect(state, observe)
         digest = api.digest(plan)

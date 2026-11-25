@@ -1,5 +1,11 @@
 # Stato corrente OUF
 
+## Sprint 03/63k · tick e start del lease g3
+
+Il passo 2b aggiunge il rinnovo sotto lock e il controllo del sigillo in `operate`. Le prove portabili coprono entrambi i formati nft, le interruzioni e il diniego prima di Docker. La prova del rinnovo con nft reale è predisposta nella CI Linux. La composizione del passo 3 deve ancora collegare i consumatori alla testa e al supervisore installati. [Contratto e prove PET](OUF_SEMANTIC_LEASE_KERNEL_G3.md#tick-e-start-governato--passo-2b)
+
+La revisione 63k-c applica la DN-A-3. Emittente della testa, riconciliatore del sigillo, migrazione e invio Docker condividono il lock del coordinatore. Prima di ciascun POST il gate conferma il puntatore su disco, la testa firmata e l’istanza nft. La ricevuta CI per A3-29 e la chiusura D-082 sono pendenti.
+
 ## Sprint 03/38 · approvazioni dei rilasci
 
 Le prove offline dei sette workflow verificano l’annotazione **Da approvare** e la sezione **Cosa approvi** nel job precedente a ogni review. Per Onboarding, MCP, UDP e Ingestion il task 38b mostra in entrambe le sedi gli ID delle immagini candidata e predecessore prima di approvare `apply` o `migrate`. La prova dell’esecutore copre anche il recupero e il predecessore selezionato dalla ricevuta del rilascio precedente. [Prove dei client](../tests/test_release_approval.py) · [Prove dell’esecutore](../tests/test_module_release.py)
