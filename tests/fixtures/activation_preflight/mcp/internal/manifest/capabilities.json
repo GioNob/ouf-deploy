@@ -1,0 +1,11 @@
+{
+  "capabilities": [
+    {
+      "capabilityId": "ouf.semantic.search.batch",
+      "toolName": "semantic.search.batch",
+      "requiredAuthorizationCapability": "ouf.semantic.search",
+      "publicationState": "ACTIVE",
+      "toolEligible": false
+    }
+  ]
+}
