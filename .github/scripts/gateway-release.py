@@ -1,4 +1,5 @@
 """Unprivileged workflow client. Summarizes the Gateway plan for approval."""
+import html
 import json
 import os
 from pathlib import Path
@@ -65,7 +66,15 @@ def changes_table(changes, counts):
         retired = action in RETIRE_ACTIONS
         if retired and ("delete" not in counts or kind != "routes" or ident in managed_ids):
             raise ValueError
-        if action == "delete":
+        if "externalResolution" in change:
+            if retired or change["externalResolution"] is not True:
+                raise ValueError
+            fields.add("externalResolution")
+        if action == "delete" and "reason" in change:
+            fields.add("reason")
+            if not isinstance(change["reason"], str) or not change["reason"].strip():
+                raise ValueError
+        elif action == "delete":
             fields.add("supersededBy")
             if not match(ID, change["supersededBy"]) or change["supersededBy"] not in route_ids:
                 raise ValueError
@@ -81,11 +90,22 @@ def changes_table(changes, counts):
             tally[action] += 1
         paths = path_cell(change["paths"]) if action == "update" else "—"
         label = ACTIONS[action]
-        if action == "delete":
+        table_label = label
+        if "reason" in change:
+            reason = " ".join(change["reason"].splitlines())
+            label += f" (obsoleta: {reason})"
+            # Render reviewed prose as text, including Markdown table delimiters.
+            escaped = re.sub(r"([\\|`*_\[\]~])", r"\\\1", html.escape(reason))
+            table_label += f" (obsoleta: {escaped})"
+        elif action == "delete":
             label += f" (sostituita da {change['supersededBy']})"
+            table_label = label
+        if "externalResolution" in change:
+            label += " (risoluzione esterna)"
+            table_label = label
         detail = " (" + ", ".join(change["paths"]) + ")" if action == "update" else ""
         resources.append(f"{kind}/{ident}: {label}{detail}")
-        lines.append(f"| `{kind}/{ident}` | {label} | {paths} |")
+        lines.append(f"| `{kind}/{ident}` | {table_label} | {paths} |")
     if tally != counts:
         raise ValueError
     return "\n".join(lines), resources
