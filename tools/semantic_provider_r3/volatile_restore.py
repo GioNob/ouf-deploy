@@ -25,6 +25,8 @@ TEMPS = tuple("usr/local/apisix/" + p for p in
 FILES = ("usr/local/apisix/conf/nginx.conf", "usr/local/apisix/conf/apisix.uid",
          # nginx pid file: removed on a clean stop, left behind by a crash or power loss.
          "usr/local/apisix/logs/nginx.pid")
+# Residue observed after an unclean APISIX stop (D-047 inventory).
+SOCKET = "usr/local/apisix/logs/worker_events.sock"
 LINK = "usr/local/apisix/conf/apisix.yaml"
 TARGET = "/run/ouf-southbound-runtime/apisix.yaml"
 # logs is copied up because nginx writes logs/nginx.pid at start (VPS inventory, 16/11).
@@ -48,14 +50,28 @@ def historical():
     return module
 
 
-def idle(observation):
+def cohort_idle(observation):
     rows = observation["candidates"]
-    require(set(rows) == {"adapter", "southbound"}, "R3_VOLATILE_IDLE_REQUIRED")
-    require(all(v["docker"]["Status"] in {"created", "exited"}
-                and v["docker"]["Running"] is False and v["docker"]["Pid"] == 0
-                and (v["epoch"] is None or v["epoch"]["state"] in {"DELETED", "FAILED", "ABANDONED"}
-                     and v["epoch"].get("live") is False) for v in rows.values()),
-            "R3_VOLATILE_IDLE_REQUIRED")
+    pending = observation.get("epochsToAbandon", {})
+    if set(rows) != {"adapter", "southbound"}:
+        return False
+    for role, row in rows.items():
+        docker, epoch = row["docker"], row["epoch"]
+        if docker["Status"] not in {"created", "exited"} or docker["Running"] is not False or docker["Pid"] != 0:
+            return False
+        if epoch is None:
+            continue
+        if epoch.get("live") is not False:
+            return False
+        if epoch["state"] not in {"DELETED", "FAILED", "ABANDONED"}:
+            if (role not in pending or pending[role]["epoch"] != epoch["epoch"]
+                    or observation.get("recoveryBootId") in (None, epoch["bootId"])):
+                return False
+    return True
+
+
+def idle(observation):
+    require(cohort_idle(observation), "R3_VOLATILE_IDLE_REQUIRED")
 
 
 def unmounted(snapshot, rows):
@@ -97,6 +113,8 @@ def validate_entry(path, entry, image, user, physical):
                 and len(PurePosixPath(path).parts) - len(PurePosixPath(temp).parts) <= MAX_DEPTH, DENIED)
     elif path in FILES:
         require(entry["kind"] == "file" and entry["links"] == 1 and entry["size"] <= 1048576, DENIED)
+    elif path == SOCKET:
+        require(entry["kind"] == "socket" and entry["links"] == 1 and entry["xattrs"] == {}, DENIED)
     elif path == LINK:
         require(entry["kind"] == "symlink" and entry["target"] == TARGET
                 and entry["links"] == 1, DENIED)
@@ -124,7 +142,7 @@ def removals(upper, image, user, expected, encoder, physical):
     directory_children = Counter(str(PurePosixPath(p).parent) for p, v in upper.items()
                                  if p and v["kind"] == "directory")
     for path, entry in upper.items():
-        if volatile(path) or path in FILES or path == LINK:
+        if volatile(path) or path in FILES or path in (LINK, SOCKET):
             # An allowlisted name must not replace an image entry.
             require(path not in image, DENIED)
             validate_entry(path, entry, image, user, physical)
@@ -189,7 +207,8 @@ def held_tree(root, directory_fd, mount_rows, snapshot):
                 child = path + "/" + name if path else name
                 info = os.stat(name, dir_fd=fd, follow_symlinks=False)
                 require(info.st_dev == device, DENIED)
-                require(stat.S_ISDIR(info.st_mode) or stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode), DENIED)
+                require(stat.S_ISDIR(info.st_mode) or stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode)
+                        or child == SOCKET and stat.S_ISSOCK(info.st_mode), DENIED)
                 if volatile(child):
                     count += 1; total += info.st_size if stat.S_ISREG(info.st_mode) else 0
                     require(count <= MAX_ENTRIES and total <= MAX_BYTES
@@ -211,14 +230,61 @@ def identity(info):
                   "st_nlink", "st_size", "st_mtime_ns", "st_ctime_ns"))
 
 
+def upper_entries(context, held):
+    """Inventory the one socket separately. Accepted seals always use the original walker."""
+    H, snapshot = context["historical"], context["comparison"]["snapshot"]
+    upper = Path(snapshot["upper"])
+    sealer, limits = context["sealer"], context["limits"]
+    if SOCKET not in held or not stat.S_ISSOCK(held[SOCKET][1].st_mode):
+        return H.entries(sealer, upper, limits)
+
+    parent_fd, parent = held[parent_of(SOCKET)]
+    name = PurePosixPath(SOCKET).name
+    before = held[SOCKET][1]
+    socket_path = Path("/proc/self/fd") / str(parent_fd) / name
+    require(identity(os.stat(name, dir_fd=parent_fd, follow_symlinks=False)) == identity(before)
+            and not os.listxattr(socket_path, follow_symlinks=False), DENIED)
+    record = dict(path=SOCKET, kind="socket", mode=stat.S_IMODE(before.st_mode),
+                  uid=before.st_uid, gid=before.st_gid, links=before.st_nlink, xattrs={})
+    validate_entry(SOCKET, record, context["image"], context["user"], H.physical)
+    seen = False
+
+    @contextmanager
+    def scandir(fd):
+        nonlocal seen
+        directory = os.fstat(fd)
+        with os.scandir(fd) as entries:
+            if (directory.st_dev, directory.st_ino) != (parent.st_dev, parent.st_ino):
+                yield entries
+                return
+
+            def ordinary_entries():
+                nonlocal seen
+                for entry in entries:
+                    if entry.name != name:
+                        yield entry
+                    else:
+                        require(not seen and identity(entry.stat(follow_symlinks=False)) == identity(before), DENIED)
+                        seen = True
+            yield ordinary_entries()
+
+    # Private view for this pre-removal walk only. Reserve one entry of its
+    # budget for the socket and bind its record into the pre-removal digest.
+    local_os = types.SimpleNamespace(**{**vars(os), "scandir": scandir})
+    inventory = types.FunctionType(sealer.__code__, {**sealer.__globals__, "os": local_os})
+    _, records = H.entries(inventory, upper, {**limits, "maxEntries": limits["maxEntries"] - 1})
+    require(seen and identity(os.stat(name, dir_fd=parent_fd, follow_symlinks=False)) == identity(before), DENIED)
+    records[SOCKET] = record
+    return predicted_seal(records, sealer.__globals__["encoded"]), records
+
+
 def inspect_upper(context):
     H, snapshot = context["historical"], context["comparison"]["snapshot"]
-    with held_tree(Path(snapshot["upper"]), H.directory_fd, H.mount_rows, snapshot):
+    with held_tree(Path(snapshot["upper"]), H.directory_fd, H.mount_rows, snapshot) as held:
         try:
-            seal, upper = H.entries(context["sealer"], Path(snapshot["upper"]), context["limits"])
+            return upper_entries(context, held)
         except Exception:
             require(False, DENIED)
-    return seal, upper
 
 
 @contextmanager
@@ -329,7 +395,7 @@ def remove(context, rows, output, report):
     """Full revalidation while descriptors are pinned, then relative unlink/rmdir."""
     H, snapshot = context["historical"], context["comparison"]["snapshot"]
     with held_tree(Path(snapshot["upper"]), H.directory_fd, H.mount_rows, snapshot) as held:
-        seal, _ = H.entries(context["sealer"], Path(snapshot["upper"]), context["limits"])
+        seal, _ = upper_entries(context, held)
         require(seal == context["beforeSeal"], "R3_PLAN_DIGEST_CHANGED")
         for path, (fd, before) in held.items():
             if not path:

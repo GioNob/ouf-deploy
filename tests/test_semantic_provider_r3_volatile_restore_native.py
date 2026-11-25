@@ -4,12 +4,14 @@ OUF_R3_VOLATILE_NATIVE=1 must fail (never skip) when prerequisites are missing.
 The equivalent snapshot uses the same v3 binding and NodeObservation.observe.
 Only unrelated signed transport/live-profile assertions are synthetic.
 """
-from contextlib import contextmanager
+from contextlib import chdir, contextmanager
+import importlib.util
 import json
 import os
 from pathlib import Path
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
@@ -131,6 +133,15 @@ def native_child():
                 baseline = node_observe()  # post-create, same sealer and actual created runc task
                 assert baseline == sealer(root, limits, H.Budget())
                 snapshot = H.overlay_binding(root, docker_root)
+            # Only the private fixture task was created and deleted. Dropping its
+            # now-empty state root simulates the loss of /run across boots.
+            runtime_root.rmdir()
+            runtime_file = ROOT / V.I.C.RUNTIME
+            spec = importlib.util.spec_from_file_location("volatile_v52", runtime_file)
+            runtime = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(runtime)
+            assert runtime.inactive({"runtimePath": runc}, cid, "state", runtime_root,
+                                    ["--root", str(runtime_root), "state", cid]) == 1
             expected_upper = sealer(upper, limits, H.Budget())
             image = H.entries(sealer, lower, limits)[1]
             with view():
@@ -140,6 +151,11 @@ def native_child():
                 os.link(root / V.TEMPS[0] / "sub/payload", root / V.TEMPS[0] / "sub/hardlink")
                 for p in V.FILES: (root / p).write_bytes(b"synthetic volatile data")
                 (root / V.LINK).symlink_to(V.TARGET)
+                # bind relative to logs to stay within sockaddr_un.sun_path.
+                with chdir((root / V.SOCKET).parent):
+                    for name in (Path(V.SOCKET).name, "other.sock"):
+                        with socket.socket(socket.AF_UNIX) as sock:
+                            sock.bind(name)
             context = dict(historical=H, sealer=sealer, limits=limits, image=image,
                 user=oci["process"]["user"], expected=baseline, cid=cid, dockerRoot=str(docker_root), sourceRoot=str(source),
                 comparison=dict(snapshot=snapshot, expectedUpperSeal=expected_upper))
@@ -154,11 +170,18 @@ def native_child():
                      if snapshot.get(k) != current.get(k)}, sort_keys=True), flush=True)
             with patch.object(H.V1, "stopped_export_view", side_effect=view):
                 V.confirm_snapshot(args, context)
+            try:
+                V.inspect_upper(context)
+            except V.I.A.OperationDenied as error:
+                assert str(error) == V.DENIED
+            else:
+                raise AssertionError("unexpected socket accepted")
+            (upper / V.SOCKET).with_name("other.sock").unlink()
             seal, records = V.inspect_upper(context)
             context["beforeSeal"] = seal
             rows = V.removals(records, image, context["user"], expected_upper,
                               sealer.__globals__["encoded"], H.physical)
-            assert rows and seal != expected_upper
+            assert {"kind": "socket", "path": V.SOCKET} in rows and seal != expected_upper
             output.mkdir(mode=0o700)
             report = dict(volatileEntriesRemoved=0)
             V.remove(context, rows, output, report)

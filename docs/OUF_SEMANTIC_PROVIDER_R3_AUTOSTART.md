@@ -170,16 +170,16 @@ journalctl -u ouf-semantic-r3-autostart.service -b -p err
 
 ## Limiti già verificati nel codice e domande aperte
 
-- R-002: un veth Semantic con ifindex diverso resta un diniego; nessuna firma,
-  aspettativa o policy viene riscritta per superarlo.
-- `operate.observe` nega un'epoca **non terminale** del boot precedente con
-  `R3_EPOCH_BOOT_DRIFT`, prima del plan. Il runtime v5.2 ha un percorso di
-  abbandono in `create`, ma lo start governato non lo raggiunge in questo caso.
-  Il driver conserva questo contratto: tre dinieghi e incidente. La decisione
-  per un eventuale recupero governato resta aperta e fuori perimetro task-61.
-- Nessuna prova di reboot, installazione systemd o readiness live è stata
-  eseguita qui. I test simulano le risposte di `operate`; la regressione di
-  `operate` resta distinta dalla qualifica di boot.
+- La v25 verifica l’identità stabile del peer Semantic e della sua generazione corrente.
+- Il task 63d-b tratta due cause di diniego nello start governato. Una vecchia
+  epoca aperta può avanzare se `operate` prova l’assenza runc, l’autorità
+  invariata e l’ingresso chiuso. Il ripristino D-047 tratta il socket APISIX
+  identificato nell’upper e verifica i sigilli originali. Il driver usa il plan
+  e il readback ordinari per entrambi i casi.
+- **R-025 resta aperto.** Il recupero del guard pre-Docker e quello del kernel
+  del lease con nuovi handle spettano ai task successivi. L’installazione
+  dell’autostart resta subordinata alla qualifica in esercizio dopo reboot e
+  alla decisione umana D-048.
 
 ## Verifica riproducibile
 

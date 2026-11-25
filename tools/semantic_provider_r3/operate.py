@@ -1,5 +1,6 @@
 """Human-invoked R3 lifecycle; installed runtime remains the sole epoch writer."""
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import ExitStack
 import json
 import os
 from pathlib import Path
@@ -9,6 +10,7 @@ import sys
 import tempfile
 import time
 import traceback
+from types import SimpleNamespace
 
 from tools.semantic_provider_r3 import install_common as I
 from tools.semantic_provider_r3 import volatile_restore as VR
@@ -132,7 +134,7 @@ def broker_denials(runtime, registry, cid, current):
     return found
 
 
-def observe(args, *, output_exists=False, deadline=None):
+def observe(args, *, output_exists=False, deadline=None, locked_cids=()):
     """Read only. Compile the installed, hash-verified v5.2 and use its loaders."""
     S = I.native_switch()
     root = V.absolute(args.install_root)
@@ -157,6 +159,48 @@ def observe(args, *, output_exists=False, deadline=None):
     require(sha(wrapper) == args.wrapper_sha256
             and wrapper == I.wrapper_bytes(cfg["pythonPath"], code_root), "R3_WRAPPER_DRIFT")
     auth, epochs = runtime.operation_modules(cfg)
+    cids = sorted(cfg["candidates"])
+    sup = C.document(runtime.bound_bytes(cfg["leaseQuiesce"]["configuration"]))
+    boot = epochs.boot_id()
+    with ExitStack() as locks:
+        recovery = False
+        if getattr(args, "action", None) == "start":
+            for cid in cids:
+                row = epochs.current(cfg["registryRoot"], cid)
+                if row and row["state"] not in TERMINAL and row["bootId"] != boot:
+                    if locked_cids:
+                        require(sorted(locked_cids) == cids, "R3_OPERATION_LOCK_DRIFT")
+                    else:
+                        locks.enter_context(I.operation_locks(root, cids))
+                    lock = sup["coordinator"]["commonLockPath"]
+                    locks.enter_context(I.guard(SimpleNamespace(lock=lock), V.guard_lock(S, lock)))
+                    recovery = True
+                    break
+        return observe_cohort(args, deadline, runtime, cfg, raw, wrapper, auth, epochs, sup, boot, recovery)
+
+
+def prove_previous_epoch(runtime, cfg, raw, head, cid, role, row, frame):
+    require(head["decision"] == "OPERATE" and row["authorizationSha256"] == head["sha256"],
+            "R3_PREVIOUS_BOOT_EPOCH_AUTHORIZATION")
+    require(row["configurationHash"] == sha(raw), "R3_PREVIOUS_BOOT_EPOCH_CONFIGURATION")
+    require(row["containerId"] == cid == head["authorization"]["roles"][role]["containerId"],
+            "R3_PREVIOUS_BOOT_EPOCH_COHORT")
+    require(frame["Status"] in {"exited", "created"} and frame["Running"] is False and frame["Pid"] == 0,
+            "R3_PREVIOUS_BOOT_EPOCH_DOCKER")
+    root = Path(row["runtimeRoot"] or "")
+    parent = Path(cfg["runtimeStateRoot"])
+    require(root.is_absolute() and root.resolve() == root and root.is_relative_to(parent) and root != parent,
+            "R3_PREVIOUS_BOOT_EPOCH_RUNTIME_ROOT")
+    try:
+        status = runtime.inactive(cfg, cid, "state", root, ["--root", str(root), "state", cid])
+    except Exception:
+        require(False, "R3_PREVIOUS_BOOT_EPOCH_RUNC")
+    require(status == 1, "R3_PREVIOUS_BOOT_EPOCH_RUNC")
+    return {"epoch": row["epoch"], "abandonedJournalSha256": sha(canonical({**row, "state": "ABANDONED"}))}
+
+
+def observe_cohort(args, deadline, runtime, cfg, raw, wrapper, auth, epochs, sup, boot, recovery):
+    S = I.native_switch()
     heads = [runtime.authorization_head(cfg, raw, cid, auth) for cid in sorted(cfg["candidates"])]
     require(heads[0] == heads[1], "R3_AUTHORIZATION_CHANGED_DURING_OBSERVATION")
     head = heads[0]
@@ -168,7 +212,6 @@ def observe(args, *, output_exists=False, deadline=None):
     authorization = {k: head[k] for k in ("sha256", "sequence", "decision")}
     if 'compositionCeiling' in head['authorization']:
         authorization['compositionCeiling'] = head['authorization']['compositionCeiling']
-    boot = epochs.boot_id()
 
     def remaining():
         if deadline is None:
@@ -178,13 +221,15 @@ def observe(args, *, output_exists=False, deadline=None):
         return min(30, seconds)
 
     candidates = {}
+    abandon = {}
     for cid, item in sorted(cfg["candidates"].items()):
         row = epochs.current(cfg["registryRoot"], cid)
         epoch = None
+        previous_boot = recovery and row is not None and row["state"] not in TERMINAL and row["bootId"] != boot
         if row is not None:
             if row["state"] in TERMINAL:
                 terminal_binding(runtime, cfg, head, row)
-            else:
+            elif not previous_boot:
                 require(row["bootId"] == boot, "R3_EPOCH_BOOT_DRIFT")
                 require(row["authorizationSha256"] == head["sha256"]
                         and row["configurationHash"] == sha(raw), "R3_EPOCH_AUTHORIZATION_DRIFT")
@@ -198,13 +243,16 @@ def observe(args, *, output_exists=False, deadline=None):
                         "epochs" / str(number) / "adapter.json"), cid, number)
             terminal_binding(runtime, cfg, head, old)
             previous = {k: old[k] for k in ("epoch", "state")}
+            if old["state"] == "ABANDONED":
+                previous["abandonedJournalSha256"] = sha(canonical(old))
         frame = docker_fields(docker(args, "inspect", cid, timeout=remaining()), cid)
-        if row is not None and row["state"] == "STARTED" and frame["Running"]:
+        if previous_boot:
+            abandon[item["role"]] = prove_previous_epoch(runtime, cfg, raw, head, cid, item["role"], row, frame)
+        elif row is not None and row["state"] == "STARTED" and frame["Running"]:
             require(frame["Pid"] == row["generation"]["pid"], "R3_EPOCH_DOCKER_PID_DRIFT")
         candidates[item["role"]] = {"cid": cid, "epoch": epoch, "previousEpoch": previous, "docker": frame,
             "denials": broker_denials(runtime, cfg["registryRoot"], cid, row["epoch"] if row else None)}
 
-    sup = C.document(runtime.bound_bytes(cfg["leaseQuiesce"]["configuration"]))
     if starting and version >= 25:
         from .semantic_identity_v25 import semantic_observe
         spec = sup['semanticIngress']
@@ -251,12 +299,18 @@ def observe(args, *, output_exists=False, deadline=None):
                 'R3_COORDINATOR_BINDING_DRIFT')
         kernel_state['leaseKernel'] = lease_kernel_state(owner, journal, tables,
             lambda family, name: decode(command(args.nft, args.nft_sha256,
-                ['-j', 'list', 'table', family, name], remaining())))
+                ['-j', 'list', 'table', family, name], remaining())), closed_required=bool(abandon))
     present = {}
     for role in ROLES:
         name = head["authorization"]["roles"][role]["tableName"]
         require(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,63}", name), "R3_TABLE_NAME_INVALID")
         present[role] = {"tableName": name, **{family: (family, name) in tables for family in ("inet", "bridge")}}
+    if abandon:
+        require(lease == {"state": "QUIESCED", "leaseAuthorized": False}, "R3_PREVIOUS_BOOT_EPOCH_LEASE")
+        require("leaseKernel" in kernel_state, "R3_PREVIOUS_BOOT_EPOCH_INGRESS")
+        kernel_state.update(epochsToAbandon=abandon, recoveryBootId=boot)
+        require(not any(t[f] for t in present.values() for f in ("inet", "bridge")),
+                "R3_PREVIOUS_BOOT_EPOCH_INGRESS")
     runtime.verify_files(cfg)
     require(S.custody(args.wrapper, 0o755)[0] == wrapper, "R3_WRAPPER_DRIFT")
     for cid in sorted(cfg["candidates"]):
@@ -266,7 +320,7 @@ def observe(args, *, output_exists=False, deadline=None):
             "candidates": candidates, "supervisor": supervisor, "lease": lease, "tables": present, **kernel_state}
 
 
-def lease_kernel_state(owner, journal, tables, read):
+def lease_kernel_state(owner, journal, tables, read, *, closed_required=False):
     """Start gate only: no nft writes, seal adoption or migration effects."""
     kernel = owner['kernel']
     name = kernel['tableName']
@@ -280,6 +334,13 @@ def lease_kernel_state(owner, journal, tables, read):
     actual = {f: read(f, name) for f in ('inet', 'bridge')}
     require(I.lease_structure_hash(actual) == owner['expectedStructureHash']
             == owner['binding']['leaseStructureHash'], 'R3_LEASE_KERNEL_STRUCTURE_DRIFT')
+    if closed_required:
+        # nft reports remaining time in whole seconds. A listed zero can
+        # represent a final fraction of a second. Absence proves expiration.
+        for table in actual.values():
+            for item in table["nftables"]:
+                if "set" in item:
+                    require(item["set"].get("elem", []) == [], "R3_PREVIOUS_BOOT_EPOCH_INGRESS")
     return {'generation': 2, 'predecessorAbsent': True, 'structureHash': owner['expectedStructureHash']}
 
 
@@ -312,10 +373,7 @@ def preconditions(args, observation):
     if args.action == "start":
         require(all(rows[r]["docker"]["RestartPolicy"] == "no" for r in ROLES),
                 "R3_RESTART_POLICY_MUST_BE_NO")
-        require(all((v["epoch"] is None or v["epoch"]["state"] in TERMINAL and not v["epoch"]["live"])
-                    and v["docker"]["Status"] in {"created", "exited"}
-                    and v["docker"]["Running"] is False and v["docker"]["Pid"] == 0
-                    for v in rows.values()), "R3_START_CANDIDATES_NOT_IDLE")
+        require(VR.cohort_idle(observation), "R3_START_CANDIDATES_NOT_IDLE")
         require(service_active(observation) and sup["state"] == "WAITING"
                 and sup["authorizationSequence"] == observation["authorization"]["sequence"],
                 "R3_START_SUPERVISOR_NOT_WAITING")
@@ -368,6 +426,10 @@ def reached(args, before, after):
             number = (old["epoch"]["epoch"] if old["epoch"] else 0) + 1
             if new["epoch"]["epoch"] != number:
                 return False
+            if role in before.get("epochsToAbandon", {}):
+                expected = {**before["epochsToAbandon"][role], "state": "ABANDONED"}
+                if new["previousEpoch"] != expected or new["epoch"]["bootId"] != before["recoveryBootId"]:
+                    return False
             if args.action == "restart-one" and new["previousEpoch"] != {
                     "epoch": number - 1, "state": "DELETED"}:
                 return False
@@ -415,12 +477,16 @@ def apply(args, plan, report):
     I.write_once(output / "operate-claim.json", canonical(plan), report)
     if args.action == "start":
         VR.apply(args, before, plan["volatileRestore"], report,
-                 lambda: observe(args, output_exists=True))
+                 lambda: observe(args, output_exists=True,
+                                 locked_cids=[v["cid"] for v in before["candidates"].values()]))
     authorization = before['authorization']
     if args.action in {'start', 'restart-one'} and C.composition_version(authorization['sequence'], authorization) >= 12:
         # Volatile restore can take time: recheck the v12 gate immediately
         # before submitting any request that starts a container.
-        preconditions(args, observe(args, output_exists=True))
+        current = observe(args, output_exists=True)
+        preconditions(args, current)
+        if "epochsToAbandon" in before or "epochsToAbandon" in current:
+            require(current == before, "R3_PLAN_DIGEST_CHANGED")
     calls = requests(args, before)
     counter = {"start": "dockerStartRequests", "stop": "dockerStopRequests",
                "restart-one": "dockerRestartRequests"}[args.action]
