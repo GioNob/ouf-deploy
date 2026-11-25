@@ -713,3 +713,13 @@ Le fixture offline dei sette workflow verificano titolo, fase, fatti pubblici, e
 ## 22 novembre 2026 · sprint-03/38b · immagini nelle approvazioni dei moduli
 
 Il task 38b completa il checkpoint 38 per i quattro moduli. Le prove offline confrontano gli ID pubblicati da `plan` e `apply` con il piano di rilascio, anche dopo un’interruzione e con il predecessore scelto dalla ricevuta firmata. Per ogni modulo il client mostra entrambi gli ID prima delle review di `apply` e `migrate`, rifiuta una coppia incompleta o malformata e segnala l’assenza dei campi negli esecutori precedenti. [Test dell’esecutore](../tests/test_module_release.py) · [Test del client](../tests/test_release_approval.py)
+
+## 25 novembre 2026 · sprint-03/60w · DN-L3-4, scelta B
+
+La review del 60w attesta 9/9 PET verdi in `python:3.13-slim` come root. Le prove verificano l’ordine ACTIVE, export, ACTIVE, il digest dell’export e lo scarto della ricevuta in caso di conflitto o cambio di ETag. L’owner ha accettato il journal temporaneo di `HumanSession` accanto al JWT. Entrambi hanno modo 0600 nella stessa directory 0700, eliminata a fine comando. [Lettore](../scripts/read_installation_active.py) · [PET](../tests/test_installation_active_reader.py)
+
+## 25 novembre 2026 · sprint-03/60w-b · correzioni della review del lettore ACTIVE
+
+Il PET 08 verifica la chiave letterale del bundle. I nuovi PET 10–12 coprono il profilo senza host, SIGINT durante la rimozione del JWT e le risposte HTTP 200 malformate con bearer sentinella. Sono passati tutti gli 11 PET eseguibili su Windows con Python 3.12.14. Il PET 09 è stato saltato perché richiede Linux root. La suite aggiornata conta 12 PET. [Prove PET](../tests/test_installation_active_reader.py)
+
+Esecuzione successiva in `python:3.13-slim` come root: 12/12 PET verdi, compreso il PET 09 con il vero `HumanSession`.

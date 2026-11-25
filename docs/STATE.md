@@ -1,5 +1,11 @@
 # Stato corrente OUF
 
+## Sprint 03/60w-b · lettura ACTIVE prima del rilascio Gateway
+
+Il lettore confronta due letture ACTIVE attorno all’export e restituisce il digest dei byte ricevuti. Ricava l’host da `gateway.values["gateway.publicApiHost"]`. Se la chiave manca, serve `--origin` prima del login. L’owner ha accettato che `HumanSession` custodisca il JWT e il journal temporaneo (entrambi 0600) nella stessa directory 0700, eliminata a fine comando anche se arriva SIGINT durante la pulizia.
+
+La review del 60w attesta 9/9 PET verdi in `python:3.13-slim` come root. Dopo le correzioni del 60w-b sono passati tutti gli 11 PET eseguibili su Windows, inclusi i tre nuovi. Rieseguiti poi in `python:3.13-slim` come root: 12/12 PET verdi, compreso il PET 09. La lettura ACTIVE e i grant HUMAN sul VPS restano da verificare. [Lettore](../scripts/read_installation_active.py) · [Prove PET](../tests/test_installation_active_reader.py)
+
 ## Sprint 03/38 · approvazioni dei rilasci
 
 Le prove offline dei sette workflow verificano l’annotazione **Da approvare** e la sezione **Cosa approvi** nel job precedente a ogni review. Per Onboarding, MCP, UDP e Ingestion il task 38b mostra in entrambe le sedi gli ID delle immagini candidata e predecessore prima di approvare `apply` o `migrate`. La prova dell’esecutore copre anche il recupero e il predecessore selezionato dalla ricevuta del rilascio precedente. [Prove dei client](../tests/test_release_approval.py) · [Prove dell’esecutore](../tests/test_module_release.py)
