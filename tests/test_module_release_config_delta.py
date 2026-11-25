@@ -1,4 +1,4 @@
-"""Isolated release and review regressions DEP-58L-01…13 and DEP-58LB-01…05."""
+"""Isolated regressions for DEP-58L, DEP-58LB and DEP-58LD."""
 import copy
 from contextlib import redirect_stdout
 import hashlib
@@ -366,3 +366,171 @@ print(json.dumps(plan(profile, Engine())))
         result = subprocess.run([sys.executable, "-I", "-B", "-c", probe, str(bootstrap.inst.ROOT)],
                                 input=json.dumps(self.old), capture_output=True, text=True, check=True)
         self.assertEqual(json.loads(result.stdout), self.planned())
+
+    def test_DEP_58LD_01_jdbc_store_password_before_and_after(self):
+        self.p.update(envAllowlist=["DATABASE_URL"], showValues=["DATABASE_URL"])
+        value = "jdbc:sqlserver://fixture;trustStorePassword=synthetic"
+        for side in ("before", "after"):
+            with self.subTest(side=side):
+                row = {"name": "DATABASE_URL", "before": None, "after": None, side: value}
+                env = ["DATABASE_URL=" + value] if side == "before" else []
+                self.p["configDelta"] = {"env": [row]}
+                with patch.dict(self.rt.docs[fixture.OLD]["Config"], Env=env):
+                    result = operation.plan(self.p, self.rt)
+                self.assertEqual((result["status"], result.get("reason")), ("HELD", "SECRET_ENV_DENIED"))
+                self.assertNotIn("synthetic", json.dumps(result))
+
+    def create_gap(self, created):
+        self.install_delta()
+        stamp = self.planned()["planSha256"]
+        create = self.rt.create
+
+        def interrupted(*args):
+            if created:
+                create(*args)
+            raise KeyboardInterrupt
+
+        with patch.object(self.rt, "create", interrupted), self.assertRaises(KeyboardInterrupt):
+            operation.apply(self.p, stamp, self.rt)
+        self.assertTrue((self.root / stamp / "create-intent.json").is_file())
+        self.assertFalse((self.root / stamp / "created.json").exists())
+        return stamp
+
+    def test_DEP_58LD_02_before_engine_create(self):
+        stamp = self.create_gap(False)
+        # A second loss after journaling the empty return must also be resumable.
+        with patch.object(return_operation, "restore", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            return_operation.run(self.p, stamp, self.rt, recover=True)
+        result = return_operation.run(self.p, stamp, self.rt, recover=True)
+        self.assertEqual(result["status"], "ROLLED_BACK", result)
+        self.assertNotIn("create", self.rt.events)
+        self.assert_restored()
+
+    def test_DEP_58LD_02_after_engine_create(self):
+        stamp = self.create_gap(True)
+        root = self.root / stamp
+        cfg = self.rt.docs[fixture.NEW]["Config"]
+        for change in ({"Labels": self.old["Config"]["Labels"]},
+                       {"Labels": {**cfg["Labels"], "ouf.release.plan": "f" * 64}},
+                       {"Env": ["FEATURE=foreign"]}):
+            with self.subTest(change=change), patch.dict(cfg, change):
+                self.assertEqual(return_operation.run(self.p, stamp, self.rt, recover=True)["status"], "HELD")
+                self.assertFalse((root / "created.json").exists())
+                self.assertFalse((root / "return-intent.json").exists())
+                self.assertEqual(self.rt.inspect(self.p["container"])["Id"], fixture.NEW)
+        result = return_operation.run(self.p, stamp, self.rt, recover=True)
+        self.assertEqual(result["status"], "ROLLED_BACK", result)
+        self.assertEqual(cfg["Labels"].get("ouf.release.plan"), stamp)
+        self.assertEqual(self.rt.events.count("create"), 1)
+        self.assertNotIn("gate:2", self.rt.events)
+        self.assert_restored()
+
+    def test_DEP_58LD_02_lost_create_response(self):
+        self.install_delta()
+        stamp = self.planned()["planSha256"]
+        create = self.rt.create
+
+        def lost(*args):
+            create(*args)
+            raise OSError
+
+        with patch.object(self.rt, "create", lost):
+            result = operation.apply(self.p, stamp, self.rt)
+        self.assertEqual((result["status"], result["rollback"]), ("HELD", "ROLLED_BACK"), result)
+        self.assertEqual(self.rt.events.count("create"), 1)
+        self.assert_restored()
+
+    def restore_start_gap(self, started):
+        self.install_delta()
+        stamp = self.planned()["planSha256"]
+        self.assertEqual(operation.apply(self.p, stamp, self.rt)["status"], "READY")
+        self.rt.docs[fixture.OLD]["State"]["FinishedAt"] = "2026-01-01T00:00:00.123456789Z"
+        start = self.rt.start
+
+        def interrupted(cid):
+            self.assertEqual(cid, fixture.OLD)
+            if started:
+                start(cid)
+            raise KeyboardInterrupt
+
+        with patch.object(self.rt, "start", interrupted), self.assertRaises(KeyboardInterrupt):
+            return_operation.run(self.p, stamp, self.rt)
+        self.assertTrue((self.root / stamp / "restore-start.json").is_file())
+        self.assertFalse((self.root / stamp / "restore-generation.json").exists())
+        return stamp
+
+    def resumed_restore(self, stamp):
+        result = return_operation.run(self.p, stamp, self.rt, recover=True)
+        self.assertEqual(result["status"], "ROLLED_BACK", result)
+        self.assertEqual(self.rt.events.count("gate:1"), 1)
+        self.assertEqual(self.rt.events.count("signal:1"), 1)
+        self.assert_restored()
+
+    def test_DEP_58LD_03_before_restore_start(self):
+        self.resumed_restore(self.restore_start_gap(False))
+
+    def test_DEP_58LD_03_after_restore_start(self):
+        self.resumed_restore(self.restore_start_gap(True))
+
+    def test_DEP_58LD_03_foreign_restore_generation(self):
+        stamp = self.restore_start_gap(True)
+        self.rt.docs[fixture.OLD]["RestartCount"] += 1
+        result = return_operation.run(self.p, stamp, self.rt, recover=True)
+        self.assertEqual(result.get("reason"), "RESTORE_GENERATION_UNCONFIRMED")
+        self.assertNotIn("signal:1", self.rt.events)
+
+    def test_DEP_58LD_04_ingestion_same_image_probes_original_and_reduced_argv(self):
+        from test_module_release_java import fixture as java_fixture
+
+        with java_fixture("ingestion") as (p, engine, _, _):
+            p.update(configDelta={"env": [self.change]}, envAllowlist=["FEATURE"])
+            engine.docs[fixture.OLD]["Image"] = p["oldImage"] = p["ci"]["imageId"]
+            rt = operation.Docker(p)
+            # Use the real procfs probe with argv from the simulated running process.
+            rt.inspect, rt.probe = engine.inspect, engine.probe
+            cmd = p["gate"]["command"]
+            reduced = [arg for arg in cmd if arg not in p["candidate"]["removeArgs"]]
+            self.assertNotEqual(cmd, reduced)
+            read_bytes = Path.read_bytes
+            argv = cmd
+
+            def read(path):
+                if path.name == "cmdline":
+                    return b"\0".join(arg.encode() for arg in argv) + b"\0"
+                return read_bytes(path)
+
+            with patch.object(Path, "read_bytes", read), patch.object(fixture.os, "readlink", return_value="/bin/java"):
+                plan = operation.plan(p, rt)
+                self.assertEqual(plan["status"], "PLANNED", plan)
+                stage = operation.apply(p, plan["planSha256"], engine)
+                self.assertEqual(stage["status"], "GATED", stage)
+                doc = rt.inspect(fixture.NEW)
+                self.assertIsNone(operation.ready_status(rt, doc, p["readiness"]))
+                argv = reduced
+                self.assertEqual(operation.ready_status(rt, doc, p["readiness"]), 200)
+
+    def test_DEP_58LD_05_dedicated_return_before_migration_checks_baseline(self):
+        from test_module_release_mcp import Release
+
+        mcp = Release()
+        self.addCleanup(mcp.doCleanups)
+        mcp.setUp()
+        mcp.dedicated()
+        p, rt = mcp.p, mcp.rt
+        p.update(configDelta={"env": [self.change]}, envAllowlist=["FEATURE"])
+        stamp = operation.plan(p, rt)["planSha256"]
+        with patch.object(operation, "start_candidate", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            operation.apply(p, stamp, rt)
+        root = Path(p["journal"]) / stamp
+        self.assertEqual(operation.read(root, "created.json"), {"cid": fixture.NEW})
+        mcp.db["schema"].append("drift")
+        self.assertEqual(return_operation.run(p, stamp, rt, recover=True).get("reason"), "DATABASE_CHANGED")
+        self.assertEqual(rt.inspect(p["container"])["Id"], fixture.NEW)
+        mcp.db["schema"].pop()
+        operation.record(root, "migration-intent.json", {"cid": fixture.NEW})
+        self.assertEqual(return_operation.run(p, stamp, rt, recover=True)["status"], "HELD")
+        (root / "migration-intent.json").unlink()
+        result = return_operation.run(p, stamp, rt, recover=True)
+        self.assertEqual((result["status"], result.get("restoredCid")), ("ROLLED_BACK", fixture.OLD), result)
+        self.assertNotIn("migrate", rt.events)
+        self.assertNotIn("signal:2", rt.events)

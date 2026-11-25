@@ -6,17 +6,19 @@ from .contract import SHA, digest, matches, require
 from .frame import snapshot
 from .recovery import verify_stop_claim
 from .operation import (Docker, checked_generation, load_predecessor, read as journal_read, reason,
-                        record, restore, retained, unlock_module, verify_flyway_return, verify_never_started, waiting_gate)
+                        reconcile_create, record, restore, retained, unlock_module, verify_database,
+                        verify_flyway_return, verify_never_started, waiting_gate)
 
 
 def interrupted_successor(profile, rt, old, plan, root):
     """Identify the owned candidate before starting a reviewed return from an open release."""
     if not (root / "created.json").exists():
-        require(not (root / "create-intent.json").exists(), "CREATE_OWNERSHIP_UNCONFIRMED")
-        return {"cid": None}
+        cid = reconcile_create(profile, rt, old, plan, root) if (root / "create-intent.json").exists() else None
+        return {"cid": cid}
     cid = journal_read(root, "created.json")["cid"]
     require(matches(SHA, cid) and cid != old["Id"] and journal_read(root, "create-intent.json") ==
-            {"requestSha256": plan["requestSha256"]}, "RECOVERY_CREATE_CHANGED")
+            {"requestSha256": plan["requestSha256"]},
+            "RECOVERY_CREATE_CHANGED")
     retained(profile, rt, old)
     new = rt.inspect(profile["container"])
     require(new["Id"] == cid, "IMMEDIATE_SUCCESSOR_CHANGED")
@@ -59,7 +61,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
         lock.mkdir(mode=0o700)
     except FileExistsError:
         resuming = (root / "return-intent.json").is_file()
-        interrupted = ("flyway" in migration or migration["mode"] == "none") and not (root / "receipt.json").exists()
+        interrupted = not (root / "receipt.json").exists()
         if not (recover and (lock / "owner.json").is_file() and json.loads((lock / "owner.json").read_bytes())
                 == {"planSha256": stamp} and (resuming or interrupted) and not (root / "return-receipt.json").exists()):
             return dict(result, reason="OPERATION_IN_PROGRESS_OR_INTERRUPTED")
@@ -75,9 +77,12 @@ def run(profile, stamp, runtime=None, *, recover=False):
         claim = {"planSha256": stamp}
         if interrupted:
             verify_stop_claim(rt, old, plan, root)
+            if migration["mode"] == "dedicated":
+                require("database" in migration and not any((root / name).exists() for name in
+                        ("migration-intent.json", "migration-complete.json", "release-signal.json")),
+                        "MIGRATION_OUTCOME_UNCONFIRMED")
+                verify_database(profile, rt, old, root)
             if resuming:
-                require(not (root / "create-intent.json").exists() or (root / "created.json").is_file(),
-                        "CREATE_OWNERSHIP_UNCONFIRMED")
                 cid = read("created.json")["cid"] if (root / "created.json").exists() else None
                 saved = read("return-intent.json")
                 if "generation" in saved:

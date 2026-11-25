@@ -31,7 +31,7 @@ def inspect_binds(mounts):
 def validate_value(name, value, allowlist=None):
     if value is not None:
         validate_env([{"name": name, "value": value}], allowlist)
-        check(not re.search(r"\b(?:password|sslpassword|passwd|pwd|(?:access[_-]?)?token)\s*=|"
+        check(not re.search(r"(?:password|passwd|pwd|token|secret)\s*=|"
                             r"\boracle:thin:[^@\s]+/[^@\s]+@",
                             unquote(value), re.IGNORECASE), "SECRET_ENV_DENIED")
 
