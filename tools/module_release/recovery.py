@@ -26,9 +26,13 @@ def proposal(p, rt):
     stamp = op.read(lock, "owner.json")["planSha256"]
     require(matches(SHA, stamp), "LOCK_OWNER_UNPROVEN")
     root = parent / stamp
+    require((root / "plan.json").is_file(), "RECOVERY_PLAN_UNPUBLISHED")
     body = op.read(root, "plan.json")
     require(digest(body) == stamp and body["profileSha256"] == digest(p), "RECOVERY_PROFILE_CHANGED")
     require(not (root / "return-intent.json").exists(), "REVIEWED_RETURN_REQUIRED")
+    require((root / "baseline.private.json").is_file(), "RECOVERY_BASELINE_UNPUBLISHED")
+    if "database" in p["migration"]:
+        require((root / "database.private.json").is_file(), "DATABASE_BASELINE_UNPUBLISHED")
     old = op.load_predecessor(p, rt, root)
     require(old["Id"] == body["oldCid"] and snapshot(old) == body["oldFrameSha256"], "RECOVERY_BASELINE_CHANGED")
     frames = {}

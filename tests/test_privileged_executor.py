@@ -639,7 +639,7 @@ class RoundTrip(unittest.TestCase):
             with self.subTest(mode=mode):
                 self.round_trip(signed=True, migrations=["V13.sql"], next_mode=mode)
 
-    def round_trip(self, signed, prove=False, migrations=None, interrupted=False, restart=False, next_mode=None):
+    def round_trip(self, signed, prove=False, migrations=None, interrupted=False, restart=False, next_mode=None, exercise=None):
         from contextlib import ExitStack
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as d, ExitStack() as patches:
@@ -755,7 +755,7 @@ class RoundTrip(unittest.TestCase):
             engine.process.side_effect = process
             import hashlib
             payload_hash = hashlib.sha256(b"payload").hexdigest()
-            def scenario(run, direction, seq, cid, stop_at_gate=False, *, release_next=False, confirm=None):
+            def make_cutover(run, direction, cid, release_next, confirm=None):
                 req = dict(run=run,attempt="1",commit=cfg["commit"],phase="plan",queue="empty",direction=direction)
                 if release_next:
                     req["release"] = "next"
@@ -815,6 +815,11 @@ class RoundTrip(unittest.TestCase):
                     stored[op] = {**value,"planSha256":mandate.digest(value)}
                     return stored[op]
                 c.books.call.side_effect = call
+                return c, stored, call
+
+            def scenario(run, direction, seq, cid, stop_at_gate=False, *, release_next=False, confirm=None):
+                c, stored, call = make_cutover(run, direction, cid, release_next, confirm)
+                req = c.req
                 if interrupted and run == "101":
                     # Capture the old run exactly: no image defaults in its plan or create claim.
                     def legacy_prepare(row, profile, image):
@@ -989,20 +994,30 @@ class RoundTrip(unittest.TestCase):
                             c.execute("review-proof")
                         c.queue.worker.assert_not_called()
                 self.assertEqual(head.version, seq)
+            def configure_next():
+                nonlocal new_id, migrations, new_image
+                line_c = new_id
+                new_id = "e"*64
+                previous = admission.return_value["migrations"]
+                migrations = ["V14__discovery.sql"]
+                new_image = "sha256:" + "9"*64
+                cfg["nextSuccessorImage"] = {"ci": {"imageId": new_image, "zipSha256": "9"*64},
+                                             "predecessorMigrations": previous}
+                admission.return_value = {"ci": cfg["nextSuccessorImage"]["ci"],
+                                          "migrations": previous + migrations, "newMigrations": migrations}
+                engine.call.return_value["Id"] = new_image
+                return line_c, new_id
+
+            if exercise is not None:
+                return exercise(SimpleNamespace(root=root, cfg=cfg, head=head, engine=engine, counts=counts,
+                    containers=containers, process_kinds=process_kinds, old=old_id, new=new_id,
+                    make_cutover=make_cutover, configure_next=configure_next, stop=stop_book))
+
             scenario("101","forward",28,new_id,stop_at_gate=True)
             if signed:
                 scenario("103","forward",28,new_id)
                 if next_mode:
-                    line_c = new_id
-                    new_id = "e"*64
-                    previous = admission.return_value["migrations"]
-                    migrations = ["V14__discovery.sql"]
-                    new_image = "sha256:" + "9"*64
-                    cfg["nextSuccessorImage"] = {"ci": {"imageId": new_image, "zipSha256": "9"*64},
-                                                 "predecessorMigrations": previous}
-                    admission.return_value = {"ci": cfg["nextSuccessorImage"]["ci"],
-                                              "migrations": previous + migrations, "newMigrations": migrations}
-                    engine.call.return_value["Id"] = new_image
+                    line_c, new_id = configure_next()
                     scenario("200", "forward", 29, new_id, release_next=True, confirm=True)
                     self.assertEqual(store.read(root / "completed-forward")["run"], "103")
                     scenario("201", "forward", 29, new_id, stop_at_gate=True, release_next=True)
