@@ -184,7 +184,7 @@ def module_scenario(trace, mode):
             req = f.req
             def call(phase, stamp, run, count):
                 return f.call(phase, stamp, run=run, approved=count > 0)
-        if mode == "none":
+        if mode in ("none", "error", "return"):
             # Exercise the detached receipt publication with a deterministic signing boundary.
             import module_receipt
             f.enterContext(patch.object(store, "trusted", side_effect=lambda path, **kw: Path(path)))
@@ -193,15 +193,18 @@ def module_scenario(trace, mode):
             f.p["receiptSigning"] = dict(publicKey=dict(path=str(public), sha256=hashlib.sha256(public.read_bytes()).hexdigest()),
                                          privateKey=str(f.root / "fixture.key"))
             f.enterContext(patch.object(module_receipt, "trusted", side_effect=lambda path, **kw: Path(path)))
-            signatures = []
             def openssl(argv, **kwargs):
                 if "pkey" in argv:
                     return Mock(returncode=0, stdout=public.read_bytes())
                 body = Path(argv[argv.index("-in") + 1]).read_bytes()
                 signature = hashlib.sha512(body).digest()
                 if "-sign" in argv:
-                    signatures.append(signature)
-                    f.assertEqual(signatures.count(signature), 1)
+                    # Ed25519 is deterministic: re-signing the same bytes after a lost process is not
+                    # a second effect. Overwriting an existing signature would be (task-63i).
+                    received = Path(argv[argv.index("-in") + 1])
+                    f.assertFalse(received.with_name(received.stem + ".ed25519").exists())
+                    f.assertEqual(store.read(f.root / (f.p["module"] + ".lock") / "owner.json"),
+                                  {"planSha256": received.parent.name})
                     return Mock(returncode=0, stdout=signature)
                 verified = Path(argv[argv.index("-sigfile") + 1]).read_bytes() == signature
                 return Mock(returncode=int(not verified))
@@ -242,9 +245,12 @@ def module_scenario(trace, mode):
                     doc = f.rt.inspect(f.p[role], missing=True)
                     value = doc["State"]["Status"] + "(" + doc["Id"] if doc else "absent"
                     f.assertIn(role + "=" + value, str(exc))
-                receipts = [store.read(path) for path in f.root.glob("*/receipt.json")]
-                if any(r.get("rollback") == "ROLLED_BACK" for r in receipts):
-                    return ready(modules.OLD)
+                for path in f.root.glob("*/receipt.json"):
+                    if store.read(path).get("rollback") == "ROLLED_BACK":
+                        f.assertFalse((f.root / (f.p["module"] + ".lock")).exists())
+                        if "receiptSigning" in f.p:
+                            module_receipt.attest(f.p["receiptSigning"], path.parent)
+                        return ready(modules.OLD)
                 return "HELD " + str(exc).split()[0]
 
         if mode == "return":
@@ -253,6 +259,9 @@ def module_scenario(trace, mode):
             def rollback(run):
                 result = f.call("rollback", stamp, run=run)
                 f.assertEqual(result["status"], "ROLLED_BACK")
+                receipt = store.read(f.root / stamp / "return-receipt.json")
+                for review in f.root.glob("*/rollback.review"):
+                    f.assertEqual(store.read(review.with_name("rollback.result")), receipt)
                 return ready(modules.OLD)
             trace.transaction(f.root, lambda: rollback("2"), lambda: classify(lambda: rollback("3")))
         else:

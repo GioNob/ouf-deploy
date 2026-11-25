@@ -56,7 +56,7 @@ def verify_stop_claim(rt, old, body, root):
                 not (root / "create-intent.json").exists(), "PRE_STOP_DRIFT")
 
 
-def resume(p, rt, approved):
+def resume(p, rt, approved, *, seal=None):
     """The executor has compared the approved recovery plan under its exclusive lock."""
     require(proposal(p, rt) == approved, "RECOVERY_PLAN_CHANGED")
     parent = Path(p["journal"])
@@ -69,9 +69,21 @@ def resume(p, rt, approved):
     # A completed receipt is immutable. Re-attest before releasing a leftover lock.
     if (root / "receipt.json").exists():
         receipt = op.read(root, "receipt.json")
-        require(receipt.get("status") == "READY" or receipt.get("rollback") == "ROLLED_BACK",
+        require(op.terminal_receipt(receipt),
                 "TERMINAL_HELD_REQUIRES_OWNER")
         forward = receipt["status"] == "READY"
+        if seal:
+            successor = op.read(root, "created.json")["cid"] if (root / "created.json").is_file() else None
+            require(receipt.get("operation") == "module-release" and receipt.get("planSha256") == root.name
+                    and receipt.get("predecessorCid") == old["Id"] and receipt.get("successorCid") == successor,
+                    "MODULE_RECEIPT_DRIFT")
+            if forward:
+                require(successor and receipt.get("readiness") == "UP" and
+                        receipt.get("readyHttp") in p["readiness"]["acceptStatus"], "MODULE_RECEIPT_DRIFT")
+            else:
+                require(receipt.get("restoredCid") == old["Id"] and receipt.get("predecessorReadiness") == "UP"
+                        and receipt.get("predecessorReadyHttp") in p["readiness"]["acceptStatus"],
+                        "MODULE_RECEIPT_DRIFT")
         doc = rt.inspect(p["container"])
         cid = receipt["successorCid"] if forward else old["Id"]
         require(doc["Id"] == cid and op.ready(rt, doc, p["readiness"]), "TERMINAL_READINESS_CHANGED")
@@ -92,6 +104,9 @@ def resume(p, rt, approved):
                         not failed["NetworkSettings"]["Networks"], "PARK_UNCONFIRMED")
         op.verify_database(p, rt, old, root, migrated=forward)
         op.verify_flyway_return(p, rt, old, root)
+        if seal:
+            # Completes a signature lost between the receipt and the lock release; never re-signs.
+            seal(root, "receipt")
         op.unlock_module(lock)
         return receipt
     verify_stop_claim(rt, old, body, root)
@@ -149,5 +164,7 @@ def resume(p, rt, approved):
             op.confirm(root, "stage.json", result)
             return result
     op.record(root, "receipt.json", result)
+    if seal and op.terminal_receipt(result):
+        seal(root, "receipt")
     op.unlock_module(lock)
     return result

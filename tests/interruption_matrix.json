@@ -614,12 +614,12 @@
     ["<plan>/release-signal.json", "module_release.operation.release", "dopo", "HELD", "READINESS_NOT_UP"],
     ["<plan>/receipt.json", "module_release.operation.apply", "prima", "RESUMED"],
     ["<plan>/receipt.json", "module_release.operation.apply", "dopo", "RESUMED"],
+    ["<plan>/receipt.ed25519", "module_receipt.attest", "prima", "RESUMED"],
+    ["<plan>/receipt.ed25519", "module_receipt.attest", "dopo", "RESUMED"],
     ["1/apply.result", "module_operation.ModuleRelease.execute_phase", "prima", "HELD", "MODULE_PREDECESSOR_RECEIPT_REQUIRED"],
     ["1/apply.result", "module_operation.ModuleRelease.execute_phase", "dopo", "HELD", "MODULE_PREDECESSOR_RECEIPT_REQUIRED"],
     ["module-mcp.ready", "module_operation.ModuleRelease.execute_phase", "prima", "HELD", "MODULE_PREDECESSOR_RECEIPT_REQUIRED"],
-    ["module-mcp.ready", "module_operation.ModuleRelease.execute_phase", "dopo", "HELD", "MODULE_RECEIPT_SIGNATURE_REQUIRED"],
-    ["<plan>/receipt.ed25519", "module_receipt.attest", "prima", "HELD", "MODULE_RECEIPT_SIGNATURE_REQUIRED"],
-    ["<plan>/receipt.ed25519", "module_receipt.attest", "dopo", "RESUMED"]
+    ["module-mcp.ready", "module_operation.ModuleRelease.execute_phase", "dopo", "RESUMED"]
   ],
   "module_dedicated": [
     ["1/approvals", "store.begin_plan", "prima", "RESUMED"],
@@ -764,6 +764,8 @@
     ["<plan>/restore-signal.json", "module_release.operation.release", "dopo", "HELD", "PREDECESSOR_READINESS_NOT_UP"],
     ["<plan>/receipt.json", "module_release.operation.apply", "prima", "RETURNED"],
     ["<plan>/receipt.json", "module_release.operation.apply", "dopo", "RETURNED"],
+    ["<plan>/receipt.ed25519", "module_receipt.attest", "prima", "RETURNED"],
+    ["<plan>/receipt.ed25519", "module_receipt.attest", "dopo", "RETURNED"],
     ["1/apply.result", "module_operation.ModuleRelease.execute_phase", "prima", "RETURNED"],
     ["1/apply.result", "module_operation.ModuleRelease.execute_phase", "dopo", "RETURNED"],
     ["1/apply.held", "module_operation.ModuleRelease.execute", "prima", "RETURNED"],
@@ -785,8 +787,10 @@
     ["<plan>/restore-signal.json", "module_release.operation.release", "prima", "RETURNED"],
     ["<plan>/restore-signal.json", "module_release.operation.release", "dopo", "HELD", "PREDECESSOR_READINESS_NOT_UP"],
     ["<plan>/return-receipt.json", "module_release.return_operation.run", "prima", "RETURNED"],
-    ["<plan>/return-receipt.json", "module_release.return_operation.run", "dopo", "HELD", "OPERATION_IN_PROGRESS_OR_INTERRUPTED"],
-    ["2/rollback.result", "module_operation.ModuleRelease.execute_phase", "prima", "HELD", "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE"],
+    ["<plan>/return-receipt.json", "module_release.return_operation.run", "dopo", "RETURNED"],
+    ["<plan>/return-receipt.ed25519", "module_receipt.attest", "prima", "RETURNED"],
+    ["<plan>/return-receipt.ed25519", "module_receipt.attest", "dopo", "RETURNED"],
+    ["2/rollback.result", "module_operation.ModuleRelease.execute_phase", "prima", "RETURNED"],
     ["2/rollback.result", "module_operation.ModuleRelease.execute_phase", "dopo", "HELD", "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE"]
   ],
   "gateway_v1": [

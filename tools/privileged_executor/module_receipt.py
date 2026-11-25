@@ -1,4 +1,4 @@
-"""Detached Ed25519 signature over the owner's immutable READY receipt."""
+"""Detached Ed25519 signatures over immutable terminal module receipts."""
 from pathlib import Path
 import subprocess
 
@@ -27,10 +27,22 @@ def signing_key(binding):
     return private
 
 
-def attest(binding, directory, *, issue=False):
+TERMINAL = ("receipt", "return-receipt")
+
+
+def sealer(binding):
+    """Callback for the module owner: sign a terminal receipt before it releases the module lock."""
+    if not binding:
+        return None
+    return lambda directory, name: attest(binding, directory, issue=True, name=name)
+
+
+def attest(binding, directory, *, issue=False, name="receipt"):
+    # READY and automatic compensation sign receipt.json; a reviewed return signs return-receipt.json.
+    require(name in TERMINAL, "MODULE_RECEIPT_NAME")
     public = public_key(binding)
-    receipt = trusted(directory / "receipt.json", private=True)
-    sigfile = directory / "receipt.ed25519"
+    receipt = trusted(directory / (name + ".json"), private=True)
+    sigfile = directory / (name + ".ed25519")
     command = [str(trusted(Path(OPENSSL))), "pkeyutl", "-rawin", "-in", str(receipt)]
     options = dict(stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
     if issue and not sigfile.exists():
@@ -38,7 +50,8 @@ def attest(binding, directory, *, issue=False):
         res = subprocess.run([*command, "-sign", "-inkey", str(private)], stdout=subprocess.PIPE, **options)
         require(res.returncode == 0 and len(res.stdout) == 64, "MODULE_RECEIPT_SIGN_FAILED")
         save_bytes(sigfile, res.stdout)
-    require(sigfile.is_file() and trusted(sigfile, private=True).stat().st_size == 64, "MODULE_RECEIPT_SIGNATURE_REQUIRED")
+    require(sigfile.is_file(), "MODULE_RECEIPT_SIGNATURE_REQUIRED")
+    require(trusted(sigfile, private=True).stat().st_size == 64, "MODULE_RECEIPT_SIGNATURE_INVALID")
     res = subprocess.run([*command, "-verify", "-pubin", "-keyform", "DER", "-inkey", str(public),
                           "-sigfile", str(sigfile)], stdout=subprocess.DEVNULL, **options)
     require(res.returncode == 0, "MODULE_RECEIPT_SIGNATURE_INVALID")

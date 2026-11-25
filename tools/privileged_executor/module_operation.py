@@ -1,4 +1,5 @@
 """Installed module release phases, serialized by the common root entrypoint."""
+import os
 from pathlib import Path
 
 from module_release import operation, recovery, return_operation
@@ -113,12 +114,51 @@ class ModuleRelease:
                                 if isinstance(row, dict) else f"{role}={row}" for role, row in live.items())
             raise Held(f"{code} owner={self.req['module']} residual={residual} claim={claim}") from None
 
+    def pending_return_runs(self):
+        """Find interrupted approvals for this exact rollback under the dispatch lock."""
+        pending = []
+        for review in self.path.parent.glob("*/rollback.review"):
+            run = review.parent
+            if (run / "rollback.result").exists():
+                continue
+            entry = read(review)
+            if entry.get("returnAlreadyConsumed") or entry["request"] != {**self.req, "run": run.name}:
+                continue
+            need(run.name.isascii() and run.name.isdigit() and hex64(entry["review"])
+                 and "rollback" in read(run / "approvals"), "MODULE_APPROVAL_DRIFT")
+            pending.append(run)
+        return pending
+
     def execute_phase(self, review):
         req, path = self.req, self.path
         phase = req["phase"]
+        binding = self.profile.get("receiptSigning")
+        seal = module_receipt.sealer(binding)
         if phase == "rollback":
-            save(path / "rollback.review", {"request": req, "review": review})
-            result = return_operation.run(self.profile, req["digest"], self.runtime, recover=True)
+            directory = Path(self.profile["journal"]) / req["digest"]
+            pending = self.pending_return_runs()
+            entry = {"request": req, "review": review}
+            lock = directory.parent / (req["module"] + ".lock")
+            published = (directory / "return-receipt.json").is_file()
+            if published and not pending:
+                owner = lock / "owner.json"
+                if not owner.is_file() or read(owner) != {"planSha256": req["digest"]}:
+                    # A crash during a replay must not turn it into an open return.
+                    entry["returnAlreadyConsumed"] = True
+            save(path / "rollback.review", entry)
+            if published and pending and not os.path.lexists(lock):
+                # The prior dispatch already released the module. Only reconcile its journal.
+                result = return_operation.completed_return(self.profile, self.runtime, directory, req["digest"])
+            else:
+                if binding:
+                    module_receipt.signing_key(binding)
+                result = return_operation.run(self.profile, req["digest"], self.runtime, recover=True, seal=seal)
+            if result["status"] == "ROLLED_BACK" and (binding or pending):
+                if binding:
+                    module_receipt.attest(binding, directory, name="return-receipt")
+                need(read(directory / "return-receipt.json") == result, "RETURN_RECEIPT_DRIFT")
+                for run in pending:
+                    save(run / "rollback.result", result)
             save(path / "rollback.result", result)
             need(result["status"] == "ROLLED_BACK", result.get("reason", "MODULE_RETURN_HELD"))
             return {"digest": req["digest"], "status": result["status"]}
@@ -156,10 +196,10 @@ class ModuleRelease:
             if "receiptSigning" in self.profile:
                 module_receipt.signing_key(self.profile["receiptSigning"])
             if "sourcePlan" in proposal["plan"]:
-                result = recovery.resume(self.profile, self.runtime, proposal["plan"])
+                result = recovery.resume(self.profile, self.runtime, proposal["plan"], seal=seal)
             else:
                 result = operation.apply(self.profile, stamp, self.runtime, defer_migration=True,
-                                         previous_release=self.previous_release)
+                                         previous_release=self.previous_release, seal=seal)
         else:
             stage = read(path / "apply.result")
             source = proposal["plan"].get("sourcePlan", stamp)
@@ -171,9 +211,19 @@ class ModuleRelease:
                 module_receipt.signing_key(self.profile["receiptSigning"])
             try:
                 result = operation.migrate(self.profile, source, req["digest"], self.runtime,
-                                           recover="sourcePlan" in proposal["plan"])
+                                           recover="sourcePlan" in proposal["plan"], seal=seal)
             except ReleaseHeld as error:
+                # A journalled terminal receipt still requires its attestation.
+                # Leave the review open for recovery if its sealer raised.
+                if binding and (Path(self.profile["journal"]) / source / "receipt.json").is_file():
+                    raise
                 result = {"status": "HELD", "reason": str(error)}
+        if binding and operation.terminal_receipt(result):
+            source = proposal["plan"].get("sourcePlan", stamp)
+            need(hex64(source) and result.get("planSha256") == source, "MODULE_RECEIPT_DRIFT")
+            directory = Path(self.profile["journal"]) / source
+            module_receipt.attest(binding, directory)
+            need(read(directory / "receipt.json") == result, "MODULE_RECEIPT_DRIFT")
         save(path / (phase + ".result"), result)
         if result["status"] not in ("READY", "GATED"):
             cause = result.get("reason", "MODULE_RELEASE_HELD")
@@ -194,6 +244,4 @@ class ModuleRelease:
         need(read(directory / "receipt.json") == result, "MODULE_RECEIPT_DRIFT")
         save(path.parent / ("module-" + req["module"] + ".ready"),
              {"run": req["run"], "phase": phase, "planSha256": source}, replace=True)
-        if "receiptSigning" in self.profile:
-            module_receipt.attest(self.profile["receiptSigning"], directory, issue=True)
         return {"status": result["status"], "digest": source, **image_ids}

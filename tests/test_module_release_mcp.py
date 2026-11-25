@@ -313,6 +313,23 @@ class Release(unittest.TestCase):
         self.assertNotIn("signal:2", self.rt.events)
         self.assertEqual(self.rt.events[self.rt.events.index("gate:1"):], ["gate:1", "signal:1", "probe:1"])
 
+    def test_unsigned_return_receipt_with_owned_lock_completes_once(self):
+        stamp = self.planned()["digest"]
+        self.call("apply", stamp)
+        with patch.object(return_operation, "unlock_module", side_effect=KeyboardInterrupt), \
+                self.assertRaises(KeyboardInterrupt):
+            self.call("rollback", stamp, run="2")
+        root = self.root / stamp
+        published = (root / "return-receipt.json").read_bytes()
+        before = len(self.rt.events)
+        self.assertEqual(self.call("rollback", stamp, run="3")["status"], "ROLLED_BACK")
+        self.assertEqual((root / "return-receipt.json").read_bytes(), published)
+        for run in ("2", "3"):
+            self.assertEqual(store.read(self.root / run / "rollback.result"), json.loads(published))
+        self.assertFalse(list(root.glob("*.ed25519")))
+        self.assertFalse((self.root / "mcp.lock").exists())
+        self.assertEqual(self.rt.events[before:], ["probe:1"])
+
     def test_rollback_refuses_restarted_successor_before_stop(self):
         stamp = self.planned()["digest"]
         self.call("apply", stamp)
