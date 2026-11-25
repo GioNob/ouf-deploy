@@ -713,3 +713,7 @@ Le fixture offline dei sette workflow verificano titolo, fase, fatti pubblici, e
 ## 22 novembre 2026 · sprint-03/38b · immagini nelle approvazioni dei moduli
 
 Il task 38b completa il checkpoint 38 per i quattro moduli. Le prove offline confrontano gli ID pubblicati da `plan` e `apply` con il piano di rilascio, anche dopo un’interruzione e con il predecessore scelto dalla ricevuta firmata. Per ogni modulo il client mostra entrambi gli ID prima delle review di `apply` e `migrate`, rifiuta una coppia incompleta o malformata e segnala l’assenza dei campi negli esecutori precedenti. [Test dell’esecutore](../tests/test_module_release.py) · [Test del client](../tests/test_release_approval.py)
+
+## 24 novembre 2026 · sprint-03/55j · secondo passaggio
+
+Le fixture provano il DSN con spazio codificato `%20`, il blocco di un catalogo con overload inatteso prima del worker amministrativo e il rifiuto del batch con TTL incompleto. Un’interruzione tra registrazione e avvio riprende lo stesso CID. Entrambi i comandi richiedono una riga JSON con `status=VERIFIED`. Il client è verificato sui percorsi di rilascio e ripresa manuale. [PET](../tests/test_module_release_retention_019.py) · [Prove del workflow](../tests/test_release_approval.py)

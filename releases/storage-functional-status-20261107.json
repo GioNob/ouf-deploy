@@ -5,6 +5,11 @@
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
   "status": "F1_PASS_WIDE_COMPONENTS_READY_DISCOVERY_ACTIVATION_PENDING",
+  "retentionAdminTask55j": {
+    "qualification": "Offline release and approval tests cover both overloads, worker configuration, restart and verified command output.",
+    "test": "tests/test_module_release_retention_019.py",
+    "runtimeApply": false
+  },
   "releaseApprovalTask38": {
     "qualification": "Offline workflow clients for all seven release workflows and their conditional approval gates. Module plan and apply responses expose both image IDs from the approved release plan, including recovery and receipt-selected predecessors.",
     "test": "tests/test_release_approval.py",

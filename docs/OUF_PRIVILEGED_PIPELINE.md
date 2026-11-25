@@ -306,3 +306,9 @@ Per abilitare il predecessore da ricevuta, il profilo privato del modulo accetta
 ```
 
 A completamento `READY`, l’esecutore conserva run, fase e digest in `module-<modulo>.ready`. Con il binding configurato, firma i byte di `receipt.json` in `receipt.ed25519`. Il plan successivo risale dalla ricevuta al piano approvato e al suo `ci.imageId`. Verifica firma, review consumata, completamento della fase, CID e frame vivo. L’apply ripete il controllo sotto lock. Un ritorno avviato, una firma assente o una ricevuta diversa fermano questo percorso. Il percorso da `oldImage` resta disponibile anche per le installazioni con ricevute storiche prive di firma. Ogni candidato richiede i propri pin CI e nomi di custodia disponibili.
+
+## Mandato di prima installazione
+
+Il bootstrap A2 installa anche `module_release/frame_spec.py`, `install_contract.py` e `install_operation.py`. La validazione usa i blob del commit approvato. L’entrypoint `ouf-a2` riceve su stdin la richiesta `ouf.module-install.v1` e verifica modulo abilitato, workflow `module-install.yml`, run e digest. Il plan è automatico. Apply e rollback consumano la review dell’environment protetto sotto il lock comune. Il replay verifica la stessa richiesta e la stessa review.
+
+Aggiornare clone root e profilo alla revisione integrata, esaminare il plan del bootstrap e applicare il digest approvato come descritto in «Installazione e aggiornamento in sito». Il trasporto dello ZIP precede il dispatch. [Prima installazione](OUF_MODULE_RELEASE.md#prima-installazione-module-install)

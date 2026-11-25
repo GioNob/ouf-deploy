@@ -11,6 +11,18 @@ from release_review import approval
 
 
 MIGRATION_FIELDS = ("version", "script", "type", "checksum", "success")
+RETENTION_ADMIN = "mcp-retention-admin-019"
+
+
+def retention_facts(review):
+    lines = []
+    for key in ("imageDigest", "databaseRef", "sqlSha256", "ownerAclSha256"):
+        pattern = r"sha256:[0-9a-f]{64}" if key == "imageDigest" else r"[0-9a-f]{64}"
+        value = review.get(key) if isinstance(review, dict) else None
+        if not isinstance(value, str) or not re.fullmatch(pattern, value):
+            raise SystemExit("Revisione retention 019 mancante o non valida")
+        lines.append(f"{key} = {value}")
+    return lines
 
 
 def public_fields(source, fields):
@@ -45,6 +57,9 @@ def module_review(summary, module, phase, result, next_phase, plan_migrations):
             database[key] = [public_fields(row, MIGRATION_FIELDS) for row in database[key]]
     images = image_facts(result) if phase in ("plan", "apply") else []
     facts = [f"Modulo {module} · stato {status}", *images]
+    if next_phase == RETENTION_ADMIN:
+        facts.append("Installazione o verifica delle due funzioni di retention 019, del proprietario e dei permessi.")
+        facts.extend(retention_facts(result["retentionReview"]))
     for key, label in (("predecessorCmdSha256", "SHA-256 comando predecessore"),
                        ("candidateCmdSha256", "SHA-256 comando candidato")):
         if key in candidate:
@@ -98,6 +113,8 @@ def main():
     following = {"plan": {"PLANNED": "apply"}, "apply": {"GATED": "migrate", "READY": None},
                  "migrate": {"READY": None}, "rollback": {"ROLLED_BACK": None}}
     next_phase = following[req["phase"]][status]
+    if req["module"] == "mcp" and req["phase"] in ("apply", "migrate") and status == "READY" and "retentionReview" in result:
+        next_phase = RETENTION_ADMIN
     previous = json.loads(e.get("PLAN_MIGRATIONS") or "null")
     with open(e["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
         module_review(f, e["MODULE"], req["phase"], result, next_phase, previous)

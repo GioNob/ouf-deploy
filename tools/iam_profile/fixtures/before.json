@@ -1,0 +1,29 @@
+{
+  "contract": "ouf.iam-profile-observation.v1",
+  "installationId": "installation.invalid",
+  "kind": "keycloak-ouf",
+  "gatewayBindings": {
+    "gatewayAudience": "gateway.invalid",
+    "scopeByAction": {
+      "issue": "ouf.analysis.mandate.issue",
+      "dispatch": "ouf.analysis.mandate.dispatch",
+      "revoke": "ouf.analysis.mandate.revoke",
+      "status": "ouf.analysis.mandate.status"
+    }
+  },
+  "managed": {
+    "clients.mcp.clientId": "mcp.invalid",
+    "clients.mcp.scopes": [
+      "ouf.analysis.mandate.status"
+    ],
+    "pools.DB.controlReservedSlots": 1
+  },
+  "foreign": [
+    {
+      "idSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "stateSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+  ],
+  "controlProof": null,
+  "complete": true
+}

@@ -1,11 +1,53 @@
 """Installed module release phases, serialized by the common root entrypoint."""
 from pathlib import Path
 
-from module_release import operation, recovery, return_operation
+from module_release import operation, recovery, retention, return_operation
 from module_release.contract import Held as ReleaseHeld, require
 import module_receipt
 from mandate import Held, digest, hex64, intent, need
 from store import Journal, read, save
+
+
+class ModuleInstall:
+    def __init__(self, cfg, root, req):
+        self.profile = cfg["modules"][req["module"]]
+        self.path = root / req["run"]
+        self.req = req
+
+    def execute(self, review):
+        from module_release import install_operation as install
+        req, path, profile = self.req, self.path, self.profile
+        phase = req["phase"]
+        rt = install.engine(profile)
+        operation.confirm(path, phase + ".review", {"request": req, "review": review})
+        if phase == "plan":
+            result = install.plan(profile, rt, resume=req.get("resumePlan"))
+            save(path / "plan", result)
+            need(result["status"] == "PLANNED", result.get("reason", "MODULE_INSTALL_PLAN_HELD"))
+            return {"status": "PLANNED", "digest": result["planSha256"], "installReview": result["plan"]["review"]}
+        stamp = req["digest"]
+        if phase == "apply":
+            approved = read(path / "plan.review")["request"]
+            proposal = read(path / "plan")
+            need(intent(req) == approved["digest"] == intent(approved)
+                 and proposal["status"] == "PLANNED" and stamp == proposal["planSha256"] == digest(proposal["plan"]),
+                 "MODULE_PARENT_DRIFT")
+            result = install.apply(profile, stamp, rt)
+        else:
+            result = install.rollback(profile, stamp, rt)
+        if result["status"] == "HELD":
+            save(path / (phase + ".held"), result, replace=True)
+            raise Held(result["reason"])
+        operation.confirm(path, phase + ".result", result)
+        if phase == "apply":
+            tip = path.parent / ("module-" + req["module"] + ".installed")
+            pointer = {"run": req["run"], "phase": phase, "planSha256": stamp}
+            if not tip.exists() or read(tip) != pointer:
+                current = rt.inspect(profile["container"], missing=True)
+                need(current and current["Id"] == result["cid"] and install.snapshot(current) == result["frameSha256"],
+                     "INSTALL_POINTER_DRIFT")
+                save(tip, pointer, replace=True)
+        return {"status": result["status"], "digest": stamp, "receipt": result}
 
 
 class ModuleRelease:
@@ -28,6 +70,9 @@ class ModuleRelease:
 
     def previous_release(self):
         """Read the last completion published under the executor lock for this module."""
+        return self.completed_release(require_signature=True)
+
+    def completed_release(self, *, require_signature):
         module = self.req["module"]
         pointer = self.path.parent / ("module-" + module + ".ready")
         require(pointer.is_file(), "MODULE_PREDECESSOR_RECEIPT_REQUIRED")
@@ -38,7 +83,8 @@ class ModuleRelease:
         run = self.path.parent / run_id
         directory = Path(self.profile["journal"]) / source
         require(not (directory / "return-intent.json").exists(), "MODULE_RECEIPT_RETURNED")
-        module_receipt.attest(self.profile.get("receiptSigning"), directory)
+        if require_signature or "receiptSigning" in self.profile:
+            module_receipt.attest(self.profile.get("receiptSigning"), directory)
         receipt = read(directory / "receipt.json")
         plan = read(directory / "plan.json")
         require(plan["module"] == module and plan["operation"] == receipt["operation"] == "module-release"
@@ -116,6 +162,36 @@ class ModuleRelease:
     def execute_phase(self, review):
         req, path = self.req, self.path
         phase = req["phase"]
+        if req["module"] == "mcp" and phase in ("apply", "migrate", "rollback"):
+            # A workflow crash can release the executor lock while Docker is
+            # still committing on the current release's database.
+            tip = path.parent / "module-mcp.ready"
+            if tip.is_file():
+                source = read(tip)["planSha256"]
+                need(hex64(source), "MODULE_RECEIPT_DRIFT")
+                for worker_phase in retention.COMMAND:
+                    start = Path(self.profile["journal"]) / source / (worker_phase + ".start.json")
+                    if start.is_file():
+                        cid = read(start)["cid"]
+                        need(hex64(cid), "RETENTION_WORKER_DRIFT")
+                        worker = self.runtime.inspect(cid, missing=True)
+                        need(worker is None or worker["State"]["Status"] == "exited" or operation.never_started(worker),
+                             "RETENTION_WORKER_IN_FLIGHT")
+        if phase in (retention.ADMIN, retention.BATCH):
+            source = req["digest"]
+            ready = self.completed_release(require_signature=False)
+            need(source == ready["planSha256"], "RETENTION_PLAN_DRIFT")
+            if phase == retention.BATCH:
+                admin = read(path / (retention.ADMIN + ".result"))
+                receipt_path = Path(self.profile["journal"]) / source / retention.RECEIPT
+                need(admin["digest"] == source and admin["status"] == "VERIFIED" and receipt_path.is_file()
+                     and read(receipt_path) == admin["retentionReview"], "RETENTION_RECEIPT_DRIFT")
+            save(path / (phase + ".review"), {"request": req, "review": review})
+            receipt = retention.run(self.profile, self.runtime, source, phase, ready)
+            response = {"digest": source, "status": "VERIFIED" if phase == retention.ADMIN else "SUCCEEDED",
+                        "retentionReview": receipt}
+            save(path / (phase + ".result"), response)
+            return response
         if phase == "rollback":
             save(path / "rollback.review", {"request": req, "review": review})
             result = return_operation.run(self.profile, req["digest"], self.runtime, recover=True)
@@ -133,6 +209,8 @@ class ModuleRelease:
             save(path / "plan", proposal)
             need(proposal["status"] == "PLANNED", proposal.get("reason", "MODULE_PLAN_HELD"))
             response = {"digest": proposal["planSha256"], "status": "PLANNED", **self.image_ids(proposal["plan"])}
+            if retention.ADMIN in proposal["plan"]:
+                response["retentionReview"] = proposal["plan"][retention.ADMIN]
             if "candidateReview" in proposal["plan"]:
                 response["candidateReview"] = proposal["plan"]["candidateReview"]
             if "sourcePlan" in proposal["plan"]:
@@ -196,4 +274,7 @@ class ModuleRelease:
              {"run": req["run"], "phase": phase, "planSha256": source}, replace=True)
         if "receiptSigning" in self.profile:
             module_receipt.attest(self.profile["receiptSigning"], directory, issue=True)
-        return {"status": result["status"], "digest": source, **image_ids}
+        response = {"status": result["status"], "digest": source, **image_ids}
+        if retention.ADMIN in proposal["plan"]:
+            response["retentionReview"] = proposal["plan"][retention.ADMIN]
+        return response

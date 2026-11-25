@@ -2,6 +2,50 @@
   "schema": "ouf.configuration-register.entries.v1",
   "entries": [
     {
+      "id": "deploy.module-install.profile",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Sezione install del profilo privato con campi comuni, riferimenti delle identità, pin CI e revisione A2.",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Custode root. Cifrare il profilo e registrare digest, permessi e commit del bootstrap.",
+      "restore": "Ripristinare profilo e ZIP dopo il codice A2 e prima del journal.",
+      "test": "Verificare digest del profilo, del pacchetto e dei bind RO fissati."
+    },
+    {
+      "id": "deploy.module-install.receipt",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Ricevuta READY del primo CID e puntatore module-<modulo>.installed con stato del run e approvazioni.",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Salvare insieme puntatore, receipt.json, plan e review del run in custodia privata.",
+      "restore": "Pubblicare lo stato dopo la riconciliazione del journal e dello store.",
+      "test": "Confrontare CID, image ID, frame e planSha256, incluso il successivo isolamento."
+    },
+    {
+      "id": "deploy.module-install.journal",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Journal per modulo con richiesta, intento CREATE, CID, generazione, claim USR1, fallimento e ritorno.",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Acquisire sotto esclusione la directory del piano insieme allo stato del run. Cifrare l’archivio.",
+      "restore": "Ripristinare con proprietario root e permessi privati prima della ripresa approvata.",
+      "test": "Simulare risposta CREATE persa e riprendere soltanto il CID riconciliato per label."
+    },
+    {
+      "id": "deploy.module-install.store",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "Store applicativi in bind RW, incluse directory condivise con collector e worker.",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Cattura applicativamente consistente prima dell’apply. Coordinare i writer e preservare contenuto, ACL, UID e GID, WAL e SHM. Cifrare il backup.",
+      "restore": "Ripristinare i dati con i writer coordinati prima dell’avvio del servizio e delle sonde.",
+      "test": "Leggere lo store dal servizio, verificare consistenza applicativa, collector e probe dopo il ripristino."
+    },
+    {
       "id": "deploy.a2.successor-image",
       "version": 1,
       "owner": "ouf-deploy",

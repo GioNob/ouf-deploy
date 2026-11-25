@@ -30,6 +30,30 @@ sys.stdout.buffer.write(str(response.status).encode() + b'\\n' + body)
 """
 
 
+TLS_PROBE = """
+import http.client, json, socket, ssl, sys
+
+tls = json.load(sys.stdin)
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+context.minimum_version = ssl.TLSVersion.TLSv1_3
+context.load_verify_locations(cafile=tls['caFile'])
+if 'clientCertFile' in tls:
+    context.load_cert_chain(tls['clientCertFile'], tls['clientKeyFile'], password=b'')
+
+port = int(sys.argv[1])
+conn = http.client.HTTPSConnection(tls['serverName'], port, timeout=2, context=context)
+with socket.create_connection((tls['address'], port), timeout=2) as raw:
+    with context.wrap_socket(raw, server_hostname=conn.host) as secured:
+        conn.sock = secured
+        conn.request('GET', sys.argv[2])
+        response = conn.getresponse()
+        body = response.read(65537)
+        if len(body) > 65536:
+            sys.exit(1)
+        sys.stdout.buffer.write(str(response.status).encode() + b'\\n' + body)
+"""
+
+
 def gate_shell_matches(proc):
     """Compare the live executable inode to /bin/sh in this process's root."""
     # Pin each component before inspecting it. An absolute link restarts at
@@ -183,10 +207,17 @@ class Docker:
 
     def probe(self, doc):
         r = self.p["readiness"]
+        program = PROBE
+        options = {}
+        if "tls" in r:
+            program = TLS_PROBE
+            # --net preserves the executor's mount namespace. Only host paths
+            # and peer coordinates cross stdin; OpenSSL opens the files locally.
+            options["input"] = json.dumps(r["tls"]).encode("ascii")
         args = [self.p["nsenter"], "--target", str(doc["State"]["Pid"]), "--net", sys.executable,
-                "-I", "-S", "-B", "-c", PROBE, str(r["port"]), r["path"]]
+                "-I", "-S", "-B", "-c", program, str(r["port"]), r["path"]]
         try:
-            run = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=4)
+            run = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=4, **options)
         except subprocess.TimeoutExpired:
             return None, b""
         if run.returncode:

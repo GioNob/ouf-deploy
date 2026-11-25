@@ -40,9 +40,14 @@ def validate(req, policy):
     if req.get("operation") == "module-release":
         need(set(req) == common | {"operation", "module"} and isinstance(req["module"], str)
              and req["module"] in policy["modules"] and (req["phase"] in ("plan", "apply", "migrate")
+             or (req["module"] == "mcp" and req["phase"] in ("mcp-retention-admin-019", "analysis-retention-once")
+                 and "retentionAdmin019" in policy["modules"]["mcp"]["migration"])
              or (req["phase"] == "rollback" and {"database", "flyway"}.intersection(
                  policy["modules"][req["module"]]["migration"]))),
              "MODULE_REQUEST_SCOPE")
+    elif req.get("operation") == "module-install":
+        from module_release.install_contract import valid_request
+        need(valid_request(req, policy, common), "MODULE_INSTALL_REQUEST_SCOPE")
     elif req.get("operation") == "semantic-database-migration":
         need(set(req) == common | {"operation"} and req["phase"] in ("plan", "apply")
              and "semanticDatabase" in policy, "SEMANTIC_DATABASE_REQUEST_SCOPE")
@@ -98,6 +103,9 @@ def authorize(req, policy, get, state):
     path = "/actions/runs/" + req["run"]
     run = get(path)
     workflow = (module_workflow(req["module"]) if req.get("operation") == "module-release" else WORKFLOW)
+    installing = req.get("operation") == "module-install"
+    if installing:
+        workflow = ".github/workflows/module-install.yml"
     if req.get("operation") == "gateway-release":
         workflow = ".github/workflows/gateway-release.yml"
     if req.get("operation") == "semantic-database-migration":
@@ -129,6 +137,16 @@ def authorize(req, policy, get, state):
                  and r["user"]["type"] == "User" and r["user"]["id"] in allowed
                  and any(e["id"] == env["id"] and e["name"] == env["name"] for e in r["environments"])]
     index = len(approvals)
+    review = digest({"mandate": req, "environmentId": env["id"], "approvalIndex": index,
+                     "reviewerIds": sorted(set(approvals))})
+    if installing:
+        from store import read
+        directory = state / req["run"]
+        previous = directory / (req["phase"] + ".review")
+        if previous.is_file():
+            phases = read(directory / "approvals")
+            need(phases == [req["phase"]] and index == 1
+                 and read(previous) == {"request": req, "review": review}, "MODULE_INSTALL_REVIEW_DRIFT")
+            return review
     consume_approval(state / req["run"], req["phase"], index)
-    return digest({"mandate": req, "environmentId": env["id"], "approvalIndex": index,
-                   "reviewerIds": sorted(set(approvals))})
+    return review

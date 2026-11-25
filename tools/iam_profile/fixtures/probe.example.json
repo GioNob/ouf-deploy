@@ -1,0 +1,51 @@
+{
+  "timeoutSeconds": 5,
+  "tls": {
+    "introspection": {
+      "caFile": "private/introspection.ca.pem",
+      "certFile": "private/introspection.cert.pem",
+      "keyFile": "private/introspection.key.pem"
+    },
+    "status": {
+      "caFile": "private/status.ca.pem",
+      "certFile": "private/status.cert.pem",
+      "keyFile": "private/status.key.pem"
+    }
+  },
+  "targets": {
+    "A": {
+      "human": "holder-A.invalid",
+      "grantRef": "grant-A.invalid",
+      "mandateId": "00000000-0000-4000-8000-000000000001",
+      "generation": "1",
+      "tokenFile": "private/assignment-A.token"
+    },
+    "B": {
+      "human": "holder-B.invalid",
+      "grantRef": "grant-B.invalid",
+      "mandateId": "00000000-0000-4000-8000-000000000002",
+      "generation": "1",
+      "tokenFile": "private/assignment-B.token"
+    }
+  },
+  "deniedForward": {
+    "pet": "55h",
+    "profileSha256": "5bf4752247902af4ed6270153376eaa9cae6e4b2ff95f45e712b1468da4da7ef",
+    "action": "dispatch",
+    "issuer": "https://iam.invalid/realms/example",
+    "workload": "mcp.invalid",
+    "workloadSubject": "assignment-A.invalid",
+    "tenant": "tenant.invalid",
+    "credentialGrantRef": "grant-A.invalid",
+    "credentialHuman": "holder-A.invalid",
+    "originMandateId": "00000000-0000-4000-8000-000000000001",
+    "targetGrantRef": "grant-B.invalid",
+    "holder": "holder-B.invalid",
+    "mandateId": "00000000-0000-4000-8000-000000000002",
+    "generation": "1",
+    "decision": "DENIED",
+    "ownerForwards": 0,
+    "sourceTraceSha256": "76909e559d878ecbfff39d90d3ade2100e154d0f521ec61ae75b78a7d54d7941",
+    "traceSha256": "daaf2a7acecc183fe1561ccfb14da3a81a555f80186dc5fd6eba7d5f236e2c61"
+  }
+}
