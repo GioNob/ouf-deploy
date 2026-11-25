@@ -38,6 +38,21 @@ La prima versione supporta il cancello storico con trap USR1, restart policy `no
 
 Prima di ogni rilascio il modulo verifica CID, image ID, frame, argomenti del PID 1, eseguibile della shell e handler USR1. Registra l'intento durevole prima dell'unico segnale alla generazione. Per Onboarding verifica quindi Java con comando esatto e `GET /actuator/health/readiness` con HTTP 200 e `status` di primo livello uguale a `UP`, nello stesso namespace di rete e sulla stessa generazione. Come nel task-20c, `acceptStatus` definisce i codici accettati e `jsonStatus` è opzionale per servizi con risposta vuota. [Upgrade storico Onboarding](../scripts/upgrade-onboarding-wide-20261108.py)
 
+## Readiness HTTP e HTTPS
+
+Senza `readiness.tls` la sonda esegue la GET HTTP su `127.0.0.1` nel namespace di rete del container. Per un listener HTTPS, aggiungere al profilo privato l'oggetto `readiness.tls` con questi campi.
+
+| Campo | Significato |
+|---|---|
+| `address` | IPv4 assegnato al modulo in una delle voci `networks` del profilo. La sonda apre qui la connessione TCP sulla porta `readiness.port`. |
+| `serverName` | Nome DNS atteso nel certificato del server, usato anche per SNI e per l'intestazione HTTP `Host`. La connessione per IP evita la dipendenza dal DNS del container. |
+| `caFile` | Percorso assoluto sull'host del file PEM delle CA fidate per questa sonda. |
+| `clientCertFile`, `clientKeyFile` | Per mTLS, indicare entrambi i percorsi assoluti sull'host della catena client PEM e della relativa chiave PEM leggibile senza passphrase. Per la sola autenticazione del server, omettere entrambi. |
+
+L'esecutore passa i riferimenti via stdin. Poiché `nsenter --net` conserva il filesystem dell'host, il processo della sonda apre direttamente i file con i permessi dell'esecutore. La chiave resta sull'host e il suo contenuto non passa negli argomenti, nell'ambiente o nei log.
+
+La sonda richiede TLS 1.3 o successivo e verifica catena e nome prima di inviare la GET a `readiness.path`. Ogni tentativo ha un timeout socket di 2 secondi e un limite complessivo di 4 secondi. Un errore TLS, file illeggibili o un corpo superiore a 65.536 byte danno esito non pronto. Un redirect restituisce il primo stato 3xx e fallisce il controllo `acceptStatus`. I criteri `acceptStatus`, `jsonStatus` e il numero di tentativi valgono per entrambi i trasporti.
+
 ## Ricevute e ritorno
 
 Una ricevuta `READY` identifica piano, entrambi i CID e readiness. Un errore dopo l'intento di stop mantiene lo stato di rilascio `HELD`. Il modulo ferma e isola il successore conosciuto, riconcilia anche distacchi parziali, ripristina nome, reti, IP e alias sul CID originario e controlla configurazione e readiness. Il predecessore riavviato ha una propria generazione al cancello e riceve un proprio segnale. La ricevuta riporta `rollback: ROLLED_BACK`, `restoredCid` e `predecessorReadiness: UP` solo a ripristino verificato. I dati applicativi e le registrazioni già persistite seguono la compatibilità qualificata nel profilo.
