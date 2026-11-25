@@ -16,6 +16,18 @@
         }
       },
       {
+        "chain": {
+          "family": "inet",
+          "table": "sample",
+          "name": "guard",
+          "hook": "forward",
+          "type": "filter",
+          "prio": 0,
+          "policy": "drop",
+          "handle": 2
+        }
+      },
+      {
         "set": {
           "family": "inet",
           "table": "sample",
@@ -34,18 +46,6 @@
               }
             }
           ]
-        }
-      },
-      {
-        "chain": {
-          "family": "inet",
-          "table": "sample",
-          "name": "guard",
-          "hook": "forward",
-          "type": "filter",
-          "prio": 0,
-          "policy": "drop",
-          "handle": 2
         }
       },
       {
@@ -115,6 +115,18 @@
         }
       },
       {
+        "chain": {
+          "family": "bridge",
+          "table": "sample",
+          "name": "guard",
+          "hook": "forward",
+          "type": "filter",
+          "prio": 0,
+          "policy": "drop",
+          "handle": 2
+        }
+      },
+      {
         "set": {
           "family": "bridge",
           "table": "sample",
@@ -133,18 +145,6 @@
               }
             }
           ]
-        }
-      },
-      {
-        "chain": {
-          "family": "bridge",
-          "table": "sample",
-          "name": "guard",
-          "hook": "forward",
-          "type": "filter",
-          "prio": 0,
-          "policy": "drop",
-          "handle": 2
         }
       },
       {

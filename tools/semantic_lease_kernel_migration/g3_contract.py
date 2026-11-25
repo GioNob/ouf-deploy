@@ -1,5 +1,6 @@
 """Pure contract for generation 3. Inputs are duplicate-free decoded JSON."""
 import ipaddress
+import math
 import re
 from uuid import UUID
 
@@ -107,9 +108,9 @@ def _family(family, document, live, nft_profile):
     name = None
     sets = {}
     chains = set()
-    handles = []
+    referenced_chains = set()
+    records = []
     children = set()
-    projected = []
     for row in rows[1:]:
         _require(isinstance(row, dict) and len(row) == 1, NFT_FORMAT)
         kind, obj = next(iter(row.items()))
@@ -121,11 +122,9 @@ def _family(family, document, live, nft_profile):
         handle = obj.get('handle')
         if live or 'handle' in obj:
             _require(_integer(handle, 1), NFT_FORMAT)
-        if live:
-            handles.append(handle)
-            if kind != 'table':
-                _require(handle not in children, NFT_FORMAT)
-                children.add(handle)
+        if live and kind != 'table':
+            _require(handle not in children, NFT_FORMAT)
+            children.add(handle)
         if kind != 'rule':
             label = obj.get('name')
             _require(isinstance(label, str) and label, NFT_FORMAT)
@@ -153,7 +152,8 @@ def _family(family, document, live, nft_profile):
                          and obj.get('policy') in ('accept', 'drop'), NFT_FORMAT)
         elif kind == 'rule':
             base.extend(['chain', 'expr'])
-            _require(isinstance(obj.get('chain'), str) and obj['chain'] in chains, NFT_FORMAT)
+            _require(isinstance(obj.get('chain'), str), NFT_FORMAT)
+            referenced_chains.add(obj['chain'])
         else:
             raise ValueError(NFT_FORMAT)
         _fields(obj, base, optional)
@@ -162,7 +162,15 @@ def _family(family, document, live, nft_profile):
         header = stable({k: v for k, v in obj.items() if k not in ('expr', 'elem')})
         if kind == 'rule':
             header['expr'] = _statements(obj['expr'])
-        projected.append({kind: header})
+        # A stable sort preserves rule sequence within each chain. Sort keys
+        # exclude handles, which stay attached to their respective records.
+        order = ('table', 'set', 'chain', 'rule').index(kind)
+        key = obj['chain'] if kind == 'rule' else ''
+        records.append(((order, key), {kind: header}, handle))
+    records.sort(key=lambda record: record[0])
+    _require(referenced_chains <= chains, NFT_FORMAT)
+    projected = [row for _, row, _ in records]
+    handles = [handle for _, _, handle in records] if live else []
     return name, projected, handles, sets
 
 
@@ -206,10 +214,20 @@ def _verify_seal(seal, binding, projection, handles):
     _require(digest(seal) == digest(_seal(binding, projection, handles)), SEAL_DRIFT)
 
 
-def verify_boot(seal, current_boot_id, head, owner, tables, nft_profile):
+def verify_boot(seal, current_boot_id, head, owner, tables, nft_profile, footprint):
     binding = _binding(head, owner, 3, current_boot_id)
     projection, handles, _ = _project(tables, nft_profile, live=True, empty=True)
+    _require(digest(projection) == footprint, POLICY_DRIFT)
     _verify_seal(seal, binding, projection, handles)
+
+
+def verify_renewal_margin(margin_seconds, tick_seconds):
+    """Validate the renewal schedule before use. nft truncates expires to seconds."""
+    for duration in (margin_seconds, tick_seconds):
+        _require(type(duration) in (int, float) and duration > 0, TTL)
+        if type(duration) is float:
+            _require(math.isfinite(duration), TTL)
+    _require(margin_seconds > tick_seconds + 1, TTL)
 
 
 def _address(value, nft_type):
