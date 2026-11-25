@@ -19,7 +19,7 @@ from platform_restart.controller import receipt, stamp
 
 UNIT = "ouf-platform-start.service"
 TEMPLATE = SOURCE / "ops/vps/systemd" / UNIT
-MODULES = ("__init__", "profile", "docker", "controller")
+MODULES = ("__init__", "profile", "docker", "identity", "controller")
 
 
 def archive():
@@ -27,6 +27,8 @@ def archive():
     with zipfile.ZipFile(result, "w") as delivery:
         files = {"__main__.py": SOURCE / "scripts/platform-restart.py"}
         files.update({f"platform_restart/{m}.py": SOURCE / f"tools/platform_restart/{m}.py" for m in MODULES})
+        for module in ("__init__", "contract", "frame"):
+            files[f"module_release/{module}.py"] = SOURCE / f"tools/module_release/{module}.py"
         for member, path in files.items():
             delivery.writestr(zipfile.ZipInfo(member), path.read_bytes())
     return result.getvalue()

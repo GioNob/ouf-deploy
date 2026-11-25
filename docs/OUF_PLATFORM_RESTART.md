@@ -44,6 +44,33 @@ Lo schema pubblico è [platform-restart-profile-v1.schema.json](../contracts/pla
 
 Usare percorsi assoluti canonici, privi di symlink, spazi o metacaratteri. Preparare directory dedicate distinte per ricevute e incidenti, root e modo 0700. Preparare il profilo privato in custodia root. Il socket locale può consentire l’accesso al gruppo Docker. Eseguibili, sorgenti installati e antenati dei percorsi devono essere protetti dalla scrittura di utenti ordinari. Scegliere percorsi visibili all’unità con `ProtectHome=yes` e `PrivateTmp=yes`. Fornire la directory delle unità locali presente nel percorso di ricerca di systemd.
 
+## Identità del cancello da una ricevuta di rilascio
+
+Per un modulo gestito dall’esecutore conservare `gate.entrypoint` del profilo statico e sostituire insieme `gate.imageId` e `gate.command` con `gate.identity`. Il seguente frammento usa percorsi di esempio. I due digest vanno calcolati sui file dell’installazione.
+
+```json
+{
+  "source": "module-release",
+  "executorRoot": "/esempio/executor",
+  "journalRoot": "/esempio/journal/onboarding",
+  "module": "onboarding",
+  "receiptSigning": {
+    "publicKey": {"path": "/esempio/chiavi/ricevute.der", "sha256": "<SHA256_DER>"},
+    "openssl": {"path": "/esempio/bin/openssl", "sha256": "<SHA256_OPENSSL>"}
+  }
+}
+```
+
+`executorRoot` contiene `profile.json`, `state/` e `lock` dell’esecutore. Il journal, la chiave pubblica DER Ed25519 e il socket devono corrispondere ai binding del produttore. Omettere `receiptSigning` solo per un produttore senza firma configurata. Il lettore e il programma OpenSSL hanno bisogno di accesso in lettura ai rispettivi file sotto custodia root. I campi privati del frame restano in memoria.
+
+Il plan ricostruisce l’identità dalla transazione conclusa. Per un’andata controlla il puntatore `module-<modulo>.ready`, il plan approvato, il risultato e le review di apply e dell’eventuale migrate. Confronta CID, immagine, entrypoint e comando effettivo. Il digest del comando candidato copre anche le opzioni rimosse in Ingestion. Con firma configurata verifica `receipt.ed25519` sui byte esatti di `receipt.json`.
+
+Per un ritorno verifica il risultato di rollback, l’intento e la baseline del medesimo plan. La baseline compatta si ricostruisce con i campi immutabili del CID originale e si verifica contro `oldFrameSha256`. `return-receipt.ed25519`, quando presente, deve verificare i byte di `return-receipt.json`. In assenza di firma il plan espone `returnSignature: absent` e richiede che CID ripristinato, immagine, entrypoint e comando corrispondano al predecessore. Vale anche per un ritorno precedente a READY. Se più ritorni non hanno un ordine dimostrabile, il lettore richiede riconciliazione.
+
+Per Semantic A2 usare `{"source":"semantic-a2","executorRoot":"/esempio/executor"}`. Il lettore segue `completed-forward` fino all’archivio, al plan di creazione e allo stage del CID concluso. I puntatori di fase ancora pubblicati, un lock di modulo o un intento senza esito terminale bloccano l’avvio con `RELEASE_TRANSACTION_OPEN`. La ricevuta identifica l’owner e il residuo. L’esecutore di release conserva la responsabilità della ripresa e della review. Il boot consuma un solo marcatore. L’esclusione condivisa con l’esecutore copre inventario, verifica e segnali.
+
+**Condizione per abilitare il boot.** Quando anche un solo modulo usa `receiptSigning`, attendere che l’esecutore installato firmi anche la ricevuta di ritorno, compreso il ritorno dopo un’interruzione prima di READY (task successivo dell’esecutore, sprint-03 task-63i). L’avvio al boot presuppone inoltre che Docker parta: dopo un reset con R3 in esercizio il guard del kernel del lease può negarlo ([Migrazione del kernel del lease](OUF_SEMANTIC_LEASE_KERNEL_MIGRATION.md)). Fino ad allora lasciare disabilitata l’unità e usare il plan/apply presidiato. Dopo la review Claude aggiorna entrambi i valori `C=` in un commit separato. Installare dalla revisione che contiene i due launcher aggiornati, dopo il passaggio del test `test_delivery_pin_matches_current_commit`, quindi seguire i comandi di plan, apply e verifica qui sotto.
+
 ## Installare e qualificare lo start presidiato
 
 Usare una shell autorizzata come root e una copia locale verificata del repository. Dopo la review Claude compila lo stesso pin di consegna nei due runbook. I runbook confrontano i SHA-256 dei file consegnati con i blob del commit e usano questi ultimi per la copia di lavoro temporanea. Tutte le operazioni successive usano il profilo installato.
@@ -99,7 +126,7 @@ Le cinque voci seguenti sono un esempio per gli array `containers` dei rispettiv
     "gate": {
       "imageId": "sha256:<ID_INGESTION>",
       "entrypoint": ["/bin/sh", "-c", "OUF_APPLICATION_GATE=0; trap \"OUF_APPLICATION_GATE=1\" USR1; while [ \"$OUF_APPLICATION_GATE\" = 0 ]; do sleep 1 & wait \"$!\"; done; exec \"$@\"", "ouf-gated-application"],
-      "command": ["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/application.jar"]
+      "command": ["java", "-jar", "/app/app.jar"]
     },
     "readiness": {"type": "actuator", "address": "127.0.0.1", "port": 8080, "path": "/actuator/health/readiness", "acceptStatus": [200], "jsonStatus": "UP", "timeoutSeconds": 2, "budgetSeconds": 60}
   },
@@ -152,6 +179,8 @@ Il budget del modulo decorre dall’operazione di start o skip. Ogni GET è limi
 
 Lavorare in una finestra esclusiva con l’owner del modulo. Verificare nel journal dell’upgrade che l’immagine sia quella già migrata e che nessun rilascio del cancello sia in corso o abbia esito incerto. Usare il CID completo della ricevuta approvata, il profilo installato e il binding Docker verificato. Questi comandi Bash mostrano i controlli per **un solo modulo Java**. Coordinare gli altri membri e i livelli con il controller.
 
+Il fallback manuale seguente usa esclusivamente i profili con immagine e comando statici. Per un modulo con identità da ricevuta usare il controller installato, che verifica anche lo stato della transazione.
+
 ```bash
 set -euo pipefail
 # PROFILE, NAME e CID provengono dal profilo e dal plan verificati.
@@ -201,6 +230,8 @@ argv_matches '.gate.command'
 
 ## Comportamento al boot
 
+Con le due unità installate, systemd ordina R3 dopo la piattaforma. Configurare in R3 `platformReceipts` con la directory delle ricevute di questa installazione. Il successo del boot pubblica `boot-<bootId senza trattini>.json`. Prima dello stop, fermare i peer esclusi con il loro owner. Il plan e ogni effetto di stop verificano che siano fermi (`GOVERNED_CONTAINER_RUNNING`). Lo start presidiato mantiene il lifecycle di R3 sotto il suo owner.
+
 L’unità verifica i digest del sorgente installato e dell’interprete. Il driver verifica il profilo e il binding Docker. Registra in modo esclusivo il boot ID del kernel nella directory persistente delle ricevute prima del primo inventario. Una seconda invocazione nello stesso boot restituisce `BOOT_ALREADY_ATTEMPTED`. Il lock della directory serializza le operazioni del controller.
 
 Le attese crescenti nel profilo sono intervalli fra tentativi. Ogni livello dispone di un primo tentativo e di un ulteriore tentativo per intervallo. Su errore transitorio Docker o timeout di prontezza il driver riosserva l’inventario prima di riprovare quel livello e verifica gli ID autorizzati. Un diniego di identità o di binding interrompe il ciclo. Il tempo massimo dell’unità deriva dai timeout di inventario e di livello, dai tentativi e dalle attese, con margine per l’avvio e la scrittura delle ricevute.
@@ -214,4 +245,4 @@ python -m unittest discover -s tests -p 'test_platform_restart*.py' -v
 OUF_PLATFORM_RESTART_NATIVE=1 python -m unittest discover -s tests -p 'test_platform_restart_native.py' -v
 ```
 
-La suite nativa richiede un Engine Linux locale di prova, accesso al socket e un compilatore C con libc statica. Costruisce un’immagine scratch dalla fixture locale, crea due reti di test e rimuove gli oggetti di sua creazione a fine prova. Per adattare il test locale, fornire `OUF_TEST_DOCKER_SOCKET` e `OUF_TEST_SUBNETS` (due CIDR IPv4 disponibili separati da virgola). Il workflow esegue entrambe le suite con Python 3.13 su Ubuntu ospitato da GitHub.
+La suite nativa richiede un Engine Linux locale di prova, accesso al socket e un compilatore C con libc statica, BusyBox e OpenSSL locali. La prova del cancello usa root per procfs e setns. Sul runner opt-in usa sudo senza interazione. Costruisce un’immagine scratch dalla fixture locale, crea due reti di test e rimuove gli oggetti di sua creazione a fine prova. Per adattare il test locale, fornire `OUF_TEST_DOCKER_SOCKET` e `OUF_TEST_SUBNETS` (due CIDR IPv4 disponibili separati da virgola). Il workflow esegue entrambe le suite con Python 3.13 su Ubuntu ospitato da GitHub.

@@ -6,6 +6,12 @@ modifica epoche o policy Docker e non scarica codice. Installazione, reboot e
 qualificazione sul VPS restano da eseguire; i test portabili usano un `operate`
 finto e un clock simulato.
 
+## Ordine con la piattaforma
+
+L’unità R3 ha `After=ouf-platform-start.service`. Il driver accetta il campo facoltativo `platformReceipts` nella configurazione privata. Impostarlo al percorso assoluto di `receipts` del profilo piattaforma quando si installano insieme le due unità.
+
+Prima del plan di ogni tentativo, dopo l’attesa, R3 legge `boot-<bootId senza trattini>.json` in quella directory sotto custodia root. Richiede schema `ouf.platform-restart-receipt.v1`, boot ID del kernel corrente, `mode=boot`, `action=start` e `status=SUCCEEDED`. L’assenza della prova produce `R3_PLATFORM_NOT_READY`. Al terzo diniego il driver scrive l’incidente D-045. Se il campo è omesso resta disponibile l’avvio autonomo di R3 dove manca la piattaforma. Il pin dell’installer R3 resta nullo e l’autostart resta da installare secondo D-048.
+
 ## Stato voluto dalle ricevute esistenti
 
 Non viene introdotto un flag separato di autorità. Il driver cerca le directory
