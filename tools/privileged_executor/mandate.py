@@ -148,7 +148,7 @@ def authorize(req, policy, get, state):
             need(phases == [req["phase"]] and index == 1
                  and read(previous) == {"request": req, "review": review}, "MODULE_INSTALL_REVIEW_DRIFT")
             return review
-    consume_approval(state / req["run"], req["phase"], index)
+    consume_module_approval(req, policy, state, index, review, consume_approval)
     return review
 
 
@@ -161,4 +161,35 @@ def validate(req, policy):
         validate_request_profiles(req, policy, check=need)
     return _validate_request(req, policy)
 
-from module_release.profile_options import reviewed_return_allowed
+from module_release.profile_options import reviewed, reviewed_return_allowed
+
+
+def consume_module_approval(req, policy, state, index, review, consume):
+    directory = state / req["run"]
+    phase = req["phase"]
+    if (req.get("operation") != "module-release" or phase not in ("apply", "migrate") or
+            not reviewed(policy["modules"][req["module"]])):
+        return consume(directory, phase, index)
+    from store import read, save
+    proposal = read(directory / "plan")
+    parent = proposal["planSha256"]
+    need(proposal["status"] == "PLANNED" and parent == digest(proposal["plan"])
+         and read(directory / "plan.review")["request"] == dict(req, phase="plan", digest=intent(req)),
+         "APPROVED_PLAN_DRIFT")
+    stamp = req["digest"]
+    phases = [] if phase == "apply" else ["apply"]
+    need(read(directory / "approvals") == phases and index == len(phases) + 1, "EXACT_HUMAN_REVIEW_REQUIRED")
+    if phase == "apply":
+        need(stamp == parent, "APPROVED_PLAN_DRIFT")
+    else:
+        stage = read(directory / "apply.result")
+        need(stage["status"] == "GATED" and stage["migrationSha256"] == stamp and
+             stage["planSha256"] == proposal["plan"].get("sourcePlan", parent), "APPROVED_MIGRATION_DRIFT")
+    # The claim is the consumption point. A crash before the per-run ledger is recoverable.
+    target = state / ("module-" + phase + "-" + stamp)
+    claim = {"request": req, "review": review}
+    if target.exists():
+        need(read(target) == claim, "PLAN_ALREADY_CONSUMED")
+    else:
+        save(target, claim)
+    consume(directory, req["phase"], index)

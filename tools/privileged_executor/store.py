@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 
 from mandate import Held, canonical, need
-
+from module_release.public_output import checked_plan, public
 
 def trusted(path, *, private=False):
     p = Path(path)
@@ -33,14 +33,14 @@ def sync_dir(path):
 
 
 def save(path, value, *, replace=False):
-    save_bytes(path, canonical(value), replace=replace)
+    save_bytes(path, canonical(public(value)), replace=replace)
 
 
 def save_bytes(path, raw, *, replace=False):
     with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as f:
         tmp = Path(f.name)
         try:
-            f.write(raw)
+            f.write(public(raw))
             f.flush()
             os.fsync(f.fileno())
         except BaseException:
@@ -57,7 +57,7 @@ def save_bytes(path, raw, *, replace=False):
 
 
 def read(path):
-    return json.loads(trusted(path, private=True).read_bytes())
+    return checked_plan(Path(path).name, json.loads(trusted(path, private=True).read_bytes()))
 
 
 def begin_plan(directory):

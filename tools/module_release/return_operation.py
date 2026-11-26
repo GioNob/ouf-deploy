@@ -37,7 +37,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
     lock = parent / (profile["module"] + ".lock")
 
     def read(name):
-        return json.loads((root / name).read_bytes())
+        return journal_read(root, name)
 
     result = {"planSha256": stamp, "status": "HELD"}
     resuming = interrupted = False
@@ -117,3 +117,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
     if reviewed.enabled(profile):
         return reviewed.return_run(profile, stamp, runtime)
     return _run(profile, stamp, runtime, recover=recover)
+
+
+from .public_output import release_output
+run = release_output(run)

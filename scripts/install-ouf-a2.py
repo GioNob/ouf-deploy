@@ -122,7 +122,7 @@ def inspect(profile):
     package = ROOT / "lib/module_release"
     for module in ("__init__", "contract", "docker", "flyway", "frame", "mcp_artifact", "operation",
                    "postgres", "provenance", "recovery", "retention", "return_operation", "transport",
-                   "frame_spec", "install_contract", "install_operation", "persistent_paths", "profile_options", "config_delta", "reviewed"):
+                   "frame_spec", "install_contract", "install_operation", "persistent_paths", "profile_options", "config_delta", "reviewed", "public_output"):
         files[package / (module + ".py")] = (blob(f"tools/module_release/{module}.py"), 0o600)
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")

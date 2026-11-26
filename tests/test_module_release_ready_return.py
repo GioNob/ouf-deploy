@@ -155,9 +155,9 @@ class ReadyReturn(unittest.TestCase):
     def test_DEP_58Q_03_ready_return_boundaries(self):
         seed, _ = self.case()
         networks = [ep["NetworkID"][0] for ep in seed.nets.values()]
-        points = ["publish-lock", "return-intent.json", "new-stop", *["new-disconnect-" + n for n in networks],
+        points = ["publish-lock", "return-intent.json", "park-epoch.json", "new-stop", *["new-disconnect-" + n for n in networks],
                   "new-rename", "old-rename", *["old-connect-" + n for n in networks], "restore-start.json",
-                  "old-start", "restore-generation.json", "restore-signal.json", "old-signal", "old-probe",
+                  "restore-stop-epoch.json", "old-start", "restore-generation.json", "restore-signal.json", "old-signal", "old-probe",
                   "return-receipt.json", "unpublish-lock", "cleanup-plan.json", "cleanup-owner.json", "unlock"]
         self.matrix(points, applying=False)
 
@@ -217,6 +217,234 @@ class ReadyReturn(unittest.TestCase):
         directory = Path(rt.p["journal"]) / stamp
         self.assertFalse((directory / "restore-generation.json").exists())
         self.assertFalse((directory / "return-receipt.json").exists())
+
+    def test_DEP_58QD_04_return_fences_staged_run_and_uncertain_spring(self):
+        for mode in ("dedicated", "spring-flyway"):
+            for cut in ("return-intent.json", "release-signal.json"):
+                with self.subTest(mode=mode, cut=cut):
+                    rt, _ = self.case()
+                    rt.p["migration"]["mode"] = mode
+                    if mode == "dedicated":
+                        rt.p["migration"]["command"] = ["fixture-migrate"]
+                    plan = op.plan(rt.p, rt)["plan"]
+                    stamp = op.digest(plan)
+                    stage = op.apply(rt.p, stamp, rt, defer_migration=True)
+                    self.assertEqual(stage["status"], "GATED")
+                    if cut == "return-intent.json":
+                        self.assertEqual(interrupted(rt, plan, "return", cut, True)[0], "crash")
+                        events = list(rt.events)
+                        with self.assertRaisesRegex(op.Held, "REVIEWED_RETURN_REQUIRED"):
+                            op.migrate(rt.p, stamp, stage["migrationSha256"], rt)
+                        self.assertEqual(rt.events, events)
+                    else:
+                        with patch.object(rt, "signal", side_effect=Crash), self.assertRaises(Crash):
+                            op.migrate(rt.p, stamp, stage["migrationSha256"], rt)
+                    self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
+
+    def test_DEP_58QD_05_unbound_dedicated_returns_across_migration(self):
+        for cut in ("start-generation.json", "migration-intent.json", "migration-complete.json"):
+            for after in (False, True):
+                with self.subTest(cut=cut, after=after):
+                    rt, _ = self.case()
+                    rt.p["migration"].update(mode="dedicated", command=["fixture-migrate"])
+                    plan = op.plan(rt.p, rt)["plan"]
+                    stamp = op.digest(plan)
+                    if cut == "start-generation.json":
+                        self.assertEqual(interrupted(rt, plan, "apply", cut, after)[0], "crash")
+                    else:
+                        stage = op.apply(rt.p, stamp, rt, defer_migration=True)
+                        record = op.record
+                        def interrupt(directory, name, data):
+                            if name == cut and not after:
+                                raise Crash()
+                            record(directory, name, data)
+                            if name == cut:
+                                raise Crash()
+                        with patch.object(op, "record", interrupt), self.assertRaises(Crash):
+                            op.migrate(rt.p, stamp, stage["migrationSha256"], rt)
+                    self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
+
+    def test_DEP_58QD_06_missing_rollback_intent_after_io_failure(self):
+        rt, plan = self.case()
+        rt.fault = "readiness"
+        original = op.record
+        def record(root, name, data):
+            if name == "rollback-intent.json":
+                raise OSError("unavailable")
+            original(root, name, data)
+        with patch.object(op, "record", record):
+            failure = op.apply(rt.p, op.digest(plan), rt)
+        self.assertEqual((failure["status"], failure["rollback"]), ("HELD", "HELD"))
+        self.oracle(rt, plan, return_operation.run(rt.p, op.digest(plan), rt))
+
+    def test_DEP_58QD_07_digest_owner_survives_interruption_before_apply_review(self):
+        import mandate
+        import module_operation
+        case = self.governed_case()
+        call, req = case.governed_dispatch()
+        stamp = call(0)["digest"]
+        req.update(phase="apply", digest=stamp)
+        with patch.object(module_operation, "save", side_effect=Crash), self.assertRaises(Crash):
+            call(1)
+        req.update(phase="plan", run="2")
+        req["digest"] = mandate.intent(req)
+        self.assertEqual(call(0)["digest"], stamp)
+        req.update(phase="apply", digest=stamp)
+        events = list(case.rt.events)
+        with self.assertRaisesRegex(mandate.Held, "PLAN_ALREADY_CONSUMED"):
+            call(1)
+        self.assertEqual(events, case.rt.events)
+        self.assertEqual(op.read(case.root / "2", "approvals"), [])
+        req.update(phase="rollback", run="3")
+        self.assertEqual(call(1)["status"], "ROLLED_BACK")
+        directory = case.root / stamp
+        self.oracle(case.rt, op.read(directory, "plan.json"), op.read(directory, "return-receipt.json"))
+
+    def test_DEP_58QD_08_foreign_restart_before_candidate_epoch(self):
+        rt, plan = self.case()
+        self.assertEqual(interrupted(rt, plan, "apply", "candidate-epoch.json", False)[0], "crash")
+        rt.stop(fixture.NEW)
+        rt.start(fixture.NEW)
+        events = list(rt.events)
+        held = return_operation.run(rt.p, op.digest(plan), rt)
+        self.assertEqual((held["status"], held["reason"]), ("HELD", "START_GENERATION_CHANGED"))
+        self.assertEqual(rt.events, events)
+        self.assertFalse((Path(rt.p["journal"]) / op.digest(plan) / "return-intent.json").exists())
+
+    def test_DEP_58QD_09_http_change_and_terminal_retry(self):
+        rt, _ = self.case()
+        rt.p["readiness"]["acceptStatus"] = [200, 204]
+        plan = op.plan(rt.p, rt)["plan"]
+        stamp = op.digest(plan)
+        ready = op.apply(rt.p, stamp, rt)
+        self.assertEqual(ready["readyHttp"], 200)
+        with patch.object(rt, "probe", return_value=(204, b'{"status":"UP"}')):
+            returned = return_operation.run(rt.p, stamp, rt)
+            self.oracle(rt, plan, returned)
+            self.assertEqual(returned["predecessorReadyHttp"], 204)
+        self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
+
+    def test_DEP_58QD_10_review_owner_before_run_ledger(self):
+        import store
+        case = self.governed_case()
+        call, req = case.governed_dispatch()
+        stamp = call(0)["digest"]
+        req.update(phase="apply", digest=stamp)
+        save = store.save
+        def cut(path, value, **kwargs):
+            if path.name == "approvals":
+                raise Crash()
+            save(path, value, **kwargs)
+        with patch.object(store, "save", cut), self.assertRaises(Crash):
+            call(1)
+        self.assertEqual(op.read(case.root / "1", "approvals"), [])
+        req.update(run="2", phase="rollback")
+        self.assertEqual(call(1)["status"], "ROLLED_BACK")
+        self.assertNotIn("stop:" + fixture.OLD[0], case.rt.events)
+
+    def test_DEP_58QD_11_compatible_schema_and_stopped_ready_candidate(self):
+        rt, plan = self.case()
+        stamp = op.digest(plan)
+        root = Path(rt.p["journal"]) / stamp
+        self.assertEqual(op.apply(rt.p, stamp, rt)["status"], "READY")
+        rt.stop(fixture.NEW)
+        self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
+        for mode, claim in (("dedicated", "migration-intent.json"), ("spring-flyway", "release-signal.json")):
+            with self.subTest(mode=mode):
+                profile = {"migration": {"mode": mode, "rollbackCompatible": False}}
+                directory = root / mode
+                directory.mkdir()
+                reviewed.return_compatible(profile, directory)
+                op.record(directory, claim, {})
+                with self.assertRaisesRegex(op.Held, "MIGRATION_ROLLBACK_BLOCKED"):
+                    reviewed.return_compatible(profile, directory)
+
+    def test_DEP_58QD_12_epoch_and_receipt_prove_candidate_without_redundant_intents(self):
+        rt, plan = self.case()
+        stamp = op.digest(plan)
+        self.assertEqual(op.apply(rt.p, stamp, rt)["status"], "READY")
+        directory = Path(rt.p["journal"]) / stamp
+        for name in ("stop-intent.json", "start-intent.json", "release-signal.json", "start-generation.json"):
+            (directory / name).unlink()
+        self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
+
+    def test_DEP_58QD_13_bound_dedicated_keeps_compatible_committed_schema(self):
+        import test_module_release_mcp as mcp
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.dedicated()
+        net = next(iter(case.p["networks"]))
+        case.p["configDelta"] = {"aliases": {net: ["reviewed-db-client"]}}
+        stamp = case.planned()["digest"]
+        gated = case.call("apply", stamp)
+        self.assertEqual(case.call("migrate", gated["digest"])["status"], "READY")
+        self.assertEqual(case.call("rollback", stamp, run="2")["status"], "ROLLED_BACK")
+        self.assertEqual(case.db["history"][-1][0], 15)
+        self.assertEqual(case.rt.inspect(case.p["container"])["Id"], fixture.OLD)
+
+    def test_DEP_58QD_14_return_after_republication_of_ready(self):
+        import mandate
+        import module_operation
+        for mode in ("none", "dedicated"):
+            with self.subTest(mode=mode):
+                case = self.governed_case()
+                if mode == "dedicated":
+                    case.p["migration"].update(mode=mode, command=["fixture-migrate"])
+                call, req = case.governed_dispatch()
+                stamp = call(0)["digest"]
+                req.update(phase="apply", digest=stamp)
+                count = 1
+                if mode == "dedicated":
+                    req.update(phase="migrate", digest=call(1)["digest"])
+                    count = 2
+                with patch.object(module_operation.operation.reviewed, "unlock", side_effect=Crash), self.assertRaises(Crash):
+                    call(count)
+                req.update(run="2", phase="plan")
+                req["digest"] = mandate.intent(req)
+                proposal = call(0)
+                req.update(phase="apply", digest=proposal["digest"])
+                self.assertEqual(call(1)["status"], "READY")
+                req.update(run="3", phase="rollback", digest=stamp)
+                self.assertEqual(call(1)["status"], "ROLLED_BACK")
+                directory = case.root / stamp
+                self.oracle(case.rt, op.read(directory, "plan.json"), op.read(directory, "return-receipt.json"))
+
+    def test_DEP_58QD_15_return_after_uncertain_spring_signal(self):
+        rt, _ = self.case()
+        rt.p["migration"]["mode"] = "spring-flyway"
+        plan = op.plan(rt.p, rt)["plan"]
+        stamp = op.digest(plan)
+        gated = op.apply(rt.p, stamp, rt, defer_migration=True)
+        rt.fault = "lost_signal"
+        failed = op.migrate(rt.p, stamp, gated["migrationSha256"], rt)
+        self.assertEqual(failed["reason"], "FLYWAY_OUTCOME_UNCONFIRMED")
+        self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
+        self.assertEqual(rt.events.count("signal:" + fixture.NEW[0]), 1)
+
+    def test_DEP_58QD_16_consumed_migration_digest_has_one_run(self):
+        import mandate
+        import module_operation
+        case = self.governed_case()
+        case.p["migration"].update(mode="dedicated", command=["fixture-migrate"])
+        call, req = case.governed_dispatch()
+        stamp = call(0)["digest"]
+        req.update(phase="apply", digest=stamp)
+        stage = call(1)["digest"]
+        req.update(phase="migrate", digest=stage)
+        with patch.object(module_operation, "save", side_effect=Crash), self.assertRaises(Crash):
+            call(2)
+        req.update(run="2", phase="plan")
+        req["digest"] = mandate.intent(req)
+        recovery_stamp = call(0)["digest"]
+        req.update(phase="apply", digest=recovery_stamp)
+        self.assertEqual(call(1)["digest"], stage)
+        req.update(phase="migrate", digest=stage)
+        with self.assertRaisesRegex(mandate.Held, "PLAN_ALREADY_CONSUMED"):
+            call(2)
+        self.assertNotIn("migrate", case.rt.events)
+        req.update(run="3", phase="rollback", digest=stamp)
+        self.assertEqual(call(1)["status"], "ROLLED_BACK")
 
     def governed_case(self):
         case = fixture.ReleaseTest()

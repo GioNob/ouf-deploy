@@ -5,7 +5,7 @@ import os
 from pathlib import Path, PurePosixPath
 import tempfile
 
-from . import flyway, postgres, reviewed
+from . import flyway, postgres, reviewed, public_output
 from .contract import (CI_COORDINATES, INGESTION_STARTUP_FLAGS, MCP_CI_COORDINATES, Held, SHA, diagnostic,
                        digest, jar_name, matches, package, require, validate)
 from .docker import Docker
@@ -101,7 +101,7 @@ def observe(p, rt, previous_release=None):
         jar = PurePosixPath("/app", jar_name(p["gate"]["command"]))
         require(not any(jar.is_relative_to(m["Destination"]) for m in old["Mounts"]), "FLYWAY_JAR_SHADOWED")
         body["flywayBaseline"] = flyway.baseline(flyway.observe(rt, old, predecessor=True))
-    return reviewed.bind_plan(p, body, old) if reviewed.enabled(p) else (body, old)
+    return reviewed.bind_plan(p, body, old) if reviewed.enabled(p) else (public_output.public(body), old)
 
 
 def plan(profile: dict, runtime=None, *, previous_release=None) -> dict:
@@ -128,7 +128,7 @@ def record(root, name, data):
     with tempfile.NamedTemporaryFile(dir=root, delete=False) as out:
         tmp = Path(out.name)
         try:
-            out.write(json.dumps(data, sort_keys=True, separators=(",", ":")).encode())
+            out.write(public_output.json_output(data))
             out.flush()
             os.fsync(out.fileno())
         except BaseException:
@@ -143,12 +143,12 @@ def record(root, name, data):
 
 
 def read(root, name):
-    return json.loads((root / name).read_bytes())
+    return public_output.checked_plan(name, json.loads((root / name).read_bytes()))
 
 
 def confirm(root, name, data):
     if (root / name).exists():
-        require(read(root, name) == data, "JOURNAL_BINDING_CHANGED")
+        require(read(root, name) == public_output.public(data), "JOURNAL_BINDING_CHANGED")
     else:
         record(root, name, data)
 
@@ -222,7 +222,7 @@ def waiting_gate(p, rt, old, cid, restoring=False):
 
 
 def load_predecessor(p, rt, root):
-    saved = json.loads((root / "baseline.private.json").read_bytes())
+    saved = public_output.private_baseline(read(root, "baseline.private.json"))
     if "Config" in saved:  # original full-frame journals
         return saved
     # Recover immutable fields from the retained CID; its original frame digest
@@ -232,8 +232,8 @@ def load_predecessor(p, rt, root):
 
 def verify_database(p, rt, old, root, *, migrated=False):
     if "database" in p["migration"]:
-        state = json.loads((root / "database.private.json").read_bytes())
-        plan = json.loads((root / "plan.json").read_bytes())
+        state = public_output.private_baseline(read(root, "database.private.json"))
+        plan = read(root, "plan.json")
         require(digest(plan) == root.name and digest(state) == plan["databaseSha256"], "DATABASE_BASELINE_CHANGED")
         postgres.verify(rt, old, state, p["migration"], migrated=migrated)
         return plan["databaseSha256"]
@@ -286,7 +286,7 @@ def finish_migration(p, rt, old, cid, root, checked, expected_generation):
 
 
 def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
-    signal_file = "restore-signal.json" if restoring else "release-signal.json"
+    signal_file = reviewed.signal_file(p, root, restoring)
     signalled = (root / signal_file).exists()
     check = checked_generation if signalled else waiting_gate
     generation, checked = reviewed.release_gate(check, p, rt, old, cid, restoring)
@@ -355,8 +355,8 @@ def restore(p, rt, old, new, root):
     require(doc["Id"] == cid and doc["Name"] in (old["Name"], "/" + p["retainedName"])
             and (doc["State"]["StartedAt"] == old["State"]["StartedAt"] or
                  (root / "restore-start.json").exists()), "RESTORE_IDENTITY_CHANGED")
-    verify_database(p, rt, old, root)
-    verify_flyway_return(p, rt, old, root)
+    # Legacy profiles require their live database proof before any return effect.
+    reviewed.verify_restore_schema(p, rt, old, root)
     attached = reviewed.attachments(p, old, doc, root) if reviewed.enabled(p) else doc["NetworkSettings"]["Networks"]
     require(set(attached) <= set(networks) and all(ep.get("NetworkID") in ("", networks[name]["NetworkID"])
             for name, ep in attached.items()), "RESTORE_NETWORK_SET_CHANGED")
@@ -433,7 +433,7 @@ def finish_apply(p, rt, body, old, new, root, result, defer_migration):
             require(rt.process(checked(), gated=True), "GATE_CHANGED")
             stage["flywayReview"] = proof
         confirm(root, "migration-plan.json", stage)
-        result.update(status="GATED", migrationSha256=digest(stage))
+        result.update(status="GATED", migrationSha256=digest(public_output.public(stage)))
         return
     proof = release(p, rt, old, new, root, expected_generation=start["generation"])
     retained(p, rt, old)
@@ -559,7 +559,7 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
     def read(name):
         return json.loads((root / name).read_bytes())
 
-    stage = read("migration-plan.json")
+    stage = reviewed.forward_stage(profile, root, plan_sha256)
     staged = read("stage.json")
     require(lock.is_dir() and not (root / "receipt.json").exists() and staged["status"] == "GATED"
             and staged["migrationSha256"] == migration_sha256 == digest(stage)
@@ -624,3 +624,8 @@ def rollback(p, rt, old, root, result, exc):
     if reviewed.enabled(p):
         return reviewed.rollback(p, rt, old, root, result, exc)
     return _rollback(p, rt, old, root, result, exc)
+
+
+plan = public_output.release_output(plan)
+apply = public_output.release_output(apply)
+migrate = public_output.release_output(migrate)

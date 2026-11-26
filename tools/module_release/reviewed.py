@@ -49,6 +49,7 @@ def bind_plan(p, body, old):
     if "configDelta" in p:
         body.update(configDeltaSha256=delta_digest(p["configDelta"]),
                     approvalLines=approval_lines(p["configDelta"], p.get("showValues", ())))
+    body = op.public_output.public(body)
     # Re-planning after an interruption before stop may observe exactly the same generation.
     directory = Path(p["journal"])
     while (directory / digest(body) / "return-receipt.json").is_file():
@@ -62,6 +63,7 @@ def lock_path(p):
 
 def acquire(lock, stamp, plan):
     require(not lock.exists(), "OPERATION_IN_PROGRESS_OR_INTERRUPTED")
+    op.public_output.checked_plan("plan.json", plan)
     private = Path(tempfile.mkdtemp(prefix=".prepare-", dir=lock.parent))
     op.record(private, "plan.json", plan)
     op.record(private, "owner.json", {"planSha256": stamp})
@@ -207,7 +209,13 @@ def attachments(p, old, doc, root):
     return endpoints(old, doc)
 
 
+def first_start(doc):
+    # A manual stop/start keeps both the CID and RestartCount. FinishedAt survives that start.
+    require(doc["State"].get("FinishedAt") == "0001-01-01T00:00:00Z", "START_GENERATION_CHANGED")
+
+
 def candidate_generation(root, cid, doc):
+    first_start(doc)
     binding = {"cid": cid, "epoch": frame.epoch(doc), "generation": frame.snapshot(doc)}
     op.confirm(root, "candidate-epoch.json", binding)
     return binding["generation"]
@@ -225,8 +233,8 @@ def park_guard(p, rt, old, root, cid):
         state = doc["State"]
         require(not (root / "start-generation.json").exists() or (root / "candidate-epoch.json").is_file(),
                 "START_GENERATION_UNCONFIRMED")
-        if (root / "candidate-epoch.json").exists():
-            binding = op.read(root, "candidate-epoch.json")
+        binding = op.read(root, "candidate-epoch.json") if (root / "candidate-epoch.json").is_file() else None
+        if binding is not None:
             observed = frame.epoch(doc)
             require(binding["cid"] == cid and binding["epoch"][:2] == observed[:2]
                     and binding["epoch"][3] == observed[3] and (not state["Running"] or
@@ -234,17 +242,17 @@ def park_guard(p, rt, old, root, cid):
             if (root / "start-generation.json").exists():
                 require(op.read(root, "start-generation.json") == {"cid": cid, "generation": binding["generation"]},
                         "START_GENERATION_CHANGED")
+        if (root / "start-intent.json").exists():
+            require(op.read(root, "start-intent.json") == {"cid": cid}, "START_GENERATION_CHANGED")
+        elif not op.never_started(doc):
+            require(binding is not None, "START_GENERATION_UNCONFIRMED")
         if state["Running"]:
-            require(op.read(root, "start-intent.json") == {"cid": cid}, "START_GENERATION_UNCONFIRMED")
-            _, checked = op.checked_generation(p, rt, old, cid)
-            current = checked()
-            if not rt.process(current, gated=True):
-                require((root / "release-signal.json").is_file() and
-                        op.read(root, "release-signal.json") == {"cid": cid, "epoch": frame.epoch(current)}
-                        and rt.process(checked(), gated=False), "GATE_CHANGED")
+            if binding is None:
+                first_start(doc)
+            # Parking only needs the owned live generation. Its application may already have failed.
+            op.checked_generation(p, rt, old, cid)
         else:
-            require(state["Pid"] == 0 and (op.never_started(doc) or state["Status"] == "exited" and
-                    op.read(root, "start-intent.json") == {"cid": cid}), "STOP_UNCONFIRMED")
+            require(state["Pid"] == 0 and (op.never_started(doc) or state["Status"] == "exited"), "STOP_UNCONFIRMED")
             endpoints(projected(p, old), doc, candidate=True)
         if (root / "park-epoch.json").exists():
             require(op.read(root, "park-epoch.json") == {"cid": cid, "startedAt": state["StartedAt"]},
@@ -283,8 +291,7 @@ def reconcile_candidate(p, rt, old, root, plan):
         cid = doc["Id"]
     if not any((root / name).exists() for name in ("rollback-intent.json", "return-intent.json")):
         op.retained(p, rt, old)
-        require(rt.inspect(p["container"])["Id"] == cid and
-                set(doc["NetworkSettings"]["Networks"]) == set(p["networks"]), "IMMEDIATE_SUCCESSOR_CHANGED")
+        require(rt.inspect(p["container"])["Id"] == cid, "IMMEDIATE_SUCCESSOR_CHANGED")
     if not (root / "create-proof.json").is_file():
         op.retained(p, rt, old)
         confirm_create(p, rt, old, doc, root)
@@ -350,8 +357,6 @@ def restore_start(p, rt, old, root, *, allow_recycle=True):
                 for _ in range(p["readiness"]["attempts"]):
                     status = op.ready_status(rt, doc, p["readiness"])
                     if status:
-                        op.verify_database(p, rt, old, root)
-                        op.verify_flyway_return(p, rt, old, root)
                         op.confirm(cycle, "recycle-ready.json", claim)
                         return status
                     rt.pause()
@@ -395,8 +400,6 @@ def restore_start(p, rt, old, root, *, allow_recycle=True):
     for _ in range(p["readiness"]["attempts"]):
         status = op.ready_status(rt, checked(), p["readiness"])
         if status:
-            op.verify_database(p, rt, old, root)
-            op.verify_flyway_return(p, rt, old, root)
             return status
         rt.pause()
     require(rt.process(checked(), gated=True), "PREDECESSOR_READINESS_NOT_UP")
@@ -457,16 +460,12 @@ def confirm_return(root, cid, stamp):
 
 def return_run(p, stamp, runtime, *, publication=None, approved_plan=None):
     from .profile_options import reviewed_return_allowed
-    migration = p["migration"]
-    has_binding = bool({"database", "flyway"}.intersection(migration))
-    require(matches(SHA, stamp) and (has_binding or reviewed_return_allowed(p)), "INVALID_RETURN_PLAN")
+    require(matches(SHA, stamp) and reviewed_return_allowed(p), "INVALID_RETURN_PLAN")
     lock = lock_path(p)
     root = lock.parent / stamp
     result = {"planSha256": stamp, "status": "HELD"}
     try:
-        require(p["migration"]["rollbackCompatible"] is True, "MIGRATION_ROLLBACK_BLOCKED")
-        if migration["mode"] == "spring-flyway" and not has_binding:
-            require(not (root / "release-signal.json").exists(), "FLYWAY_OUTCOME_UNCONFIRMED")
+        return_compatible(p, root)
         if lock.exists():
             owner(lock, stamp)
         if (root / "plan.json").exists():
@@ -477,21 +476,20 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None):
             plan = approved_plan
         require(plan and digest(plan) == stamp and plan["module"] == p["module"] and
                 plan["profileSha256"] == digest(p) and plan["createPlanLabel"] == OWNER_LABEL, "RETURN_PLAN_CHANGED")
+        op.public_output.checked_plan("plan.json", plan)
         if "configDelta" in p:
             require(plan.get("configDeltaSha256") == delta_digest(p["configDelta"]), "RETURN_PLAN_CHANGED")
         rt = runtime or op.Docker(p)
         old = (op.load_predecessor(p, rt, root) if (root / "baseline.private.json").exists()
                else rt.inspect(plan["oldCid"]))
-        require(old["Id"] == plan["oldCid"] and frame.snapshot(old) == plan["oldFrameSha256"], "RETURN_BASELINE_CHANGED")
-        pre_stop = not (root / "stop-intent.json").exists()
+        require(old["Id"] == plan["oldCid"] and old["Image"] == plan["oldImage"] and
+                frame.snapshot(old) == plan["oldFrameSha256"], "RETURN_BASELINE_CHANGED")
+        pre_stop = not any((root / name).exists() for name in ("stop-intent.json", "create-intent.json"))
         if pre_stop:
-            require(not (root / "create-intent.json").exists() and
-                    frame.snapshot(rt.inspect(p["container"])) == frame.snapshot(old) and
+            require(frame.snapshot(rt.inspect(p["container"])) == frame.snapshot(old) and
                     op.ready(rt, old, p["readiness"]), "PRE_STOP_DRIFT")
-        else:
+        elif (root / "stop-intent.json").exists():
             require(op.read(root, "stop-intent.json") == {"cid": old["Id"]}, "STOP_CLAIM_CHANGED")
-            op.verify_database(p, rt, old, root)
-            op.verify_flyway_return(p, rt, old, root)
         receipt = op.read(root, "receipt.json") if (root / "receipt.json").exists() else None
         returning = (root / "return-intent.json").exists()
         if receipt:
@@ -501,18 +499,17 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None):
             require(not pre_stop and receipt.get("readiness") == "UP" and receipt.get("readyHttp") in p["readiness"]["acceptStatus"], "RETURN_RECEIPT_CHANGED")
             cid = receipt["successorCid"]
             rt.candidate_cid = cid
-            require(op.read(root, "created.json") == {"cid": cid} and
-                    op.read(root, "start-generation.json") == {"cid": cid, "generation": receipt["successorFrameSha256"]},
+            binding = op.read(root, "candidate-epoch.json")
+            require(binding["cid"] == cid and binding["generation"] == receipt["successorFrameSha256"],
                     "IMMEDIATE_SUCCESSOR_CHANGED")
             if not returning:
                 op.retained(p, rt, old)
                 doc = rt.inspect(p["container"])
-                require(doc["Id"] == cid and frame.snapshot(doc) == receipt["successorFrameSha256"]
+                require(doc["Id"] == cid and (not doc["State"]["Running"] or
+                        frame.snapshot(doc) == receipt["successorFrameSha256"])
                         and doc["Config"]["Labels"].get(OWNER_LABEL) == stamp
-                        and op.read(root, "create-proof.json") == {"cid": cid, "stableFrameSha256": stable(doc)}
-                        and op.read(root, "release-signal.json") == {"cid": cid, "epoch": frame.epoch(doc)}
-                        and receipt["readyHttp"] == op.ready_status(rt, doc, p["readiness"]), "IMMEDIATE_SUCCESSOR_CHANGED")
-                check_binds(p, rt, doc)
+                        and op.read(root, "create-proof.json") == {"cid": cid, "stableFrameSha256": stable(doc)},
+                        "IMMEDIATE_SUCCESSOR_CHANGED")
             if publication:
                 publication(plan, receipt, returning)
             if "receiptSigning" in p:
@@ -521,13 +518,9 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None):
         else:
             if receipt:
                 require(receipt.get("status") == "HELD" and bool(receipt.get("reason"))
-                        and not (root / "receipt.ed25519").exists() and (pre_stop or
-                        receipt.get("rollback") in ("HELD", "ROLLED_BACK") and
-                        op.read(root, "rollback-intent.json") == {"cid": old["Id"]}), "RETURN_RECEIPT_CHANGED")
+                        and not (root / "receipt.ed25519").exists(), "RETURN_RECEIPT_CHANGED")
             require(pre_stop or lock.exists() or receipt and receipt.get("rollback") == "ROLLED_BACK",
                     "LOCK_OWNER_UNPROVEN")
-            require(not (root / "migration-intent.json").exists() or (root / "migration-complete.json").exists(),
-                    "MIGRATION_OUTCOME_UNCONFIRMED")
         if (root / "return-receipt.json").exists():
             claim = op.read(root, "return-intent.json")
             cid = op.read(root, "created.json")["cid"] if (root / "created.json").exists() else None
@@ -535,12 +528,14 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None):
             require(claim == final_claim or cid and claim == dict(final_claim, cid=None) and
                     op.read(root, "late-create.json") == final_claim, "RETURN_INTENT_CHANGED")
             final = restored(p, rt, old, cid, root, plan)
-            require(final == op.read(root, "return-receipt.json"), "RETURN_RECEIPT_CHANGED")
+            saved = op.read(root, "return-receipt.json")
+            require(saved.get("predecessorReadyHttp") in p["readiness"]["acceptStatus"] and
+                    dict(final, predecessorReadyHttp=saved["predecessorReadyHttp"]) == saved, "RETURN_RECEIPT_CHANGED")
             if lock.exists():
                 unlock(lock, stamp)
             else:
                 cleanup(lock, stamp)
-            return final
+            return saved
         if not lock.exists():
             require(not returning, "LOCK_OWNER_UNPROVEN")
             acquire(lock, stamp, plan)
@@ -567,11 +562,9 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None):
 def rollback(p, rt, old, root, result, exc):
     result.update(status="HELD", reason=op.reason(exc), rollback="HELD")
     try:
-        require(not op.reason(exc).startswith("FLYWAY_OUTCOME_UNCONFIRMED"), "FLYWAY_OUTCOME_UNCONFIRMED")
+        return_compatible(p, root)
         plan = op.read(root, "plan.json")
         require(digest(plan) == root.name, "RETURN_PLAN_CHANGED")
-        require(not (root / "migration-intent.json").exists() or (root / "migration-complete.json").is_file(),
-                "MIGRATION_OUTCOME_UNCONFIRMED")
         op.confirm(root, "rollback-intent.json", {"cid": old["Id"]})
         cid = reconcile_candidate(p, rt, old, root, plan)
         if cid:
@@ -580,6 +573,44 @@ def rollback(p, rt, old, root, result, exc):
         result.update(rollback="ROLLED_BACK", restoredCid=old["Id"], predecessorReadiness="UP", predecessorReadyHttp=status)
     except Exception as failure:
         result["rollbackReason"] = op.reason(failure)
+
+
+def verify_restore_schema(p, rt, old, root):
+    if enabled(p):
+        return_compatible(p, root)
+    else:
+        op.verify_database(p, rt, old, root)
+        op.verify_flyway_return(p, rt, old, root)
+
+
+def return_compatible(p, root):
+    migration = p["migration"]
+    if migration["rollbackCompatible"] is True:
+        return
+    if migration["mode"] == "dedicated":
+        possible = any((root / name).exists() for name in ("migration-intent.json", "migration-complete.json"))
+    else:
+        ready = (root / "receipt.json").is_file() and op.read(root, "receipt.json").get("status") == "READY"
+        possible = migration["mode"] == "spring-flyway" and ((root / "release-signal.json").exists() or ready)
+    require(not possible, "MIGRATION_ROLLBACK_BLOCKED")
+
+
+def forward_open(root):
+    require(not any((root / name).exists() for name in ("return-intent.json", "rollback-intent.json")),
+            "REVIEWED_RETURN_REQUIRED")
+
+
+def forward_stage(p, root, stamp):
+    if enabled(p):
+        forward_open(root)
+        owner(lock_path(p), stamp)
+    return op.read(root, "migration-plan.json")
+
+
+def signal_file(p, root, restoring):
+    if not restoring and enabled(p):
+        forward_open(root)
+    return "restore-signal.json" if restoring else "release-signal.json"
 
 
 def before_start(p, root, cid):
@@ -595,6 +626,7 @@ def started(rt, root, cid, generation):
 
 def resume(p, rt, stamp):
     root = Path(p["journal"]) / stamp
+    require(not (root / "return-intent.json").exists(), "REVIEWED_RETURN_REQUIRED")
     owner(lock_path(p), stamp)
     plan = op.read(root, "plan.json")
     old = op.load_predecessor(p, rt, root)
@@ -619,7 +651,7 @@ def resume(p, rt, stamp):
         result["configDeltaSha256"] = plan["configDeltaSha256"]
     if cid:
         result["successorCid"] = cid
-    if (not receipt and cid and (root / "migration-plan.json").is_file()
+    if (not receipt and cid and (root / "migration-plan.json").is_file() and rt.inspect(cid)["State"]["Running"]
             and not (root / "rollback-intent.json").exists()):
         stage = op.read(root, "migration-plan.json")
         require(stage["cid"] == cid and stage["generation"] == frame.snapshot(rt.inspect(cid)) and
@@ -669,14 +701,7 @@ def recovery_review(p, root, body, proposal):
         shown = p.get("showValues", ())
         require(delta_digest(delta) == body["configDeltaSha256"], "RECOVERY_PROFILE_CHANGED")
         lines = approval_lines(delta, shown)
-        if lines != body["approvalLines"]:
-            # A 58q-b plan could display the Flyway flag in a mixed delta.
-            # Verify that exact historical rendering only against the authenticated source plan.
-            previous = lines.copy()
-            for i, row in enumerate(delta.get("env", ())):
-                if row["name"] == "SPRING_FLYWAY_ENABLED":
-                    previous[i] = approval_lines({"env": [row]}, shown)[0]
-            require(previous == body["approvalLines"], "RECOVERY_PROFILE_CHANGED")
+        require(lines == body["approvalLines"], "RECOVERY_PROFILE_CHANGED")
         proposal["approvalLines"] = lines
     for claim in root.glob("restore-after-*/*.json"):
         proposal["journal"][claim.relative_to(root).as_posix()] = digest(op.read(claim.parent, claim.name))
@@ -697,3 +722,7 @@ def publish_result(rt, root, result):
     if result["status"] == "READY" and hasattr(rt, "release_run"):
         result["releaseRun"] = rt.release_run
     op.confirm(root, "stage.json" if result["status"] == "GATED" else "receipt.json", result)
+
+
+from .public_output import release_output
+return_run = release_output(return_run)

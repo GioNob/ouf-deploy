@@ -146,24 +146,111 @@ class InvalidDeltaTest(unittest.TestCase):
                         with self.assertRaisesRegex(Held, "^SECRET_ENV_DENIED$"):
                             config_delta.approval_lines(delta, [name, flag])
 
-    def test_DEP_58QB_01_recovery_of_previously_approved_mixed_delta(self):
-        case = fixture.ReleaseTest()
-        self.addCleanup(case.doCleanups)
-        case.setUp()
-        names = ["SNMP_COMMUNITY", "SPRING_FLYWAY_ENABLED"]
-        delta = {"env": [dict(name=name, before=None, after="enabled") for name in names]}
-        case.p.update(migration={"mode": "none", "rollbackCompatible": True}, configDelta=delta,
-                      envAllowlist=names, showValues=names)
-        safe = config_delta.approval_lines(delta, names)
-        legacy = [safe[0], 'ENV SPRING_FLYWAY_ENABLED da assente a "enabled"']
-        with patch.object(operation.reviewed, "approval_lines", return_value=legacy):
-            stamp = operation.plan(case.p, case.rt)["planSha256"]
-            with patch.object(operation, "finish_apply", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
-                operation.apply(case.p, stamp, case.rt)
-        retry = recovery.proposal(case.p, case.rt)
-        self.assertEqual(retry["approvalLines"], safe)
-        self.assertNotIn("enabled", "\n".join(retry["approvalLines"]))
-        self.assertEqual(recovery.resume(case.p, case.rt, retry)["status"], "READY")
+    def test_DEP_58QD_02_plaintext_plan_held_before_copy_or_effect(self):
+        for ready in (True, False):
+            with self.subTest(ready=ready):
+                case = fixture.ReleaseTest()
+                self.addCleanup(case.doCleanups)
+                case.setUp()
+                names = ["SNMP_COMMUNITY", "SPRING_FLYWAY_ENABLED"]
+                delta = {"env": [dict(name=name, before=None, after="enabled") for name in names]}
+                case.p.update(migration={"mode": "none", "rollbackCompatible": True}, configDelta=delta,
+                              envAllowlist=names, showValues=names)
+                legacy = [config_delta.approval_lines(delta)[0], 'ENV SPRING_FLYWAY_ENABLED da assente a "enabled"']
+                # Reproduce the old writer, including its original digest and CREATE ownership label.
+                with (patch.object(operation.public_output, "public", side_effect=lambda value: value),
+                      patch.object(operation.reviewed, "approval_lines", return_value=legacy)):
+                    stamp = operation.plan(case.p, case.rt)["planSha256"]
+                    if ready:
+                        self.assertEqual(operation.apply(case.p, stamp, case.rt)["status"], "READY")
+                    else:
+                        with patch.object(operation, "finish_apply", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+                            operation.apply(case.p, stamp, case.rt)
+                files = {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()}
+                events = list(case.rt.events)
+                if not ready:
+                    with self.assertRaisesRegex(Held, "UNSAFE_RETURN_PLAN"):
+                        recovery.proposal(case.p, case.rt)
+                result = return_operation.run(case.p, stamp, case.rt)
+                self.assertEqual((result["status"], result["reason"]), ("HELD", "UNSAFE_RETURN_PLAN"))
+                self.assertEqual(events, case.rt.events)
+                self.assertEqual(files, {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()})
+
+    def test_DEP_58QD_01_alias_collisions_cover_substrings_and_overlapping_values(self):
+        delta = {"env": [dict(name="SNMP_COMMUNITY", before="private-value", after="private-value-long")],
+                 "aliases": {"backend": ["private-value-long", "prefix-private-value-suffix"]}}
+        lines = config_delta.approval_lines(delta)
+        self.assertNotIn("private-value", "".join(lines))
+        self.assertIn(operation.digest("private-value-long"), lines[-2])
+        self.assertIn(operation.digest("private-value"), lines[-1])
+
+    def test_DEP_58QD_03_secrets_absent_from_every_output(self):
+        from random import Random
+        rng = Random(58)
+        for option in ("password", "client-secret", "access-token"):
+            for inline in (True, False):
+                with self.subTest(option=option, inline=inline):
+                    case = fixture.ReleaseTest()
+                    self.addCleanup(case.doCleanups)
+                    case.setUp()
+                    secrets = ["private-" + rng.randbytes(12).hex() for _ in range(5)]
+                    before, after, arg, migration, nested = secrets
+                    net = next(iter(case.p["networks"]))
+                    case.p["networks"][net]["aliases"].append("old-" + before)
+                    def argv(value):
+                        return ["--" + option + "=" + value] if inline else ["--" + option, value]
+                    command = ["fixture-migrate", *argv(migration), "prefix-" + before]
+                    case.p["gate"]["command"].extend(argv(arg))
+                    case.p.update(migration={"mode": "dedicated", "command": command, "rollbackCompatible": True,
+                                             "options": {"credentials": {"password": nested}}},
+                                  envAllowlist=["SNMP_COMMUNITY", "SETTING"],
+                                  configDelta={"env": [dict(name="SNMP_COMMUNITY", before=before, after=after),
+                                                       dict(name="SETTING", before=None, after=arg)],
+                                               "aliases": {net: [after, "alias-" + arg, "alias-" + migration, nested]}})
+                    case.rt = fixture.Engine(case.p, case.rt.blob)
+                    case.rt.docs[fixture.OLD]["Config"]["Env"].append("SNMP_COMMUNITY=" + before)
+                    call, req = case.governed_dispatch()
+                    out, err, summary = io.StringIO(), io.StringIO(), io.StringIO()
+                    with patch.object(sys, "path", list(sys.path)):
+                        render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
+                    def verify(result):
+                        outputs = [json.dumps(result).encode(), summary.getvalue().encode(),
+                                   out.getvalue().encode(), err.getvalue().encode()]
+                        outputs.extend(p.read_bytes() for p in case.root.rglob("*") if p.is_file())
+                        for secret in secrets:
+                            self.assertTrue(all(secret.encode() not in raw for raw in outputs))
+                    with redirect_stdout(out), redirect_stderr(err), self.assertNoLogs():
+                        result = call(0)
+                        stamp = result["digest"]
+                        render(summary, req["module"], "plan", result, "apply", None)
+                        verify(result)
+                        for secret in (after, arg, migration, nested):
+                            self.assertIn(operation.digest(secret), " ".join(result["approvalLines"]))
+                        req.update(phase="apply", digest=stamp)
+                        gated = call(1)
+                        self.assertEqual(gated["status"], "GATED")
+                        stage = operation.read(case.root / stamp, "migration-plan.json")
+                        self.assertEqual(gated["digest"], operation.digest(stage))
+                        verify(gated)
+                        req.update(phase="migrate", digest=gated["digest"])
+                        with patch.object(case.rt, "migrate", wraps=case.rt.migrate) as migrate:
+                            ready = call(2)
+                        migrate.assert_called_once_with(fixture.NEW, command)
+                        self.assertEqual(ready["status"], "READY")
+                        verify(ready)
+                        req.update(run="2", phase="rollback", digest=stamp)
+                        returned = call(1)
+                        self.assertEqual(returned["status"], "ROLLED_BACK")
+                        verify(returned)
+                        req.update(run="3", phase="plan")
+                        req["digest"] = mandate.intent(req)
+                        with (patch.object(module_operation.operation, "plan",
+                                           side_effect=module_operation.ReleaseHeld("FIXTURE/" + arg)),
+                              self.assertRaises(mandate.Held) as denied):
+                            call(0)
+                        self.assertIn(operation.digest(arg), str(denied.exception))
+                        self.assertTrue((case.root / "3" / "plan.held").is_file())
+                        verify(str(denied.exception))
 
     def test_DEP_58LI_01_presence_precedes_profile_validation(self):
         for delta in (None, {}, [], "", False, 0, self.marker):

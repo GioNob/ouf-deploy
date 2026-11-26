@@ -264,57 +264,54 @@ class ModuleRelease(_ModuleRelease):
         if operation.reviewed.enabled(self.profile):
             self.runtime.release_run = req["run"]
 
+    def execute(self, review):
+        with operation.public_output.scope(self.profile):
+            try:
+                return operation.public_output.public(super().execute(review))
+            except Held as exc:
+                raise Held(operation.public_output.public(str(exc))) from None
+
     def reviewed_return(self):
         stamp = self.req["digest"]
         # Look up the already approved dispatch independently of the READY pointer.
         # A crash can leave the original result, pointer or signature unpublished.
-        approved = {}
-        originals = []
-        for proposal_file in self.path.parent.glob("[0-9]*/plan"):
-            run = proposal_file.parent
-            proposal = read(proposal_file)
-            if not isinstance(proposal, dict) or not isinstance(proposal.get("plan"), dict):
-                continue
-            proposal_stamp = proposal.get("planSha256")
-            if proposal["plan"].get("sourcePlan", proposal_stamp) != stamp or proposal.get("status") != "PLANNED":
-                continue
-            plan_review = read(run / "plan.review")["request"]
-            req = {**plan_review, "phase": "apply", "digest": proposal_stamp}
-            if req.get("module") != self.req["module"] or "apply" not in read(run / "approvals"):
-                continue
-            need(plan_review["phase"] == "plan" and plan_review["digest"] == intent(req) and
-                 req["operation"] == "module-release" and req["run"] == run.name and
-                 proposal_stamp == digest(proposal["plan"]), "MODULE_APPROVAL_DRIFT")
+        def approved_run(plan_digest):
+            need(hex64(plan_digest), "MODULE_APPROVAL_DRIFT")
+            claim = read(self.path.parent / ("module-apply-" + plan_digest))
+            req = claim["request"]
+            need(req["operation"] == "module-release" and req["module"] == self.req["module"] and
+                 req["phase"] == "apply" and req["digest"] == plan_digest and hex64(claim["review"])
+                 and req["run"].isascii() and req["run"].isdigit(), "MODULE_APPROVAL_DRIFT")
+            run = self.path.parent / req["run"]
+            proposal = read(run / "plan")
+            need(read(run / "plan.review")["request"] == dict(req, phase="plan", digest=intent(req)) and
+                 proposal["status"] == "PLANNED" and proposal["planSha256"] == digest(proposal["plan"]) == plan_digest
+                 and proposal["plan"].get("sourcePlan", plan_digest) == stamp, "MODULE_APPROVAL_DRIFT")
             if (run / "apply.review").exists():
-                review = read(run / "apply.review")
-                need(review["request"] == req and hex64(review["review"]), "MODULE_APPROVAL_DRIFT")
-            else:
-                # A recovery dispatch cannot touch the release before its own
-                # apply.review. The source run owns the earlier stop intent.
-                if proposal["plan"].get("sourcePlan") == stamp:
-                    need(not any((run / name).exists() for name in ("apply.result", "migrate.review")),
-                         "MODULE_APPROVAL_DRIFT")
-                    continue
-                directory = Path(self.profile["journal"]) / stamp
-                need(not (directory / "stop-intent.json").exists(), "MODULE_APPROVAL_DRIFT")
-            approved[run.name] = run
-            if proposal_stamp == stamp:
-                originals.append(proposal["plan"])
-        need(originals and all(plan == originals[0] for plan in originals), "MODULE_APPROVAL_DRIFT")
-        plan = originals[0]
+                need(read(run / "apply.review") == claim, "MODULE_APPROVAL_DRIFT")
+            return run, proposal["plan"]
+
+        original, plan = approved_run(stamp)
+
+        def publishing_run(run_id):
+            need(isinstance(run_id, str) and run_id.isascii() and run_id.isdigit(), "MODULE_APPROVAL_DRIFT")
+            if run_id == original.name:
+                return original
+            recovery_plan = read(self.path.parent / run_id / "plan")
+            run, _ = approved_run(recovery_plan["planSha256"])
+            need(run.name == run_id, "MODULE_APPROVAL_DRIFT")
+            return run
 
         def publish(body, receipt, returning):
             pointer = self.path.parent / ("module-" + self.req["module"] + ".ready")
             current = read(pointer) if pointer.exists() else None
             origin = receipt.get("releaseRun")
-            need(origin in approved, "MODULE_APPROVAL_DRIFT")
-            run = approved[origin]
-            if current and current["planSha256"] == stamp:
-                need(current["run"] in approved, "MODULE_APPROVAL_DRIFT")
-                run = approved[current["run"]]
+            run = publishing_run(origin)
             phase = "migrate" if "migrationSha256" in receipt else "apply"
             if phase == "migrate":
                 stage = read(run / "apply.result")
+                need(read(self.path.parent / ("module-migrate-" + receipt["migrationSha256"])) == read(run / "migrate.review"),
+                     "MODULE_APPROVAL_DRIFT")
                 need(stage["migrationSha256"] == receipt["migrationSha256"] == read(run / "migrate.review")["request"]["digest"]
                      and "migrate" in read(run / "approvals"), "MODULE_APPROVAL_DRIFT")
             need(body == plan, "MODULE_PARENT_DRIFT")
@@ -329,6 +326,12 @@ class ModuleRelease(_ModuleRelease):
                          published == dict(receipt, status="HELD", reason=reason), "MODULE_RECEIPT_DRIFT")
                     unlock_failure = published
             tip = {"run": run.name, "phase": phase, "planSha256": stamp}
+            if current and current["planSha256"] == stamp and current["run"] != origin:
+                # A recovery apply can republish an already durable READY from the original run.
+                publisher = publishing_run(current["run"])
+                need(current["phase"] == "apply" and read(publisher / "apply.result") == receipt,
+                     "MODULE_RECEIPT_DRIFT")
+                tip = current
             if current != tip:
                 need(not returning and (current is None or int(current["run"]) < int(run.name)), "MODULE_RECEIPT_DRIFT")
             if "receiptSigning" in self.profile:

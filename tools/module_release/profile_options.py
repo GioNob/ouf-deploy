@@ -33,7 +33,7 @@ def reviewed(profile):
 
 def reviewed_return_allowed(profile):
     migration = profile.get("migration")
-    return reviewed(profile) and isinstance(migration, Mapping) and migration.get("mode") in ("none", "spring-flyway")
+    return reviewed(profile) and isinstance(migration, Mapping) and migration.get("mode") in ("none", "spring-flyway", "dedicated")
 
 
 def validate_request_profiles(req, policy, *, check=require):

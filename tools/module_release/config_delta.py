@@ -6,6 +6,7 @@ from pathlib import PurePosixPath
 import re
 from urllib.parse import unquote
 
+from .public_output import public, scope
 from .contract import NAME, matches
 from .frame_spec import SpecHeld, canonical, check_file_env, disjoint, validate_bind, validate_env
 
@@ -185,4 +186,5 @@ def approval_lines(delta, show_values=()):
         lines.append(f"Aggiungi bind in sola lettura su {bind['target']} · sha256 {bind['sha256']}")
     for network, additions in sorted(delta.get("aliases", {}).items()):
         lines.extend(f"Aggiungi alias {alias} alla rete {network}" for alias in additions)
-    return lines
+    with scope({"configDelta": delta, "showValues": list(show_values)}):
+        return public(lines)
