@@ -104,3 +104,13 @@ def run(profile, stamp, runtime=None, *, recover=False):
         if unlock:
             unlock_module(lock)
     return result
+
+
+from .contract import validate_profile_options
+
+_run = run
+
+
+def run(profile, stamp, runtime=None, *, recover=False):
+    validate_profile_options(profile)
+    return _run(profile, stamp, runtime, recover=recover)

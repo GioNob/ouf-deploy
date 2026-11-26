@@ -53,3 +53,19 @@ def validate(p):
     check(matches(NAME, ci["workflow"]) and type(ci["pullRequest"]) is int and ci["pullRequest"] > 0
           and "publisherFormat" not in ci and matches(NAME, ci.get("manifestSchema"))
           and matches(IMAGE, ci["imageId"]), "CI_PINS_REQUIRED")
+
+
+_valid_request = valid_request
+_validate = validate
+
+
+def valid_request(req, policy, common):
+    from .profile_options import validate_module_profiles
+    if isinstance(req, dict):
+        validate_module_profiles(req.get("module"), policy, release=False, check=contract.require)
+    return _valid_request(req, policy, common)
+
+
+def validate(p):
+    contract.validate_profile_options(p)
+    return _validate(p)

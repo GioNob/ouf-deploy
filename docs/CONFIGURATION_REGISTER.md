@@ -45,6 +45,12 @@ Le voci `deploy.a2.executor@2`, `deploy.a2.profile@2` e `deploy.a2.journal@2` re
 
 Il formato di cattura, il punto di aggancio T2 e i comandi in sola lettura sono nella [guida IAM T2](IAM_PROFILE_T2.md).
 
+## Delta di configurazione di module-release (D-065)
+
+`configDelta` non abilitato, si abilita con il 58q. Il custode omette la chiave dal profilo di rilascio. Un profilo che la contiene viene rifiutato con `CONFIG_DELTA_NOT_ENABLED`.
+
+Per il 58q, la voce di custodia prevista è `deploy.module-release.config-delta@1`. Il custode dell'esecutore conserva il profilo privato, i digest e i permessi dei file RO. Il produttore conserva i contenuti approvati e i segreti. La prova di ripristino prevista confronta i file con i digest approvati e verifica bind, ENV, reti e readiness sul CID originale.
+
 ## Prima installazione dei moduli
 
 | Voce D-065 | Cattura privata del custode | Ripristino e verifica |

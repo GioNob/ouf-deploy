@@ -517,3 +517,40 @@ def rollback(p, stamp, runtime=None):
         return isolate(p, rt, root, body, req, defaults, cid)
     except Exception as exc:
         return {"status": "HELD", "reason": reason(exc)}
+
+
+from .contract import validate_profile_options
+
+_engine = engine
+_plan = plan
+_apply = apply
+_rollback = rollback
+
+
+def engine(profile):
+    validate_profile_options(profile)
+    return _engine(profile)
+
+
+def plan(p, runtime=None, *, resume=None):
+    try:
+        validate_profile_options(p)
+    except Held as exc:
+        return {"status": "HELD", "reason": reason(exc)}
+    return _plan(p, runtime, resume=resume)
+
+
+def apply(p, stamp, runtime=None):
+    try:
+        validate_profile_options(p)
+    except Held as exc:
+        return {"status": "HELD", "reason": reason(exc)}
+    return _apply(p, stamp, runtime)
+
+
+def rollback(p, stamp, runtime=None):
+    try:
+        validate_profile_options(p)
+    except Held as exc:
+        return {"status": "HELD", "reason": reason(exc)}
+    return _rollback(p, stamp, runtime)

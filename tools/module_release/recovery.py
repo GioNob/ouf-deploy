@@ -149,3 +149,13 @@ def resume(p, rt, approved):
     op.record(root, "receipt.json", result)
     op.unlock_module(lock)
     return result
+
+
+from .contract import validate_profile_options
+
+_residual = residual
+
+
+def residual(p, rt):
+    validate_profile_options(p)
+    return _residual(p, rt)

@@ -341,3 +341,30 @@ def package(p, target=None, *, transport=False, migrations_field=None, image_def
                 require(isinstance(manifest.get(migrations_field), list), "MIGRATION_INVENTORY_REQUIRED")
                 facts["migrations"] = manifest[migrations_field]
             return facts
+
+
+_validate = validate
+_package = package
+
+
+def validate_profile_options(profile, *, check=require):
+    if __package__:
+        try:
+            from .profile_options import validate_profile_options as admit
+        except ImportError:
+            pass
+        else:
+            return admit(profile, check=check)
+    # The installer also executes this module directly from its verified Git blob.
+    if isinstance(profile, dict):
+        check("configDelta" not in profile, "CONFIG_DELTA_NOT_ENABLED")
+
+
+def validate(p):
+    validate_profile_options(p)
+    return _validate(p)
+
+
+def package(p, target=None, *, transport=False, migrations_field=None, image_defaults=None):
+    validate_profile_options(p)
+    return _package(p, target, transport=transport, migrations_field=migrations_field, image_defaults=image_defaults)

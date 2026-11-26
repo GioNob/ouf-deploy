@@ -150,3 +150,13 @@ def authorize(req, policy, get, state):
             return review
     consume_approval(state / req["run"], req["phase"], index)
     return review
+
+
+_validate_request = validate
+
+
+def validate(req, policy):
+    if isinstance(req, dict) and req.get("operation") in ("module-release", "module-install"):
+        from module_release.profile_options import validate_request_profiles
+        validate_request_profiles(req, policy, check=need)
+    return _validate_request(req, policy)

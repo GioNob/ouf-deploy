@@ -241,3 +241,23 @@ class ModuleRelease:
         if retention.ADMIN in proposal["plan"]:
             response["retentionReview"] = proposal["plan"][retention.ADMIN]
         return response
+
+
+from module_release.profile_options import validate_module_profiles
+
+_ModuleInstall = ModuleInstall
+_ModuleRelease = ModuleRelease
+
+
+class ModuleInstall(_ModuleInstall):
+    def __init__(self, cfg, root, req):
+        if isinstance(req, dict):
+            validate_module_profiles(req.get("module"), cfg, release=False, check=need)
+        super().__init__(cfg, root, req)
+
+
+class ModuleRelease(_ModuleRelease):
+    def __init__(self, cfg, root, req):
+        if isinstance(req, dict):
+            validate_module_profiles(req.get("module"), cfg, release=True, check=need)
+        super().__init__(cfg, root, req)

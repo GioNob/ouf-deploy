@@ -81,6 +81,10 @@ Il profilo MCP identifica il PID 1 con `gate.executable` e l'intero argv con `ga
 
 La suite portabile usa lo ZIP nel formato R-033 e verifica i mandati sulle fasi. Il job nativo opt-in usa un processo Go al cancello e un PostgreSQL temporaneo per verificare variazioni della storia e dello schema. [Qualifica GitHub-hosted](../.github/workflows/privileged-executor-native.yml)
 
+## Delta di configurazione
+
+`configDelta` non abilitato, si abilita con il 58q. La presenza della chiave nel profilo, anche con valore nullo o vuoto, ferma la richiesta con `HELD / CONFIG_DELTA_NOT_ENABLED` prima della creazione del piano e del journal.
+
 ## Prima installazione (`module-install`)
 
 Il custode completa `modules.<modulo>.install` nel profilo A2 privato. La voce del modulo fornisce nome del container, gate, readiness, reti, socket, nsenter, CI, inbox e journal. Usare un UID numerico positivo, ed eventualmente un GID e gruppi supplementari numerici. Ogni dato persistente richiede un bind. Ogni destinazione dichiarata in `Config.Volumes`, compreso `/tmp`, richiede un bind o un tmpfs esplicito. [Sezione di esempio](module-install.example.json)
@@ -93,7 +97,7 @@ Gli antenati delle sorgenti sono directory in custodia root. Il mount RO richied
 4. Per isolare il candidato indicare `return_plan` con il digest originale e approvare `rollback`. Il journal conserva il CID anche dopo il fermo, il distacco delle reti e la rinomina in `install.failedName`. Dopo un errore di readiness l’apply registra il fallimento e tenta lo stesso isolamento. Il recupero dei dati applicativi usa la cattura dello store.
 5. Per il primo aggiornamento ordinario fissare `oldImage` a `imageId` della ricevuta, preparare i pin del nuovo ZIP e i nomi di custodia liberi e usare il workflow `module-release` del modulo. La linea A inserisce il nuovo servizio nella guardia di boot coordinata, con gate, dipendenze e sonda del relativo profilo.
 
-Il consumatore di `configDelta` passa le radici del delta e i percorsi privati del modulo a `validate_bind(entry, roots, profile=profile)`. La forma a due argomenti accetta una mappa con `bindRoots`, `journal`, `inbox` e `dockerSocket`. Una lista priva del contesto privato dà `BIND_POLICY_REQUIRED` per una sorgente altrimenti ammessa. Dopo la composizione del delta, `check_file_env(env, mounts)` verifica i riferimenti `*_FILE` contro le destinazioni RO del frame risultante.
+Per il 58q, il contratto della libreria richiede di passare le radici del delta e i percorsi privati del modulo a `validate_bind(entry, roots, profile=profile)`. La forma a due argomenti accetta una mappa con `bindRoots`, `journal`, `inbox` e `dockerSocket`. Una lista priva del contesto privato dà `BIND_POLICY_REQUIRED` per una sorgente altrimenti ammessa. Dopo la composizione del delta, `check_file_env(env, mounts)` verifica i riferimenti `*_FILE` contro le destinazioni RO del frame risultante.
 
 La verifica della CREATE precede la registrazione del CID, anche nel recupero dalla label. Config eredita i default dell’immagine verificata. L’inspect Linux API 1.44 può materializzare l’hostname dal CID breve, il conteggio zero dei tentativi di restart, raccolte vuote o nulle, la propagazione privata dei bind e i default Engine elencati in `HOST_DEFAULTS`. I mount si confrontano per destinazione e gli alias per nome. A container fermo il NetworkID può essere vuoto. Dopo lo start si verificano ID della rete e IPv4 assegnata. Docker alloca le MAC. Un limite risorse diverso, un’opzione host sconosciuta o un default del daemon fuori dal profilo riconosciuto danno `HELD`.
 

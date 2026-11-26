@@ -246,3 +246,12 @@ def create_with_custody(spec, image_facts, plan_sha256):
     except OSError:
         raise SpecHeld("BIND_CUSTODY_UNPROVEN") from None
     return request, custody
+
+
+_build_create = build_create
+
+
+def build_create(spec, image_facts, plan_sha256) -> dict:
+    from .contract import validate_profile_options
+    validate_profile_options(spec, check=check)
+    return _build_create(spec, image_facts, plan_sha256)

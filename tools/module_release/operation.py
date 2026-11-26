@@ -590,3 +590,31 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
     if result.get("rollback") != "HELD":
         unlock_module(lock)
     return result
+
+
+from .contract import validate_profile_options
+
+_plan = plan
+_apply = apply
+_rollback = rollback
+
+
+def plan(profile: dict, runtime=None, *, previous_release=None) -> dict:
+    try:
+        validate_profile_options(profile)
+    except Held as exc:
+        return {"status": "HELD", "reason": reason(exc), "rollback": "UNVERIFIED"}
+    return _plan(profile, runtime, previous_release=previous_release)
+
+
+def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=False, previous_release=None) -> dict:
+    try:
+        validate_profile_options(profile)
+    except Held as exc:
+        return {"operation": "module-release", "status": "HELD", "reason": reason(exc)}
+    return _apply(profile, plan_sha256, runtime, defer_migration=defer_migration, previous_release=previous_release)
+
+
+def rollback(p, rt, old, root, result, exc):
+    validate_profile_options(p)
+    return _rollback(p, rt, old, root, result, exc)

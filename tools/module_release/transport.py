@@ -102,18 +102,37 @@ def transport(profile, run_id, artifact_id, inbox):
     return {k: ci[k] for k in fields} | receipt
 
 
-if __name__ == "__main__":
+def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--module", choices=("udp", "ingestion"))
     parser.add_argument("profile", type=Path)
     parser.add_argument("run_id", type=int)
     parser.add_argument("artifact_id", type=int)
     parser.add_argument("inbox", type=Path)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     try:
-        profile = json.loads(args.profile.read_text(encoding="utf-8"))
+        profile = admitted_profile(json.loads(args.profile.read_text(encoding="utf-8")))
         require(args.module is None or profile.get("module") == args.module, "MODULE_PROFILE_MISMATCH")
         print(json.dumps(transport(profile, args.run_id,
                                    args.artifact_id, args.inbox), sort_keys=True))
     except Exception as error:
         raise SystemExit(str(error) if isinstance(error, Held) else "TRANSPORT_IO_OR_INPUT_ERROR") from None
+
+
+from .contract import validate_profile_options
+
+_transport = transport
+
+
+def transport(profile, run_id, artifact_id, inbox):
+    validate_profile_options(profile)
+    return _transport(profile, run_id, artifact_id, inbox)
+
+
+def admitted_profile(profile):
+    validate_profile_options(profile)
+    return profile
+
+
+if __name__ == "__main__":
+    main()

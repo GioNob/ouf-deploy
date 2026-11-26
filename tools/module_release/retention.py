@@ -231,3 +231,13 @@ def run(p, rt, source, phase, ready):
         require(done.get("status") == "VERIFIED", "RETENTION_OUTPUT_UNCONFIRMED")
         retire_worker(rt, root, phase, done["cid"])
     return expected
+
+
+from .contract import validate_profile_options
+
+_run = run
+
+
+def run(p, rt, source, phase, ready):
+    validate_profile_options(p)
+    return _run(p, rt, source, phase, ready)
