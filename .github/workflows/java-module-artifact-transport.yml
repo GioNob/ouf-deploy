@@ -1,11 +1,11 @@
-name: Transport UDP or Ingestion release image
+name: Transport governed module release image
 on:
   workflow_dispatch:
     inputs:
       module:
         description: Module with a reviewed CI pin
         type: choice
-        options: [udp, ingestion]
+        options: [udp, ingestion, vertical-mock]
         required: true
       source_run:
         description: Successful pinned PR CI run ID
@@ -33,6 +33,7 @@ jobs:
           MODULE: ${{ inputs.module }}
           UDP_PROFILE: ${{ vars.UDP_RELEASE_TRANSPORT_PROFILE }}
           INGESTION_PROFILE: ${{ vars.INGESTION_RELEASE_TRANSPORT_PROFILE }}
+          VERTICAL_MOCK_PROFILE: ${{ vars.VERTICAL_MOCK_RELEASE_TRANSPORT_PROFILE }}
           INBOX: ${{ vars.MODULE_RELEASE_INBOX }}
         run: |
           set -euo pipefail
@@ -40,6 +41,7 @@ jobs:
           case "$MODULE" in
             udp) PROFILE="$UDP_PROFILE" ;;
             ingestion) PROFILE="$INGESTION_PROFILE" ;;
+            vertical-mock) PROFILE="$VERTICAL_MOCK_PROFILE" ;;
             *) exit 1 ;;
           esac
           python3 -B -m tools.module_release.transport --module "$MODULE" "$PROFILE" \

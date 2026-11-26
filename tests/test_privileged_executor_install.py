@@ -66,6 +66,22 @@ class Bootstrap(unittest.TestCase):
             java["ci"] = dict(module["ci"], artifactPrefix="fixture-" + name)
             java["migration"]["flyway"].update(postgresCid="d"*64, socket="/tmp", urlEnv="APP_URL",
                                                userEnv="APP_USER", database="fixture", schema=name)
+        mock = cfg["modules"]["vertical-mock"]
+        section = json.dumps(mock["install"])
+        for placeholder, value in {
+            "<host data root>": "/fixture/data", "<host configuration root>": "/fixture/config",
+            "<container data directory>": "/mock/data", "<container domain file>": "/mock/domain",
+            "<container read token file>": "/mock/read", "<container admin token file>": "/mock/admin",
+            "<approved domain SHA-256>": "c"*64,
+        }.items():
+            section = section.replace(placeholder, value)
+        mock["install"] = json.loads(section)
+        for key in ("inbox", "journal", "dockerSocket", "nsenter", "oldImage", "networks"):
+            mock[key] = module[key]
+        mock["ci"] = dict(module["ci"], repository="fixture/ouf-vertical-mock", workflow="module-ci.yml",
+                          pullRequest=1, artifactPrefix="vertical-mock-governed-image",
+                          manifestSchema="ouf.vertical-mock-tested-image.v1", imageName="ouf-vertical-mock",
+                          sourceCommit="f"*40, sourceTree="e"*40)
         book = ("C="+"f"*40+"\n").encode()
         self.artifacts = {}
         for binding in cfg["runbooks"].values():
@@ -99,7 +115,13 @@ class Bootstrap(unittest.TestCase):
         cfg = json.loads(files[inst.ROOT / "profile.json"][0])
         self.assertNotIn("proof", cfg["queue"])
         self.assertEqual(len(cfg["runbooks"]), 13)
-        self.assertEqual(set(cfg["modules"]), {"onboarding", "mcp", "udp", "ingestion"})
+        self.assertEqual(set(cfg["modules"]), {"onboarding", "mcp", "udp", "ingestion", "vertical-mock"})
+        install = cfg["modules"]["vertical-mock"]["install"]
+        self.assertEqual(install["user"], "10008:10008")
+        env = {e["name"]: e["value"] for e in install["env"]}
+        self.assertEqual({b["target"]: b["mode"] for b in install["binds"]},
+                         {env["OUF_MOCK_DATA_DIR"]: "rw", env["OUF_MOCK_DOMAIN_FILE"]: "ro",
+                          env["OUF_MOCK_READ_TOKEN_FILE"]: "ro", env["OUF_MOCK_ADMIN_TOKEN_FILE"]: "ro"})
         lib = inst.ROOT / "lib"
         for file, (data, _) in files.items():
             if file.is_relative_to(lib):
@@ -125,6 +147,7 @@ class Bootstrap(unittest.TestCase):
                     del cfg["modules"]["mcp"]
                     del cfg["modules"]["udp"]
                     del cfg["modules"]["ingestion"]
+                    del cfg["modules"]["vertical-mock"]
                 self.path.write_text(json.dumps(cfg))
                 self.assertIn(self.inst.ENTRY, self.inst.inspect(self.path))
 
@@ -325,7 +348,8 @@ class Bootstrap(unittest.TestCase):
         self.install_fixture()
         if not self.native:
             self.enterContext(patch.object(os, "geteuid", return_value=0, create=True))
-            self.enterContext(patch.object(inst, "sys", types.SimpleNamespace(flags=types.SimpleNamespace(isolated=True))))
+            self.enterContext(patch.object(inst, "sys", types.SimpleNamespace(
+                flags=types.SimpleNamespace(isolated=True), path=sys.path, modules=sys.modules)))
         if os.name == "nt":
             self.enterContext(patch.object(inst, "installation_lock", nullcontext))
         def cli(mode, *args):

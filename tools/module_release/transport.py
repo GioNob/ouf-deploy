@@ -9,12 +9,14 @@ import re
 import tempfile
 from urllib.parse import urlsplit
 
-from .contract import SEMANTIC_SCHEMA, Held, checksum, package, require, validate_ci
+from .contract import (SEMANTIC_SCHEMA, VERTICAL_MOCK_SCHEMA, Held, checksum, package, require, valid_repository,
+                       validate_ci, validate_vertical_mock_ci)
 from .provenance import select_artifact, verify_tested_tree
 
 
 API_LIMIT = 4 << 20
 CHUNK = 1 << 20
+PINNED_MODULES = ("udp", "ingestion", "vertical-mock")
 
 
 def _token():
@@ -63,6 +65,7 @@ def github(path, output=None):
 
 
 def select(ci, run_id, artifact_id, api, *, artifact_prefix=None):
+    require(valid_repository(ci.get("repository")), "CI_PINS_REQUIRED")
     prefix = "repos/" + ci["repository"]
     if artifact_prefix is None:
         if "artifactPrefix" in ci or ci.get("publisherFormat") or ci.get("manifestSchema") == SEMANTIC_SCHEMA:
@@ -74,8 +77,14 @@ def select(ci, run_id, artifact_id, api, *, artifact_prefix=None):
 
 
 def transport(profile, run_id, artifact_id, inbox):
+    mock = profile.get("module") == "vertical-mock"
+    if profile["ci"].get("manifestSchema") == VERTICAL_MOCK_SCHEMA:
+        require(mock, "MODULE_PROFILE_MISMATCH")
+    if mock:
+        validate_vertical_mock_ci(profile["ci"])
+        require("migrationsField" not in profile, "VERTICAL_MOCK_MIGRATION_PROFILE")
     ci = select(profile["ci"], run_id, artifact_id, github)
-    pinned = profile.get("module") in ("udp", "ingestion")
+    pinned = profile.get("module") in PINNED_MODULES
     if pinned:
         validate_ci(profile["ci"])
         require(all(ci[k] == profile["ci"][k] for k in ("runId", "runAttempt", "artifactId", "zipSha256")),
@@ -97,14 +106,16 @@ def transport(profile, run_id, artifact_id, inbox):
             with final.open("rb") as existing:
                 require(checksum(existing) == ci["zipSha256"], "EXISTING_TRANSPORT_CHANGED")
     fields = ("repository", "sourceCommit", "sourceTree", "runId", "runAttempt", "artifactId", "zipSha256")
+    if mock or ci.get("publisherFormat") == "acquisition-mcp":
+        fields += ("workflow", "pullRequest")
     if ci.get("publisherFormat") == "acquisition-mcp":
-        fields += ("workflow", "pullRequest", "sourceBranch")
+        fields += ("sourceBranch",)
     return {k: ci[k] for k in fields} | receipt
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--module", choices=("udp", "ingestion"))
+    parser.add_argument("--module", choices=PINNED_MODULES)
     parser.add_argument("profile", type=Path)
     parser.add_argument("run_id", type=int)
     parser.add_argument("artifact_id", type=int)
