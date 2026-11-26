@@ -188,7 +188,7 @@ def park(rt, cid, name, networks, *, verify=None):
             and not doc["NetworkSettings"]["Networks"], "PARK_UNCONFIRMED")
 
 
-def checked_generation(p, rt, old, cid, restoring=False):
+def checked_generation(p, rt, old, cid, restoring=False, *, stamp=None):
     image = old["Image"] if restoring else p["ci"]["imageId"]
     config_image = old["Config"]["Image"] if restoring else image
     first = reviewed.first_inspect(rt, cid, restoring) if reviewed.enabled(p) else rt.inspect(cid)
@@ -200,7 +200,7 @@ def checked_generation(p, rt, old, cid, restoring=False):
     def checked():
         doc = rt.inspect(cid)
         require(doc["Id"] == cid and doc["Name"] == "/" + p["container"], "SERVICE_IDENTITY_CHANGED")
-        check_body(*reviewed.body_args(p, old, doc, image, config_image, restoring), labels=None if restoring else reviewed.labels(p),
+        check_body(*reviewed.body_args(p, old, doc, image, config_image, restoring), labels=None if restoring else reviewed.labels(p, stamp),
                    image_defaults=reviewed.defaults(p, defaults, restoring), candidate=None if restoring else p.get("candidate"))
         check_live_networks(reviewed.network_baseline(p, old, restoring), doc)
         require(snapshot(doc) == generation, "GENERATION_CHANGED")
@@ -222,18 +222,18 @@ def waiting_gate(p, rt, old, cid, restoring=False):
 
 
 def load_predecessor(p, rt, root):
-    saved = public_output.private_baseline(read(root, "baseline.private.json"))
+    saved = public_output.private_baseline(json.loads((root / "baseline.private.json").read_bytes()))
     if "Config" in saved:  # original full-frame journals
         return saved
     # Recover immutable fields from the retained CID; its original frame digest
     # authenticates them. DSNs and other Config.Env values never enter this journal.
-    return {**rt.inspect(saved["Id"]), **saved}
+    return {**rt.inspect(saved["Id"]), **public_output.network_alias_refs(p, saved)}
 
 
 def verify_database(p, rt, old, root, *, migrated=False):
     if "database" in p["migration"]:
-        state = public_output.private_baseline(read(root, "database.private.json"))
-        plan = read(root, "plan.json")
+        state = public_output.private_baseline(json.loads((root / "database.private.json").read_bytes()))
+        plan = json.loads((root / "plan.json").read_bytes())
         require(digest(plan) == root.name and digest(state) == plan["databaseSha256"], "DATABASE_BASELINE_CHANGED")
         postgres.verify(rt, old, state, p["migration"], migrated=migrated)
         return plan["databaseSha256"]
@@ -354,7 +354,7 @@ def restore(p, rt, old, new, root):
     check_body(old, doc, old["Image"], old["Config"]["Image"])
     require(doc["Id"] == cid and doc["Name"] in (old["Name"], "/" + p["retainedName"])
             and (doc["State"]["StartedAt"] == old["State"]["StartedAt"] or
-                 (root / "restore-start.json").exists()), "RESTORE_IDENTITY_CHANGED")
+                 reviewed.enabled(p) or (root / "restore-start.json").exists()), "RESTORE_IDENTITY_CHANGED")
     # Legacy profiles require their live database proof before any return effect.
     reviewed.verify_restore_schema(p, rt, old, root)
     attached = reviewed.attachments(p, old, doc, root) if reviewed.enabled(p) else doc["NetworkSettings"]["Networks"]
@@ -372,7 +372,7 @@ def restore(p, rt, old, new, root):
     owner = rt.inspect(p["container"], missing=True)
     require(owner is None or owner["Id"] == cid, "UNKNOWN_SERVICE_OWNER")
     if doc["State"]["Running"]:
-        if (root / "restore-start.json").exists():
+        if (root / "restore-start.json").exists() or reviewed.enabled(p) and doc["State"]["StartedAt"] != old["State"]["StartedAt"]:
             if reviewed.enabled(p): return reviewed.restore_start(p, rt, old, root)
             require(read(root, "restore-start.json") == {"cid": cid} and (root / "restore-generation.json").is_file()
                     and read(root, "restore-generation.json") == {"generation": snapshot(doc)}, "RESTORE_GENERATION_UNCONFIRMED")
@@ -419,7 +419,7 @@ def start_candidate(p, rt, old, cid, root):
 
 def finish_apply(p, rt, body, old, new, root, result, defer_migration):
     start = read(root, "start-generation.json")
-    require(start == {"cid": new, "generation": snapshot(rt.inspect(new))}, "START_GENERATION_CHANGED")
+    require(start == reviewed.start_proof(new, rt.inspect(new), start if reviewed.enabled(p) else {}), "START_GENERATION_CHANGED")
     review = defer_migration or "database" in p["migration"] or "flyway" in p["migration"]
     if review and p["migration"]["mode"] != "none":
         generation, checked = waiting_gate(p, rt, old, new)
@@ -444,10 +444,10 @@ def finish_apply(p, rt, body, old, new, root, result, defer_migration):
 def execute(p, rt, body, old, root, result, defer_migration):
     new = None
     result["predecessorCid"] = old["Id"]
-    saved = {key: old[key] for key in ("Id", "Name", "NetworkSettings", "RestartCount")}
+    saved = public_output.network_alias_refs(p, {key: old[key] for key in ("Id", "Name", "NetworkSettings", "RestartCount")}, config=old["Config"])
     saved["State"] = {key: old["State"][key] for key in ("Running", "Pid", "StartedAt")}
     record(root, "plan.json", body)
-    record(root, "baseline.private.json", saved)
+    reviewed.save_frame(root, saved, body) if reviewed.enabled(p) else record(root, "baseline.private.json", saved)
     with tempfile.TemporaryFile(dir=root) as archive:
         actual = package(p, archive)
         require(all(body[k] == v for k, v in actual.items()), "ARTIFACT_CHANGED")
@@ -559,7 +559,7 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
     def read(name):
         return json.loads((root / name).read_bytes())
 
-    stage = reviewed.forward_stage(profile, root, plan_sha256)
+    stage = reviewed.forward_stage(profile, root, plan_sha256) if reviewed.enabled(profile) else read("migration-plan.json")
     staged = read("stage.json")
     require(lock.is_dir() and not (root / "receipt.json").exists() and staged["status"] == "GATED"
             and staged["migrationSha256"] == migration_sha256 == digest(stage)

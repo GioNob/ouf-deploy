@@ -1,9 +1,11 @@
 """DEP-58Q interruption matrix. Engine state crosses process boundaries separately from the journal."""
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import ExitStack
+import copy
 import hashlib
 import json
 import os
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -46,7 +48,7 @@ def interrupted(rt, plan, phase, point, after):
             if directory.name.startswith(".prepare-"):
                 return "private-" + name
             if directory.name.startswith("restore-after-"):
-                return "recycled-" + name
+                return name if name == "origin.json" else "recycled-" + name
             return name
 
         wrap(op, "record", record_point)
@@ -66,8 +68,8 @@ def interrupted(rt, plan, phase, point, after):
                 return prefix + method
             wrap(rt, method, identify)
         try:
-            if phase == "apply":
-                result = op.apply(rt.p, stamp, rt)
+            if phase in ("apply", "stage"):
+                result = op.apply(rt.p, stamp, rt, defer_migration=phase == "stage")
             else:
                 result = reviewed.return_run(rt.p, stamp, rt, approved_plan=plan)
         except Crash:
@@ -142,7 +144,7 @@ class ReadyReturn(unittest.TestCase):
         self.assertFalse(list(root.parent.glob(".*-retired-" + root.name)))
         self.assertEqual(result, op.read(root, "return-receipt.json"))
 
-    def test_DEP_58Q_02_apply_boundaries_then_interrupted_approved_return(self):
+    def apply_points(self):
         seed, _ = self.case()
         networks = [ep["NetworkID"][0] for ep in seed.nets.values()]
         points = ["private-plan.json", "private-owner.json", "rename-lock", "publish-lock", "plan.json",
@@ -150,16 +152,194 @@ class ReadyReturn(unittest.TestCase):
                   "old-rename", "create-intent.json", "create", "created.json", "create-proof.json",
                   "start-intent.json", "new-start", "candidate-epoch.json", "start-generation.json",
                   "release-signal.json", "new-signal", "new-probe", "receipt.json", "unpublish-lock", "unlock"]
-        self.matrix(points, applying=True)
+        return points
 
-    def test_DEP_58Q_03_ready_return_boundaries(self):
+    def test_DEP_58Q_02_apply_boundaries_then_interrupted_approved_return(self):
+        self.matrix(self.apply_points(), applying=True)
+
+    def return_points(self):
         seed, _ = self.case()
         networks = [ep["NetworkID"][0] for ep in seed.nets.values()]
         points = ["publish-lock", "return-intent.json", "park-epoch.json", "new-stop", *["new-disconnect-" + n for n in networks],
                   "new-rename", "old-rename", *["old-connect-" + n for n in networks], "restore-start.json",
                   "restore-stop-epoch.json", "old-start", "restore-generation.json", "restore-signal.json", "old-signal", "old-probe",
                   "return-receipt.json", "unpublish-lock", "cleanup-plan.json", "cleanup-owner.json", "unlock"]
-        self.matrix(points, applying=False)
+        return points
+
+    def test_DEP_58Q_03_ready_return_boundaries(self):
+        self.matrix(self.return_points(), applying=False)
+
+    def loss_row(self, rt, plan, label, retry=None, ambiguous_exit=False):
+        """Replay the same independent Docker and filesystem snapshots for each missing file."""
+        parent = Path(rt.p["journal"])
+        root = parent / op.digest(plan)
+        def journal_entries():
+            return [p for p in parent.iterdir() if p.is_dir() and (
+                p == root or p == reviewed.lock_path(rt.p) or p.name.startswith((".prepare-", "." + rt.p["module"] + ".lock-")))]
+        # Keep the approval ledger as a separate input to each dispatch. Only
+        # the release journal (including its published/private locks) loses a file.
+        release_entries = {d.name for d in journal_entries()}
+        def relevant(path):
+            return path.suffix != ".zip" and (retry is not None or path.parts[0] in release_entries)
+        dirs, snapshot = [], {}
+        for path in parent.rglob("*"):
+            rel = path.relative_to(parent)
+            if relevant(rel):
+                if path.is_dir():
+                    dirs.append(rel)
+                else:
+                    snapshot[rel] = path.read_bytes()
+        files = sorted(rel for rel in snapshot if rel.parts[0] in release_entries)
+
+        def reset():
+            entries = [p for p in parent.iterdir() if p.suffix != ".zip"] if retry else journal_entries()
+            for path in entries:
+                if path.is_dir():
+                    shutil.rmtree(path)
+                else:
+                    path.unlink()
+            for rel in sorted(dirs, key=lambda d: len(d.parts)):
+                (parent / rel).mkdir()
+            for rel, data in snapshot.items():
+                (parent / rel).write_bytes(data)
+
+        row = []
+        try:
+            for lost in [None, *files]:
+                with self.subTest(cut=label, lost=str(lost)):
+                    reset()
+                    if lost:
+                        (parent / lost).unlink()
+                    unobserved = ambiguous_exit and not any((root / name).is_file() for name in
+                                                            ("candidate-epoch.json", "start-generation.json"))
+                    fresh = copy.deepcopy(rt)
+                    if retry is None:
+                        result = reviewed.return_run(fresh.p, root.name, fresh, approved_plan=plan)
+                    else:
+                        result = retry(fresh)
+                    cell = str(lost).replace(root.name, "run") if lost else "intact"
+                    if unobserved:
+                        self.assertEqual((result["status"], result["reason"]), ("HELD", "START_GENERATION_UNCONFIRMED"))
+                        self.assertEqual(rt.events, fresh.events)
+                        cell += "=HELD/START_GENERATION_UNCONFIRMED"
+                    else:
+                        self.oracle(fresh, plan, result)
+                    row.append(cell)
+        finally:
+            reset()
+        print("D-080", label, "(ROLLED_BACK unless indicated)", ", ".join(row), flush=True)
+        return len(files) + 1
+
+    def test_DEP_58QG_02_generated_single_loss_matrix(self):
+        phases = {"apply": [*self.apply_points(), "return-frame.json"],
+                  "return": [*self.return_points(), "restore-dispatch.json"],
+                  "recycle": ["restore-recycle.json", "origin.json", "old-stop", "recycled-restore-stop-epoch.json",
+                              "recycled-restore-start.json", "old-start", "recycled-restore-generation.json",
+                              "recycled-restore-signal.json", "recycled-restore-dispatch.json", "old-signal"],
+                  "failed-apply": ["rollback-intent.json", "new-stop", "old-start", "receipt.json"]}
+        cells = rows = 0
+        with patch.object(os, "fsync"):
+            for phase, points in phases.items():
+                for point in points:
+                    for after in (False, True):
+                        rt, plan = self.case()
+                        stamp = op.digest(plan)
+                        if phase in ("return", "recycle"):
+                            self.assertEqual(op.apply(rt.p, stamp, rt)["status"], "READY")
+                        if phase == "recycle":
+                            self.assertEqual(interrupted(rt, plan, "return", "restore-signal.json", True)[0], "crash")
+                        if phase == "failed-apply":
+                            rt.fault = "readiness"
+                        action = "apply" if phase in ("apply", "failed-apply") else "return"
+                        result, rt = interrupted(rt, plan, action, point, after)
+                        self.assertEqual(result, "crash", (phase, point, after, result))
+                        cells += self.loss_row(rt, plan, (phase, point, after))
+                        rows += 1
+        print(f"D-080 matrix: {rows} interruption boundaries, {cells} cases", flush=True)
+
+    def test_DEP_58QG_02_publication_and_transient_return_cuts(self):
+        points = {"apply": ["cleanup-plan.json", "cleanup-owner.json"],
+                  "return": ["private-plan.json", "private-owner.json", "rename-lock"],
+                  "late-signal": ["recycle-ready.json"], "failed-restore": ["receipt.json"],
+                  "dedicated": ["migration-plan.json", "stage.json"],
+                  "spring-flyway": ["migration-plan.json", "stage.json"]}
+        rows = cells = 0
+        for scenario, cuts in points.items():
+            for point in cuts:
+                for after in (False, True):
+                    rt, plan = self.case()
+                    phase = "apply"
+                    with ExitStack() as stack:
+                        if scenario in ("dedicated", "spring-flyway"):
+                            phase = "stage"
+                            rt.p["migration"]["mode"] = scenario
+                            if scenario == "dedicated":
+                                rt.p["migration"]["command"] = ["fixture-migrate"]
+                            plan = op.plan(rt.p, rt)["plan"]
+                        elif scenario == "failed-restore":
+                            rt.fault = "readiness"
+                            start = rt.start
+                            def transient(cid):
+                                if cid == fixture.OLD:
+                                    raise OSError("fixture")
+                                start(cid)
+                            stack.enter_context(patch.object(rt, "start", transient))
+                        elif scenario in ("return", "late-signal"):
+                            phase = "return"
+                            self.assertEqual(op.apply(rt.p, op.digest(plan), rt)["status"], "READY")
+                            if scenario == "late-signal":
+                                for claim in ("restore-signal.json", "restore-recycle.json"):
+                                    self.assertEqual(interrupted(rt, plan, phase, claim, True)[0], "crash")
+                                rt.signal(fixture.OLD)
+                        self.assertEqual(interrupted(rt, plan, phase, point, after)[0], "crash")
+                    cells += self.loss_row(rt, plan, (scenario, point, after))
+                    rows += 1
+        print(f"D-080 publication and recovery: {rows} interruption boundaries, {cells} cases", flush=True)
+
+    def test_DEP_58QG_02_immediate_exit_single_loss_matrix(self):
+        cells = 0
+        for cut, after in (("new-start", True), ("candidate-epoch.json", False), ("candidate-epoch.json", True),
+                           ("start-generation.json", False), ("start-generation.json", True)):
+            rt, plan = self.case()
+            self.assertEqual(interrupted(rt, plan, "apply", cut, after)[0], "crash")
+            rt.stop(fixture.NEW)
+            cells += self.loss_row(rt, plan, ("exited", cut, after), ambiguous_exit=True)
+        print(f"D-080 exited: 5 interruption boundaries, {cells} cases", flush=True)
+
+    def test_DEP_58QG_02_migration_single_loss_matrix(self):
+        cells = rows = 0
+        for mode in ("dedicated", "spring-flyway"):
+            points = ["migration-review-consumed.json", "release-signal.json", "signal", "receipt.json"]
+            if mode == "dedicated":
+                points += ["migration-intent.json", "migrate", "migration-complete.json"]
+            for point in points:
+                for after in (False, True):
+                    rt, _ = self.case()
+                    rt.p["migration"]["mode"] = mode
+                    if mode == "dedicated":
+                        rt.p["migration"]["command"] = ["fixture-migrate"]
+                    plan = op.plan(rt.p, rt)["plan"]
+                    stamp = op.digest(plan)
+                    stage = op.apply(rt.p, stamp, rt, defer_migration=True)
+                    def cut(name, fn, *args, **kwargs):
+                        if name == point and not after:
+                            raise Crash()
+                        result = fn(*args, **kwargs)
+                        if name == point and after:
+                            raise Crash()
+                        return result
+                    record = op.record
+                    with ExitStack() as stack:
+                        stack.enter_context(patch.object(op, "record", lambda d, n, v: cut(n, record, d, n, v)))
+                        for name in ("signal", "migrate"):
+                            original = getattr(rt, name)
+                            stack.enter_context(patch.object(rt, name,
+                                lambda *a, n=name, fn=original: cut(n, fn, *a)))
+                        with self.assertRaises(Crash):
+                            op.migrate(rt.p, stamp, stage["migrationSha256"], rt)
+                    cells += self.loss_row(rt, plan, (mode, point, after))
+                    rows += 1
+        print(f"D-080 migration: {rows} interruption boundaries, {cells} cases", flush=True)
 
     def matrix(self, points, applying):
         # New OS processes for both retries. No module globals, open FDs or executor stack survive.
@@ -658,6 +838,17 @@ class ReadyReturn(unittest.TestCase):
         self.assertEqual(rt.events, before)
         reviewed.owner(reviewed.lock_path(rt.p), new["planSha256"])
 
+    def test_DEP_58QG_02_multiple_run_cids_hold_before_stop(self):
+        rt, plan = self.case()
+        stamp = op.digest(plan)
+        self.assertEqual(op.apply(rt.p, stamp, rt)["status"], "READY")
+        extra = "c" * 64
+        rt.docs[extra] = dict(rt.inspect(fixture.NEW), Name="/unexpected", Id=extra)
+        before = rt.events.copy()
+        result = return_operation.run(rt.p, stamp, rt)
+        self.assertEqual(result["reason"], "IMMEDIATE_SUCCESSOR_CHANGED")
+        self.assertEqual(before, rt.events)
+
     def test_DEP_58Q_19_first_park_inspect_drift(self):
         rt, plan = self.case()
         stamp = op.digest(plan)
@@ -693,6 +884,7 @@ class ReadyReturn(unittest.TestCase):
         import module_operation
         retry = self.enterContext(ProcessPoolExecutor(1))
         finish = self.enterContext(ProcessPoolExecutor(1))
+        cells = 0
         for cut in ("apply.review", "apply.result", "pointer", "signature"):
             for after in (False, True):
                 with self.subTest(cut=cut, after=after):
@@ -729,11 +921,18 @@ class ReadyReturn(unittest.TestCase):
                     with self.assertRaises(mandate.Held):
                         call(0)
                     self.assertEqual(json.dumps(case.rt.docs), before)
+                    def governed(fresh):
+                        response, _ = approved_retry(fresh, stamp, "2", interrupt=False)
+                        self.assertEqual(response["status"], "ROLLED_BACK", response)
+                        return op.read(case.root / stamp, "return-receipt.json")
+                    cells += self.loss_row(case.rt, plan, ("publication", cut, after), governed)
                     result, rt = retry.submit(approved_retry, case.rt, stamp, "2", interrupt=True).result()
                     self.assertEqual(result, "crash")
                     result, rt = finish.submit(approved_retry, rt, stamp, "3", interrupt=False).result()
                     self.assertEqual(result["status"], "ROLLED_BACK", result)
                     self.oracle(rt, plan, op.read(case.root / stamp, "return-receipt.json"))
+
+        print(f"D-080 publication: 8 interruption boundaries, {cells} cases", flush=True)
 
     def test_DEP_58Q_21_ready_published_by_recovery_dispatch(self):
         import mandate

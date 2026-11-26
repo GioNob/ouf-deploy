@@ -317,7 +317,7 @@ class ModuleRelease(_ModuleRelease):
             need(body == plan, "MODULE_PARENT_DRIFT")
             target = run / (phase + ".result")
             unlock_failure = None
-            if returning or target.exists():
+            if target.exists():
                 published = read(target)
                 if published != receipt:
                     reason = published.get("reason")
@@ -333,10 +333,10 @@ class ModuleRelease(_ModuleRelease):
                      "MODULE_RECEIPT_DRIFT")
                 tip = current
             if current != tip:
-                need(not returning and (current is None or int(current["run"]) < int(run.name)), "MODULE_RECEIPT_DRIFT")
+                need(current is None or not returning and int(current["run"]) < int(run.name), "MODULE_RECEIPT_DRIFT")
             if "receiptSigning" in self.profile:
                 directory = Path(self.profile["journal"]) / stamp
-                module_receipt.attest(self.profile["receiptSigning"], directory, issue=not returning)
+                module_receipt.attest(self.profile["receiptSigning"], directory, issue=True)
             if unlock_failure:
                 operation.confirm(run, "apply.unlock-failure", unlock_failure)
                 save(target, receipt, replace=True)
@@ -345,4 +345,17 @@ class ModuleRelease(_ModuleRelease):
             if current != tip:
                 save(pointer, tip, replace=True)
 
-        return operation.reviewed.return_run(self.profile, stamp, self.runtime, publication=publish, approved_plan=plan)
+        def published_receipt():
+            pointer = self.path.parent / ("module-" + self.req["module"] + ".ready")
+            tip = read(pointer) if pointer.is_file() else {}
+            run = publishing_run(tip["run"]) if tip.get("planSha256") == stamp else original
+            for phase in ("migrate", "apply"):
+                path = run / (phase + ".result")
+                if path.is_file():
+                    result = read(path)
+                    if result.get("status") == "READY":
+                        return result
+            return None
+
+        return operation.reviewed.return_run(self.profile, stamp, self.runtime, publication=publish,
+                                             approved_plan=plan, published_receipt=published_receipt)

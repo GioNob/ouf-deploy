@@ -157,6 +157,9 @@ class Engine:
                            "State": {"Running": True, "Status": "running", "Pid": 12, "StartedAt": "first"},
                            "RestartCount": 0}}
 
+    def owned_containers(self, label, value):
+        return {cid for cid, doc in self.docs.items() if (doc.get("Config", {}).get("Labels") or {}).get(label) == value}
+
     def inspect(self, ident, missing=False):
         for cid, doc in self.docs.items():
             if ident in (cid, doc["Name"][1:]):

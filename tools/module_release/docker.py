@@ -254,3 +254,7 @@ class Docker:
                             "BIND_DIGEST_CHANGED")
         except OSError:
             raise Held("BIND_CUSTODY_UNPROVEN") from None
+
+    def owned_containers(self, label, value):
+        filters = quote(json.dumps({"label": [label + "=" + value]}), safe="")
+        return {item["Id"] for item in self.api("GET", "/containers/json?all=1&filters=" + filters)}

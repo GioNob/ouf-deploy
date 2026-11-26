@@ -42,7 +42,7 @@ def proposal(p, rt):
         proposal["candidateReview"] = body["candidateReview"]
     if "mcp-retention-admin-019" in body:
         proposal["mcp-retention-admin-019"] = body["mcp-retention-admin-019"]
-    return op.reviewed.recovery_review(p, root, body, proposal) if op.reviewed.enabled(p) else proposal
+    return op.reviewed.recovery_review(p, root, body, proposal, old) if op.reviewed.enabled(p) else proposal
 
 
 def verify_stop_claim(rt, old, body, root):

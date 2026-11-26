@@ -109,7 +109,7 @@ class NoDeltaParity(unittest.TestCase):
             archive = subprocess.check_output(["git", "archive", "--format=zip", REFERENCE, "tools/module_release",
                                                "scripts/ouf-a2-executor", "scripts/install-ouf-a2.py",
                                                ".github/scripts/module-release.py", ".github/scripts/release_review.py",
-                                               "tools/privileged_executor/mandate.py",
+                                               "tools/privileged_executor/mandate.py", "tools/privileged_executor/store.py",
                                                "tools/privileged_executor/module_operation.py"],
                                               cwd=fixture.ROOT, stderr=subprocess.PIPE)
         except subprocess.CalledProcessError:
@@ -130,7 +130,9 @@ class NoDeltaParity(unittest.TestCase):
         # The installed executor uses absolute imports from its private lib directory.
         with patch.dict(sys.modules, {"module_release": reference_package, "module_release.contract": contract,
                                       "module_release.retention": retention, "mandate": reference_mandate}):
+            from dep58lf_reference.tools.privileged_executor import store as reference_store
             from dep58lf_reference.tools.privileged_executor import module_operation as reference_executor
+        cls.reference_store = reference_store
         cls.reference_executor = reference_executor
         cls.reference_mandate = reference_mandate
         cls.reference = (operation, recovery, return_operation)
@@ -605,6 +607,170 @@ class NoDeltaParity(unittest.TestCase):
 
     def test_DEP_58LF_07_dedicated(self):
         self.compare("dedicated", interrupted=False)
+
+    def test_DEP_58QG_03_every_no_delta_file_read(self):
+        """Discover ordered reads from the pinned release, including repeated opens of one file."""
+        self.read_fault_matrix(("none", "dedicated", "spring-flyway"))
+
+    def test_DEP_58QG_03_executor_file_reads(self):
+        self.read_fault_matrix(("executor-none", "executor-dedicated"))
+
+    def read_fault_matrix(self, modes):
+        total = 0
+        for mode in modes:
+            for interrupted in ((False,) if mode.startswith("executor-") else (False, True)):
+                for modules in (self.reference, (operation, recovery, return_operation)):
+                    op, rec, ret = modules
+                    with ExitStack() as setup:
+                        if mode == "spring-flyway":
+                            import importlib
+                            import test_module_release_java as java
+                            p, initial, rows, history = setup.enter_context(java.fixture("udp"))
+                            fw = importlib.import_module(op.__package__ + ".flyway")
+                            setup.enter_context(patch.object(fw, "inventory", return_value=rows))
+                        else:
+                            case = mcp.Release()
+                            case.setUp()
+                            setup.callback(case.doCleanups)
+                            p, initial = case.p, case.rt
+                            baseline_db = copy.deepcopy(case.db)
+                        parent = Path(p["inbox"]) / "read-matrix"
+                        p["journal"] = str(parent)
+
+                        if mode.startswith("executor-"):
+                            import store
+                            pinned = modules is self.reference
+                            executor = self.reference_executor if pinned else module_operation
+                            storage = self.reference_store if pinned else store
+                            policy = self.reference_mandate if pinned else mandate
+                            setup.enter_context(patch.dict(sys.modules, {"store": storage}))
+                            setup.enter_context(patch.dict(case.dispatch.__globals__,
+                                {"ModuleRelease": executor.ModuleRelease, "authorize": policy.authorize}))
+                            setup.enter_context(patch.object(executor, "read", storage.read))
+                            setup.enter_context(patch.object(executor, "save", storage.save))
+                            setup.enter_context(patch.object(executor, "Journal", storage.Journal))
+                            setup.enter_context(patch.object(storage, "trusted", lambda path, **kw: path))
+                            setup.enter_context(patch.object(storage, "sync_dir"))
+                            case.root = parent
+
+                        def replay(fault):
+                            parent.mkdir()
+                            engine = copy.deepcopy(initial)
+                            if mode == "spring-flyway":
+                                del history[1:]
+                                send = engine.signal
+                                def launch(cid):
+                                    send(cid)
+                                    if cid == fixture.NEW:
+                                        history.append(rows[1])
+                                engine.signal = launch
+                            else:
+                                case.rt, case.db = engine, copy.deepcopy(baseline_db)
+                                if mode.endswith("dedicated"):
+                                    case.dedicated()
+                            events = []
+                            phase = "plan"
+                            def visit(kind, name):
+                                # Names containing content digests differ between temporary installations.
+                                name = re.sub(r"[a-f0-9]{64}", "digest", str(name))
+                                events.append((phase, kind, name))
+                                if len(events) == fault:
+                                    raise OSError("injected")
+                            path_open, fd_open, zip_open = Path.open, os.open, zipfile.ZipFile.open
+                            def path_read(path, mode="r", *args, **kwargs):
+                                if "r" in mode:
+                                    visit("file", path.name)
+                                return path_open(path, mode, *args, **kwargs)
+                            def fd_read(path, flags, *args, **kwargs):
+                                if isinstance(path, (str, Path)) and Path(path).suffix == ".zip":
+                                    visit("artifact", Path(path).name)
+                                return fd_open(path, flags, *args, **kwargs)
+                            def member_read(archive, name, mode="r", *args, **kwargs):
+                                if mode == "r":
+                                    visit("member", getattr(name, "filename", name))
+                                return zip_open(archive, name, mode, *args, **kwargs)
+
+                            try:
+                                with patch.object(Path, "open", path_read), patch.object(os, "open", fd_read), \
+                                     patch.object(zipfile.ZipFile, "open", member_read), patch.object(os, "fsync"):
+                                    if mode.startswith("executor-"):
+                                        case.req["run"] = "1"
+                                        case.approvals.clear()
+                                        with patch.object(executor.operation, "Docker", return_value=engine), \
+                                             patch.object(executor.return_operation, "Docker", return_value=engine):
+                                            result = case.call("plan", policy.intent(dict(case.req, phase="plan")), approved=False)
+                                            phase = "apply"
+                                            stamp = result["digest"]
+                                            result = case.call(phase, stamp)
+                                            if result["status"] == "GATED":
+                                                phase = "migrate"
+                                                result = case.call(phase, result["digest"])
+                                            phase = "return"
+                                            result = case.call("rollback", stamp, run="2")
+                                    else:
+                                        result = op.plan(p, engine)
+                                    if result["status"] == "PLANNED":
+                                        stamp = result["planSha256"]
+                                        phase = "apply"
+                                        if interrupted:
+                                            try:
+                                                with patch.object(engine, "start", side_effect=KeyboardInterrupt):
+                                                    result = op.apply(p, stamp, engine)
+                                            except KeyboardInterrupt:
+                                                phase = "recovery-plan"
+                                                approved = rec.proposal(p, engine)
+                                                phase = "resume"
+                                                result = rec.resume(p, engine, approved)
+                                        else:
+                                            result = op.apply(p, stamp, engine)
+                                        if result["status"] == "GATED":
+                                            phase = "migrate"
+                                            result = op.migrate(p, stamp, result["migrationSha256"], engine)
+                                        if result["status"] == "READY":
+                                            phase = "return"
+                                            if interrupted and mode != "dedicated":
+                                                deliver = engine.signal
+                                                def lost_signal(cid):
+                                                    deliver(cid)
+                                                    raise KeyboardInterrupt
+                                                try:
+                                                    with patch.object(engine, "signal", lost_signal):
+                                                        result = ret.run(p, stamp, engine)
+                                                except KeyboardInterrupt:
+                                                    phase = "resume-return"
+                                                    result = ret.run(p, stamp, engine, recover=True)
+                                            else:
+                                                result = ret.run(p, stamp, engine)
+                            except Exception as exc:
+                                if mode.startswith("executor-") and isinstance(exc, (executor.Held, policy.Held)):
+                                    result = {"status": "HELD", "reason": str(exc)}
+                                else:
+                                    result = {"status": "raised", "reason": op.reason(exc)}
+                            finally:
+                                shutil.rmtree(parent)
+                            return events, {k: result[k] for k in ("status", "reason", "rollbackReason") if k in result}
+
+                        trace, outcome = replay(None)
+                        if modules is self.reference:
+                            self.assertIn(outcome["status"], ("ROLLED_BACK", "HELD"))
+                            self.assertIn("return", {row[0] for row in trace})
+                            expected_trace = trace
+                            expected = [replay(i)[1] for i in range(1, len(trace) + 1)]
+                        else:
+                            self.assertEqual(trace, expected_trace)
+                            for i, (event, reference) in enumerate(zip(trace, expected), 1):
+                                with self.subTest(mode=mode, interrupted=interrupted, occurrence=i, read=event):
+                                    reached, actual = replay(i)
+                                    self.assertEqual(reached[:i], trace[:i])
+                                    self.assertEqual(actual, reference)
+                            total += len(trace)
+                            print("I/O", mode, "resume" if interrupted else "apply", len(trace), flush=True)
+        print("I/O matrix:", total, "injected reads", flush=True)
+
+    def test_DEP_58QG_01_control_corpus(self):
+        for args in (["--bypass-cache"], ["psql", "--password"], ["psql", "-W"]):
+            with self.subTest(args=args):
+                self.compare("dedicated", migration_args=args)
 
     def test_DEP_58QE_05_mcp_return_plan_io_location(self):
         def exercise(op, rec, case, rt, stamp):

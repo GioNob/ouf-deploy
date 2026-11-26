@@ -395,9 +395,122 @@ _validate = validate
 _package = package
 
 
-_migration_password_url = re.compile(r"(?:^|[:=])//[^/?#@:\s]*:[^/?#\s]+@")
-_migration_secret_flags = {"--password", "--secret", "--token"}
-_shell_secret_flag = re.compile(r"""(?:^|[\s'"])--(?:password|secret|token)(?=$|[\s='"])""")
+# Credential-bearing productions accepted by the supported clients. Keep this
+# in the standalone contract: the installer loads this exact Git blob.
+import shlex
+from urllib.parse import unquote
+
+
+_migration_literal = re.compile(
+    r"://[^/?#@\s]*:[^/?#@\s]+@|(?i:oracle:thin:)[^/@\s]+/[^@\s]+@"
+    r"|(?:^|[=\s?&;'\"])(?i:password|sslpassword|PGPASSWORD|FLYWAY_PASSWORD|(?:-D)?flyway\.password)\s*=\s*[^\s&;]+"
+    r"|(?:^|[\s'\"])-{1,2}(?:password|secret|token)=[^\s]+"
+    r"|(?:^|[\s'\"])-p[^\s=]+")
+_value_flags = {"--password", "--secret", "--token"}
+_shells = {"sh", "bash", "dash", "ash", "ksh", "zsh"}
+
+
+def migration_literal(text):
+    return bool(_migration_literal.search(text))
+
+
+def credential_words(words):
+    for i, word in enumerate(words):
+        if not isinstance(word, str):
+            continue
+        if migration_literal(word):
+            return True
+        if word in _value_flags and i + 1 < len(words):
+            value = words[i + 1]
+            if isinstance(value, str) and value and not value.startswith("-"):
+                if not (word == "--password" and isinstance(words[0], str) and words[0].rsplit("/", 1)[-1] == "psql"):
+                    return True
+    return False
+
+
+_sensitive_word = (r"pass(?:wd|words?|phrase)?|pwd|secrets?|tokens?|credentials?|community|dsn|jwt|auths?|"
+                   r"authorization|key|(?:api|private|sharedaccess|account|access|signing)[_.-]?key|"
+                   r"shared[_.-]?access[_.-]?signature|connection[_.-]?string")
+_credential = re.compile(r"(?:^|[_.-])(?:" + _sensitive_word + r")(?:$|[_.-])", re.I)
+_option = re.compile(r"(?:[a-z0-9]+[_.-])*(?:" + _sensitive_word + r")", re.I)
+_literal = re.compile(r"://[^/\s?#]*:[^/\s?#]*@|\b(?:basic|bearer)\s+\S+|-----BEGIN [^\n]*PRIVATE KEY|"
+                      r"\boracle:thin:[^@\s]+/[^@\s]+@", re.I)
+_assignment = re.compile(r"(?<![\w.-])(--?)?([\w.][\w.-]*)\s*=")
+_long_option = re.compile(r"""(?:^|[\s'"])--([a-zA-Z][\w.-]*)(?=$|[\s='"])""")
+
+
+def credential_name(name, *, option=False):
+    if not isinstance(name, str):
+        return False
+    words = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name)
+    if option:
+        return bool(_option.fullmatch(words))
+    if words.lower().endswith(("_file", "-file", ".file")):
+        return False
+    return bool(_credential.search(words) or re.search(r"password|passwd|passphrase|secret|token|credential", words, re.I))
+
+
+def json_properties(pairs):
+    # Keep duplicate keys so a later property cannot hide an earlier credential.
+    return [{key: value} for key, value in pairs]
+
+
+def env_reference(key, value):
+    return (isinstance(key, str) and key.endswith("Env") and isinstance(value, str)
+            and re.fullmatch(r"[A-Z_][A-Z0-9_]*", value) is not None)
+
+
+def inline_secret(value):
+    """Recognize credential-bearing fields, argv and nested JSON in release inputs."""
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if env_reference(key, item):
+                continue
+            if credential_name(key) or inline_secret(key) or inline_secret(item):
+                return True
+        return False
+    if isinstance(value, list):
+        for flag, operand in zip(value, value[1:]):
+            if (isinstance(flag, str) and flag.startswith("--") and flag != "--password"
+                    and credential_name(flag[2:], option=True)
+                    and isinstance(operand, str) and operand and not operand.startswith("-")):
+                return True
+        return credential_words(value) or any(inline_secret(item) for item in value)
+    if not isinstance(value, str):
+        return False
+    raw = value.strip()
+    decoded = unquote(raw)
+    if _literal.search(decoded) or migration_literal(decoded):
+        return True
+    if any(credential_name(m[1], option=True) and raw[m.end():].strip().lstrip("= ")
+           for m in _long_option.finditer(raw)):
+        return True
+    if raw.startswith("--"):
+        _, equals, argument = raw.partition("=")
+        if equals and inline_secret(argument):
+            return True
+    for field in _assignment.finditer(decoded):
+        if credential_name(field[2], option=bool(field[1])) or field[2].lower() == "sig":
+            return True
+    for representation in dict.fromkeys((raw, decoded)):
+        if representation.startswith(("{", "[", '"')):
+            try:
+                parsed = json.loads(representation, object_pairs_hook=json_properties)
+            except ValueError:
+                continue  # Non-JSON inputs, including IPv6 addresses, follow the usual field validation.
+            if inline_secret(parsed):
+                return True
+    return False
+
+
+def migration_json_secret(command):
+    for word in command:
+        if not isinstance(word, str):
+            continue
+        payload = word.partition("=")[2] if word.startswith("-") and "=" in word else word
+        if payload.lstrip().startswith(("{", "[", '"')) and inline_secret(payload):
+            return True
+    return False
 
 
 def migration_has_inline_secret(profile):
@@ -405,17 +518,21 @@ def migration_has_inline_secret(profile):
     command = migration.get("command") if isinstance(migration, dict) else None
     if not isinstance(command, list):
         return False
-    for index, arg in enumerate(command):
-        if not isinstance(arg, str):
-            continue
-        if arg.partition("=")[0] in _migration_secret_flags or _migration_password_url.search(arg):
-            return True
-        # In a shell command string the options are words inside a single argv entry.
-        if (index >= 2 and isinstance(command[index - 2], str)
-                and command[index - 2].rsplit("/", 1)[-1] in ("sh", "bash", "dash", "ash", "ksh", "zsh")
-                and matches(r"-[a-zA-Z]*c[a-zA-Z]*", command[index - 1]) and _shell_secret_flag.search(arg)):
-            return True
-    return False
+    if credential_words(command):
+        return True
+    for shell, flag, script in zip(command, command[1:], command[2:]):
+        if (isinstance(shell, str) and shell.rsplit("/", 1)[-1] in _shells and
+                matches(r"-[a-zA-Z]*c[a-zA-Z]*", flag) and isinstance(script, str)):
+            try:
+                words = shlex.split(script)
+            except ValueError:
+                words = script.split()
+            if credential_words(words):
+                return True
+    # The delta admission additionally checks every profile section and retains
+    # its historical CONFIG_DELTA_INLINE_SECRET diagnostic for structured inputs.
+    return "configDelta" not in profile and (migration_json_secret(command) or
+           inline_secret({key: item for key, item in migration.items() if key != "command"}))
 
 
 def validate_profile_options(profile, *, check=require):

@@ -111,6 +111,113 @@ class InvalidDeltaTest(unittest.TestCase):
         self.assertEqual((out.getvalue(), err.getvalue(), case.rt.events), ("", "", []))
         self.assertEqual(files, {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()})
 
+    def test_DEP_58QG_01_generated_credential_matrix(self):
+        marker = "private-58qg-canary"
+        corpus = [
+            "postgresql://user:{v}@host/db", "-url=jdbc:postgresql://user:{v}@host/db",
+            "host=db dbname=ouf password={v}", "host=db sslpassword='{v}'",
+            "jdbc:postgresql://db/ouf?password={v}", "jdbc:postgresql://db/ouf?ssl=true&password={v}",
+            "jdbc:sqlserver://db;password={v}", "--password={v}", "-password={v}", "-p{v}",
+            "PGPASSWORD={v}", "--secret={v}", "--token={v}", "FLYWAY_PASSWORD={v}", "-Dflyway.password={v}",
+            "jdbc:oracle:thin:user/{v}@db", "--dbname=sslpassword={v}",
+            ("--password", "{v}"), ("--secret", "{v}"), ("--token", "{v}"),
+            ("sh", "-c", "migrate --password '{v}'"),
+        ]
+        positions = ("env-before", "env-after", "nested-json", "json-argument", "json-metadata", "label", "alias", "migration")
+        count = 0
+        for syntax in corpus:
+            args = [word.format(v=marker) for word in (syntax if isinstance(syntax, tuple) else (syntax,))]
+            value = " ".join(args)
+            for position in positions:
+                for delta in (False, True):
+                    with self.subTest(syntax=syntax, position=position, delta=delta), ExitStack() as stack:
+                        case = fixture.ReleaseTest()
+                        case.setUp()
+                        stack.callback(case.doCleanups)
+                        p, rt = case.p, case.rt
+                        net = next(iter(p["networks"]))
+                        cmd = ["fixture-migrate"]
+                        p["migration"] = dict(mode="dedicated", rollbackCompatible=True, command=cmd)
+                        if delta:
+                            p["configDelta"] = {"aliases": {net: ["public-candidate"]}}
+                        old = rt.docs[fixture.OLD]
+                        if position == "migration":
+                            cmd.extend(args)
+                        elif position in ("json-argument", "json-metadata"):
+                            nested = {"settings": [{"AccountKey": marker, "connection": value}]}
+                            if position == "json-argument":
+                                cmd.append("--settings=" + json.dumps(nested))
+                            else:
+                                p["migration"]["options"] = nested
+                        elif position == "alias":
+                            if delta:
+                                p["configDelta"]["aliases"][net] = [value]
+                            else:
+                                p["networks"][net]["aliases"].append(value)
+                                old["NetworkSettings"]["Networks"][net]["Aliases"].append(value)
+                        elif position == "label":
+                            old["Config"]["Labels"]["AccountKey"] = marker
+                            old["Config"]["Labels"]["settings"] = value
+                            if not delta:
+                                p["networks"][net]["aliases"].append(marker)
+                                old["NetworkSettings"]["Networks"][net]["Aliases"].append(marker)
+                            if delta:
+                                p["configDelta"]["aliases"][net] = [marker]
+                        else:
+                            setting = json.dumps({"settings": [{"argument": value}]}) if position == "nested-json" else value
+                            before = setting if position == "env-before" else None
+                            after = setting if before is None else "replacement"
+                            if before is not None or not delta:
+                                old["Config"]["Env"].append("APP_SETTINGS=" + setting)
+                            if delta:
+                                p.update(envAllowlist=["APP_SETTINGS"], showValues=["APP_SETTINGS"])
+                                p["configDelta"]["env"] = [dict(name="APP_SETTINGS", before=before, after=after)]
+                        streams = [io.StringIO(), io.StringIO(), io.StringIO()]
+                        call, req = case.governed_dispatch()
+                        responses = []
+                        with redirect_stdout(streams[0]), redirect_stderr(streams[1]):
+                            plan = operation.plan(p, rt)
+                            responses.append(plan)
+                            if position == "migration":
+                                self.assertEqual(plan.get("reason"), "MIGRATION_INLINE_SECRET")
+                            if plan["status"] == "PLANNED":
+                                response = call(0)
+                                responses.append(response)
+                                with patch.object(sys, "path", list(sys.path)):
+                                    render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
+                                    render(streams[2], p["module"], "plan", response, "apply", None)
+                                req.update(phase="apply", digest=response["digest"])
+                                result = call(1)
+                                responses.append(result)
+                                self.assertEqual(result["status"], "GATED", result)
+                                responses.append(recovery.proposal(p, rt))
+                                render(streams[2], p["module"], "apply", result, "migrate", None)
+                                req.update(phase="migrate", digest=result["digest"])
+                                ready = call(2)
+                                self.assertEqual(ready["status"], "READY", ready)
+                                responses.append(ready)
+                                render(streams[2], p["module"], "migrate", ready, None, None)
+                                req.update(phase="rollback", run="2", digest=response["digest"])
+                                if delta:
+                                    returned = call(1)
+                                    self.assertEqual(returned["status"], "ROLLED_BACK", returned)
+                                    responses.append(returned)
+                                else:
+                                    with self.assertRaises(mandate.Held) as denied:
+                                        call(1)
+                                    responses.append(str(denied.exception))
+                            else:
+                                responses.append(operation.apply(p, "a" * 64, rt))
+                                with self.assertRaises(mandate.Held) as denied:
+                                    call(0)
+                                responses.append(str(denied.exception))
+                        outputs = [json.dumps(responses).encode(), *(s.getvalue().encode() for s in streams)]
+                        outputs.extend(f.read_bytes() for f in case.root.rglob("*") if f.is_file() and f.suffix != ".zip")
+                        for output in outputs:
+                            self.assertNotIn(marker.encode(), output)
+                        count += 1
+        print(f"Credentials: {len(corpus)} syntaxes x {len(positions)} positions x 2 profiles = {count}")
+
     def test_DEP_58QE_01_migration_and_aliases(self):
         marker = "fixture-only"
         dsn = "postgresql://user:" + marker + "@localhost/test"
@@ -237,7 +344,7 @@ class InvalidDeltaTest(unittest.TestCase):
         for before, after in (("true", "false"), ("enabled", "disabled")):
             public = dict(name=flag, before=before, after=after)
             self.assertEqual(config_delta.approval_lines({"env": [public]}, [flag]),
-                             [f'ENV {flag} da "{before}" a "{after}"'])
+                             [f'ENV {flag} da sha256 {operation.digest(before)} a "{after}"'])
             for name in ("SNMP_COMMUNITY", "DB_DSN", "DB_PASSWORD", "SERVICE_SECRET", "ACCESS_TOKEN",
                          "SIGNING_KEY", "DB_CONNECTION_STRING"):
                 with self.subTest(name=name, before=before):
@@ -276,13 +383,57 @@ class InvalidDeltaTest(unittest.TestCase):
                 self.assertEqual(events, case.rt.events)
                 self.assertEqual(files, {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()})
 
+    def test_DEP_58QG_01_approval_grammar_at_both_boundaries(self):
+        row = {"name": "OPAQUE", "before": None, "after": "ENV"}
+        with self.assertRaisesRegex(Held, "CONFIG_DELTA_INLINE_SECRET"):
+            config_delta.approval_lines({"env": [row]}, ["OPAQUE"])
+        stream = io.StringIO()
+        with patch.object(sys, "path", list(sys.path)), redirect_stdout(stream):
+            render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
+            forged = {"status": "PLANNED", "digest": "a" * 64, "approvalLines": ["Alias " + self.marker]}
+            with self.assertRaisesRegex(SystemExit, "Righe di approvazione"):
+                render(stream, "mcp", "plan", forged, "apply", None)
+        self.assertEqual(stream.getvalue(), "")
+
+    def test_DEP_58QG_01_public_flag_cannot_repeat_inherited_label(self):
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        flag = "SPRING_FLYWAY_ENABLED"
+        case.rt.docs[fixture.OLD]["Config"]["Labels"]["AccountKey"] = "enabled"
+        case.p.update(envAllowlist=[flag], showValues=[flag], configDelta={"env": [
+            dict(name=flag, before=None, after="enabled")]})
+        plan = operation.plan(case.p, case.rt)
+        self.assertEqual(plan["status"], "PLANNED", plan)
+        self.assertNotIn("enabled", json.dumps(plan))
+        self.assertIn(operation.digest("enabled"), plan["plan"]["approvalLines"][0])
+
+    def test_DEP_58QG_01_historical_alias_return_binds_digest_only(self):
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        net = next(iter(case.p["networks"]))
+        marker = self.marker
+        case.rt.docs[fixture.OLD]["Config"]["Labels"]["AccountKey"] = marker
+        case.p.update(migration=dict(mode="none", rollbackCompatible=True),
+                      configDelta={"aliases": {net: [marker]}})
+        with patch.object(operation.reviewed, "approval_lines", return_value=["Aggiungi alias " + marker]):
+            stamp = operation.plan(case.p, case.rt)["planSha256"]
+            self.assertEqual(operation.apply(case.p, stamp, case.rt)["status"], "READY")
+        record = operation.record
+        def safe(directory, name, value):
+            self.assertNotIn(marker, json.dumps(value))
+            return record(directory, name, value)
+        with patch.object(operation, "record", safe):
+            self.assertEqual(return_operation.run(case.p, stamp, case.rt)["status"], "ROLLED_BACK")
+
     def test_DEP_58QD_01_alias_collisions_cover_substrings_and_overlapping_values(self):
         delta = {"env": [dict(name="SETTING", before="private-value", after="private-value-long")],
                  "aliases": {"backend": ["private-value-long", "prefix-private-value-suffix"]}}
         lines = config_delta.approval_lines(delta, ["SETTING"])
         self.assertNotIn("private-value", "".join(lines))
         self.assertIn(operation.digest("private-value-long"), lines[-2])
-        self.assertIn(operation.digest("private-value"), lines[-1])
+        self.assertIn(operation.digest("prefix-private-value-suffix"), lines[-1])
 
     def test_DEP_58QD_03_secrets_absent_from_every_output(self):
         from random import Random

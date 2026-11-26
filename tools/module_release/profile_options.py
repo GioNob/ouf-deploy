@@ -1,82 +1,9 @@
 """Module profile admission, shared with the isolated bootstrap."""
 from collections.abc import Mapping
-import json
-import re
-from urllib.parse import unquote
-
-from .contract import migration_has_inline_secret
+from .contract import credential_name, env_reference, inline_secret, migration_has_inline_secret
 
 
 INLINE_SECRET = "CONFIG_DELTA_INLINE_SECRET"
-_sensitive_word = (r"pass(?:wd|words?|phrase)?|pwd|secrets?|tokens?|credentials?|community|dsn|jwt|auths?|"
-                   r"authorization|key|(?:api|private|sharedaccess|account|access|signing)[_.-]?key|"
-                   r"shared[_.-]?access[_.-]?signature|connection[_.-]?string")
-_credential = re.compile(r"(?:^|[_.-])(?:" + _sensitive_word + r")(?:$|[_.-])", re.I)
-_option = re.compile(r"(?:[a-z0-9]+[_.-])*(?:" + _sensitive_word + r")", re.I)
-_literal = re.compile(r"://[^/\s?#]*:[^/\s?#]*@|\b(?:basic|bearer)\s+\S+|-----BEGIN [^\n]*PRIVATE KEY|"
-                      r"\boracle:thin:[^@\s]+/[^@\s]+@", re.I)
-_assignment = re.compile(r"(?<![\w.-])(--?)?([\w.][\w.-]*)\s*=")
-_long_option = re.compile(r"""(?:^|[\s'"])--([a-zA-Z][\w.-]*)(?=$|[\s='"])""")
-
-
-def credential_name(name, *, option=False):
-    if not isinstance(name, str):
-        return False
-    words = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name)
-    if option:
-        return bool(_option.fullmatch(words))
-    if words.lower().endswith(("_file", "-file", ".file")):
-        return False
-    return bool(_credential.search(words) or re.search(r"password|passwd|passphrase|secret|token|credential", words, re.I))
-
-
-def json_properties(pairs):
-    # Keep duplicate keys so a later property cannot hide an earlier credential.
-    return [{key: value} for key, value in pairs]
-
-
-def env_reference(key, value):
-    return (isinstance(key, str) and key.endswith("Env") and isinstance(value, str)
-            and re.fullmatch(r"[A-Z_][A-Z0-9_]*", value) is not None)
-
-
-def inline_secret(value):
-    """Recognize credential-bearing fields, argv and nested JSON in release inputs."""
-    if isinstance(value, dict):
-        for key, item in value.items():
-            if env_reference(key, item):
-                continue
-            if credential_name(key) or inline_secret(key) or inline_secret(item):
-                return True
-        return False
-    if isinstance(value, list):
-        return any(inline_secret(item) for item in value)
-    if not isinstance(value, str):
-        return False
-    raw = value.strip()
-    decoded = unquote(raw)
-    if _literal.search(raw) or _literal.search(decoded):
-        return True
-    if any(credential_name(m[1], option=True) for m in _long_option.finditer(raw)):
-        return True
-    if raw.startswith("--"):
-        _, equals, argument = raw.partition("=")
-        if equals and inline_secret(argument):
-            return True
-    for field in _assignment.finditer(decoded):
-        if credential_name(field[2], option=bool(field[1])) or field[2].lower() == "sig":
-            return True
-    for representation in dict.fromkeys((raw, decoded)):
-        if representation.startswith(("{", "[", '"')):
-            try:
-                parsed = json.loads(representation, object_pairs_hook=json_properties)
-            except ValueError:
-                continue  # Non-JSON inputs, including IPv6 addresses, follow the usual field validation.
-            if inline_secret(parsed):
-                return True
-    return False
-
-
 def delta_has_inline_secret(profile):
     delta = profile.get("configDelta")
     if not isinstance(delta, dict):

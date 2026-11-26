@@ -1,6 +1,7 @@
 """The release's private inputs stay in memory. Only this projection crosses a journal or public boundary."""
 from contextlib import contextmanager
 from contextvars import ContextVar
+from copy import deepcopy
 from functools import wraps
 import json
 import re
@@ -25,13 +26,23 @@ def private_inputs(value, sensitive=False):
             if isinstance(item, str) and item.startswith("--"):
                 flag, sep, argument = item[2:].partition("=")
                 if credential_name(flag, option=True):
+                    if (not sep and flag == "password" and isinstance(value[0], str)
+                            and value[0].rsplit("/", 1)[-1] == "psql"):
+                        continue
                     if not sep and i + 1 < len(value):
                         argument = value[i + 1]
-                    if isinstance(argument, str) and argument:
+                    if isinstance(argument, str) and argument and (sep or not argument.startswith("-")):
                         yield argument
             yield from private_inputs(item, sensitive)
-    elif sensitive and isinstance(value, str) and value:
-        yield value
+    elif isinstance(value, str) and value:
+        if sensitive:
+            yield value
+        if value.lstrip().startswith(("{", "[")):
+            try:
+                parsed = json.loads(value, object_pairs_hook=lambda pairs: [{k: v} for k, v in pairs])
+            except (ValueError, RecursionError):
+                return
+            yield from private_inputs(parsed, sensitive)
 
 
 def secret_values(profile):
@@ -105,6 +116,36 @@ def private_baseline(value):
         return value
     pattern = re.compile("|".join(map(re.escape, replacements)))
     return _map_strings(value, lambda text: pattern.sub(lambda m: replacements[m[0]], text))
+
+
+def network_alias_refs(profile, saved, *, config=None):
+    """Reference an approved alias by index if it would copy an inherited credential into custody."""
+    secrets = set()
+    if config is not None:
+        secrets.update(private_inputs(config.get("Labels")))
+        for entry in config.get("Env") or ():
+            key, _, value = entry.partition("=")
+            secrets.update(private_inputs({key: value}))
+        if not secrets:
+            return saved
+    result = saved
+    for net, ep in saved["NetworkSettings"]["Networks"].items():
+        aliases = profile["networks"][net]["aliases"]
+        for field in ("Aliases", "DNSNames"):
+            for i, name in enumerate(ep.get(field) or ()):
+                if config is None and isinstance(name, dict):
+                    index = name.get("profileAlias")
+                    require(set(name) == {"profileAlias"} and type(index) is int and 0 <= index < len(aliases),
+                            "RETURN_BASELINE_CHANGED")
+                    replacement = aliases[index]
+                elif config is not None and name in aliases and any(secret in name for secret in secrets):
+                    replacement = {"profileAlias": aliases.index(name)}
+                else:
+                    continue
+                if result is saved:
+                    result = deepcopy(saved)
+                result["NetworkSettings"]["Networks"][net][field][i] = replacement
+    return result
 
 
 def select_request(envelope, cfg, stack):

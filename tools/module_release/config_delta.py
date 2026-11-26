@@ -159,26 +159,32 @@ def expected_after(predecessor_inspect, delta):
     return doc
 
 
-def approval_lines(delta, show_values=()):
+def approval_lines(delta, show_values=(), *, inherited=()):
     profile = {"configDelta": delta, "showValues": list(show_values)}
     check(not delta_has_inline_secret(profile), INLINE_SECRET)
     env = delta.get("env", [])
 
-    def display(name, value):
+    def display(name, value, *, replacement=False):
         validate_value(name, value)
         # In a mixed delta even the public flag can repeat a private value.
-        if (len(env) == 1 and name == "SPRING_FLYWAY_ENABLED" and name in show_values
-                and value in (None, "true", "false", "enabled", "disabled")):
+        if (replacement and len(env) == 1 and name == "SPRING_FLYWAY_ENABLED" and name in show_values
+                and value in (None, "true", "false", "enabled", "disabled")
+                and (value is None or not any(value in item for item in inherited))):
             return "assente" if value is None else json.dumps(value, ensure_ascii=False)
         return "sha256 " + delta_digest(value)
 
     lines = []
     for row in env:
         name = row["name"]
-        lines.append(f"ENV {name} da {display(name, row['before'])} a {display(name, row['after'])}")
+        check(matches(r"[A-Z_][A-Z0-9_]*", name), "INVALID_ENV")
+        lines.append(f"ENV {name} da {display(name, row['before'])} a {display(name, row['after'], replacement=True)}")
     for bind in delta.get("binds", []):
-        lines.append(f"Aggiungi bind in sola lettura su {bind['target']} · sha256 {bind['sha256']}")
+        check(matches(r"[0-9a-f]{64}", bind["sha256"]), "INVALID_BIND_DIGEST")
+        lines.append(f"Bind destinazione sha256 {delta_digest(bind['target'])} · contenuto sha256 {bind['sha256']}")
     for network, additions in sorted(delta.get("aliases", {}).items()):
-        lines.extend(f"Aggiungi alias {alias} alla rete {network}" for alias in additions)
+        lines.extend(f"Alias sha256 {delta_digest(alias)} · rete sha256 {delta_digest(network)}" for alias in additions)
+    # A private value can coincide with a fixed keyword or part of a digest.
+    # Never rewrite the grammar of a line that will be presented for approval.
     with scope(profile):
-        return public(lines)
+        check(public(lines) == lines, INLINE_SECRET)
+    return lines
