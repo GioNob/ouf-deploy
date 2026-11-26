@@ -1,4 +1,5 @@
 """DEP-58LF: execute both releases against the same MCP archive, profile and Engine."""
+import ast
 import copy
 from contextlib import ExitStack, redirect_stderr, redirect_stdout
 from http.client import HTTPConnection
@@ -6,11 +7,13 @@ import io
 import json
 import os
 from pathlib import Path
+import re
 import runpy
 import shutil
 import subprocess
 import sys
 import tempfile
+from textwrap import dedent
 import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
@@ -27,6 +30,36 @@ from tools.module_release import frame, operation, recovery, return_operation
 
 # Tip of origin/release/d091-t2-deploy at DN-L1-5. Keep the oracle fixed after merge.
 REFERENCE = "c8851aba5d6fabb93f84829e39e461bc57094b3e"
+
+
+def installer_plan(root, profile, fail_read=0):
+    # Use the same relative CLI filename for both tracebacks. Supply private, root-owned
+    # metadata for the temporary profile and its ancestors on unprivileged hosts.
+    launcher = dedent("""\
+        import errno, os, runpy, sys
+        from pathlib import Path
+
+        profile, fail_read = sys.argv[1], int(sys.argv[2])
+        original_stat, original_read = Path.stat, Path.read_bytes
+        def private_stat(path, *args, **kwargs):
+            s = original_stat(path, *args, **kwargs)
+            return os.stat_result((s.st_mode & ~0o077, *s[1:4], 0, *s[5:]))
+
+        reads = 0
+        def read(path):
+            global reads
+            reads += 1
+            if reads == fail_read:
+                raise OSError(errno.EIO, "simulated read failure")
+            return original_read(path)
+
+        os.geteuid = lambda: 0
+        Path.stat, Path.read_bytes = private_stat, read
+        sys.argv = ["scripts/install-ouf-a2.py", "plan", profile]
+        runpy.run_path(sys.argv[0], run_name="__main__")
+        """)
+    return subprocess.run([sys.executable, "-I", "-B", "-c", launcher, str(profile), str(fail_read)],
+                          cwd=root, capture_output=True, timeout=15)
 
 
 class Trace:
@@ -317,8 +350,7 @@ class NoDeltaParity(unittest.TestCase):
                         enter(redirect_stderr(err))
                         with self.assertRaises(ValueError) as caught:
                             main()
-                    profiles_read = [args[0] for args, _ in read.call_args_list if args[0] in (case.path, installed)]
-                    self.assertEqual(profiles_read, [case.path])
+                    read.assert_called_once_with(case.path)
                     if diagnostic == "JSONDecodeError":
                         self.assertIs(type(caught.exception), json.JSONDecodeError)
                     else:
@@ -329,6 +361,68 @@ class NoDeltaParity(unittest.TestCase):
                     case.inst.subprocess.check_output.assert_not_called()
                     self.assertEqual(list(case.inst.ROOT.iterdir()), [installed])
                     self.assertEqual(installed.read_bytes(), current)
+
+    def test_DEP_58LO_01_installer_plan_traceback_and_read_faults(self):
+        profile = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve() / "profile.json"
+        for policy, fail_read, error in (
+                ({}, 0, b"ValueError: INSTALL_PROFILE_FIELDS"),
+                ({}, 1, b"OSError: [Errno 5] simulated read failure"),
+                ({}, 2, b"ValueError: INSTALL_PROFILE_FIELDS"),
+                (None, 0, b"TypeError:"),
+                ({"modules": ["configDelta"]}, 0, b"ValueError: INSTALL_PROFILE_FIELDS"),
+                ({"modules": {"mcp": "configDelta"}}, 0, b"ValueError: INSTALL_PROFILE_FIELDS")):
+            with self.subTest(policy=policy, fail_read=fail_read):
+                profile.write_text(json.dumps(policy), encoding="utf-8")
+                expected = installer_plan(self.reference_root, profile, fail_read)
+                actual = installer_plan(fixture.ROOT, profile, fail_read)
+                self.assertEqual((expected.returncode, expected.stdout), (1, b""))
+                self.assertIn(error, expected.stderr.splitlines()[-1])
+                self.assertIn(b'line 365, in <module>', expected.stderr)
+                self.assertEqual((actual.returncode, actual.stdout, actual.stderr),
+                                 (expected.returncode, expected.stdout, expected.stderr))
+
+    def test_DEP_58LO_02_installer_plan_denies_delta_without_value(self):
+        case = installer_fixture.Bootstrap()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        marker = "private-installer-delta"
+        policy = json.loads(case.path.read_bytes())
+        policy["modules"]["mcp"]["configDelta"] = marker
+        case.path.write_text(json.dumps(policy), encoding="utf-8")
+        actual = installer_plan(fixture.ROOT, case.path, fail_read=2)
+        self.assertEqual((actual.returncode, actual.stdout), (1, b""))
+        self.assertEqual(actual.stderr.splitlines()[-1], b"ValueError: CONFIG_DELTA_NOT_ENABLED")
+        self.assertNotIn(marker.encode(), actual.stderr)
+
+    def test_DEP_58LO_03_changed_hunks_preserve_release_lines(self):
+        def git(*args):
+            return subprocess.check_output(["git", *args], cwd=fixture.ROOT)
+
+        def library_module(source):
+            return not any(isinstance(node, ast.If) and
+                           any(isinstance(name, ast.Name) and name.id == "__name__" for name in ast.walk(node.test))
+                           for node in ast.walk(ast.parse(source)))
+
+        # New files have no release lines. The only CLI tail is the transport wrapper,
+        # exercised by DEP_58LN_01 (transient read) and DEP_58LN_02 (--help with stdin open).
+        transport_tail = ("tools/module_release/transport.py", 119, 0, 120, 19)
+        paths = git("diff", "--no-renames", "--diff-filter=MDT", "--name-only", "-z", REFERENCE,
+                    "--", "tools/", "scripts/", ".github/scripts/")
+        for path in os.fsdecode(paths).split("\0"):
+            if not path:
+                continue
+            with self.subTest(path=path):
+                original = git("show", f"{REFERENCE}:{path}")
+                diff = git("diff", "--no-renames", "--no-color", "--no-ext-diff", "--no-textconv",
+                           "--unified=0", REFERENCE, "--", path)
+                self.assertNotIn(b"Binary files ", diff)
+                for hunk in re.finditer(rb"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@", diff, re.M):
+                    old, removed, new, added = (int(n or 1) for n in hunk.groups())
+                    if removed == added or (path, old, removed, new, added) == transport_tail:
+                        continue
+                    self.assertEqual((removed, old), (0, len(original.splitlines())), hunk[0])
+                    self.assertTrue(path.endswith(".py") and library_module(original) and
+                                    library_module((fixture.ROOT / path).read_bytes()), hunk[0])
 
     def test_DEP_58LM_02_executor_preserves_malformed_request_errors(self):
         marker = "private-executor-delta"

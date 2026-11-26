@@ -43,7 +43,7 @@ def inspect(profile):
     safe(profile)
     check(profile.is_file() and not profile.stat().st_mode & 0o077, "PRIVATE_PROFILE_REQUIRED")
     raw = profile.read_bytes()
-    cfg = admitted_policy(json.loads(raw))
+    cfg = json.loads(raw); check(not (isinstance(cfg, dict) and isinstance(cfg.get("modules"), dict) and any(isinstance(p, dict) and "configDelta" in p for p in cfg["modules"].values())), "CONFIG_DELTA_NOT_ENABLED")
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
@@ -126,7 +126,7 @@ def inspect(profile):
         files[package / (module + ".py")] = (blob(f"tools/module_release/{module}.py"), 0o600)
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")
-    load_contract(contract, files, package)
+    exec(compile(files[package / "contract.py"][0], "contract.py", "exec"), contract.__dict__)
     if "semanticDatabase" in cfg:
         check(contract.valid_semantic_database(cfg["semanticDatabase"]), "SEMANTIC_DATABASE_PROFILE_REQUIRED")
     for spec in (cfg[k] for k in ("successorImage", "nextSuccessorImage") if k in cfg):
@@ -202,7 +202,7 @@ def fingerprint(data, mode):
 
 
 def journals(profile_bytes):
-    return {Path(m["journal"]) for m in admitted_policy(json.loads(profile_bytes)).get("modules", {}).values()}
+    return {Path(m["journal"]) for m in json.loads(profile_bytes).get("modules", {}).values()}
 
 
 def manifest(files):
@@ -359,36 +359,6 @@ def main():
         check(manifest(files) == spec, "INSTALL_PLAN_DRIFT")
         install(files, spec)
     print("OUF_A2_INSTALLED")
-
-
-from functools import cache
-
-PROFILE_OPTIONS_SHA256 = "02e27b8f77cc82b5bd002bbc0d8e4a2029169b0c35ff4b5a8aad84bebcb1f332"
-
-
-@cache
-def profile_options():
-    # This bootstrap must reject unsupported options even before a profile supplies a valid commit.
-    # Pin the dependency-free validator just as we pin the bootstrap itself at checkout verification.
-    path = Path(__file__).resolve().parents[1] / "tools/module_release/profile_options.py"
-    raw = path.read_bytes().replace(b"\r\n", b"\n")
-    check(sha(raw) == PROFILE_OPTIONS_SHA256, "BOOTSTRAP_DRIFT")
-    options = types.ModuleType("profile_options")
-    exec(compile(raw, "profile_options.py", "exec"), options.__dict__)
-    return options
-
-
-def admitted_policy(policy):
-    profile_options().validate_policy_profiles(policy)
-    return policy
-
-
-def load_contract(contract, files, package):
-    raw = files[package / "profile_options.py"][0]
-    check(sha(raw.replace(b"\r\n", b"\n")) == PROFILE_OPTIONS_SHA256, "BOOTSTRAP_DRIFT")
-    exec(compile(files[package / "contract.py"][0], "contract.py", "exec"), contract.__dict__)
-    # The standalone contract has no package loader. Use the same pinned validator.
-    contract.validate_profile_options = profile_options().validate_profile_options
 
 
 if __name__ == "__main__":
