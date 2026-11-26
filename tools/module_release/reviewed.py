@@ -665,9 +665,18 @@ def predecessor_guard(old):
 
 def recovery_review(p, root, body, proposal):
     if "configDelta" in p:
-        lines = approval_lines(p["configDelta"], p.get("showValues", ()))
-        require(lines == body["approvalLines"] and delta_digest(p["configDelta"]) == body["configDeltaSha256"],
-                "RECOVERY_PROFILE_CHANGED")
+        delta = p["configDelta"]
+        shown = p.get("showValues", ())
+        require(delta_digest(delta) == body["configDeltaSha256"], "RECOVERY_PROFILE_CHANGED")
+        lines = approval_lines(delta, shown)
+        if lines != body["approvalLines"]:
+            # A 58q-b plan could display the Flyway flag in a mixed delta.
+            # Verify that exact historical rendering only against the authenticated source plan.
+            previous = lines.copy()
+            for i, row in enumerate(delta.get("env", ())):
+                if row["name"] == "SPRING_FLYWAY_ENABLED":
+                    previous[i] = approval_lines({"env": [row]}, shown)[0]
+            require(previous == body["approvalLines"], "RECOVERY_PROFILE_CHANGED")
         proposal["approvalLines"] = lines
     for claim in root.glob("restore-after-*/*.json"):
         proposal["journal"][claim.relative_to(root).as_posix()] = digest(op.read(claim.parent, claim.name))

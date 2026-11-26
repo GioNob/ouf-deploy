@@ -100,7 +100,7 @@ class InvalidDeltaTest(unittest.TestCase):
         case = fixture.ReleaseTest()
         self.addCleanup(case.doCleanups)
         case.setUp()
-        names = ["SNMP_COMMUNITY", "SERVICE_DSN", "OPAQUE_SETTINGS"]
+        names = ["SNMP_COMMUNITY", "SERVICE_DSN", "OPAQUE_SETTINGS", "SPRING_FLYWAY_ENABLED"]
         rows = [dict(name=name, before="enabled", after="disabled") for name in names]
         case.rt.docs[fixture.OLD]["Config"]["Env"].extend(name + "=enabled" for name in names)
         case.p.update(migration={"mode": "none", "rollbackCompatible": True},
@@ -116,13 +116,54 @@ class InvalidDeltaTest(unittest.TestCase):
                 render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
                 render(summary, req["module"], "plan", result, "apply", None)
             req.update(phase="apply", digest=result["digest"])
-            self.assertEqual(call(1)["status"], "READY")
+            applied = call(1)
+            self.assertEqual(applied["status"], "READY")
             req.update(phase="rollback", run="2")
-            self.assertEqual(call(1)["status"], "ROLLED_BACK")
-        outputs = [summary.getvalue(), out.getvalue(), err.getvalue(), json.dumps(result)]
+            returned = call(1)
+            self.assertEqual(returned["status"], "ROLLED_BACK")
+        outputs = [summary.getvalue(), out.getvalue(), err.getvalue(), json.dumps([result, applied, returned])]
         outputs.extend(path.read_text() for path in case.root.rglob("*") if path.is_file() and path.suffix != ".zip")
         for output in outputs:
             self.assertNotRegex(output, "enabled|disabled")
+
+    def test_DEP_58QB_01_show_values_with_all_four_public_literals(self):
+        flag = "SPRING_FLYWAY_ENABLED"
+        for before, after in (("true", "false"), ("enabled", "disabled")):
+            public = dict(name=flag, before=before, after=after)
+            self.assertEqual(config_delta.approval_lines({"env": [public]}, [flag]),
+                             [f'ENV {flag} da "{before}" a "{after}"'])
+            for name in ("SNMP_COMMUNITY", "DB_DSN", "DB_PASSWORD", "SERVICE_SECRET", "ACCESS_TOKEN",
+                         "SIGNING_KEY", "DB_CONNECTION_STRING"):
+                with self.subTest(name=name, before=before):
+                    private = dict(name=name, before=after, after=before)
+                    delta = {"env": [public, private]}
+                    if name in ("SNMP_COMMUNITY", "DB_DSN"):
+                        lines = config_delta.approval_lines(delta, [name, flag])
+                        for row, line in zip(delta["env"], lines, strict=True):
+                            self.assertEqual(line, f"ENV {row['name']} da sha256 {config_delta.delta_digest(row['before'])}"
+                                                   f" a sha256 {config_delta.delta_digest(row['after'])}")
+                    else:
+                        with self.assertRaisesRegex(Held, "^SECRET_ENV_DENIED$"):
+                            config_delta.approval_lines(delta, [name, flag])
+
+    def test_DEP_58QB_01_recovery_of_previously_approved_mixed_delta(self):
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        names = ["SNMP_COMMUNITY", "SPRING_FLYWAY_ENABLED"]
+        delta = {"env": [dict(name=name, before=None, after="enabled") for name in names]}
+        case.p.update(migration={"mode": "none", "rollbackCompatible": True}, configDelta=delta,
+                      envAllowlist=names, showValues=names)
+        safe = config_delta.approval_lines(delta, names)
+        legacy = [safe[0], 'ENV SPRING_FLYWAY_ENABLED da assente a "enabled"']
+        with patch.object(operation.reviewed, "approval_lines", return_value=legacy):
+            stamp = operation.plan(case.p, case.rt)["planSha256"]
+            with patch.object(operation, "finish_apply", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+                operation.apply(case.p, stamp, case.rt)
+        retry = recovery.proposal(case.p, case.rt)
+        self.assertEqual(retry["approvalLines"], safe)
+        self.assertNotIn("enabled", "\n".join(retry["approvalLines"]))
+        self.assertEqual(recovery.resume(case.p, case.rt, retry)["status"], "READY")
 
     def test_DEP_58LI_01_presence_precedes_profile_validation(self):
         for delta in (None, {}, [], "", False, 0, self.marker):

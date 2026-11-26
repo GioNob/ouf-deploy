@@ -167,17 +167,18 @@ def expected_after(predecessor_inspect, delta):
 
 
 def approval_lines(delta, show_values=()):
+    env = delta.get("env", [])
+
     def display(name, value):
         validate_value(name, value)
-        # An installed allowlist authorizes a change, not disclosure of an
-        # arbitrary environment variable. Only this known boolean is public.
-        if (name == "SPRING_FLYWAY_ENABLED" and name in show_values
+        # In a mixed delta even the public flag can repeat a private value.
+        if (len(env) == 1 and name == "SPRING_FLYWAY_ENABLED" and name in show_values
                 and value in (None, "true", "false", "enabled", "disabled")):
             return "assente" if value is None else json.dumps(value, ensure_ascii=False)
         return "sha256 " + delta_digest(value)
 
     lines = []
-    for row in delta.get("env", []):
+    for row in env:
         name = row["name"]
         lines.append(f"ENV {name} da {display(name, row['before'])} a {display(name, row['after'])}")
     for bind in delta.get("binds", []):

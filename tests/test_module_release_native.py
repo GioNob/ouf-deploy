@@ -1,6 +1,7 @@
 """Opt-in module release with an actual Docker archive, gated Java and HTTP probe."""
 import gzip
 from contextlib import ExitStack
+from ipaddress import IPv4Network
 import json
 import os
 from pathlib import Path
@@ -20,6 +21,27 @@ from tools.module_release import flyway, postgres, recovery, return_operation
 from tools.module_release.contract import ENTRY, checksum, digest
 from tools.module_release.docker import Docker
 from tools.module_release.operation import apply, migrate, plan, ready
+
+
+def fixture_subnet(interruption):
+    if interruption and interruption.startswith("58q-"):
+        return IPv4Network({
+            "58q-exit": "192.0.2.64/27",
+            "58q-lost-stop": "192.0.2.96/27",
+            "58q-before-signal": "192.0.2.128/27",
+            "58q-after-signal": "192.0.2.160/27",
+        }[interruption])
+    return IPv4Network("192.0.2.32/27")
+
+
+class FixtureNetworkTest(unittest.TestCase):
+    def test_DEP_58QB_08_subcases_have_disjoint_subnets(self):
+        allocated = [fixture_subnet(None)]
+        for cut in ("exit", "lost-stop", "before-signal", "after-signal"):
+            with self.subTest(cut=cut):
+                subnet = fixture_subnet("58q-" + cut)
+                self.assertFalse(any(subnet.overlaps(previous) for previous in allocated))
+                allocated.append(subnet)
 
 
 @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_MODULE_RELEASE_NATIVE") == "1",
@@ -121,11 +143,13 @@ class NativeRelease(unittest.TestCase):
         cli = ["/usr/bin/docker", "--host", "unix://" + socket]
         self.exercise_release(busybox=True, interruption="58q-exit")
         with ExitStack() as resources:
-            self.fixture_network(rt, cli, "module-fixture-" + uuid.uuid4().hex, resources)
+            for cut in ("exit", "lost-stop", "before-signal", "after-signal"):
+                self.fixture_network(rt, cli, "module-fixture-" + uuid.uuid4().hex,
+                                     fixture_subnet("58q-" + cut), resources)
 
-    def fixture_network(self, rt, cli, net, resources):
+    def fixture_network(self, rt, cli, net, subnet, resources):
         network = rt.api("POST", "/networks/create", {"Name": net, "Internal": True, "Driver": "bridge",
-                         "IPAM": {"Config": [{"Subnet": "192.0.2.32/27"}]}})["Id"]
+                         "IPAM": {"Config": [{"Subnet": str(subnet)}]}})["Id"]
         resources.callback(subprocess.run, [*cli, "network", "rm", network], check=True)
 
     def exercise_release(self, busybox, interruption=None, module=None):
@@ -138,6 +162,8 @@ class NativeRelease(unittest.TestCase):
         self.assertIn("ouf.a2.fixture=true", rt.api("GET", "/info")["Labels"])
         name = "module-fixture-" + uuid.uuid4().hex
         net = name + "-net"
+        subnet = fixture_subnet(interruption)
+        ipv4 = str(subnet[3])
         command = ["java", "-jar", "/app/application.jar"]
         old_image = os.environ["OUF_A2_FIXTURE_IMAGE"]
         image_name = "ouf-ci-busybox" if busybox else "ouf-ci-gate"
@@ -159,7 +185,7 @@ class NativeRelease(unittest.TestCase):
             root = Path(directory)
             p.update(container=name, retainedName=name+"-saved", failedName=name+"-failed", oldImage=old_image,
                      inbox=directory, journal=directory, nsenter="/usr/bin/nsenter",
-                     networks={net: {"ipv4":"192.0.2.35", "aliases":[name]}}, gate={"command":command})
+                     networks={net: {"ipv4":ipv4, "aliases":[name]}}, gate={"command":command})
             p["readiness"].update(path="/ready", attempts=20)
             p["migration"].update(mode="dedicated", command=["/bin/sh", "-c", "exit 0"], rollbackCompatible=True)
             if busybox:
@@ -188,7 +214,7 @@ class NativeRelease(unittest.TestCase):
             with archive.open("rb") as f:
                 ci["zipSha256"] = checksum(f)
             archive.rename(root / (ci["zipSha256"] + ".zip"))
-            self.fixture_network(rt, cli, net, resources)
+            self.fixture_network(rt, cli, net, subnet, resources)
             for container in (name, p["retainedName"], p["failedName"]):
                 resources.callback(subprocess.run, [*cli, "rm", "-f", container], stderr=subprocess.DEVNULL)
             env = []
@@ -241,7 +267,7 @@ class NativeRelease(unittest.TestCase):
                 p["migration"]["mode"] = "none"
             old = rt.create(name, dict(Image=old_image, Entrypoint=ENTRY, Cmd=command, Env=env, User="10005:10005" if busybox else "",
                 HostConfig={"NetworkMode":net, "RestartPolicy":{"Name":"no"}},
-                NetworkingConfig={"EndpointsConfig":{net:{"Aliases":[name], "IPAMConfig":{"IPv4Address":"192.0.2.35"}}}}))
+                NetworkingConfig={"EndpointsConfig":{net:{"Aliases":[name], "IPAMConfig":{"IPv4Address":ipv4}}}}))
             rt.start(old)
             for _ in range(100):
                 if rt.process(rt.inspect(old), gated=True):
