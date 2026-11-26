@@ -173,7 +173,7 @@ class Engine:
 
     def stop(self, cid):
         self.events.append("stop:" + cid[0])
-        self.docs[cid]["State"].update(Running=False, Status="exited", Pid=0)
+        self.docs[cid]["State"].update(Running=False, Status="exited", Pid=0, FinishedAt=str(len(self.events)))
 
     def start(self, cid):
         self.events.append("gate:" + cid[0])

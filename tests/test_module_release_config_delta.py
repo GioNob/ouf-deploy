@@ -96,6 +96,34 @@ class InvalidDeltaTest(unittest.TestCase):
     code = "INVALID_DELTA"
     marker = "synthetic-58li-private-value"
 
+    def test_DEP_58QB_01_credential_literals_remain_digests_through_dispatch(self):
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        names = ["SNMP_COMMUNITY", "SERVICE_DSN", "OPAQUE_SETTINGS"]
+        rows = [dict(name=name, before="enabled", after="disabled") for name in names]
+        case.rt.docs[fixture.OLD]["Config"]["Env"].extend(name + "=enabled" for name in names)
+        case.p.update(migration={"mode": "none", "rollbackCompatible": True},
+                      envAllowlist=names, showValues=names, configDelta={"env": rows})
+        call, req = case.governed_dispatch()
+        summary, out, err = io.StringIO(), io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err), self.assertNoLogs():
+            result = call(0)
+            expected = [f"ENV {name} da sha256 {config_delta.delta_digest('enabled')} a sha256 "
+                        f"{config_delta.delta_digest('disabled')}" for name in names]
+            self.assertEqual(result["approvalLines"], expected)
+            with patch.object(sys, "path", list(sys.path)):
+                render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
+                render(summary, req["module"], "plan", result, "apply", None)
+            req.update(phase="apply", digest=result["digest"])
+            self.assertEqual(call(1)["status"], "READY")
+            req.update(phase="rollback", run="2")
+            self.assertEqual(call(1)["status"], "ROLLED_BACK")
+        outputs = [summary.getvalue(), out.getvalue(), err.getvalue(), json.dumps(result)]
+        outputs.extend(path.read_text() for path in case.root.rglob("*") if path.is_file() and path.suffix != ".zip")
+        for output in outputs:
+            self.assertNotRegex(output, "enabled|disabled")
+
     def test_DEP_58LI_01_presence_precedes_profile_validation(self):
         for delta in (None, {}, [], "", False, 0, self.marker):
             with self.subTest(delta_type=type(delta).__name__):

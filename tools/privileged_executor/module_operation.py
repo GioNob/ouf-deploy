@@ -289,6 +289,12 @@ class ModuleRelease(_ModuleRelease):
                 review = read(run / "apply.review")
                 need(review["request"] == req and hex64(review["review"]), "MODULE_APPROVAL_DRIFT")
             else:
+                # A recovery dispatch cannot touch the release before its own
+                # apply.review. The source run owns the earlier stop intent.
+                if proposal["plan"].get("sourcePlan") == stamp:
+                    need(not any((run / name).exists() for name in ("apply.result", "migrate.review")),
+                         "MODULE_APPROVAL_DRIFT")
+                    continue
                 directory = Path(self.profile["journal"]) / stamp
                 need(not (directory / "stop-intent.json").exists(), "MODULE_APPROVAL_DRIFT")
             approved[run.name] = run
@@ -313,15 +319,26 @@ class ModuleRelease(_ModuleRelease):
                      and "migrate" in read(run / "approvals"), "MODULE_APPROVAL_DRIFT")
             need(body == plan, "MODULE_PARENT_DRIFT")
             target = run / (phase + ".result")
+            unlock_failure = None
             if returning or target.exists():
-                need(read(target) == receipt, "MODULE_RECEIPT_DRIFT")
+                published = read(target)
+                if published != receipt:
+                    reason = published.get("reason")
+                    need(not returning and phase == "apply" and run.name == origin and
+                         isinstance(reason, str) and reason.startswith("RELEASE_IO_OR_INPUT_ERROR/") and
+                         published == dict(receipt, status="HELD", reason=reason), "MODULE_RECEIPT_DRIFT")
+                    unlock_failure = published
             tip = {"run": run.name, "phase": phase, "planSha256": stamp}
             if current != tip:
                 need(not returning and (current is None or int(current["run"]) < int(run.name)), "MODULE_RECEIPT_DRIFT")
             if "receiptSigning" in self.profile:
                 directory = Path(self.profile["journal"]) / stamp
                 module_receipt.attest(self.profile["receiptSigning"], directory, issue=not returning)
-            operation.confirm(run, target.name, receipt)
+            if unlock_failure:
+                operation.confirm(run, "apply.unlock-failure", unlock_failure)
+                save(target, receipt, replace=True)
+            else:
+                operation.confirm(run, target.name, receipt)
             if current != tip:
                 save(pointer, tip, replace=True)
 

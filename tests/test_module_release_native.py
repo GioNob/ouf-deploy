@@ -1,5 +1,6 @@
 """Opt-in module release with an actual Docker archive, gated Java and HTTP probe."""
 import gzip
+from contextlib import ExitStack
 import json
 import os
 from pathlib import Path
@@ -113,6 +114,20 @@ class NativeRelease(unittest.TestCase):
             with self.subTest(cut=cut):
                 self.exercise_release(busybox=True, interruption="58q-" + cut)
 
+    def test_DEP_58QB_08_native_fixture_releases_subnet_on_exit(self):
+        socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
+        rt = Docker({"dockerSocket": socket})
+        self.assertIn("ouf.a2.fixture=true", rt.api("GET", "/info")["Labels"])
+        cli = ["/usr/bin/docker", "--host", "unix://" + socket]
+        self.exercise_release(busybox=True, interruption="58q-exit")
+        with ExitStack() as resources:
+            self.fixture_network(rt, cli, "module-fixture-" + uuid.uuid4().hex, resources)
+
+    def fixture_network(self, rt, cli, net, resources):
+        network = rt.api("POST", "/networks/create", {"Name": net, "Internal": True, "Driver": "bridge",
+                         "IPAM": {"Config": [{"Subnet": "192.0.2.32/27"}]}})["Id"]
+        resources.callback(subprocess.run, [*cli, "network", "rm", network], check=True)
+
     def exercise_release(self, busybox, interruption=None, module=None):
         self.assertEqual(os.geteuid(), 0)
         socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
@@ -140,7 +155,7 @@ class NativeRelease(unittest.TestCase):
             command = ["/usr/local/bin/ouf-mcp", "server"]
         tag = image_name + ":" + TESTED
         candidate = rt.api("GET", "/images/" + tag + "/json")["Id"]
-        with tempfile.TemporaryDirectory() as directory:
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as resources:
             root = Path(directory)
             p.update(container=name, retainedName=name+"-saved", failedName=name+"-failed", oldImage=old_image,
                      inbox=directory, journal=directory, nsenter="/usr/bin/nsenter",
@@ -173,15 +188,13 @@ class NativeRelease(unittest.TestCase):
             with archive.open("rb") as f:
                 ci["zipSha256"] = checksum(f)
             archive.rename(root / (ci["zipSha256"] + ".zip"))
-            network = rt.api("POST", "/networks/create", {"Name":net, "Internal":True, "Driver":"bridge",
-                             "IPAM":{"Config":[{"Subnet":"192.0.2.32/27"}]}})["Id"]
-            self.addCleanup(subprocess.run, [*cli, "network", "rm", network], check=False)
+            self.fixture_network(rt, cli, net, resources)
             for container in (name, p["retainedName"], p["failedName"]):
-                self.addCleanup(subprocess.run, [*cli, "rm", "-f", container], stderr=subprocess.DEVNULL)
+                resources.callback(subprocess.run, [*cli, "rm", "-f", container], stderr=subprocess.DEVNULL)
             env = []
             if interruption in ("flyway", "database", "jdbc"):
                 pg = name + "-pg"
-                setup = self.enterContext(postgres_fixture(cli, pg, net, jdbc=interruption == "jdbc"))
+                setup = resources.enter_context(postgres_fixture(cli, pg, net, jdbc=interruption == "jdbc"))
                 def sql(command):
                     subprocess.run(setup, input=command.encode(), check=True, stdout=subprocess.DEVNULL)
                 if interruption == "jdbc":

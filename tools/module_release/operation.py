@@ -287,9 +287,9 @@ def finish_migration(p, rt, old, cid, root, checked, expected_generation):
 
 def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
     signal_file = "restore-signal.json" if restoring else "release-signal.json"
-    signalled = reviewed.signal_claimed(p, root, signal_file, restoring) if "configDelta" in p else (root / signal_file).exists()
+    signalled = (root / signal_file).exists()
     check = checked_generation if signalled else waiting_gate
-    generation, checked = check(p, rt, old, cid, restoring)
+    generation, checked = reviewed.release_gate(check, p, rt, old, cid, restoring)
     require(expected_generation is None or generation == expected_generation, "MIGRATION_GENERATION_CHANGED")
     dedicated = not restoring and p["migration"]["mode"] == "dedicated"
     if dedicated:
@@ -321,7 +321,7 @@ def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
             else:
                 confirm(root, "flyway-plan.json", proof)
             require(rt.process(checked(), gated=True), "GATE_CHANGED")
-        reviewed.claim_signal(p, root, signal_file, signal_claim, restoring) if reviewed.enabled(p) else record(root, signal_file, signal_claim)
+        reviewed.claim_signal(p, rt, checked, root, signal_file, signal_claim) if not restoring and "configDelta" in p else record(root, signal_file, signal_claim)
         try:
             reviewed.signal(rt, checked) if reviewed.enabled(p) else rt.signal(cid)
         except Exception as exc:

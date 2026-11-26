@@ -42,8 +42,8 @@ def validate(req, policy):
              and req["module"] in policy["modules"] and (req["phase"] in ("plan", "apply", "migrate")
              or (req["module"] == "mcp" and req["phase"] in ("mcp-retention-admin-019", "analysis-retention-once")
                  and "retentionAdmin019" in policy["modules"]["mcp"]["migration"])
-             or (req["phase"] == "rollback" and return_allowed(
-                 policy["modules"][req["module"]]))),
+             or (req["phase"] == "rollback" and ({"database", "flyway"}.intersection(
+                 policy["modules"][req["module"]]["migration"]) or reviewed_return_allowed(policy["modules"][req["module"]])))),
              "MODULE_REQUEST_SCOPE")
     elif req.get("operation") == "module-install":
         from module_release.install_contract import valid_request
@@ -161,4 +161,4 @@ def validate(req, policy):
         validate_request_profiles(req, policy, check=need)
     return _validate_request(req, policy)
 
-from module_release.profile_options import return_allowed
+from module_release.profile_options import reviewed_return_allowed

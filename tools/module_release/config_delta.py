@@ -169,7 +169,10 @@ def expected_after(predecessor_inspect, delta):
 def approval_lines(delta, show_values=()):
     def display(name, value):
         validate_value(name, value)
-        if name in show_values and value in (None, "true", "false", "enabled", "disabled"):
+        # An installed allowlist authorizes a change, not disclosure of an
+        # arbitrary environment variable. Only this known boolean is public.
+        if (name == "SPRING_FLYWAY_ENABLED" and name in show_values
+                and value in (None, "true", "false", "enabled", "disabled")):
             return "assente" if value is None else json.dumps(value, ensure_ascii=False)
         return "sha256 " + delta_digest(value)
 

@@ -24,21 +24,22 @@ def validate_profile_options(profile, *, check=require):
 
 
 def reviewed(profile):
-    return isinstance(profile, Mapping) and ("configDelta" in profile or
-            profile.get("readyReturn") is True and profile.get("migration", {}).get("mode") == "none"
-            and not {"database", "flyway"}.intersection(profile["migration"]))
+    if not isinstance(profile, Mapping):
+        return False
+    migration = profile.get("migration")
+    return "configDelta" in profile or (profile.get("readyReturn") is True and isinstance(migration, Mapping)
+            and migration.get("mode") == "none" and not {"database", "flyway"}.intersection(migration))
 
 
-def return_allowed(profile):
-    migration = profile["migration"]
-    return bool({"database", "flyway"}.intersection(migration) or
-                migration.get("mode") == "none" and reviewed(profile))
+def reviewed_return_allowed(profile):
+    migration = profile.get("migration")
+    return reviewed(profile) and isinstance(migration, Mapping) and migration.get("mode") in ("none", "spring-flyway")
 
 
 def validate_request_profiles(req, policy, *, check=require):
     if not isinstance(req, dict) or req.get("operation") not in ("module-release", "module-install"):
         return
-    validate_module_profiles(req.get("module"), policy, release=req["operation"] == "module-release", check=check)
+    validate_module_profiles(req.get("module"), policy, release=req.get("operation") == "module-release", check=check)
 
 
 def validate_module_profiles(name, policy, *, release, check=require):

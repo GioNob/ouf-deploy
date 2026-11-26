@@ -3,6 +3,8 @@ from concurrent.futures import ProcessPoolExecutor
 from contextlib import ExitStack
 import hashlib
 import json
+import os
+import sys
 import tempfile
 from pathlib import Path
 import unittest
@@ -189,6 +191,82 @@ class ReadyReturn(unittest.TestCase):
                 self.assertIn("LISTEN_ADDRESS=[::1]:8080", rt.inspect(fixture.NEW)["Config"]["Env"])
                 self.assertEqual(ready["configDeltaSha256"], plan["configDeltaSha256"])
             self.oracle(rt, plan, return_operation.run(rt.p, op.digest(plan), rt))
+
+    def test_DEP_58QB_02_unbound_spring_recovery_before_generation(self):
+        rt, _ = self.case()
+        rt.p["migration"]["mode"] = "spring-flyway"
+        plan = op.plan(rt.p, rt)["plan"]
+        result, rt = interrupted(rt, plan, "apply", "start-generation.json", False)
+        self.assertEqual(result, "crash")
+        resumed = recovery.resume(rt.p, rt, recovery.proposal(rt.p, rt))
+        self.assertEqual(resumed["rollback"], "ROLLED_BACK", resumed)
+        self.oracle(rt, plan, op.read(Path(rt.p["journal"]) / op.digest(plan), "return-receipt.json"))
+
+    def test_DEP_58QB_05_foreign_restart_before_restore_generation(self):
+        rt, plan = self.case()
+        stamp = op.digest(plan)
+        self.assertEqual(op.apply(rt.p, stamp, rt)["status"], "READY")
+        result, rt = interrupted(rt, plan, "return", "restore-generation.json", False)
+        self.assertEqual(result, "crash")
+        rt.stop(fixture.OLD)
+        rt.start(fixture.OLD)
+        before = list(rt.events)
+        denied = return_operation.run(rt.p, stamp, rt)
+        self.assertEqual((denied["status"], denied["reason"]), ("HELD", "RESTORE_GENERATION_CHANGED"))
+        self.assertEqual(rt.events, before)
+        directory = Path(rt.p["journal"]) / stamp
+        self.assertFalse((directory / "restore-generation.json").exists())
+        self.assertFalse((directory / "return-receipt.json").exists())
+
+    def governed_case(self):
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.p.update(migration={"mode": "none", "rollbackCompatible": True},
+                      configDelta={"env": [dict(name="FEATURE", before=None, after="enabled")]},
+                      envAllowlist=["FEATURE"])
+        return case
+
+    def test_DEP_58QB_03_ready_with_unlock_io_failure(self):
+        import mandate
+        import module_operation
+        case = self.governed_case()
+        call, req = case.governed_dispatch()
+        stamp = call(0)["digest"]
+        req.update(phase="apply", digest=stamp)
+        with patch.object(module_operation.operation.reviewed, "unlock", side_effect=OSError), self.assertRaises(mandate.Held):
+            call(1)
+        receipt = op.read(case.root / stamp, "receipt.json")
+        failure = op.read(case.root / "1", "apply.result")
+        self.assertEqual((receipt["status"], failure["status"]), ("READY", "HELD"))
+        req.update(phase="rollback", run="2")
+        self.assertEqual(call(1)["status"], "ROLLED_BACK")
+        directory = case.root / stamp
+        self.oracle(case.rt, op.read(directory, "plan.json"), op.read(directory, "return-receipt.json"))
+        self.assertEqual(op.read(case.root / "1", "apply.result"), receipt)
+        self.assertEqual(op.read(case.root / "1", "apply.unlock-failure"), failure)
+
+    def test_DEP_58QB_04_recovery_review_consumed_before_apply_review(self):
+        import mandate
+        import module_operation
+        case = self.governed_case()
+        call, req = case.governed_dispatch()
+        stamp = call(0)["digest"]
+        req.update(phase="apply", digest=stamp)
+        with patch.object(case.rt, "signal", side_effect=Crash), self.assertRaises(Crash):
+            call(1)
+        req.update(phase="plan", run="2")
+        req["digest"] = mandate.intent(req)
+        recovery_stamp = call(0)["digest"]
+        req.update(phase="apply", digest=recovery_stamp)
+        with patch.object(module_operation, "save", side_effect=Crash), self.assertRaises(Crash):
+            call(1)
+        self.assertEqual(op.read(case.root / "2", "approvals"), ["apply"])
+        self.assertFalse((case.root / "2/apply.review").exists())
+        req.update(phase="rollback", run="3", digest=stamp)
+        self.assertEqual(call(1)["status"], "ROLLED_BACK")
+        directory = case.root / stamp
+        self.oracle(case.rt, op.read(directory, "plan.json"), op.read(directory, "return-receipt.json"))
 
     def test_DEP_58Q_05_stopped_candidate_and_lost_restore_start(self):
         with ProcessPoolExecutor(1) as retry, ProcessPoolExecutor(1) as finish:
@@ -396,6 +474,10 @@ class ReadyReturn(unittest.TestCase):
 
 
 class DeltaEngine(fixture.Engine):
+    def verify_mounted_bind(self, doc, bind):
+        if hashlib.sha256(self.mounted[doc["Id"], bind["target"]]).hexdigest() != bind["sha256"]:
+            raise op.Held("BIND_DIGEST_CHANGED")
+
     def create(self, name, request):
         cid = super().create(name, request)
         doc = self.docs[cid]
@@ -432,6 +514,7 @@ class ConfigDeltaTest(unittest.TestCase):
 
     def install_delta(self):
         self.p["configDelta"] = self.delta
+        self.rt.mounted = {(fixture.NEW, self.bind["target"]): self.source_bytes}
         # The Engine and host are synthetic. Exercise the common path/policy grammar
         # and content pin while substituting the POSIX root-owned file reader.
         def fixture_file(entry, roots, *, profile):
@@ -476,6 +559,34 @@ class ConfigDeltaTest(unittest.TestCase):
         self.assertEqual((failure["reason"], failure["rollback"]), ("BIND_DIGEST_CHANGED", "ROLLED_BACK"))
         self.assertNotIn("signal:" + fixture.NEW[0], self.rt.events)
         self.assert_restored()
+
+    def test_DEP_58QB_07_changed_mount_with_approved_host_replacement(self):
+        self.install_delta()
+        stamp = self.planned()["planSha256"]
+        with patch.object(op, "finish_apply", side_effect=Crash), self.assertRaises(Crash):
+            op.apply(self.p, stamp, self.rt)
+        self.rt.mounted[fixture.NEW, self.bind["target"]] = b"old mounted inode was modified"
+        failure = recovery.resume(self.p, self.rt, recovery.proposal(self.p, self.rt))
+        self.assertEqual((failure["reason"], failure["rollback"]), ("BIND_DIGEST_CHANGED", "ROLLED_BACK"))
+        self.assertNotIn("signal:" + fixture.NEW[0], self.rt.events)
+        self.assertFalse((self.root / stamp / "release-signal.json").exists())
+        self.assert_restored()
+
+    @unittest.skipUnless(sys.platform == "linux", "requires procfs process root")
+    def test_DEP_58QB_07_proc_root_reads_the_pinned_inode(self):
+        source, mounted = self.root / "source", self.root / "mounted"
+        source.write_bytes(self.source_bytes)
+        os.link(source, mounted)
+        bind = dict(self.bind, source=str(source), target=str(mounted))
+        doc = {"State": {"Running": True, "Pid": os.getpid()}}
+        rt = op.Docker(self.p)
+        rt.verify_mounted_bind(doc, bind)
+        replacement = self.root / "replacement"
+        replacement.write_bytes(self.source_bytes)
+        replacement.replace(source)
+        mounted.write_bytes(b"changed behind the mount")
+        with self.assertRaisesRegex(op.Held, "^BIND_DIGEST_CHANGED$"):
+            rt.verify_mounted_bind(doc, bind)
 
     def test_DEP_58Q_13_combined_create(self):
         self.install_delta()

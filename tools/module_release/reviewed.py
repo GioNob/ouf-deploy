@@ -293,16 +293,25 @@ def reconcile_candidate(p, rt, old, root, plan):
     return cid
 
 
-def check_binds(p):
+def check_binds(p, rt=None, doc=None):
     from .frame_spec import validate_bind
     for bind in p.get("configDelta", {}).get("binds", ()):
         validate_bind(bind, p)
+        if doc is not None:
+            rt.verify_mounted_bind(doc, bind)
 
 
-def claim_signal(p, root, name, claim, restoring):
+def release_gate(check, p, rt, old, cid, restoring):
+    generation, checked = check(p, rt, old, cid, restoring)
+    if not restoring and p.get("configDelta", {}).get("binds"):
+        check_binds(p, rt, checked())
+    return generation, checked
+
+
+def claim_signal(p, rt, checked, root, name, claim):
     op.record(root, name, claim)
-    if not restoring:
-        check_binds(p)
+    if p["configDelta"].get("binds"):
+        check_binds(p, rt, checked())
 
 
 def signal(rt, checked):
@@ -361,6 +370,7 @@ def restore_start(p, rt, old, root, *, allow_recycle=True):
         require(doc["State"]["Pid"] == 0 and doc["State"]["StartedAt"] == before and
                 not (cycle / "restore-generation.json").exists(), "RESTORE_GENERATION_CHANGED")
         require(set(endpoints(old, doc)) == set(old["NetworkSettings"]["Networks"]), "NETWORK_SET_CHANGED")
+        op.confirm(cycle, "restore-stop-epoch.json", stop_epoch(doc))
         op.confirm(cycle, "restore-start.json", {"cid": cid, "startedAt": before})
         rt.start(cid)
     require(op.read(cycle, "restore-start.json") == {"cid": cid, "startedAt": before}, "RESTORE_GENERATION_CHANGED")
@@ -368,6 +378,11 @@ def restore_start(p, rt, old, root, *, allow_recycle=True):
     doc = checked()
     proof = {"epoch": frame.epoch(doc), "generation": generation}
     require(proof["epoch"][1] != before and doc["RestartCount"] == old["RestartCount"], "RESTORE_GENERATION_CHANGED")
+    if (cycle / "restore-stop-epoch.json").exists():
+        require(op.read(cycle, "restore-stop-epoch.json") == stop_epoch(doc), "RESTORE_GENERATION_CHANGED")
+    else:
+        # Older journals can still prove an already recorded live generation.
+        require((cycle / "restore-generation.json").is_file(), "RESTORE_GENERATION_UNCONFIRMED")
     op.confirm(cycle, "restore-generation.json", proof)
     signal_claim = {"cid": cid, "epoch": proof["epoch"]}
     if (cycle / "restore-signal.json").exists():
@@ -389,6 +404,13 @@ def restore_start(p, rt, old, root, *, allow_recycle=True):
     # Retry from the durable edge under a fresh review if the replacement gate fails too.
     require(allow_recycle, "PREDECESSOR_READINESS_NOT_UP")
     return restore_start(p, rt, old, root, allow_recycle=False)
+
+
+def stop_epoch(doc):
+    finished = doc["State"].get("FinishedAt")
+    require(isinstance(finished, str) and finished and finished != "0001-01-01T00:00:00Z",
+            "RESTORE_GENERATION_UNCONFIRMED")
+    return {"cid": doc["Id"], "finishedAt": finished}
 
 
 def restored(p, rt, old, cid, root, plan):
@@ -434,13 +456,17 @@ def confirm_return(root, cid, stamp):
 
 
 def return_run(p, stamp, runtime, *, publication=None, approved_plan=None):
-    from .profile_options import return_allowed
-    require(matches(SHA, stamp) and return_allowed(p), "INVALID_RETURN_PLAN")
+    from .profile_options import reviewed_return_allowed
+    migration = p["migration"]
+    has_binding = bool({"database", "flyway"}.intersection(migration))
+    require(matches(SHA, stamp) and (has_binding or reviewed_return_allowed(p)), "INVALID_RETURN_PLAN")
     lock = lock_path(p)
     root = lock.parent / stamp
     result = {"planSha256": stamp, "status": "HELD"}
     try:
         require(p["migration"]["rollbackCompatible"] is True, "MIGRATION_ROLLBACK_BLOCKED")
+        if migration["mode"] == "spring-flyway" and not has_binding:
+            require(not (root / "release-signal.json").exists(), "FLYWAY_OUTCOME_UNCONFIRMED")
         if lock.exists():
             owner(lock, stamp)
         if (root / "plan.json").exists():
@@ -479,7 +505,6 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None):
                     op.read(root, "start-generation.json") == {"cid": cid, "generation": receipt["successorFrameSha256"]},
                     "IMMEDIATE_SUCCESSOR_CHANGED")
             if not returning:
-                check_binds(p)
                 op.retained(p, rt, old)
                 doc = rt.inspect(p["container"])
                 require(doc["Id"] == cid and frame.snapshot(doc) == receipt["successorFrameSha256"]
@@ -487,6 +512,7 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None):
                         and op.read(root, "create-proof.json") == {"cid": cid, "stableFrameSha256": stable(doc)}
                         and op.read(root, "release-signal.json") == {"cid": cid, "epoch": frame.epoch(doc)}
                         and receipt["readyHttp"] == op.ready_status(rt, doc, p["readiness"]), "IMMEDIATE_SUCCESSOR_CHANGED")
+                check_binds(p, rt, doc)
             if publication:
                 publication(plan, receipt, returning)
             if "receiptSigning" in p:
@@ -635,12 +661,6 @@ def predecessor_guard(old):
             endpoints(old, doc)
         return doc
     return verify
-
-
-def signal_claimed(p, root, name, restoring):
-    if not restoring and "configDelta" in p:
-        check_binds(p)
-    return (root / name).exists()
 
 
 def recovery_review(p, root, body, proposal):

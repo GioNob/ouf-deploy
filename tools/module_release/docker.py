@@ -230,3 +230,27 @@ class Docker:
 
     def is_candidate(self, doc):
         return doc["Id"] == getattr(self, "candidate_cid", None)
+
+    def verify_mounted_bind(self, doc, bind):
+        from .contract import checksum
+        from .frame_spec import path
+        parts = path(bind["target"]).parts[1:]
+        require(parts and doc["State"]["Running"] and doc["State"]["Pid"] > 0, "BIND_CUSTODY_UNPROVEN")
+        root = Path("/proc", str(doc["State"]["Pid"]), "root")
+        # Pin the process root and walk below it without following links back
+        # into the executor's namespace. Read the file behind the actual mount.
+        try:
+            with ExitStack() as stack:
+                directory = os.open(root, os.O_RDONLY | os.O_DIRECTORY)
+                stack.callback(os.close, directory)
+                for part in parts[:-1]:
+                    directory = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=directory)
+                    stack.callback(os.close, directory)
+                fd = os.open(parts[-1], os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW, dir_fd=directory)
+                with os.fdopen(fd, "rb") as mounted:
+                    before = os.fstat(fd)
+                    require(stat.S_ISREG(before.st_mode), "BIND_CUSTODY_UNPROVEN")
+                    require(checksum(mounted) == bind["sha256"] and before.st_ctime_ns == os.fstat(fd).st_ctime_ns,
+                            "BIND_DIGEST_CHANGED")
+        except OSError:
+            raise Held("BIND_CUSTODY_UNPROVEN") from None

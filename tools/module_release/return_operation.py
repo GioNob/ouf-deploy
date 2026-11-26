@@ -30,7 +30,7 @@ def interrupted_successor(profile, rt, old, plan, root):
 
 
 def run(profile, stamp, runtime=None, *, recover=False):
-    require(matches(SHA, stamp) and return_allowed(profile),
+    require(matches(SHA, stamp) and {"database", "flyway"}.intersection(profile["migration"]),
             "INVALID_RETURN_PLAN")
     parent = Path(profile["journal"])
     root = parent / stamp
@@ -107,7 +107,6 @@ def run(profile, stamp, runtime=None, *, recover=False):
 
 
 from .contract import validate_profile_options
-from .profile_options import return_allowed
 
 _run = run
 

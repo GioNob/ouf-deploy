@@ -289,6 +289,22 @@ class NoDeltaParity(unittest.TestCase):
     def test_DEP_58Q_17_legacy_none_denial_and_public_annotation(self):
         self.compare_legacy_none_denial_and_public_annotation()
 
+    def test_DEP_58QB_06_missing_migration_keeps_public_location(self):
+        outcomes = []
+        for policy in (self.reference_mandate, mandate):
+            req = dict(module="mcp", operation="module-release", phase="rollback", run="1", attempt="1",
+                       digest="a" * 64, commit="b" * 40)
+            with self.assertRaises(KeyError) as missing:
+                try:
+                    policy.validate(req, {"modules": {"mcp": {}}})
+                except KeyError as error:
+                    import traceback
+                    last = traceback.extract_tb(error.__traceback__)[-1]
+                    outcomes.append(f"{type(error).__name__}@{Path(last.filename).name}:{last.lineno}")
+                    raise
+            self.assertEqual(missing.exception.args, ("migration",))
+        self.assertEqual(outcomes, ["KeyError@mandate.py:46"] * 2)
+
     def compare_legacy_none_denial_and_public_annotation(self):
         case = fixture.ReleaseTest()
         self.addCleanup(case.doCleanups)

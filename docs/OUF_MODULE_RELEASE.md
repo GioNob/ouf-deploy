@@ -85,7 +85,7 @@ La suite portabile usa lo ZIP nel formato R-033 e verifica i mandati sulle fasi.
 
 Il custode abilita il ritorno approvato per un rilascio con migrazione `none` impostando `readyReturn: true` nel profilo, oppure approvando un `configDelta` effettivo. Il piano lega il CID del predecessore, la baseline e la richiesta CREATE. La label `ouf.release.plan` usa uno slot di 64 zeri nel calcolo del digest e contiene il digest approvato nella CREATE. Il ritorno usa un nuovo dispatch con `return_plan` e la review del job rollback.
 
-`configDelta.env` applica il confronto fra `before` e il valore del predecessore per i nomi in `envAllowlist`. I bind aggiunti richiedono sola lettura e SHA-256, gli alias una rete già presente. Il piano e la ricevuta includono `configDeltaSha256`. La review mostra i digest dei valori ENV. Per i nomi in `showValues` può mostrare assenza e i letterali pubblici `true`, `false`, `enabled`, `disabled`. Le credenziali richiedono un riferimento `*_FILE` a un bind in sola lettura.
+`configDelta.env` applica il confronto fra `before` e il valore del predecessore per i nomi in `envAllowlist`. I bind aggiunti richiedono sola lettura e SHA-256, gli alias una rete già presente. Al cancello l’esecutore verifica il digest del file montato dal candidato. Il piano e la ricevuta includono `configDeltaSha256`. La review mostra i digest dei valori ENV. Solo per `SPRING_FLYWAY_ENABLED` in `showValues` può mostrare assenza e i letterali pubblici `true`, `false`, `enabled`, `disabled`. Le credenziali richiedono un riferimento `*_FILE` a un bind in sola lettura.
 
 ## Prima installazione (`module-install`)
 
