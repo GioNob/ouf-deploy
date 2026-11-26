@@ -43,8 +43,7 @@ def inspect(profile):
     safe(profile)
     check(profile.is_file() and not profile.stat().st_mode & 0o077, "PRIVATE_PROFILE_REQUIRED")
     raw = profile.read_bytes()
-    checked_profiles(raw)
-    cfg = json.loads(raw)
+    cfg = admitted_policy(json.loads(raw))
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
@@ -202,15 +201,11 @@ def fingerprint(data, mode):
     return {"sha256": sha(data), "mode": oct(mode)}
 
 
-def _journal_paths(raw):
-    policy = json.loads(raw)
-    profile_options().validate_policy_profiles(policy)
-    return {Path(m["journal"]) for m in policy.get("modules", {}).values()}
+def journals(profile_bytes):
+    return {Path(m["journal"]) for m in admitted_policy(json.loads(profile_bytes)).get("modules", {}).values()}
 
 
 def manifest(files):
-    profile = ROOT / "profile.json"
-    checked_profiles(files[profile][0])
     inventory = ROOT / "managed-files.json"
     paths = set(files)
     if existing(inventory):
@@ -221,11 +216,11 @@ def manifest(files):
             check(len(rel.parts) >= 2 and rel.parts[0] in ("lib", "books")
                   and rel.as_posix() == name and ".." not in rel.parts, "INVALID_INSTALL_INVENTORY")
             paths.add(ROOT / rel)
-    new_journals = _journal_paths(files[profile][0])
+    profile = ROOT / "profile.json"
+    new_journals = journals(files[profile][0])
     protected = {ROOT / "state"} | new_journals
-    # An upgrade also protects journals retired by the proposed profile.
     if existing(profile):
-        protected.update(_journal_paths(profile.read_bytes()))
+        protected.update(journals(profile.read_bytes()))
     for directory in new_journals:
         if not directory.exists():
             check(not any(p in directory.parents for p in protected), "PROTECTED_INSTALL_STATE")
@@ -273,8 +268,6 @@ def visudo(*args):
 
 
 def install(files, spec):
-    profile = files[ROOT / "profile.json"][0]
-    checked_profiles(profile)
     changed = [Path(p) for p, row in spec.items() if row["action"] != "unchanged"]
     changed.sort(key=lambda p: p == RULE)
     visudo()
@@ -284,7 +277,7 @@ def install(files, spec):
             staged[RULE] = stage(RULE, *files[RULE], cleanup)
             visudo("-f", str(staged[RULE]))
         for directory in (ROOT, ROOT / "lib", ROOT / "lib/module_release", ROOT / "books",
-                          ROOT / "state", *_journal_paths(profile)):
+                          ROOT / "state", *journals(files[ROOT / "profile.json"][0])):
             if not directory.exists():
                 directory.mkdir(mode=0o700)
                 sync_dir(directory.parent)
@@ -346,7 +339,7 @@ def installation_lock():
 
 
 def main():
-    parser = InstallParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=("bootstrap", "plan", "apply"))
     parser.add_argument("profile", type=Path)
     parser.add_argument("--plan-sha256")
@@ -368,13 +361,9 @@ def main():
     print("OUF_A2_INSTALLED")
 
 
-def _run_cli():
-    main()
-
-
 from functools import cache
 
-PROFILE_OPTIONS_SHA256 = "2f2efcd842617bedd298c0ac45194d29bc98f8d7d0165fee1c65075c7b4bdbed"
+PROFILE_OPTIONS_SHA256 = "02e27b8f77cc82b5bd002bbc0d8e4a2029169b0c35ff4b5a8aad84bebcb1f332"
 
 
 @cache
@@ -389,28 +378,9 @@ def profile_options():
     return options
 
 
-def checked_profiles(candidate):
-    """Only deny a decoded option here. Each caller owns its required reads."""
-    try:
-        proposed = json.loads(candidate)
-    except (ValueError, RecursionError):
-        return
-    options = profile_options()
-    options.validate_policy_profiles(proposed)
-    path = ROOT / "profile.json"
-    try:
-        if not existing(path):
-            return
-        installed = json.loads(path.read_bytes())
-    except (OSError, ValueError, RecursionError):
-        return
-    options.validate_policy_profiles(installed)
-
-
-def read_profiles(profile):
-    safe(profile)
-    check(profile.is_file() and not profile.stat().st_mode & 0o077, "PRIVATE_PROFILE_REQUIRED")
-    return checked_profiles(profile.read_bytes())
+def admitted_policy(policy):
+    profile_options().validate_policy_profiles(policy)
+    return policy
 
 
 def load_contract(contract, files, package):
@@ -421,27 +391,5 @@ def load_contract(contract, files, package):
     contract.validate_profile_options = profile_options().validate_profile_options
 
 
-def journals(profile_bytes):
-    checked_profiles(profile_bytes)
-    return _journal_paths(profile_bytes)
-
-
-class InstallParser(argparse.ArgumentParser):
-    def error(self, message):
-        locator = argparse.ArgumentParser(add_help=False, exit_on_error=False)
-        locator.add_argument("mode", nargs="?")
-        locator.add_argument("profile", nargs="?", type=Path)
-        locator.add_argument("--plan-sha256", nargs="?")
-        hint, _ = locator.parse_known_args()
-        if hint.profile is not None and os.geteuid() == 0 and sys.flags.isolated:
-            try:
-                read_profiles(hint.profile)
-            except profile_options().UnsupportedOption:
-                raise
-            except (OSError, ValueError, RecursionError):
-                pass  # Keep the original argument diagnostic when admission cannot read a profile.
-        super().error(message)
-
-
 if __name__ == "__main__":
-    _run_cli()
+    main()

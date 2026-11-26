@@ -10,7 +10,7 @@ import sys
 import tempfile
 import unittest
 from types import SimpleNamespace
-from unittest.mock import Mock, call, mock_open, patch
+from unittest.mock import Mock, mock_open, patch
 
 import test_module_release as fixture
 from test_module_install import setup_profile
@@ -23,13 +23,20 @@ from tools.module_release import config_delta, operation, recovery, return_opera
 from tools.module_release.contract import Held, validate
 
 
-def executor_with_busy_lock(root, policy_module, profile, *, denied=False, operation_name="module-release", phase="plan",
-                            locked_profile=None, raw_request=None, installation_fd=None):
+def request_for(kind, module, phase="plan"):
+    req = dict(operation=kind, module=module, phase=phase, run="1", attempt="1", commit="a" * 40)
+    if kind == "module-install":
+        req["schema"] = install_contract.SCHEMA
+    return dict(req, digest=mandate.intent(req))
+
+
+def executor_with_busy_lock(root, policy_module, profile, *, operation_name="module-release", phase="plan",
+                            raw_request=None, installation_fd=None):
     """Run the CLI and capture its public output with the operation lock occupied."""
     script = str(root / "scripts/ouf-a2-executor")
-    req = dict(operation=operation_name, module="mcp", phase=phase, run="1", attempt="1", commit="a" * 40)
-    req["digest"] = policy_module.intent(req)
-    cfg = {"commit": req["commit"], "modules": {"mcp": profile}}
+    name = profile.get("module", "mcp")
+    req = request_for(operation_name, name, phase)
+    cfg = {"commit": req["commit"], "modules": {name: profile}}
     envelope = json.dumps({"request": req, "token": "fixture"}).encode() if raw_request is None else raw_request
     locks = Mock(LOCK_SH=1, LOCK_EX=2, LOCK_NB=4)
     locks.flock.side_effect = [None, BlockingIOError()]
@@ -41,43 +48,28 @@ def executor_with_busy_lock(root, policy_module, profile, *, denied=False, opera
     out, err = io.StringIO(), io.StringIO()
     flags = SimpleNamespace(**{k: getattr(sys.flags, k) for k in dir(sys.flags) if not k.startswith("_")})
     flags.isolated = 1
-    run_path = runpy.run_path
-    installed = Path("/opt/ouf-a2")
-    read_bytes = Path.read_bytes
-    lstat = Path.lstat
+    stream = Mock(wraps=io.BytesIO(envelope))
 
-    def stat_file(path):
-        if path == installed / "profile.json":
-            return SimpleNamespace(st_mode=0o100600, st_uid=0)
-        return lstat(path)
-
-    def read_file(path):
-        return json.dumps(cfg).encode() if path == installed / "profile.json" else read_bytes(path)
-
-    def run_file(path, **kwargs):
-        if Path(path) == installed / "lib/module_release/profile_options.py":
-            path = root / "tools/module_release/profile_options.py"
-        return run_path(str(path), **kwargs)
+    def locked_read(path):
+        locks.flock.assert_called_once_with(fd, locks.LOCK_SH | locks.LOCK_NB)
+        stream.read.assert_not_called()
+        return cfg
 
     with ExitStack() as stack:
         enter = stack.enter_context
         enter(patch.dict(sys.modules, {"fcntl": locks, "mandate": policy_module}))
         enter(patch.object(sys, "argv", [script]))
         enter(patch.object(sys, "flags", flags))
-        enter(patch.object(Path, "lstat", stat_file))
-        enter(patch.object(Path, "read_bytes", read_file))
-        enter(patch.object(runpy, "run_path", run_file))
         enter(patch.object(sys, "path", list(sys.path)))
         enter(patch.object(sys, "dont_write_bytecode", True))
-        enter(patch.object(sys, "stdin", Mock(buffer=io.BytesIO(envelope))))
+        enter(patch.object(sys, "stdin", Mock(buffer=stream)))
         enter(patch.object(os, "geteuid", return_value=0, create=True))
         enter(patch.object(os, "O_DIRECTORY", 0, create=True))
-        open_lock = enter(patch.object(os, "open", return_value=fd))
+        enter(patch.object(os, "open", return_value=fd))
         enter(patch.object(os, "environ", {}))
         enter(patch.object(os, "chdir"))
         enter(patch.object(os, "umask"))
-        locked = cfg if locked_profile is None else {**cfg, "modules": {"mcp": locked_profile}}
-        enter(patch.object(store, "read", return_value=locked))
+        read = enter(patch.object(store, "read", side_effect=locked_read))
         trusted = enter(patch.object(store, "trusted", return_value=trusted_lock))
         github = enter(patch.object(policy_module, "github_reader"))
         mkdir = enter(patch.object(os, "mkdir"))
@@ -94,12 +86,8 @@ def executor_with_busy_lock(root, policy_module, profile, *, denied=False, opera
             status = 0
     github.assert_not_called()
     mkdir.assert_not_called()
-    if denied:
-        trusted.assert_not_called()
-        open_lock.assert_not_called()
-        locks.flock.assert_not_called()
-    else:
-        assert locks.flock.call_args_list[0] == call(fd, locks.LOCK_SH | locks.LOCK_NB)
+    read.assert_called_once_with(Path("/opt/ouf-a2/profile.json"))
+    stream.read.assert_called_once_with(8193)
     return (status, out.getvalue(), err.getvalue()), trusted.call_count, sum(
         args[1] == locks.LOCK_EX | locks.LOCK_NB for args, _ in locks.flock.call_args_list)
 
@@ -154,10 +142,7 @@ class DisabledDeltaTest(unittest.TestCase):
                              ("module-install", ("plan", "apply", "rollback"))):
             for phase in phases:
                 with self.subTest(operation=kind, phase=phase):
-                    req = dict(operation=kind, module="mcp", phase=phase, run="1", attempt="1", commit=cfg["commit"])
-                    if kind == "module-install":
-                        req["schema"] = "ouf.module-install.v1"
-                    req["digest"] = mandate.intent(req)
+                    req = request_for(kind, "mcp", phase)
                     out, err = io.StringIO(), io.StringIO()
                     with redirect_stdout(out), redirect_stderr(err), self.assertRaises(mandate.Held) as denied:
                         executor["dispatch"](req, cfg, root, get)
@@ -169,7 +154,7 @@ class DisabledDeltaTest(unittest.TestCase):
     def test_DEP_58LJ_01_executor_denies_before_busy_operation_lock(self):
         profile = json.loads(fixture.PROFILE.with_name("mcp.example.json").read_bytes())
         profile["configDelta"] = self.marker
-        output, opens, locks = executor_with_busy_lock(fixture.ROOT, mandate, profile, denied=True)
+        output, opens, locks = executor_with_busy_lock(fixture.ROOT, mandate, profile)
         self.assertEqual(output, (1, "", self.code + "\n"))
         self.assertEqual((opens, locks), (0, 0))
 
@@ -202,7 +187,7 @@ class DisabledDeltaTest(unittest.TestCase):
                 self.assertEqual(str(held.exception), self.code)
             render.assert_not_called()
 
-    def test_DEP_58LL_02_transport_dangling_module_is_usage_only(self):
+    def test_DEP_58LL_02_transport_argument_errors_do_not_open_profile(self):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))
         profile = root / "profilo.json"
         raw = json.dumps({"configDelta": self.marker}).encode()
@@ -215,9 +200,11 @@ class DisabledDeltaTest(unittest.TestCase):
             open_fd = stack.enter_context(patch.object(os, "open"))
             open_file = stack.enter_context(patch.object(Path, "open"))
             stack.enter_context(patch.dict(sys.modules, fcntl=locking))
-            with self.assertRaises(SystemExit) as usage:
-                transport.main([profile.name, "1", "2", ".", "--module"])
-        self.assertEqual(usage.exception.code, 2)
+            for args in ([profile.name, "1", "2", ".", "--module"], [profile.name],
+                         ["--module", "other", profile.name, "1", "2", "."], [profile.name, "invalid", "2", "."]):
+                with self.subTest(args=args), self.assertRaises(SystemExit) as usage:
+                    transport.main(args)
+                self.assertEqual(usage.exception.code, 2)
         self.assertEqual(out.getvalue(), "")
         self.assertIn("usage:", err.getvalue())
         self.assertIn("argument --module: expected one argument", err.getvalue())
@@ -227,43 +214,50 @@ class DisabledDeltaTest(unittest.TestCase):
         self.assertEqual(list(root.iterdir()), [profile])
         self.assertEqual(profile.read_bytes(), raw)
 
-    def test_DEP_58LM_05_transport_retries_unreadable_profile_after_parsing(self):
+    def test_DEP_58LM_05_transport_preserves_single_read_error(self):
         argv = ["profile.json", "1", "2", "."]
         for first_read in (OSError("unavailable"), "{"):
             with self.subTest(first_read=first_read), patch.object(Path, "read_text", side_effect=[
-                    first_read, json.dumps({"configDelta": self.marker})]), patch.object(transport, "transport") as send:
+                    first_read, json.dumps({"configDelta": self.marker})]) as read, \
+                    patch.object(transport, "transport") as send:
                 with self.assertRaises(SystemExit) as denied:
                     transport.main(argv)
-                self.assertEqual(denied.exception.code, self.code)
+                self.assertEqual(denied.exception.code, "TRANSPORT_IO_OR_INPUT_ERROR")
+                read.assert_called_once_with(encoding="utf-8")
                 send.assert_not_called()
 
-    def test_DEP_58LK_01_all_profile_ingresses_precede_errors_and_effects(self):
+    def test_DEP_58LK_01_all_profile_ingresses_deny_before_use(self):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))
         journal = root / "journal"
-        p = json.loads(fixture.PROFILE.with_name("mcp.example.json").read_bytes())
-        p.update(configDelta=self.marker, journal=str(journal))
-        first = dict(setup_profile(str(journal)), configDelta=self.marker)
-        profile_file = root / "transport.json"
-        profile_file.write_text(json.dumps(p), encoding="utf-8")
         bootstrap = installer_fixture.Bootstrap()
         self.addCleanup(bootstrap.doCleanups)
         bootstrap.setUp()
         inst = bootstrap.inst
-        # Even the invalid sibling and missing executor-level fields must come second.
-        cfg = {"modules": {"onboarding": {}, "mcp": p}}
+        proposed = bootstrap.path.read_bytes()
+        cfg = json.loads(proposed)
+        clean = {inst.ROOT / "profile.json": (proposed, 0o600)}
+        p = cfg["modules"]["mcp"]
+        p.update(configDelta=self.marker, journal=str(journal))
+        first = dict(setup_profile(str(journal)), configDelta=self.marker)
+        profile_file = root / "transport.json"
+        profile_file.write_text(json.dumps(p), encoding="utf-8")
         bootstrap.path.write_text(json.dumps(cfg))
         files = {inst.ROOT / "profile.json": (json.dumps(cfg).encode(), 0o600)}
         inst.ROOT.mkdir()
         (inst.ROOT / "profile.json").write_text(json.dumps(cfg))
-        clean = {inst.ROOT / "profile.json": (b'{"modules":{"mcp":{}}}', 0o600)}
-        req = {"operation": "module-release", "module": "mcp", "phase": "plan", "digest": ""}
+        req = request_for("module-release", "mcp")
+        install_req = request_for("module-install", first["module"])
+        install_cfg = dict(cfg, modules={first["module"]: first})
+        common = {"commit", "run", "attempt", "phase", "digest"}
         get, rt = Mock(), Mock()
         stamp = "a" * 64
         executor = runpy.run_path(str(fixture.ROOT / "scripts/ouf-a2-executor"))
 
         def cli(kind, phase):
-            output, _, _ = executor_with_busy_lock(fixture.ROOT, mandate, p, denied=True,
-                                                    operation_name=kind, phase=phase)
+            profile = first if kind == "module-install" else p
+            if phase in retention.COMMAND:
+                profile = dict(p, migration=dict(p["migration"], retentionAdmin019={}))
+            output, _, _ = executor_with_busy_lock(fixture.ROOT, mandate, profile, operation_name=kind, phase=phase)
             self.assertEqual(output, (1, "", self.code + "\n"))
 
         def installer_cli(mode):
@@ -276,20 +270,21 @@ class DisabledDeltaTest(unittest.TestCase):
             ("contract.validate", partial(validate, p)),
             ("contract.package", partial(operation.package, p)),
             ("install_contract.validate", partial(install_contract.validate, first)),
-            ("install_contract.valid_request", partial(install_contract.valid_request, req, cfg, set())),
+            ("install_contract.valid_request", partial(install_contract.valid_request, install_req, install_cfg, common)),
             ("mandate.validate", partial(mandate.validate, req, cfg)),
             ("mandate.authorize", partial(mandate.authorize, req, cfg, get, journal)),
             ("executor.dispatch", partial(executor["dispatch"], req, cfg, journal, get)),
             ("ModuleRelease", partial(module_operation.ModuleRelease, cfg, journal, req)),
-            ("ModuleRelease.peer", partial(module_operation.ModuleRelease, cfg, journal, dict(req, module="onboarding"))),
-            ("ModuleInstall", partial(module_operation.ModuleInstall, cfg, journal, req)),
+            ("ModuleRelease.peer", partial(module_operation.ModuleRelease, cfg, journal,
+                                           request_for("module-release", "onboarding"))),
+            ("ModuleInstall", partial(module_operation.ModuleInstall, install_cfg, journal, install_req)),
             ("release.plan", partial(operation.plan, p)),
             ("release.observe", partial(operation.observe, p, rt)),
-            ("release.apply", partial(operation.apply, p, "")),
-            ("release.migrate", partial(operation.migrate, p, "", "")),
+            ("release.apply", partial(operation.apply, p, stamp)),
+            ("release.migrate", partial(operation.migrate, p, stamp, stamp)),
             ("release.migrate.recover", partial(operation.migrate, p, stamp, stamp, recover=True)),
             ("release.rollback", partial(operation.rollback, p, rt, {}, journal, {}, ValueError())),
-            ("return", partial(return_operation.run, p, "", rt)),
+            ("return", partial(return_operation.run, p, stamp, rt)),
             ("return.recover", partial(return_operation.run, p, stamp, rt, recover=True)),
             ("recovery.residual", partial(recovery.residual, p, rt)),
             ("recovery.proposal", partial(recovery.proposal, p, rt)),
@@ -298,24 +293,17 @@ class DisabledDeltaTest(unittest.TestCase):
             ("install.observe", partial(install.observe, first, rt)),
             ("install.plan", partial(install.plan, first)),
             ("install.plan.resume", partial(install.plan, first, resume=stamp)),
-            ("install.apply", partial(install.apply, first, "")),
+            ("install.apply", partial(install.apply, first, stamp)),
             ("install.rollback", partial(install.rollback, first, stamp)),
             ("transport", partial(transport.transport, p, 15, 17, root)),
-            ("transport.cli", partial(transport.main, ["--module", "udp", str(profile_file), "15", "17", str(root)])),
-            ("transport.cli.arguments", partial(transport.main, ["--module", "other", str(profile_file),
-                                                                "invalid", "invalid", str(root)])),
-            ("transport.cli.missing", partial(transport.main, [str(profile_file)])),
-            ("installer.invalid-mode", partial(installer_cli, "unknown")),
-            ("installer.read_profiles", partial(inst.read_profiles, bootstrap.path)),
-            ("installer.checked_profiles", partial(inst.checked_profiles, files[inst.ROOT / "profile.json"][0])),
+            ("transport.cli", partial(transport.main, [str(profile_file), "15", "17", str(root)])),
             ("installer.inspect", partial(inst.inspect, bootstrap.path)),
             ("installer.journals", partial(inst.journals, files[inst.ROOT / "profile.json"][0])),
             ("installer.manifest", partial(inst.manifest, files)),
             ("installer.install", partial(inst.install, files, {})),
             ("installer.manifest.installed", partial(inst.manifest, clean)),
-            ("installer.install.installed", partial(inst.install, clean, {})),
         ]
-        cases.extend((phase, partial(retention.run, p, rt, "", phase, {})) for phase in retention.COMMAND)
+        cases.extend((phase, partial(retention.run, p, rt, stamp, phase, {})) for phase in retention.COMMAND)
         cases.extend(("installer." + mode, partial(installer_cli, mode)) for mode in ("plan", "apply", "bootstrap"))
         for kind, phases in (("module-release", ("plan", "apply", "migrate", "rollback", *retention.COMMAND)),
                              ("module-install", ("plan", "apply", "rollback"))):
@@ -337,11 +325,16 @@ class DisabledDeltaTest(unittest.TestCase):
                 enter(patch.object(Path, attr, monitor(getattr(Path, attr))))
             guards = [enter(patch.object(owner, name, side_effect=AssertionError(name)))
                       for owner, name in ((os, "mkdir"), (operation, "Docker"), (module_operation.operation, "Docker"),
-                                          (return_operation, "Docker"), (inst.subprocess, "check_output"),
-                                          (transport, "github"), (inst, "installation_lock"), (inst, "visudo"),
+                                          (return_operation, "Docker"), (operation, "request"), (install, "summary"),
+                                          (frame_spec, "create_with_custody"), (config_delta, "approval_lines"),
+                                          (module_operation, "Journal"), (inst.subprocess, "check_output"),
+                                          (transport, "github"), (inst, "installation_lock"),
                                           (store, "begin_plan"), (store, "consume_approval"))]
+            # install() checks sudoers before it decodes the proposed journal paths.
+            enter(patch.object(inst, "visudo"))
             for name, invoke in cases:
-                with self.subTest(ingress=name):
+                out, err = io.StringIO(), io.StringIO()
+                with self.subTest(ingress=name), redirect_stdout(out), redirect_stderr(err), self.assertNoLogs(level="DEBUG"):
                     try:
                         result = invoke()
                     except (Held, mandate.Held, SystemExit, ValueError) as exc:
@@ -352,15 +345,46 @@ class DisabledDeltaTest(unittest.TestCase):
                         else:
                             self.assertEqual((result["status"], result["reason"]), ("HELD", self.code))
                             self.assertNotIn(self.marker, json.dumps(result))
+                    self.assertEqual((out.getvalue(), err.getvalue()), ("", ""))
                     self.assertEqual(effects, [])
                     for guard in (*guards, rt, get):
                         self.assertEqual(guard.mock_calls, [])
         self.assertFalse(journal.exists())
 
-    def test_DEP_58LK_02_executor_revalidates_profile_under_shared_lock(self):
-        output, opens, locks = executor_with_busy_lock(fixture.ROOT, mandate, {}, locked_profile={"configDelta": None})
-        self.assertEqual(output, (1, "", self.code + "\n"))
-        self.assertEqual((opens, locks), (0, 0))
+    def test_DEP_58LN_03_installer_denies_installed_delta_on_manifest_read(self):
+        case = installer_fixture.Bootstrap()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        inst = case.inst
+        inst.ROOT.mkdir()
+        installed = inst.ROOT / "profile.json"
+        policy = json.loads(case.path.read_bytes())
+        policy["modules"]["mcp"]["configDelta"] = self.marker
+        installed.write_text(json.dumps(policy))
+
+        with ExitStack() as stack:
+            enter = stack.enter_context
+            read = enter(patch.object(Path, "read_bytes", autospec=True, side_effect=Path.read_bytes))
+            enter(patch.object(sys, "argv", ["install", "plan", str(case.path)]))
+            enter(patch.object(inst, "sys", SimpleNamespace(flags=SimpleNamespace(isolated=True))))
+            enter(patch.object(os, "geteuid", return_value=0, create=True))
+            enter(patch.object(os, "umask"))
+            apply = enter(patch.object(inst, "install"))
+            out, err = enter(redirect_stdout(io.StringIO())), enter(redirect_stderr(io.StringIO()))
+            with self.assertRaisesRegex(ValueError, "^" + self.code + "$"):
+                inst.main()
+        profiles_read = [args[0] for args, _ in read.call_args_list if args[0] in (case.path, installed)]
+        self.assertEqual(profiles_read, [case.path, installed])
+        self.assertEqual((out.getvalue(), err.getvalue()), ("", ""))
+        apply.assert_not_called()
+
+    def test_DEP_58LK_02_installer_usage_does_not_read_profile(self):
+        inst = runpy.run_path(str(fixture.ROOT / "scripts/install-ouf-a2.py"))
+        with patch.object(sys, "argv", ["install", "unknown", "profile.json"]), \
+             patch.object(Path, "read_bytes") as read, redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as usage:
+            inst["main"]()
+        self.assertEqual(usage.exception.code, 2)
+        read.assert_not_called()
 
 
 class LibraryTest(unittest.TestCase):

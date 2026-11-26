@@ -4,13 +4,13 @@ import json
 import os
 from pathlib import Path
 import sys
+
 sys.dont_write_bytecode = True
-from runpy import run_path
 ROOT = Path("/opt/ouf-a2")
 if __name__ == "__main__":
+    # Hold the shared installation lock until process exit, including all imports.
     import fcntl
     try:
-        prefetched = run_path(str(ROOT / "lib/module_release/profile_options.py"))["preflight_executor"](ROOT, sys.stdin.buffer)
         installation = os.open(ROOT.parent, os.O_DIRECTORY)
         fcntl.flock(installation, fcntl.LOCK_SH | fcntl.LOCK_NB)
     except OSError:
@@ -36,7 +36,7 @@ def dispatch(req, cfg, state, get, source_get=None, *, token=None):
     return Cutover(cfg, state, req, source_get).execute(review)
 
 
-def main(prefetched=None):
+def main():
     import fcntl
     need(os.geteuid() == 0 and sys.flags.isolated and len(sys.argv) == 1, "ROOT_ENTRYPOINT_ONLY")
     os.umask(0o077)
@@ -44,7 +44,7 @@ def main(prefetched=None):
     os.environ.clear()
     os.environ.update(PATH="/usr/sbin:/usr/bin:/sbin:/bin", LC_ALL="C")
     cfg = read(ROOT / "profile.json")
-    raw = sys.stdin.buffer.read(8193) if prefetched is None else prefetched
+    raw = sys.stdin.buffer.read(8193)
     need(0 < len(raw) <= 8192, "REQUEST_LIMIT")
     envelope = json.loads(raw)
     need(set(envelope) == {"request", "token"}, "REQUEST_FIELDS")
@@ -78,7 +78,7 @@ def public_error(error):
 
 if __name__ == "__main__":
     try:
-        main(prefetched)
+        main()
     except Exception as error:
         # Neither arbitrary API responses nor subprocess diagnostics are public.
         print(public_error(error), file=sys.stderr)

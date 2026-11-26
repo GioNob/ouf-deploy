@@ -242,6 +242,52 @@ class NoDeltaParity(unittest.TestCase):
         self.assertEqual(expected["reason"], "RELEASE_IO_OR_INPUT_ERROR/TypeError@contract.py:86")
         self.assertEqual(operation.plan(None, runtime=object()), expected)
 
+    def test_DEP_58LN_01_transport_transient_read_without_token(self):
+        path = fixture.PROFILE.with_name("mcp.example.json")
+        profile = path.read_text(encoding="utf-8")
+        self.assertNotIn("configDelta", json.loads(profile))
+        for package in ("dep58lf_reference.tools.module_release", "tools.module_release"):
+            with self.subTest(package=package), ExitStack() as stack:
+                enter = stack.enter_context
+                enter(patch.dict(os.environ))
+                os.environ.pop("GH_TOKEN", None)
+                enter(patch.object(sys, "argv", ["transport", str(path), "1", "2", "."]))
+                read = enter(patch.object(Path, "read_text", side_effect=[OSError("transient"), profile]))
+                enter(patch.dict(sys.modules))
+                sys.modules.pop(package + ".transport", None)
+                with self.assertRaises(SystemExit) as held:
+                    runpy.run_module(package + ".transport", run_name="__main__")
+                self.assertEqual(held.exception.code, "TRANSPORT_IO_OR_INPUT_ERROR")
+                read.assert_called_once_with(encoding="utf-8")
+
+    def test_DEP_58LN_02_transport_help_with_stdin_open(self):
+        outputs = []
+        for root in (self.reference_root, fixture.ROOT):
+            module = "tools.module_release.transport"
+            launch = ["-m", module]
+            if os.name == "nt":
+                # Windows has pipes but no /dev/stdin. Bind that path to the child's real input pipe.
+                launch = ["-c", "import pathlib, runpy, sys\n"
+                          "open_path = pathlib.Path.open\n"
+                          "def open_input(path, *args, **kwargs):\n"
+                          "    return sys.stdin if path.as_posix() == '/dev/stdin' else open_path(path, *args, **kwargs)\n"
+                          "pathlib.Path.open = open_input\n"
+                          f"runpy.run_module({module!r}, run_name='__main__', alter_sys=True)"]
+            cmd = [sys.executable, "-B", *launch, "--help", "/dev/stdin"]
+            with subprocess.Popen(cmd, cwd=root, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE) as cli:
+                try:
+                    # communicate() would send EOF, masking a read before argparse.
+                    self.assertEqual(cli.wait(timeout=10), 0)
+                except subprocess.TimeoutExpired:
+                    cli.kill()
+                    cli.communicate()
+                    self.fail("transport --help waited for EOF")
+                outputs.append(cli.communicate())
+        self.assertIn(b"--module", outputs[0][0])
+        self.assertEqual(outputs[0][1], b"")
+        self.assertEqual(outputs[1], outputs[0])
+
     def test_DEP_58LM_01_installer_plan_preserves_first_error(self):
         case = installer_fixture.Bootstrap()
         self.addCleanup(case.doCleanups)
@@ -263,6 +309,7 @@ class NoDeltaParity(unittest.TestCase):
                         enter(patch.dict(main.__globals__, ROOT=case.inst.ROOT, safe=case.inst.safe,
                                          sys=SimpleNamespace(flags=SimpleNamespace(isolated=True)),
                                          manifest=effect, installation_lock=effect, install=effect))
+                        read = enter(patch.object(Path, "read_bytes", autospec=True, side_effect=Path.read_bytes))
                         enter(patch.object(sys, "argv", ["install", "plan", str(case.path)]))
                         enter(patch.object(os, "geteuid", return_value=0, create=True))
                         enter(patch.object(os, "umask"))
@@ -270,6 +317,8 @@ class NoDeltaParity(unittest.TestCase):
                         enter(redirect_stderr(err))
                         with self.assertRaises(ValueError) as caught:
                             main()
+                    profiles_read = [args[0] for args, _ in read.call_args_list if args[0] in (case.path, installed)]
+                    self.assertEqual(profiles_read, [case.path])
                     if diagnostic == "JSONDecodeError":
                         self.assertIs(type(caught.exception), json.JSONDecodeError)
                     else:
