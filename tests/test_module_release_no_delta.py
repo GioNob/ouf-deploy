@@ -204,7 +204,7 @@ class NoDeltaParity(unittest.TestCase):
         finally:
             shutil.rmtree(journal)
 
-    def compare(self, mode, interrupted=False, exercise=None):
+    def compare(self, mode, interrupted=False, exercise=None, migration_args=()):
         case = mcp.Release()
         self.addCleanup(case.doCleanups)
         case.setUp()
@@ -218,6 +218,7 @@ class NoDeltaParity(unittest.TestCase):
             case.rt.database = lambda old: copy.deepcopy(case.db)
             if mode == "dedicated":
                 case.dedicated()
+                case.p["migration"]["command"].extend(migration_args)
             self.assertEqual(case.p["migration"]["mode"], mode)
             results.append(self.run_release(modules, case, interrupted, exercise))
         expected, actual = results
@@ -604,6 +605,47 @@ class NoDeltaParity(unittest.TestCase):
 
     def test_DEP_58LF_07_dedicated(self):
         self.compare("dedicated", interrupted=False)
+
+    def test_DEP_58QE_05_mcp_return_plan_io_location(self):
+        def exercise(op, rec, case, rt, stamp):
+            import importlib
+            ret = importlib.import_module(op.__package__ + ".return_operation")
+            self.assertEqual(op.apply(case.p, stamp, rt)["status"], "READY")
+            read = Path.read_bytes
+            def fail(path):
+                if path.name == "plan.json":
+                    raise OSError("fixture")
+                return read(path)
+            with patch.object(Path, "read_bytes", fail):
+                result = ret.run(case.p, stamp, rt)
+            self.assertEqual((result["status"], result["reason"]),
+                             ("HELD", "RELEASE_IO_OR_INPUT_ERROR/OSError@return_operation.py:40"))
+        self.compare("none", exercise=exercise)
+
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        stamp = case.planned()["digest"]
+        self.assertEqual(case.call("apply", stamp)["status"], "READY")
+        read = Path.read_bytes
+        def fail_plan(path):
+            if path == Path(case.p["journal"]) / stamp / "plan.json":
+                raise OSError("fixture")
+            return read(path)
+        with patch.object(Path, "read_bytes", fail_plan), self.assertRaisesRegex(mandate.Held, "OSError@return_operation.py:40"):
+            case.call("rollback", stamp, run="2")
+        self.assertEqual(json.loads((case.root / "2" / "rollback.result").read_bytes()),
+                         {"status": "HELD", "planSha256": stamp, "reason": "RELEASE_IO_OR_INPUT_ERROR/OSError@return_operation.py:40"})
+
+    def test_DEP_58QE_06_legacy_migration_bytes_and_digest(self):
+        args = ["--bypass-cache=enabled", "--url", "postgresql://test:fixture-only@localhost/db"]
+        def exercise(op, rec, case, rt, stamp):
+            result = op.apply(case.p, stamp, rt)
+            self.assertEqual(result["status"], "GATED")
+            stage = op.read(Path(case.p["journal"]) / stamp, "migration-plan.json")
+            self.assertEqual(stage["migration"]["command"][-len(args):], args)
+            self.assertEqual(result["migrationSha256"], op.digest(stage))
+        self.compare("dedicated", exercise=exercise, migration_args=args)
 
     def test_DEP_58LF_08_dedicated_interrupted_apply_and_migration(self):
         self.compare("dedicated", interrupted=True)

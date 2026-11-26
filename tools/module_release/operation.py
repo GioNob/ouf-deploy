@@ -43,7 +43,7 @@ def observe(p, rt, previous_release=None):
     validate(p)
     require(p["migration"]["rollbackCompatible"], "MIGRATION_ROLLBACK_BLOCKED")
     binding = p["migration"].get("flyway", {})
-    defaults = {} if "candidate" in p or "effectiveDatasource" in binding else None
+    defaults = {} if "candidate" in p or "effectiveDatasource" in binding or "configDelta" in p else None
     artifact = package(p, image_defaults=defaults)
     old = rt.inspect(p["container"])
     previous = None
@@ -85,7 +85,7 @@ def observe(p, rt, previous_release=None):
         }
     if "database" in p["migration"]:
         migration = p["migration"]
-        state = postgres.observe(rt, old)
+        state = reviewed.check_input(postgres.observe(rt, old)) if "configDelta" in p else postgres.observe(rt, old)
         require(len(state["history"]) == migration["database"]["version"], "DATABASE_CHANGED")
         body.update(rollback="IF_DATABASE_UNCHANGED", databaseSha256=digest(state), schemaSha256=digest(state["schema"]),
                     migrations=migration["migrations"], migrationsSha256=digest(migration["migrations"]))

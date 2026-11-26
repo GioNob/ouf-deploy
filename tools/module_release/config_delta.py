@@ -4,9 +4,9 @@ import hashlib
 import json
 from pathlib import PurePosixPath
 import re
-from urllib.parse import unquote
 
 from .public_output import public, scope
+from .profile_options import INLINE_SECRET, credential_name, delta_has_inline_secret, inline_secret
 from .contract import NAME, matches
 from .frame_spec import SpecHeld, canonical, check_file_env, disjoint, validate_bind, validate_env
 
@@ -29,35 +29,27 @@ def inspect_binds(mounts):
     return [{"Type": m["Type"], "Target": m["Destination"], "ReadOnly": m.get("RW") is False} for m in mounts]
 
 
-def check_json_properties(pairs):
-    # The decoder visits every object, including duplicate and escaped property names.
-    for key, _ in pairs:
-        check(not re.search(r"password|passwd|passphrase|secret|token|credential|api[._-]?key|private[._-]?key|"
-                            r"(?:^|[._-])(?:pwd|auths?|authorization|jwt|key)$", key, re.IGNORECASE),
-              "SECRET_ENV_DENIED")
-
-
 def validate_value(name, value, allowlist=None):
     if value is not None:
-        validate_env([{"name": name, "value": value}], allowlist)
-        if not name.endswith("_FILE"):
-            check(name != "DOCKER_AUTH_CONFIG" and not re.search(r"(?:^|_)(?:AUTH$|(?:AUTHORIZATION|PWD|CONNECTION_STRING)(?:_|$))", name),
-                  "SECRET_ENV_DENIED")
+        check(not credential_name(name) and not inline_secret(value), INLINE_SECRET)
+        try:
+            validate_env([{"name": name, "value": value}], allowlist)
+        except SpecHeld as exc:
+            if exc.code == "SECRET_ENV_DENIED":
+                raise SpecHeld(INLINE_SECRET) from None
+            raise
         if name == "SPRING_APPLICATION_JSON" or value.lstrip().startswith("{") or (
                 value.lstrip().startswith("[") and not re.fullmatch(r"\[[0-9a-fA-F:.]+\]:[0-9]+", value)):
             try:
-                json.loads(value, object_pairs_hook=check_json_properties)
+                json.loads(value)
             except (ValueError, RecursionError):
                 raise SpecHeld("INVALID_ENV") from None
-        check(not re.search(r"\bbasic\s+[A-Za-z0-9+/]+=*|(?:password|passwd|pwd|token|secret|accountkey|"
-                            r"sharedaccesskey|sharedaccesssignature|sig)\s*=|"
-                            r"\boracle:thin:[^@\s]+/[^@\s]+@", unquote(value), re.IGNORECASE),
-              "SECRET_ENV_DENIED")
 
 
 def validate_delta(delta, policy, module, *, predecessor_mounts=()):
     """policy is the installed profile for this module, outside configDelta."""
     check(policy.get("module") == module, "DELTA_POLICY_MODULE")
+    check(not delta_has_inline_secret(dict(policy, configDelta=delta)), INLINE_SECRET)
     check(isinstance(delta, dict) and set(delta) <= {"env", "binds", "aliases"}, "INVALID_DELTA")
     env, binds, aliases = delta.get("env", []), delta.get("binds", []), delta.get("aliases", {})
     check(isinstance(env, list) and isinstance(binds, list) and isinstance(aliases, dict), "INVALID_DELTA")
@@ -168,6 +160,8 @@ def expected_after(predecessor_inspect, delta):
 
 
 def approval_lines(delta, show_values=()):
+    profile = {"configDelta": delta, "showValues": list(show_values)}
+    check(not delta_has_inline_secret(profile), INLINE_SECRET)
     env = delta.get("env", [])
 
     def display(name, value):
@@ -186,5 +180,5 @@ def approval_lines(delta, show_values=()):
         lines.append(f"Aggiungi bind in sola lettura su {bind['target']} · sha256 {bind['sha256']}")
     for network, additions in sorted(delta.get("aliases", {}).items()):
         lines.extend(f"Aggiungi alias {alias} alla rete {network}" for alias in additions)
-    with scope({"configDelta": delta, "showValues": list(show_values)}):
+    with scope(profile):
         return public(lines)

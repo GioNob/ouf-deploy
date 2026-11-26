@@ -140,7 +140,7 @@ def inspect(profile):
         exec(compile(files[ROOT / "lib/gateway_policy.py"][0], "gateway_policy.py", "exec"), gateway.__dict__)
         check(gateway.valid_profile(cfg["gateway"]), "GATEWAY_INSTALL_PROFILE")
     check(isinstance(cfg["modules"], dict) and "onboarding" in cfg["modules"], "MODULE_PROFILE_REQUIRED")
-    if any("install" in p for p in cfg["modules"].values()):
+    if any("install" in p or "configDelta" in p for p in cfg["modules"].values()):
         # Resolve relative imports exclusively from the same pinned Git blobs.
         with tempfile.TemporaryDirectory() as tmp:
             grammar = Path(tmp) / "a2_install_validation"
@@ -149,10 +149,10 @@ def inspect(profile):
                 (grammar / (unit + ".py")).write_bytes(files[package / (unit + ".py")][0])
             sys.path.insert(0, tmp)
             try:
-                from a2_install_validation.install_contract import validate as validate_install
+                from a2_install_validation import install_contract, profile_options
                 for module_profile in cfg["modules"].values():
-                    if "install" in module_profile:
-                        validate_install(module_profile)
+                    if "configDelta" in module_profile: profile_options.validate_profile_options(module_profile, check=check)
+                    if "install" in module_profile: install_contract.validate(module_profile)
             finally:
                 sys.path.remove(tmp)
                 for key in tuple(sys.modules):

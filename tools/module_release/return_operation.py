@@ -37,7 +37,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
     lock = parent / (profile["module"] + ".lock")
 
     def read(name):
-        return journal_read(root, name)
+        return json.loads((root / name).read_bytes())
 
     result = {"planSha256": stamp, "status": "HELD"}
     resuming = interrupted = False

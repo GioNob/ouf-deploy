@@ -311,6 +311,60 @@ class ReadyReturn(unittest.TestCase):
         self.assertEqual(rt.events, events)
         self.assertFalse((Path(rt.p["journal"]) / op.digest(plan) / "return-intent.json").exists())
 
+    def test_DEP_58QE_03_generation_at_stop(self):
+        for inside_stop in (False, True):
+            for already_exited in (False, True):
+                with self.subTest(inside_stop=inside_stop, already_exited=already_exited):
+                    rt, plan = self.case()
+                    stamp = op.digest(plan)
+                    self.assertEqual(interrupted(rt, plan, "apply", "candidate-epoch.json", False)[0], "crash")
+                    stop, confirm = rt.stop, op.confirm
+                    def foreign_restart():
+                        stop(fixture.NEW)
+                        rt.start(fixture.NEW)
+                        if already_exited:
+                            stop(fixture.NEW)
+                    def at_stop(cid):
+                        if inside_stop:
+                            foreign_restart()
+                        stop(cid)
+                    def after_proof(root, name, value):
+                        confirm(root, name, value)
+                        if not inside_stop and name == "park-epoch.json":
+                            foreign_restart()
+                    with patch.object(rt, "stop", side_effect=at_stop) as requested, patch.object(op, "confirm", after_proof):
+                        held = return_operation.run(rt.p, stamp, rt)
+                    self.assertEqual((held["status"], held["reason"]), ("HELD", "START_GENERATION_CHANGED"))
+                    self.assertEqual(requested.call_count, int(inside_stop))
+                    self.assertFalse(rt.inspect(fixture.OLD)["State"]["Running"])
+                    self.assertFalse((Path(rt.p["journal"]) / stamp / "return-receipt.json").exists())
+
+    def test_DEP_58QE_04_ready_create_intent_redundant(self):
+        for after_park in (False, True):
+            with self.subTest(after_park=after_park):
+                rt, plan = self.case()
+                stamp = op.digest(plan)
+                root = Path(rt.p["journal"]) / stamp
+                self.assertEqual(op.apply(rt.p, stamp, rt)["status"], "READY")
+                if after_park:
+                    self.assertEqual(interrupted(rt, plan, "return", "new-rename", True)[0], "crash")
+                    (root / "created.json").unlink()
+                (root / "create-intent.json").unlink()
+                self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
+                (root / "created.json").unlink()
+                self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
+
+        rt, plan = self.case()
+        stamp = op.digest(plan)
+        root = Path(rt.p["journal"]) / stamp
+        self.assertEqual(op.apply(rt.p, stamp, rt)["status"], "READY")
+        (root / "create-intent.json").unlink()
+        (root / "created.json").write_text(json.dumps({"cid": fixture.OLD}))
+        events = list(rt.events)
+        held = return_operation.run(rt.p, stamp, rt)
+        self.assertEqual(held["status"], "HELD")
+        self.assertEqual(events, rt.events)
+
     def test_DEP_58QD_09_http_change_and_terminal_retry(self):
         rt, _ = self.case()
         rt.p["readiness"]["acceptStatus"] = [200, 204]
@@ -504,6 +558,10 @@ class ReadyReturn(unittest.TestCase):
                     _, rt = interrupted(rt, plan, "apply", point, True)
                     rt.stop(fixture.NEW)
                     result, rt = retry.submit(interrupted, rt, plan, "return", "old-start", started).result()
+                    if point == "new-start":
+                        # An exit before any epoch was observed is indistinguishable from a foreign stop/start/exit.
+                        self.assertEqual((result["status"], result["reason"]), ("HELD", "START_GENERATION_UNCONFIRMED"))
+                        continue
                     self.assertEqual(result, "crash", result)
                     result, rt = finish.submit(interrupted, rt, plan, "return", None, False).result()
                     self.oracle(rt, plan, result)

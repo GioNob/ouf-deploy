@@ -6,26 +6,25 @@ import json
 import re
 
 from .contract import digest, require
+from .profile_options import credential_name, delta_has_inline_secret, env_reference, inline_secret
 
 
-_values = ContextVar("module_release_secrets", default=())
-_credential = re.compile(
-    r"pass(?:wd|word|phrase)?|secret|token|credential|community|(?:^|[_.-])"
-    r"(?:pwd|dsn|jwt|auth(?:orization)?|(?:api|private|sharedaccess|account|access|signing)?[_.-]?key|connection[_.-]?string)(?:$|[_.-])",
-    re.I)
+_values = ContextVar("module_release_secrets", default=None)
 
 
 def private_inputs(value, sensitive=False):
     """Inspect typed profile data before any output, including nested migration options."""
     if isinstance(value, dict):
         for name, item in value.items():
-            credential = isinstance(name, str) and _credential.search(name) and not name.lower().endswith("file")
+            if env_reference(name, item):
+                continue
+            credential = credential_name(name)
             yield from private_inputs(item, sensitive or credential)
     elif isinstance(value, list):
         for i, item in enumerate(value):
             if isinstance(item, str) and item.startswith("--"):
                 flag, sep, argument = item[2:].partition("=")
-                if _credential.search(flag):
+                if credential_name(flag, option=True):
                     if not sep and i + 1 < len(value):
                         argument = value[i + 1]
                     if isinstance(argument, str) and argument:
@@ -36,7 +35,7 @@ def private_inputs(value, sensitive=False):
 
 
 def secret_values(profile):
-    if not isinstance(profile, dict):
+    if not isinstance(profile, dict) or "configDelta" not in profile:
         return set()
     found = set()
     shown = profile.get("showValues")
@@ -46,7 +45,7 @@ def secret_values(profile):
         for row in delta["env"]:
             name = row.get("name") if isinstance(row, dict) else None
             if isinstance(name, str) and not name.endswith("_FILE") and (
-                    _credential.search(name) or name in shown and name != "SPRING_FLYWAY_ENABLED"):
+                    credential_name(name) or name in shown and name != "SPRING_FLYWAY_ENABLED"):
                 found.update(row[k] for k in ("before", "after") if isinstance(row.get(k), str) and row[k])
     for section in ("migration", "gate", "candidate"):
         found.update(private_inputs(profile.get(section)))
@@ -54,9 +53,14 @@ def secret_values(profile):
 
 
 @contextmanager
-def scope(profile):
-    values = set(_values.get()).union(secret_values(profile))
-    token = _values.set(tuple(sorted(values, key=lambda s: (-len(s), s))))
+def scope(profile, *, admitting=False):
+    values = None
+    if isinstance(profile, dict) and "configDelta" in profile:
+        # An admission refusal contains only a fixed code. Its spelling must be independent of the input.
+        if not admitting or not delta_has_inline_secret(profile):
+            found = secret_values(profile).union(_values.get() or ())
+            values = tuple(sorted(found, key=lambda s: (-len(s), s)))
+    token = _values.set(values)
     try:
         yield
     finally:
@@ -96,7 +100,7 @@ def public(value):
 
 def private_baseline(value):
     """Only for authenticated snapshots. The caller checks the original digest after reconstruction."""
-    replacements = {"sha256:" + digest(s): s for s in _values.get()}
+    replacements = {"sha256:" + digest(s): s for s in _values.get() or ()}
     if not replacements:
         return value
     pattern = re.compile("|".join(map(re.escape, replacements)))
@@ -108,13 +112,13 @@ def select_request(envelope, cfg, stack):
     if isinstance(req, dict) and req.get("operation") == "module-release" and isinstance(req.get("module"), str):
         modules = cfg.get("modules") if isinstance(cfg, dict) else None
         if isinstance(modules, dict):
-            stack.enter_context(scope(modules.get(req["module"])))
+            stack.enter_context(scope(modules.get(req["module"]), admitting=True))
     return req
 
 
 def checked_plan(name, value):
-    if name in ("plan", "plan.json", "migration-plan.json"):
-        require(public(value) == value, "UNSAFE_RETURN_PLAN")
+    if _values.get() is not None and name in ("plan", "plan.json", "migration-plan.json"):
+        require(not inline_secret(value) and public(value) == value, "UNSAFE_RETURN_PLAN")
     return value
 
 
@@ -126,6 +130,6 @@ def json_output(value, *, sort_keys=True):
 def release_output(function):
     @wraps(function)
     def run(profile, *args, **kwargs):
-        with scope(profile):
+        with scope(profile, admitting=True):
             return public(function(profile, *args, **kwargs))
     return run

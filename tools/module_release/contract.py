@@ -347,7 +347,7 @@ def package(p, target=None, *, transport=False, migrations_field=None, image_def
         with zipfile.ZipFile(stream) as z:
             if ci.get("publisherFormat") == "acquisition-mcp":
                 from .mcp_artifact import verify
-                receipt = verify(z, ci, target, transport)
+                receipt = verify(z, ci, target, transport, image_defaults=image_defaults if "configDelta" in p else None)
                 require(os.fstat(stream.fileno()).st_ctime_ns == info.st_ctime_ns, "ARTIFACT_CHANGED_DURING_READ")
                 return receipt
             require(sorted(z.namelist()) == ["SHA256SUMS", "image.tar.gz", "manifest.json"]

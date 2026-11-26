@@ -5,7 +5,7 @@ import json
 from .contract import checksum, digest, image_ids, require
 
 
-def verify(z, ci, target, transport):
+def verify(z, ci, target, transport, *, image_defaults=None):
     metadata = {"image-id.txt", "image-config.json", "source-commit.txt", "capabilities.json"}
     require(sorted(z.namelist()) == sorted(metadata | {"SHA256SUMS", "image.tar.gz"})
             and sum(i.file_size for i in z.infolist()) <= 64 << 20
@@ -22,7 +22,7 @@ def verify(z, ci, target, transport):
     inspected, = json.loads(files["image-config.json"])
     require(isinstance(inspected["Config"], dict), "ARCHIVED_DEFAULTS_CHANGED")
     with z.open("image.tar.gz") as archive:
-        ids = image_ids(archive, tag, ci["repository"], tested, publisher_config=inspected["Config"])
+        ids = image_ids(archive, tag, ci["repository"], tested, publisher_config=inspected["Config"], image_defaults=image_defaults)
     ident = files["image-id.txt"].decode("ascii").strip()
     require(ident == inspected["Id"] and ident in ids and (transport or ci["imageId"] in ids), "IMAGE_ID_CHANGED")
     receipt = {"archiveSha256": sums["image.tar.gz"], "capabilitiesSha256": sums["capabilities.json"],
