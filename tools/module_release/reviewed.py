@@ -544,7 +544,7 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None, publi
         if (root / "baseline.private.json").is_file():
             old = op.load_predecessor(p, rt, root)
         else:
-            live = op.public_output.predecessor(rt.inspect(plan["oldCid"]))
+            live = rt.inspect(plan["oldCid"])
             saved = optional(root, "return-frame.json")
             old = dict(live, **saved["baseline"]) if saved else live
         receipt = optional(root, "receipt.json")

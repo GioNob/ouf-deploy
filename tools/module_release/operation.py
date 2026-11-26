@@ -45,7 +45,7 @@ def observe(p, rt, previous_release=None):
     binding = p["migration"].get("flyway", {})
     defaults = {} if "candidate" in p or "effectiveDatasource" in binding or "configDelta" in p else None
     artifact = package(p, image_defaults=defaults)
-    old = public_output.predecessor(rt.inspect(p["container"]))
+    old = rt.inspect(p["container"])
     previous = None
     if old["Image"] != p["oldImage"] and previous_release is not None:
         previous = previous_release()
@@ -124,7 +124,7 @@ def sync_dir(path):
 
 
 def record(root, name, data):
-    # Never expose a partially written claim or receipt after process loss.
+    public_output.check_record(name, data)
     with tempfile.NamedTemporaryFile(dir=root, delete=False) as out:
         tmp = Path(out.name)
         try:
@@ -224,15 +224,15 @@ def waiting_gate(p, rt, old, cid, restoring=False):
 def load_predecessor(p, rt, root):
     saved = json.loads((root / "baseline.private.json").read_bytes())
     if "Config" in saved:  # original full-frame journals
-        return public_output.predecessor(saved)
+        return public_output.inspected(saved)
     # Recover immutable fields from the retained CID; its original frame digest
     # authenticates them. DSNs and other Config.Env values never enter this journal.
-    return {**public_output.predecessor(rt.inspect(saved["Id"])), **saved}
+    return {**rt.inspect(saved["Id"]), **saved}
 
 
 def verify_database(p, rt, old, root, *, migrated=False):
     if "database" in p["migration"]:
-        state = json.loads((root / "database.private.json").read_bytes())
+        state = database_baseline(lambda: json.loads((root / "database.private.json").read_bytes()))
         plan = json.loads((root / "plan.json").read_bytes())
         require(digest(plan) == root.name and digest(state) == plan["databaseSha256"], "DATABASE_BASELINE_CHANGED")
         postgres.verify(rt, old, state, p["migration"], migrated=migrated)
@@ -624,6 +624,13 @@ def rollback(p, rt, old, root, result, exc):
     if reviewed.enabled(p):
         return reviewed.rollback(p, rt, old, root, result, exc)
     return _rollback(p, rt, old, root, result, exc)
+
+
+def database_baseline(read_snapshot):
+    try:
+        return read_snapshot()
+    except FileNotFoundError:
+        raise Held("DATABASE_BASELINE_MISSING") from None
 
 
 plan = public_output.release_output(plan)

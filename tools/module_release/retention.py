@@ -193,7 +193,7 @@ def run(p, rt, source, phase, ready):
             "RETENTION_CANDIDATE_DRIFT")
     spec = p["migration"]["retentionAdmin019"]
     expected = {"planSha256": source, **plan[ADMIN], "status": "VERIFIED"}
-    baseline = op.read(root, "database.private.json")
+    baseline = op.database_baseline(lambda: op.read(root, "database.private.json"))
     require(digest(baseline) == plan["databaseSha256"], "DATABASE_BASELINE_CHANGED")
 
     def verify(*, installed):

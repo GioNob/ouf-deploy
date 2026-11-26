@@ -50,7 +50,7 @@ class Engine(fixture.Engine):
         if endpoint == "/networks/example-net":
             return {"Name": "example-net", "Id": "1"*64, "Driver": "bridge", "Containers": {},
                     "IPAM": {"Config": [{"Subnet": "192.0.2.0/24", "Gateway": "192.0.2.1"}]}}
-        raise AssertionError(endpoint)
+        return super().api(method, endpoint, **kwargs)
 
     def image_defaults(self, image_id):
         return {"Labels": self.labels}

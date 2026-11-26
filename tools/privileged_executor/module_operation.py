@@ -116,11 +116,11 @@ class ModuleRelease:
         except Exception as error:
             code = str(error) if isinstance(error, (Held, ReleaseHeld)) else operation.reason(error)
             live = recovery.residual(self.profile, self.runtime)
-            result = dict(status="HELD", reason=code, owner=self.req["module"], residual=live)
+            result = self.diagnostic_result(code, live)
             save(self.path / (self.req["phase"] + ".held"), result)
-            residual = ",".join(f"{role}={row['state']}({row['cid']},nets={row['networks']})"
-                                if isinstance(row, dict) else f"{role}={row}" for role, row in live.items())
-            raise Held(f"{code} owner={self.req['module']} residual={residual}") from None
+            if "residual" not in result:
+                raise Held(result["reason"]) from None
+            raise Held(self.failure_message(result)) from None
 
     def execute_phase(self, review):
         req, path = self.req, self.path
@@ -153,12 +153,12 @@ class ModuleRelease:
             receipt = retention.run(self.profile, self.runtime, source, phase, ready)
             response = {"digest": source, "status": "VERIFIED" if phase == retention.ADMIN else "SUCCEEDED",
                         "retentionReview": receipt}
-            save(path / (phase + ".result"), response)
+            self.save_result(path / (phase + ".result"), response)
             return response
         if phase == "rollback":
             save(path / "rollback.review", {"request": req, "review": review})
             result = self.reviewed_return() if operation.reviewed.enabled(self.profile) else return_operation.run(self.profile, req["digest"], self.runtime, recover=True)
-            save(path / "rollback.result", result)
+            self.save_result(path / "rollback.result", result)
             need(result["status"] == "ROLLED_BACK", result.get("reason", "MODULE_RETURN_HELD"))
             return {"digest": req["digest"], "status": result["status"]}
         if phase == "plan":
@@ -169,7 +169,7 @@ class ModuleRelease:
                 proposal = {"status": "PLANNED", "planSha256": digest(body), "plan": body}
             else:
                 proposal = operation.plan(self.profile, self.runtime, previous_release=self.previous_release)
-            save(path / "plan", proposal)
+            self.save_result(path / "plan", proposal)
             need(proposal["status"] == "PLANNED", proposal.get("reason", "MODULE_PLAN_HELD"))
             response = {"digest": proposal["planSha256"], "status": "PLANNED", **self.image_ids(proposal["plan"]), **{k: proposal["plan"][k] for k in ("approvalLines",) if k in proposal["plan"]}}
             if retention.ADMIN in proposal["plan"]:
@@ -215,7 +215,7 @@ class ModuleRelease:
                                            recover="sourcePlan" in proposal["plan"])
             except ReleaseHeld as error:
                 result = {"status": "HELD", "reason": str(error)}
-        save(path / (phase + ".result"), result)
+        self.save_result(path / (phase + ".result"), result)
         if result["status"] not in ("READY", "GATED"):
             cause = result.get("reason", "MODULE_RELEASE_HELD")
             if result.get("rollback") == "ROLLED_BACK":
@@ -257,6 +257,38 @@ class ModuleInstall(_ModuleInstall):
 
 
 class ModuleRelease(_ModuleRelease):
+    def save_result(self, path, result):
+        if result["status"] == "HELD":
+            # Diagnostics may inspect more containers before publishing this failure.
+            self.pending_failure = (path, result)
+        else:
+            save(path, operation.public_output.public(result))
+
+    def diagnostic_result(self, code, live):
+        output = operation.public_output
+        pending = self.pending_failure
+        try:
+            result = dict(status="HELD", reason=code, owner=self.req["module"], residual=live)
+            if code == output.COLLISION:
+                raise ReleaseHeld(code)
+            result = output.public(result)
+            if pending:
+                save(pending[0], output.public(pending[1]))
+            return result
+        except ReleaseHeld as exc:
+            if str(exc) != output.COLLISION:
+                raise
+            result = {"status": "HELD", "reason": output.COLLISION}
+            if pending:
+                save(pending[0], result)
+            return result
+
+    @staticmethod
+    def failure_message(result):
+        residual = ",".join(f"{role}={row['state']}({row['cid']},nets={row['networks']})"
+                            if isinstance(row, dict) else f"{role}={row}" for role, row in result["residual"].items())
+        return f"{result['reason']} owner={result['owner']} residual={residual}"
+
     def __init__(self, cfg, root, req):
         if isinstance(req, dict):
             validate_module_profiles(req.get("module"), cfg, release=True, check=need)
@@ -265,11 +297,12 @@ class ModuleRelease(_ModuleRelease):
             self.runtime.release_run = req["run"]
 
     def execute(self, review):
+        self.pending_failure = None
         with operation.public_output.scope(self.profile):
             try:
                 return operation.public_output.public(super().execute(review))
-            except Held as exc:
-                raise Held(operation.public_output.public(str(exc))) from None
+            except (ReleaseHeld, Held) as exc:
+                raise Held(operation.public_output.public_error(str(exc))) from None
 
     def reviewed_return(self):
         stamp = self.req["digest"]

@@ -12,7 +12,7 @@ from test_module_release import Engine, ROOT, OLD, NEW
 from test_mcp_image_swap import bundle
 import mandate
 import store
-from module_release import operation, postgres, return_operation, transport
+from module_release import docker, operation, postgres, return_operation, transport
 from module_release.contract import Held, digest, package
 
 
@@ -30,7 +30,7 @@ class Release(unittest.TestCase):
         p["migration"]["database"].update(postgresCid="3"*64, socket="/run/postgresql")
         self.archive = self.make_artifact()
         with zipfile.ZipFile(self.archive) as z:
-            self.rt = Engine(p, z.read("image.tar.gz"))
+            self.rt = Engine(p, z.read("image.tar.gz"), client=docker.Docker)
         self.db = {"databaseOid": "42", "tables": True, "history": [[i, "1"*64, "UTC"] for i in range(1, 15)],
                    "schema": ["relation", "column"]}
         self.rt.database = lambda old: copy.deepcopy(self.db)

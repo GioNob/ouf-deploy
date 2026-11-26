@@ -5,7 +5,7 @@ import json
 from pathlib import PurePosixPath
 import re
 
-from .public_output import public, scope
+from .public_output import identifier, public, scope, scrub
 from .profile_options import INLINE_SECRET, credential_name, delta_has_inline_secret, inline_secret
 from .contract import NAME, matches
 from .frame_spec import SpecHeld, canonical, check_file_env, disjoint, validate_bind, validate_env
@@ -162,6 +162,13 @@ def expected_after(predecessor_inspect, delta):
 def approval_lines(delta, show_values=(), *, inherited=()):
     profile = {"configDelta": delta, "showValues": list(show_values)}
     check(not delta_has_inline_secret(profile), INLINE_SECRET)
+    with scope(profile):
+        lines = _approval_lines(delta, show_values, inherited)
+        check(public(lines) == lines, "REDACTION_COLLISION")
+        return lines
+
+
+def _approval_lines(delta, show_values, inherited):
     env = delta.get("env", [])
 
     def display(name, value, *, replacement=False):
@@ -169,23 +176,19 @@ def approval_lines(delta, show_values=(), *, inherited=()):
         # In a mixed delta even the public flag can repeat a private value.
         if (replacement and len(env) == 1 and name == "SPRING_FLYWAY_ENABLED" and name in show_values
                 and value in (None, "true", "false", "enabled", "disabled")
-                and (value is None or public(value) == value and not any(value in item for item in inherited))):
+                and (value is None or scrub(value) == value and not any(value in item for item in inherited))):
             return "assente" if value is None else json.dumps(value, ensure_ascii=False)
         return "sha256 " + delta_digest(value)
 
     lines = []
     for row in env:
-        name = row["name"]
+        name = identifier(row["name"])
         check(matches(r"[A-Z_][A-Z0-9_]*", name), "INVALID_ENV")
-        label = name if public(name) == name else "sha256 " + delta_digest(name)
+        label = name if scrub(name) == name else "sha256 " + delta_digest(name)
         lines.append(f"ENV {label} da {display(name, row['before'])} a {display(name, row['after'], replacement=label == name)}")
     for bind in delta.get("binds", []):
         check(matches(r"[0-9a-f]{64}", bind["sha256"]), "INVALID_BIND_DIGEST")
         lines.append(f"Bind destinazione sha256 {delta_digest(bind['target'])} · contenuto sha256 {bind['sha256']}")
     for network, additions in sorted(delta.get("aliases", {}).items()):
         lines.extend(f"Alias sha256 {delta_digest(alias)} · rete sha256 {delta_digest(network)}" for alias in additions)
-    # A private value can coincide with a fixed keyword or part of a digest.
-    # Never rewrite the grammar of a line that will be presented for approval.
-    with scope(profile):
-        check(public(lines) == lines, "REDACTION_COLLISION")
     return lines

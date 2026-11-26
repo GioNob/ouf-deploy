@@ -170,7 +170,8 @@ class NoDeltaParity(unittest.TestCase):
                                                "scripts/ouf-a2-executor", "scripts/install-ouf-a2.py",
                                                ".github/scripts/module-release.py", ".github/scripts/release_review.py",
                                                "tools/privileged_executor/mandate.py", "tools/privileged_executor/store.py",
-                                               "tools/privileged_executor/module_operation.py"],
+                                               "tools/privileged_executor/module_operation.py",
+                                               "tools/privileged_executor/module_receipt.py"],
                                               cwd=fixture.ROOT, stderr=subprocess.PIPE)
         except subprocess.CalledProcessError:
             if "CI" in os.environ:
@@ -191,7 +192,10 @@ class NoDeltaParity(unittest.TestCase):
         with patch.dict(sys.modules, {"module_release": reference_package, "module_release.contract": contract,
                                       "module_release.retention": retention, "mandate": reference_mandate}):
             from dep58lf_reference.tools.privileged_executor import store as reference_store
-            from dep58lf_reference.tools.privileged_executor import module_operation as reference_executor
+            with patch.dict(sys.modules, {"store": reference_store}):
+                from dep58lf_reference.tools.privileged_executor import module_receipt as reference_receipt
+            with patch.dict(sys.modules, {"module_receipt": reference_receipt}):
+                from dep58lf_reference.tools.privileged_executor import module_operation as reference_executor
         cls.reference_store = reference_store
         cls.reference_executor = reference_executor
         cls.reference_mandate = reference_mandate
@@ -672,7 +676,7 @@ class NoDeltaParity(unittest.TestCase):
         self.read_fault_matrix(("none", "dedicated", "spring-flyway"))
 
     def test_DEP_58QG_03_executor_file_reads(self):
-        self.read_fault_matrix(("executor-none", "executor-dedicated"))
+        self.read_fault_matrix(("executor-none", "executor-dedicated", "executor-signed-none", "executor-signed-dedicated"))
 
     def read_fault_matrix(self, modes):
         total = 0
@@ -717,7 +721,23 @@ class NoDeltaParity(unittest.TestCase):
                             setup.enter_context(patch.object(executor, "read", storage.read))
                             setup.enter_context(patch.object(executor, "save", storage.save))
                             setup.enter_context(patch.object(executor, "Journal", storage.Journal))
-                            setup.enter_context(patch.object(storage, "trusted", lambda path, **kw: path))
+                            setup.enter_context(patch.object(storage, "trusted", lambda path, **kw: Path(path)))
+                            if "signed" in mode:
+                                signer = executor.module_receipt
+                                public = directory / "receipt-public.der"
+                                der = signer.ED25519_SPKI + bytes(range(32))
+                                public.write_bytes(der)
+                                private = directory / "receipt-private"
+                                private.touch()
+                                p["receiptSigning"] = {"publicKey": {"path": str(public), "sha256": fixture.sha(der)},
+                                                       "privateKey": str(private)}
+                                setup.enter_context(patch.object(signer, "trusted", storage.trusted))
+                                # Only OpenSSL is doubled. Key bindings, key reads, signature publication
+                                # and verification use the signer shipped by each release.
+                                def openssl(command, **kwargs):
+                                    output = der if command[1] == "pkey" else bytes(64) if "-sign" in command else b""
+                                    return subprocess.CompletedProcess(command, 0, stdout=output)
+                                setup.enter_context(patch.object(signer.subprocess, "run", openssl))
                             if os.name == "posix":
                                 setup.enter_context(patch.object(storage, "sync_dir", sync_storage))
                             else:
@@ -794,6 +814,10 @@ class NoDeltaParity(unittest.TestCase):
                                             if result["status"] == "GATED":
                                                 phase = "migrate"
                                                 result = case.call(phase, result["digest"])
+                                            if "signed" in mode:
+                                                phase = "verify"
+                                                release = executor.ModuleRelease(case.cfg, case.root, case.req)
+                                                release.previous_release()
                                             phase = "return"
                                             result = case.call("rollback", stamp, run="2")
                                     else:
@@ -847,6 +871,10 @@ class NoDeltaParity(unittest.TestCase):
                             self.assertTrue({("open", "status"), ("read_bytes", "cmdline")} <= opens, opens)
                             if mode == "spring-flyway":
                                 self.assertIn(("os.open", "app.jar"), opens)
+                            if "signed" in mode:
+                                signing = "migrate" if mode.endswith("dedicated") else "apply"
+                                for phase in (signing, "verify"):
+                                    self.assertIn((phase, "read_bytes", public.name), trace)
                             expected_trace = trace
                             expected = [replay(i)[1] for i in range(1, len(trace) + 1)]
                         else:
@@ -859,6 +887,24 @@ class NoDeltaParity(unittest.TestCase):
                             total += len(trace)
                             print("I/O", mode, "resume" if interrupted else "apply", len(trace), flush=True)
         print("I/O matrix:", total, "injected reads", flush=True)
+
+    def test_credential_matrix_near_names_match_reference_without_delta(self):
+        names = ("TOKENIZER", "TOKENIZER_STATUS", "KEYBOARD_LAYOUT", "PASSAGE", "SECRETARY", "MONKEY")
+        for name in names:
+            with self.subTest(name=name), ExitStack() as stack:
+                case = mcp.Release()
+                case.setUp()
+                stack.callback(case.doCleanups)
+                case.dedicated()
+                case.rt.docs[fixture.OLD]["Config"]["Env"].append(name + "=PLANNED")
+                outputs = []
+                for op in (self.reference[0], module_operation.operation):
+                    adapter = importlib.import_module(op.__package__ + ".docker").Docker
+                    with patch.object(case.rt, "client", adapter):
+                        outputs.append(op.plan(case.p, case.rt))
+                self.assertEqual(outputs[0]["status"], "PLANNED")
+                self.assertEqual(outputs[0], outputs[1])
+        print(f"Credentials: {len(names)} no-delta control names match {REFERENCE[:8]}", flush=True)
 
     def test_DEP_58QE_05_mcp_return_plan_io_location(self):
         def exercise(op, rec, case, rt, stamp):

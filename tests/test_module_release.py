@@ -137,7 +137,8 @@ def artifact(p, root, *, image_env=None, revision_label=TESTED, **manifest_chang
 
 
 class Engine:
-    def __init__(self, p, blob):
+    def __init__(self, p, blob, client=docker.Docker):
+        self.client = client
         self.p = p
         self.blob = blob
         self.events = []
@@ -161,6 +162,12 @@ class Engine:
         return {cid for cid, doc in self.docs.items() if (doc.get("Config", {}).get("Labels") or {}).get(label) == value}
 
     def inspect(self, ident, missing=False):
+        return self.client.inspect(self, ident, missing=missing)
+
+    def api(self, method, path, *, missing=False):
+        from urllib.parse import unquote
+        assert method == "GET" and path.startswith("/containers/") and path.endswith("/json")
+        ident = unquote(path[len("/containers/"):-len("/json")])
         for cid, doc in self.docs.items():
             if ident in (cid, doc["Name"][1:]):
                 return copy.deepcopy(doc)
@@ -298,6 +305,7 @@ class ReleaseTest(unittest.TestCase):
                    module=self.p["module"], phase="plan")
         req["digest"] = mandate.intent(req)
         def call(approval_count, workflow=mandate.module_workflow(self.p["module"])):
+            from module_release.docker import Docker as InstalledDocker
             run = dict(id=int(req["run"]), run_attempt=1, event="workflow_dispatch", status="in_progress",
                        path=workflow, head_branch="protected", head_sha=cfg["commit"],
                        repository={"id":10}, head_repository={"id":10})
@@ -307,8 +315,9 @@ class ReleaseTest(unittest.TestCase):
             approval = dict(state="approved", comment="",
                             user=user, environments=[env])
             jobs = {"jobs": [dict(status="in_progress", runner_name="fixture", name=req["phase"] + " " + req["digest"])]}
-            return dispatch(req, cfg, self.root, Mock(side_effect=[run, jobs, dict(protected=True,
-                            commit={"sha":cfg["commit"]}), env, [approval] * approval_count]))
+            with patch.object(self.rt, "client", InstalledDocker):
+                return dispatch(req, cfg, self.root, Mock(side_effect=[run, jobs, dict(protected=True,
+                                commit={"sha":cfg["commit"]}), env, [approval] * approval_count]))
         self.enterContext(patch.object(store, "sync_dir"))
         self.enterContext(patch.object(store, "trusted", side_effect=lambda path, **_: Path(path)))
         self.enterContext(patch.object(module_operation.operation, "Docker", return_value=self.rt))

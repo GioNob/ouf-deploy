@@ -81,5 +81,5 @@ if __name__ == "__main__":
         try:
             main(output_scope)
         except Exception as error:
-            print(public_output.public(public_error(error)), file=sys.stderr)
+            print(public_output.public_error(public_error(error)), file=sys.stderr)
             sys.exit(1)

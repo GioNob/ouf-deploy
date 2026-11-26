@@ -426,26 +426,26 @@ def credential_words(words):
     return False
 
 
-_sensitive_word = (r"pass(?:wd|words?|phrase)?|pwd|secrets?|tokens?|credentials?|community|dsn|jwt|auths?|"
-                   r"authorization|key|(?:api|private|sharedaccess|account|access|signing)[_.-]?key|"
-                   r"shared[_.-]?access[_.-]?signature|connection[_.-]?string")
-_credential = re.compile(r"(?:^|[_.-])(?:" + _sensitive_word + r")(?:$|[_.-])", re.I)
-_option = re.compile(r"(?:[a-z0-9]+[_.-])*(?:" + _sensitive_word + r")", re.I)
+_credential_parts = frozenset("PASSWORD PASSWD PWD SECRET TOKEN APIKEY ACCOUNTKEY PRIVATEKEY "
+                              "CREDENTIAL CREDENTIALS SAS SIGNATURE CONNECTIONSTRING DSN".split())
+_credential_pairs = {("API", "KEY"), ("ACCOUNT", "KEY"), ("PRIVATE", "KEY"), ("CONNECTION", "STRING")}
+# These clients have established names which do not follow the component convention.
+_client_credentials = {"PGPASSWORD", "SSLPASSWORD", "SNMP_COMMUNITY", "REDISCLI_AUTH", "DOCKER_AUTH_CONFIG"}
 _literal = re.compile(r"://[^/\s?#]*:[^/\s?#]*@|\b(?:basic|bearer)\s+\S+|-----BEGIN [^\n]*PRIVATE KEY|"
                       r"\boracle:thin:[^@\s]+/[^@\s]+@", re.I)
 _assignment = re.compile(r"(?<![\w.-])(--?)?([\w.][\w.-]*)\s*=")
 _long_option = re.compile(r"""(?:^|[\s'"])--([a-zA-Z][\w.-]*)(?=$|[\s='"])""")
 
 
-def credential_name(name, *, option=False):
+def credential_name(name):
     if not isinstance(name, str):
         return False
-    words = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name)
-    if option:
-        return bool(_option.fullmatch(words))
-    if words.lower().endswith(("_file", "-file", ".file")):
-        return False
-    return bool(_credential.search(words) or re.search(r"password|passwd|passphrase|secret|token|credential", words, re.I))
+    words = re.sub(r"([A-Z])([A-Z][a-z])", r"\1_\2", name)
+    words = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", words)
+    parts = re.split(r"[_.-]+", words.upper())
+    return parts[-1] != "FILE" and (name.upper() in _client_credentials or parts[-1] == "KEY"
+            or bool(_credential_parts.intersection(parts))
+            or any(pair in _credential_pairs for pair in zip(parts, parts[1:])))
 
 
 def json_properties(pairs):
@@ -470,7 +470,7 @@ def inline_secret(value):
     if isinstance(value, list):
         for flag, operand in zip(value, value[1:]):
             if (isinstance(flag, str) and flag.startswith("--") and flag != "--password"
-                    and credential_name(flag[2:], option=True)
+                    and credential_name(flag[2:])
                     and isinstance(operand, str) and operand and not operand.startswith("-")):
                 return True
         return credential_words(value) or any(inline_secret(item) for item in value)
@@ -480,7 +480,7 @@ def inline_secret(value):
     decoded = unquote(raw)
     if _literal.search(decoded) or delta_literal(decoded):
         return True
-    if any(credential_name(m[1], option=True) and raw[m.end():].strip().lstrip("= ")
+    if any(credential_name(m[1]) and raw[m.end():].strip().lstrip("= ")
            for m in _long_option.finditer(raw)):
         return True
     if raw.startswith("--"):
@@ -488,7 +488,7 @@ def inline_secret(value):
         if equals and inline_secret(argument):
             return True
     for field in _assignment.finditer(decoded):
-        if credential_name(field[2], option=bool(field[1])) or field[2].lower() == "sig":
+        if credential_name(field[2]) or field[2].lower() == "sig":
             return True
     for representation in dict.fromkeys((raw, decoded)):
         if representation.startswith(("{", "[", '"')):

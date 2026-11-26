@@ -85,7 +85,10 @@ class RetentionFixture(unittest.TestCase):
             if self.crash == cmd:
                 raise KeyboardInterrupt
         f.rt.create, f.rt.start = create_worker, start_worker
-        def retire(method, path):
+        engine_api = f.rt.api
+        def retire(method, path, **kwargs):
+            if method == "GET":
+                return engine_api(method, path, **kwargs)
             self.assertEqual(method, "DELETE")
             cid = path.removeprefix("/containers/").removesuffix("?v=true")
             self.assertEqual(f.rt.docs[cid]["State"]["Status"], "exited")

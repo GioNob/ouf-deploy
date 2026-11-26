@@ -5,7 +5,7 @@ from pathlib import Path
 from .contract import SHA, digest, matches, require
 from .frame import snapshot
 from .recovery import verify_stop_claim
-from .operation import (Docker, checked_generation, load_predecessor, read as journal_read, reason,
+from .operation import (Docker, checked_generation, database_baseline, load_predecessor, read as journal_read, reason,
                         record, restore, retained, unlock_module, verify_flyway_return, verify_never_started)
 
 
@@ -74,7 +74,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
                     and (resuming or not (root / "return-intent.json").exists()), "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE")
             cid = receipt["successorCid"]
         if "database" in profile["migration"]:
-            require(digest(read("database.private.json")) == plan["databaseSha256"], "RETURN_BASELINE_CHANGED")
+            require(digest(database_baseline(lambda: read("database.private.json"))) == plan["databaseSha256"], "RETURN_BASELINE_CHANGED")
         claim = {"cid": cid, "planSha256": stamp}
         verify_flyway_return(profile, rt, old, root)
         if resuming:

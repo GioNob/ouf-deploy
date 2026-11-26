@@ -152,7 +152,7 @@ class InvalidDeltaTest(unittest.TestCase):
             "postgresql://user:{v}@host/db", "-url=jdbc:postgresql://user:{v}@host/db",
             "host=db dbname=ouf password={v}", "host=db sslpassword='{v}'",
             "jdbc:postgresql://db/ouf?password={v}", "jdbc:postgresql://db/ouf?ssl=true&password={v}",
-            "jdbc:sqlserver://db;password={v}", "--password={v}", "-password={v}", "-p{v}",
+            "jdbc:sqlserver://db;password={v}", "jdbc:sqlserver://db;password={{{v}}}", "--password={v}", "-password={v}", "-p{v}",
             "PGPASSWORD={v}", "--secret={v}", "--token={v}", "FLYWAY_PASSWORD={v}", "-Dflyway.password={v}",
             "jdbc:oracle:thin:user/{v}@db", "--dbname=sslpassword={v}",
             ("--password", "{v}"), ("--secret", "{v}"), ("--token", "{v}"),
@@ -191,7 +191,6 @@ class InvalidDeltaTest(unittest.TestCase):
                                 p["networks"][net]["aliases"].append(value)
                                 old["NetworkSettings"]["Networks"][net]["Aliases"].append(value)
                         elif position == "label":
-                            old["Config"]["Labels"]["AccountKey"] = marker
                             old["Config"]["Labels"]["settings"] = value
                             if not delta:
                                 p["networks"][net]["aliases"].append(marker)
@@ -305,7 +304,7 @@ class InvalidDeltaTest(unittest.TestCase):
             for source in ("env", "label"):
                 with self.subTest(dsn=dsn, source=source), output.scope({}):
                     config = {"Env": ["DB_URL=" + dsn]} if source == "env" else {"Labels": {"dsn": dsn}}
-                    output.predecessor({"Config": config})
+                    output.inspected({"Config": config})
                     self.assertNotIn(b"ENV_NAME", output.json_output({"result": "prefix-ENV_NAME-suffix"}))
 
     def test_DEP_58QE_09_bootstrap_rejects_before_manifest(self):
@@ -403,7 +402,7 @@ class InvalidDeltaTest(unittest.TestCase):
 
     def test_inherited_credential_matching_env_name_through_dispatch(self):
         marker = "SETTING_FROM_PROFILE"
-        for source in ("label", "env", "dsn", "migration-dsn"):
+        for source in ("label", "env", "dsn", "PGPASSWORD", "jdbc-braces", "migration-dsn"):
             with self.subTest(source=source):
                 case = fixture.ReleaseTest()
                 case.setUp()
@@ -414,6 +413,9 @@ class InvalidDeltaTest(unittest.TestCase):
                                                command=["migrate", f"host=db password={marker}"])
                 elif source == "env":
                     config["Env"].append("DB_PASSWORD=" + marker)
+                elif source in ("PGPASSWORD", "jdbc-braces"):
+                    config["Labels"]["settings"] = ("PGPASSWORD=" + marker if source == "PGPASSWORD" else
+                                                    f"jdbc:sqlserver://db;password={{{marker}}};user=test")
                 else:
                     config["Labels"]["AccountKey" if source == "label" else "database.url"] = (
                         marker if source == "label" else f"postgresql://user:{marker}@db/test")
@@ -427,16 +429,49 @@ class InvalidDeltaTest(unittest.TestCase):
                             call(0)
                         self.assertEqual((stdout.getvalue(), stderr.getvalue()), ("", ""))
                         continue
-                    planned = call(0)
-                    self.assertIn(operation.digest(marker), planned["approvalLines"][0])
-                    with patch.object(sys, "path", list(sys.path)):
-                        render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
-                        render(summary, req["module"], "plan", planned, "apply", None)
-                    req.update(phase="apply", digest=planned["digest"])
-                    applied = call(1)
-                self.assertIn(applied["status"], ("READY", "GATED"))
-                for output in (summary.getvalue(), stdout.getvalue(), stderr.getvalue(), json.dumps([planned, applied])):
+                    with self.assertRaisesRegex(mandate.Held, "^SECRET_IDENTIFIER_COLLISION$"):
+                        call(0)
+                for output in (summary.getvalue(), stdout.getvalue(), stderr.getvalue(),
+                               (case.root / "1" / "plan").read_text(), (case.root / "1" / "plan.held").read_text()):
                     self.assertNotIn(marker, output)
+
+    def test_collision_in_residual_after_early_artifact_failure(self):
+        case = fixture.ReleaseTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        next(case.root.glob("*.zip")).write_bytes(b"changed")
+        self.assertEqual(operation.plan(case.p, case.rt)["reason"], "ARTIFACT_DIGEST_CHANGED")
+        case.rt.docs[fixture.OLD]["Config"]["Labels"]["AccountKey"] = fixture.OLD
+        call, _ = case.governed_dispatch()
+        with self.assertRaisesRegex(mandate.Held, "^SECRET_IDENTIFIER_COLLISION$"):
+            call(0)
+        self.assertEqual(operation.read(case.root / "1", "plan.held"),
+                         {"status": "HELD", "reason": "SECRET_IDENTIFIER_COLLISION"})
+
+    def test_public_identifier_collisions(self):
+        output = operation.public_output
+        stamp = "9" * 64
+        for secret, result in (("successorCid", {"successorCid": fixture.NEW}),
+                               ("onboarding", {"status": "GATED"}),
+                               ("ouf-service", {"service": "ouf-service"}),
+                               ("PLANNED", {"status": "PLANNED"}),
+                               ("204", {"readyHttp": 204}),
+                               (stamp, {"imageId": "sha256:" + stamp}),
+                               ("SETTING", {"approvalLines": ["ENV SETTING da sha256 " + stamp]})):
+            with self.subTest(result=result), output.scope({"module": "onboarding"}):
+                output.inspected({"Config": {"Labels": {"AccountKey": secret}}})
+                with self.assertRaisesRegex(Held, "^SECRET_IDENTIFIER_COLLISION$"):
+                    output.json_output(result)
+
+    def test_credential_components_and_boundaries(self):
+        from tools.module_release.contract import credential_name
+        for name in ("PASSWORD", "UserPasswd", "DB.PWD", "client-secret", "myOAuthToken", "x.APIKEY.id",
+                     "AccountKeyId", "authorPrivateKeyPath", "Credential", "credentials", "SAS",
+                     "SharedAccessSignature", "DB_CONNECTION_STRING", "dsn", "ACCESS_KEY"):
+            self.assertTrue(credential_name(name), name)
+        for name in ("TOKENIZER", "TOKENIZER_STATUS", "KEYBOARD_LAYOUT", "PASSAGE", "SECRETARY",
+                     "MONKEY", "KEY_ID", "ACCESS_KEY_STATUS"):
+            self.assertFalse(credential_name(name), name)
 
     def test_DEP_58QD_01_alias_collisions_cover_substrings_and_overlapping_values(self):
         delta = {"env": [dict(name="SETTING", before="private-value", after="private-value-long")],

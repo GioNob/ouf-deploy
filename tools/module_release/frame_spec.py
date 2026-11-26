@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 
-from .contract import ENTRY, Held, IMAGE, NAME, SHA, argv, matches
+from .contract import ENTRY, Held, IMAGE, NAME, SHA, argv, credential_name, matches
 
 
 class SpecHeld(Held):
@@ -48,7 +48,7 @@ def validate_env(entries, allowlist=None) -> list[str]:
         if name.endswith("_FILE"):
             path(value)
         else:
-            check(not re.search(r"PASS(WD|WORD|PHRASE)?|SECRET|TOKEN|CREDENTIAL|APIKEY|PRIVATEKEY|(?:^|_)(KEY|JWT)(?:_|$)", name)
+            check(not credential_name(name)
                   and not re.search(r"(?i)://[^/\s]*@|-----BEGIN .*PRIVATE KEY|\bbearer\s+", value),
                   "SECRET_ENV_DENIED")
         result[name] = value

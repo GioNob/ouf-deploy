@@ -6,16 +6,19 @@ import json
 import re
 from urllib.parse import unquote
 
-from .contract import digest, require
+from .contract import Held, digest, require
 from .profile_options import credential_name
 
 
 _values = ContextVar("module_release_secrets", default=None)
+_module = ContextVar("module_release_public_module", default=None)
 
 
 # Keep both the encoded spelling and the password interpreted by the DSN consumer.
 _url_password = re.compile(r"://[^/@?#\s:]*:([^/@?#\s]+)@|oracle:thin:[^/@\s]+/([^@\s]+)@", re.I)
-_property_password = re.compile(r"""(?:^|[?&;\s])(?:sslpassword|password)\s*=\s*(?:'((?:\\.|[^'\\])*)'|((?:\\.|[^\s\\])+))""", re.I)
+_property = re.compile(r"""(?<![\w.-])(?:-D|--?)?([\w.][\w.-]*)\s*=\s*""", re.I)
+_operand = re.compile(r"""\{((?:\}\}|[^}])*)\}|'((?:\\.|[^'\\])*)'|"((?:\\.|[^"\\])*)"|((?:\\.|[^\s\\])+)""")
+_flag = re.compile(r"(?:^|\s)--([\w.-]+)\s+|(?:^|\s)-p(?=[^\s=]+(?:\s|$))")
 
 
 def dsn_values(text):
@@ -23,13 +26,18 @@ def dsn_values(text):
         raw = match[1] or match[2]
         yield raw
         yield unquote(raw)
-    for match in _property_password.finditer(text):
-        raw = match[1] if match[1] is not None else match[2]
-        if match[2] and match[0][0] in "?&;":
-            raw = re.split("[&;#]", raw, maxsplit=1)[0]
-        if raw:
-            yield raw
-            yield unquote(re.sub(r"\\(.)", r"\1", raw))
+    for pattern in (_property, _flag):
+        for match in pattern.finditer(text):
+            if match[1] is not None and not (credential_name(match[1]) or match[1].lower() == "sig"):
+                continue
+            operand = _operand.match(text, match.end())
+            if operand:
+                raw = next(v for v in operand.groups() if v is not None)
+                if operand[4] and match.start() and text[match.start() - 1] in "?&;":
+                    raw = re.split("[&;#]", raw, maxsplit=1)[0]
+                if raw:
+                    yield raw
+                    yield unquote(raw.replace("}}", "}") if operand[1] is not None else re.sub(r"\\(.)", r"\1", raw))
 
 
 def private_inputs(value, sensitive=False):
@@ -86,7 +94,7 @@ def secret_values(profile):
     return found
 
 
-def predecessor(doc):
+def inspected(doc):
     values = _values.get()
     if values is not None and isinstance(doc, dict):
         config = doc.get("Config") or {}
@@ -105,9 +113,11 @@ def scope(profile):
         values = set()
     values.update(secret_values(profile))
     token = _values.set(values)
+    module_token = _module.set(profile.get("module", _module.get()) if isinstance(profile, dict) else _module.get())
     try:
         yield
     finally:
+        _module.reset(module_token)
         _values.reset(token)
 
 
@@ -123,7 +133,37 @@ def _map_strings(value, transform):
     return value
 
 
-def public(value):
+COLLISION = "SECRET_IDENTIFIER_COLLISION"
+
+
+def identifier(value):
+    values = _values.get()
+    if values and str(value) in values:
+        raise Held(COLLISION)
+    return value
+
+
+def check_identifiers(value):
+    if not _values.get():
+        return
+    if isinstance(value, dict):
+        for key, item in value.items():
+            identifier(key)
+            check_identifiers(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            check_identifiers(item)
+    elif isinstance(value, (str, int)):
+        identifier(value)
+        if isinstance(value, str):
+            # Approval lines embed digests and typed identifiers in prose.
+            for stamp in re.findall(r"(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])", value):
+                identifier(stamp)
+            if match := re.match(r"ENV ([A-Z_][A-Z0-9_]*) da ", value):
+                identifier(match[1])
+
+
+def scrub(value):
     values = _values.get()
     if not values:
         return value
@@ -140,6 +180,30 @@ def public(value):
         return result
 
     return _map_strings(value, replace)
+
+
+def public(value):
+    # The workflow includes the module alongside every successful phase response.
+    if isinstance(value, dict) and _module.get():
+        identifier(_module.get())
+    check_identifiers(value)
+    return scrub(value)
+
+
+def check_record(name, data):
+    if name in ("plan.json", "receipt.json", "return-receipt.json", "stage.json", "ready-before-signing.json"):
+        if _module.get():
+            identifier(_module.get())
+        check_identifiers(data)
+
+
+def public_error(message):
+    if message == COLLISION:
+        return COLLISION
+    try:
+        return public(message)
+    except Held as exc:
+        return str(exc)
 
 
 def select_request(envelope, cfg, stack):
@@ -160,5 +224,13 @@ def release_output(function):
     @wraps(function)
     def run(profile, *args, **kwargs):
         with scope(profile):
-            return public(function(profile, *args, **kwargs))
+            result = function(profile, *args, **kwargs)
+            if result.get("reason") == COLLISION:
+                return {"status": "HELD", "reason": COLLISION}
+            try:
+                return public(result)
+            except Held as exc:
+                if str(exc) != COLLISION or "status" not in result:
+                    raise
+                return {"status": "HELD", "reason": COLLISION}
     return run

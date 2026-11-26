@@ -603,6 +603,12 @@ class ReadyReturn(unittest.TestCase):
         self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
 
     def test_bound_none_refuses_changed_database_before_stop(self):
+        self.check_database_return(missing=False)
+
+    def test_bound_none_refuses_missing_database_baseline_before_stop(self):
+        self.check_database_return(missing=True)
+
+    def check_database_return(self, missing):
         import test_module_release_mcp as mcp
         import mandate
         case = mcp.Release()
@@ -612,8 +618,11 @@ class ReadyReturn(unittest.TestCase):
         stamp = case.planned()["digest"]
         self.assertEqual(case.call("apply", stamp)["status"], "READY")
         events = list(case.rt.events)
-        case.db["schema"].append("unexpected column")
-        with self.assertRaisesRegex(mandate.Held, "DATABASE_CHANGED"):
+        if missing:
+            (case.root / stamp / "database.private.json").unlink()
+        else:
+            case.db["schema"].append("unexpected column")
+        with self.assertRaisesRegex(mandate.Held, "DATABASE_BASELINE_MISSING" if missing else "DATABASE_CHANGED"):
             case.call("rollback", stamp, run="2")
         self.assertEqual(events, case.rt.events)
         self.assertEqual(case.rt.inspect(case.p["container"])["Id"], fixture.NEW)
@@ -917,6 +926,10 @@ class ReadyReturn(unittest.TestCase):
         self.assertTrue(rt.inspect(fixture.NEW)["State"]["Running"])
 
     def test_DEP_58Q_15_late_create_after_empty_inspect(self):
+        cells = sum(self.late_create_loss_row(after) for after in (False, True))
+        print(f"D-080 late CREATE: 2 interruption boundaries, {cells} cases", flush=True)
+
+    def late_create_loss_row(self, after):
         rt, plan = self.case()
         stamp = op.digest(plan)
         result, rt = interrupted(rt, plan, "apply", "create", False)
@@ -927,7 +940,8 @@ class ReadyReturn(unittest.TestCase):
         old = op.load_predecessor(rt.p, rt, root)
         req = reviewed.request(rt.p, old, None)
         rt.create(rt.p["container"], reviewed.stamp_request(req, root))
-        self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
+        self.assertEqual(interrupted(rt, plan, "return", "late-create.json", after)[0], "crash")
+        return self.loss_row(rt, plan, ("return", "late-create.json", after))
 
     def test_DEP_58Q_16_review_and_ready_publication(self):
         import mandate
