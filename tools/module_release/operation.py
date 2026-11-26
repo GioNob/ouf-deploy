@@ -481,9 +481,14 @@ def reconcile_create(p, rt, old, plan, root):
     """Resolve a CREATE intent with no recorded CID under the plan's lock."""
     require(read(root, "create-intent.json") == {"requestSha256": plan["requestSha256"]}
             and not (root / "start-intent.json").exists(), "RECOVERY_CREATE_CHANGED")
-    retained(p, rt, old)
     require(rt.inspect(p["failedName"], missing=True) is None, "CUSTODY_NAME_OCCUPIED")
     doc = rt.inspect(p["container"], missing=True)
+    if doc and doc["Id"] == old["Id"] and (root / "rollback-intent.json").is_file():
+        # A previous recovery already reclaimed the service name. restore() checks its frame and generation.
+        require(read(root, "rollback-intent.json") == {"cid": old["Id"]}
+                and rt.inspect(p["retainedName"], missing=True) is None, "RESTORE_IDENTITY_CHANGED")
+        return None
+    retained(p, rt, old)
     if doc is None:
         return None
     cid = doc["Id"]

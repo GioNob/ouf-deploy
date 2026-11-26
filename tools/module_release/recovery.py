@@ -110,10 +110,15 @@ def resume(p, rt, approved):
                 "RECOVERY_CREATE_CHANGED")
         result["successorCid"] = cid
     if not created or (root / "rollback-intent.json").exists():
-        require(not (root / "create-intent.json").exists() or created, "CREATE_OWNERSHIP_UNCONFIRMED")
+        uncertain_create = not created and (root / "create-intent.json").exists()
+        require(not uncertain_create or "configDelta" in p, "CREATE_OWNERSHIP_UNCONFIRMED")
         if (root / "migration-intent.json").exists():
             require((root / "migration-complete.json").exists(), "MIGRATION_OUTCOME_UNCONFIRMED")
         op.confirm(root, "rollback-intent.json", {"cid": old["Id"]})
+        if uncertain_create:
+            cid = op.reconcile_create(p, rt, old, body, root)
+            if cid:
+                result["successorCid"] = cid
         status = op.restore(p, rt, old, result.get("successorCid"), root)
         result.update(reason="INTERRUPTED_RELEASE_RESTORED", rollback="ROLLED_BACK", restoredCid=old["Id"],
                       predecessorReadyHttp=status, predecessorReadiness="UP")

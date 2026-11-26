@@ -45,8 +45,6 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-          # The no-delta regression executes the reference release from local Git history.
-          fetch-depth: 0
       - name: Normalize the hosted runner's own sudoers modes (the installer runs a full visudo -c)
         run: sudo find /etc/sudoers.d -type f -exec chmod 0440 {} + && sudo /usr/sbin/visudo -c
       - name: Label the disposable hosted Engine and prepare local images

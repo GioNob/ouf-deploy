@@ -494,3 +494,88 @@ print(json.dumps(plan(profile, Engine())))
         result = return_operation.run(p, stamp, rt)
         self.assertEqual((result["status"], result["restoredCid"]), ("ROLLED_BACK", fixture.OLD))
         self.assertEqual(result["configDeltaSha256"], json.loads(original)["configDeltaSha256"])
+
+    def test_DEP_58LG_01_credentials_denied_before_approval(self):
+        from tools.module_release.config_delta import approval_lines
+
+        secret = "synthetic-redis-or-spring"
+        for name, value in (("REDISCLI_AUTH", secret),
+                            ("SPRING_APPLICATION_JSON", json.dumps({"spring": {"datasource": {"password": secret}}})),
+                            ("SPRING_APPLICATION_JSON", r'{"spring.datasource.pass\u0077ord":"synthetic-redis-or-spring"}')):
+            self.p.update(envAllowlist=[name], showValues=[name])
+            for side in ("before", "after"):
+                with self.subTest(name=name, side=side, value=value):
+                    row = {"name": name, "before": None, "after": None, side: value}
+                    self.p["configDelta"] = {"env": [row]}
+                    env = [f"{name}={value}"] if side == "before" else []
+                    with patch.dict(self.rt.docs[fixture.OLD]["Config"], Env=env):
+                        result = operation.plan(self.p, self.rt)
+                    self.assertEqual((result["status"], result.get("reason")), ("HELD", "SECRET_ENV_DENIED"))
+                    self.assertNotIn(secret, json.dumps(result))
+                    with self.assertRaisesRegex(operation.Held, "^SECRET_ENV_DENIED$"):
+                        approval_lines(self.p["configDelta"], [name])
+        value = '{"spring":{"application":{"name":"fixture"}}}'
+        self.p["configDelta"] = {"env": [{"name": "SPRING_APPLICATION_JSON", "before": None, "after": value}]}
+        self.assertIn(json.dumps(value), self.planned()["plan"]["approvalLines"][0])
+
+    def interrupt_create(self, *, applied):
+        self.install_delta()
+        stamp = self.planned()["planSha256"]
+        create = self.rt.create
+
+        def interrupt(*args):
+            if applied:
+                create(*args)
+            raise KeyboardInterrupt
+
+        with patch.object(self.rt, "create", interrupt), self.assertRaises(KeyboardInterrupt):
+            operation.apply(self.p, stamp, self.rt)
+        root = self.root / stamp
+        self.assertTrue((root / "create-intent.json").is_file())
+        self.assertFalse((root / "created.json").exists())
+        return root
+
+    def check_create_recovery(self, *, applied):
+        root = self.interrupt_create(applied=applied)
+        result = recovery.resume(self.p, self.rt, recovery.proposal(self.p, self.rt))
+        self.assertEqual((result["rollback"], result["restoredCid"]), ("ROLLED_BACK", fixture.OLD))
+        self.assertEqual(result.get("successorCid"), fixture.NEW if applied else None)
+        self.assertEqual(operation.read(root, "receipt.json"), result)
+        self.assertEqual(self.rt.events.count("create"), int(applied))
+        self.assertNotIn("gate:2", self.rt.events)
+        self.assertFalse((self.root / (self.p["module"] + ".lock")).exists())
+        self.assert_restored()
+
+    def test_DEP_58LG_02_interrupted_before_create(self):
+        self.check_create_recovery(applied=False)
+
+    def test_DEP_58LG_03_interrupted_after_create(self):
+        self.check_create_recovery(applied=True)
+
+    def test_DEP_58LG_04_native_checkout_does_not_require_full_history(self):
+        path = fixture.ROOT / ".github/workflows/privileged-executor-native.yml"
+        self.assertNotRegex(path.read_text(encoding="utf-8"), r"(?m)^\s*fetch-depth:\s*0\s*$")
+
+    def test_DEP_58LG_05_unverified_candidate_stays_in_place(self):
+        root = self.interrupt_create(applied=True)
+        labels = self.rt.docs[fixture.NEW]["Config"]["Labels"]
+        with patch.dict(labels, {operation.OWNER_LABEL: "0" * 64}):
+            with self.assertRaisesRegex(operation.Held, "^CREATE_OWNERSHIP_UNCONFIRMED$"):
+                recovery.resume(self.p, self.rt, recovery.proposal(self.p, self.rt))
+        self.assertFalse((root / "created.json").exists())
+        self.assertEqual(self.rt.inspect(self.p["container"])["State"]["Status"], "created")
+        result = recovery.resume(self.p, self.rt, recovery.proposal(self.p, self.rt))
+        self.assertEqual(result["rollback"], "ROLLED_BACK")
+        self.assert_restored()
+
+    def test_DEP_58LG_06_recovery_interrupted_after_restoring_without_candidate(self):
+        root = self.interrupt_create(applied=False)
+        with patch.object(operation, "record_result", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            recovery.resume(self.p, self.rt, recovery.proposal(self.p, self.rt))
+        self.assert_restored()
+        result = recovery.resume(self.p, self.rt, recovery.proposal(self.p, self.rt))
+        self.assertEqual(operation.read(root, "receipt.json"), result)
+        self.assertEqual(result["rollback"], "ROLLED_BACK")
+        self.assertNotIn("create", self.rt.events)
+        self.assertEqual(self.rt.events.count("gate:1"), 1)
+        self.assertEqual(self.rt.events.count("signal:1"), 1)

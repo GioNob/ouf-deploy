@@ -64,8 +64,15 @@ class NoDeltaParity(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         tmp = cls.enterClassContext(tempfile.TemporaryDirectory())
-        archive = subprocess.check_output(["git", "archive", "--format=zip", REFERENCE, "tools/module_release"],
-                                          cwd=fixture.ROOT)
+        try:
+            archive = subprocess.check_output(["git", "archive", "--format=zip", REFERENCE, "tools/module_release"],
+                                              cwd=fixture.ROOT, stderr=subprocess.PIPE)
+        except subprocess.CalledProcessError:
+            shallow = subprocess.check_output(["git", "rev-parse", "--is-shallow-repository"], cwd=fixture.ROOT)
+            if shallow.strip() == b"true" and subprocess.run(
+                    ["git", "cat-file", "-e", REFERENCE], cwd=fixture.ROOT, stderr=subprocess.DEVNULL).returncode:
+                raise unittest.SkipTest(f"Shallow checkout lacks reference release {REFERENCE}") from None
+            raise
         with zipfile.ZipFile(io.BytesIO(archive)) as source:
             source.extractall(Path(tmp) / "dep58lf_reference")
         cls.enterClassContext(patch.object(sys, "path", [tmp, *sys.path]))

@@ -28,11 +28,25 @@ def inspect_binds(mounts):
     return [{"Type": m["Type"], "Target": m["Destination"], "ReadOnly": m.get("RW") is False} for m in mounts]
 
 
+def check_json_properties(pairs):
+    # The decoder visits every object, including duplicate and escaped property names.
+    for key, _ in pairs:
+        check(not re.search(r"password|passwd|passphrase|secret|token|credential|api[._-]?key|private[._-]?key|"
+                            r"(?:^|[._-])(?:pwd|auth|authorization|jwt|key)$", key, re.IGNORECASE),
+              "SECRET_ENV_DENIED")
+
+
 def validate_value(name, value, allowlist=None):
     if value is not None:
         validate_env([{"name": name, "value": value}], allowlist)
         if not name.endswith("_FILE"):
-            check(not re.search(r"(?:^|_)(?:AUTHORIZATION|PWD)(?:_|$)", name), "SECRET_ENV_DENIED")
+            check(not re.search(r"(?:^|_)(?:AUTH$|(?:AUTHORIZATION|PWD)(?:_|$))", name),
+                  "SECRET_ENV_DENIED")
+        if name == "SPRING_APPLICATION_JSON":
+            try:
+                json.loads(value, object_pairs_hook=check_json_properties)
+            except (ValueError, RecursionError):
+                raise SpecHeld("INVALID_ENV") from None
         check(not re.search(r"\bbasic\s+[A-Za-z0-9+/]+=*|(?:password|passwd|pwd|token|secret)\s*=|"
                             r"\boracle:thin:[^@\s]+/[^@\s]+@", unquote(value), re.IGNORECASE),
               "SECRET_ENV_DENIED")
