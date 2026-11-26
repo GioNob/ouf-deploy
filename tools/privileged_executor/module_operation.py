@@ -3,6 +3,7 @@ from pathlib import Path
 
 from module_release import operation, recovery, retention, return_operation
 from module_release.contract import Held as ReleaseHeld, require
+from module_release.profile_options import validate_module_profiles
 import module_receipt
 from mandate import Held, digest, hex64, intent, need
 from store import Journal, read, save
@@ -10,6 +11,7 @@ from store import Journal, read, save
 
 class ModuleInstall:
     def __init__(self, cfg, root, req):
+        validate_module_profiles(req.get("module"), cfg, release=False, check=need)
         self.profile = cfg["modules"][req["module"]]
         self.path = root / req["run"]
         self.req = req
@@ -52,6 +54,7 @@ class ModuleInstall:
 
 class ModuleRelease:
     def __init__(self, cfg, root, req):
+        validate_module_profiles(req.get("module"), cfg, release=True, check=need)
         self.profile = cfg["modules"][req["module"]]
         self.path = Journal(root / req["run"]).path
         self.req = req

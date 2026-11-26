@@ -7,7 +7,7 @@ import tempfile
 
 from . import flyway, postgres
 from .contract import (CI_COORDINATES, INGESTION_STARTUP_FLAGS, MCP_CI_COORDINATES, Held, SHA, diagnostic,
-                       digest, jar_name, matches, package, require, validate)
+                       digest, jar_name, matches, package, require, validate, validate_profile_options)
 from .docker import Docker
 from .frame import (baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, merge_image,
                     provenance_labels, request, snapshot)
@@ -103,8 +103,8 @@ def observe(p, rt, previous_release=None):
 
 
 def plan(profile: dict, runtime=None, *, previous_release=None) -> dict:
-    """Read-only; no image import, lock, journal, signal or network download."""
     try:
+        validate_profile_options(profile)
         body, _ = observe(profile, runtime or Docker(profile), previous_release)
         return {"status": "PLANNED", "planSha256": digest(body), "plan": body}
     except Exception as exc:
@@ -483,7 +483,7 @@ def execute(p, rt, body, old, root, result, defer_migration):
         rollback(p, rt, old, root, result, exc)
 
 
-def rollback(p, rt, old, root, result, exc):
+def _rollback(p, rt, old, root, result, exc):
     result.update(status="HELD", reason=reason(exc), rollback="HELD")
     try:
         require(not reason(exc).startswith("FLYWAY_OUTCOME_UNCONFIRMED"), "FLYWAY_OUTCOME_UNCONFIRMED")
@@ -503,9 +503,9 @@ def rollback(p, rt, old, root, result, exc):
 
 
 def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=False, previous_release=None) -> dict:
-    """Replan under exclusion; consume once, write a private receipt even on ordinary failure."""
     result = {"operation": "module-release", "status": "HELD"}
     try:
+        validate_profile_options(profile)
         require(matches(SHA, plan_sha256), "PLAN_DIGEST_REQUIRED")
         result["planSha256"] = plan_sha256
         validate(profile)
@@ -590,3 +590,8 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
     if result.get("rollback") != "HELD":
         unlock_module(lock)
     return result
+
+
+def rollback(p, rt, old, root, result, exc):
+    validate_profile_options(p)
+    _rollback(p, rt, old, root, result, exc)

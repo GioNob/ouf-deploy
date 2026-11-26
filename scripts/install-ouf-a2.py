@@ -2,6 +2,7 @@
 """Install or update from a private root-owned checkout of the reviewed commit."""
 import argparse
 from contextlib import contextmanager, ExitStack
+from functools import cache
 import hashlib
 import json
 import os
@@ -20,6 +21,7 @@ RULE = Path("/etc/sudoers.d/ouf-a2")
 REPO = Path(__file__).resolve().parents[1]
 LIB = ("mandate", "store", "queue_inventory", "runbooks", "semantic", "ingress", "pipeline", "module_operation", "successor_image")
 LIB += ("gateway_policy", "gateway_bundle", "gateway_admin", "gateway_operation", "semantic_database", "module_receipt")
+PROFILE_OPTIONS_SHA256 = "71bff6f46f8dbf94fb4995e5aced60b9a1f4db0651de492c68fef184ada6e4de"
 MODELS = ("transition_journal", "gated_creation_plan", "gated_process_observation")
 
 
@@ -39,11 +41,36 @@ def safe(path):
         check(s.st_uid == 0 and not s.st_mode & 0o022, "ROOT_TREE_REQUIRED")
 
 
-def inspect(profile):
+@cache
+def profile_options():
+    # This bootstrap must reject unsupported options even before a profile supplies a valid commit.
+    # Pin the dependency-free validator just as we pin the bootstrap itself at checkout verification.
+    path = Path(__file__).resolve().parents[1] / "tools/module_release/profile_options.py"
+    raw = path.read_bytes().replace(b"\r\n", b"\n")
+    check(sha(raw) == PROFILE_OPTIONS_SHA256, "BOOTSTRAP_DRIFT")
+    options = types.ModuleType("profile_options")
+    exec(compile(raw, "profile_options.py", "exec"), options.__dict__)
+    return options
+
+
+def checked_profiles(candidate):
+    proposed = json.loads(candidate)
+    options = profile_options()
+    options.validate_policy_profiles(proposed)
+    path = ROOT / "profile.json"
+    installed = json.loads(path.read_bytes()) if existing(path) else {}
+    options.validate_policy_profiles(installed)
+    return proposed, installed
+
+
+def read_profiles(profile):
     safe(profile)
     check(profile.is_file() and not profile.stat().st_mode & 0o077, "PRIVATE_PROFILE_REQUIRED")
-    raw = profile.read_bytes()
-    cfg = json.loads(raw)
+    return checked_profiles(profile.read_bytes())
+
+
+def inspect(profile):
+    cfg, _ = read_profiles(profile)
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
@@ -122,11 +149,15 @@ def inspect(profile):
     package = ROOT / "lib/module_release"
     for module in ("__init__", "contract", "docker", "flyway", "frame", "mcp_artifact", "operation",
                    "postgres", "provenance", "recovery", "retention", "return_operation", "transport",
-                   "frame_spec", "install_contract", "install_operation"):
+                   "frame_spec", "install_contract", "install_operation", "profile_options"):
         files[package / (module + ".py")] = (blob(f"tools/module_release/{module}.py"), 0o600)
+    check(sha(files[package / "profile_options.py"][0].replace(b"\r\n", b"\n")) == PROFILE_OPTIONS_SHA256,
+          "BOOTSTRAP_DRIFT")
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")
     exec(compile(files[package / "contract.py"][0], "contract.py", "exec"), contract.__dict__)
+    # Standalone Git blob execution has no package loader. Bind the same pinned option validator.
+    contract.validate_profile_options = profile_options().validate_profile_options
     if "semanticDatabase" in cfg:
         check(contract.valid_semantic_database(cfg["semanticDatabase"]), "SEMANTIC_DATABASE_PROFILE_REQUIRED")
     for spec in (cfg[k] for k in ("successorImage", "nextSuccessorImage") if k in cfg):
@@ -145,7 +176,7 @@ def inspect(profile):
         with tempfile.TemporaryDirectory() as tmp:
             grammar = Path(tmp) / "a2_install_validation"
             grammar.mkdir()
-            for unit in ("__init__", "contract", "frame_spec", "install_contract"):
+            for unit in ("__init__", "contract", "frame_spec", "install_contract", "profile_options"):
                 (grammar / (unit + ".py")).write_bytes(files[package / (unit + ".py")][0])
             sys.path.insert(0, tmp)
             try:
@@ -202,10 +233,16 @@ def fingerprint(data, mode):
 
 
 def journals(profile_bytes):
-    return {Path(m["journal"]) for m in json.loads(profile_bytes).get("modules", {}).values()}
+    proposed, _ = checked_profiles(profile_bytes)
+    return journal_paths(proposed)
+
+
+def journal_paths(policy):
+    return {Path(m["journal"]) for m in policy.get("modules", {}).values()}
 
 
 def manifest(files):
+    proposed, installed = checked_profiles(files[ROOT / "profile.json"][0])
     inventory = ROOT / "managed-files.json"
     paths = set(files)
     if existing(inventory):
@@ -216,11 +253,8 @@ def manifest(files):
             check(len(rel.parts) >= 2 and rel.parts[0] in ("lib", "books")
                   and rel.as_posix() == name and ".." not in rel.parts, "INVALID_INSTALL_INVENTORY")
             paths.add(ROOT / rel)
-    profile = ROOT / "profile.json"
-    new_journals = journals(files[profile][0])
-    protected = {ROOT / "state"} | new_journals
-    if existing(profile):
-        protected.update(journals(profile.read_bytes()))
+    new_journals = journal_paths(proposed)
+    protected = {ROOT / "state"} | new_journals | journal_paths(installed)
     for directory in new_journals:
         if not directory.exists():
             check(not any(p in directory.parents for p in protected), "PROTECTED_INSTALL_STATE")
@@ -268,6 +302,7 @@ def visudo(*args):
 
 
 def install(files, spec):
+    new_journals = journals(files[ROOT / "profile.json"][0])
     changed = [Path(p) for p, row in spec.items() if row["action"] != "unchanged"]
     changed.sort(key=lambda p: p == RULE)
     visudo()
@@ -277,7 +312,7 @@ def install(files, spec):
             staged[RULE] = stage(RULE, *files[RULE], cleanup)
             visudo("-f", str(staged[RULE]))
         for directory in (ROOT, ROOT / "lib", ROOT / "lib/module_release", ROOT / "books",
-                          ROOT / "state", *journals(files[ROOT / "profile.json"][0])):
+                          ROOT / "state", *new_journals):
             if not directory.exists():
                 directory.mkdir(mode=0o700)
                 sync_dir(directory.parent)
@@ -338,8 +373,25 @@ def installation_lock():
         os.close(fd)
 
 
+class InstallParser(argparse.ArgumentParser):
+    def error(self, message):
+        locator = argparse.ArgumentParser(add_help=False, exit_on_error=False)
+        locator.add_argument("mode", nargs="?")
+        locator.add_argument("profile", nargs="?", type=Path)
+        locator.add_argument("--plan-sha256", nargs="?")
+        hint, _ = locator.parse_known_args()
+        if hint.profile is not None and os.geteuid() == 0 and sys.flags.isolated:
+            try:
+                read_profiles(hint.profile)
+            except profile_options().UnsupportedOption:
+                raise
+            except (OSError, ValueError, RecursionError):
+                pass  # Keep the original argument diagnostic when admission cannot read a profile.
+        super().error(message)
+
+
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = InstallParser(description=__doc__)
     parser.add_argument("mode", choices=("bootstrap", "plan", "apply"))
     parser.add_argument("profile", type=Path)
     parser.add_argument("--plan-sha256")

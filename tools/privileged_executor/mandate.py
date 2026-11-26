@@ -156,10 +156,6 @@ def validate(req, policy):
     # Select only the requested profile. Keep the original request diagnostics
     # for malformed envelopes and for operations without a module profile.
     if isinstance(req, dict) and req.get("operation") in ("module-release", "module-install"):
-        from module_release.contract import validate_profile_options
-        name = req.get("module")
-        if isinstance(name, str):
-            profile = policy.get("modules", {}).get(name)
-            if isinstance(profile, dict):
-                validate_profile_options(profile, check=need)
+        from module_release.profile_options import validate_request_profiles
+        validate_request_profiles(req, policy, check=need)
     _validate_request(req, policy)

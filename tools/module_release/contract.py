@@ -290,7 +290,7 @@ def verify_labels(labels, repository, tested, *, optional):
 
 
 def package(p, target=None, *, transport=False, migrations_field=None, image_defaults=None):
-    """Hash the exact open ZIP and inner payload. Only copy verified bytes to private custody."""
+    validate_profile_options(p)
     ci = p["ci"]
     path = Path(p["inbox"]) / (ci["zipSha256"] + ".zip")
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_BINARY", 0)
@@ -344,8 +344,8 @@ def package(p, target=None, *, transport=False, migrations_field=None, image_def
 
 
 def validate_profile_options(profile, *, check=require):
-    """Common to full release profiles and the smaller transport profiles."""
-    check("configDelta" not in profile, "CONFIG_DELTA_NOT_ENABLED")
+    from .profile_options import validate_profile_options as admit
+    admit(profile, check=check)
 
 
 def validate(p):

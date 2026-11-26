@@ -1,5 +1,6 @@
 """Fail-closed release profiles and the isolated 58q library."""
 from contextlib import ExitStack, redirect_stderr, redirect_stdout
+from functools import partial
 import io
 import json
 import os
@@ -8,19 +9,25 @@ import runpy
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import Mock, call, mock_open, patch
 
 import test_module_release as fixture
+from test_module_install import setup_profile
+import test_privileged_executor_install as installer_fixture
+import module_operation
+from tools.module_release import install_contract, install_operation as install, retention
 import mandate
 import store
 from tools.module_release import config_delta, operation, recovery, return_operation, transport
 from tools.module_release.contract import Held, validate
 
 
-def executor_with_busy_lock(root, policy_module, profile):
+def executor_with_busy_lock(root, policy_module, profile, *, denied=False, operation_name="module-release", phase="plan",
+                            locked_profile=None):
     """Run the CLI and capture its public output with the operation lock occupied."""
     script = str(root / "scripts/ouf-a2-executor")
-    req = dict(operation="module-release", module="mcp", phase="plan", run="1", attempt="1", commit="a" * 40)
+    req = dict(operation=operation_name, module="mcp", phase=phase, run="1", attempt="1", commit="a" * 40)
     req["digest"] = policy_module.intent(req)
     cfg = {"commit": req["commit"], "modules": {"mcp": profile}}
     envelope = json.dumps({"request": req, "token": "fixture"}).encode()
@@ -28,21 +35,45 @@ def executor_with_busy_lock(root, policy_module, profile):
     locks.flock.side_effect = [None, BlockingIOError()]
     trusted_lock = Mock(open=mock_open())
     out, err = io.StringIO(), io.StringIO()
+    flags = SimpleNamespace(**{k: getattr(sys.flags, k) for k in dir(sys.flags) if not k.startswith("_")})
+    flags.isolated = 1
+    run_path = runpy.run_path
+    installed = Path("/opt/ouf-a2")
+    read_bytes = Path.read_bytes
+    lstat = Path.lstat
+
+    def stat_file(path):
+        if path == installed / "profile.json":
+            return SimpleNamespace(st_mode=0o100600, st_uid=0)
+        return lstat(path)
+
+    def read_file(path):
+        return json.dumps(cfg).encode() if path == installed / "profile.json" else read_bytes(path)
+
+    def run_file(path, **kwargs):
+        if Path(path) == installed / "lib/module_release/profile_options.py":
+            path = root / "tools/module_release/profile_options.py"
+        return run_path(str(path), **kwargs)
+
     with ExitStack() as stack:
         enter = stack.enter_context
         enter(patch.dict(sys.modules, {"fcntl": locks, "mandate": policy_module}))
         enter(patch.object(sys, "argv", [script]))
-        enter(patch.object(sys, "flags", Mock(wraps=sys.flags, isolated=1)))
+        enter(patch.object(sys, "flags", flags))
+        enter(patch.object(Path, "lstat", stat_file))
+        enter(patch.object(Path, "read_bytes", read_file))
+        enter(patch.object(runpy, "run_path", run_file))
         enter(patch.object(sys, "path", list(sys.path)))
         enter(patch.object(sys, "dont_write_bytecode", True))
         enter(patch.object(sys, "stdin", Mock(buffer=io.BytesIO(envelope))))
         enter(patch.object(os, "geteuid", return_value=0, create=True))
         enter(patch.object(os, "O_DIRECTORY", 0, create=True))
-        enter(patch.object(os, "open", return_value=17))
+        open_lock = enter(patch.object(os, "open", return_value=17))
         enter(patch.object(os, "environ", {}))
         enter(patch.object(os, "chdir"))
         enter(patch.object(os, "umask"))
-        enter(patch.object(store, "read", return_value=cfg))
+        locked = cfg if locked_profile is None else {**cfg, "modules": {"mcp": locked_profile}}
+        enter(patch.object(store, "read", return_value=locked))
         trusted = enter(patch.object(store, "trusted", return_value=trusted_lock))
         github = enter(patch.object(policy_module, "github_reader"))
         mkdir = enter(patch.object(os, "mkdir"))
@@ -52,13 +83,21 @@ def executor_with_busy_lock(root, policy_module, profile):
             runpy.run_path(script, run_name="__main__")
         except SystemExit as error:
             status = error.code
+            if isinstance(status, str):
+                print(status, file=sys.stderr)
+                status = 1
         else:
             status = 0
     github.assert_not_called()
     mkdir.assert_not_called()
-    # Both versions acquire the shared installation lock before importing the executor.
-    assert locks.flock.call_args_list[0] == call(17, locks.LOCK_SH | locks.LOCK_NB)
-    return (status, out.getvalue(), err.getvalue()), trusted.call_count, locks.flock.call_count - 1
+    if denied:
+        trusted.assert_not_called()
+        open_lock.assert_not_called()
+        locks.flock.assert_not_called()
+    else:
+        assert locks.flock.call_args_list[0] == call(17, locks.LOCK_SH | locks.LOCK_NB)
+    return (status, out.getvalue(), err.getvalue()), trusted.call_count, sum(
+        args[1] == locks.LOCK_EX | locks.LOCK_NB for args, _ in locks.flock.call_args_list)
 
 
 class DisabledDeltaTest(unittest.TestCase):
@@ -126,7 +165,7 @@ class DisabledDeltaTest(unittest.TestCase):
     def test_DEP_58LJ_01_executor_denies_before_busy_operation_lock(self):
         profile = json.loads(fixture.PROFILE.with_name("mcp.example.json").read_bytes())
         profile["configDelta"] = self.marker
-        output, opens, locks = executor_with_busy_lock(fixture.ROOT, mandate, profile)
+        output, opens, locks = executor_with_busy_lock(fixture.ROOT, mandate, profile, denied=True)
         self.assertEqual(output, (1, "", self.code + "\n"))
         self.assertEqual((opens, locks), (0, 0))
 
@@ -149,6 +188,131 @@ class DisabledDeltaTest(unittest.TestCase):
                 transport.transport(profile, 15, 17, fixture.PROFILE.parent)
         github.assert_not_called()
         mkdir.assert_not_called()
+
+    def test_DEP_58LK_01_all_profile_ingresses_precede_errors_and_effects(self):
+        root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        journal = root / "journal"
+        p = json.loads(fixture.PROFILE.with_name("mcp.example.json").read_bytes())
+        p.update(configDelta=self.marker, journal=str(journal))
+        first = dict(setup_profile(str(journal)), configDelta=self.marker)
+        profile_file = root / "transport.json"
+        profile_file.write_text(json.dumps(p), encoding="utf-8")
+        bootstrap = installer_fixture.Bootstrap()
+        self.addCleanup(bootstrap.doCleanups)
+        bootstrap.setUp()
+        inst = bootstrap.inst
+        # Even the invalid sibling and missing executor-level fields must come second.
+        cfg = {"modules": {"onboarding": {}, "mcp": p}}
+        bootstrap.path.write_text(json.dumps(cfg))
+        files = {inst.ROOT / "profile.json": (json.dumps(cfg).encode(), 0o600)}
+        inst.ROOT.mkdir()
+        (inst.ROOT / "profile.json").write_text(json.dumps(cfg))
+        clean = {inst.ROOT / "profile.json": (b'{"modules":{"mcp":{}}}', 0o600)}
+        req = {"operation": "module-release", "module": "mcp", "phase": "plan", "digest": ""}
+        get, rt = Mock(), Mock()
+        stamp = "a" * 64
+        executor = runpy.run_path(str(fixture.ROOT / "scripts/ouf-a2-executor"))
+
+        def cli(kind, phase):
+            output, _, _ = executor_with_busy_lock(fixture.ROOT, mandate, p, denied=True,
+                                                    operation_name=kind, phase=phase)
+            self.assertEqual(output, (1, "", self.code + "\n"))
+
+        def installer_cli(mode):
+            with patch.object(sys, "argv", ["install-ouf-a2", mode, str(bootstrap.path)]), \
+                 patch.object(inst, "sys", SimpleNamespace(flags=SimpleNamespace(isolated=True))), \
+                 patch.object(os, "geteuid", return_value=0, create=True), patch.object(os, "umask"):
+                inst.main()
+
+        cases = [
+            ("contract.validate", partial(validate, p)),
+            ("contract.package", partial(operation.package, p)),
+            ("install_contract.validate", partial(install_contract.validate, first)),
+            ("install_contract.valid_request", partial(install_contract.valid_request, req, cfg, set())),
+            ("mandate.validate", partial(mandate.validate, req, cfg)),
+            ("mandate.authorize", partial(mandate.authorize, req, cfg, get, journal)),
+            ("executor.dispatch", partial(executor["dispatch"], req, cfg, journal, get)),
+            ("ModuleRelease", partial(module_operation.ModuleRelease, cfg, journal, req)),
+            ("ModuleRelease.peer", partial(module_operation.ModuleRelease, cfg, journal, dict(req, module="onboarding"))),
+            ("ModuleInstall", partial(module_operation.ModuleInstall, cfg, journal, req)),
+            ("release.plan", partial(operation.plan, p)),
+            ("release.observe", partial(operation.observe, p, rt)),
+            ("release.apply", partial(operation.apply, p, "")),
+            ("release.migrate", partial(operation.migrate, p, "", "")),
+            ("release.migrate.recover", partial(operation.migrate, p, stamp, stamp, recover=True)),
+            ("release.rollback", partial(operation.rollback, p, rt, {}, journal, {}, ValueError())),
+            ("return", partial(return_operation.run, p, "", rt)),
+            ("return.recover", partial(return_operation.run, p, stamp, rt, recover=True)),
+            ("recovery.residual", partial(recovery.residual, p, rt)),
+            ("recovery.proposal", partial(recovery.proposal, p, rt)),
+            ("recovery.resume", partial(recovery.resume, p, rt, {})),
+            ("install.engine", partial(install.engine, first)),
+            ("install.observe", partial(install.observe, first, rt)),
+            ("install.plan", partial(install.plan, first)),
+            ("install.plan.resume", partial(install.plan, first, resume=stamp)),
+            ("install.apply", partial(install.apply, first, "")),
+            ("install.rollback", partial(install.rollback, first, stamp)),
+            ("transport", partial(transport.transport, p, 15, 17, root)),
+            ("transport.cli", partial(transport.main, ["--module", "udp", str(profile_file), "15", "17", str(root)])),
+            ("transport.cli.arguments", partial(transport.main, ["--module", "other", str(profile_file),
+                                                                "invalid", "invalid", str(root)])),
+            ("transport.cli.missing", partial(transport.main, [str(profile_file)])),
+            ("installer.invalid-mode", partial(installer_cli, "unknown")),
+            ("installer.read_profiles", partial(inst.read_profiles, bootstrap.path)),
+            ("installer.checked_profiles", partial(inst.checked_profiles, files[inst.ROOT / "profile.json"][0])),
+            ("installer.inspect", partial(inst.inspect, bootstrap.path)),
+            ("installer.journals", partial(inst.journals, files[inst.ROOT / "profile.json"][0])),
+            ("installer.manifest", partial(inst.manifest, files)),
+            ("installer.install", partial(inst.install, files, {})),
+            ("installer.manifest.installed", partial(inst.manifest, clean)),
+            ("installer.install.installed", partial(inst.install, clean, {})),
+        ]
+        cases.extend((phase, partial(retention.run, p, rt, "", phase, {})) for phase in retention.COMMAND)
+        cases.extend(("installer." + mode, partial(installer_cli, mode)) for mode in ("plan", "apply", "bootstrap"))
+        for kind, phases in (("module-release", ("plan", "apply", "migrate", "rollback", *retention.COMMAND)),
+                             ("module-install", ("plan", "apply", "rollback"))):
+            cases.extend(("executor." + kind + "." + phase, partial(cli, kind, phase)) for phase in phases)
+
+        # Detect attempted reads (including existence checks) as well as writes to the empty journal.
+        effects = []
+        def monitor(method):
+            def checked(path, *args, **kwargs):
+                if path.is_relative_to(journal):
+                    effects.append((method.__name__, path))
+                    self.fail("accessed private journal")
+                return method(path, *args, **kwargs)
+            return checked
+
+        with ExitStack() as stack:
+            enter = stack.enter_context
+            for attr in ("stat", "open"):
+                enter(patch.object(Path, attr, monitor(getattr(Path, attr))))
+            guards = [enter(patch.object(owner, name, side_effect=AssertionError(name)))
+                      for owner, name in ((os, "mkdir"), (operation, "Docker"), (module_operation.operation, "Docker"),
+                                          (return_operation, "Docker"), (inst.subprocess, "check_output"),
+                                          (transport, "github"), (inst, "installation_lock"), (inst, "visudo"),
+                                          (store, "begin_plan"), (store, "consume_approval"))]
+            for name, invoke in cases:
+                with self.subTest(ingress=name):
+                    try:
+                        result = invoke()
+                    except (Held, mandate.Held, SystemExit, ValueError) as exc:
+                        self.assertEqual(str(exc), self.code)
+                    else:
+                        if name.startswith("executor.module-"):
+                            self.assertIsNone(result)  # cli() asserted status, stdout, stderr and both locks
+                        else:
+                            self.assertEqual((result["status"], result["reason"]), ("HELD", self.code))
+                            self.assertNotIn(self.marker, json.dumps(result))
+                    self.assertEqual(effects, [])
+                    for guard in (*guards, rt, get):
+                        self.assertEqual(guard.mock_calls, [])
+        self.assertFalse(journal.exists())
+
+    def test_DEP_58LK_02_executor_revalidates_profile_under_shared_lock(self):
+        output, opens, locks = executor_with_busy_lock(fixture.ROOT, mandate, {}, locked_profile={"configDelta": None})
+        self.assertEqual(output, (1, "", self.code + "\n"))
+        self.assertEqual((opens, locks), (0, 0))
 
 
 class LibraryTest(unittest.TestCase):

@@ -103,18 +103,33 @@ def transport(profile, run_id, artifact_id, inbox):
     return {k: ci[k] for k in fields} | receipt
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--module", choices=("udp", "ingestion"))
-    parser.add_argument("profile", type=Path)
-    parser.add_argument("run_id", type=int)
-    parser.add_argument("artifact_id", type=int)
-    parser.add_argument("inbox", type=Path)
-    args = parser.parse_args()
+def main(argv=None):
+    # Locate the profile even when later positional arguments are missing or invalid.
+    locator = argparse.ArgumentParser(add_help=False)
+    locator.add_argument("--module")
+    locator.add_argument("profile", nargs="?", type=Path)
+    hint, _ = locator.parse_known_args(argv)
+    profile = None
+    if hint.profile is not None:
+        try:
+            profile = json.loads(hint.profile.read_text(encoding="utf-8"))
+        except (OSError, ValueError, RecursionError):
+            pass  # Let the release parser report argument errors first.
     try:
-        profile = json.loads(args.profile.read_text(encoding="utf-8"))
+        if isinstance(profile, dict):
+            validate_profile_options(profile)
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--module", choices=("udp", "ingestion"))
+        parser.add_argument("profile", type=Path)
+        parser.add_argument("run_id", type=int)
+        parser.add_argument("artifact_id", type=int)
+        parser.add_argument("inbox", type=Path)
+        args = parser.parse_args(argv)
         require(args.module is None or profile.get("module") == args.module, "MODULE_PROFILE_MISMATCH")
-        print(json.dumps(transport(profile, args.run_id,
-                                   args.artifact_id, args.inbox), sort_keys=True))
+        print(json.dumps(transport(profile, args.run_id, args.artifact_id, args.inbox), sort_keys=True))
     except Exception as error:
         raise SystemExit(str(error) if isinstance(error, Held) else "TRANSPORT_IO_OR_INPUT_ERROR") from None
+
+
+if __name__ == "__main__":
+    main()
