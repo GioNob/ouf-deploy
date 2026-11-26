@@ -65,6 +65,11 @@ def profile_passwords(value):
 
 
 def secret_values(profile):
+    # Admission compares the entire dedicated argv and reports only a fixed code.
+    # An embedded DSN in a rejected argv must never rewrite that diagnostic.
+    migration = profile.get("migration") if isinstance(profile, dict) else None
+    if isinstance(migration, dict) and migration.get("mode") == "dedicated" and "command" in migration:
+        profile = {**profile, "migration": {k: v for k, v in migration.items() if k != "command"}}
     found = set(profile_passwords(profile))
     if not isinstance(profile, dict) or "configDelta" not in profile:
         return found

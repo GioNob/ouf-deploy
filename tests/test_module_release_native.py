@@ -187,10 +187,12 @@ class NativeRelease(unittest.TestCase):
                      inbox=directory, journal=directory, nsenter="/usr/bin/nsenter",
                      networks={net: {"ipv4":ipv4, "aliases":[name]}}, gate={"command":command})
             p["readiness"].update(path="/ready", attempts=20)
-            p["migration"].update(mode="dedicated", command=["/bin/sh", "-c", "exit 0"], rollbackCompatible=True)
+            p["migration"]["rollbackCompatible"] = True
+            if interruption in (None, "database", "detach"):
+                p["module"] = "mcp"
+                p["migration"].update(mode="dedicated", command=["/usr/local/bin/ouf-mcp", "migrate"])
             if busybox:
                 p["readiness"] = dict(path="/health/ready", port=8080, acceptStatus=[204], attempts=20)
-                p["migration"]["command"] = ["/bin/sh", "-c", "exit 1"]
             ci = p["ci"]
             ci.update(repository="fixture/module", imageName=image_name, imageId=candidate,
                       runId=1, runAttempt=1, artifactId=1)
@@ -217,7 +219,7 @@ class NativeRelease(unittest.TestCase):
             self.fixture_network(rt, cli, net, subnet, resources)
             for container in (name, p["retainedName"], p["failedName"]):
                 resources.callback(subprocess.run, [*cli, "rm", "-f", container], stderr=subprocess.DEVNULL)
-            env = []
+            env = ["FIXTURE_MIGRATE_FAIL=true"] if busybox and interruption is None else []
             if interruption in ("flyway", "database", "jdbc"):
                 pg = name + "-pg"
                 setup = resources.enter_context(postgres_fixture(cli, pg, net, jdbc=interruption == "jdbc"))
@@ -244,7 +246,7 @@ class NativeRelease(unittest.TestCase):
                         CREATE TABLE ouf_mcp.schema_migration(version int, checksum text, applied_at timestamptz);
                         INSERT INTO ouf_mcp.schema_migration VALUES (1,repeat('a',64),now());""")
                     env = [f"MCP_DATABASE_URL=postgresql://fixture@{pg}/postgres"]
-                    p["migration"].update(command=["/bin/sh", "-c", "exit 0"],
+                    p["migration"].update(
                         database=dict(postgresCid=rt.inspect(pg)["Id"], version=1, socket="/tmp", urlEnv="MCP_DATABASE_URL"),
                         migrations=[dict(version=2, checksum="b"*64)])
                 else:
@@ -254,7 +256,6 @@ class NativeRelease(unittest.TestCase):
                         INSERT INTO ouf_onboarding.flyway_schema_history VALUES
                         (1,'1','V1__base.sql','SQL',%d,true);""" % flyway.flyway_checksum(b"SELECT 1;"))
                     rt.flyway_peer = dict(postgresCid=rt.inspect(pg)["Id"], socket="/tmp")
-                    p["migration"].pop("command")
                     p["migration"]["mode"] = "spring-flyway"
                     env = [f"OUF_ONB_DB_URL=jdbc:postgresql://{pg}/postgres", "OUF_ONB_DB_USER=fixture"]
             elif interruption and interruption.startswith("58q-"):
@@ -263,7 +264,6 @@ class NativeRelease(unittest.TestCase):
                     p.update(envAllowlist=["FIXTURE_EXIT"], configDelta={"env": [
                         {"name": "FIXTURE_EXIT", "before": None, "after": "true"}]})
             elif interruption == "create":
-                p["migration"].pop("command")
                 p["migration"]["mode"] = "none"
             old = rt.create(name, dict(Image=old_image, Entrypoint=ENTRY, Cmd=command, Env=env, User="10005:10005" if busybox else "",
                 HostConfig={"NetworkMode":net, "RestartPolicy":{"Name":"no"}},

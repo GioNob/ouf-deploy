@@ -501,6 +501,17 @@ def inline_secret(value):
     return False
 
 
+DEDICATED_MIGRATION_COMMANDS = {"mcp": (["/usr/local/bin/ouf-mcp", "migrate"],)}
+
+
+def validate_migration_command(profile, *, check=require):
+    migration = profile.get("migration")
+    if isinstance(migration, dict) and migration.get("mode") == "dedicated":
+        module = profile.get("module")
+        check(isinstance(module, str) and migration.get("command") in DEDICATED_MIGRATION_COMMANDS.get(module, ()),
+              "MIGRATION_COMMAND_NOT_ALLOWED")
+
+
 def validate_profile_options(profile, *, check=require):
     if __package__:
         try:
@@ -512,6 +523,7 @@ def validate_profile_options(profile, *, check=require):
     # The installer also executes this module directly from its verified Git blob.
     if isinstance(profile, dict):
         check("configDelta" not in profile or isinstance(profile["configDelta"], dict) and profile["configDelta"], "INVALID_DELTA")
+        validate_migration_command(profile, check=check)
 
 
 def validate(p):

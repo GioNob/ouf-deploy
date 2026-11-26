@@ -8,6 +8,12 @@ import (
 )
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "migrate" {
+		if os.Getenv("FIXTURE_MIGRATE_FAIL") == "true" {
+			os.Exit(1)
+		}
+		return
+	}
 	if os.Getenv("FIXTURE_EXIT") == "true" {
 		return
 	}

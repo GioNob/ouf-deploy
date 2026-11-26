@@ -274,7 +274,7 @@ class ReadyReturn(unittest.TestCase):
                             phase = "stage"
                             rt.p["migration"]["mode"] = scenario
                             if scenario == "dedicated":
-                                rt.p["migration"]["command"] = ["fixture-migrate"]
+                                fixture.dedicated_profile(rt.p)
                             plan = op.plan(rt.p, rt)["plan"]
                         elif scenario == "failed-restore":
                             rt.fault = "readiness"
@@ -317,7 +317,7 @@ class ReadyReturn(unittest.TestCase):
                     rt, _ = self.case()
                     rt.p["migration"]["mode"] = mode
                     if mode == "dedicated":
-                        rt.p["migration"]["command"] = ["fixture-migrate"]
+                        fixture.dedicated_profile(rt.p)
                     plan = op.plan(rt.p, rt)["plan"]
                     stamp = op.digest(plan)
                     stage = op.apply(rt.p, stamp, rt, defer_migration=True)
@@ -405,7 +405,7 @@ class ReadyReturn(unittest.TestCase):
                     rt, _ = self.case()
                     rt.p["migration"]["mode"] = mode
                     if mode == "dedicated":
-                        rt.p["migration"]["command"] = ["fixture-migrate"]
+                        fixture.dedicated_profile(rt.p)
                     plan = op.plan(rt.p, rt)["plan"]
                     stamp = op.digest(plan)
                     stage = op.apply(rt.p, stamp, rt, defer_migration=True)
@@ -426,7 +426,7 @@ class ReadyReturn(unittest.TestCase):
             for after in (False, True):
                 with self.subTest(cut=cut, after=after):
                     rt, _ = self.case()
-                    rt.p["migration"].update(mode="dedicated", command=["fixture-migrate"])
+                    fixture.dedicated_profile(rt.p)
                     plan = op.plan(rt.p, rt)["plan"]
                     stamp = op.digest(plan)
                     if cut == "start-generation.json":
@@ -674,7 +674,7 @@ class ReadyReturn(unittest.TestCase):
             with self.subTest(mode=mode):
                 case = self.governed_case()
                 if mode == "dedicated":
-                    case.p["migration"].update(mode=mode, command=["fixture-migrate"])
+                    fixture.dedicated_profile(case.p)
                 call, req = case.governed_dispatch()
                 stamp = call(0)["digest"]
                 req.update(phase="apply", digest=stamp)
@@ -710,7 +710,7 @@ class ReadyReturn(unittest.TestCase):
         import mandate
         import module_operation
         case = self.governed_case()
-        case.p["migration"].update(mode="dedicated", command=["fixture-migrate"])
+        fixture.dedicated_profile(case.p)
         call, req = case.governed_dispatch()
         stamp = call(0)["digest"]
         req.update(phase="apply", digest=stamp)

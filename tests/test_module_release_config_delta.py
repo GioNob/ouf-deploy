@@ -96,6 +96,41 @@ class InvalidDeltaTest(unittest.TestCase):
     code = "INVALID_DELTA"
     marker = "synthetic-58li-private-value"
 
+    def test_DEP_58QI_02_installed_profile_rejects_unlisted_argv_before_plan(self):
+        import test_module_release_mcp as mcp
+
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.dedicated()
+        allowed = case.p["migration"]["command"]
+        commands = [allowed + tail for tail in (
+            ["--url", "postgresql://user:private-fixture@localhost/db"],
+            ["postgresql://user:NOT_ALLOWED@localhost/db"],
+            ["--password", "private-fixture"], ["host=db password=;private-fixture"],
+            ["--bypass-cache"], ["psql", "--password"], ["psql", "-W"], ["psql", "-p5432"],
+            ["-placeholders.region=eu"], ["--url-env", "DB_URL"], ["--password-file", "/run/secrets/database"],
+        )]
+        commands.extend((allowed[::-1], ["other-migrator", "migrate"], [], [allowed]))
+        cases = [("mcp", cmd) for cmd in commands] + [("onboarding", allowed)]
+        reason = "MIGRATION_COMMAND_NOT_ALLOWED"
+        files = set(case.root.rglob("*"))
+        for delta in (False, True):
+            if delta:
+                case.p["configDelta"] = {"aliases": {next(iter(case.p["networks"])): ["reviewed"]}}
+            for module, command in cases:
+                with self.subTest(delta=delta, module=module, command=command):
+                    case.p.update(module=module)
+                    case.p["migration"]["command"] = command
+                    with self.assertRaisesRegex(Held, "^" + reason + "$"):
+                        validate(case.p)
+                    self.assertEqual(operation.plan(case.p, case.rt),
+                                     {"status": "HELD", "reason": reason, "rollback": "UNVERIFIED"})
+                    public, locks, attempts = executor_with_busy_lock(fixture.ROOT, mandate, case.p)
+                    self.assertEqual((public, locks, attempts), ((1, "", reason + "\n"), 0, 0))
+        self.assertEqual(set(case.root.rglob("*")), files)
+        self.assertEqual(case.rt.events, [])
+
     def assert_inline_denied(self, profile, reason="CONFIG_DELTA_INLINE_SECRET"):
         case = fixture.ReleaseTest()
         self.addCleanup(case.doCleanups)
@@ -136,8 +171,8 @@ class InvalidDeltaTest(unittest.TestCase):
                         stack.callback(case.doCleanups)
                         p, rt = case.p, case.rt
                         net = next(iter(p["networks"]))
-                        cmd = ["fixture-migrate"]
-                        p["migration"] = dict(mode="dedicated", rollbackCompatible=True, command=cmd)
+                        fixture.dedicated_profile(p)
+                        cmd = p["migration"]["command"]
                         if delta:
                             p["configDelta"] = {"aliases": {net: ["public-candidate"]}}
                         old = rt.docs[fixture.OLD]
@@ -178,7 +213,9 @@ class InvalidDeltaTest(unittest.TestCase):
                         with redirect_stdout(streams[0]), redirect_stderr(streams[1]):
                             plan = operation.plan(p, rt)
                             responses.append(plan)
-                            if position in ("migration", "json-metadata", "json-argument", "label"):
+                            if position in ("migration", "json-argument"):
+                                self.assertEqual(plan["reason"], "MIGRATION_COMMAND_NOT_ALLOWED")
+                            if position in ("json-metadata", "label"):
                                 self.assertEqual(plan["status"], "PLANNED", plan)
                             if plan["status"] == "PLANNED":
                                 response = call(0)
@@ -229,8 +266,7 @@ class InvalidDeltaTest(unittest.TestCase):
                 old["Config"]["Labels"]["dsn"] = f"postgresql://user:{marker}@db/test"
                 case.p["networks"][net]["aliases"].append(marker)
                 old["NetworkSettings"]["Networks"][net]["Aliases"].append(marker)
-                case.p["migration"] = dict(mode="dedicated", rollbackCompatible=True,
-                                           command=["migrate", f"host=db password=;{marker}"])
+                fixture.dedicated_profile(case.p)
                 if delta:
                     case.p["configDelta"] = {"aliases": {net: ["public-candidate"]}}
                 call, req = case.governed_dispatch()
@@ -245,7 +281,10 @@ class InvalidDeltaTest(unittest.TestCase):
                     names.append("return-frame.json")
                 for name in names:
                     path = root / name
-                    self.assertIn(marker.encode(), path.read_bytes())
+                    if name == "migration-plan.json":
+                        self.assertEqual(json.loads(path.read_bytes())["migration"]["command"], case.p["migration"]["command"])
+                    else:
+                        self.assertIn(marker.encode(), path.read_bytes())
                     if os.name == "posix":
                         self.assertEqual(path.stat().st_mode & 0o777, 0o600)
                         self.assertEqual(path.stat().st_uid, os.geteuid())
@@ -383,6 +422,11 @@ class InvalidDeltaTest(unittest.TestCase):
                 call, req = case.governed_dispatch()
                 summary, stdout, stderr = io.StringIO(), io.StringIO(), io.StringIO()
                 with redirect_stdout(stdout), redirect_stderr(stderr):
+                    if source == "migration-dsn":
+                        with self.assertRaisesRegex(mandate.Held, "^MIGRATION_COMMAND_NOT_ALLOWED$"):
+                            call(0)
+                        self.assertEqual((stdout.getvalue(), stderr.getvalue()), ("", ""))
+                        continue
                     planned = call(0)
                     self.assertIn(operation.digest(marker), planned["approvalLines"][0])
                     with patch.object(sys, "path", list(sys.path)):

@@ -266,7 +266,7 @@ class NoDeltaParity(unittest.TestCase):
         finally:
             shutil.rmtree(journal)
 
-    def compare(self, mode, interrupted=False, exercise=None, migration_args=()):
+    def compare(self, mode, interrupted=False, exercise=None):
         case = mcp.Release()
         self.addCleanup(case.doCleanups)
         case.setUp()
@@ -280,7 +280,6 @@ class NoDeltaParity(unittest.TestCase):
             case.rt.database = lambda old: copy.deepcopy(case.db)
             if mode == "dedicated":
                 case.dedicated()
-                case.p["migration"]["command"].extend(migration_args)
             self.assertEqual(case.p["migration"]["mode"], mode)
             results.append(self.run_release(modules, case, interrupted, exercise))
         expected, actual = results
@@ -861,11 +860,6 @@ class NoDeltaParity(unittest.TestCase):
                             print("I/O", mode, "resume" if interrupted else "apply", len(trace), flush=True)
         print("I/O matrix:", total, "injected reads", flush=True)
 
-    def test_DEP_58QG_01_control_corpus(self):
-        for args in (["--bypass-cache"], ["psql", "--password"], ["psql", "-W"]):
-            with self.subTest(args=args):
-                self.compare("dedicated", migration_args=args)
-
     def test_DEP_58QE_05_mcp_return_plan_io_location(self):
         def exercise(op, rec, case, rt, stamp):
             import importlib
@@ -897,34 +891,27 @@ class NoDeltaParity(unittest.TestCase):
         self.assertEqual(json.loads((case.root / "2" / "rollback.result").read_bytes()),
                          {"status": "HELD", "planSha256": stamp, "reason": "RELEASE_IO_OR_INPUT_ERROR/OSError@return_operation.py:40"})
 
-    def test_private_migration_arguments_match_release(self):
-        for args in (["psql", "-p5432"], ["-placeholders.region=eu"], ["host=db password=;private-fixture"],
-                     ["--url", "postgresql://test:fixture-only@localhost/db"]):
-            with self.subTest(args=args):
-                self.compare("dedicated", migration_args=args)
+    def test_DEP_58QI_01_allowed_migration_bytes_and_digest(self):
+        argv = ["/usr/local/bin/ouf-mcp", "migrate"]
 
-    def test_DEP_58QF_03_reference_migration_bytes_and_digest(self):
-        args = ["--bypass-cache=enabled", "--url", "postgresql://test@localhost/db",
-                "--url-env", "DB_URL", "--password-file", "/run/secrets/database", "--token-env=API_TOKEN_FILE"]
         def exercise(op, rec, case, rt, stamp):
             result = op.apply(case.p, stamp, rt)
             self.assertEqual(result["status"], "GATED")
             stage = op.read(Path(case.p["journal"]) / stamp, "migration-plan.json")
-            self.assertEqual(stage["migration"]["command"][-len(args):], args)
+            self.assertEqual(stage["migration"]["command"], argv)
             self.assertEqual(result["migrationSha256"], op.digest(stage))
-        self.compare("dedicated", exercise=exercise, migration_args=["-c", "/etc/db --token config", *args])
+        self.compare("dedicated", exercise=exercise)
 
         case = mcp.Release()
         self.addCleanup(case.doCleanups)
         case.setUp()
         case.dedicated()
-        case.p["migration"]["command"].extend(args)
         network = next(iter(case.p["networks"]))
         case.p["configDelta"] = {"aliases": {network: ["reviewed-db-client"]}}
         stamp = case.planned()["digest"]
         gated = case.call("apply", stamp)
         stage = operation.read(Path(case.p["journal"]) / stamp, "migration-plan.json")
-        self.assertEqual(stage["migration"]["command"][-len(args):], args)
+        self.assertEqual(stage["migration"]["command"], argv)
         self.assertEqual(case.call("migrate", gated["digest"])["status"], "READY")
 
     def test_DEP_58LF_08_dedicated_interrupted_apply_and_migration(self):

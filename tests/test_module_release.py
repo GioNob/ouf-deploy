@@ -255,6 +255,11 @@ class Engine:
         pass
 
 
+def dedicated_profile(profile):
+    profile["module"] = "mcp"
+    profile["migration"].update(mode="dedicated", command=["/usr/local/bin/ouf-mcp", "migrate"])
+
+
 class ReleaseTest(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
@@ -288,11 +293,11 @@ class ReleaseTest(unittest.TestCase):
         import store
         dispatch = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["dispatch"]
         cfg = dict(repositoryId=10, environmentId=20, branch="protected", environment="test",
-                   reviewerIds=[30], commit="a"*40, runner="fixture", modules={"onboarding":self.p})
+                   reviewerIds=[30], commit="a"*40, runner="fixture", modules={self.p["module"]: self.p})
         req = dict(run="1", attempt="1", commit=cfg["commit"], operation="module-release",
-                   module="onboarding", phase="plan")
+                   module=self.p["module"], phase="plan")
         req["digest"] = mandate.intent(req)
-        def call(approval_count, workflow=mandate.module_workflow("onboarding")):
+        def call(approval_count, workflow=mandate.module_workflow(self.p["module"])):
             run = dict(id=int(req["run"]), run_attempt=1, event="workflow_dispatch", status="in_progress",
                        path=workflow, head_branch="protected", head_sha=cfg["commit"],
                        repository={"id":10}, head_repository={"id":10})
@@ -517,9 +522,22 @@ class ReleaseTest(unittest.TestCase):
         self.assertFalse((self.root / approved / "migration-review-consumed.json").exists())
 
     def test_dedicated_migration_before_signal(self):
-        self.p["migration"].update(mode="dedicated", command=["app", "migrate"])
+        dedicated_profile(self.p)
         self.assertEqual(self.execute()["readiness"], "UP")
         self.assertLess(self.rt.events.index("migrate"), self.rt.events.index("signal:2"))
+
+    def test_DEP_58QI_03_exec_inherits_candidate_environment(self):
+        dedicated_profile(self.p)
+        adapter = docker.Docker(self.p)
+        responses = [{"Id": "exec-id"}, None, {"ContainerID": NEW, "Running": False, "ExitCode": 0}]
+        with patch.object(adapter, "api", side_effect=responses) as api:
+            adapter.migrate(NEW, self.p["migration"]["command"])
+        self.assertEqual([call.args for call in api.call_args_list], [
+            ("POST", "/containers/" + NEW + "/exec", {"Cmd": ["/usr/local/bin/ouf-mcp", "migrate"],
+                                                      "AttachStdout": False, "AttachStderr": False, "Tty": False}),
+            ("POST", "/exec/exec-id/start", {"Detach": True, "Tty": False}),
+            ("GET", "/exec/exec-id/json"),
+        ])
 
     def test_original_onboarding_profile_still_requires_http_200_with_up(self):
         with patch.object(self.rt, "probe", return_value=(204, b"")):

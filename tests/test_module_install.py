@@ -472,9 +472,8 @@ class InstallTest(unittest.TestCase):
         import mandate
         from module_release import frame_spec as installed_spec
         self.enterContext(patch.object(installed_spec, "bind_facts", return_value=({}, {"ino": 42})))
-        # Existing harness authenticates an onboarding workflow and supplies the Engine.
+        self.p["module"] = "onboarding"
         call, req = fixture.ReleaseTest.governed_dispatch(self)
-        self.p["module"] = req["module"]
         req.update(operation="module-install", schema="ouf.module-install.v1")
         req["digest"] = mandate.intent(req)
         workflow = ".github/workflows/module-install.yml"

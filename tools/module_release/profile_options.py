@@ -1,6 +1,6 @@
 """Module profile admission, shared with the isolated bootstrap."""
 from collections.abc import Mapping
-from .contract import credential_name, env_reference, inline_secret
+from .contract import credential_name, env_reference, inline_secret, validate_migration_command
 
 
 INLINE_SECRET = "CONFIG_DELTA_INLINE_SECRET"
@@ -40,6 +40,7 @@ def validate_profile_options(profile, *, check=require):
         check(not delta_has_inline_secret(profile), INLINE_SECRET)
     if "readyReturn" in profile:
         check(type(profile["readyReturn"]) is bool, "INVALID_READY_RETURN")
+    validate_migration_command(profile, check=check)
 
 
 def reviewed(profile):
