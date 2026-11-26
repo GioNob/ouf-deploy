@@ -10,6 +10,7 @@ and application owners independently validate every authenticated request.
 import base64
 import copy
 from email.utils import parsedate_to_datetime
+import http.client
 import json
 import os
 from pathlib import Path
@@ -40,6 +41,14 @@ class HumanSessionPaused(RuntimeError):
     def __init__(self, reason, *, retry_at=None):
         super().__init__(reason)
         self.reason, self.retry_at = reason, retry_at
+
+
+class HumanOAuthResponseUnknown(HumanSessionPaused):
+    """A response arrived but its body could not be used."""
+
+    def __init__(self, status):
+        super().__init__('HUMAN_OAUTH_RESPONSE_UNKNOWN')
+        self.status = status
 
 
 class HumanBrowserConfirmationRequired(HumanSessionPaused):
@@ -276,13 +285,20 @@ class HumanSession:
             except urllib.error.HTTPError as error:
                 reply = error
             with reply:
-                raw = reply.read(65537)
-                require(len(raw) <= 65536, 'BOUNDED_HUMAN_OAUTH_RESPONSE_REQUIRED')
+                try:
+                    raw = reply.read(65537)
+                except (OSError, http.client.HTTPException):
+                    if reply.status == 200:
+                        raise HumanOAuthResponseUnknown(reply.status) from None
+                    raise
+                if len(raw) > 65536:
+                    raise HumanOAuthResponseUnknown(reply.status)
                 try:
                     value = json.loads(raw)
-                except (ValueError, UnicodeError):
-                    raise HumanSessionPaused('HUMAN_OAUTH_RESPONSE_UNKNOWN') from None
-                require(type(value) is dict, 'HUMAN_OAUTH_RESPONSE_SHAPE_UNKNOWN')
+                except (ValueError, RecursionError):
+                    raise HumanOAuthResponseUnknown(reply.status) from None
+                if type(value) is not dict:
+                    raise HumanOAuthResponseUnknown(reply.status)
                 retry = reply.headers.get('Retry-After', '')
                 try:
                     delay = int(retry) if retry.isdigit() else max(0,parsedate_to_datetime(retry).timestamp()-time.time())
@@ -321,6 +337,8 @@ class HumanSession:
         if status == 429 or (status in (400,503) and result.get('error') == 'temporarily_unavailable'):
             index = min(row.get('consecutiveFailures', 0), 4)
             delay = PROFILE['backoffSeconds'][index] * (0.8 + secrets.randbelow(401)/1000)
+            if resume == 'DEVICE_POLL':
+                delay = max(delay, row['interval'])
             when = time.time()+max(delay, retry)
             self._save(row, state='RETRY_WAIT', resumeState=resume, nextAttemptAt=when,
                        consecutiveFailures=row.get('consecutiveFailures', 0)+1)
@@ -489,20 +507,27 @@ class HumanSession:
                             {'client_id':CLIENT, 'scope':' '.join(SCOPES)})
                         if status != 200: self._transient(row, status, result, retry, 'DEVICE_START')
                         uri, code = result.get('verification_uri'), result.get('user_code')
+                        device_code = result.get('device_code')
                         require(type(uri) is str and uri.startswith(self.selection['issuer']+'/')
                                 and not any(c.isspace() for c in uri) and type(code) is str and 1 <= len(code) <= 64
                                 and all(c.isalnum() or c == '-' for c in code)
-                                and type(result.get('device_code')) is str and 0 < len(result['device_code']) <= 16384
+                                and type(device_code) is str and 0 < len(device_code) <= 16384
                                 and type(result.get('expires_in')) is int and result['expires_in'] > 0,
                                 'EXACT_PROVIDER_DEVICE_CHALLENGE_REQUIRED')
+                        for verification_url in (uri, result.get('verification_uri_complete')):
+                            if isinstance(verification_url, str):
+                                require(device_code not in verification_url
+                                        and device_code not in urllib.parse.unquote(verification_url),
+                                        'EXACT_PROVIDER_DEVICE_CHALLENGE_REQUIRED')
                         supplied_interval = result.get('interval',5)
                         require(type(supplied_interval) is int and 1 <= supplied_interval <= 600,
                                 'BOUNDED_PROVIDER_POLL_INTERVAL_REQUIRED')
                         interval = max(5,supplied_interval)
-                        row = self._save(row, state='DEVICE_POLL', deviceCode=result['device_code'],
+                        now = time.time()
+                        lifetime = min(result['expires_in'], self.expires_at - now)
+                        row = self._save(row, state='DEVICE_POLL', deviceCode=device_code,
                             verificationUri=uri,userCode=code,
-                            deviceDeadline=min(self.expires_at,time.time()+min(600,result['expires_in'])),
-                            interval=interval, nextPollAt=time.time()+interval)
+                            deviceDeadline=now+lifetime, interval=interval, nextPollAt=now+interval)
                         emit('OPEN_IN_BROWSER='+uri); emit('ENTER_DEVICE_CODE='+code)
                     if row['state'] == 'DEVICE_POLL':
                         require(time.time() < row['deviceDeadline'], 'HUMAN_DEVICE_LOGIN_EXPIRED')
@@ -519,7 +544,7 @@ class HumanSession:
                         if status == 200:
                             row = self._retain_tokens(row, result)
                         elif status == 400 and result.get('error') in ('authorization_pending','slow_down'):
-                            interval = min(600,row['interval']+(5 if result['error'] == 'slow_down' else 0))
+                            interval = row['interval'] + (5 if result['error'] == 'slow_down' else 0)
                             self._save(row, state='DEVICE_POLL', interval=interval, nextPollAt=time.time()+interval)
                             continue
                         else: self._transient(row,status,result,retry,'DEVICE_POLL')

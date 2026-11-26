@@ -6,8 +6,12 @@
   "document": "docs/OUF_STORAGE_MINIPET.md",
   "status": "F1_PASS_WIDE_COMPONENTS_READY_DISCOVERY_ACTIVATION_PENDING",
   "installationActiveReader60w": {
+    "qualification60wcd": "Windows Python 3.12.12: 23 of 24 offline PETs passed. PET 23 rejects a challenge before terminal output or token polling when either verification URL contains the device code. PET 24 verifies LOGIN_FAILED:token for HTTP 200 with a non-object, unreadable, or oversized body. Native Linux root PET 09 was skipped. The standalone HumanSession suite failed to import fcntl.",
+    "qualification60wcc": "Windows Python 3.12.14: 21 of 22 offline PETs passed. PET 21 verifies polls at 600, 1205 and 1815 seconds and expiry at 1900. PET 22 verifies LOGIN_FAILED:token for an unreadable HTTP 200 from the token endpoint. Native Linux root PET 09 was skipped on Windows. The standalone HumanSession suite failed to import fcntl.",
+    "qualification60wcb": "Windows Python 3.12.14: 19 of 20 offline PETs passed. PET 19 verifies poll spacing after slow_down, 429 and 503, including Retry-After. PET 20 verifies the provider's 900-second expiry. Native Linux root PET 09 was skipped on Windows. The Docker daemon denied access before container startup.",
     "reader": "scripts/read_installation_active.py",
     "test": "tests/test_installation_active_reader.py",
+    "qualification60wc": "17 offline PETs passed on Windows with Python 3.12.12. Native Linux root journal PET 09 skipped. Device polling, slow_down, expiry, input precedence, phase-specific failures and the success receipt exercised with in-memory HTTP fixtures. The updated reader has only been tested offline.",
     "qualification": "60w review: 9/9 offline PETs passed as root in python:3.13-slim. After 60w-b corrections: 11 passed on Windows, then 12/12 passed as root in python:3.13-slim (PET 09 included). Live ACTIVE revision and HUMAN read/export grants unverified.",
     "journalDecision": "Owner accepted the temporary recovery journal and JWT, both mode 0600 in the same 0700 directory. The reader removes the directory before reporting and ignores SIGINT during removal."
   },
