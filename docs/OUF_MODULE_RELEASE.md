@@ -95,7 +95,11 @@ Il piano di `module-release` espone `approvalLines` con una riga per operazione.
 
 L'apply confronta configurazione, mount e reti del candidato con il frame approvato. Per le nuove CREATE con delta, il piano riserva l'etichetta Docker `ouf.release.plan`. Il calcolo di `requestSha256` usa 64 zeri in quel campo e la CREATE vi inserisce `planSha256`. Se la risposta alla CREATE si perde, il rollback automatico dell'apply verifica etichetta, frame e stato di container mai avviato prima di isolare il candidato.
 
-Se resta un lock dopo la scrittura della ricevuta terminale, la ripresa confronta `configDeltaSha256` con il piano originale. Un digest assente o diverso dà `RECOVERY_RECEIPT_CHANGED` e conserva il lock.
+Il controllo di `before` e `after` precede la pubblicazione. `DOCKER_AUTH_CONFIG` e le proprietà JSON di autenticazione del registry danno `SECRET_ENV_DENIED` anche con il nome in `showValues`.
+
+Durante il recupero prima di `READY`, un candidato uscito tra start e registrazione della generazione viene isolato dopo la verifica del CID, dell’intento e del frame. Per riavviare il predecessore la ripresa riconcilia l’intento di start con lo stato Docker. Se esiste già il claim di `USR1`, attende la readiness della generazione registrata. Se il processo è ancora al cancello verificato, ne conferma l’arresto, archivia i claim e riavvia lo stesso CID. Ogni generazione riceve al massimo un segnale.
+
+Se resta un lock dopo la scrittura della ricevuta terminale, la ripresa confronta `configDeltaSha256` con il piano originale. Un digest assente o diverso dà `RECOVERY_RECEIPT_CHANGED` e conserva il lock. Dopo un ripristino interrotto con `PREDECESSOR_READINESS_NOT_UP`, il recupero riuscito conserva la ricevuta del tentativo in `restore-held.json` e registra `ROLLED_BACK` in `receipt.json`.
 
 ## Prima installazione (`module-install`)
 

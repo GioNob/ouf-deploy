@@ -40,6 +40,8 @@ def proposal(p, rt):
                 "journal": journal, "frames": frames}
     if "configDelta" in p:
         from .config_delta import approval_lines
+        for claim in root.glob("restore-after-*/*.json"):
+            journal[claim.relative_to(root).as_posix()] = digest(op.read(claim.parent, claim.name))
         # Older journals may predate current checks on values shown to the reviewer.
         lines = approval_lines(p["configDelta"], p.get("showValues", []))
         require(lines == body["approvalLines"], "RECOVERY_PROFILE_CHANGED")
@@ -71,11 +73,22 @@ def resume(p, rt, approved):
     result = {"operation": "module-release", "status": "HELD", "planSha256": root.name,
               "predecessorCid": old["Id"]}
     # A completed receipt is immutable. Re-attest before releasing a leftover lock.
-    if (root / "receipt.json").exists():
+    has_receipt = (root / "receipt.json").exists()
+    retry_restore = False
+    if has_receipt:
         receipt = op.read(root, "receipt.json")
         if "configDelta" in p:
             require(receipt.get("planSha256") == root.name and
                     receipt.get("configDeltaSha256") == body["configDeltaSha256"], "RECOVERY_RECEIPT_CHANGED")
+            retry_restore = (receipt.get("status") == receipt.get("rollback") == "HELD"
+                             and receipt.get("rollbackReason") == "PREDECESSOR_READINESS_NOT_UP")
+    if retry_restore:
+        archive = op.restore_archive(root, epoch(old))
+        claim = archive if (archive / "restore-signal.json").is_file() else root
+        require(receipt.get("predecessorCid") == old["Id"] and op.read(claim, "restore-signal.json")["cid"] == old["Id"]
+                and op.read(root, "rollback-intent.json") == {"cid": old["Id"]}
+                and not (root / "restore-held.json").exists(), "RECOVERY_RECEIPT_CHANGED")
+    elif has_receipt:
         require(receipt.get("status") == "READY" or receipt.get("rollback") == "ROLLED_BACK",
                 "TERMINAL_HELD_REQUIRES_OWNER")
         forward = receipt["status"] == "READY"
@@ -103,13 +116,33 @@ def resume(p, rt, approved):
         return receipt
     verify_stop_claim(rt, old, body, root)
     created = (root / "created.json").exists()
+    rollback = not created or (root / "rollback-intent.json").exists()
     if created:
         cid = op.read(root, "created.json")["cid"]
         require(matches(SHA, cid) and cid != old["Id"] and
                 op.read(root, "create-intent.json") == {"requestSha256": body["requestSha256"]},
                 "RECOVERY_CREATE_CHANGED")
         result["successorCid"] = cid
-    if not created or (root / "rollback-intent.json").exists():
+        if ("configDelta" in p and not rollback
+                and (root / "start-intent.json").is_file() and not (root / "start-generation.json").exists()):
+            doc = rt.inspect(cid)
+            state = doc["State"]
+            if state["Status"] == "exited":
+                op.retained(p, rt, old)
+                require(doc["Id"] == cid and doc["Name"] == old["Name"] and state["Running"] is False
+                        and state["Pid"] == 0 and doc["RestartCount"] == 0
+                        and state.get("StartedAt") not in (None, "", "0001-01-01T00:00:00Z")
+                        and op.read(root, "start-intent.json") == {"cid": cid}
+                        and not any((root / f).exists() for f in ("migration-plan.json", "migration-intent.json",
+                                                                  "release-signal.json")), "START_GENERATION_UNCONFIRMED")
+                image = p["ci"]["imageId"]
+                check_body(old, doc, image, image, exited=True, labels=op.release_labels(p),
+                           candidate=p.get("candidate"), config_delta=p["configDelta"],
+                           image_defaults=rt.image_defaults(image))
+                rollback = True
+    if rollback:
+        if retry_restore:
+            require(receipt.get("successorCid") == result.get("successorCid"), "RECOVERY_RECEIPT_CHANGED")
         uncertain_create = not created and (root / "create-intent.json").exists()
         require(not uncertain_create or "configDelta" in p, "CREATE_OWNERSHIP_UNCONFIRMED")
         if (root / "migration-intent.json").exists():
@@ -160,6 +193,9 @@ def resume(p, rt, approved):
         if result["status"] == "GATED":
             op.confirm(root, "stage.json", result)
             return result
+    if retry_restore:
+        (root / "receipt.json").rename(root / "restore-held.json")
+        op.sync_dir(root)
     op.record_result(p, root, result)
     op.unlock_module(lock)
     return result

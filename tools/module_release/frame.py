@@ -141,7 +141,7 @@ def epoch(doc):
 
 
 def check_body(old, doc, image, config_image, *, created=False, labels=None, image_defaults=None, candidate=None,
-               config_delta=None, check_networks=False):
+               config_delta=None, check_networks=False, exited=False):
     removed = set()
     if config_delta is not None:
         from .config_delta import expected_after
@@ -167,7 +167,7 @@ def check_body(old, doc, image, config_image, *, created=False, labels=None, ima
             and digest(doc["HostConfig"]) == digest(host) and mounts(doc) == mounts(old)
             and [doc["Path"], *doc["Args"]] == cfg["Entrypoint"] + cfg["Cmd"], "CONFIGURATION_DELTA")
     if check_networks or config_delta is not None:
-        if created:
+        if created or exited:
             check_created_networks(old, doc)
         else:
             check_live_networks(old, doc)

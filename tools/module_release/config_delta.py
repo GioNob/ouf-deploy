@@ -32,7 +32,7 @@ def check_json_properties(pairs):
     # The decoder visits every object, including duplicate and escaped property names.
     for key, _ in pairs:
         check(not re.search(r"password|passwd|passphrase|secret|token|credential|api[._-]?key|private[._-]?key|"
-                            r"(?:^|[._-])(?:pwd|auth|authorization|jwt|key)$", key, re.IGNORECASE),
+                            r"(?:^|[._-])(?:pwd|auths?|authorization|jwt|key)$", key, re.IGNORECASE),
               "SECRET_ENV_DENIED")
 
 
@@ -40,9 +40,9 @@ def validate_value(name, value, allowlist=None):
     if value is not None:
         validate_env([{"name": name, "value": value}], allowlist)
         if not name.endswith("_FILE"):
-            check(not re.search(r"(?:^|_)(?:AUTH$|(?:AUTHORIZATION|PWD)(?:_|$))", name),
+            check(name != "DOCKER_AUTH_CONFIG" and not re.search(r"(?:^|_)(?:AUTH$|(?:AUTHORIZATION|PWD)(?:_|$))", name),
                   "SECRET_ENV_DENIED")
-        if name == "SPRING_APPLICATION_JSON":
+        if name == "SPRING_APPLICATION_JSON" or value.lstrip().startswith(("{", "[")):
             try:
                 json.loads(value, object_pairs_hook=check_json_properties)
             except (ValueError, RecursionError):

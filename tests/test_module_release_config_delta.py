@@ -579,3 +579,159 @@ print(json.dumps(plan(profile, Engine())))
         self.assertNotIn("create", self.rt.events)
         self.assertEqual(self.rt.events.count("gate:1"), 1)
         self.assertEqual(self.rt.events.count("signal:1"), 1)
+
+    def test_DEP_58LH_01_registry_credentials_rejected_before_publication(self):
+        import mandate
+        from tools.module_release.config_delta import approval_lines
+
+        marker = "synthetic-registry-credential"
+        payload = json.dumps({"auths": {"registry.example": {"auth": marker}}})
+        for name, value in (("DOCKER_AUTH_CONFIG", payload), ("DOCKER_AUTH_CONFIG", marker),
+                            ("SETTINGS", payload.replace('"auth"', r'"a\u0075th"'))):
+            self.p.update(envAllowlist=[name], showValues=[name])
+            for side in ("before", "after"):
+                with self.subTest(name=name, side=side):
+                    row = {"name": name, "before": None, "after": None, side: value}
+                    self.p["configDelta"] = {"env": [row]}
+                    env = [name + "=" + value] if side == "before" else []
+                    with patch.dict(self.rt.docs[fixture.OLD]["Config"], Env=env):
+                        plan = operation.plan(self.p, self.rt)
+                        self.assertEqual(plan.get("reason"), "SECRET_ENV_DENIED")
+                        result = operation.apply(self.p, "a" * 64, self.rt)
+                        with self.assertRaisesRegex(operation.Held, "^SECRET_ENV_DENIED$"):
+                            approval_lines(self.p["configDelta"], [name])
+                    self.assertEqual(result.get("reason"), "SECRET_ENV_DENIED")
+                    self.assertNotIn(marker, json.dumps([plan, result]))
+                    self.assertNotIn("plan", plan)
+                    self.assertFalse(any(self.root.rglob("*.json")))
+
+        self.p.update(envAllowlist=["DOCKER_AUTH_CONFIG"], showValues=["DOCKER_AUTH_CONFIG"],
+                      configDelta={"env": [{"name": "DOCKER_AUTH_CONFIG", "before": None, "after": payload}]})
+        call, _ = fixture.ReleaseTest.governed_dispatch(self)
+        with self.assertRaisesRegex(mandate.Held, "SECRET_ENV_DENIED") as held:
+            call(0)
+        public_error = runpy.run_path(str(fixture.ROOT / "scripts/ouf-a2-executor"))["public_error"]
+        self.assertNotIn(marker, public_error(held.exception))
+        for entry in (self.root / "1").iterdir():
+            if entry.is_file():
+                self.assertNotIn(marker.encode(), entry.read_bytes())
+        self.assertNotIn("approvalLines", operation.read(self.root / "1", "plan"))
+
+    def resume_delta(self):
+        return recovery.resume(self.p, self.rt, recovery.proposal(self.p, self.rt))
+
+    def test_DEP_58LH_02_candidate_exited_before_start_generation(self):
+        self.install_delta()
+        stamp = self.planned()["planSha256"]
+        start = self.rt.start
+
+        def exited(cid):
+            start(cid)
+            self.rt.stop(cid)
+            for ep in self.rt.docs[cid]["NetworkSettings"]["Networks"].values():
+                ep.update(NetworkID="", IPAddress="")
+            raise KeyboardInterrupt
+
+        with patch.object(self.rt, "start", exited), self.assertRaises(KeyboardInterrupt):
+            operation.apply(self.p, stamp, self.rt)
+        self.assertFalse((self.root / stamp / "start-generation.json").exists())
+        with patch.dict(self.rt.docs[fixture.NEW]["Config"]["Labels"], {operation.OWNER_LABEL: "f" * 64}):
+            with self.assertRaises(operation.Held):
+                self.resume_delta()
+        self.assertFalse((self.root / stamp / "rollback-intent.json").exists())
+        result = self.resume_delta()
+        self.assertEqual(result["rollback"], "ROLLED_BACK")
+        self.assertEqual(self.rt.events.count("gate:2"), 1)
+        self.assertNotIn("signal:2", self.rt.events)
+        self.assert_restored()
+
+    def test_DEP_58LH_03_uncertain_restore_signal_once_per_generation(self):
+        self.install_delta()
+        self.rt.fault = "readiness"
+        stamp = self.planned()["planSha256"]
+        start, signal = self.rt.start, self.rt.signal
+        attempted = []
+
+        def start_generation(cid):
+            start(cid)
+            self.rt.docs[cid]["State"]["StartedAt"] = str(len(self.rt.events))
+
+        def lose_first_response(cid):
+            if cid == fixture.OLD:
+                attempted.append(frame.epoch(self.rt.inspect(cid)))
+                if len(attempted) == 1:
+                    raise OSError
+            signal(cid)
+
+        with patch.object(self.rt, "signal", lose_first_response), patch.object(self.rt, "start", start_generation):
+            held = operation.apply(self.p, stamp, self.rt)
+            self.assertEqual(held.get("rollbackReason"), "PREDECESSOR_READINESS_NOT_UP")
+            self.assertIn(fixture.OLD, self.rt.gates)
+            # A second dispatch can also lose the stop response while retiring the claimed generation.
+            stop = self.rt.stop
+            def lost_stop(cid):
+                stop(cid)
+                raise KeyboardInterrupt
+
+            with patch.object(self.rt, "stop", lost_stop), self.assertRaises(KeyboardInterrupt):
+                self.resume_delta()
+            self.assertEqual(operation.read(self.root / stamp, "receipt.json"), held)
+            result = self.resume_delta()
+        self.assertEqual(result["rollback"], "ROLLED_BACK")
+        self.assertEqual(len(attempted), 2)
+        self.assertNotEqual(attempted[0][1], attempted[1][1])
+        self.assertEqual(self.rt.events.count("signal:1"), 1)
+        self.assertEqual(operation.read(self.root / stamp, "receipt.json"), result)
+        self.assertEqual(operation.read(self.root / stamp, "restore-held.json"), held)
+        self.assert_restored()
+
+    def test_DEP_58LH_03_delayed_restore_signal_reattests_original_generation(self):
+        self.install_delta()
+        self.rt.fault = "readiness"
+        stamp = self.planned()["planSha256"]
+        signal = self.rt.signal
+
+        def delayed(cid):
+            if cid == fixture.OLD:
+                raise OSError
+            signal(cid)
+
+        with patch.object(self.rt, "signal", delayed):
+            held = operation.apply(self.p, stamp, self.rt)
+        self.assertEqual(held.get("rollbackReason"), "PREDECESSOR_READINESS_NOT_UP")
+        # Delivery of the original request completes during the reviewed readiness wait.
+        with patch.object(self.rt, "pause", side_effect=lambda: self.rt.gates.discard(fixture.OLD)), \
+                patch.object(self.rt, "signal", side_effect=AssertionError("duplicate USR1")):
+            self.assertEqual(self.resume_delta()["rollback"], "ROLLED_BACK")
+        self.assertEqual(self.rt.events.count("gate:1"), 1)
+        self.assert_restored()
+
+    def check_interrupted_restore_start(self, started):
+        root = self.interrupt_create(applied=False)
+        self.rt.docs[fixture.OLD]["State"]["FinishedAt"] = "fixture-stop"
+        start = self.rt.start
+
+        def interrupt(cid):
+            self.assertEqual(cid, fixture.OLD)
+            if started:
+                start(cid)
+            raise KeyboardInterrupt
+
+        with patch.object(self.rt, "start", interrupt), self.assertRaises(KeyboardInterrupt):
+            self.resume_delta()
+        self.assertFalse((root / "restore-generation.json").exists())
+        with patch.dict(self.rt.docs[fixture.OLD], RestartCount=1), self.assertRaises(operation.Held):
+            self.resume_delta()
+        with patch.dict(self.rt.docs[fixture.OLD]["State"], FinishedAt="foreign-stop"), self.assertRaises(operation.Held):
+            self.resume_delta()
+        result = self.resume_delta()
+        self.assertEqual(result["rollback"], "ROLLED_BACK")
+        self.assertEqual(self.rt.events.count("gate:1"), 1)
+        self.assertEqual(self.rt.events.count("signal:1"), 1)
+        self.assert_restored()
+
+    def test_DEP_58LH_04_interruption_before_restore_start(self):
+        self.check_interrupted_restore_start(False)
+
+    def test_DEP_58LH_04_interruption_after_restore_start(self):
+        self.check_interrupted_restore_start(True)
