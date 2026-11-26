@@ -5,7 +5,7 @@ from functools import wraps
 import json
 import re
 
-from .contract import digest, require
+from .contract import digest, migration_has_inline_secret, require
 from .profile_options import credential_name, delta_has_inline_secret, env_reference, inline_secret
 
 
@@ -57,7 +57,7 @@ def scope(profile, *, admitting=False):
     values = None
     if isinstance(profile, dict) and "configDelta" in profile:
         # An admission refusal contains only a fixed code. Its spelling must be independent of the input.
-        if not admitting or not delta_has_inline_secret(profile):
+        if not admitting or not (migration_has_inline_secret(profile) or delta_has_inline_secret(profile)):
             found = secret_values(profile).union(_values.get() or ())
             values = tuple(sorted(found, key=lambda s: (-len(s), s)))
     token = _values.set(values)

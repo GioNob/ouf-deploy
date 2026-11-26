@@ -395,6 +395,29 @@ _validate = validate
 _package = package
 
 
+_migration_password_url = re.compile(r"(?:^|[:=])//[^/?#@:\s]*:[^/?#\s]+@")
+_migration_secret_flags = {"--password", "--secret", "--token"}
+_shell_secret_flag = re.compile(r"""(?:^|[\s'"])--(?:password|secret|token)(?=$|[\s='"])""")
+
+
+def migration_has_inline_secret(profile):
+    migration = profile.get("migration") if isinstance(profile, dict) else None
+    command = migration.get("command") if isinstance(migration, dict) else None
+    if not isinstance(command, list):
+        return False
+    for index, arg in enumerate(command):
+        if not isinstance(arg, str):
+            continue
+        if arg.partition("=")[0] in _migration_secret_flags or _migration_password_url.search(arg):
+            return True
+        # In a shell command string the options are words inside a single argv entry.
+        if (index >= 2 and isinstance(command[index - 2], str)
+                and command[index - 2].rsplit("/", 1)[-1] in ("sh", "bash", "dash", "ash", "ksh", "zsh")
+                and matches(r"-[a-zA-Z]*c[a-zA-Z]*", command[index - 1]) and _shell_secret_flag.search(arg)):
+            return True
+    return False
+
+
 def validate_profile_options(profile, *, check=require):
     if __package__:
         try:
@@ -405,6 +428,7 @@ def validate_profile_options(profile, *, check=require):
             return admit(profile, check=check)
     # The installer also executes this module directly from its verified Git blob.
     if isinstance(profile, dict):
+        check(not migration_has_inline_secret(profile), "MIGRATION_INLINE_SECRET")
         check("configDelta" not in profile or isinstance(profile["configDelta"], dict) and profile["configDelta"], "INVALID_DELTA")
 
 

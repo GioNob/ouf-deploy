@@ -637,15 +637,45 @@ class NoDeltaParity(unittest.TestCase):
         self.assertEqual(json.loads((case.root / "2" / "rollback.result").read_bytes()),
                          {"status": "HELD", "planSha256": stamp, "reason": "RELEASE_IO_OR_INPUT_ERROR/OSError@return_operation.py:40"})
 
-    def test_DEP_58QE_06_legacy_migration_bytes_and_digest(self):
-        args = ["--bypass-cache=enabled", "--url", "postgresql://test:fixture-only@localhost/db"]
+    def test_DEP_58QF_01_password_url_refused_before_migration_plan(self):
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.dedicated()
+        case.p["migration"]["command"].extend(["--url", "postgresql://test:fixture-only@localhost/db"])
+        files = {path: path.read_bytes() for path in case.root.rglob("*") if path.is_file()}
+        with redirect_stdout(io.StringIO()) as out, redirect_stderr(io.StringIO()) as err:
+            with self.assertRaisesRegex(mandate.Held, "^MIGRATION_INLINE_SECRET$"):
+                case.planned()
+            for result in (operation.plan(case.p, case.rt), operation.apply(case.p, "a" * 64, case.rt)):
+                self.assertEqual((result["status"], result["reason"]), ("HELD", "MIGRATION_INLINE_SECRET"))
+                self.assertNotIn("fixture-only", json.dumps(result))
+        self.assertEqual((out.getvalue(), err.getvalue(), case.rt.events), ("", "", []))
+        self.assertEqual(files, {path: path.read_bytes() for path in case.root.rglob("*") if path.is_file()})
+
+    def test_DEP_58QF_03_reference_migration_bytes_and_digest(self):
+        args = ["--bypass-cache=enabled", "--url", "postgresql://test@localhost/db",
+                "--url-env", "DB_URL", "--password-file", "/run/secrets/database", "--token-env=API_TOKEN_FILE"]
         def exercise(op, rec, case, rt, stamp):
             result = op.apply(case.p, stamp, rt)
             self.assertEqual(result["status"], "GATED")
             stage = op.read(Path(case.p["journal"]) / stamp, "migration-plan.json")
             self.assertEqual(stage["migration"]["command"][-len(args):], args)
             self.assertEqual(result["migrationSha256"], op.digest(stage))
-        self.compare("dedicated", exercise=exercise, migration_args=args)
+        self.compare("dedicated", exercise=exercise, migration_args=["-c", "/etc/db --token config", *args])
+
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.dedicated()
+        case.p["migration"]["command"].extend(args)
+        network = next(iter(case.p["networks"]))
+        case.p["configDelta"] = {"aliases": {network: ["reviewed-db-client"]}}
+        stamp = case.planned()["digest"]
+        gated = case.call("apply", stamp)
+        stage = operation.read(Path(case.p["journal"]) / stamp, "migration-plan.json")
+        self.assertEqual(stage["migration"]["command"][-len(args):], args)
+        self.assertEqual(case.call("migrate", gated["digest"])["status"], "READY")
 
     def test_DEP_58LF_08_dedicated_interrupted_apply_and_migration(self):
         self.compare("dedicated", interrupted=True)

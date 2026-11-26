@@ -140,8 +140,8 @@ def inspect(profile):
         exec(compile(files[ROOT / "lib/gateway_policy.py"][0], "gateway_policy.py", "exec"), gateway.__dict__)
         check(gateway.valid_profile(cfg["gateway"]), "GATEWAY_INSTALL_PROFILE")
     check(isinstance(cfg["modules"], dict) and "onboarding" in cfg["modules"], "MODULE_PROFILE_REQUIRED")
-    if any("install" in p or "configDelta" in p for p in cfg["modules"].values()):
-        # Resolve relative imports exclusively from the same pinned Git blobs.
+    check(not any(contract.migration_has_inline_secret(p) for p in cfg["modules"].values()), "MIGRATION_INLINE_SECRET")
+    if any("install" in profile or "configDelta" in profile for profile in cfg["modules"].values()):
         with tempfile.TemporaryDirectory() as tmp:
             grammar = Path(tmp) / "a2_install_validation"
             grammar.mkdir()

@@ -4,6 +4,8 @@ import json
 import re
 from urllib.parse import unquote
 
+from .contract import migration_has_inline_secret
+
 
 INLINE_SECRET = "CONFIG_DELTA_INLINE_SECRET"
 _sensitive_word = (r"pass(?:wd|words?|phrase)?|pwd|secrets?|tokens?|credentials?|community|dsn|jwt|auths?|"
@@ -105,6 +107,7 @@ def validate_profile_options(profile, *, check=require):
     """Common to full release profiles and the smaller transport profiles."""
     if not isinstance(profile, Mapping):
         return  # The entry point owns malformed profile diagnostics.
+    check(not migration_has_inline_secret(profile), "MIGRATION_INLINE_SECRET")
     if "configDelta" in profile:
         delta = profile["configDelta"]
         check(isinstance(delta, dict), "INVALID_DELTA")

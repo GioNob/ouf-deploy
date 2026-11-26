@@ -96,7 +96,7 @@ class InvalidDeltaTest(unittest.TestCase):
     code = "INVALID_DELTA"
     marker = "synthetic-58li-private-value"
 
-    def assert_inline_denied(self, profile):
+    def assert_inline_denied(self, profile, reason="CONFIG_DELTA_INLINE_SECRET"):
         case = fixture.ReleaseTest()
         self.addCleanup(case.doCleanups)
         case.setUp()
@@ -105,8 +105,8 @@ class InvalidDeltaTest(unittest.TestCase):
         files = {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()}
         with redirect_stdout(io.StringIO()) as out, redirect_stderr(io.StringIO()) as err:
             for result in (operation.plan(case.p, case.rt), operation.apply(case.p, "a" * 64, case.rt)):
-                self.assertEqual((result["status"], result["reason"]), ("HELD", "CONFIG_DELTA_INLINE_SECRET"))
-            with self.assertRaisesRegex(mandate.Held, "^CONFIG_DELTA_INLINE_SECRET$"):
+                self.assertEqual((result["status"], result["reason"]), ("HELD", reason))
+            with self.assertRaisesRegex(mandate.Held, f"^{reason}$"):
                 call(0)
         self.assertEqual((out.getvalue(), err.getvalue(), case.rt.events), ("", "", []))
         self.assertEqual(files, {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()})
@@ -115,15 +115,24 @@ class InvalidDeltaTest(unittest.TestCase):
         marker = "fixture-only"
         dsn = "postgresql://user:" + marker + "@localhost/test"
         delta = {"aliases": {"backend": [marker]}}
-        for flags in (["--url", dsn], ["--dsn=" + dsn], ["--password", marker],
-                      ["--client-secret=" + marker], ["--token", marker],
-                      ["--settings=" + json.dumps({"AccountKey": marker})], ["sh", "-c", "tool --password " + marker]):
-            with self.subTest(option=flags[0].partition("=")[0]):
-                self.assert_inline_denied(dict(configDelta=delta, migration=dict(
-                    mode="dedicated", command=["upgrade", *flags], rollbackCompatible=True)))
+        for flags in (["--client-secret=" + marker], ["--settings=" + json.dumps({"AccountKey": marker})]):
+            self.assert_inline_denied(dict(configDelta=delta, migration=dict(
+                mode="dedicated", command=["upgrade", *flags], rollbackCompatible=True)))
         self.assert_inline_denied(dict(configDelta={"aliases": {"backend": [dsn]}}))
         self.assert_inline_denied(dict(configDelta=delta, gate={"command": ["service", "--secret", marker]}))
         self.assert_inline_denied(dict(configDelta=delta, candidate={"removeArgs": ["--token=" + marker]}))
+
+    def test_DEP_58QF_02_migration_secret_forms_precede_publication(self):
+        dsn = "postgresql://:" + self.marker + "@localhost/db"
+        commands = [[dsn], ["--url", dsn], ["--dsn=" + dsn], ["sh", "-c", "tool --password " + self.marker]]
+        for flag in ("--password", "--secret", "--token"):
+            commands.extend(([flag, self.marker], [flag + "=" + self.marker]))
+        for args in commands:
+            for delta in ({}, {"configDelta": {"aliases": {"backend": [self.marker]}}}):
+                with self.subTest(flag=args[0].partition("=")[0] if args[0].startswith("--") else "argument",
+                                  delta=bool(delta)):
+                    self.assert_inline_denied(dict(delta, migration=dict(
+                        mode="dedicated", command=["upgrade", *args], rollbackCompatible=True)), "MIGRATION_INLINE_SECRET")
 
     def test_DEP_58QE_07_defence_scoped_to_delta_and_whole_options(self):
         output = operation.public_output
@@ -304,7 +313,8 @@ class InvalidDeltaTest(unittest.TestCase):
                     out, err = io.StringIO(), io.StringIO()
                     initial = {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()}
                     with redirect_stdout(out), redirect_stderr(err), self.assertNoLogs():
-                        with self.assertRaisesRegex(mandate.Held, "^CONFIG_DELTA_INLINE_SECRET$") as denied:
+                        reason = "MIGRATION_INLINE_SECRET" if option == "password" else "CONFIG_DELTA_INLINE_SECRET"
+                        with self.assertRaisesRegex(mandate.Held, f"^{reason}$") as denied:
                             call(0)
                     self.assertEqual(initial, {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()})
                     for secret in secrets:
@@ -450,6 +460,15 @@ class InvalidDeltaTest(unittest.TestCase):
                 send.assert_not_called()
 
     def test_DEP_58LK_01_all_profile_ingresses_deny_before_use(self):
+        self.assert_ingresses_deny({"configDelta": self.marker}, self.code)
+
+    def test_DEP_58QF_04_migration_secret_at_all_profile_ingresses(self):
+        migration = {"mode": "dedicated", "rollbackCompatible": True, "command": ["upgrade", "--token=" + self.marker]}
+        for delta in ({}, {"configDelta": {"aliases": {"backend": ["client"]}}}):
+            with self.subTest(delta=bool(delta)):
+                self.assert_ingresses_deny(dict(delta, migration=migration), "MIGRATION_INLINE_SECRET")
+
+    def assert_ingresses_deny(self, options, reason):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))
         journal = root / "journal"
         bootstrap = installer_fixture.Bootstrap()
@@ -458,8 +477,8 @@ class InvalidDeltaTest(unittest.TestCase):
         inst = bootstrap.inst
         cfg = json.loads(bootstrap.path.read_bytes())
         p = cfg["modules"]["mcp"]
-        p.update(configDelta=self.marker, journal=str(journal))
-        first = dict(setup_profile(str(journal)), configDelta=self.marker)
+        p.update(options, journal=str(journal))
+        first = dict(setup_profile(str(journal)), **options)
         profile_file = root / "transport.json"
         profile_file.write_text(json.dumps(p), encoding="utf-8")
         bootstrap.path.write_text(json.dumps(cfg))
@@ -476,7 +495,7 @@ class InvalidDeltaTest(unittest.TestCase):
             if phase in retention.COMMAND:
                 profile = dict(p, migration=dict(p["migration"], retentionAdmin019={}))
             output, _, _ = executor_with_busy_lock(fixture.ROOT, mandate, profile, operation_name=kind, phase=phase)
-            self.assertEqual(output, (1, "", self.code + "\n"))
+            self.assertEqual(output, (1, "", reason + "\n"))
 
         def installer_cli(mode):
             with patch.object(sys, "argv", ["install-ouf-a2", mode, str(bootstrap.path)]), \
@@ -541,22 +560,24 @@ class InvalidDeltaTest(unittest.TestCase):
                       for owner, name in ((os, "mkdir"), (operation, "Docker"), (module_operation.operation, "Docker"),
                                           (return_operation, "Docker"), (operation, "request"), (install, "summary"),
                                           (frame_spec, "create_with_custody"), (config_delta, "approval_lines"),
-                                          (module_operation, "Journal"), (inst.subprocess, "check_output"),
+                                          (module_operation, "Journal"),
                                           (transport, "github"), (inst, "manifest"), (inst, "install"),
                                           (inst, "installation_lock"),
                                           (store, "begin_plan"), (store, "consume_approval"))]
+            if reason == "INVALID_DELTA":
+                guards.append(enter(patch.object(inst.subprocess, "check_output", side_effect=AssertionError("git"))))
             for name, invoke in cases:
                 out, err = io.StringIO(), io.StringIO()
                 with self.subTest(ingress=name), redirect_stdout(out), redirect_stderr(err), self.assertNoLogs(level="DEBUG"):
                     try:
                         result = invoke()
                     except (Held, mandate.Held, SystemExit, ValueError) as exc:
-                        self.assertEqual(str(exc), self.code)
+                        self.assertEqual(str(exc), reason)
                     else:
                         if name.startswith("executor.module-"):
                             self.assertIsNone(result)  # cli() asserted status, stdout, stderr and both locks
                         else:
-                            self.assertEqual((result["status"], result["reason"]), ("HELD", self.code))
+                            self.assertEqual((result["status"], result["reason"]), ("HELD", reason))
                             self.assertNotIn(self.marker, json.dumps(result))
                     self.assertEqual((out.getvalue(), err.getvalue()), ("", ""))
                     self.assertEqual(effects, [])
