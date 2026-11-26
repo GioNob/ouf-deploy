@@ -103,6 +103,16 @@ class NativeRelease(unittest.TestCase):
     def test_ingestion_v21_from_validate_only_and_return(self):
         self.exercise_release(busybox=False, interruption="jdbc", module="ingestion")
 
+    def test_DEP_58Q_08_native_immediate_exit_and_lost_stop(self):
+        for cut in ("exit", "lost-stop"):
+            with self.subTest(cut=cut):
+                self.exercise_release(busybox=True, interruption="58q-" + cut)
+
+    def test_DEP_58Q_09_native_restore_signal_delivery(self):
+        for cut in ("before-signal", "after-signal"):
+            with self.subTest(cut=cut):
+                self.exercise_release(busybox=True, interruption="58q-" + cut)
+
     def exercise_release(self, busybox, interruption=None, module=None):
         self.assertEqual(os.geteuid(), 0)
         socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
@@ -208,6 +218,11 @@ class NativeRelease(unittest.TestCase):
                     p["migration"].pop("command")
                     p["migration"]["mode"] = "spring-flyway"
                     env = [f"OUF_ONB_DB_URL=jdbc:postgresql://{pg}/postgres", "OUF_ONB_DB_USER=fixture"]
+            elif interruption and interruption.startswith("58q-"):
+                p.update(readyReturn=True, migration={"mode": "none", "rollbackCompatible": True})
+                if interruption == "58q-exit":
+                    p.update(envAllowlist=["FIXTURE_EXIT"], configDelta={"env": [
+                        {"name": "FIXTURE_EXIT", "before": None, "after": "true"}]})
             elif interruption == "create":
                 p["migration"].pop("command")
                 p["migration"]["mode"] = "none"
@@ -234,6 +249,41 @@ class NativeRelease(unittest.TestCase):
             proposal = plan(p)
             self.assertEqual(proposal["status"], "PLANNED", proposal)
             stamp = proposal["planSha256"]
+            if interruption and interruption.startswith("58q-"):
+                from tools.module_release import reviewed
+                if interruption == "58q-exit":
+                    deliver = reviewed.signal
+                    def exit_after_delivery(engine, checked):
+                        cid = checked()["Id"]
+                        deliver(engine, checked)
+                        for _ in range(100):
+                            if engine.inspect(cid)["State"]["Status"] == "exited":
+                                raise KeyboardInterrupt
+                            time.sleep(.1)
+                        self.fail("Candidate did not exit after its gate was released")
+                    with patch.object(reviewed, "signal", exit_after_delivery), self.assertRaises(KeyboardInterrupt):
+                        apply(p, stamp, rt)
+                    self.assertEqual(rt.inspect(name)["State"]["Status"], "exited")
+                else:
+                    self.assertEqual(apply(p, stamp, rt)["status"], "READY")
+                    stop, deliver = rt.stop, reviewed.signal
+                    def lost_stop(cid):
+                        stop(cid)
+                        raise KeyboardInterrupt
+                    def cut_signal(engine, checked):
+                        if interruption == "58q-after-signal":
+                            deliver(engine, checked)
+                        raise KeyboardInterrupt
+                    hook = (patch.object(rt, "stop", lost_stop) if interruption == "58q-lost-stop" else
+                            patch.object(reviewed, "signal", cut_signal))
+                    with hook, self.assertRaises(KeyboardInterrupt):
+                        return_operation.run(p, stamp, rt)
+                final = return_operation.run(p, stamp, Docker(p))
+                self.assertEqual((final["status"], final.get("restoredCid")), ("ROLLED_BACK", old), final)
+                self.assertTrue(ready(rt, rt.inspect(name), p["readiness"]))
+                parked = rt.inspect(p["failedName"])
+                self.assertEqual((parked["State"]["Pid"], parked["NetworkSettings"]["Networks"]), (0, {}))
+                return
             if interruption == "jdbc":
                 before = rt.inspect(old)["Config"]
                 stage = apply(p, stamp, rt, defer_migration=True)

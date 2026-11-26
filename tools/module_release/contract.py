@@ -405,7 +405,7 @@ def validate_profile_options(profile, *, check=require):
             return admit(profile, check=check)
     # The installer also executes this module directly from its verified Git blob.
     if isinstance(profile, dict):
-        check("configDelta" not in profile, "CONFIG_DELTA_NOT_ENABLED")
+        check("configDelta" not in profile or isinstance(profile["configDelta"], dict) and profile["configDelta"], "INVALID_DELTA")
 
 
 def validate(p):

@@ -43,7 +43,7 @@ def inspect(profile):
     safe(profile)
     check(profile.is_file() and not profile.stat().st_mode & 0o077, "PRIVATE_PROFILE_REQUIRED")
     raw = profile.read_bytes()
-    cfg = json.loads(raw); check(not (isinstance(cfg, dict) and isinstance(cfg.get("modules"), dict) and any(isinstance(p, dict) and "configDelta" in p for p in cfg["modules"].values())), "CONFIG_DELTA_NOT_ENABLED")
+    cfg = json.loads(raw); check(not (isinstance(cfg, dict) and isinstance(cfg.get("modules"), dict) and any(isinstance(p, dict) and "configDelta" in p and not (isinstance(p["configDelta"], dict) and p["configDelta"]) for p in cfg["modules"].values())), "INVALID_DELTA")
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
@@ -122,7 +122,7 @@ def inspect(profile):
     package = ROOT / "lib/module_release"
     for module in ("__init__", "contract", "docker", "flyway", "frame", "mcp_artifact", "operation",
                    "postgres", "provenance", "recovery", "retention", "return_operation", "transport",
-                   "frame_spec", "install_contract", "install_operation", "persistent_paths", "profile_options"):
+                   "frame_spec", "install_contract", "install_operation", "persistent_paths", "profile_options", "config_delta", "reviewed"):
         files[package / (module + ".py")] = (blob(f"tools/module_release/{module}.py"), 0o600)
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")

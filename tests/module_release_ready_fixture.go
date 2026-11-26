@@ -8,6 +8,9 @@ import (
 )
 
 func main() {
+	if os.Getenv("FIXTURE_EXIT") == "true" {
+		return
+	}
 	if len(os.Args) != 2 || os.Args[1] != "server" {
 		os.Exit(2)
 	}

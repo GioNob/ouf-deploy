@@ -167,7 +167,7 @@ class Docker:
 
     def process(self, doc, gated):
         command = self.p["gate"]["command"]
-        if "candidate" in self.p and doc["Image"] == self.p["ci"]["imageId"]:
+        if "candidate" in self.p and (self.is_candidate(doc) if "configDelta" in self.p else doc["Image"] == self.p["ci"]["imageId"]):
             command = candidate_command(command, self.p["candidate"])
         pid = doc["State"]["Pid"]
         if not doc["State"]["Running"] or pid <= 0:
@@ -227,3 +227,6 @@ class Docker:
 
     def pause(self):
         time.sleep(1)
+
+    def is_candidate(self, doc):
+        return doc["Id"] == getattr(self, "candidate_cid", None)

@@ -47,7 +47,7 @@ Il formato di cattura, il punto di aggancio T2 e i comandi in sola lettura sono 
 
 ## Delta di configurazione di module-release (D-065)
 
-`configDelta` non abilitato, si abilita con il 58q. Il custode omette la chiave dal profilo di rilascio. Un profilo che la contiene viene rifiutato con `CONFIG_DELTA_NOT_ENABLED`.
+Il custode registra nel profilo privato il delta ENV, bind RO e alias, le allowlist e gli hash dei file. Il piano conserva il digest del delta e il frame del predecessore. Una review di rollback ripristina il CID conservato con la configurazione originaria. Per il ritorno semplice senza delta il custode imposta `readyReturn: true`.
 
 Per il 58q, la voce di custodia prevista è `deploy.module-release.config-delta@1`. Il custode dell'esecutore conserva il profilo privato, i digest e i permessi dei file RO. Il produttore conserva i contenuti approvati e i segreti. La prova di ripristino prevista confronta i file con i digest approvati e verifica bind, ENV, reti e readiness sul CID originale.
 

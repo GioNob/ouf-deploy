@@ -42,7 +42,7 @@ def proposal(p, rt):
         proposal["candidateReview"] = body["candidateReview"]
     if "mcp-retention-admin-019" in body:
         proposal["mcp-retention-admin-019"] = body["mcp-retention-admin-019"]
-    return proposal
+    return op.reviewed.recovery_review(p, root, body, proposal) if op.reviewed.enabled(p) else proposal
 
 
 def verify_stop_claim(rt, old, body, root):
@@ -159,3 +159,13 @@ _residual = residual
 def residual(p, rt):
     validate_profile_options(p)
     return _residual(p, rt)
+
+
+_resume = resume
+
+
+def resume(p, rt, approved):
+    if not op.reviewed.enabled(p):
+        return _resume(p, rt, approved)
+    require(proposal(p, rt) == approved, "RECOVERY_PLAN_CHANGED")
+    return op.reviewed.resume(p, rt, approved["sourcePlan"])

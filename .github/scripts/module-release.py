@@ -56,7 +56,7 @@ def module_review(summary, module, phase, result, next_phase, plan_migrations):
         if key in database:
             database[key] = [public_fields(row, MIGRATION_FIELDS) for row in database[key]]
     images = image_facts(result) if phase in ("plan", "apply") else []
-    facts = [f"Modulo {module} · stato {status}", *images]
+    facts = [f"Modulo {module} · stato {status}", *images, *(result.get("approvalLines", ()) if phase == "plan" else ())]
     if next_phase == RETENTION_ADMIN:
         facts.append("Installazione o verifica delle due funzioni di retention 019, del proprietario e dei permessi.")
         facts.extend(retention_facts(result["retentionReview"]))

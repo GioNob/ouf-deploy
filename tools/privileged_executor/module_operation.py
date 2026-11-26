@@ -157,7 +157,7 @@ class ModuleRelease:
             return response
         if phase == "rollback":
             save(path / "rollback.review", {"request": req, "review": review})
-            result = return_operation.run(self.profile, req["digest"], self.runtime, recover=True)
+            result = self.reviewed_return() if operation.reviewed.enabled(self.profile) else return_operation.run(self.profile, req["digest"], self.runtime, recover=True)
             save(path / "rollback.result", result)
             need(result["status"] == "ROLLED_BACK", result.get("reason", "MODULE_RETURN_HELD"))
             return {"digest": req["digest"], "status": result["status"]}
@@ -171,7 +171,7 @@ class ModuleRelease:
                 proposal = operation.plan(self.profile, self.runtime, previous_release=self.previous_release)
             save(path / "plan", proposal)
             need(proposal["status"] == "PLANNED", proposal.get("reason", "MODULE_PLAN_HELD"))
-            response = {"digest": proposal["planSha256"], "status": "PLANNED", **self.image_ids(proposal["plan"])}
+            response = {"digest": proposal["planSha256"], "status": "PLANNED", **self.image_ids(proposal["plan"]), **{k: proposal["plan"][k] for k in ("approvalLines",) if k in proposal["plan"]}}
             if retention.ADMIN in proposal["plan"]:
                 response["retentionReview"] = proposal["plan"][retention.ADMIN]
             if "candidateReview" in proposal["plan"]:
@@ -261,3 +261,68 @@ class ModuleRelease(_ModuleRelease):
         if isinstance(req, dict):
             validate_module_profiles(req.get("module"), cfg, release=True, check=need)
         super().__init__(cfg, root, req)
+        if operation.reviewed.enabled(self.profile):
+            self.runtime.release_run = req["run"]
+
+    def reviewed_return(self):
+        stamp = self.req["digest"]
+        # Look up the already approved dispatch independently of the READY pointer.
+        # A crash can leave the original result, pointer or signature unpublished.
+        approved = {}
+        originals = []
+        for proposal_file in self.path.parent.glob("[0-9]*/plan"):
+            run = proposal_file.parent
+            proposal = read(proposal_file)
+            if not isinstance(proposal, dict) or not isinstance(proposal.get("plan"), dict):
+                continue
+            proposal_stamp = proposal.get("planSha256")
+            if proposal["plan"].get("sourcePlan", proposal_stamp) != stamp or proposal.get("status") != "PLANNED":
+                continue
+            plan_review = read(run / "plan.review")["request"]
+            req = {**plan_review, "phase": "apply", "digest": proposal_stamp}
+            if req.get("module") != self.req["module"] or "apply" not in read(run / "approvals"):
+                continue
+            need(plan_review["phase"] == "plan" and plan_review["digest"] == intent(req) and
+                 req["operation"] == "module-release" and req["run"] == run.name and
+                 proposal_stamp == digest(proposal["plan"]), "MODULE_APPROVAL_DRIFT")
+            if (run / "apply.review").exists():
+                review = read(run / "apply.review")
+                need(review["request"] == req and hex64(review["review"]), "MODULE_APPROVAL_DRIFT")
+            else:
+                directory = Path(self.profile["journal"]) / stamp
+                need(not (directory / "stop-intent.json").exists(), "MODULE_APPROVAL_DRIFT")
+            approved[run.name] = run
+            if proposal_stamp == stamp:
+                originals.append(proposal["plan"])
+        need(originals and all(plan == originals[0] for plan in originals), "MODULE_APPROVAL_DRIFT")
+        plan = originals[0]
+
+        def publish(body, receipt, returning):
+            pointer = self.path.parent / ("module-" + self.req["module"] + ".ready")
+            current = read(pointer) if pointer.exists() else None
+            origin = receipt.get("releaseRun")
+            need(origin in approved, "MODULE_APPROVAL_DRIFT")
+            run = approved[origin]
+            if current and current["planSha256"] == stamp:
+                need(current["run"] in approved, "MODULE_APPROVAL_DRIFT")
+                run = approved[current["run"]]
+            phase = "migrate" if "migrationSha256" in receipt else "apply"
+            if phase == "migrate":
+                stage = read(run / "apply.result")
+                need(stage["migrationSha256"] == receipt["migrationSha256"] == read(run / "migrate.review")["request"]["digest"]
+                     and "migrate" in read(run / "approvals"), "MODULE_APPROVAL_DRIFT")
+            need(body == plan, "MODULE_PARENT_DRIFT")
+            target = run / (phase + ".result")
+            if returning or target.exists():
+                need(read(target) == receipt, "MODULE_RECEIPT_DRIFT")
+            tip = {"run": run.name, "phase": phase, "planSha256": stamp}
+            if current != tip:
+                need(not returning and (current is None or int(current["run"]) < int(run.name)), "MODULE_RECEIPT_DRIFT")
+            if "receiptSigning" in self.profile:
+                directory = Path(self.profile["journal"]) / stamp
+                module_receipt.attest(self.profile["receiptSigning"], directory, issue=not returning)
+            operation.confirm(run, target.name, receipt)
+            if current != tip:
+                save(pointer, tip, replace=True)
+
+        return operation.reviewed.return_run(self.profile, stamp, self.runtime, publication=publish, approved_plan=plan)

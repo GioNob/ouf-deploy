@@ -40,14 +40,16 @@ def validate_value(name, value, allowlist=None):
     if value is not None:
         validate_env([{"name": name, "value": value}], allowlist)
         if not name.endswith("_FILE"):
-            check(name != "DOCKER_AUTH_CONFIG" and not re.search(r"(?:^|_)(?:AUTH$|(?:AUTHORIZATION|PWD)(?:_|$))", name),
+            check(name != "DOCKER_AUTH_CONFIG" and not re.search(r"(?:^|_)(?:AUTH$|(?:AUTHORIZATION|PWD|CONNECTION_STRING)(?:_|$))", name),
                   "SECRET_ENV_DENIED")
-        if name == "SPRING_APPLICATION_JSON" or value.lstrip().startswith(("{", "[")):
+        if name == "SPRING_APPLICATION_JSON" or value.lstrip().startswith("{") or (
+                value.lstrip().startswith("[") and not re.fullmatch(r"\[[0-9a-fA-F:.]+\]:[0-9]+", value)):
             try:
                 json.loads(value, object_pairs_hook=check_json_properties)
             except (ValueError, RecursionError):
                 raise SpecHeld("INVALID_ENV") from None
-        check(not re.search(r"\bbasic\s+[A-Za-z0-9+/]+=*|(?:password|passwd|pwd|token|secret)\s*=|"
+        check(not re.search(r"\bbasic\s+[A-Za-z0-9+/]+=*|(?:password|passwd|pwd|token|secret|accountkey|"
+                            r"sharedaccesskey|sharedaccesssignature|sig)\s*=|"
                             r"\boracle:thin:[^@\s]+/[^@\s]+@", unquote(value), re.IGNORECASE),
               "SECRET_ENV_DENIED")
 
@@ -167,7 +169,7 @@ def expected_after(predecessor_inspect, delta):
 def approval_lines(delta, show_values=()):
     def display(name, value):
         validate_value(name, value)
-        if name in show_values:
+        if name in show_values and value in (None, "true", "false", "enabled", "disabled"):
             return "assente" if value is None else json.dumps(value, ensure_ascii=False)
         return "sha256 " + delta_digest(value)
 

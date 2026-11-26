@@ -5,7 +5,7 @@ import os
 from pathlib import Path, PurePosixPath
 import tempfile
 
-from . import flyway, postgres
+from . import flyway, postgres, reviewed
 from .contract import (CI_COORDINATES, INGESTION_STARTUP_FLAGS, MCP_CI_COORDINATES, Held, SHA, diagnostic,
                        digest, jar_name, matches, package, require, validate)
 from .docker import Docker
@@ -53,13 +53,13 @@ def observe(p, rt, previous_release=None):
                 "PREDECESSOR_CHANGED")
     check_persistent_paths(p, old)
     baseline(p, old, predecessor_image=previous["imageId"] if previous else None)
-    require(old["Image"] != p["ci"]["imageId"], "ALREADY_INSTALLED")
+    require(old["Image"] != p["ci"]["imageId"] or "configDelta" in p, "ALREADY_INSTALLED")
     require(all(rt.inspect(p[k], missing=True) is None for k in ("retainedName", "failedName")),
             "CUSTODY_NAME_OCCUPIED")
     require(ready(rt, old, p["readiness"]), "PREDECESSOR_NOT_READY")
     coordinates = MCP_CI_COORDINATES if p["ci"].get("publisherFormat") == "acquisition-mcp" else CI_COORDINATES
-    create_request = request(old, p["ci"]["imageId"], provenance_labels(p),
-                             candidate=p.get("candidate"), image_defaults=defaults)
+    create_request = reviewed.request(p, old, defaults) if reviewed.enabled(p) else request(
+        old, p["ci"]["imageId"], provenance_labels(p), candidate=p.get("candidate"), image_defaults=defaults)
     if "effectiveDatasource" in binding:
         prospective = {key: create_request.get(key) for key in ("Entrypoint", "Cmd", "Env")}
         merge_image(prospective, defaults)
@@ -101,7 +101,7 @@ def observe(p, rt, previous_release=None):
         jar = PurePosixPath("/app", jar_name(p["gate"]["command"]))
         require(not any(jar.is_relative_to(m["Destination"]) for m in old["Mounts"]), "FLYWAY_JAR_SHADOWED")
         body["flywayBaseline"] = flyway.baseline(flyway.observe(rt, old, predecessor=True))
-    return body, old
+    return reviewed.bind_plan(p, body, old) if reviewed.enabled(p) else (body, old)
 
 
 def plan(profile: dict, runtime=None, *, previous_release=None) -> dict:
@@ -169,12 +169,12 @@ def retained(p, rt, old):
             "PREDECESSOR_NOT_RETAINED")
 
 
-def park(rt, cid, name, networks):
-    doc = rt.inspect(cid)
+def park(rt, cid, name, networks, *, verify=None):
+    doc = verify(rt.inspect(cid)) if verify else rt.inspect(cid)
     require(doc["Id"] == cid, "CONTAINER_ID_CHANGED")
     if doc["State"]["Running"]:
         rt.stop(cid)
-    doc = rt.inspect(cid)
+    doc = verify(rt.inspect(cid)) if verify else rt.inspect(cid)
     require(not doc["State"]["Running"] and doc["State"]["Pid"] == 0, "STOP_UNCONFIRMED")
     primary = doc["HostConfig"].get("NetworkMode")
     for net in sorted(doc["NetworkSettings"]["Networks"], key=lambda n: n == primary):
@@ -191,7 +191,7 @@ def park(rt, cid, name, networks):
 def checked_generation(p, rt, old, cid, restoring=False):
     image = old["Image"] if restoring else p["ci"]["imageId"]
     config_image = old["Config"]["Image"] if restoring else image
-    first = rt.inspect(cid)
+    first = reviewed.first_inspect(rt, cid, restoring) if reviewed.enabled(p) else rt.inspect(cid)
     require(first["State"]["Running"] and first["State"]["Pid"] > 0, "GATE_NOT_RUNNING")
     generation = snapshot(first)
 
@@ -200,9 +200,9 @@ def checked_generation(p, rt, old, cid, restoring=False):
     def checked():
         doc = rt.inspect(cid)
         require(doc["Id"] == cid and doc["Name"] == "/" + p["container"], "SERVICE_IDENTITY_CHANGED")
-        check_body(old, doc, image, config_image, labels=None if restoring else provenance_labels(p),
-                   image_defaults=defaults, candidate=None if restoring else p.get("candidate"))
-        check_live_networks(old, doc)
+        check_body(*reviewed.body_args(p, old, doc, image, config_image, restoring), labels=None if restoring else reviewed.labels(p),
+                   image_defaults=reviewed.defaults(p, defaults, restoring), candidate=None if restoring else p.get("candidate"))
+        check_live_networks(reviewed.network_baseline(p, old, restoring), doc)
         require(snapshot(doc) == generation, "GENERATION_CHANGED")
         return doc
 
@@ -287,7 +287,7 @@ def finish_migration(p, rt, old, cid, root, checked, expected_generation):
 
 def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
     signal_file = "restore-signal.json" if restoring else "release-signal.json"
-    signalled = (root / signal_file).exists()
+    signalled = reviewed.signal_claimed(p, root, signal_file, restoring) if "configDelta" in p else (root / signal_file).exists()
     check = checked_generation if signalled else waiting_gate
     generation, checked = check(p, rt, old, cid, restoring)
     require(expected_generation is None or generation == expected_generation, "MIGRATION_GENERATION_CHANGED")
@@ -321,9 +321,9 @@ def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
             else:
                 confirm(root, "flyway-plan.json", proof)
             require(rt.process(checked(), gated=True), "GATE_CHANGED")
-        record(root, signal_file, signal_claim)
+        reviewed.claim_signal(p, root, signal_file, signal_claim, restoring) if reviewed.enabled(p) else record(root, signal_file, signal_claim)
         try:
-            rt.signal(cid)
+            reviewed.signal(rt, checked) if reviewed.enabled(p) else rt.signal(cid)
         except Exception as exc:
             signalled = True
             record(root, signal_file + ".failure", {"reason": reason(exc)})
@@ -357,7 +357,7 @@ def restore(p, rt, old, new, root):
                  (root / "restore-start.json").exists()), "RESTORE_IDENTITY_CHANGED")
     verify_database(p, rt, old, root)
     verify_flyway_return(p, rt, old, root)
-    attached = doc["NetworkSettings"]["Networks"]
+    attached = reviewed.attachments(p, old, doc, root) if reviewed.enabled(p) else doc["NetworkSettings"]["Networks"]
     require(set(attached) <= set(networks) and all(ep.get("NetworkID") in ("", networks[name]["NetworkID"])
             for name, ep in attached.items()), "RESTORE_NETWORK_SET_CHANGED")
     service = rt.inspect(p["container"], missing=True)
@@ -368,14 +368,14 @@ def restore(p, rt, old, new, root):
         candidate = rt.inspect(new)
         require(candidate["Id"] == new and candidate["Image"] == p["ci"]["imageId"] and
                 candidate["Name"] in (old["Name"], "/" + p["failedName"]), "RESTORE_SUCCESSOR_CHANGED")
-        park(rt, new, p["failedName"], networks)
+        park(rt, new, p["failedName"], networks, verify=reviewed.parking(p, rt, old, root, new))
     owner = rt.inspect(p["container"], missing=True)
     require(owner is None or owner["Id"] == cid, "UNKNOWN_SERVICE_OWNER")
     if doc["State"]["Running"]:
         if (root / "restore-start.json").exists():
-            require(read(root, "restore-start.json") == {"cid": cid} and
-                    (root / "restore-generation.json").is_file() and read(root, "restore-generation.json") == {"generation": snapshot(doc)},
-                    "RESTORE_GENERATION_UNCONFIRMED")
+            if reviewed.enabled(p): return reviewed.restore_start(p, rt, old, root)
+            require(read(root, "restore-start.json") == {"cid": cid} and (root / "restore-generation.json").is_file()
+                    and read(root, "restore-generation.json") == {"generation": snapshot(doc)}, "RESTORE_GENERATION_UNCONFIRMED")
             return release(p, rt, old, cid, root, restoring=True)["readyHttp"]
         require(epoch(doc) == epoch(old) and snapshot(doc) == snapshot(old), "OLD_SERVICE_CHANGED")
         status = ready_status(rt, doc, p["readiness"])
@@ -383,8 +383,8 @@ def restore(p, rt, old, new, root):
         return status
     if doc["Name"] != old["Name"]:
         rt.rename(cid, p["container"])
-    primary = old["HostConfig"].get("NetworkMode")
-    for name in sorted(networks, key=lambda n: n != primary):
+    if reviewed.enabled(p): return reviewed.reconnect_and_start(p, rt, old, root, attached)
+    for name in sorted(networks, key=lambda n: n != old["HostConfig"].get("NetworkMode")):
         ep = networks[name]
         if name not in attached:
             rt.connect(cid, ep["NetworkID"], endpoint(ep))
@@ -411,10 +411,10 @@ def verify_never_started(p, rt, old, doc, root):
 
 
 def start_candidate(p, rt, old, cid, root):
-    confirm(root, "start-intent.json", {"cid": cid})
+    reviewed.before_start(p, root, cid) if reviewed.enabled(p) else confirm(root, "start-intent.json", {"cid": cid})
     rt.start(cid)
     generation, _ = checked_generation(p, rt, old, cid)
-    record(root, "start-generation.json", {"cid": cid, "generation": generation})
+    reviewed.started(rt, root, cid, generation) if reviewed.enabled(p) else record(root, "start-generation.json", {"cid": cid, "generation": generation})
 
 
 def finish_apply(p, rt, body, old, new, root, result, defer_migration):
@@ -455,7 +455,7 @@ def execute(p, rt, body, old, root, result, defer_migration):
         rt.load(archive, actual)
     require(snapshot(rt.inspect(old["Id"])) == body["oldFrameSha256"], "PRE_STOP_DRIFT")
     image = p["ci"]["imageId"]
-    req = request(old, image, provenance_labels(p), candidate=p.get("candidate"),
+    req = reviewed.request(p, old, rt.image_defaults(image) if "candidate" in p else None) if reviewed.enabled(p) else request(old, image, provenance_labels(p), candidate=p.get("candidate"),
                   image_defaults=rt.image_defaults(image) if "candidate" in p else None)
     require(digest(req) == body["requestSha256"], "CREATE_REQUEST_CHANGED")
     networks = old["NetworkSettings"]["Networks"]
@@ -466,19 +466,19 @@ def execute(p, rt, body, old, root, result, defer_migration):
     verify_flyway_return(p, rt, old, root)
     record(root, "stop-intent.json", {"cid": old["Id"]})
     try:
-        park(rt, old["Id"], p["retainedName"], networks)
+        park(rt, old["Id"], p["retainedName"], networks, verify=reviewed.predecessor_guard(old) if reviewed.enabled(p) else None)
         retained(p, rt, old)
         record(root, "create-intent.json", {"requestSha256": digest(req)})
-        new = rt.create(p["container"], req)
+        new = rt.create(p["container"], reviewed.stamp_request(req, root) if reviewed.enabled(p) else req)
         require(matches(SHA, new) and new != old["Id"], "CREATE_ID_UNCONFIRMED")
         result["successorCid"] = new
         record(root, "created.json", {"cid": new})
         doc = rt.inspect(new)
         require(doc["Id"] == new and doc["Name"] == old["Name"] and doc["State"]["Status"] == "created"
                 and not doc["State"]["Running"], "CREATED_IDENTITY_CHANGED")
-        check_body(old, doc, p["ci"]["imageId"], p["ci"]["imageId"], created=True, labels=provenance_labels(p),
-                   image_defaults=rt.image_defaults(image), candidate=p.get("candidate"))
-        check_created_networks(old, doc)
+        check_body(*reviewed.body_args(p, old, doc, image, image, False), created=True, labels=reviewed.labels(p),
+                   image_defaults=reviewed.defaults(p, rt.image_defaults(image), False), candidate=p.get("candidate"))
+        reviewed.created(p, old, doc, root)
         start_candidate(p, rt, old, new, root)
         finish_apply(p, rt, body, old, new, root, result, defer_migration)
     except Exception as exc:
@@ -588,9 +588,9 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
         # An uncertain signal may finish while no executor is running. Retain
         # the reviewed stage for a fresh dispatch to reconcile it read-only.
         return result
-    record(root, "receipt.json", result)
+    reviewed.publish_result(rt, root, result) if reviewed.enabled(profile) else record(root, "receipt.json", result)
     if result.get("rollback") != "HELD":
-        unlock_module(lock)
+        reviewed.unlock(lock, plan_sha256) if reviewed.enabled(profile) else unlock_module(lock)
     return result
 
 
@@ -614,9 +614,13 @@ def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=Fals
         validate_profile_options(profile)
     except Held as exc:
         return {"operation": "module-release", "status": "HELD", "reason": reason(exc)}
+    if reviewed.enabled(profile):
+        return reviewed.apply(profile, plan_sha256, runtime, previous_release, defer_migration)
     return _apply(profile, plan_sha256, runtime, defer_migration=defer_migration, previous_release=previous_release)
 
 
 def rollback(p, rt, old, root, result, exc):
     validate_profile_options(p)
+    if reviewed.enabled(p):
+        return reviewed.rollback(p, rt, old, root, result, exc)
     return _rollback(p, rt, old, root, result, exc)

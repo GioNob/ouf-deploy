@@ -63,7 +63,8 @@ def installer_plan(root, profile, fail_read=0):
 
 class Trace:
     """Capture calls at the Docker adapter boundary, before the Engine changes state."""
-    def __init__(self, engine, docker):
+    def __init__(self, engine, docker, *, create_id=fixture.NEW):
+        self.create_id = create_id
         self.engine = engine
         self.docker = docker
         self.calls = []
@@ -72,7 +73,7 @@ class Trace:
     def create(self, name, body):
         # Exercise this version's Docker.create and Docker.api up to the socket boundary.
         response = Mock(status=201)
-        response.read.return_value = json.dumps({"Id": fixture.NEW}).encode()
+        response.read.return_value = json.dumps({"Id": self.create_id}).encode()
         with patch.object(HTTPConnection, "request") as send, patch.object(HTTPConnection, "getresponse",
                                                                          return_value=response):
             cid = self.docker.create(name, body)
@@ -107,6 +108,7 @@ class NoDeltaParity(unittest.TestCase):
         try:
             archive = subprocess.check_output(["git", "archive", "--format=zip", REFERENCE, "tools/module_release",
                                                "scripts/ouf-a2-executor", "scripts/install-ouf-a2.py",
+                                               ".github/scripts/module-release.py", ".github/scripts/release_review.py",
                                                "tools/privileged_executor/mandate.py",
                                                "tools/privileged_executor/module_operation.py"],
                                               cwd=fixture.ROOT, stderr=subprocess.PIPE)
@@ -195,7 +197,8 @@ class NoDeltaParity(unittest.TestCase):
             else:
                 exercise(op, rec, case, rt, stamp)
             self.assertEqual(len(rt.creates), 1)
-            return {"CREATE": rt.creates[0], "planSha256": stamp.encode(), "Docker calls": rt.calls,
+            return {"plan": json.dumps(planned).encode(), "inspect": json.dumps(case.rt.docs).encode(),
+                    "CREATE": rt.creates[0], "planSha256": stamp.encode(), "Docker calls": rt.calls,
                     "journal": {f.relative_to(journal): f.read_bytes()
                                 for f in journal.rglob("*") if f.is_file()}}
         finally:
@@ -221,6 +224,114 @@ class NoDeltaParity(unittest.TestCase):
         for key in expected:
             with self.subTest(field=key):
                 self.assertEqual(expected[key], actual[key])
+
+    def test_DEP_58Q_10_legacy_flyway_bytes(self):
+        self.compare_legacy_flyway_bytes()
+
+    def compare_legacy_flyway_bytes(self):
+        import test_module_release_java as java
+        import importlib
+        with java.fixture("udp") as (p, initial, rows, history):
+            p["journal"] = str(Path(p["inbox"]) / "journal")
+            journal = Path(p["journal"])
+            results = []
+            for op, _, ret in (self.reference, (operation, recovery, return_operation)):
+                journal.mkdir()
+                rt = Trace(copy.deepcopy(initial), op.Docker(p))
+                fw = importlib.import_module(op.__package__ + ".flyway")
+                with patch.object(fw, "inventory", return_value=rows):
+                    plan = op.plan(p, rt)
+                    stage = op.apply(p, plan["planSha256"], rt)
+                    send = rt.engine.signal
+                    def launch(cid):
+                        send(cid)
+                        if cid == fixture.NEW:
+                            history.append(rows[1])
+                    with patch.object(rt.engine, "signal", launch):
+                        ready = op.migrate(p, plan["planSha256"], stage["migrationSha256"], rt)
+                    returned = ret.run(p, plan["planSha256"], rt)
+                self.assertEqual((ready["status"], returned["status"]), ("READY", "ROLLED_BACK"))
+                results.append((rt.calls, rt.creates, json.dumps([plan, stage, ready, returned, rt.engine.docs]).encode(),
+                                {f.relative_to(journal): f.read_bytes() for f in journal.rglob("*") if f.is_file()}))
+                del history[1:]
+                shutil.rmtree(journal)
+            self.assertEqual(*results)
+
+    def test_DEP_58Q_11_first_install_bytes(self):
+        self.compare_first_install_bytes()
+
+    def compare_first_install_bytes(self):
+        import importlib
+        import test_module_install as first
+        with tempfile.TemporaryDirectory() as tmp:
+            p = first.setup_profile(tmp)
+            blob = fixture.artifact(p, Path(tmp))
+            journal = Path(tmp) / "journal"
+            p["journal"] = str(journal)
+            results = []
+            for op in (self.reference[0], operation):
+                journal.mkdir()
+                install = importlib.import_module(op.__package__ + ".install_operation")
+                spec = importlib.import_module(op.__package__ + ".frame_spec")
+                engine = first.Engine(p, blob)
+                rt = Trace(engine, op.Docker(p), create_id=fixture.OLD)
+                with patch.object(spec, "bind_facts", return_value=({}, {"ino": 42})):
+                    plan = install.plan(p, rt)
+                    ready = install.apply(p, plan["planSha256"], rt)
+                    returned = install.rollback(p, plan["planSha256"], rt)
+                self.assertEqual(ready["status"], "READY", ready)
+                self.assertEqual(returned["status"], "ROLLED_BACK", returned)
+                results.append((rt.calls, rt.creates, json.dumps([plan, ready, returned, engine.docs]).encode(),
+                                {f.relative_to(journal): f.read_bytes() for f in journal.rglob("*") if f.is_file()}))
+                shutil.rmtree(journal)
+            self.assertEqual(*results)
+
+    def test_DEP_58Q_17_legacy_none_denial_and_public_annotation(self):
+        self.compare_legacy_none_denial_and_public_annotation()
+
+    def compare_legacy_none_denial_and_public_annotation(self):
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.p["migration"] = {"mode": "none", "rollbackCompatible": True}
+        outputs = []
+        for modules, source in ((self.reference, self.reference_root), ((operation, recovery, return_operation), fixture.ROOT)):
+            op, _, ret = modules
+            rt = Trace(copy.deepcopy(case.rt), op.Docker(case.p))
+            planned = op.plan(case.p, rt)
+            stamp = planned["planSha256"]
+            with self.assertRaisesRegex(op.Held, "^INVALID_RETURN_PLAN$") as held:
+                ret.run(case.p, stamp, rt)
+            public = {"status": planned["status"], "digest": stamp, "candidateImageId": case.p["ci"]["imageId"],
+                      "predecessorImageId": case.p["oldImage"]}
+            summary, annotation = io.StringIO(), io.StringIO()
+            with patch.object(sys, "path", list(sys.path)), patch.dict(sys.modules), redirect_stdout(annotation):
+                sys.modules.pop("release_review", None)
+                render = runpy.run_path(str(source / ".github/scripts/module-release.py"))["module_review"]
+                render(summary, case.p["module"], "plan", public, "apply", None)
+            outputs.append((json.dumps(planned).encode(), rt.calls, summary.getvalue().encode(),
+                            annotation.getvalue().encode(), str(held.exception).encode()))
+        self.assertEqual(*outputs)
+
+    def test_DEP_58Q_22_reference_from_design(self):
+        import importlib
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "dep58q_design"
+            archive = subprocess.check_output(["git", "archive", "--format=zip", "c8851aba", "tools/module_release",
+                                               ".github/scripts/module-release.py", ".github/scripts/release_review.py"],
+                                              cwd=fixture.ROOT)
+            with zipfile.ZipFile(io.BytesIO(archive)) as files:
+                files.extractall(source)
+            with patch.object(sys, "path", [directory, *sys.path]):
+                self.reference = tuple(importlib.import_module("dep58q_design.tools.module_release." + name)
+                                       for name in ("operation", "recovery", "return_operation"))
+                self.reference_root = source
+                self.compare("none")
+                self.compare("none", interrupted=True)
+                self.compare("dedicated", interrupted=True)
+                self.compare_legacy_flyway_bytes()
+                self.compare_first_install_bytes()
+                self.compare_legacy_none_denial_and_public_annotation()
 
     def test_DEP_58LF_05_none(self):
         self.compare("none", interrupted=False)
@@ -389,7 +500,7 @@ class NoDeltaParity(unittest.TestCase):
         case.path.write_text(json.dumps(policy), encoding="utf-8")
         actual = installer_plan(fixture.ROOT, case.path, fail_read=2)
         self.assertEqual((actual.returncode, actual.stdout), (1, b""))
-        self.assertEqual(actual.stderr.splitlines()[-1], b"ValueError: CONFIG_DELTA_NOT_ENABLED")
+        self.assertEqual(actual.stderr.splitlines()[-1], b"ValueError: INVALID_DELTA")
         self.assertNotIn(marker.encode(), actual.stderr)
 
     def test_DEP_58LO_03_changed_hunks_preserve_release_lines(self):

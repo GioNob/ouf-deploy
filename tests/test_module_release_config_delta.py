@@ -92,8 +92,8 @@ def executor_with_busy_lock(root, policy_module, profile, *, operation_name="mod
         args[1] == locks.LOCK_EX | locks.LOCK_NB for args, _ in locks.flock.call_args_list)
 
 
-class DisabledDeltaTest(unittest.TestCase):
-    code = "CONFIG_DELTA_NOT_ENABLED"
+class InvalidDeltaTest(unittest.TestCase):
+    code = "INVALID_DELTA"
     marker = "synthetic-58li-private-value"
 
     def test_DEP_58LI_01_presence_precedes_profile_validation(self):
@@ -101,36 +101,45 @@ class DisabledDeltaTest(unittest.TestCase):
             with self.subTest(delta_type=type(delta).__name__):
                 with self.assertRaises(Held) as denied:
                     validate({"configDelta": delta})
-                self.assertEqual(str(denied.exception), self.code)
+                self.assertEqual(str(denied.exception), "EMPTY_DELTA" if delta == {} else self.code)
 
-    def test_DEP_58LI_02_plan_and_recovery_do_not_observe_or_publish(self):
+    def test_DEP_58Q_01_credentials_never_published(self):
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
         name = "AZURE_STORAGE_CONNECTION_STRING"
-        value = "AccountName=fixture;AccountKey=" + self.marker
-        changes = [{"env": [{"name": name, "before": None, "after": None, side: value}]}
-                   for side in ("before", "after")]
-        changes += [{"env": [{"name": "LISTEN_ADDRESS", "before": None, "after": "[::1]:8080"}]},
-                    {"binds": [{"source": self.marker, "mode": "ro"}]}]
-        root = Path(self.enterContext(tempfile.TemporaryDirectory()))
-        profile = json.loads(fixture.PROFILE.read_bytes())
-        profile.update(journal=str(root), envAllowlist=[name, "LISTEN_ADDRESS"], showValues=[name])
-        rt = Mock()
-        package = self.enterContext(patch.object(operation, "package"))
-        for delta in changes:
-            profile["configDelta"] = delta
-            out, err = io.StringIO(), io.StringIO()
-            with redirect_stdout(out), redirect_stderr(err), self.assertNoLogs(level="DEBUG"):
-                result = operation.plan(profile, rt)
-                applied = operation.apply(profile, "a" * 64, rt)
-                with self.assertRaises(Held) as denied:
-                    recovery.proposal(profile, rt)
-            self.assertEqual(result, {"status": "HELD", "reason": self.code, "rollback": "UNVERIFIED"})
-            self.assertEqual((applied["status"], applied["reason"]), ("HELD", self.code))
-            self.assertNotIn(self.marker, json.dumps(applied))
-            self.assertEqual(str(denied.exception), self.code)
-            self.assertEqual((out.getvalue(), err.getvalue()), ("", ""))
-            self.assertEqual(list(root.iterdir()), [])
-        self.assertEqual(rt.mock_calls, [])
-        package.assert_not_called()
+        case.p.update(envAllowlist=[name], showValues=[name])
+        for side in ("before", "after"):
+            case.p["configDelta"] = {"env": [{"name": name, "before": None, "after": None,
+                                            side: "AccountName=fixture;AccountKey=" + self.marker}]}
+            with redirect_stdout(io.StringIO()) as out, redirect_stderr(io.StringIO()) as err, self.assertNoLogs():
+                plan = operation.plan(case.p, case.rt)
+                apply = operation.apply(case.p, "a" * 64, case.rt)
+            self.assertEqual((plan["reason"], apply["reason"]), ("SECRET_ENV_DENIED", "SECRET_ENV_DENIED"))
+            self.assertNotIn(self.marker, json.dumps([plan, apply, out.getvalue(), err.getvalue()]))
+            self.assertFalse(list(case.root.rglob("*.json")))
+
+    def test_DEP_58Q_23_governed_credential_outputs(self):
+        for side in ("before", "after"):
+            with self.subTest(side=side):
+                case = fixture.ReleaseTest()
+                self.addCleanup(case.doCleanups)
+                case.setUp()
+                name = "AZURE_STORAGE_CONNECTION_STRING"
+                row = {"name": name, "before": None, "after": None, side: "AccountKey=" + self.marker}
+                case.p.update(configDelta={"env": [row]}, envAllowlist=[name], showValues=[name])
+                call, _ = case.governed_dispatch()
+                out, err = io.StringIO(), io.StringIO()
+                with redirect_stdout(out), redirect_stderr(err), self.assertNoLogs(), \
+                     self.assertRaisesRegex(mandate.Held, "SECRET_ENV_DENIED") as held:
+                    call(0)
+                self.assertNotIn(self.marker, out.getvalue() + err.getvalue() + str(held.exception))
+                for path in case.root.rglob("*"):
+                    if path.is_file() and path.suffix != ".zip":
+                        self.assertNotIn(self.marker.encode(), path.read_bytes(), path.name)
+        # A free-form value cannot be classified by its spelling alone.
+        opaque = {"env": [{"name": "SETTINGS", "before": None, "after": self.marker}]}
+        self.assertNotIn(self.marker, json.dumps(config_delta.approval_lines(opaque, ["SETTINGS"])))
 
     def test_DEP_58LI_03_executor_denies_before_authorization_journal(self):
         executor = runpy.run_path(str(fixture.ROOT / "scripts/ouf-a2-executor"))
