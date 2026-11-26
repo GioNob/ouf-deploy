@@ -1,5 +1,6 @@
 """MCP publisher, PostgreSQL contracts and governed release/return on offline fixtures."""
 import copy
+import os
 import json
 from pathlib import Path
 import runpy
@@ -21,6 +22,9 @@ class Release(unittest.TestCase):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name)
+        key = self.root / ".release-hmac.key"
+        key.touch(mode=0o600)
+        key.write_bytes(os.urandom(32))
         p = self.p = json.loads((ROOT / "tests/fixtures/module-release/mcp.example.json").read_bytes())
         p.update(inbox=temp.name, journal=temp.name, dockerSocket=str(self.root / "docker.sock"),
                  nsenter=str(self.root / "nsenter"), oldImage="sha256:" + "a"*64)

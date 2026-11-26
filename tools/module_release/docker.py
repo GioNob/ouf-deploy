@@ -16,7 +16,7 @@ from urllib.parse import quote
 
 from .contract import ENTRY, Held, candidate_command, require, verify_labels
 from .postgres import database_snapshot
-from .public_output import inspected
+
 
 PROBE = """
 import http.client, sys
@@ -128,18 +128,18 @@ class Docker:
             connection.close()
 
     def inspect(self, identity, *, missing=False):
-        return inspected(self.api("GET", "/containers/" + quote(identity, safe="") + "/json", missing=missing))
+        return self.api("GET", "/containers/" + quote(identity, safe="") + "/json", missing=missing)
 
     def load(self, archive, package):
         self.api("POST", "/images/load?quiet=1", archive=archive)
-        image = inspected(self.api("GET", "/images/" + quote(package["imageTag"], safe="") + "/json"))
+        image = self.api("GET", "/images/" + quote(package["imageTag"], safe="") + "/json")
         require(image["Id"] == self.p["ci"]["imageId"], "LOADED_IMAGE_CHANGED")
         ci = self.p["ci"]
         verify_labels(image["Config"].get("Labels") or {}, ci["repository"], package["testedCommit"],
                       optional=ci.get("publisherFormat") == "acquisition-mcp")
 
     def image_defaults(self, image_id):
-        image = inspected(self.api("GET", "/images/" + quote(image_id, safe="") + "/json"))
+        image = self.api("GET", "/images/" + quote(image_id, safe="") + "/json")
         require(image["Id"] == image_id, "LOADED_IMAGE_CHANGED")
         return image["Config"]
 

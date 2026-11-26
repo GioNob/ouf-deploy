@@ -20,7 +20,18 @@ class Crash(BaseException):
     pass
 
 
+def bind_database(profile):
+    profile["migration"].update(database={"postgresCid": "3"*64, "socket": "/run/postgresql",
+                                          "urlEnv": "DB_URL", "version": 1}, migrations=[])
+
+
 class Engine(fixture.Engine):
+    def database(self, old):
+        history = [[1, "1"*64, "UTC"]]
+        if "migrate" in self.events:
+            history.append([2, "2"*64, "UTC"])
+        return {"databaseOid": "42", "tables": True, "history": history, "schema": ["relation"]}
+
     def start(self, cid):
         super().start(cid)
         self.docs[cid]["State"]["StartedAt"] = str(len(self.events))
@@ -110,7 +121,7 @@ def approved_retry(rt, stamp, run, *, interrupt):
 
 
 class ReadyReturn(unittest.TestCase):
-    def case(self, delta=True):
+    def case(self, delta=True, *, database=False):
         case = fixture.ReleaseTest()
         self.addCleanup(case.doCleanups)
         case.setUp()
@@ -121,6 +132,8 @@ class ReadyReturn(unittest.TestCase):
                      envAllowlist=["LISTEN_ADDRESS"], showValues=["LISTEN_ADDRESS"])
         else:
             p["readyReturn"] = True
+        if database:
+            bind_database(p)
         rt = Engine(p, case.rt.blob)
         plan = op.plan(p, rt)
         self.assertEqual(plan["status"], "PLANNED", plan)
@@ -180,7 +193,7 @@ class ReadyReturn(unittest.TestCase):
         # the release journal (including its published/private locks) loses a file.
         release_entries = {d.name for d in journal_entries()}
         def relevant(path):
-            return path.suffix != ".zip" and (retry is not None or path.parts[0] in release_entries)
+            return path.name != ".release-hmac.key" and path.suffix != ".zip" and (retry is not None or path.parts[0] in release_entries)
         dirs, snapshot = [], {}
         for path in parent.rglob("*"):
             rel = path.relative_to(parent)
@@ -191,8 +204,13 @@ class ReadyReturn(unittest.TestCase):
                     snapshot[rel] = path.read_bytes()
         files = sorted(rel for rel in snapshot if rel.parts[0] in release_entries)
 
+        database_file = root.relative_to(parent) / "database.private.json"
+        if "database" in rt.p["migration"] and database_file not in files:
+            files.append(database_file)
+        ready = json.loads(snapshot.get(root.relative_to(parent) / "receipt.json", b"{}")).get("status") == "READY"
+
         def reset():
-            entries = [p for p in parent.iterdir() if p.suffix != ".zip"] if retry else journal_entries()
+            entries = [p for p in parent.iterdir() if relevant(p.relative_to(parent))] if retry else journal_entries()
             for path in entries:
                 if path.is_dir():
                     shutil.rmtree(path)
@@ -209,16 +227,28 @@ class ReadyReturn(unittest.TestCase):
                 with self.subTest(cut=label, lost=str(lost)):
                     reset()
                     if lost:
-                        (parent / lost).unlink()
+                        (parent / lost).unlink(missing_ok=True)
                     unobserved = ambiguous_exit and not any((root / name).is_file() for name in
                                                             ("candidate-epoch.json", "start-generation.json"))
                     fresh = copy.deepcopy(rt)
+                    missing_ready_db = lost == database_file and ready and "database" in rt.p["migration"]
+                    if retry and missing_ready_db:
+                        import mandate
+                        with self.assertRaisesRegex(mandate.Held, "DATABASE_BASELINE_MISSING"):
+                            retry(fresh)
+                        self.assertEqual(fresh.events, rt.events)
+                        row.append("run/database.private.json=HELD/DATABASE_BASELINE_MISSING")
+                        continue
                     if retry is None:
                         result = reviewed.return_run(fresh.p, root.name, fresh, approved_plan=plan)
                     else:
                         result = retry(fresh)
                     cell = str(lost).replace(root.name, "run") if lost else "intact"
-                    if unobserved:
+                    if missing_ready_db:
+                        self.assertEqual((result["status"], result["reason"]), ("HELD", "DATABASE_BASELINE_MISSING"))
+                        self.assertEqual(fresh.events, rt.events)
+                        cell += "=HELD/DATABASE_BASELINE_MISSING"
+                    elif unobserved:
                         self.assertEqual((result["status"], result["reason"]), ("HELD", "START_GENERATION_UNCONFIRMED"))
                         self.assertEqual(rt.events, fresh.events)
                         cell += "=HELD/START_GENERATION_UNCONFIRMED"
@@ -227,11 +257,18 @@ class ReadyReturn(unittest.TestCase):
                     row.append(cell)
         finally:
             reset()
+        if label[0] == "dedicated":
+            self.assertIn(database_file, snapshot)
+            self.assertIn(database_file, files)
+            self.bound_migration_cuts.add(label[1:])
+        elif label[0] == "spring-flyway":
+            # The profile grammar forbids database+spring-flyway. Check the same boundary on a bound release.
+            self.assertIn(label[1:], self.bound_migration_cuts)
         print("D-080", label, "(ROLLED_BACK unless indicated)", ", ".join(row), flush=True)
         return len(files) + 1
 
     def test_DEP_58QG_02_generated_single_loss_matrix(self):
-        phases = {"apply": [*self.apply_points(), "return-frame.json"],
+        phases = {"apply": [*self.apply_points(), "return-frame.json", "database.private.json"],
                   "return": [*self.return_points(), "restore-dispatch.json"],
                   "recycle": ["restore-recycle.json", "origin.json", "old-stop", "recycled-restore-stop-epoch.json",
                               "recycled-restore-start.json", "old-start", "recycled-restore-generation.json",
@@ -242,7 +279,7 @@ class ReadyReturn(unittest.TestCase):
             for phase, points in phases.items():
                 for point in points:
                     for after in (False, True):
-                        rt, plan = self.case()
+                        rt, plan = self.case(database=True)
                         stamp = op.digest(plan)
                         if phase in ("return", "recycle"):
                             self.assertEqual(op.apply(rt.p, stamp, rt)["status"], "READY")
@@ -258,6 +295,7 @@ class ReadyReturn(unittest.TestCase):
         print(f"D-080 matrix: {rows} interruption boundaries, {cells} cases", flush=True)
 
     def test_DEP_58QG_02_publication_and_transient_return_cuts(self):
+        self.bound_migration_cuts = set()
         points = {"apply": ["cleanup-plan.json", "cleanup-owner.json"],
                   "return": ["private-plan.json", "private-owner.json", "rename-lock"],
                   "late-signal": ["recycle-ready.json"], "failed-restore": ["receipt.json"],
@@ -267,14 +305,14 @@ class ReadyReturn(unittest.TestCase):
         for scenario, cuts in points.items():
             for point in cuts:
                 for after in (False, True):
-                    rt, plan = self.case()
+                    rt, plan = self.case(database=scenario != "spring-flyway")
                     phase = "apply"
                     with ExitStack() as stack:
                         if scenario in ("dedicated", "spring-flyway"):
                             phase = "stage"
                             rt.p["migration"]["mode"] = scenario
                             if scenario == "dedicated":
-                                fixture.dedicated_profile(rt.p)
+                                self.dedicated_database(rt)
                             plan = op.plan(rt.p, rt)["plan"]
                         elif scenario == "failed-restore":
                             rt.fault = "readiness"
@@ -300,13 +338,14 @@ class ReadyReturn(unittest.TestCase):
         cells = 0
         for cut, after in (("new-start", True), ("candidate-epoch.json", False), ("candidate-epoch.json", True),
                            ("start-generation.json", False), ("start-generation.json", True)):
-            rt, plan = self.case()
+            rt, plan = self.case(database=True)
             self.assertEqual(interrupted(rt, plan, "apply", cut, after)[0], "crash")
             rt.stop(fixture.NEW)
             cells += self.loss_row(rt, plan, ("exited", cut, after), ambiguous_exit=True)
         print(f"D-080 exited: 5 interruption boundaries, {cells} cases", flush=True)
 
     def test_DEP_58QG_02_migration_single_loss_matrix(self):
+        self.bound_migration_cuts = set()
         cells = rows = 0
         for mode in ("dedicated", "spring-flyway"):
             points = ["migration-review-consumed.json", "release-signal.json", "signal", "receipt.json"]
@@ -314,10 +353,10 @@ class ReadyReturn(unittest.TestCase):
                 points += ["migration-intent.json", "migrate", "migration-complete.json"]
             for point in points:
                 for after in (False, True):
-                    rt, _ = self.case()
+                    rt, _ = self.case(database=mode == "dedicated")
                     rt.p["migration"]["mode"] = mode
                     if mode == "dedicated":
-                        fixture.dedicated_profile(rt.p)
+                        self.dedicated_database(rt)
                     plan = op.plan(rt.p, rt)["plan"]
                     stamp = op.digest(plan)
                     stage = op.apply(rt.p, stamp, rt, defer_migration=True)
@@ -340,6 +379,11 @@ class ReadyReturn(unittest.TestCase):
                     cells += self.loss_row(rt, plan, (mode, point, after))
                     rows += 1
         print(f"D-080 migration: {rows} interruption boundaries, {cells} cases", flush=True)
+
+    def dedicated_database(self, rt):
+        fixture.dedicated_profile(rt.p)
+        rt.p["migration"].update(migrations=[{"version": 2, "checksum": "2"*64}],
+                                 targetSchemaSha256=op.digest([op.digest("relation")]))
 
     def matrix(self, points, applying):
         # New OS processes for both retries. No module globals, open FDs or executor stack survive.
@@ -460,25 +504,32 @@ class ReadyReturn(unittest.TestCase):
     def test_DEP_58QD_07_digest_owner_survives_interruption_before_apply_review(self):
         import mandate
         import module_operation
-        case = self.governed_case()
-        call, req = case.governed_dispatch()
-        stamp = call(0)["digest"]
-        req.update(phase="apply", digest=stamp)
-        with patch.object(module_operation, "save", side_effect=Crash), self.assertRaises(Crash):
-            call(1)
-        req.update(phase="plan", run="2")
-        req["digest"] = mandate.intent(req)
-        self.assertEqual(call(0)["digest"], stamp)
-        req.update(phase="apply", digest=stamp)
-        events = list(case.rt.events)
-        with self.assertRaisesRegex(mandate.Held, "PLAN_ALREADY_CONSUMED"):
-            call(1)
-        self.assertEqual(events, case.rt.events)
-        self.assertEqual(op.read(case.root / "2", "approvals"), [])
-        req.update(phase="rollback", run="3")
-        self.assertEqual(call(1)["status"], "ROLLED_BACK")
-        directory = case.root / stamp
-        self.oracle(case.rt, op.read(directory, "plan.json"), op.read(directory, "return-receipt.json"))
+        for private in (False, True):
+            with self.subTest(private=private):
+                case = self.governed_case()
+                if not private:
+                    case.p.pop("configDelta")
+                    case.p["readyReturn"] = True
+                call, req = case.governed_dispatch()
+                stamp = call(0)["digest"]
+                req.update(phase="apply", digest=stamp)
+                with patch.object(module_operation, "save", side_effect=Crash), self.assertRaises(Crash):
+                    call(1)
+                req.update(phase="plan", run="2")
+                req["digest"] = mandate.intent(req)
+                # A fresh plan binds its private inputs to run 2. Replay the actual consumed approval from run 1.
+                self.assertEqual(call(0)["digest"] == stamp, not private)
+                req.update(phase="apply", digest=stamp)
+                events = list(case.rt.events)
+                reason = "APPROVED_PLAN_DRIFT" if private else "PLAN_ALREADY_CONSUMED"
+                with self.assertRaisesRegex(mandate.Held, reason):
+                    call(1)
+                self.assertEqual(events, case.rt.events)
+                self.assertEqual(op.read(case.root / "2", "approvals"), [])
+                req.update(phase="rollback", run="3")
+                self.assertEqual(call(1)["status"], "ROLLED_BACK")
+                directory = case.root / stamp
+                self.oracle(case.rt, op.read(directory, "plan.json"), op.read(directory, "return-receipt.json"))
 
     def test_DEP_58QD_08_foreign_restart_before_candidate_epoch(self):
         rt, plan = self.case()
@@ -633,6 +684,8 @@ class ReadyReturn(unittest.TestCase):
         cells = 0
         for unlock_error, apply_error in ((Crash, Crash), (OSError, mandate.Held)):
             case = self.governed_case()
+            bind_database(case.p)
+            case.rt = Engine(case.p, case.rt.blob)
             case.p["receiptSigning"] = {"publicKey": {"path": str(case.root / "pub"), "sha256": "a"*64},
                                         "privateKey": str(case.root / "key")}
             call, req = case.governed_dispatch()
@@ -930,7 +983,7 @@ class ReadyReturn(unittest.TestCase):
         print(f"D-080 late CREATE: 2 interruption boundaries, {cells} cases", flush=True)
 
     def late_create_loss_row(self, after):
-        rt, plan = self.case()
+        rt, plan = self.case(database=True)
         stamp = op.digest(plan)
         result, rt = interrupted(rt, plan, "apply", "create", False)
         self.assertEqual(result, "crash")
@@ -958,6 +1011,9 @@ class ReadyReturn(unittest.TestCase):
                     case.p.update(readyReturn=True, migration={"mode": "none", "rollbackCompatible": True},
                                   receiptSigning={"publicKey": {"path": str(case.root / "pub"), "sha256": "a"*64},
                                                   "privateKey": str(case.root / "key")})
+                    case.p["configDelta"] = {"aliases": {next(iter(case.p["networks"])): ["reviewed"]}}
+                    bind_database(case.p)
+                    case.rt = Engine(case.p, case.rt.blob)
                     call, req = case.governed_dispatch()
                     stamp = call(0)["digest"]
                     plan = op.read(case.root / "1", "plan")["plan"]
@@ -1050,6 +1106,9 @@ class ConfigDeltaTest(unittest.TestCase):
             net["ipv4"] = f"192.0.2.{i}"
         p["readiness"]["attempts"] = 2
         p["oldImage"] = "sha256:" + "a" * 64
+        key = self.root / ".release-hmac.key"
+        key.touch(mode=0o600)
+        key.write_bytes(os.urandom(32))
         self.rt = DeltaEngine(p, fixture.artifact(p, self.root))
         self.old = self.rt.inspect(fixture.OLD)
         self.net = next(iter(p["networks"]))
@@ -1143,6 +1202,9 @@ class ConfigDeltaTest(unittest.TestCase):
         stamp = plan["planSha256"]
         result = op.apply(self.p, stamp, self.rt)
         self.assertEqual(result["status"], "READY", result)
+        published = json.dumps([plan, result])
+        self.assertNotIn(self.bind["sha256"], published)
+        self.assertNotIn(op.digest(self.p["configDelta"]), published)
         doc = self.rt.inspect(fixture.NEW)
         self.assertIn("FEATURE=enabled", doc["Config"]["Env"])
         self.assertNotIn("KEEP=fixture", doc["Config"]["Env"])

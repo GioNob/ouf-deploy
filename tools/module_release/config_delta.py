@@ -1,23 +1,18 @@
 """Reviewed, additive changes to a retained container's CREATE frame."""
 from copy import deepcopy
-import hashlib
 import json
 from pathlib import PurePosixPath
 import re
 
-from .public_output import identifier, public, scope, scrub
+from .public_output import fingerprint
 from .profile_options import INLINE_SECRET, credential_name, delta_has_inline_secret, inline_secret
 from .contract import NAME, matches
-from .frame_spec import SpecHeld, canonical, check_file_env, disjoint, validate_bind, validate_env
+from .frame_spec import SpecHeld, check_file_env, disjoint, validate_bind, validate_env
 
 
 def check(ok, code):
     if not ok:
         raise SpecHeld(code)
-
-
-def delta_digest(value):
-    return hashlib.sha256(canonical(value)).hexdigest()
 
 
 def file_references(env, mounts):
@@ -159,36 +154,30 @@ def expected_after(predecessor_inspect, delta):
     return doc
 
 
-def approval_lines(delta, show_values=(), *, inherited=()):
+def approval_lines(delta, show_values=()):
     profile = {"configDelta": delta, "showValues": list(show_values)}
     check(not delta_has_inline_secret(profile), INLINE_SECRET)
-    with scope(profile):
-        lines = _approval_lines(delta, show_values, inherited)
-        check(public(lines) == lines, "REDACTION_COLLISION")
-        return lines
-
-
-def _approval_lines(delta, show_values, inherited):
     env = delta.get("env", [])
 
-    def display(name, value, *, replacement=False):
+    def display(name, side, value):
         validate_value(name, value)
-        # In a mixed delta even the public flag can repeat a private value.
-        if (replacement and len(env) == 1 and name == "SPRING_FLYWAY_ENABLED" and name in show_values
-                and value in (None, "true", "false", "enabled", "disabled")
-                and (value is None or scrub(value) == value and not any(value in item for item in inherited))):
-            return "assente" if value is None else json.dumps(value, ensure_ascii=False)
-        return "sha256 " + delta_digest(value)
+        if (side == "after" and len(env) == 1 and name == "SPRING_FLYWAY_ENABLED" and name in show_values
+                and value in (None, "true", "false", "enabled", "disabled")):
+            return "assente" if value is None else json.dumps(value)
+        return "hmac-sha256 " + fingerprint(["env", name, side], value)
 
     lines = []
     for row in env:
-        name = identifier(row["name"])
+        name = row["name"]
         check(matches(r"[A-Z_][A-Z0-9_]*", name), "INVALID_ENV")
-        label = name if scrub(name) == name else "sha256 " + delta_digest(name)
-        lines.append(f"ENV {label} da {display(name, row['before'])} a {display(name, row['after'], replacement=label == name)}")
+        lines.append(f"ENV {name} da {display(name, 'before', row['before'])} a {display(name, 'after', row['after'])}")
     for bind in delta.get("binds", []):
         check(matches(r"[0-9a-f]{64}", bind["sha256"]), "INVALID_BIND_DIGEST")
-        lines.append(f"Bind destinazione sha256 {delta_digest(bind['target'])} · contenuto sha256 {bind['sha256']}")
+        target = fingerprint("bind.target", bind["target"])
+        content = fingerprint(["bind.content", bind["target"]], bind["sha256"])
+        lines.append(f"Bind destinazione hmac-sha256 {target} · contenuto hmac-sha256 {content}")
     for network, additions in sorted(delta.get("aliases", {}).items()):
-        lines.extend(f"Alias sha256 {delta_digest(alias)} · rete sha256 {delta_digest(network)}" for alias in additions)
+        net = fingerprint("alias.network", network)
+        for alias in additions:
+            lines.append(f"Alias hmac-sha256 {fingerprint(['alias', network], alias)} · rete hmac-sha256 {net}")
     return lines

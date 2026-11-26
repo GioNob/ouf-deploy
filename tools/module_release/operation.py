@@ -43,13 +43,13 @@ def observe(p, rt, previous_release=None):
     validate(p)
     require(p["migration"]["rollbackCompatible"], "MIGRATION_ROLLBACK_BLOCKED")
     binding = p["migration"].get("flyway", {})
-    defaults = {} if "candidate" in p or "effectiveDatasource" in binding or "configDelta" in p else None
+    defaults = {}
     artifact = package(p, image_defaults=defaults)
     old = rt.inspect(p["container"])
-    previous = None
-    if old["Image"] != p["oldImage"] and previous_release is not None:
-        previous = previous_release()
-        require(old["Id"] == previous["successorCid"] and snapshot(old) == previous["successorFrameSha256"],
+    public_output.begin(p, old, defaults)
+    previous = previous_release() if old["Image"] != p["oldImage"] and previous_release is not None else None
+    if previous:
+        require(old["Id"] == previous["successorCid"] and prior_snapshot(p, old, previous) == previous["successorFrameSha256"],
                 "PREDECESSOR_CHANGED")
     check_persistent_paths(p, old)
     baseline(p, old, predecessor_image=previous["imageId"] if previous else None)
@@ -68,8 +68,8 @@ def observe(p, rt, previous_release=None):
             require("--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY" not in prospective["Cmd"],
                     "CANDIDATE_VALIDATE_ONLY")
     body = {
-        "operation": "module-release", "module": p["module"], "profileSha256": digest(p),
-        "oldCid": old["Id"], "oldFrameSha256": snapshot(old), "requestSha256": digest(create_request),
+        "operation": "module-release", "module": p["module"], "profileSha256": public_output.binding("profile", p), **public_output.run_fields(),
+        "oldCid": old["Id"], "oldFrameSha256": snapshot(old), "requestSha256": public_output.binding("request", create_request),
         "oldImage": old["Image"], "ci": {k: p["ci"][k] for k in coordinates}, **artifact,
         "migrationMode": p["migration"]["mode"], "rollback": "AVAILABLE",
     }
@@ -77,8 +77,8 @@ def observe(p, rt, previous_release=None):
         body["predecessorPlanSha256"] = previous["planSha256"]
     if "candidate" in p:
         removed = p["candidate"].get("removeArgs", [])
-        body["candidateReview"] = {
-            "predecessorCmdSha256": digest(old["Config"]["Cmd"]), "candidateCmdSha256": digest(create_request["Cmd"]),
+        body["candidateReview"] = {**({"commandMac": "hmac-sha256"} if public_output.run_fields() else {}),
+            "predecessorCmdSha256": public_output.binding("command", old["Config"]["Cmd"]), "candidateCmdSha256": public_output.binding("command", create_request["Cmd"]),
             "removedArgs": [arg if arg in INGESTION_STARTUP_FLAGS else arg.partition("=")[0] + "=<redacted>"
                             for arg in old["Config"]["Cmd"] if arg in removed],
             "envOperations": {"SPRING_FLYWAY_ENABLED": "enable"} if p["candidate"].get("enableFlyway") else {},
@@ -101,7 +101,7 @@ def observe(p, rt, previous_release=None):
         jar = PurePosixPath("/app", jar_name(p["gate"]["command"]))
         require(not any(jar.is_relative_to(m["Destination"]) for m in old["Mounts"]), "FLYWAY_JAR_SHADOWED")
         body["flywayBaseline"] = flyway.baseline(flyway.observe(rt, old, predecessor=True))
-    return reviewed.bind_plan(p, body, old) if reviewed.enabled(p) else (public_output.public(body), old)
+    return reviewed.bind_plan(p, body, old) if reviewed.enabled(p) else (body, old)
 
 
 def plan(profile: dict, runtime=None, *, previous_release=None) -> dict:
@@ -124,7 +124,7 @@ def sync_dir(path):
 
 
 def record(root, name, data):
-    public_output.check_record(name, data)
+    # The run directory is in executor custody.
     with tempfile.NamedTemporaryFile(dir=root, delete=False) as out:
         tmp = Path(out.name)
         try:
@@ -224,7 +224,7 @@ def waiting_gate(p, rt, old, cid, restoring=False):
 def load_predecessor(p, rt, root):
     saved = json.loads((root / "baseline.private.json").read_bytes())
     if "Config" in saved:  # original full-frame journals
-        return public_output.inspected(saved)
+        return saved
     # Recover immutable fields from the retained CID; its original frame digest
     # authenticates them. DSNs and other Config.Env values never enter this journal.
     return {**rt.inspect(saved["Id"]), **saved}
@@ -243,8 +243,8 @@ def verify_flyway_return(p, rt, old, root):
     if "flyway" in p["migration"]:
         if (root / "release-signal.json").exists():
             stage = read(root, "migration-plan.json")
-            require(stage["planSha256"] == root.name and stage["profileSha256"] == digest(p)
-                    and read(root, "migration-review-consumed.json") == {"digest": digest(stage)},
+            require(stage["planSha256"] == root.name and stage["profileSha256"] == public_output.binding("profile", p)
+                    and read(root, "migration-review-consumed.json") == {"digest": public_output.migration_binding(stage)},
                     "FLYWAY_REVIEW_CHANGED")
             flyway.verify(rt, old, stage["flywayReview"], predecessor=True)
         else:
@@ -425,7 +425,7 @@ def finish_apply(p, rt, body, old, new, root, result, defer_migration):
         generation, checked = waiting_gate(p, rt, old, new)
         require(generation == start["generation"], "START_GENERATION_CHANGED")
         retained(p, rt, old)
-        stage = {"planSha256": digest(body), "profileSha256": digest(p), "cid": new,
+        stage = {"planSha256": digest(body), "profileSha256": public_output.binding("profile", p), **public_output.run_fields(), "cid": new,
                  "generation": generation, "predecessorFrame": body["oldFrameSha256"], "migration": p["migration"]}
         if "flyway" in p["migration"]:
             proof = flyway.checkpoint(rt, checked())
@@ -433,7 +433,7 @@ def finish_apply(p, rt, body, old, new, root, result, defer_migration):
             require(rt.process(checked(), gated=True), "GATE_CHANGED")
             stage["flywayReview"] = proof
         confirm(root, "migration-plan.json", stage)
-        result.update(status="GATED", migrationSha256=digest(stage))
+        result.update(status="GATED", migrationSha256=public_output.migration_binding(stage))
         return
     proof = release(p, rt, old, new, root, expected_generation=start["generation"])
     retained(p, rt, old)
@@ -457,7 +457,7 @@ def execute(p, rt, body, old, root, result, defer_migration):
     image = p["ci"]["imageId"]
     req = reviewed.request(p, old, rt.image_defaults(image) if "candidate" in p else None) if reviewed.enabled(p) else request(old, image, provenance_labels(p), candidate=p.get("candidate"),
                   image_defaults=rt.image_defaults(image) if "candidate" in p else None)
-    require(digest(req) == body["requestSha256"], "CREATE_REQUEST_CHANGED")
+    require(public_output.binding("request", req) == body["requestSha256"], "CREATE_REQUEST_CHANGED")
     networks = old["NetworkSettings"]["Networks"]
     if "database" in p["migration"]:
         state = postgres.observe(rt, old)
@@ -468,7 +468,7 @@ def execute(p, rt, body, old, root, result, defer_migration):
     try:
         park(rt, old["Id"], p["retainedName"], networks, verify=reviewed.predecessor_guard(old) if reviewed.enabled(p) else None)
         retained(p, rt, old)
-        record(root, "create-intent.json", {"requestSha256": digest(req)})
+        record(root, "create-intent.json", {"requestSha256": public_output.binding("request", req)})
         new = rt.create(p["container"], reviewed.stamp_request(req, root) if reviewed.enabled(p) else req)
         require(matches(SHA, new) and new != old["Id"], "CREATE_ID_UNCONFIRMED")
         result["successorCid"] = new
@@ -562,8 +562,8 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
     stage = reviewed.forward_stage(profile, root, plan_sha256) if reviewed.enabled(profile) else read("migration-plan.json")
     staged = read("stage.json")
     require(lock.is_dir() and not (root / "receipt.json").exists() and staged["status"] == "GATED"
-            and staged["migrationSha256"] == migration_sha256 == digest(stage)
-            and stage["planSha256"] == plan_sha256 and stage["profileSha256"] == digest(profile),
+            and staged["migrationSha256"] == migration_sha256 == public_output.migration_binding(stage)
+            and stage["planSha256"] == plan_sha256 and stage["profileSha256"] == public_output.binding("profile", profile),
             "MIGRATION_PLAN_CHANGED")
     rt = runtime or Docker(profile)
     old = load_predecessor(profile, rt, root)
@@ -636,3 +636,11 @@ def database_baseline(read_snapshot):
 plan = public_output.release_output(plan)
 apply = public_output.release_output(apply)
 migrate = public_output.release_output(migrate)
+observe = public_output.release_output(observe)
+
+
+def prior_snapshot(profile, doc, previous):
+    # The signed predecessor frame belongs to the run that issued its receipt.
+    with public_output.scope(dict(profile)):
+        public_output.use_plan(previous)
+        return snapshot(doc)

@@ -272,6 +272,9 @@ class ReleaseTest(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
+        key = self.root / ".release-hmac.key"
+        key.touch(mode=0o600)
+        key.write_bytes(os.urandom(32))
         p = self.p = json.loads(PROFILE.read_text(encoding="utf-8"))
         p.update(inbox=tmp.name, journal=tmp.name, dockerSocket=str(self.root / "sock"),
                  nsenter=str(self.root / "nsenter"), oldImage="sha256:" + "a" * 64)
@@ -367,7 +370,15 @@ class ReleaseTest(unittest.TestCase):
             call(0, workflow=mandate.WORKFLOW)
         plan_result = call(0)
         self.assertEqual(plan_result["candidateReview"]["removedArgs"], ["--fixture.option=<redacted>"])
-        self.assertFalse("private-marker" in json.dumps(plan_result))
+        self.assertNotIn("private-marker", json.dumps(plan_result))
+        self.assertNotEqual(plan_result["candidateReview"]["predecessorCmdSha256"], mandate.digest(command))
+        with patch.object(sys, "path", list(sys.path)), patch("sys.stdout", new_callable=io.StringIO) as notice:
+            render = runpy.run_path(str(ROOT / ".github/scripts/module-release.py"))["module_review"]
+            summary = io.StringIO()
+            render(summary, self.p["module"], "plan", plan_result, "apply", None)
+            for output in (summary.getvalue(), notice.getvalue()):
+                self.assertIn("HMAC-SHA-256 comando predecessore", output)
+                self.assertNotIn("private-marker", output)
         req.update(phase="apply", digest=plan_result["digest"])
         with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
             call(0)

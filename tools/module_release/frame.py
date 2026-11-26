@@ -197,5 +197,8 @@ def snapshot(old):
     nets.pop("MacAddress", None)
     for ep in nets["Networks"].values():
         ep.pop("MacAddress", None)
-    return digest([old["Name"], old["Image"], configuration(old), old["HostConfig"], old["Mounts"],
+    return frame_binding("frame", [old["Name"], old["Image"], configuration(old), old["HostConfig"], old["Mounts"],
                    old["Path"], old["Args"], nets, epoch(old)])
+
+
+from .public_output import binding as frame_binding

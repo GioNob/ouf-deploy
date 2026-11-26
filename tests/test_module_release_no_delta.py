@@ -738,10 +738,9 @@ class NoDeltaParity(unittest.TestCase):
                                     output = der if command[1] == "pkey" else bytes(64) if "-sign" in command else b""
                                     return subprocess.CompletedProcess(command, 0, stdout=output)
                                 setup.enter_context(patch.object(signer.subprocess, "run", openssl))
-                            if os.name == "posix":
-                                setup.enter_context(patch.object(storage, "sync_dir", sync_storage))
-                            else:
-                                setup.enter_context(patch.object(storage, "sync_dir"))
+                            setup.enter_context(patch.object(storage, "sync_dir", sync_storage))
+                            if os.name != "posix":
+                                setup.enter_context(patch.object(os, "O_DIRECTORY", 1 << 28, create=True))
                             case.root = parent
 
                         def replay(fault):
@@ -791,6 +790,8 @@ class NoDeltaParity(unittest.TestCase):
                             def fd_read(path, flags, *args, **kwargs):
                                 if not flags & (os.O_WRONLY | os.O_CREAT):
                                     visit("os.open", Path(path).name)
+                                if os.name != "posix" and flags == getattr(os, "O_DIRECTORY", None):
+                                    return fd_open(directory / "descriptor", os.O_RDONLY)
                                 return fd_open(path, flags, *args, **kwargs)
                             def member_read(archive, name, mode="r", *args, **kwargs):
                                 if mode == "r":
@@ -818,6 +819,9 @@ class NoDeltaParity(unittest.TestCase):
                                                 phase = "verify"
                                                 release = executor.ModuleRelease(case.cfg, case.root, case.req)
                                                 release.previous_release()
+                                            # The previous READY release can own a completed retention worker.
+                                            worker = parent / stamp / "mcp-retention-admin-019.start.json"
+                                            worker.write_text(json.dumps({"cid": "d" * 64}))
                                             phase = "return"
                                             result = case.call("rollback", stamp, run="2")
                                     else:
@@ -871,6 +875,8 @@ class NoDeltaParity(unittest.TestCase):
                             self.assertTrue({("open", "status"), ("read_bytes", "cmdline")} <= opens, opens)
                             if mode == "spring-flyway":
                                 self.assertIn(("os.open", "app.jar"), opens)
+                            if mode.startswith("executor-"):
+                                self.assertIn(("return", "read_bytes", "mcp-retention-admin-019.start.json"), trace)
                             if "signed" in mode:
                                 signing = "migrate" if mode.endswith("dedicated") else "apply"
                                 for phase in (signing, "verify"):
@@ -890,13 +896,16 @@ class NoDeltaParity(unittest.TestCase):
 
     def test_credential_matrix_near_names_match_reference_without_delta(self):
         names = ("TOKENIZER", "TOKENIZER_STATUS", "KEYBOARD_LAYOUT", "PASSAGE", "SECRETARY", "MONKEY")
-        for name in names:
+        for name in (*names, "psql"):
             with self.subTest(name=name), ExitStack() as stack:
                 case = mcp.Release()
                 case.setUp()
                 stack.callback(case.doCleanups)
                 case.dedicated()
-                case.rt.docs[fixture.OLD]["Config"]["Env"].append(name + "=PLANNED")
+                if name == "psql":
+                    case.rt.docs[fixture.OLD]["Config"]["Labels"]["client"] = "psql --password mcp"
+                else:
+                    case.rt.docs[fixture.OLD]["Config"]["Env"].append(name + "=PLANNED")
                 outputs = []
                 for op in (self.reference[0], module_operation.operation):
                     adapter = importlib.import_module(op.__package__ + ".docker").Docker
@@ -904,7 +913,7 @@ class NoDeltaParity(unittest.TestCase):
                         outputs.append(op.plan(case.p, case.rt))
                 self.assertEqual(outputs[0]["status"], "PLANNED")
                 self.assertEqual(outputs[0], outputs[1])
-        print(f"Credentials: {len(names)} no-delta control names match {REFERENCE[:8]}", flush=True)
+        print(f"Credentials: {len(names)} no-delta control names and psql --password mcp match {REFERENCE[:8]}", flush=True)
 
     def test_DEP_58QE_05_mcp_return_plan_io_location(self):
         def exercise(op, rec, case, rt, stamp):

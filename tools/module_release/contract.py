@@ -347,7 +347,7 @@ def package(p, target=None, *, transport=False, migrations_field=None, image_def
         with zipfile.ZipFile(stream) as z:
             if ci.get("publisherFormat") == "acquisition-mcp":
                 from .mcp_artifact import verify
-                receipt = verify(z, ci, target, transport, image_defaults=image_defaults if "configDelta" in p else None)
+                receipt = verify(z, ci, target, transport, image_defaults=image_defaults)
                 require(os.fstat(stream.fileno()).st_ctime_ns == info.st_ctime_ns, "ARTIFACT_CHANGED_DURING_READ")
                 return receipt
             require(sorted(z.namelist()) == ["SHA256SUMS", "image.tar.gz", "manifest.json"]
@@ -481,6 +481,8 @@ def inline_secret(value):
     if _literal.search(decoded) or delta_literal(decoded):
         return True
     if any(credential_name(m[1]) and raw[m.end():].strip().lstrip("= ")
+           and not (m[1] == "password" and raw[m.end():].startswith(" ")
+                    and re.match(r"^(?:[^\s]*/)?psql(?:\s|$)", raw))
            for m in _long_option.finditer(raw)):
         return True
     if raw.startswith("--"):

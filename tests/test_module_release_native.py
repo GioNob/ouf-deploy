@@ -183,6 +183,9 @@ class NativeRelease(unittest.TestCase):
         candidate = rt.api("GET", "/images/" + tag + "/json")["Id"]
         with tempfile.TemporaryDirectory() as directory, ExitStack() as resources:
             root = Path(directory)
+            key = root / ".release-hmac.key"
+            key.touch(mode=0o600)
+            key.write_bytes(os.urandom(32))
             p.update(container=name, retainedName=name+"-saved", failedName=name+"-failed", oldImage=old_image,
                      inbox=directory, journal=directory, nsenter="/usr/bin/nsenter",
                      networks={net: {"ipv4":ipv4, "aliases":[name]}}, gate={"command":command})

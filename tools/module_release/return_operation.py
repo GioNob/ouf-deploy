@@ -52,7 +52,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
     unlock = not (resuming or interrupted)
     try:
         plan = read("plan.json")
-        require(digest(plan) == stamp and plan["profileSha256"] == digest(profile), "RETURN_PLAN_CHANGED")
+        require(digest(plan) == stamp and plan["profileSha256"] == profile_binding(profile, plan), "RETURN_PLAN_CHANGED")
         rt = runtime or Docker(profile)
         old = load_predecessor(profile, rt, root)
         require(snapshot(old) == plan["oldFrameSha256"] and old["Id"] == plan["oldCid"], "RETURN_BASELINE_CHANGED")
@@ -119,5 +119,5 @@ def run(profile, stamp, runtime=None, *, recover=False):
     return _run(profile, stamp, runtime, recover=recover)
 
 
-from .public_output import release_output
+from .public_output import profile_binding, release_output
 run = release_output(run)

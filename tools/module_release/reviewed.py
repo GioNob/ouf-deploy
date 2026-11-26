@@ -7,7 +7,7 @@ import tempfile
 from . import operation as op
 from . import frame
 from .docker import Docker
-from .config_delta import approval_lines, delta_digest, expected_after, validate_delta
+from .config_delta import approval_lines, expected_after, validate_delta
 from .contract import SHA, digest, matches, require
 from .profile_options import reviewed as enabled
 
@@ -44,19 +44,15 @@ def stamp_request(req, root):
     return req
 
 
-def review_lines(p, old):
-    cfg = old["Config"]
-    inherited = [entry.partition("=")[2] for entry in cfg.get("Env") or ()]
-    inherited.extend((cfg.get("Labels") or {}).values())
-    return approval_lines(p["configDelta"], p.get("showValues", ()), inherited=inherited)
+def review_lines(p):
+    return approval_lines(p["configDelta"], p.get("showValues", ()))
 
 
 def bind_plan(p, body, old):
     body["createPlanLabel"] = OWNER_LABEL
     if "configDelta" in p:
-        body.update(configDeltaSha256=delta_digest(p["configDelta"]),
-                    approvalLines=review_lines(p, old))
-    body = op.public_output.public(body)
+        body.update(configDeltaSha256=op.public_output.fingerprint("configDelta", p["configDelta"]),
+                    approvalLines=review_lines(p))
     # Re-planning after an interruption before stop may observe exactly the same generation.
     directory = Path(p["journal"])
     while (directory / digest(body) / "return-receipt.json").is_file():
@@ -186,7 +182,7 @@ def stable(doc):
     # Docker normalizes explicit false (CREATE) back to null on first start.
     if host.get("OomKillDisable") is False:
         host["OomKillDisable"] = None
-    return digest([doc["Id"], doc["Image"], frame.configuration(doc), host, doc["Mounts"], doc["Path"], doc["Args"]])
+    return op.public_output.binding("stable-frame", [doc["Id"], doc["Image"], frame.configuration(doc), host, doc["Mounts"], doc["Path"], doc["Args"]])
 
 
 def endpoints(old, doc, *, candidate=False):
@@ -537,9 +533,9 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None, publi
             if plan is None:
                 plan = (optional(root, "return-frame.json") or {}).get("plan")
         require(plan and digest(plan) == stamp and plan["module"] == p["module"] and
-                plan["profileSha256"] == digest(p) and plan["createPlanLabel"] == OWNER_LABEL, "RETURN_PLAN_CHANGED")
+                plan["profileSha256"] == op.public_output.profile_binding(p, plan) and plan["createPlanLabel"] == OWNER_LABEL, "RETURN_PLAN_CHANGED")
         if "configDelta" in p:
-            require(plan.get("configDeltaSha256") == delta_digest(p["configDelta"]), "RETURN_PLAN_CHANGED")
+            require(plan.get("configDeltaSha256") == op.public_output.fingerprint("configDelta", p["configDelta"]), "RETURN_PLAN_CHANGED")
         rt = runtime or op.Docker(p)
         if (root / "baseline.private.json").is_file():
             old = op.load_predecessor(p, rt, root)
@@ -575,6 +571,7 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None, publi
                 require(receipt.get("status") == "HELD" and bool(receipt.get("reason"))
                         and not (root / "receipt.ed25519").exists(), "RETURN_RECEIPT_CHANGED")
         if (root / "return-receipt.json").exists():
+            op.confirm(root, "plan.json", plan)
             verify_restore_schema(p, rt, old, root)
             confirm_return(root, cid, stamp)
             final = restored(p, rt, old, cid, root, plan)
@@ -622,6 +619,13 @@ def rollback(p, rt, old, root, result, exc):
 
 
 def verify_restore_schema(p, rt, old, root):
+    if enabled(p) and "database" in p["migration"]:
+        receipt = optional(root, "receipt.json") or {}
+        if receipt.get("status") == "READY":
+            baseline = op.database_baseline(lambda: op.read(root, "database.private.json"))
+            require(digest(baseline) == op.read(root, "plan.json")["databaseSha256"], "DATABASE_BASELINE_CHANGED")
+        elif not (root / "database.private.json").is_file():
+            return
     if not enabled(p) or p["migration"]["mode"] == "none":
         op.verify_database(p, rt, old, root)
         op.verify_flyway_return(p, rt, old, root)
@@ -713,8 +717,8 @@ def resume(p, rt, stamp):
             and not (root / "rollback-intent.json").exists()):
         stage = op.read(root, "migration-plan.json")
         require(stage["cid"] == cid and stage["generation"] == frame.snapshot(rt.inspect(cid)) and
-                stage["planSha256"] == stamp and stage["profileSha256"] == digest(p), "MIGRATION_PLAN_CHANGED")
-        result.update(status="GATED", migrationSha256=digest(stage))
+                stage["planSha256"] == stamp and stage["profileSha256"] == op.public_output.binding("profile", p), "MIGRATION_PLAN_CHANGED")
+        result.update(status="GATED", migrationSha256=op.public_output.migration_binding(stage))
         op.confirm(root, "stage.json", result)
         return result
     if (not receipt and cid and (root / "start-generation.json").is_file() and rt.inspect(cid)["State"]["Running"]
@@ -756,10 +760,11 @@ def predecessor_guard(old):
 def recovery_review(p, root, body, proposal, old):
     if "configDelta" in p:
         delta = p["configDelta"]
-        require(delta_digest(delta) == body["configDeltaSha256"], "RECOVERY_PROFILE_CHANGED")
-        proposal["approvalLines"] = review_lines(p, old)
+        require(op.public_output.fingerprint("configDelta", delta) == body["configDeltaSha256"], "RECOVERY_PROFILE_CHANGED")
+        proposal["approvalLines"] = review_lines(p)
     for claim in root.glob("restore-after-*/*.json"):
-        proposal["journal"][claim.relative_to(root).as_posix()] = digest(op.read(claim.parent, claim.name))
+        name = claim.relative_to(root).as_posix()
+        proposal["journal"][name] = op.public_output.journal_binding(name, op.read(claim.parent, claim.name))
     return proposal
 
 

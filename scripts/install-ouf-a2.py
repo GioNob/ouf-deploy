@@ -122,7 +122,7 @@ def inspect(profile):
     package = ROOT / "lib/module_release"
     for module in ("__init__", "contract", "docker", "flyway", "frame", "mcp_artifact", "operation",
                    "postgres", "provenance", "recovery", "retention", "return_operation", "transport",
-                   "frame_spec", "install_contract", "install_operation", "persistent_paths", "profile_options", "config_delta", "reviewed", "public_output"):
+                   "frame_spec", "install_contract", "install_operation", "persistent_paths", "profile_options", "config_delta", "reviewed", "public_output", "fingerprints"):
         files[package / (module + ".py")] = (blob(f"tools/module_release/{module}.py"), 0o600)
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")
@@ -222,13 +222,13 @@ def manifest(files):
     if existing(profile):
         protected.update(journals(profile.read_bytes()))
     for directory in new_journals:
-        if not directory.exists():
-            check(not any(p in directory.parents for p in protected), "PROTECTED_INSTALL_STATE")
-    spec = {}
+        check(directory.exists() or not any(p in directory.parents for p in protected), "PROTECTED_INSTALL_STATE")
+    spec, helper = {}, types.ModuleType("release_fingerprints")
+    exec(files[ROOT / "lib/module_release/fingerprints.py"][0], helper.__dict__)
     for path in sorted(paths):
         check(not any(path.is_relative_to(p) for p in protected), "PROTECTED_INSTALL_STATE")
-        before = fingerprint(path.read_bytes(), stat.S_IMODE(path.stat().st_mode)) if existing(path) else None
-        after = fingerprint(*files[path]) if path in files else None
+        before = helper.file_binding(ROOT, files, path, fingerprint, path.read_bytes(), stat.S_IMODE(path.stat().st_mode)) if existing(path) else None
+        after = helper.file_binding(ROOT, files, path, fingerprint, *files[path]) if path in files else None
         if before is None and after is None:
             continue
         if before == after:

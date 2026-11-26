@@ -37,9 +37,9 @@ def approval(summary, phase, digest, facts):
 def delta_lines(result):
     """Only the closed delta projection may reach the summary or workflow command."""
     import re
-    sha = r"sha256 [0-9a-f]{64}"
+    sha = r"hmac-sha256 [0-9a-f]{64}"
     flag = r'(?:assente|"(?:true|false|enabled|disabled)")'
-    patterns = (rf"ENV (?:[A-Z_][A-Z0-9_]*|{sha}) da {sha} a {sha}",
+    patterns = (rf"ENV [A-Z_][A-Z0-9_]* da {sha} a {sha}",
                 rf"ENV SPRING_FLYWAY_ENABLED da {sha} a {flag}",
                 rf"Bind destinazione {sha} · contenuto {sha}", rf"Alias {sha} · rete {sha}")
     lines = result.get("approvalLines", [])

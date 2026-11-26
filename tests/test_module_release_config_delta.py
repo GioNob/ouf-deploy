@@ -1,6 +1,10 @@
 """Fail-closed release profiles and the isolated 58q library."""
 from contextlib import ExitStack, chdir, nullcontext, redirect_stderr, redirect_stdout
 from functools import partial
+import base64
+import hashlib
+import secrets
+from urllib.parse import quote
 import io
 import json
 import os
@@ -147,7 +151,15 @@ class InvalidDeltaTest(unittest.TestCase):
         self.assertEqual(files, {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()})
 
     def test_DEP_58QG_01_generated_credential_matrix(self):
-        marker = "private-58qg-canary"
+        def derivatives(secret):
+            raw = secret.encode()
+            forms = {raw, raw.hex().encode(), quote(secret, safe="").encode(),
+                     "".join(f"%{byte:02X}" for byte in raw).encode(), hashlib.sha256(raw).hexdigest().encode(),
+                     hashlib.md5(raw, usedforsecurity=False).hexdigest().encode(), operation.digest(secret).encode()}
+            forms.update(encode(raw).rstrip(b"=") for encode in (base64.b64encode, base64.urlsafe_b64encode))
+            forms.update(raw[i:i+8] for i in range(len(raw)-7))
+            return {form.lower() for form in forms}
+
         corpus = [
             "postgresql://user:{v}@host/db", "-url=jdbc:postgresql://user:{v}@host/db",
             "host=db dbname=ouf password={v}", "host=db sslpassword='{v}'",
@@ -158,12 +170,17 @@ class InvalidDeltaTest(unittest.TestCase):
             ("--password", "{v}"), ("--secret", "{v}"), ("--token", "{v}"),
             ("sh", "-c", "migrate --password '{v}'"),
         ]
-        positions = ("env-before", "env-after", "nested-json", "json-argument", "json-metadata", "label", "alias", "migration")
+        positions = ("env-before", "env-after", "nested-json", "json-argument", "json-metadata", "label", "label-argv", "alias", "migration")
         count = 0
         for syntax in corpus:
-            args = [word.format(v=marker) for word in (syntax if isinstance(syntax, tuple) else (syntax,))]
-            value = " ".join(args)
             for position in positions:
+                # DNS aliases must also be usable as aliases. Other inputs exercise URL escaping
+                # and the distinct standard / URL-safe base64 alphabets with the same oracle.
+                prefix = "Qk-" if position in ("label", "label-argv", "alias") else "Qk+AB~"
+                marker = prefix + secrets.token_urlsafe(28)
+                forbidden = derivatives(marker)
+                args = [word.format(v=marker) for word in (syntax if isinstance(syntax, tuple) else (syntax,))]
+                value = " ".join(args)
                 for delta in (False, True):
                     with self.subTest(syntax=syntax, position=position, delta=delta), ExitStack() as stack:
                         case = fixture.ReleaseTest()
@@ -190,8 +207,8 @@ class InvalidDeltaTest(unittest.TestCase):
                             else:
                                 p["networks"][net]["aliases"].append(value)
                                 old["NetworkSettings"]["Networks"][net]["Aliases"].append(value)
-                        elif position == "label":
-                            old["Config"]["Labels"]["settings"] = value
+                        elif position in ("label", "label-argv"):
+                            old["Config"]["Labels"]["settings"] = value if position == "label" else json.dumps(args)
                             if not delta:
                                 p["networks"][net]["aliases"].append(marker)
                                 old["NetworkSettings"]["Networks"][net]["Aliases"].append(marker)
@@ -214,7 +231,7 @@ class InvalidDeltaTest(unittest.TestCase):
                             responses.append(plan)
                             if position in ("migration", "json-argument"):
                                 self.assertEqual(plan["reason"], "MIGRATION_COMMAND_NOT_ALLOWED")
-                            if position in ("json-metadata", "label"):
+                            if position in ("json-metadata", "label", "label-argv"):
                                 self.assertEqual(plan["status"], "PLANNED", plan)
                             if plan["status"] == "PLANNED":
                                 response = call(0)
@@ -248,8 +265,22 @@ class InvalidDeltaTest(unittest.TestCase):
                                     call(0)
                                 responses.append(str(denied.exception))
                         outputs = [json.dumps(responses).encode(), *(s.getvalue().encode() for s in streams)]
+                        private_hashes = set()
+                        for document in (p, old, p.get("configDelta"), old["Config"]["Cmd"]):
+                            if marker in json.dumps(document):
+                                private_hashes.add(operation.digest(document).encode())
+                        for path in case.root.rglob("*.json"):
+                            raw = path.read_bytes()
+                            if marker.encode() in raw:
+                                private_hashes.add(hashlib.sha256(raw).hexdigest().encode())
+                                private_hashes.add(hashlib.md5(raw, usedforsecurity=False).hexdigest().encode())
+                                private_hashes.add(operation.digest(json.loads(raw)).encode())
+                        for path in case.root.rglob("*"):
+                            if path.is_file() and (path.name in {"plan", "plan.json", "stage.json", "receipt.json",
+                                    "ready-before-signing.json", "return-receipt.json"} or path.suffix in (".held", ".result")):
+                                outputs.append(path.read_bytes())
                         for output in outputs:
-                            self.assertNotIn(marker.encode(), output)
+                            self.assertFalse(any(needle in output.lower() for needle in forbidden | private_hashes), position)
                         count += 1
         print(f"Credentials: {len(corpus)} syntaxes x {len(positions)} positions x 2 profiles = {count}")
 
@@ -296,16 +327,11 @@ class InvalidDeltaTest(unittest.TestCase):
         dsn = "postgresql://user:" + self.marker + "@localhost/test"
         self.assert_inline_denied(dict(configDelta={"aliases": {"backend": [dsn]}}))
 
-    def test_private_dsn_passwords_scrubbed_at_publication(self):
+    def test_private_inputs_recognize_json_argv_and_encoded_passwords(self):
         output = operation.public_output
-        for dsn in ("postgresql://user:ENV%5FNAME@host/db", "host=db password='ENV_NAME'",
-                    "jdbc:postgresql://host/db?password=ENV_NAME&ssl=true",
-                    "jdbc:sqlserver://host;password=ENV_NAME;user=test", "jdbc:oracle:thin:user/ENV_NAME@db"):
-            for source in ("env", "label"):
-                with self.subTest(dsn=dsn, source=source), output.scope({}):
-                    config = {"Env": ["DB_URL=" + dsn]} if source == "env" else {"Labels": {"dsn": dsn}}
-                    output.inspected({"Config": config})
-                    self.assertNotIn(b"ENV_NAME", output.json_output({"result": "prefix-ENV_NAME-suffix"}))
+        for text in ('["--token","ENV_NAME"]', "postgresql://user:ENV%5FNAME@host/db",
+                     "host=db password='ENV_NAME'", "jdbc:oracle:thin:user/ENV_NAME@db"):
+            self.assertTrue(output.private_config({"Labels": {"value": text}}))
 
     def test_DEP_58QE_09_bootstrap_rejects_before_manifest(self):
         case = installer_fixture.Bootstrap()
@@ -345,9 +371,10 @@ class InvalidDeltaTest(unittest.TestCase):
         summary, out, err = io.StringIO(), io.StringIO(), io.StringIO()
         with redirect_stdout(out), redirect_stderr(err), self.assertNoLogs():
             result = call(0)
-            expected = [f"ENV {name} da sha256 {config_delta.delta_digest('enabled')} a sha256 "
-                        f"{config_delta.delta_digest('disabled')}" for name in names]
+            with operation.public_output.scope(case.p, req["run"]):
+                expected = config_delta.approval_lines({"env": rows}, names)
             self.assertEqual(result["approvalLines"], expected)
+            self.assertEqual(len({line.split()[4] for line in expected}), len(names))
             with patch.object(sys, "path", list(sys.path)):
                 render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
                 render(summary, req["module"], "plan", result, "apply", None)
@@ -361,12 +388,38 @@ class InvalidDeltaTest(unittest.TestCase):
         for output in outputs:
             self.assertNotRegex(output, "enabled|disabled")
 
+    def fingerprint_scope(self, run="1"):
+        directory = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        key = directory / ".release-hmac.key"
+        key.touch(mode=0o600)
+        key.write_bytes(os.urandom(32))
+        return operation.public_output.scope({"journal": str(directory), "module": "mcp"}, run)
+
+    def test_hmac_depends_on_field_run_and_private_key(self):
+        case = fixture.ReleaseTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        output = operation.public_output
+        def marks(run):
+            with output.scope(case.p, run):
+                return [output.fingerprint(["env", field, "after"], "apply") for field in ("SETTING_A", "SETTING_B")]
+        original = marks("1")
+        self.assertEqual(original, marks("1"))
+        self.assertEqual(len(set(original + marks("2"))), 4)
+        path = case.root / output.KEY_FILE
+        path.write_bytes(os.urandom(32))
+        self.assertTrue(set(original).isdisjoint(marks("1")))
+        path.unlink()
+        with self.assertRaisesRegex(Held, "^FINGERPRINT_KEY_UNAVAILABLE$"):
+            marks("1")
+
     def test_DEP_58QB_01_show_values_with_all_four_public_literals(self):
+        self.enterContext(self.fingerprint_scope())
         flag = "SPRING_FLYWAY_ENABLED"
         for before, after in (("true", "false"), ("enabled", "disabled")):
             public = dict(name=flag, before=before, after=after)
-            self.assertEqual(config_delta.approval_lines({"env": [public]}, [flag]),
-                             [f'ENV {flag} da sha256 {operation.digest(before)} a "{after}"'])
+            self.assertRegex(config_delta.approval_lines({"env": [public]}, [flag])[0],
+                             rf'^ENV {flag} da hmac-sha256 [a-f0-9]{{64}} a "{after}"$')
             for name in ("SNMP_COMMUNITY", "DB_DSN", "DB_PASSWORD", "SERVICE_SECRET", "ACCESS_TOKEN",
                          "SIGNING_KEY", "DB_CONNECTION_STRING"):
                 with self.subTest(name=name, before=before):
@@ -377,8 +430,8 @@ class InvalidDeltaTest(unittest.TestCase):
 
     def test_DEP_58QG_01_approval_grammar_at_both_boundaries(self):
         row = {"name": "OPAQUE", "before": None, "after": "ENV"}
-        with self.assertRaisesRegex(Held, "REDACTION_COLLISION"):
-            config_delta.approval_lines({"env": [row]}, ["OPAQUE"])
+        with self.fingerprint_scope():
+            self.assertTrue(config_delta.approval_lines({"env": [row]}, ["OPAQUE"])[0].startswith("ENV OPAQUE da hmac-sha256 "))
         stream = io.StringIO()
         with patch.object(sys, "path", list(sys.path)), redirect_stdout(stream):
             render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
@@ -387,7 +440,7 @@ class InvalidDeltaTest(unittest.TestCase):
                 render(stream, "mcp", "plan", forged, "apply", None)
         self.assertEqual(stream.getvalue(), "")
 
-    def test_DEP_58QG_01_public_flag_cannot_repeat_inherited_label(self):
+    def test_public_flag_may_coincide_with_inherited_label(self):
         case = fixture.ReleaseTest()
         self.addCleanup(case.doCleanups)
         case.setUp()
@@ -397,12 +450,11 @@ class InvalidDeltaTest(unittest.TestCase):
             dict(name=flag, before=None, after="enabled")]})
         plan = operation.plan(case.p, case.rt)
         self.assertEqual(plan["status"], "PLANNED", plan)
-        self.assertNotIn("enabled", json.dumps(plan))
-        self.assertIn(operation.digest("enabled"), plan["plan"]["approvalLines"][0])
+        self.assertTrue(plan["plan"]["approvalLines"][0].endswith(' a "enabled"'))
 
     def test_inherited_credential_matching_env_name_through_dispatch(self):
         marker = "SETTING_FROM_PROFILE"
-        for source in ("label", "env", "dsn", "PGPASSWORD", "jdbc-braces", "migration-dsn"):
+        for source in ("label", "env", "dsn", "PGPASSWORD", "jdbc-braces", "migration-dsn", "label-argv", "job", "psql"):
             with self.subTest(source=source):
                 case = fixture.ReleaseTest()
                 case.setUp()
@@ -411,6 +463,13 @@ class InvalidDeltaTest(unittest.TestCase):
                 if source == "migration-dsn":
                     case.p["migration"] = dict(mode="dedicated", rollbackCompatible=True,
                                                command=["migrate", f"host=db password={marker}"])
+                elif source == "psql":
+                    fixture.dedicated_profile(case.p)
+                    config["Labels"]["client"] = "psql --password mcp"
+                elif source == "label-argv":
+                    config["Labels"]["argv"] = json.dumps(["--token", marker])
+                elif source == "job":
+                    config["Labels"]["AccountKey"] = "apply"
                 elif source == "env":
                     config["Env"].append("DB_PASSWORD=" + marker)
                 elif source in ("PGPASSWORD", "jdbc-braces"):
@@ -429,39 +488,25 @@ class InvalidDeltaTest(unittest.TestCase):
                             call(0)
                         self.assertEqual((stdout.getvalue(), stderr.getvalue()), ("", ""))
                         continue
-                    with self.assertRaisesRegex(mandate.Held, "^SECRET_IDENTIFIER_COLLISION$"):
-                        call(0)
-                for output in (summary.getvalue(), stdout.getvalue(), stderr.getvalue(),
-                               (case.root / "1" / "plan").read_text(), (case.root / "1" / "plan.held").read_text()):
-                    self.assertNotIn(marker, output)
+                    result = call(0)
+                    self.assertEqual(result["status"], "PLANNED")
+                    with patch.object(sys, "path", list(sys.path)):
+                        render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
+                        render(summary, case.p["module"], "plan", result, "apply", None)
+                self.assertIn("ENV " + marker + " da ", summary.getvalue())
+                self.assertIn("Job apply ", stdout.getvalue().replace("%0A", "\n"))
+                self.assertFalse((case.root / "1" / "plan.held").exists())
 
-    def test_collision_in_residual_after_early_artifact_failure(self):
+    def test_public_cid_in_residual_after_early_artifact_failure(self):
         case = fixture.ReleaseTest()
         case.setUp()
         self.addCleanup(case.doCleanups)
         next(case.root.glob("*.zip")).write_bytes(b"changed")
-        self.assertEqual(operation.plan(case.p, case.rt)["reason"], "ARTIFACT_DIGEST_CHANGED")
         case.rt.docs[fixture.OLD]["Config"]["Labels"]["AccountKey"] = fixture.OLD
         call, _ = case.governed_dispatch()
-        with self.assertRaisesRegex(mandate.Held, "^SECRET_IDENTIFIER_COLLISION$"):
+        with self.assertRaisesRegex(mandate.Held, "ARTIFACT_DIGEST_CHANGED owner="):
             call(0)
-        self.assertEqual(operation.read(case.root / "1", "plan.held"),
-                         {"status": "HELD", "reason": "SECRET_IDENTIFIER_COLLISION"})
-
-    def test_public_identifier_collisions(self):
-        output = operation.public_output
-        stamp = "9" * 64
-        for secret, result in (("successorCid", {"successorCid": fixture.NEW}),
-                               ("onboarding", {"status": "GATED"}),
-                               ("ouf-service", {"service": "ouf-service"}),
-                               ("PLANNED", {"status": "PLANNED"}),
-                               ("204", {"readyHttp": 204}),
-                               (stamp, {"imageId": "sha256:" + stamp}),
-                               ("SETTING", {"approvalLines": ["ENV SETTING da sha256 " + stamp]})):
-            with self.subTest(result=result), output.scope({"module": "onboarding"}):
-                output.inspected({"Config": {"Labels": {"AccountKey": secret}}})
-                with self.assertRaisesRegex(Held, "^SECRET_IDENTIFIER_COLLISION$"):
-                    output.json_output(result)
+        self.assertEqual(operation.read(case.root / "1", "plan.held")["residual"]["container"]["cid"], fixture.OLD)
 
     def test_credential_components_and_boundaries(self):
         from tools.module_release.contract import credential_name
@@ -476,10 +521,11 @@ class InvalidDeltaTest(unittest.TestCase):
     def test_DEP_58QD_01_alias_collisions_cover_substrings_and_overlapping_values(self):
         delta = {"env": [dict(name="SETTING", before="private-value", after="private-value-long")],
                  "aliases": {"backend": ["private-value-long", "prefix-private-value-suffix"]}}
+        self.enterContext(self.fingerprint_scope())
         lines = config_delta.approval_lines(delta, ["SETTING"])
         self.assertNotIn("private-value", "".join(lines))
-        self.assertIn(operation.digest("private-value-long"), lines[-2])
-        self.assertIn(operation.digest("prefix-private-value-suffix"), lines[-1])
+        self.assertNotIn(operation.digest("private-value-long"), lines[-2])
+        self.assertNotIn(operation.digest("prefix-private-value-suffix"), lines[-1])
 
     def test_DEP_58QD_03_secrets_absent_from_every_output(self):
         from random import Random
@@ -559,6 +605,7 @@ class InvalidDeltaTest(unittest.TestCase):
                     if path.is_file() and path.suffix != ".zip":
                         self.assertNotIn(self.marker.encode(), path.read_bytes(), path.name)
         # A free-form value cannot be classified by its spelling alone.
+        self.enterContext(self.fingerprint_scope())
         opaque = {"env": [{"name": "SETTINGS", "before": None, "after": self.marker}]}
         self.assertNotIn(self.marker, json.dumps(config_delta.approval_lines(opaque, ["SETTINGS"])))
 
@@ -823,8 +870,10 @@ class InstalledDeltaTest(unittest.TestCase):
         plan = json.loads(self.cli("plan"))
         row = plan["files"][str(self.installed)]
         self.assertEqual(row["action"], "replace")
-        self.assertEqual(row["before"]["sha256"], self.case.inst.sha(before))
-        self.assertEqual(row["after"]["sha256"], self.case.inst.sha(self.clean))
+        self.assertNotIn(self.case.inst.sha(before), json.dumps(plan))
+        self.assertRegex(row["before"]["hmacSha256"], r"^[0-9a-f]{64}$")
+        self.assertNotIn(self.case.inst.sha(self.clean), json.dumps(plan))
+        self.assertNotEqual(row["after"]["hmacSha256"], row["before"]["hmacSha256"])
         self.assertEqual(self.installed.read_bytes(), before)
 
         inventory = self.case.inst.ROOT / "managed-files.json"
