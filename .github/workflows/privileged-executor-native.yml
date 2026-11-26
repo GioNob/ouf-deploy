@@ -27,6 +27,7 @@ on:
       - '.github/workflows/semantic-database-migration.yml'
       - '.github/workflows/onboarding-module-release.yml'
       - '.github/workflows/mcp-module-release.yml'
+      - '.github/workflows/vertical-mock-module-release.yml'
       - '.github/workflows/udp-module-release.yml'
       - '.github/workflows/ingestion-module-release.yml'
       - '.github/workflows/java-module-artifact-transport.yml'

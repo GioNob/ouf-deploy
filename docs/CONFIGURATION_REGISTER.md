@@ -53,3 +53,16 @@ Il formato di cattura, il punto di aggancio T2 e i comandi in sola lettura sono 
 | `deploy.module-install.receipt@1` | Ricevuta READY, puntatore `.installed`, review e risultato del run | Riconciliare digest, CID, image ID e frame con il journal e l’eventuale ritorno |
 | `deploy.module-install.journal@1` | Vista coerente cifrata di piano, intenti, CID, generazione, claim USR1 e isolamento | Ripristinare insieme allo stato per run, verificare nome e label prima della ripresa |
 | `deploy.module-install.store@1` | Prima dell’apply acquisire con il proprietario applicativo le directory RW, owner, ACL e copia consistente del DB condiviso, inclusi WAL e SHM quando presenti | Ripristinare con i writer coordinati, verificare consistenza e accessi del servizio, del collector e delle sonde |
+
+## Verticale mockup
+
+Per `modules["vertical-mock"]` valgono le tre voci di rilascio ordinario. La tabella specifica la custodia del verticale. I tre archivi applicativi hanno voci proprie nel [registro host](../tools/privileged_executor/host-register.json).
+
+| Archivio D-065 | Custode e classe | Cattura | Ordine di ripristino e prova |
+|---|---|---|---|
+| `deploy.module-release.profile@2` | Custode root, configurazione privata | Conservare profilo di creazione del 61e e profilo ordinario, impronte, permessi, versione esecutore e riferimenti di environment `VERTICAL_MOCK_RELEASE_TRANSPORT_PROFILE` e `MODULE_RELEASE_INBOX`. | Dopo il bootstrap ripristinare profili, inbox e reviewer. Validare binding e digest. |
+| `deploy.module-release.artifact@1` | Custode del trasporto, immagine e metadati CI | Conservare lo ZIP originale e la ricevuta con pin, commit testato e identità Docker/OCI. | Dopo il profilo ripristinare lo ZIP per digest nell’inbox e verificarlo con il lettore del plan. |
+| `deploy.module-release.journal@2` | Custode root, journal privato potenzialmente segreto | Cifrare journal, lock, inspect, ricevuta del primo CID con image ID e 204 (61e), piani e ricevute dei successori. | Dopo profilo e ZIP ripristinare lo stato in quiescenza. Riconciliare CID e digest prima dell’apply e verificare il rifiuto del replay. |
+| `vertical-mock.data@1` | Custode dell’installazione, dati di prova con chiave HMAC segreta | A scrittore fermo cifrare journal, schemi, epoca e chiave con i permessi. Per dati rigenerabili registrare la scelta di omettere la cattura. | Prima dell’avvio ripristinare il bind RW. Verificare la rilettura di una posizione conservata oppure, dopo reset, `410 CURSOR_EXPIRED` e `POSITION_LOST` lato consumatore. |
+| `vertical-mock.tokens@1` | Custode dei segreti, due bearer distinti | Conservare i due file e i permessi nel deposito segreto dell’installazione. | Prima dell’avvio ripristinare i bind RO. Provare rotazione con riavvio, accessi distinti e lettura tramite `credentialRef`. |
+| `vertical-mock.domain@1` | Custode dell’installazione, configurazione senza segreti | Versionare il file di dominio, la revisione approvata e il digest. | Ripristinare il bind RO prima dell’avvio. Verificare digest, collezioni e schemi su journal nuovo. Su un journal esistente verificare anche il dominio effettivamente registrato. |
