@@ -336,6 +336,7 @@ class ModuleRelease(_ModuleRelease):
                 need(current is None or not returning and int(current["run"]) < int(run.name), "MODULE_RECEIPT_DRIFT")
             if "receiptSigning" in self.profile:
                 directory = Path(self.profile["journal"]) / stamp
+                operation.confirm(directory, "ready-before-signing.json", receipt)
                 module_receipt.attest(self.profile["receiptSigning"], directory, issue=True)
             if unlock_failure:
                 operation.confirm(run, "apply.unlock-failure", unlock_failure)

@@ -178,8 +178,8 @@ class InvalidDeltaTest(unittest.TestCase):
                         with redirect_stdout(streams[0]), redirect_stderr(streams[1]):
                             plan = operation.plan(p, rt)
                             responses.append(plan)
-                            if position == "migration":
-                                self.assertEqual(plan.get("reason"), "MIGRATION_INLINE_SECRET")
+                            if position in ("migration", "json-metadata", "json-argument", "label"):
+                                self.assertEqual(plan["status"], "PLANNED", plan)
                             if plan["status"] == "PLANNED":
                                 response = call(0)
                                 responses.append(response)
@@ -212,77 +212,62 @@ class InvalidDeltaTest(unittest.TestCase):
                                     call(0)
                                 responses.append(str(denied.exception))
                         outputs = [json.dumps(responses).encode(), *(s.getvalue().encode() for s in streams)]
-                        outputs.extend(f.read_bytes() for f in case.root.rglob("*") if f.is_file() and f.suffix != ".zip")
                         for output in outputs:
                             self.assertNotIn(marker.encode(), output)
                         count += 1
         print(f"Credentials: {len(corpus)} syntaxes x {len(positions)} positions x 2 profiles = {count}")
 
-    def test_DEP_58QE_01_migration_and_aliases(self):
-        marker = "fixture-only"
-        dsn = "postgresql://user:" + marker + "@localhost/test"
-        delta = {"aliases": {"backend": [marker]}}
-        for flags in (["--client-secret=" + marker], ["--settings=" + json.dumps({"AccountKey": marker})]):
-            self.assert_inline_denied(dict(configDelta=delta, migration=dict(
-                mode="dedicated", command=["upgrade", *flags], rollbackCompatible=True)))
-        self.assert_inline_denied(dict(configDelta={"aliases": {"backend": [dsn]}}))
-        self.assert_inline_denied(dict(configDelta=delta, gate={"command": ["service", "--secret", marker]}))
-        self.assert_inline_denied(dict(configDelta=delta, candidate={"removeArgs": ["--token=" + marker]}))
-
-    def test_DEP_58QF_02_migration_secret_forms_precede_publication(self):
-        dsn = "postgresql://:" + self.marker + "@localhost/db"
-        commands = [[dsn], ["--url", dsn], ["--dsn=" + dsn], ["sh", "-c", "tool --password " + self.marker]]
-        for flag in ("--password", "--secret", "--token"):
-            commands.extend(([flag, self.marker], [flag + "=" + self.marker]))
-        for args in commands:
-            for delta in ({}, {"configDelta": {"aliases": {"backend": [self.marker]}}}):
-                with self.subTest(flag=args[0].partition("=")[0] if args[0].startswith("--") else "argument",
-                                  delta=bool(delta)):
-                    self.assert_inline_denied(dict(delta, migration=dict(
-                        mode="dedicated", command=["upgrade", *args], rollbackCompatible=True)), "MIGRATION_INLINE_SECRET")
-
-    def test_DEP_58QE_07_defence_scoped_to_delta_and_whole_options(self):
-        output = operation.public_output
-        command = ["tool", "--bypass-cache=enabled", "--secret-policy", "policy", "--token", self.marker]
-        profile = dict(migration={"command": command, "urlEnv": "DB_URL"})
-        with output.scope(dict(profile, configDelta={"aliases": {"backend": ["ok"]}})):
-            self.assertEqual(output.public(command), [*command[:-1], "sha256:" + operation.digest(self.marker)])
-            with output.scope(profile):
-                self.assertEqual(output.public(command), command)
-        profile["migration"]["command"] = command[:-2]
-        operation.validate_profile_options(dict(profile, configDelta={"aliases": {"backend": ["ok"]}}))
-
-    def test_DEP_58QE_08_observed_inputs_before_journal(self):
-        for source in ("driver", "env", "image"):
-            with self.subTest(source=source):
+    def test_migration_and_frame_remain_in_executor_custody(self):
+        marker = self.marker
+        for delta in (False, True):
+            with self.subTest(delta=delta):
                 case = fixture.ReleaseTest()
-                self.addCleanup(case.doCleanups)
                 case.setUp()
+                self.addCleanup(case.doCleanups)
                 net = next(iter(case.p["networks"]))
-                case.p["configDelta"] = {"aliases": {net: [self.marker]}}
                 old = case.rt.docs[fixture.OLD]
-                setting = "APP_SETTINGS=" + json.dumps({"AccountKey": self.marker})
-                if source == "driver":
-                    old["NetworkSettings"]["Networks"][net]["DriverOpts"] = {"token": self.marker}
-                elif source == "env":
-                    old["Config"]["Env"].append(setting)
-                else:
-                    case.rt.blob = fixture.artifact(case.p, case.root, image_env=[setting])
-                for result in (operation.plan(case.p, case.rt), operation.apply(case.p, "a" * 64, case.rt)):
-                    self.assertEqual(result["reason"], "CONFIG_DELTA_INLINE_SECRET")
-                    self.assertNotIn(self.marker, json.dumps(result))
-                self.assertFalse(list(case.root.rglob("*.json")))
+                old["Config"]["Labels"]["dsn"] = f"postgresql://user:{marker}@db/test"
+                case.p["networks"][net]["aliases"].append(marker)
+                old["NetworkSettings"]["Networks"][net]["Aliases"].append(marker)
+                case.p["migration"] = dict(mode="dedicated", rollbackCompatible=True,
+                                           command=["migrate", f"host=db password=;{marker}"])
+                if delta:
+                    case.p["configDelta"] = {"aliases": {net: ["public-candidate"]}}
+                call, req = case.governed_dispatch()
+                plan = call(0)
+                req.update(phase="apply", digest=plan["digest"])
+                stage = call(1)
+                self.assertEqual(stage["status"], "GATED", stage)
+                self.assertNotIn(marker, json.dumps([plan, stage]))
+                root = case.root / plan["digest"]
+                names = ["migration-plan.json", "baseline.private.json"]
+                if delta:
+                    names.append("return-frame.json")
+                for name in names:
+                    path = root / name
+                    self.assertIn(marker.encode(), path.read_bytes())
+                    if os.name == "posix":
+                        self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+                        self.assertEqual(path.stat().st_uid, os.geteuid())
+                if os.name == "posix":
+                    for directory in (case.root, root):
+                        self.assertEqual(directory.stat().st_mode & 0o777, 0o700)
+                        self.assertEqual(directory.stat().st_uid, os.geteuid())
 
-        import test_module_release_mcp as mcp
-        case = mcp.Release()
-        self.addCleanup(case.doCleanups)
-        case.setUp()
-        net = next(iter(case.p["networks"]))
-        case.p["configDelta"] = {"aliases": {net: [self.marker]}}
-        case.db["history"][0][2] = "token=" + self.marker
-        plan = operation.plan(case.p, case.rt)
-        self.assertEqual(plan["reason"], "CONFIG_DELTA_INLINE_SECRET")
-        self.assertNotIn(self.marker, json.dumps(plan))
+    def test_DEP_58QE_01_migration_and_aliases(self):
+        dsn = "postgresql://user:" + self.marker + "@localhost/test"
+        self.assert_inline_denied(dict(configDelta={"aliases": {"backend": [dsn]}}))
+
+    def test_private_dsn_passwords_scrubbed_at_publication(self):
+        output = operation.public_output
+        for dsn in ("postgresql://user:ENV%5FNAME@host/db", "host=db password='ENV_NAME'",
+                    "jdbc:postgresql://host/db?password=ENV_NAME&ssl=true",
+                    "jdbc:sqlserver://host;password=ENV_NAME;user=test", "jdbc:oracle:thin:user/ENV_NAME@db"):
+            for source in ("env", "label"):
+                with self.subTest(dsn=dsn, source=source), output.scope({}):
+                    config = {"Env": ["DB_URL=" + dsn]} if source == "env" else {"Labels": {"dsn": dsn}}
+                    output.predecessor({"Config": config})
+                    self.assertNotIn(b"ENV_NAME", output.json_output({"result": "prefix-ENV_NAME-suffix"}))
 
     def test_DEP_58QE_09_bootstrap_rejects_before_manifest(self):
         case = installer_fixture.Bootstrap()
@@ -335,7 +320,6 @@ class InvalidDeltaTest(unittest.TestCase):
             returned = call(1)
             self.assertEqual(returned["status"], "ROLLED_BACK")
         outputs = [summary.getvalue(), out.getvalue(), err.getvalue(), json.dumps([result, applied, returned])]
-        outputs.extend(path.read_text() for path in case.root.rglob("*") if path.is_file() and path.suffix != ".zip")
         for output in outputs:
             self.assertNotRegex(output, "enabled|disabled")
 
@@ -353,39 +337,9 @@ class InvalidDeltaTest(unittest.TestCase):
                     with self.assertRaisesRegex(Held, "^CONFIG_DELTA_INLINE_SECRET$"):
                         config_delta.approval_lines(delta, [name, flag])
 
-    def test_DEP_58QD_02_plaintext_plan_held_before_copy_or_effect(self):
-        for ready in (True, False):
-            with self.subTest(ready=ready):
-                case = fixture.ReleaseTest()
-                self.addCleanup(case.doCleanups)
-                case.setUp()
-                names = ["OPAQUE_SETTING", "SPRING_FLYWAY_ENABLED"]
-                delta = {"env": [dict(name=name, before=None, after="enabled") for name in names]}
-                case.p.update(migration={"mode": "none", "rollbackCompatible": True}, configDelta=delta,
-                              envAllowlist=names, showValues=names)
-                legacy = [config_delta.approval_lines(delta)[0], 'ENV SPRING_FLYWAY_ENABLED da assente a "enabled"']
-                # Reproduce the old writer, including its original digest and CREATE ownership label.
-                with (patch.object(operation.public_output, "public", side_effect=lambda value: value),
-                      patch.object(operation.reviewed, "approval_lines", return_value=legacy)):
-                    stamp = operation.plan(case.p, case.rt)["planSha256"]
-                    if ready:
-                        self.assertEqual(operation.apply(case.p, stamp, case.rt)["status"], "READY")
-                    else:
-                        with patch.object(operation, "finish_apply", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
-                            operation.apply(case.p, stamp, case.rt)
-                files = {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()}
-                events = list(case.rt.events)
-                if not ready:
-                    with self.assertRaisesRegex(Held, "UNSAFE_RETURN_PLAN"):
-                        recovery.proposal(case.p, case.rt)
-                result = return_operation.run(case.p, stamp, case.rt)
-                self.assertEqual((result["status"], result["reason"]), ("HELD", "UNSAFE_RETURN_PLAN"))
-                self.assertEqual(events, case.rt.events)
-                self.assertEqual(files, {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()})
-
     def test_DEP_58QG_01_approval_grammar_at_both_boundaries(self):
         row = {"name": "OPAQUE", "before": None, "after": "ENV"}
-        with self.assertRaisesRegex(Held, "CONFIG_DELTA_INLINE_SECRET"):
+        with self.assertRaisesRegex(Held, "REDACTION_COLLISION"):
             config_delta.approval_lines({"env": [row]}, ["OPAQUE"])
         stream = io.StringIO()
         with patch.object(sys, "path", list(sys.path)), redirect_stdout(stream):
@@ -408,24 +362,37 @@ class InvalidDeltaTest(unittest.TestCase):
         self.assertNotIn("enabled", json.dumps(plan))
         self.assertIn(operation.digest("enabled"), plan["plan"]["approvalLines"][0])
 
-    def test_DEP_58QG_01_historical_alias_return_binds_digest_only(self):
-        case = fixture.ReleaseTest()
-        self.addCleanup(case.doCleanups)
-        case.setUp()
-        net = next(iter(case.p["networks"]))
-        marker = self.marker
-        case.rt.docs[fixture.OLD]["Config"]["Labels"]["AccountKey"] = marker
-        case.p.update(migration=dict(mode="none", rollbackCompatible=True),
-                      configDelta={"aliases": {net: [marker]}})
-        with patch.object(operation.reviewed, "approval_lines", return_value=["Aggiungi alias " + marker]):
-            stamp = operation.plan(case.p, case.rt)["planSha256"]
-            self.assertEqual(operation.apply(case.p, stamp, case.rt)["status"], "READY")
-        record = operation.record
-        def safe(directory, name, value):
-            self.assertNotIn(marker, json.dumps(value))
-            return record(directory, name, value)
-        with patch.object(operation, "record", safe):
-            self.assertEqual(return_operation.run(case.p, stamp, case.rt)["status"], "ROLLED_BACK")
+    def test_inherited_credential_matching_env_name_through_dispatch(self):
+        marker = "SETTING_FROM_PROFILE"
+        for source in ("label", "env", "dsn", "migration-dsn"):
+            with self.subTest(source=source):
+                case = fixture.ReleaseTest()
+                case.setUp()
+                self.addCleanup(case.doCleanups)
+                config = case.rt.docs[fixture.OLD]["Config"]
+                if source == "migration-dsn":
+                    case.p["migration"] = dict(mode="dedicated", rollbackCompatible=True,
+                                               command=["migrate", f"host=db password={marker}"])
+                elif source == "env":
+                    config["Env"].append("DB_PASSWORD=" + marker)
+                else:
+                    config["Labels"]["AccountKey" if source == "label" else "database.url"] = (
+                        marker if source == "label" else f"postgresql://user:{marker}@db/test")
+                case.p.update(envAllowlist=[marker], configDelta={"env": [
+                    dict(name=marker, before=None, after="on")]})
+                call, req = case.governed_dispatch()
+                summary, stdout, stderr = io.StringIO(), io.StringIO(), io.StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    planned = call(0)
+                    self.assertIn(operation.digest(marker), planned["approvalLines"][0])
+                    with patch.object(sys, "path", list(sys.path)):
+                        render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
+                        render(summary, req["module"], "plan", planned, "apply", None)
+                    req.update(phase="apply", digest=planned["digest"])
+                    applied = call(1)
+                self.assertIn(applied["status"], ("READY", "GATED"))
+                for output in (summary.getvalue(), stdout.getvalue(), stderr.getvalue(), json.dumps([planned, applied])):
+                    self.assertNotIn(marker, output)
 
     def test_DEP_58QD_01_alias_collisions_cover_substrings_and_overlapping_values(self):
         delta = {"env": [dict(name="SETTING", before="private-value", after="private-value-long")],
@@ -464,7 +431,7 @@ class InvalidDeltaTest(unittest.TestCase):
                     out, err = io.StringIO(), io.StringIO()
                     initial = {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()}
                     with redirect_stdout(out), redirect_stderr(err), self.assertNoLogs():
-                        reason = "MIGRATION_INLINE_SECRET" if option == "password" else "CONFIG_DELTA_INLINE_SECRET"
+                        reason = "CONFIG_DELTA_INLINE_SECRET"
                         with self.assertRaisesRegex(mandate.Held, f"^{reason}$") as denied:
                             call(0)
                     self.assertEqual(initial, {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()})
@@ -612,12 +579,6 @@ class InvalidDeltaTest(unittest.TestCase):
 
     def test_DEP_58LK_01_all_profile_ingresses_deny_before_use(self):
         self.assert_ingresses_deny({"configDelta": self.marker}, self.code)
-
-    def test_DEP_58QF_04_migration_secret_at_all_profile_ingresses(self):
-        migration = {"mode": "dedicated", "rollbackCompatible": True, "command": ["upgrade", "--token=" + self.marker]}
-        for delta in ({}, {"configDelta": {"aliases": {"backend": ["client"]}}}):
-            with self.subTest(delta=bool(delta)):
-                self.assert_ingresses_deny(dict(delta, migration=migration), "MIGRATION_INLINE_SECRET")
 
     def assert_ingresses_deny(self, options, reason):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))

@@ -1,8 +1,10 @@
 """DEP-58LF: execute both releases against the same MCP archive, profile and Engine."""
 import ast
+import builtins
 import copy
 from contextlib import ExitStack, redirect_stderr, redirect_stdout
 from http.client import HTTPConnection
+import importlib
 import io
 import json
 import os
@@ -99,6 +101,64 @@ class Trace:
             self.calls.append(json.dumps([name, recorded, kwargs]).encode())
             return method(*args, **kwargs)
         return call
+
+
+class ProcessFiles:
+    """Back the Docker adapter's procfs and dir_fd reads with ordinary fixture files."""
+    O_PATH = getattr(os, "O_PATH", 0)
+    O_DIRECTORY = getattr(os, "O_DIRECTORY", 0)
+    O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+    O_NONBLOCK = getattr(os, "O_NONBLOCK", 0)
+
+    def __init__(self, directory, profile):
+        self.directory = directory
+        self.command = profile["gate"]["command"]
+        self.executable = profile["gate"].get("executable", self.command[0])
+        self.directories = {}
+        self.root = directory / "root"
+        (self.root / "bin").mkdir(parents=True)
+        shell = self.root / "bin/sh"
+        shell.touch()
+        for state in ("gated", "running"):
+            proc = directory / state
+            proc.mkdir()
+            (proc / "exe").hardlink_to(shell)
+            (proc / "status").write_text("SigCgt: 00000200\n")
+            argv = fixture.ENTRY + self.command if state == "gated" else self.command
+            (proc / "cmdline").write_bytes(b"\0".join(arg.encode() for arg in argv) + b"\0")
+
+    def __getattr__(self, name):
+        return getattr(os, name)
+
+    def proc_path(self, *args):
+        if args[0] == "/proc":
+            return self.directory / self.state
+        return Path(*args)
+
+    def readlink(self, path):
+        assert Path(path).name == "exe"
+        return self.executable
+
+    def open(self, name, flags, *, dir_fd=None):
+        path = self.directories[dir_fd] / name if dir_fd in self.directories else Path(name)
+        if path.name == "root":
+            path = self.root
+        if os.name == "posix":
+            return os.open(path if dir_fd is None else name, flags, **({"dir_fd": dir_fd} if dir_fd is not None else {}))
+        # Windows cannot open directories as file descriptors. Give them a real
+        # descriptor and keep their path for relative opens and inode checks.
+        if path.is_dir():
+            fd = os.open(self.directory / "descriptor", os.O_RDONLY)
+            self.directories[fd] = path
+            return fd
+        return os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+
+    def fstat(self, fd):
+        return self.directories[fd].stat() if fd in self.directories else os.fstat(fd)
+
+    def close(self, fd):
+        self.directories.pop(fd, None)
+        os.close(fd)
 
 
 class NoDeltaParity(unittest.TestCase):
@@ -622,26 +682,35 @@ class NoDeltaParity(unittest.TestCase):
                 for modules in (self.reference, (operation, recovery, return_operation)):
                     op, rec, ret = modules
                     with ExitStack() as setup:
+                        import store
+                        storage = self.reference_store if modules is self.reference else store
+                        sync_storage = storage.sync_dir
+                        directory = Path(setup.enter_context(tempfile.TemporaryDirectory()))
+                        (directory / "descriptor").touch()
+                        jar = directory / "root/app/app.jar"
+                        jar.parent.mkdir(parents=True)
                         if mode == "spring-flyway":
-                            import importlib
                             import test_module_release_java as java
-                            p, initial, rows, history = setup.enter_context(java.fixture("udp"))
-                            fw = importlib.import_module(op.__package__ + ".flyway")
-                            setup.enter_context(patch.object(fw, "inventory", return_value=rows))
+                            p, initial, rows, history = setup.enter_context(java.fixture("udp", jar=jar))
                         else:
                             case = mcp.Release()
                             case.setUp()
                             setup.callback(case.doCleanups)
                             p, initial = case.p, case.rt
                             baseline_db = copy.deepcopy(case.db)
+                        proc = ProcessFiles(directory, p)
+                        docker = importlib.import_module(op.__package__ + ".docker")
+                        setup.enter_context(patch.object(docker, "Path", proc.proc_path))
+                        setup.enter_context(patch.object(docker, "os", proc))
+                        setup.enter_context(patch.object(docker.signal, "SIGUSR1", 10, create=True))
+                        setup.enter_context(patch.object(op.flyway, "os", proc))
+                        adapter = docker.Docker(p)
                         parent = Path(p["inbox"]) / "read-matrix"
                         p["journal"] = str(parent)
 
                         if mode.startswith("executor-"):
-                            import store
                             pinned = modules is self.reference
                             executor = self.reference_executor if pinned else module_operation
-                            storage = self.reference_store if pinned else store
                             policy = self.reference_mandate if pinned else mandate
                             setup.enter_context(patch.dict(sys.modules, {"store": storage}))
                             setup.enter_context(patch.dict(case.dispatch.__globals__,
@@ -650,7 +719,10 @@ class NoDeltaParity(unittest.TestCase):
                             setup.enter_context(patch.object(executor, "save", storage.save))
                             setup.enter_context(patch.object(executor, "Journal", storage.Journal))
                             setup.enter_context(patch.object(storage, "trusted", lambda path, **kw: path))
-                            setup.enter_context(patch.object(storage, "sync_dir"))
+                            if os.name == "posix":
+                                setup.enter_context(patch.object(storage, "sync_dir", sync_storage))
+                            else:
+                                setup.enter_context(patch.object(storage, "sync_dir"))
                             case.root = parent
 
                         def replay(fault):
@@ -668,6 +740,10 @@ class NoDeltaParity(unittest.TestCase):
                                 case.rt, case.db = engine, copy.deepcopy(baseline_db)
                                 if mode.endswith("dedicated"):
                                     case.dedicated()
+                            def process(doc, gated):
+                                proc.state = "gated" if doc["Id"] in engine.gates else "running"
+                                return adapter.process(doc, gated)
+                            engine.process = process
                             events = []
                             phase = "plan"
                             def visit(kind, name):
@@ -676,14 +752,26 @@ class NoDeltaParity(unittest.TestCase):
                                 events.append((phase, kind, name))
                                 if len(events) == fault:
                                     raise OSError("injected")
-                            path_open, fd_open, zip_open = Path.open, os.open, zipfile.ZipFile.open
-                            def path_read(path, mode="r", *args, **kwargs):
-                                if "r" in mode:
-                                    visit("file", path.name)
-                                return path_open(path, mode, *args, **kwargs)
+                            fd_open, zip_open = os.open, zipfile.ZipFile.open
+                            read_bytes = Path.read_bytes
+                            in_read_bytes = False
+                            def bytes_read(path):
+                                nonlocal in_read_bytes
+                                visit("read_bytes", path.name)
+                                in_read_bytes = True
+                                try:
+                                    return read_bytes(path)
+                                finally:
+                                    in_read_bytes = False
+                            def traced_open(original):
+                                def opened(path, mode="r", *args, **kwargs):
+                                    if not in_read_bytes and "r" in mode and not isinstance(path, int):
+                                        visit("open", Path(path).name)
+                                    return original(path, mode, *args, **kwargs)
+                                return opened
                             def fd_read(path, flags, *args, **kwargs):
-                                if isinstance(path, (str, Path)) and Path(path).suffix == ".zip":
-                                    visit("artifact", Path(path).name)
+                                if not flags & (os.O_WRONLY | os.O_CREAT):
+                                    visit("os.open", Path(path).name)
                                 return fd_open(path, flags, *args, **kwargs)
                             def member_read(archive, name, mode="r", *args, **kwargs):
                                 if mode == "r":
@@ -691,8 +779,10 @@ class NoDeltaParity(unittest.TestCase):
                                 return zip_open(archive, name, mode, *args, **kwargs)
 
                             try:
-                                with patch.object(Path, "open", path_read), patch.object(os, "open", fd_read), \
-                                     patch.object(zipfile.ZipFile, "open", member_read), patch.object(os, "fsync"):
+                                with (patch.object(builtins, "open", traced_open(builtins.open)),
+                                      patch.object(io, "open", traced_open(io.open)),
+                                      patch.object(Path, "read_bytes", bytes_read), patch.object(os, "open", fd_read),
+                                      patch.object(zipfile.ZipFile, "open", member_read), patch.object(os, "fsync")):
                                     if mode.startswith("executor-"):
                                         case.req["run"] = "1"
                                         case.approvals.clear()
@@ -753,7 +843,11 @@ class NoDeltaParity(unittest.TestCase):
                         trace, outcome = replay(None)
                         if modules is self.reference:
                             self.assertIn(outcome["status"], ("ROLLED_BACK", "HELD"))
-                            self.assertIn("return", {row[0] for row in trace})
+                            self.assertIn("return", {row[0] for row in trace}, (outcome, trace[-20:]))
+                            opens = {(kind, name) for _, kind, name in trace}
+                            self.assertTrue({("open", "status"), ("read_bytes", "cmdline")} <= opens, opens)
+                            if mode == "spring-flyway":
+                                self.assertIn(("os.open", "app.jar"), opens)
                             expected_trace = trace
                             expected = [replay(i)[1] for i in range(1, len(trace) + 1)]
                         else:
@@ -803,21 +897,11 @@ class NoDeltaParity(unittest.TestCase):
         self.assertEqual(json.loads((case.root / "2" / "rollback.result").read_bytes()),
                          {"status": "HELD", "planSha256": stamp, "reason": "RELEASE_IO_OR_INPUT_ERROR/OSError@return_operation.py:40"})
 
-    def test_DEP_58QF_01_password_url_refused_before_migration_plan(self):
-        case = mcp.Release()
-        self.addCleanup(case.doCleanups)
-        case.setUp()
-        case.dedicated()
-        case.p["migration"]["command"].extend(["--url", "postgresql://test:fixture-only@localhost/db"])
-        files = {path: path.read_bytes() for path in case.root.rglob("*") if path.is_file()}
-        with redirect_stdout(io.StringIO()) as out, redirect_stderr(io.StringIO()) as err:
-            with self.assertRaisesRegex(mandate.Held, "^MIGRATION_INLINE_SECRET$"):
-                case.planned()
-            for result in (operation.plan(case.p, case.rt), operation.apply(case.p, "a" * 64, case.rt)):
-                self.assertEqual((result["status"], result["reason"]), ("HELD", "MIGRATION_INLINE_SECRET"))
-                self.assertNotIn("fixture-only", json.dumps(result))
-        self.assertEqual((out.getvalue(), err.getvalue(), case.rt.events), ("", "", []))
-        self.assertEqual(files, {path: path.read_bytes() for path in case.root.rglob("*") if path.is_file()})
+    def test_private_migration_arguments_match_release(self):
+        for args in (["psql", "-p5432"], ["-placeholders.region=eu"], ["host=db password=;private-fixture"],
+                     ["--url", "postgresql://test:fixture-only@localhost/db"]):
+            with self.subTest(args=args):
+                self.compare("dedicated", migration_args=args)
 
     def test_DEP_58QF_03_reference_migration_bytes_and_digest(self):
         args = ["--bypass-cache=enabled", "--url", "postgresql://test@localhost/db",

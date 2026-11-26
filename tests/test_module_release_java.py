@@ -1,5 +1,5 @@
 """Run both Java module profiles through the shared release and recovery owners."""
-from contextlib import closing, contextmanager
+from contextlib import closing, contextmanager, nullcontext
 import copy
 import json
 from pathlib import Path
@@ -19,7 +19,7 @@ MODULES = ("udp", "ingestion")
 
 
 @contextmanager
-def fixture(module):
+def fixture(module, *, jar=None):
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         p = json.loads(PROFILE.with_name(module + ".example.json").read_bytes())
@@ -45,8 +45,15 @@ def fixture(module):
             rt.docs[OLD]["Config"]["Env"].append('SPRING_APPLICATION_JSON={"ouf":{"udp":{"storage":"private-marker"}}}')
         rt.docs[pg] = dict(Id=pg, Name="/pg", State={"Running": True},
                            NetworkSettings={"Networks": copy.deepcopy(rt.nets)})
-        rows = [dict(version=str(i), script=f"V{i}__fixture.sql", type="SQL", checksum=i, success=True)
-                for i in ((20, 21) if module == "ingestion" else (1, 2))]
+        versions = (20, 21) if module == "ingestion" else (1, 2)
+        if jar is None:
+            rows = [dict(version=str(i), script=f"V{i}__fixture.sql", type="SQL", checksum=i, success=True)
+                    for i in versions]
+        else:
+            with zipfile.ZipFile(jar, "w") as archive:
+                for i in versions:
+                    archive.writestr(f"BOOT-INF/classes/db/migration/V{i}__fixture.sql", f"SELECT {i};")
+            rows = flyway.java_migrations(jar)
         history = rows[:1]
 
         def sql(cmd, *, input, **kwargs):
@@ -56,7 +63,8 @@ def fixture(module):
             return SimpleNamespace(returncode=0, stdout=json.dumps(
                 {"databaseOid":"42", "history":history}).encode())
 
-        with patch.object(flyway, "inventory", return_value=rows), patch.object(flyway.subprocess, "run", side_effect=sql):
+        inventory = patch.object(flyway, "inventory", return_value=rows) if jar is None else nullcontext()
+        with inventory, patch.object(flyway.subprocess, "run", side_effect=sql):
             yield p, rt, rows, history
 
 

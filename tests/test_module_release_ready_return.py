@@ -602,6 +602,56 @@ class ReadyReturn(unittest.TestCase):
             (directory / name).unlink()
         self.oracle(rt, plan, return_operation.run(rt.p, stamp, rt))
 
+    def test_bound_none_refuses_changed_database_before_stop(self):
+        import test_module_release_mcp as mcp
+        import mandate
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.p["configDelta"] = {"aliases": {next(iter(case.p["networks"])): ["reviewed-db-client"]}}
+        stamp = case.planned()["digest"]
+        self.assertEqual(case.call("apply", stamp)["status"], "READY")
+        events = list(case.rt.events)
+        case.db["schema"].append("unexpected column")
+        with self.assertRaisesRegex(mandate.Held, "DATABASE_CHANGED"):
+            case.call("rollback", stamp, run="2")
+        self.assertEqual(events, case.rt.events)
+        self.assertEqual(case.rt.inspect(case.p["container"])["Id"], fixture.NEW)
+
+    def test_signed_ready_before_result_republication_single_loss_matrix(self):
+        import module_operation
+        import mandate
+        cells = 0
+        for unlock_error, apply_error in ((Crash, Crash), (OSError, mandate.Held)):
+            case = self.governed_case()
+            case.p["receiptSigning"] = {"publicKey": {"path": str(case.root / "pub"), "sha256": "a"*64},
+                                        "privateKey": str(case.root / "key")}
+            call, req = case.governed_dispatch()
+            stamp = call(0)["digest"]
+            plan = op.read(case.root / "1", "plan")["plan"]
+            req.update(phase="apply", digest=stamp)
+            with patch.object(module_operation.module_receipt, "signing_key"), \
+                 patch.object(module_operation.operation.reviewed, "unlock", side_effect=unlock_error), self.assertRaises(apply_error):
+                call(1)
+            req.update(run="2", phase="rollback")
+            def signed(binding, directory, **kwargs):
+                attest_fixture(binding, directory, **kwargs)
+                raise Crash()
+            with patch.object(module_operation.module_receipt, "attest", signed), self.assertRaises(Crash):
+                call(1)
+            self.assertTrue((case.root / stamp / "receipt.ed25519").is_file())
+            target = case.root / "1" / "apply.result"
+            if unlock_error is OSError:
+                self.assertEqual(op.read(target.parent, target.name)["status"], "HELD")
+            else:
+                self.assertFalse(target.exists())
+            def governed(fresh):
+                result, _ = approved_retry(fresh, stamp, "3", interrupt=False)
+                self.assertEqual(result["status"], "ROLLED_BACK", result)
+                return op.read(case.root / stamp, "return-receipt.json")
+            cells += self.loss_row(case.rt, plan, ("signed-before-republication", unlock_error.__name__), governed)
+        print(f"D-080 signed before republication: 2 interruption boundaries, {cells} cases", flush=True)
+
     def test_DEP_58QD_13_bound_dedicated_keeps_compatible_committed_schema(self):
         import test_module_release_mcp as mcp
         case = mcp.Release()

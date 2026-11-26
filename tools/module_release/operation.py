@@ -45,7 +45,7 @@ def observe(p, rt, previous_release=None):
     binding = p["migration"].get("flyway", {})
     defaults = {} if "candidate" in p or "effectiveDatasource" in binding or "configDelta" in p else None
     artifact = package(p, image_defaults=defaults)
-    old = rt.inspect(p["container"])
+    old = public_output.predecessor(rt.inspect(p["container"]))
     previous = None
     if old["Image"] != p["oldImage"] and previous_release is not None:
         previous = previous_release()
@@ -85,7 +85,7 @@ def observe(p, rt, previous_release=None):
         }
     if "database" in p["migration"]:
         migration = p["migration"]
-        state = reviewed.check_input(postgres.observe(rt, old)) if "configDelta" in p else postgres.observe(rt, old)
+        state = postgres.observe(rt, old)
         require(len(state["history"]) == migration["database"]["version"], "DATABASE_CHANGED")
         body.update(rollback="IF_DATABASE_UNCHANGED", databaseSha256=digest(state), schemaSha256=digest(state["schema"]),
                     migrations=migration["migrations"], migrationsSha256=digest(migration["migrations"]))
@@ -128,7 +128,7 @@ def record(root, name, data):
     with tempfile.NamedTemporaryFile(dir=root, delete=False) as out:
         tmp = Path(out.name)
         try:
-            out.write(public_output.json_output(data))
+            out.write(json.dumps(data, sort_keys=True, separators=(",", ":")).encode())
             out.flush()
             os.fsync(out.fileno())
         except BaseException:
@@ -143,12 +143,12 @@ def record(root, name, data):
 
 
 def read(root, name):
-    return public_output.checked_plan(name, json.loads((root / name).read_bytes()))
+    return json.loads((root / name).read_bytes())
 
 
 def confirm(root, name, data):
     if (root / name).exists():
-        require(read(root, name) == public_output.public(data), "JOURNAL_BINDING_CHANGED")
+        require(read(root, name) == data, "JOURNAL_BINDING_CHANGED")
     else:
         record(root, name, data)
 
@@ -222,17 +222,17 @@ def waiting_gate(p, rt, old, cid, restoring=False):
 
 
 def load_predecessor(p, rt, root):
-    saved = public_output.private_baseline(json.loads((root / "baseline.private.json").read_bytes()))
+    saved = json.loads((root / "baseline.private.json").read_bytes())
     if "Config" in saved:  # original full-frame journals
-        return saved
+        return public_output.predecessor(saved)
     # Recover immutable fields from the retained CID; its original frame digest
     # authenticates them. DSNs and other Config.Env values never enter this journal.
-    return {**rt.inspect(saved["Id"]), **public_output.network_alias_refs(p, saved)}
+    return {**public_output.predecessor(rt.inspect(saved["Id"])), **saved}
 
 
 def verify_database(p, rt, old, root, *, migrated=False):
     if "database" in p["migration"]:
-        state = public_output.private_baseline(json.loads((root / "database.private.json").read_bytes()))
+        state = json.loads((root / "database.private.json").read_bytes())
         plan = json.loads((root / "plan.json").read_bytes())
         require(digest(plan) == root.name and digest(state) == plan["databaseSha256"], "DATABASE_BASELINE_CHANGED")
         postgres.verify(rt, old, state, p["migration"], migrated=migrated)
@@ -355,7 +355,7 @@ def restore(p, rt, old, new, root):
     require(doc["Id"] == cid and doc["Name"] in (old["Name"], "/" + p["retainedName"])
             and (doc["State"]["StartedAt"] == old["State"]["StartedAt"] or
                  reviewed.enabled(p) or (root / "restore-start.json").exists()), "RESTORE_IDENTITY_CHANGED")
-    # Legacy profiles require their live database proof before any return effect.
+    # Check the configured schema contract before touching either container.
     reviewed.verify_restore_schema(p, rt, old, root)
     attached = reviewed.attachments(p, old, doc, root) if reviewed.enabled(p) else doc["NetworkSettings"]["Networks"]
     require(set(attached) <= set(networks) and all(ep.get("NetworkID") in ("", networks[name]["NetworkID"])
@@ -419,7 +419,7 @@ def start_candidate(p, rt, old, cid, root):
 
 def finish_apply(p, rt, body, old, new, root, result, defer_migration):
     start = read(root, "start-generation.json")
-    require(start == reviewed.start_proof(new, rt.inspect(new), start if reviewed.enabled(p) else {}), "START_GENERATION_CHANGED")
+    require(start == reviewed.start_proof(new, rt.inspect(new), include_epoch=reviewed.enabled(p)), "START_GENERATION_CHANGED")
     review = defer_migration or "database" in p["migration"] or "flyway" in p["migration"]
     if review and p["migration"]["mode"] != "none":
         generation, checked = waiting_gate(p, rt, old, new)
@@ -433,7 +433,7 @@ def finish_apply(p, rt, body, old, new, root, result, defer_migration):
             require(rt.process(checked(), gated=True), "GATE_CHANGED")
             stage["flywayReview"] = proof
         confirm(root, "migration-plan.json", stage)
-        result.update(status="GATED", migrationSha256=digest(public_output.public(stage)))
+        result.update(status="GATED", migrationSha256=digest(stage))
         return
     proof = release(p, rt, old, new, root, expected_generation=start["generation"])
     retained(p, rt, old)
@@ -444,7 +444,7 @@ def finish_apply(p, rt, body, old, new, root, result, defer_migration):
 def execute(p, rt, body, old, root, result, defer_migration):
     new = None
     result["predecessorCid"] = old["Id"]
-    saved = public_output.network_alias_refs(p, {key: old[key] for key in ("Id", "Name", "NetworkSettings", "RestartCount")}, config=old["Config"])
+    saved = {key: old[key] for key in ("Id", "Name", "NetworkSettings", "RestartCount")}
     saved["State"] = {key: old["State"][key] for key in ("Running", "Pid", "StartedAt")}
     record(root, "plan.json", body)
     reviewed.save_frame(root, saved, body) if reviewed.enabled(p) else record(root, "baseline.private.json", saved)

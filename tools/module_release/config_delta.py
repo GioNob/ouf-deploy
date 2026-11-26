@@ -169,7 +169,7 @@ def approval_lines(delta, show_values=(), *, inherited=()):
         # In a mixed delta even the public flag can repeat a private value.
         if (replacement and len(env) == 1 and name == "SPRING_FLYWAY_ENABLED" and name in show_values
                 and value in (None, "true", "false", "enabled", "disabled")
-                and (value is None or not any(value in item for item in inherited))):
+                and (value is None or public(value) == value and not any(value in item for item in inherited))):
             return "assente" if value is None else json.dumps(value, ensure_ascii=False)
         return "sha256 " + delta_digest(value)
 
@@ -177,7 +177,8 @@ def approval_lines(delta, show_values=(), *, inherited=()):
     for row in env:
         name = row["name"]
         check(matches(r"[A-Z_][A-Z0-9_]*", name), "INVALID_ENV")
-        lines.append(f"ENV {name} da {display(name, row['before'])} a {display(name, row['after'], replacement=True)}")
+        label = name if public(name) == name else "sha256 " + delta_digest(name)
+        lines.append(f"ENV {label} da {display(name, row['before'])} a {display(name, row['after'], replacement=label == name)}")
     for bind in delta.get("binds", []):
         check(matches(r"[0-9a-f]{64}", bind["sha256"]), "INVALID_BIND_DIGEST")
         lines.append(f"Bind destinazione sha256 {delta_digest(bind['target'])} · contenuto sha256 {bind['sha256']}")
@@ -186,5 +187,5 @@ def approval_lines(delta, show_values=(), *, inherited=()):
     # A private value can coincide with a fixed keyword or part of a digest.
     # Never rewrite the grammar of a line that will be presented for approval.
     with scope(profile):
-        check(public(lines) == lines, INLINE_SECRET)
+        check(public(lines) == lines, "REDACTION_COLLISION")
     return lines

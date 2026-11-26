@@ -9,14 +9,9 @@ from . import frame
 from .docker import Docker
 from .config_delta import approval_lines, delta_digest, expected_after, validate_delta
 from .contract import SHA, digest, matches, require
-from .profile_options import INLINE_SECRET, inline_secret, reviewed as enabled
+from .profile_options import reviewed as enabled
 
 OWNER_LABEL = "ouf.release.plan"
-
-
-def check_input(value):
-    require(not inline_secret(value), INLINE_SECRET)
-    return value
 
 
 def projected(p, old):
@@ -28,13 +23,6 @@ def request(p, old, defaults):
     require(OWNER_LABEL not in labels, "INVALID_PROVENANCE_LABELS")
     labels[OWNER_LABEL] = "0" * 64
     if "configDelta" in p:
-        # These inputs are inherited by CREATE or copied into baseline.private.json.
-        for config in (old["Config"], defaults or {}):
-            for entry in config.get("Env") or ():
-                name, _, value = entry.partition("=")
-                check_input({name: value})
-        for endpoint in old["NetworkSettings"]["Networks"].values():
-            check_input([endpoint.get(field) for field in ("DriverOpts", "Aliases", "DNSNames", "Links")])
         delta = validate_delta(p["configDelta"], p, p["module"], predecessor_mounts=old["Mounts"])
         require(not (p.get("candidate", {}).get("enableFlyway") and
                      any(row["name"] == "SPRING_FLYWAY_ENABLED" for row in delta.get("env", []))), "AMBIGUOUS_ENV")
@@ -66,7 +54,6 @@ def review_lines(p, old):
 def bind_plan(p, body, old):
     body["createPlanLabel"] = OWNER_LABEL
     if "configDelta" in p:
-        check_input(body)
         body.update(configDeltaSha256=delta_digest(p["configDelta"]),
                     approvalLines=review_lines(p, old))
     body = op.public_output.public(body)
@@ -83,18 +70,11 @@ def lock_path(p):
 
 def acquire(lock, stamp, plan):
     require(not lock.exists(), "OPERATION_IN_PROGRESS_OR_INTERRUPTED")
-    op.public_output.checked_plan("plan.json", plan)
     private = Path(tempfile.mkdtemp(prefix=".prepare-", dir=lock.parent))
     op.record(private, "plan.json", plan)
     op.record(private, "owner.json", {"planSha256": stamp})
     os.rename(private, lock)
     op.sync_dir(lock.parent)
-
-
-def lock_digest(plan):
-    # A rollback of a historical plan can bind the digest without copying
-    # free-form text from the old approval projection into a fresh lock.
-    return plan["returnPlanSha256"] if set(plan) == {"returnPlanSha256"} else digest(plan)
 
 
 def owner(lock, stamp):
@@ -103,7 +83,7 @@ def owner(lock, stamp):
     if (lock / "owner.json").is_file():
         bindings.append(op.read(lock, "owner.json") == {"planSha256": stamp})
     if (lock / "plan.json").is_file():
-        bindings.append(lock_digest(op.read(lock, "plan.json")) == stamp)
+        bindings.append(digest(op.read(lock, "plan.json")) == stamp)
     require(bindings and all(bindings), "LOCK_OWNER_UNPROVEN")
 
 
@@ -113,7 +93,7 @@ def cleanup(lock, stamp):
         require(directory.is_dir() and {f.name for f in directory.iterdir()} <= {"owner.json", "plan.json"},
                 "LOCK_CLEANUP_CHANGED")
         if (directory / "plan.json").exists():
-            require(lock_digest(op.read(directory, "plan.json")) == stamp, "LOCK_CLEANUP_CHANGED")
+            require(digest(op.read(directory, "plan.json")) == stamp, "LOCK_CLEANUP_CHANGED")
         if (directory / "owner.json").exists():
             require(op.read(directory, "owner.json") == {"planSha256": stamp}, "LOCK_CLEANUP_CHANGED")
         (directory / "plan.json").unlink(missing_ok=True)
@@ -168,7 +148,7 @@ def labels(p, stamp=None):
     if enabled(p):
         lock = lock_path(p)
         labels[OWNER_LABEL] = stamp or (op.read(lock, "owner.json")["planSha256"] if (lock / "owner.json").exists()
-                               else lock_digest(op.read(lock, "plan.json")))
+                               else digest(op.read(lock, "plan.json")))
     return labels
 
 
@@ -269,7 +249,7 @@ def park_guard(p, rt, old, root, cid):
         park = optional(root, "park-epoch.json")
         if started is not None:
             require(started.get("cid") == cid and matches(SHA, started.get("generation"))
-                    and started.get("startedAt", observed[1]) == observed[1], "START_GENERATION_CHANGED")
+                    and started.get("startedAt") == observed[1], "START_GENERATION_CHANGED")
         if binding is not None:
             require(binding["cid"] == cid and binding["epoch"][:2] == observed[:2]
                     and binding["epoch"][3] == observed[3], "START_GENERATION_CHANGED")
@@ -288,7 +268,7 @@ def park_guard(p, rt, old, root, cid):
                     and (not signal or signal["epoch"] == observed), "START_GENERATION_CHANGED")
         else:
             require(state["Pid"] == 0 and (op.never_started(doc) or state["Status"] == "exited"), "STOP_UNCONFIRMED")
-            require(op.never_started(doc) or binding or signal or park or started and "startedAt" in started,
+            require(op.never_started(doc) or binding or signal or park or started,
                     "START_GENERATION_UNCONFIRMED")
             endpoints(projected(p, old), doc, candidate=True)
         return doc
@@ -467,7 +447,7 @@ def restore_start(p, rt, old, root, *, allow_recycle=True):
     if (cycle / "restore-stop-epoch.json").exists():
         require(op.read(cycle, "restore-stop-epoch.json") == stop_epoch(doc), "RESTORE_GENERATION_CHANGED")
     else:
-        # Older journals can still prove an already recorded live generation.
+        # A surviving generation record can prove the epoch if its stop record was lost.
         require((cycle / "restore-generation.json").is_file() or start and start.get("finishedAt") == stop_epoch(doc)["finishedAt"],
                 "RESTORE_GENERATION_UNCONFIRMED")
     op.confirm(cycle, "restore-generation.json", proof)
@@ -558,23 +538,21 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None, publi
                 plan = (optional(root, "return-frame.json") or {}).get("plan")
         require(plan and digest(plan) == stamp and plan["module"] == p["module"] and
                 plan["profileSha256"] == digest(p) and plan["createPlanLabel"] == OWNER_LABEL, "RETURN_PLAN_CHANGED")
-        op.public_output.checked_plan("plan.json", plan)
-        copyable = True
         if "configDelta" in p:
             require(plan.get("configDeltaSha256") == delta_digest(p["configDelta"]), "RETURN_PLAN_CHANGED")
         rt = runtime or op.Docker(p)
         if (root / "baseline.private.json").is_file():
             old = op.load_predecessor(p, rt, root)
         else:
-            live = rt.inspect(plan["oldCid"])
+            live = op.public_output.predecessor(rt.inspect(plan["oldCid"]))
             saved = optional(root, "return-frame.json")
-            old = dict(live, **op.public_output.network_alias_refs(p, op.public_output.private_baseline(saved["baseline"]))) if saved else live
-        if "configDelta" in p:
-            copyable = plan.get("approvalLines") == review_lines(p, old)
+            old = dict(live, **saved["baseline"]) if saved else live
         receipt = optional(root, "receipt.json")
         missing_receipt = receipt is None
         if missing_receipt and published_receipt:
             receipt = published_receipt()
+        if missing_receipt and receipt is None and (root / "receipt.ed25519").exists():
+            receipt = optional(root, "ready-before-signing.json")
         require(receipt or not (root / "receipt.ed25519").exists(), "RETURN_RECEIPT_CHANGED")
         returning = (root / "return-intent.json").is_file()
         if receipt:
@@ -597,6 +575,7 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None, publi
                 require(receipt.get("status") == "HELD" and bool(receipt.get("reason"))
                         and not (root / "receipt.ed25519").exists(), "RETURN_RECEIPT_CHANGED")
         if (root / "return-receipt.json").exists():
+            verify_restore_schema(p, rt, old, root)
             confirm_return(root, cid, stamp)
             final = restored(p, rt, old, cid, root, plan)
             saved = op.read(root, "return-receipt.json")
@@ -608,11 +587,10 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None, publi
                 cleanup(lock, stamp)
             return saved
         if not lock.exists():
-            acquire(lock, stamp, plan if copyable else {"returnPlanSha256": stamp})
+            acquire(lock, stamp, plan)
         root.mkdir(mode=0o700, exist_ok=True)
         op.sync_dir(root.parent)
-        if copyable:
-            op.confirm(root, "plan.json", plan)
+        op.confirm(root, "plan.json", plan)
         if cid:
             op.confirm(root, "created.json", {"cid": cid})
         if (root / "rollback-intent.json").exists():
@@ -644,7 +622,7 @@ def rollback(p, rt, old, root, result, exc):
 
 
 def verify_restore_schema(p, rt, old, root):
-    if not enabled(p):
+    if not enabled(p) or p["migration"]["mode"] == "none":
         op.verify_database(p, rt, old, root)
         op.verify_flyway_return(p, rt, old, root)
 
@@ -699,9 +677,9 @@ def started(rt, root, cid, generation):
     op.record(root, "start-generation.json", {"cid": cid, "generation": generation, "startedAt": doc["State"]["StartedAt"]})
 
 
-def start_proof(cid, doc, record):
+def start_proof(cid, doc, *, include_epoch):
     proof = {"cid": cid, "generation": frame.snapshot(doc)}
-    if "startedAt" in record:
+    if include_epoch:
         proof["startedAt"] = doc["State"]["StartedAt"]
     return proof
 

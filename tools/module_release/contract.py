@@ -397,28 +397,26 @@ _package = package
 
 # Credential-bearing productions accepted by the supported clients. Keep this
 # in the standalone contract: the installer loads this exact Git blob.
-import shlex
 from urllib.parse import unquote
 
 
-_migration_literal = re.compile(
+_delta_literal = re.compile(
     r"://[^/?#@\s]*:[^/?#@\s]+@|(?i:oracle:thin:)[^/@\s]+/[^@\s]+@"
     r"|(?:^|[=\s?&;'\"])(?i:password|sslpassword|PGPASSWORD|FLYWAY_PASSWORD|(?:-D)?flyway\.password)\s*=\s*[^\s&;]+"
     r"|(?:^|[\s'\"])-{1,2}(?:password|secret|token)=[^\s]+"
     r"|(?:^|[\s'\"])-p[^\s=]+")
 _value_flags = {"--password", "--secret", "--token"}
-_shells = {"sh", "bash", "dash", "ash", "ksh", "zsh"}
 
 
-def migration_literal(text):
-    return bool(_migration_literal.search(text))
+def delta_literal(text):
+    return bool(_delta_literal.search(text))
 
 
 def credential_words(words):
     for i, word in enumerate(words):
         if not isinstance(word, str):
             continue
-        if migration_literal(word):
+        if delta_literal(word):
             return True
         if word in _value_flags and i + 1 < len(words):
             value = words[i + 1]
@@ -480,7 +478,7 @@ def inline_secret(value):
         return False
     raw = value.strip()
     decoded = unquote(raw)
-    if _literal.search(decoded) or migration_literal(decoded):
+    if _literal.search(decoded) or delta_literal(decoded):
         return True
     if any(credential_name(m[1], option=True) and raw[m.end():].strip().lstrip("= ")
            for m in _long_option.finditer(raw)):
@@ -503,38 +501,6 @@ def inline_secret(value):
     return False
 
 
-def migration_json_secret(command):
-    for word in command:
-        if not isinstance(word, str):
-            continue
-        payload = word.partition("=")[2] if word.startswith("-") and "=" in word else word
-        if payload.lstrip().startswith(("{", "[", '"')) and inline_secret(payload):
-            return True
-    return False
-
-
-def migration_has_inline_secret(profile):
-    migration = profile.get("migration") if isinstance(profile, dict) else None
-    command = migration.get("command") if isinstance(migration, dict) else None
-    if not isinstance(command, list):
-        return False
-    if credential_words(command):
-        return True
-    for shell, flag, script in zip(command, command[1:], command[2:]):
-        if (isinstance(shell, str) and shell.rsplit("/", 1)[-1] in _shells and
-                matches(r"-[a-zA-Z]*c[a-zA-Z]*", flag) and isinstance(script, str)):
-            try:
-                words = shlex.split(script)
-            except ValueError:
-                words = script.split()
-            if credential_words(words):
-                return True
-    # The delta admission additionally checks every profile section and retains
-    # its historical CONFIG_DELTA_INLINE_SECRET diagnostic for structured inputs.
-    return "configDelta" not in profile and (migration_json_secret(command) or
-           inline_secret({key: item for key, item in migration.items() if key != "command"}))
-
-
 def validate_profile_options(profile, *, check=require):
     if __package__:
         try:
@@ -545,7 +511,6 @@ def validate_profile_options(profile, *, check=require):
             return admit(profile, check=check)
     # The installer also executes this module directly from its verified Git blob.
     if isinstance(profile, dict):
-        check(not migration_has_inline_secret(profile), "MIGRATION_INLINE_SECRET")
         check("configDelta" not in profile or isinstance(profile["configDelta"], dict) and profile["configDelta"], "INVALID_DELTA")
 
 

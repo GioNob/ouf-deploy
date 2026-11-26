@@ -132,7 +132,7 @@ def resume(p, rt, approved):
                          else op.flyway.checkpoint(rt, checked()))
                 require(all(proof[k] == v for k, v in body["flywayBaseline"].items()), "FLYWAY_BASELINE_CHANGED")
                 expected["flywayReview"] = proof
-            require(stage == op.public_output.public(expected), "MIGRATION_PLAN_CHANGED")
+            require(stage == expected, "MIGRATION_PLAN_CHANGED")
             if (root / "release-signal.json").exists():
                 require(op.read(root, "migration-review-consumed.json") == {"digest": digest(stage)},
                         "MIGRATION_REVIEW_UNPROVEN")

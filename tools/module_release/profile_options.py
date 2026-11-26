@@ -1,6 +1,6 @@
 """Module profile admission, shared with the isolated bootstrap."""
 from collections.abc import Mapping
-from .contract import credential_name, env_reference, inline_secret, migration_has_inline_secret
+from .contract import credential_name, env_reference, inline_secret
 
 
 INLINE_SECRET = "CONFIG_DELTA_INLINE_SECRET"
@@ -15,8 +15,7 @@ def delta_has_inline_secret(profile):
             return True
         if isinstance(rows, list) and any(isinstance(row, dict) and credential_name(row.get("name")) for row in rows):
             return True
-        return any(inline_secret(profile.get(section)) for section in
-                   ("configDelta", "migration", "gate", "candidate", "networks"))
+        return inline_secret(delta)
     except RecursionError:
         return True
 
@@ -34,7 +33,6 @@ def validate_profile_options(profile, *, check=require):
     """Common to full release profiles and the smaller transport profiles."""
     if not isinstance(profile, Mapping):
         return  # The entry point owns malformed profile diagnostics.
-    check(not migration_has_inline_secret(profile), "MIGRATION_INLINE_SECRET")
     if "configDelta" in profile:
         delta = profile["configDelta"]
         check(isinstance(delta, dict), "INVALID_DELTA")
