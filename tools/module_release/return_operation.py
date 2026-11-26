@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 
-from .contract import SHA, digest, matches, require
+from .contract import SHA, digest, matches, require, validate_profile_options
 from .frame import snapshot
 from .recovery import verify_stop_claim
 from .operation import (Docker, checked_generation, load_predecessor, read as journal_read, reason,
@@ -29,7 +29,7 @@ def interrupted_successor(profile, rt, old, plan, root):
     return cid
 
 
-def run(profile, stamp, runtime=None, *, recover=False):
+def _run(profile, stamp, runtime=None, *, recover=False):
     require(matches(SHA, stamp) and ("database" in profile["migration"] or "flyway" in profile["migration"]),
             "INVALID_RETURN_PLAN")
     parent = Path(profile["journal"])
@@ -104,3 +104,8 @@ def run(profile, stamp, runtime=None, *, recover=False):
         if unlock:
             unlock_module(lock)
     return result
+
+
+def run(profile, stamp, runtime=None, *, recover=False):
+    validate_profile_options(profile)
+    return _run(profile, stamp, runtime, recover=recover)

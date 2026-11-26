@@ -343,7 +343,12 @@ def package(p, target=None, *, transport=False, migrations_field=None, image_def
             return facts
 
 
+def validate_profile_options(profile, *, check=require):
+    """Common to full release profiles and the smaller transport profiles."""
+    check("configDelta" not in profile, "CONFIG_DELTA_NOT_ENABLED")
+
+
 def validate(p):
     # Keep diagnostic locations in the release validator stable for no-delta receipts.
-    require("configDelta" not in p, "CONFIG_DELTA_NOT_ENABLED")
+    validate_profile_options(p)
     _validate(p)

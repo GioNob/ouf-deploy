@@ -9,7 +9,7 @@ import re
 import tempfile
 from urllib.parse import urlsplit
 
-from .contract import SEMANTIC_SCHEMA, Held, checksum, package, require, validate_ci
+from .contract import SEMANTIC_SCHEMA, Held, checksum, package, require, validate_ci, validate_profile_options
 from .provenance import select_artifact, verify_tested_tree
 
 
@@ -74,6 +74,7 @@ def select(ci, run_id, artifact_id, api, *, artifact_prefix=None):
 
 
 def transport(profile, run_id, artifact_id, inbox):
+    validate_profile_options(profile)
     ci = select(profile["ci"], run_id, artifact_id, github)
     pinned = profile.get("module") in ("udp", "ingestion")
     if pinned:

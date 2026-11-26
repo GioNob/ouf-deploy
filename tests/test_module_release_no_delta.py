@@ -14,6 +14,8 @@ import zipfile
 
 import test_module_release as fixture
 import test_module_release_mcp as mcp
+from test_module_release_config_delta import executor_with_busy_lock
+import mandate
 from tools.module_release import frame, operation, recovery, return_operation
 
 
@@ -65,7 +67,8 @@ class NoDeltaParity(unittest.TestCase):
     def setUpClass(cls):
         tmp = cls.enterClassContext(tempfile.TemporaryDirectory())
         try:
-            archive = subprocess.check_output(["git", "archive", "--format=zip", REFERENCE, "tools/module_release"],
+            archive = subprocess.check_output(["git", "archive", "--format=zip", REFERENCE, "tools/module_release",
+                                               "scripts/ouf-a2-executor", "tools/privileged_executor/mandate.py"],
                                               cwd=fixture.ROOT, stderr=subprocess.PIPE)
         except subprocess.CalledProcessError:
             shallow = subprocess.check_output(["git", "rev-parse", "--is-shallow-repository"], cwd=fixture.ROOT)
@@ -73,10 +76,13 @@ class NoDeltaParity(unittest.TestCase):
                     ["git", "cat-file", "-e", REFERENCE], cwd=fixture.ROOT, stderr=subprocess.DEVNULL).returncode:
                 raise unittest.SkipTest(f"Shallow checkout lacks reference release {REFERENCE}") from None
             raise
+        cls.reference_root = Path(tmp) / "dep58lf_reference"
         with zipfile.ZipFile(io.BytesIO(archive)) as source:
-            source.extractall(Path(tmp) / "dep58lf_reference")
+            source.extractall(cls.reference_root)
         cls.enterClassContext(patch.object(sys, "path", [tmp, *sys.path]))
         from dep58lf_reference.tools.module_release import operation, recovery, return_operation
+        from dep58lf_reference.tools.privileged_executor import mandate as reference_mandate
+        cls.reference_mandate = reference_mandate
         cls.reference = (operation, recovery, return_operation)
 
     def complete_release(self, modules, case, rt, stamp, interrupted):
@@ -170,6 +176,14 @@ class NoDeltaParity(unittest.TestCase):
 
     def test_DEP_58LF_05_none(self):
         self.compare("none", interrupted=False)
+
+    def test_DEP_58LJ_04_busy_lock_public_error_matches_release(self):
+        profile = json.loads(fixture.PROFILE.with_name("mcp.example.json").read_bytes())
+        self.assertNotIn("configDelta", profile)
+        reference = executor_with_busy_lock(self.reference_root, self.reference_mandate, profile)
+        actual = executor_with_busy_lock(fixture.ROOT, mandate, profile)
+        self.assertEqual(reference, ((1, "", "A2_EVIDENCE_UNPROVEN/BlockingIOError@ouf-a2-executor:54\n"), 1, 1))
+        self.assertEqual(actual, reference)
 
     def test_DEP_58LF_06_none_interrupted_apply_and_return(self):
         self.compare("none", interrupted=True)

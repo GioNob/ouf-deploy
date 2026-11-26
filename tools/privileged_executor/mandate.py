@@ -35,7 +35,7 @@ def module_workflow(module):
     return f".github/workflows/{module}-module-release.yml"
 
 
-def validate(req, policy):
+def _validate_request(req, policy):
     common = {"commit", "run", "attempt", "phase", "digest"}
     if req.get("operation") == "module-release":
         need(set(req) == common | {"operation", "module"} and isinstance(req["module"], str)
@@ -150,3 +150,16 @@ def authorize(req, policy, get, state):
             return review
     consume_approval(state / req["run"], req["phase"], index)
     return review
+
+
+def validate(req, policy):
+    # Select only the requested profile. Keep the original request diagnostics
+    # for malformed envelopes and for operations without a module profile.
+    if isinstance(req, dict) and req.get("operation") in ("module-release", "module-install"):
+        from module_release.contract import validate_profile_options
+        name = req.get("module")
+        if isinstance(name, str):
+            profile = policy.get("modules", {}).get(name)
+            if isinstance(profile, dict):
+                validate_profile_options(profile, check=need)
+    _validate_request(req, policy)
