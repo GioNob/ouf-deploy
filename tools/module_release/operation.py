@@ -1,6 +1,5 @@
 """Typed module-release entry points. Caller authenticates phase and owns the installation lock."""
 
-from copy import copy
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -10,7 +9,7 @@ from . import flyway, postgres
 from .contract import (CI_COORDINATES, INGESTION_STARTUP_FLAGS, MCP_CI_COORDINATES, Held, SHA, diagnostic,
                        digest, jar_name, matches, package, require, validate)
 from .docker import Docker
-from .frame import (baseline, check_body, endpoint, epoch, merge_image,
+from .frame import (baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, merge_image,
                     provenance_labels, request, snapshot)
 
 
@@ -18,19 +17,8 @@ def reason(exc):
     return str(exc) if isinstance(exc, Held) else diagnostic("RELEASE_IO_OR_INPUT_ERROR", exc)
 
 
-def process(rt, doc, *, gated):
-    # baseline/check_body pin Config.Cmd to the command for this CID's role.
-    # Two containers can share an image and still require different procfs probes.
-    p = getattr(rt, "p", {})
-    if ("configDelta" in p and p.get("candidate", {}).get("removeArgs") and doc["Image"] == p["ci"]["imageId"]
-            and doc["Config"]["Cmd"] == p["gate"]["command"]):
-        rt = copy(rt)
-        rt.p = {key: value for key, value in p.items() if key != "candidate"}
-    return rt.process(doc, gated=gated)
-
-
 def ready_status(rt, doc, contract):
-    if not process(rt, doc, gated=False):
+    if not rt.process(doc, gated=False):
         return None
     status, body = rt.probe(doc)
     if status not in contract["acceptStatus"]:
@@ -43,39 +31,11 @@ def ready_status(rt, doc, contract):
         if not isinstance(value, dict) or value.get("status") != contract["jsonStatus"]:
             return None
     after = rt.inspect(doc["Id"])
-    return status if snapshot(after) == snapshot(doc) and process(rt, after, gated=False) else None
+    return status if snapshot(after) == snapshot(doc) and rt.process(after, gated=False) else None
 
 
 def ready(rt, doc, contract):
     return bool(ready_status(rt, doc, contract))
-
-
-OWNER_LABEL = "ouf.release.plan"
-
-
-def release_labels(p, *, planning=False):
-    labels = provenance_labels(p)
-    if "configDelta" in p:
-        if planning:
-            # As in module-install, hash the request with a fixed slot for the plan digest.
-            stamp = "0" * 64
-        else:
-            parent = Path(p["journal"])
-            stamp = read(parent / (p["module"] + ".lock"), "owner.json")["planSha256"]
-            require(matches(SHA, stamp), "LOCK_OWNER_UNPROVEN")
-            plan = read(parent / stamp, "plan.json")
-            require(digest(plan) == stamp and plan["profileSha256"] == digest(p), "JOURNAL_BINDING_CHANGED")
-            if "createPlanLabel" not in plan:  # Recorded CIDs from older delta journals.
-                return labels
-            require(plan["createPlanLabel"] == OWNER_LABEL, "JOURNAL_BINDING_CHANGED")
-        require(OWNER_LABEL not in labels, "INVALID_PROVENANCE_LABELS")
-        labels[OWNER_LABEL] = stamp
-    return labels
-
-
-def candidate_request(p, old, defaults):
-    return request(old, p["ci"]["imageId"], release_labels(p, planning=True), candidate=p.get("candidate"),
-                   image_defaults=defaults, config_delta=p.get("configDelta"))
 
 
 def observe(p, rt, previous_release=None):
@@ -91,18 +51,13 @@ def observe(p, rt, previous_release=None):
         require(old["Id"] == previous["successorCid"] and snapshot(old) == previous["successorFrameSha256"],
                 "PREDECESSOR_CHANGED")
     baseline(p, old, predecessor_image=previous["imageId"] if previous else None)
-    if "configDelta" in p:
-        from .config_delta import approval_lines, delta_digest, validate_delta
-        delta = validate_delta(p["configDelta"], p, p["module"], predecessor_mounts=old["Mounts"])
-        require(not (p.get("candidate", {}).get("enableFlyway") and
-                     any(row["name"] == "SPRING_FLYWAY_ENABLED" for row in delta.get("env", []))),
-                "AMBIGUOUS_ENV")
-    require(old["Image"] != p["ci"]["imageId"] or "configDelta" in p, "ALREADY_INSTALLED")
+    require(old["Image"] != p["ci"]["imageId"], "ALREADY_INSTALLED")
     require(all(rt.inspect(p[k], missing=True) is None for k in ("retainedName", "failedName")),
             "CUSTODY_NAME_OCCUPIED")
     require(ready(rt, old, p["readiness"]), "PREDECESSOR_NOT_READY")
     coordinates = MCP_CI_COORDINATES if p["ci"].get("publisherFormat") == "acquisition-mcp" else CI_COORDINATES
-    create_request = candidate_request(p, old, defaults)
+    create_request = request(old, p["ci"]["imageId"], provenance_labels(p),
+                             candidate=p.get("candidate"), image_defaults=defaults)
     if "effectiveDatasource" in binding:
         prospective = {key: create_request.get(key) for key in ("Entrypoint", "Cmd", "Env")}
         merge_image(prospective, defaults)
@@ -118,10 +73,6 @@ def observe(p, rt, previous_release=None):
     }
     if previous:
         body["predecessorPlanSha256"] = previous["planSha256"]
-    if "configDelta" in p:
-        body["createPlanLabel"] = OWNER_LABEL
-        body["configDeltaSha256"] = delta_digest(delta)
-        body["approvalLines"] = approval_lines(delta, p.get("showValues", []))
     if "candidate" in p:
         removed = p["candidate"].get("removeArgs", [])
         body["candidateReview"] = {
@@ -146,10 +97,7 @@ def observe(p, rt, previous_release=None):
         body["ci"]["artifactPrefix"] = p["ci"]["artifactPrefix"]
     if "flyway" in p["migration"]:
         jar = PurePosixPath("/app", jar_name(p["gate"]["command"]))
-        targets = [m["Destination"] for m in old["Mounts"]]
-        if "configDelta" in p:
-            targets.extend(b["target"] for b in delta.get("binds", []))
-        require(not any(jar.is_relative_to(target) for target in targets), "FLYWAY_JAR_SHADOWED")
+        require(not any(jar.is_relative_to(m["Destination"]) for m in old["Mounts"]), "FLYWAY_JAR_SHADOWED")
         body["flywayBaseline"] = flyway.baseline(flyway.observe(rt, old, predecessor=True))
     return body, old
 
@@ -194,17 +142,6 @@ def record(root, name, data):
 
 def read(root, name):
     return json.loads((root / name).read_bytes())
-
-
-def record_result(p, root, data):
-    if data["status"] == "GATED":
-        record(root, "stage.json", data)
-        return
-    if "configDelta" in p and (root / "plan.json").is_file():
-        plan = read(root, "plan.json")
-        require(digest(plan) == data["planSha256"] == root.name, "JOURNAL_BINDING_CHANGED")
-        data["configDeltaSha256"] = plan["configDeltaSha256"]
-    record(root, "receipt.json", data)
 
 
 def confirm(root, name, data):
@@ -257,15 +194,13 @@ def checked_generation(p, rt, old, cid, restoring=False):
     generation = snapshot(first)
 
     defaults = None if restoring else rt.image_defaults(image)
-    delta = None if restoring else p.get("configDelta")
-    labels = None if restoring else release_labels(p)
 
     def checked():
         doc = rt.inspect(cid)
         require(doc["Id"] == cid and doc["Name"] == "/" + p["container"], "SERVICE_IDENTITY_CHANGED")
-        check_body(old, doc, image, config_image, labels=labels,
-                   image_defaults=defaults, candidate=None if restoring else p.get("candidate"),
-                   config_delta=delta, check_networks=True)
+        check_body(old, doc, image, config_image, labels=None if restoring else provenance_labels(p),
+                   image_defaults=defaults, candidate=None if restoring else p.get("candidate"))
+        check_live_networks(old, doc)
         require(snapshot(doc) == generation, "GENERATION_CHANGED")
         return doc
 
@@ -276,7 +211,7 @@ def checked_generation(p, rt, old, cid, restoring=False):
 def waiting_gate(p, rt, old, cid, restoring=False):
     generation, checked = checked_generation(p, rt, old, cid, restoring)
     for _ in range(p["readiness"]["attempts"]):
-        if process(rt, checked(), gated=True):
+        if rt.process(checked(), gated=True):
             break
         rt.pause()
     else:
@@ -366,7 +301,7 @@ def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
     if signalled:
         require(read(root, signal_file) == signal_claim, "SIGNAL_GENERATION_CHANGED")
     else:
-        require(process(rt, checked(), gated=True), "GATE_CHANGED")
+        require(rt.process(checked(), gated=True), "GATE_CHANGED")
         if spring and "flyway" in p["migration"]:
             proof = flyway.checkpoint(rt, checked())
             require(proof == read(root, "migration-plan.json")["flywayReview"], "FLYWAY_REVIEW_CHANGED")
@@ -410,91 +345,14 @@ def release(p, rt, old, cid, root, restoring=False, expected_generation=None):
     raise Held("PREDECESSOR_READINESS_NOT_UP" if restoring else "READINESS_NOT_UP")
 
 
-def restore_archive(root, prior):
-    return root / ("restore-after-" + digest(prior))
-
-
-def restore_delta_start(p, rt, old, root):
-    """Keep one signal per generation, retaining each retired run's original journal."""
-    cid = old["Id"]
-    prior = epoch(old)
-    archive = restore_archive(root, prior)
-    while archive.is_dir() or (root / "restore-signal.json").is_file():
-        # Move the signal claim last. Its presence in the archive commits retirement.
-        if (archive / "restore-signal.json").is_file():
-            retired = read(archive, "restore-signal.json")
-            require(retired["cid"] == cid and retired["epoch"][0] == cid and retired["epoch"][1] != prior[1],
-                    "RESTORE_GENERATION_UNCONFIRMED")
-            prior = retired["epoch"]
-            archive = restore_archive(root, prior)
-            continue
-        signal = read(root, "restore-signal.json")
-        generation = read(archive if (archive / "restore-generation.json").exists() else root,
-                          "restore-generation.json")["generation"]
-        if not archive.exists():
-            try:
-                return release(p, rt, old, cid, root, restoring=True, expected_generation=generation)["readyHttp"]
-            except Held as exc:
-                if str(exc) != "PREDECESSOR_READINESS_NOT_UP":
-                    raise
-            # A shell can still be in its trap after delivery. Never signal this generation twice.
-            current, checked = checked_generation(p, rt, old, cid, restoring=True)
-            require(current == generation and process(rt, checked(), gated=True), "RESTORE_GATE_UNCONFIRMED")
-            archive.mkdir(mode=0o700)
-            sync_dir(root)
-        doc = rt.inspect(cid)
-        if doc["State"]["Running"]:
-            current, checked = checked_generation(p, rt, old, cid, restoring=True)
-            require(current == generation and signal == {"cid": cid, "epoch": epoch(doc)}, "SIGNAL_GENERATION_CHANGED")
-            if not process(rt, checked(), gated=True):
-                return release(p, rt, old, cid, root, restoring=True, expected_generation=current)["readyHttp"]
-            rt.stop(cid)
-            doc = rt.inspect(cid)
-        require(not doc["State"]["Running"] and doc["State"]["Status"] == "exited" and doc["State"]["Pid"] == 0
-                and signal["cid"] == doc["Id"] == cid and signal["epoch"][1] == doc["State"]["StartedAt"]
-                and signal["epoch"][3] == doc["RestartCount"], "RESTORE_GENERATION_UNCONFIRMED")
-        for name in ("restore-start.json", "restore-generation.json", "restore-signal.json.failure", "restore-signal.json"):
-            if (root / name).is_file():
-                require(not (archive / name).exists(), "JOURNAL_BINDING_CHANGED")
-                (root / name).rename(archive / name)
-                sync_dir(archive)
-                sync_dir(root)
-
-    start = read(root, "restore-start.json") if (root / "restore-start.json").is_file() else None
-    doc = rt.inspect(cid)
-    state = doc["State"]
-    require(doc["Id"] == cid and doc["Name"] == old["Name"] and doc["RestartCount"] == prior[3]
-            and (start is None or start.get("cid") == cid), "RESTORE_GENERATION_UNCONFIRMED")
-    if not state["Running"]:
-        require(state["Status"] == "exited" and state["Pid"] == 0 and state["StartedAt"] == prior[1]
-                and not (root / "restore-generation.json").exists(),
-                "RESTORE_GENERATION_UNCONFIRMED")
-        intent = {"cid": cid, "finishedAt": state.get("FinishedAt")}
-        confirm(root, "restore-start.json", {"cid": cid} if start == {"cid": cid} else intent)
-        rt.start(cid)
-    elif not (root / "restore-generation.json").exists():
-        require(start is not None and "finishedAt" in start and state.get("FinishedAt") == start["finishedAt"],
-                "RESTORE_GENERATION_UNCONFIRMED")
-    generation, checked = waiting_gate(p, rt, old, cid, restoring=True)
-    live = checked()
-    require((not state["Running"] or snapshot(doc) == generation)
-            and live["State"]["Status"] == "running" and live["RestartCount"] == prior[3]
-            and live["State"]["StartedAt"] not in ("", None, "0001-01-01T00:00:00Z", prior[1]),
-            "RESTORE_GENERATION_UNCONFIRMED")
-    confirm(root, "restore-generation.json", {"generation": generation})
-    return release(p, rt, old, cid, root, restoring=True, expected_generation=generation)["readyHttp"]
-
-
 def restore(p, rt, old, new, root):
     networks = old["NetworkSettings"]["Networks"]
     cid = old["Id"]
-    delta_rollback = "configDelta" in p and (root / "rollback-intent.json").is_file()
     doc = rt.inspect(cid)
     check_body(old, doc, old["Image"], old["Config"]["Image"])
     require(doc["Id"] == cid and doc["Name"] in (old["Name"], "/" + p["retainedName"])
             and (doc["State"]["StartedAt"] == old["State"]["StartedAt"] or
-                 (root / "restore-start.json").exists() or
-                 delta_rollback and restore_archive(root, epoch(old)).is_dir()), "RESTORE_IDENTITY_CHANGED")
+                 (root / "restore-start.json").exists()), "RESTORE_IDENTITY_CHANGED")
     verify_database(p, rt, old, root)
     verify_flyway_return(p, rt, old, root)
     attached = doc["NetworkSettings"]["Networks"]
@@ -513,8 +371,6 @@ def restore(p, rt, old, new, root):
     require(owner is None or owner["Id"] == cid, "UNKNOWN_SERVICE_OWNER")
     if doc["State"]["Running"]:
         if (root / "restore-start.json").exists():
-            if delta_rollback:
-                return restore_delta_start(p, rt, old, root)
             require(read(root, "restore-start.json") == {"cid": cid} and
                     (root / "restore-generation.json").is_file() and read(root, "restore-generation.json") == {"generation": snapshot(doc)},
                     "RESTORE_GENERATION_UNCONFIRMED")
@@ -530,8 +386,6 @@ def restore(p, rt, old, new, root):
         ep = networks[name]
         if name not in attached:
             rt.connect(cid, ep["NetworkID"], endpoint(ep))
-    if delta_rollback:
-        return restore_delta_start(p, rt, old, root)
     record(root, "restore-start.json", {"cid": cid})
     rt.start(cid)
     record(root, "restore-generation.json", {"generation": snapshot(rt.inspect(cid))})
@@ -548,45 +402,13 @@ def verify_never_started(p, rt, old, doc, root):
     require(never_started(doc)
             and not any((root / f).exists() for f in ("start-generation.json", "migration-plan.json", "release-signal.json")),
             "NEVER_STARTED_UNPROVEN")
-    check_created(p, rt, old, doc)
-
-
-def check_created(p, rt, old, doc):
     image = p["ci"]["imageId"]
-    delta = p.get("configDelta")
-    check_body(old, doc, image, image, created=True, labels=release_labels(p), image_defaults=rt.image_defaults(image),
-               candidate=p.get("candidate"), config_delta=delta, check_networks=True)
-
-
-def reconcile_create(p, rt, old, plan, root):
-    """Resolve a CREATE intent with no recorded CID under the plan's lock."""
-    require(read(root, "create-intent.json") == {"requestSha256": plan["requestSha256"]}
-            and not (root / "start-intent.json").exists(), "RECOVERY_CREATE_CHANGED")
-    require(rt.inspect(p["failedName"], missing=True) is None, "CUSTODY_NAME_OCCUPIED")
-    doc = rt.inspect(p["container"], missing=True)
-    if doc and doc["Id"] == old["Id"] and (root / "rollback-intent.json").is_file():
-        # A previous recovery already reclaimed the service name. restore() checks its frame and generation.
-        require(read(root, "rollback-intent.json") == {"cid": old["Id"]}
-                and rt.inspect(p["retainedName"], missing=True) is None, "RESTORE_IDENTITY_CHANGED")
-        return None
-    retained(p, rt, old)
-    if doc is None:
-        return None
-    cid = doc["Id"]
-    require(plan.get("createPlanLabel") == OWNER_LABEL and matches(SHA, cid) and cid != old["Id"]
-            and doc["Name"] == old["Name"] and (doc["Config"].get("Labels") or {}).get(OWNER_LABEL) == root.name,
-            "CREATE_OWNERSHIP_UNCONFIRMED")
-    verify_never_started(p, rt, old, doc, root)
-    record(root, "created.json", {"cid": cid})
-    return cid
+    check_body(old, doc, image, image, created=True, labels=provenance_labels(p),
+               image_defaults=rt.image_defaults(image), candidate=p.get("candidate"))
+    check_created_networks(old, doc)
 
 
 def start_candidate(p, rt, old, cid, root):
-    binds = p.get("configDelta", {}).get("binds")
-    if binds:
-        from .frame_spec import validate_bind
-        for bind in binds:
-            validate_bind(bind, p)
     confirm(root, "start-intent.json", {"cid": cid})
     rt.start(cid)
     generation, _ = checked_generation(p, rt, old, cid)
@@ -631,7 +453,8 @@ def execute(p, rt, body, old, root, result, defer_migration):
         rt.load(archive, actual)
     require(snapshot(rt.inspect(old["Id"])) == body["oldFrameSha256"], "PRE_STOP_DRIFT")
     image = p["ci"]["imageId"]
-    req = candidate_request(p, old, rt.image_defaults(image) if "candidate" in p else None)
+    req = request(old, image, provenance_labels(p), candidate=p.get("candidate"),
+                  image_defaults=rt.image_defaults(image) if "candidate" in p else None)
     require(digest(req) == body["requestSha256"], "CREATE_REQUEST_CHANGED")
     networks = old["NetworkSettings"]["Networks"]
     if "database" in p["migration"]:
@@ -643,9 +466,7 @@ def execute(p, rt, body, old, root, result, defer_migration):
     try:
         park(rt, old["Id"], p["retainedName"], networks)
         retained(p, rt, old)
-        record(root, "create-intent.json", {"requestSha256": body["requestSha256"]})
-        if "createPlanLabel" in body:
-            req["Labels"][OWNER_LABEL] = root.name
+        record(root, "create-intent.json", {"requestSha256": digest(req)})
         new = rt.create(p["container"], req)
         require(matches(SHA, new) and new != old["Id"], "CREATE_ID_UNCONFIRMED")
         result["successorCid"] = new
@@ -653,7 +474,9 @@ def execute(p, rt, body, old, root, result, defer_migration):
         doc = rt.inspect(new)
         require(doc["Id"] == new and doc["Name"] == old["Name"] and doc["State"]["Status"] == "created"
                 and not doc["State"]["Running"], "CREATED_IDENTITY_CHANGED")
-        check_created(p, rt, old, doc)
+        check_body(old, doc, p["ci"]["imageId"], p["ci"]["imageId"], created=True, labels=provenance_labels(p),
+                   image_defaults=rt.image_defaults(image), candidate=p.get("candidate"))
+        check_created_networks(old, doc)
         start_candidate(p, rt, old, new, root)
         finish_apply(p, rt, body, old, new, root, result, defer_migration)
     except Exception as exc:
@@ -669,11 +492,6 @@ def rollback(p, rt, old, root, result, exc):
                 and not (root / "migration-complete.json").exists()):
             verify_database(p, rt, old, root)
             raise Held("MIGRATION_OUTCOME_UNCONFIRMED")
-        if ("configDelta" in p and (root / "create-intent.json").exists()
-                and "successorCid" not in result and not (root / "created.json").exists()):
-            cid = reconcile_create(p, rt, old, read(root, "plan.json"), root)
-            if cid:
-                result["successorCid"] = cid
         status = restore(p, rt, old, result.get("successorCid"), root)
         result.update(rollback="ROLLED_BACK", restoredCid=old["Id"], predecessorReadiness="UP",
                       predecessorReadyHttp=status)
@@ -718,7 +536,7 @@ def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=Fals
             except Exception as exc:
                 result["reason"] = reason(exc)
             gated = result["status"] == "GATED"
-            record_result(profile, root, result)
+            record(root, "stage.json" if gated else "receipt.json", result)
             unlock = not gated and result.get("rollback") != "HELD"
         finally:
             if unlock:
@@ -768,7 +586,7 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
         # An uncertain signal may finish while no executor is running. Retain
         # the reviewed stage for a fresh dispatch to reconcile it read-only.
         return result
-    record_result(profile, root, result)
+    record(root, "receipt.json", result)
     if result.get("rollback") != "HELD":
         unlock_module(lock)
     return result

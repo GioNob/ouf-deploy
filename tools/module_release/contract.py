@@ -82,7 +82,7 @@ def candidate_command(command, candidate):
     return [arg for arg in command if arg not in removed]
 
 
-def validate(p):
+def _validate(p):
     require(p["schema"] == "ouf.module-release.v1", "PROFILE_VERSION")
     for name in ("module", "container", "retainedName", "failedName"):
         require(matches(NAME, p[name]), "INVALID_NAME")
@@ -341,3 +341,9 @@ def package(p, target=None, *, transport=False, migrations_field=None, image_def
                 require(isinstance(manifest.get(migrations_field), list), "MIGRATION_INVENTORY_REQUIRED")
                 facts["migrations"] = manifest[migrations_field]
             return facts
+
+
+def validate(p):
+    # Keep diagnostic locations in the release validator stable for no-delta receipts.
+    require("configDelta" not in p, "CONFIG_DELTA_NOT_ENABLED")
+    _validate(p)

@@ -24,6 +24,10 @@ from gateway_operation import GatewayRelease
 
 
 def dispatch(req, cfg, state, get, source_get=None, *, token=None):
+    # authorize() creates the run journal or consumes an approval.
+    if req.get("operation") in ("module-release", "module-install") and isinstance(req.get("module"), str):
+        profile = cfg["modules"].get(req["module"], {})
+        need("configDelta" not in profile, "CONFIG_DELTA_NOT_ENABLED")
     review = authorize(req, cfg, get, state)
     if req.get("operation") == "module-install":
         return ModuleInstall(cfg, state, req).execute(review)

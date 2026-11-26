@@ -53,8 +53,6 @@ def run(profile, stamp, runtime=None, *, recover=False):
     try:
         plan = read("plan.json")
         require(digest(plan) == stamp and plan["profileSha256"] == digest(profile), "RETURN_PLAN_CHANGED")
-        if "configDelta" in profile:
-            result["configDeltaSha256"] = plan["configDeltaSha256"]
         rt = runtime or Docker(profile)
         old = load_predecessor(profile, rt, root)
         require(snapshot(old) == plan["oldFrameSha256"] and old["Id"] == plan["oldCid"], "RETURN_BASELINE_CHANGED")
@@ -72,7 +70,6 @@ def run(profile, stamp, runtime=None, *, recover=False):
         else:
             receipt = read("receipt.json")
             require(receipt["status"] == "READY" and receipt["planSha256"] == stamp
-                    and ("configDelta" not in profile or receipt.get("configDeltaSha256") == plan["configDeltaSha256"])
                     and receipt["predecessorCid"] == old["Id"]
                     and (resuming or not (root / "return-intent.json").exists()), "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE")
             cid = receipt["successorCid"]

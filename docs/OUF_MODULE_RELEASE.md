@@ -83,23 +83,7 @@ La suite portabile usa lo ZIP nel formato R-033 e verifica i mandati sulle fasi.
 
 ## Delta di configurazione
 
-Il custode può aggiungere `configDelta` al profilo privato del modulo per cambiare configurazione nella stessa CREATE che seleziona l'immagine CI. Un delta effettivo permette anche di mantenere l'image ID corrente. In sua assenza, la stessa immagine dà `ALREADY_INSTALLED`.
-
-| Campo del delta | Contratto |
-|---|---|
-| `env` | Lista di oggetti con `name`, `before` e `after`. Il nome deve comparire in `envAllowlist` del profilo del modulo. In `before`, JSON `null` richiede una variabile assente e `""` richiede una variabile presente con valore vuoto. In `after`, `null` rimuove la variabile, anche se l'immagine definisce un default. I segreti si referenziano con un nome `*_FILE` che punta alla destinazione esatta di un bind RO. |
-| `binds` | Lista di aggiunte con `source`, `target`, `mode` uguale a `ro` e `sha256` del file. Le sorgenti devono appartenere alle `bindRoots` del profilo e superare i controlli di custodia comuni a `module-install`. Il plan e il ricalcolo sotto lock verificano il contenuto. La destinazione deve essere libera, anche rispetto ai mount sovrapposti. |
-| `aliases` | Oggetto che associa il nome di una rete già presente nel profilo a una lista di alias da aggiungere. Il predecessore conserva i propri alias. |
-
-Il piano di `module-release` espone `approvalLines` con una riga per operazione. Per le ENV mostra prima e dopo in chiaro solo per i nomi presenti in `showValues`, un sottoinsieme di `envAllowlist` nello stesso profilo. Per le altre mostra il nome e gli SHA-256 dei due valori JSON canonici. Per un bind mostra destinazione, modalità e digest. `configDeltaSha256` è lo SHA-256 del JSON canonico del delta e lega il piano approvato alla ricevuta. Una preimmagine difforme dà `DELTA_PRECONDITION_FAILED`, un nome ENV duplicato dà `AMBIGUOUS_ENV` e un delta vuoto dà `EMPTY_DELTA`.
-
-L'apply confronta configurazione, mount e reti del candidato con il frame approvato. Per le nuove CREATE con delta, il piano riserva l'etichetta Docker `ouf.release.plan`. Il calcolo di `requestSha256` usa 64 zeri in quel campo e la CREATE vi inserisce `planSha256`. Se la risposta alla CREATE si perde, il rollback automatico dell'apply verifica etichetta, frame e stato di container mai avviato prima di isolare il candidato.
-
-Il controllo di `before` e `after` precede la pubblicazione. `DOCKER_AUTH_CONFIG` e le proprietà JSON di autenticazione del registry danno `SECRET_ENV_DENIED` anche con il nome in `showValues`.
-
-Durante il recupero prima di `READY`, un candidato uscito tra start e registrazione della generazione viene isolato dopo la verifica del CID, dell’intento e del frame. Per riavviare il predecessore la ripresa riconcilia l’intento di start con lo stato Docker. Se esiste già il claim di `USR1`, attende la readiness della generazione registrata. Se il processo è ancora al cancello verificato, ne conferma l’arresto, archivia i claim e riavvia lo stesso CID. Ogni generazione riceve al massimo un segnale.
-
-Se resta un lock dopo la scrittura della ricevuta terminale, la ripresa confronta `configDeltaSha256` con il piano originale. Un digest assente o diverso dà `RECOVERY_RECEIPT_CHANGED` e conserva il lock. Dopo un ripristino interrotto con `PREDECESSOR_READINESS_NOT_UP`, il recupero riuscito conserva la ricevuta del tentativo in `restore-held.json` e registra `ROLLED_BACK` in `receipt.json`.
+`configDelta` non abilitato, si abilita con il 58q. La presenza della chiave nel profilo, anche con valore nullo o vuoto, ferma la richiesta con `HELD / CONFIG_DELTA_NOT_ENABLED` prima della creazione del piano e del journal.
 
 ## Prima installazione (`module-install`)
 
@@ -113,7 +97,7 @@ Gli antenati delle sorgenti sono directory in custodia root. Il mount RO richied
 4. Per isolare il candidato indicare `return_plan` con il digest originale e approvare `rollback`. Il journal conserva il CID anche dopo il fermo, il distacco delle reti e la rinomina in `install.failedName`. Dopo un errore di readiness l’apply registra il fallimento e tenta lo stesso isolamento. Il recupero dei dati applicativi usa la cattura dello store.
 5. Per il primo aggiornamento ordinario fissare `oldImage` a `imageId` della ricevuta, preparare i pin del nuovo ZIP e i nomi di custodia liberi e usare il workflow `module-release` del modulo. La linea A inserisce il nuovo servizio nella guardia di boot coordinata, con gate, dipendenze e sonda del relativo profilo.
 
-Il consumatore di `configDelta` passa le radici del delta e i percorsi privati del modulo a `validate_bind(entry, roots, profile=profile)`. La forma a due argomenti accetta una mappa con `bindRoots`, `journal`, `inbox` e `dockerSocket`. Una lista priva del contesto privato dà `BIND_POLICY_REQUIRED` per una sorgente altrimenti ammessa. Dopo la composizione del delta, `check_file_env(env, mounts)` verifica i riferimenti `*_FILE` contro le destinazioni RO del frame risultante.
+Per il 58q, il contratto della libreria richiede di passare le radici del delta e i percorsi privati del modulo a `validate_bind(entry, roots, profile=profile)`. La forma a due argomenti accetta una mappa con `bindRoots`, `journal`, `inbox` e `dockerSocket`. Una lista priva del contesto privato dà `BIND_POLICY_REQUIRED` per una sorgente altrimenti ammessa. Dopo la composizione del delta, `check_file_env(env, mounts)` verifica i riferimenti `*_FILE` contro le destinazioni RO del frame risultante.
 
 La verifica della CREATE precede la registrazione del CID, anche nel recupero dalla label. Config eredita i default dell’immagine verificata. L’inspect Linux API 1.44 può materializzare l’hostname dal CID breve, il conteggio zero dei tentativi di restart, raccolte vuote o nulle, la propagazione privata dei bind e i default Engine elencati in `HOST_DEFAULTS`. I mount si confrontano per destinazione e gli alias per nome. A container fermo il NetworkID può essere vuoto. Dopo lo start si verificano ID della rete e IPv4 assegnata. Docker alloca le MAC. Un limite risorse diverso, un’opzione host sconosciuta o un default del daemon fuori dal profilo riconosciuto danno `HELD`.
 

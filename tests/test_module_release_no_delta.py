@@ -14,7 +14,7 @@ import zipfile
 
 import test_module_release as fixture
 import test_module_release_mcp as mcp
-from tools.module_release import operation, recovery, return_operation
+from tools.module_release import frame, operation, recovery, return_operation
 
 
 # Tip of origin/release/d091-t2-deploy at DN-L1-5. Keep the oracle fixed after merge.
@@ -79,8 +79,55 @@ class NoDeltaParity(unittest.TestCase):
         from dep58lf_reference.tools.module_release import operation, recovery, return_operation
         cls.reference = (operation, recovery, return_operation)
 
-    def run_release(self, modules, case, interrupted):
+    def complete_release(self, modules, case, rt, stamp, interrupted):
         op, rec, ret = modules
+        p = case.p
+        if interrupted:
+            # The candidate exists and its CID is journaled, but start has not run.
+            with patch.object(case.rt, "start", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+                op.apply(p, stamp, rt)
+            approved = rec.proposal(p, rt)
+            result = rec.resume(p, rt, approved)
+        else:
+            result = op.apply(p, stamp, rt)
+        if p["migration"]["mode"] == "dedicated":
+            self.assertEqual(result["status"], "GATED", result)
+            stage = result["migrationSha256"]
+            if interrupted:
+                migrate = case.rt.migrate
+
+                def lost_migration_response(*args):
+                    migrate(*args)
+                    raise KeyboardInterrupt
+
+                with patch.object(case.rt, "migrate", lost_migration_response), self.assertRaises(KeyboardInterrupt):
+                    op.migrate(p, stamp, stage, rt)
+                self.assertEqual(rec.resume(p, rt, rec.proposal(p, rt))["migrationSha256"], stage)
+            result = op.migrate(p, stamp, stage, rt, recover=interrupted)
+        self.assertEqual(result["status"], "READY", result)
+
+        if interrupted and p["migration"]["mode"] == "none":
+            signal = case.rt.signal
+
+            def lost_restore_response(cid):
+                signal(cid)
+                raise KeyboardInterrupt
+
+            with patch.object(case.rt, "signal", lost_restore_response), self.assertRaises(KeyboardInterrupt):
+                ret.run(p, stamp, rt)
+            returned = ret.run(p, stamp, rt, recover=True)
+        else:
+            returned = ret.run(p, stamp, rt)
+        root = Path(p["journal"]) / stamp
+        self.assertEqual(op.read(root, "return-receipt.json"), returned)
+        self.assertEqual(op.read(root, "receipt.json"), result)
+        if p["migration"]["mode"] == "dedicated":
+            self.assertEqual((returned["status"], returned["reason"]), ("HELD", "DATABASE_CHANGED"))
+        else:
+            self.assertEqual((returned["status"], returned["restoredCid"]), ("ROLLED_BACK", fixture.OLD))
+
+    def run_release(self, modules, case, interrupted, exercise):
+        op, rec, _ = modules
         p = case.p
         journal = Path(p["journal"])
         journal.mkdir()
@@ -89,56 +136,18 @@ class NoDeltaParity(unittest.TestCase):
             planned = op.plan(p, rt)
             self.assertEqual(planned["status"], "PLANNED", planned)
             stamp = planned["planSha256"]
-            if interrupted:
-                # The candidate exists and its CID is journaled, but start has not run.
-                with patch.object(case.rt, "start", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
-                    op.apply(p, stamp, rt)
-                approved = rec.proposal(p, rt)
-                result = rec.resume(p, rt, approved)
+            if exercise is None:
+                self.complete_release(modules, case, rt, stamp, interrupted)
             else:
-                result = op.apply(p, stamp, rt)
-            if p["migration"]["mode"] == "dedicated":
-                self.assertEqual(result["status"], "GATED", result)
-                stage = result["migrationSha256"]
-                if interrupted:
-                    migrate = case.rt.migrate
-
-                    def lost_migration_response(*args):
-                        migrate(*args)
-                        raise KeyboardInterrupt
-
-                    with patch.object(case.rt, "migrate", lost_migration_response), self.assertRaises(KeyboardInterrupt):
-                        op.migrate(p, stamp, stage, rt)
-                    self.assertEqual(rec.resume(p, rt, rec.proposal(p, rt))["migrationSha256"], stage)
-                result = op.migrate(p, stamp, stage, rt, recover=interrupted)
-            self.assertEqual(result["status"], "READY", result)
-
-            if interrupted and p["migration"]["mode"] == "none":
-                signal = case.rt.signal
-
-                def lost_restore_response(cid):
-                    signal(cid)
-                    raise KeyboardInterrupt
-
-                with patch.object(case.rt, "signal", lost_restore_response), self.assertRaises(KeyboardInterrupt):
-                    ret.run(p, stamp, rt)
-                returned = ret.run(p, stamp, rt, recover=True)
-            else:
-                returned = ret.run(p, stamp, rt)
-            if p["migration"]["mode"] == "dedicated":
-                self.assertEqual((returned["status"], returned["reason"]), ("HELD", "DATABASE_CHANGED"))
-            else:
-                self.assertEqual((returned["status"], returned["restoredCid"]), ("ROLLED_BACK", fixture.OLD))
+                exercise(op, rec, case, rt, stamp)
             self.assertEqual(len(rt.creates), 1)
-            root = journal / stamp
-            return {"CREATE": rt.creates[0], "planSha256": stamp.encode(), "plan": (root / "plan.json").read_bytes(),
-                    "receipt": (root / "receipt.json").read_bytes(), "return": (root / "return-receipt.json").read_bytes(),
-                    "Docker calls": rt.calls, "journal": {f.relative_to(journal): f.read_bytes()
-                                                          for f in journal.rglob("*.json")}}
+            return {"CREATE": rt.creates[0], "planSha256": stamp.encode(), "Docker calls": rt.calls,
+                    "journal": {f.relative_to(journal): f.read_bytes()
+                                for f in journal.rglob("*") if f.is_file()}}
         finally:
             shutil.rmtree(journal)
 
-    def compare(self, mode, interrupted):
+    def compare(self, mode, interrupted=False, exercise=None):
         case = mcp.Release()
         self.addCleanup(case.doCleanups)
         case.setUp()
@@ -153,7 +162,7 @@ class NoDeltaParity(unittest.TestCase):
             if mode == "dedicated":
                 case.dedicated()
             self.assertEqual(case.p["migration"]["mode"], mode)
-            results.append(self.run_release(modules, case, interrupted))
+            results.append(self.run_release(modules, case, interrupted, exercise))
         expected, actual = results
         for key in expected:
             with self.subTest(field=key):
@@ -170,3 +179,131 @@ class NoDeltaParity(unittest.TestCase):
 
     def test_DEP_58LF_08_dedicated_interrupted_apply_and_migration(self):
         self.compare("dedicated", interrupted=True)
+
+    def test_DEP_58LI_04_created_publication_io_error(self):
+        def exercise(op, rec, case, rt, stamp):
+            link = op.os.link
+
+            def publish(source, dest):
+                if dest.name == "created.json":
+                    raise OSError("synthetic publication failure")
+                link(source, dest)
+
+            with patch.object(op.os, "link", publish):
+                result = op.apply(case.p, stamp, rt)
+            self.assertEqual((result["status"], result["rollback"], result["restoredCid"]),
+                             ("HELD", "ROLLED_BACK", fixture.OLD))
+            self.assertEqual(result["reason"], "RELEASE_IO_OR_INPUT_ERROR/OSError@operation.py:137")
+            self.assertEqual(op.read(Path(case.p["journal"]) / stamp, "receipt.json"), result)
+
+        for mode in ("none", "dedicated"):
+            with self.subTest(mode=mode):
+                self.compare(mode, exercise=exercise)
+
+    def test_DEP_58LI_05_interrupted_start_and_failed_resume(self):
+        def exercise(op, rec, case, rt, stamp):
+            record = op.record
+
+            def interrupt(root, name, data):
+                if name == "start-generation.json":
+                    if reason != "START_GENERATION_UNCONFIRMED":
+                        record(root, name, data)
+                    raise KeyboardInterrupt
+                record(root, name, data)
+
+            with patch.object(op, "record", interrupt), self.assertRaises(KeyboardInterrupt):
+                op.apply(case.p, stamp, rt)
+            if reason == "START_GENERATION_CHANGED":
+                case.rt.stop(fixture.NEW)
+            if reason == "READINESS_NOT_UP":
+                case.rt.fault = "readiness"
+            with self.assertRaises(op.Held) as held:
+                rec.resume(case.p, rt, rec.proposal(case.p, rt))
+            self.assertEqual(str(held.exception), reason)
+
+        for reason in ("START_GENERATION_UNCONFIRMED", "START_GENERATION_CHANGED", "READINESS_NOT_UP"):
+            with self.subTest(reason=reason):
+                self.compare("none", exercise=exercise)
+
+    def test_DEP_58LI_06_lost_predecessor_start_response(self):
+        def exercise(op, rec, case, rt, stamp):
+            case.rt.fault = "readiness"
+            start = case.rt.start
+
+            def unreliable_start(cid):
+                if cid != fixture.OLD or started:
+                    start(cid)
+                if cid == fixture.OLD:
+                    raise OSError("synthetic lost response")
+
+            with patch.object(case.rt, "start", unreliable_start):
+                result = op.apply(case.p, stamp, rt)
+            self.assertEqual((result["status"], result["reason"], result["rollback"]),
+                             ("HELD", "READINESS_NOT_UP", "HELD"))
+            self.assertEqual(op.read(Path(case.p["journal"]) / stamp, "receipt.json"), result)
+            with self.assertRaisesRegex(op.Held, "^TERMINAL_HELD_REQUIRES_OWNER$"):
+                rec.resume(case.p, rt, rec.proposal(case.p, rt))
+
+        for started in (False, True):
+            with self.subTest(started=started):
+                self.compare("none", exercise=exercise)
+
+
+class WithoutDelta(unittest.TestCase):
+    def test_DEP_58L_06_legacy_create_bytes(self):
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        old = case.rt.inspect(fixture.OLD)
+        image = case.p["ci"]["imageId"]
+        expected = copy.deepcopy(old["Config"])
+        expected.pop("MacAddress")
+        expected["Image"] = image
+        expected["HostConfig"] = dict(old["HostConfig"], OomKillDisable=False)
+        expected["NetworkingConfig"] = {"EndpointsConfig": {
+            name: {"IPAMConfig": {"IPv4Address": ep["IPAddress"]}, "Aliases": ep["Aliases"]}
+            for name, ep in old["NetworkSettings"]["Networks"].items()}}
+        self.assertEqual(json.dumps(frame.request(old, image)).encode(), json.dumps(expected).encode())
+
+    def test_DEP_58LE_05_dedicated_without_delta_requires_release_receipt(self):
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.dedicated()
+        stamp = operation.plan(case.p, case.rt)["planSha256"]
+        with patch.object(operation, "start_candidate", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            operation.apply(case.p, stamp, case.rt)
+        events = list(case.rt.events)
+        result = return_operation.run(case.p, stamp, case.rt, recover=True)
+        self.assertEqual(result.get("reason"), "OPERATION_IN_PROGRESS_OR_INTERRUPTED")
+        self.assertEqual(events, case.rt.events)
+        self.assertFalse((Path(case.p["journal"]) / stamp / "return-intent.json").exists())
+
+    def test_DEP_58LE_05_legacy_restore_start_claim(self):
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        stamp = operation.plan(case.p, case.rt)["planSha256"]
+        self.assertEqual(operation.apply(case.p, stamp, case.rt)["status"], "READY")
+        with patch.object(case.rt, "start", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            return_operation.run(case.p, stamp, case.rt)
+        self.assertEqual(operation.read(Path(case.p["journal"]) / stamp, "restore-start.json"), {"cid": fixture.OLD})
+
+    def test_DEP_58LE_05_none_without_delta_preserves_rollback_scope(self):
+        import mandate
+
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.p["migration"] = {"mode": "none", "rollbackCompatible": True}
+        stamp = case.planned()
+        req = dict(commit="c"*40, run="1", attempt="1", operation="module-release",
+                   module=case.p["module"], phase="rollback", digest=stamp)
+        with self.assertRaisesRegex(mandate.Held, "MODULE_REQUEST_SCOPE"):
+            mandate.validate(req, {"commit": req["commit"], "modules": {req["module"]: case.p}})
+        with self.assertRaisesRegex(operation.Held, "INVALID_RETURN_PLAN"):
+            return_operation.run(case.p, stamp, case.rt, recover=True)
+
+    def test_DEP_58LG_04_native_checkout_does_not_require_full_history(self):
+        path = fixture.ROOT / ".github/workflows/privileged-executor-native.yml"
+        self.assertNotRegex(path.read_text(encoding="utf-8"), r"(?m)^\s*fetch-depth:\s*0\s*$")

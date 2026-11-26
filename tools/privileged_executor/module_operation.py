@@ -176,8 +176,6 @@ class ModuleRelease:
                 response["retentionReview"] = proposal["plan"][retention.ADMIN]
             if "candidateReview" in proposal["plan"]:
                 response["candidateReview"] = proposal["plan"]["candidateReview"]
-            if "approvalLines" in proposal["plan"]:
-                response["approvalLines"] = proposal["plan"]["approvalLines"]
             if "sourcePlan" in proposal["plan"]:
                 response["sourcePlan"] = proposal["plan"]["sourcePlan"]
             if "migrations" in proposal["plan"]:
