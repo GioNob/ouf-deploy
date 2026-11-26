@@ -1,5 +1,5 @@
 """Fail-closed release profiles and the isolated 58q library."""
-from contextlib import ExitStack, chdir, redirect_stderr, redirect_stdout
+from contextlib import ExitStack, chdir, nullcontext, redirect_stderr, redirect_stdout
 from functools import partial
 import io
 import json
@@ -233,18 +233,13 @@ class DisabledDeltaTest(unittest.TestCase):
         self.addCleanup(bootstrap.doCleanups)
         bootstrap.setUp()
         inst = bootstrap.inst
-        proposed = bootstrap.path.read_bytes()
-        cfg = json.loads(proposed)
-        clean = {inst.ROOT / "profile.json": (proposed, 0o600)}
+        cfg = json.loads(bootstrap.path.read_bytes())
         p = cfg["modules"]["mcp"]
         p.update(configDelta=self.marker, journal=str(journal))
         first = dict(setup_profile(str(journal)), configDelta=self.marker)
         profile_file = root / "transport.json"
         profile_file.write_text(json.dumps(p), encoding="utf-8")
         bootstrap.path.write_text(json.dumps(cfg))
-        files = {inst.ROOT / "profile.json": (json.dumps(cfg).encode(), 0o600)}
-        inst.ROOT.mkdir()
-        (inst.ROOT / "profile.json").write_text(json.dumps(cfg))
         req = request_for("module-release", "mcp")
         install_req = request_for("module-install", first["module"])
         install_cfg = dict(cfg, modules={first["module"]: first})
@@ -298,10 +293,6 @@ class DisabledDeltaTest(unittest.TestCase):
             ("transport", partial(transport.transport, p, 15, 17, root)),
             ("transport.cli", partial(transport.main, [str(profile_file), "15", "17", str(root)])),
             ("installer.inspect", partial(inst.inspect, bootstrap.path)),
-            ("installer.journals", partial(inst.journals, files[inst.ROOT / "profile.json"][0])),
-            ("installer.manifest", partial(inst.manifest, files)),
-            ("installer.install", partial(inst.install, files, {})),
-            ("installer.manifest.installed", partial(inst.manifest, clean)),
         ]
         cases.extend((phase, partial(retention.run, p, rt, stamp, phase, {})) for phase in retention.COMMAND)
         cases.extend(("installer." + mode, partial(installer_cli, mode)) for mode in ("plan", "apply", "bootstrap"))
@@ -328,10 +319,9 @@ class DisabledDeltaTest(unittest.TestCase):
                                           (return_operation, "Docker"), (operation, "request"), (install, "summary"),
                                           (frame_spec, "create_with_custody"), (config_delta, "approval_lines"),
                                           (module_operation, "Journal"), (inst.subprocess, "check_output"),
-                                          (transport, "github"), (inst, "installation_lock"),
+                                          (transport, "github"), (inst, "manifest"), (inst, "install"),
+                                          (inst, "installation_lock"),
                                           (store, "begin_plan"), (store, "consume_approval"))]
-            # install() checks sudoers before it decodes the proposed journal paths.
-            enter(patch.object(inst, "visudo"))
             for name, invoke in cases:
                 out, err = io.StringIO(), io.StringIO()
                 with self.subTest(ingress=name), redirect_stdout(out), redirect_stderr(err), self.assertNoLogs(level="DEBUG"):
@@ -351,33 +341,6 @@ class DisabledDeltaTest(unittest.TestCase):
                         self.assertEqual(guard.mock_calls, [])
         self.assertFalse(journal.exists())
 
-    def test_DEP_58LN_03_installer_denies_installed_delta_on_manifest_read(self):
-        case = installer_fixture.Bootstrap()
-        self.addCleanup(case.doCleanups)
-        case.setUp()
-        inst = case.inst
-        inst.ROOT.mkdir()
-        installed = inst.ROOT / "profile.json"
-        policy = json.loads(case.path.read_bytes())
-        policy["modules"]["mcp"]["configDelta"] = self.marker
-        installed.write_text(json.dumps(policy))
-
-        with ExitStack() as stack:
-            enter = stack.enter_context
-            read = enter(patch.object(Path, "read_bytes", autospec=True, side_effect=Path.read_bytes))
-            enter(patch.object(sys, "argv", ["install", "plan", str(case.path)]))
-            enter(patch.object(inst, "sys", SimpleNamespace(flags=SimpleNamespace(isolated=True))))
-            enter(patch.object(os, "geteuid", return_value=0, create=True))
-            enter(patch.object(os, "umask"))
-            apply = enter(patch.object(inst, "install"))
-            out, err = enter(redirect_stdout(io.StringIO())), enter(redirect_stderr(io.StringIO()))
-            with self.assertRaisesRegex(ValueError, "^" + self.code + "$"):
-                inst.main()
-        profiles_read = [args[0] for args, _ in read.call_args_list if args[0] in (case.path, installed)]
-        self.assertEqual(profiles_read, [case.path, installed])
-        self.assertEqual((out.getvalue(), err.getvalue()), ("", ""))
-        apply.assert_not_called()
-
     def test_DEP_58LK_02_installer_usage_does_not_read_profile(self):
         inst = runpy.run_path(str(fixture.ROOT / "scripts/install-ouf-a2.py"))
         with patch.object(sys, "argv", ["install", "unknown", "profile.json"]), \
@@ -385,6 +348,66 @@ class DisabledDeltaTest(unittest.TestCase):
             inst["main"]()
         self.assertEqual(usage.exception.code, 2)
         read.assert_not_called()
+
+
+class InstalledDeltaTest(unittest.TestCase):
+    marker = "private-installed-mcp-delta"
+
+    def setUp(self):
+        case = self.case = installer_fixture.Bootstrap()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.install_fixture()
+        self.installed = case.inst.ROOT / "profile.json"
+        self.clean = self.installed.read_bytes()
+        policy = json.loads(self.clean)
+        self.old_journal = case.inst.ROOT / "lib" / "retired-journal"
+        policy["modules"]["mcp"].update(configDelta=self.marker, journal=str(self.old_journal))
+        self.installed.write_text(json.dumps(policy))
+        self.old_journal.mkdir()
+        self.receipt = self.old_journal / "receipt"
+        self.receipt.write_bytes(b"retained receipt")
+        if not case.native:
+            self.enterContext(patch.object(os, "geteuid", return_value=0, create=True))
+            self.enterContext(patch.object(case.inst, "sys", SimpleNamespace(flags=SimpleNamespace(isolated=True))))
+        if os.name == "nt":
+            self.enterContext(patch.object(case.inst, "installation_lock", nullcontext))
+
+    def cli(self, mode, *args):
+        out, err = io.StringIO(), io.StringIO()
+        with patch.object(sys, "argv", ["install", mode, str(self.case.path), *args]), \
+                redirect_stdout(out), redirect_stderr(err):
+            self.case.inst.main()
+        self.assertNotIn(self.marker, out.getvalue())
+        self.assertEqual(err.getvalue(), "")
+        return out.getvalue()
+
+    def test_DEP_58LN_03_installer_plans_replacement_and_protects_old_journal(self):
+        before = self.installed.read_bytes()
+        plan = json.loads(self.cli("plan"))
+        row = plan["files"][str(self.installed)]
+        self.assertEqual(row["action"], "replace")
+        self.assertEqual(row["before"]["sha256"], self.case.inst.sha(before))
+        self.assertEqual(row["after"]["sha256"], self.case.inst.sha(self.clean))
+        self.assertEqual(self.installed.read_bytes(), before)
+
+        inventory = self.case.inst.ROOT / "managed-files.json"
+        names = json.loads(inventory.read_bytes())
+        names.append(self.receipt.relative_to(self.case.inst.ROOT).as_posix())
+        inventory.write_text(json.dumps(names))
+        with self.assertRaisesRegex(ValueError, "^PROTECTED_INSTALL_STATE$"):
+            self.cli("plan")
+
+    def test_DEP_58LP_01_installed_delta_is_absent_from_plan_and_receipt(self):
+        plan = json.loads(self.cli("plan"))
+        self.assertNotIn(self.marker, json.dumps(plan))
+        applied = self.cli("apply", "--plan-sha256", plan["planSha256"])
+        published, status = applied.rstrip().rsplit("\n", 1)
+        self.assertEqual(json.loads(published), plan)
+        self.assertEqual(status, "OUF_A2_INSTALLED")
+        self.assertEqual(self.installed.read_bytes(), self.clean)
+        self.assertEqual(list(self.old_journal.iterdir()), [self.receipt])
+        self.assertEqual(self.receipt.read_bytes(), b"retained receipt")
 
 
 class LibraryTest(unittest.TestCase):

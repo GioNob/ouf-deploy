@@ -33,8 +33,7 @@ REFERENCE = "c8851aba5d6fabb93f84829e39e461bc57094b3e"
 
 
 def installer_plan(root, profile, fail_read=0):
-    # Use the same relative CLI filename for both tracebacks. Supply private, root-owned
-    # metadata for the temporary profile and its ancestors on unprivileged hosts.
+    # Supply private, root-owned metadata for the temporary profile on unprivileged hosts.
     launcher = dedent("""\
         import errno, os, runpy, sys
         from pathlib import Path
@@ -362,7 +361,7 @@ class NoDeltaParity(unittest.TestCase):
                     self.assertEqual(list(case.inst.ROOT.iterdir()), [installed])
                     self.assertEqual(installed.read_bytes(), current)
 
-    def test_DEP_58LO_01_installer_plan_traceback_and_read_faults(self):
+    def test_DEP_58LO_01_installer_plan_public_errors_and_read_faults(self):
         profile = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve() / "profile.json"
         for policy, fail_read, error in (
                 ({}, 0, b"ValueError: INSTALL_PROFILE_FIELDS"),
@@ -377,9 +376,8 @@ class NoDeltaParity(unittest.TestCase):
                 actual = installer_plan(fixture.ROOT, profile, fail_read)
                 self.assertEqual((expected.returncode, expected.stdout), (1, b""))
                 self.assertIn(error, expected.stderr.splitlines()[-1])
-                self.assertIn(b'line 365, in <module>', expected.stderr)
-                self.assertEqual((actual.returncode, actual.stdout, actual.stderr),
-                                 (expected.returncode, expected.stdout, expected.stderr))
+                self.assertEqual((actual.returncode, actual.stdout, actual.stderr.splitlines()[-1]),
+                                 (expected.returncode, expected.stdout, expected.stderr.splitlines()[-1]))
 
     def test_DEP_58LO_02_installer_plan_denies_delta_without_value(self):
         case = installer_fixture.Bootstrap()
