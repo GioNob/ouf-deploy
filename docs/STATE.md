@@ -1,6 +1,16 @@
 # Stato corrente OUF
 
-## Sprint 03/60w-b · lettura ACTIVE prima del rilascio Gateway
+## Sprint 03/60w-c · lettura ACTIVE prima del rilascio Gateway
+
+Il lettore accetta `--issuer`, `--subject` e `--tenant`. Per l'issuer può usare `gateway.values["gateway.issuerUrl"]` e per il tenant `queue.subjectTenants[subject]`. I campi HUMAN mancanti vengono chiesti prima del login. Quando compare la riga con URL e codice, basta confermare nel browser. Il lettore interroga il token endpoint e indica la fase in caso di errore.
+
+Il 26 novembre sono passati 17 dei 18 PET su Windows con Python 3.12.12. Il PET 09 richiede un journal nativo Linux root ed è stato saltato. Le prove offline coprono il polling con `slow_down`, la scadenza, la classificazione degli errori e la ricevuta di successo. Il primo tentativo sul VPS con il lettore precedente aveva restituito `TRANSPORT_ERROR` senza identificare la fase.
+
+Dopo la review 60w-c-b, un retry del token endpoint rispetta l’intervallo di polling corrente, il backoff e `Retry-After`. Con `expires_in=900` il lettore attende fino al secondo 900. Su Windows con Python 3.12.14 sono passati 19 PET su 20. La verifica Linux root del PET 09 resta aperta per accesso negato al daemon Docker.
+
+Il 60w-c-c verifica che `slow_down` aumenti l’intervallo anche oltre 600 secondi. Con `interval=600` ed `expires_in=1900` i poll partono ai secondi 600, 1205 e 1815 e la challenge scade al secondo 1900. Un HTTP 200 con JSON illeggibile dal token endpoint produce `LOGIN_FAILED:token`. Su Windows con Python 3.12.14 sono passati 21 PET su 22. Il PET 09 richiede Linux root e la suite dedicata a `HumanSession` richiede `fcntl`.
+
+Il 60w-c-d rifiuta prima dell’output e del polling una challenge che include il `device_code` in uno dei due URL di verifica, anche in forma percent-encoded. Gli HTTP 200 del token endpoint con corpo illeggibile, JSON non oggetto o oltre 65.536 byte producono `LOGIN_FAILED:token`. Su Windows con Python 3.12.12 sono passati 23 PET su 24. Il PET 09 è stato saltato e la suite dedicata a `HumanSession` si è fermata all’import di `fcntl`. [Report](../report-60w-c-d.md)
 
 Il lettore confronta due letture ACTIVE attorno all’export e restituisce il digest dei byte ricevuti. Ricava l’host da `gateway.values["gateway.publicApiHost"]`. Se la chiave manca, serve `--origin` prima del login. L’owner ha accettato che `HumanSession` custodisca il JWT e il journal temporaneo (entrambi 0600) nella stessa directory 0700, eliminata a fine comando anche se arriva SIGINT durante la pulizia.
 

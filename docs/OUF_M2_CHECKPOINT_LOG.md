@@ -723,3 +723,19 @@ La review del 60w attesta 9/9 PET verdi in `python:3.13-slim` come root. Le prov
 Il PET 08 verifica la chiave letterale del bundle. I nuovi PET 10–12 coprono il profilo senza host, SIGINT durante la rimozione del JWT e le risposte HTTP 200 malformate con bearer sentinella. Sono passati tutti gli 11 PET eseguibili su Windows con Python 3.12.14. Il PET 09 è stato saltato perché richiede Linux root. La suite aggiornata conta 12 PET. [Prove PET](../tests/test_installation_active_reader.py)
 
 Esecuzione successiva in `python:3.13-slim` come root: 12/12 PET verdi, compreso il PET 09 con il vero `HumanSession`.
+
+## 26 novembre 2026 · sprint-03/60w-c · polling automatico e diagnosi del lettore ACTIVE
+
+Il lettore mostra URL e codice sul terminale e prosegue dopo la conferma nel browser. Nel PET 16, con intervallo di 7 secondi, il token endpoint riceve i poll a 7, 14 e 26 secondi dopo `authorization_pending` e `slow_down`. Il PET 17 verifica anche la scadenza prima del primo poll e durante il rallentamento. Su Windows con Python 3.12.12 sono passati 17 PET, con il solo PET 09 saltato perché richiede Linux root. Le risposte HTTP provengono da fixture in memoria. [Prove del lettore](../tests/test_installation_active_reader.py)
+
+## 26 novembre 2026 · sprint-03/60w-c-b · retry e scadenza del device flow
+
+Con il clock simulato, i PET 19–20 hanno riprodotto il retry al secondo 24 e l’ultimo poll al secondo 590 per una challenge valida 900 secondi. Dopo la correzione, HTTP 429 e 503 portano il retry al secondo 31, oppure al 39 con `Retry-After: 20`. La challenge in attesa scade al secondo 900 dopo l’ultimo poll al secondo 890. Su Windows sono passati 19 PET. Docker ha negato l’accesso al daemon prima dell’avvio del container richiesto per il PET 09.
+
+## 26 novembre 2026 · sprint-03/60w-c-c · intervallo crescente e JSON del token endpoint
+
+Il PET 21 ha riprodotto i poll ai secondi 600, 1200 e 1800. Dopo la correzione partono ai secondi 600, 1205 e 1815 e la challenge scade al secondo 1900. Il PET 22 verifica `LOGIN_FAILED:token` per HTTP 200 con JSON illeggibile e `LOGIN_FAILED:poll` per la stessa risposta con HTTP 400. Su Windows sono passati 21 PET e il PET 09 è stato saltato. La suite dedicata a `HumanSession` si è fermata all’import di `fcntl`. [Report](../report-60w-c-c.md)
+
+## 26 novembre 2026 · sprint-03/60w-c-d · URL di verifica e corpi del token endpoint
+
+Il PET 23 verifica il rifiuto della challenge prima di qualsiasi messaggio o poll quando la sentinella compare in uno dei due URL di verifica. Il PET 24 verifica `LOGIN_FAILED:token` per HTTP 200 con JSON non oggetto, byte non decodificabili, errore durante la lettura o corpo di 65.537 byte. Su Windows sono passati 23 PET e il PET 09 è stato saltato. La suite dedicata a `HumanSession` si è fermata all’import di `fcntl`. [Report](../report-60w-c-d.md)
