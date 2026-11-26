@@ -63,6 +63,7 @@ NAME = r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}"
 SHA = r"[0-9a-f]{64}"
 IMAGE = "sha256:" + SHA
 SEMANTIC_SCHEMA = "ouf.semantic-tested-image.v1"
+VERTICAL_MOCK_SCHEMA = "ouf.vertical-mock-tested-image.v1"
 COMMON_CI_COORDINATES = ("repository", "workflow", "pullRequest", "runId", "runAttempt", "artifactId", "zipSha256",
                          "sourceCommit", "sourceTree", "imageName", "imageId")
 CI_COORDINATES = COMMON_CI_COORDINATES + ("manifestSchema",)
@@ -141,6 +142,12 @@ def validate(p):
     require(("command" in migration) == (migration["mode"] == "dedicated")
             and ("command" not in migration or argv(migration["command"])), "INVALID_MIGRATION_COMMAND")
     ci = p["ci"]
+    if p["module"] == "vertical-mock":
+        validate_vertical_mock_ci(ci)
+        require(isinstance(p.get("persistentPathEnv"), list) and "OUF_MOCK_DATA_DIR" in p["persistentPathEnv"],
+                "PERSISTENT_PATH_PROFILE_REQUIRED")
+        require(migration["mode"] == "none" and set(migration) == {"mode", "rollbackCompatible"},
+                "VERTICAL_MOCK_MIGRATION_PROFILE")
     validate_ci(ci)
     if "flyway" in migration or p["module"] in ("udp", "ingestion"):
         db = migration.get("flyway", {})
@@ -207,11 +214,25 @@ def jar_name(command):
     return tail[0].split("/")[-1]
 
 
+def valid_repository(value):
+    return matches(NAME + "/" + NAME, value) and ".." not in value
+
+
 def validate_ci(ci):
-    require(matches(NAME + "/" + NAME, ci["repository"]) and matches(NAME, ci["imageName"])
+    require(valid_repository(ci.get("repository")) and matches(NAME, ci["imageName"])
             and matches(r"[0-9a-f]{40}", ci["sourceCommit"]) and matches(r"[0-9a-f]{40}", ci["sourceTree"])
             and all(type(ci[k]) is int and ci[k] > 0 for k in ("runId", "runAttempt", "artifactId"))
             and matches(SHA, ci["zipSha256"]) and matches(IMAGE, ci["imageId"]), "CI_PINS_REQUIRED")
+
+
+def validate_vertical_mock_ci(ci):
+    require(isinstance(ci, dict) and set(CI_COORDINATES).issubset(ci)
+            and valid_repository(ci["repository"])
+            and ci["workflow"] == "module-ci.yml"
+            and ci.get("artifactPrefix") == "vertical-mock-governed-image"
+            and ci["manifestSchema"] == VERTICAL_MOCK_SCHEMA and ci["imageName"] == "ouf-vertical-mock"
+            and type(ci["pullRequest"]) is int and ci["pullRequest"] > 0 and "publisherFormat" not in ci,
+            "VERTICAL_MOCK_PUBLISHER_PINS_REQUIRED")
 
 
 def image_metadata(archive, verify_blobs):
@@ -289,6 +310,31 @@ def verify_labels(labels, repository, tested, *, optional):
             "IMAGE_LABELS_CHANGED")
 
 
+def vertical_mock_manifest(raw):
+    # The v1 manifest is a flat object. Preserve key multiplicity when decoding.
+    def unique_fields(pairs):
+        fields = dict(pairs)
+        require(len(fields) == len(pairs), "VERTICAL_MOCK_MANIFEST_FIELDS")
+        return fields
+
+    try:
+        manifest = json.loads(raw, object_pairs_hook=unique_fields)
+    except (UnicodeError, ValueError):
+        raise Held("VERTICAL_MOCK_MANIFEST_FIELDS") from None
+    flags = {"targetApplyAuthorized", "humanBudgetGranted", "releaseAcceptance"}
+    fields = {"schema", "repository", "reviewedSourceCommit", "testedCommit", "testedTree",
+              "workflowRunId", "workflowRunAttempt", "imageTag", "imageRevisionLabel", "imageId",
+              "archiveName", "archiveSha256", "archiveBytes", "qualifiedInCiOnly", "contract", "journalFormat"}
+    require(isinstance(manifest, dict) and set(manifest) == fields | flags, "VERTICAL_MOCK_MANIFEST_FIELDS")
+    require(manifest["schema"] == VERTICAL_MOCK_SCHEMA and manifest["contract"] == "ouf.vertical-mock.v1"
+            and manifest["journalFormat"] == "ouf.vertical-mock-journal.v1"
+            and manifest["qualifiedInCiOnly"] is True and all(manifest[k] is False for k in flags),
+            "VERTICAL_MOCK_MANIFEST_CONTRACT")
+    require(matches(r"[0-9a-f]{40}", manifest["testedCommit"]) and type(manifest["archiveBytes"]) is int,
+            "CI_PROVENANCE_CHANGED")
+    return manifest
+
+
 def package(p, target=None, *, transport=False, migrations_field=None, image_defaults=None):
     """Hash the exact open ZIP and inner payload. Only copy verified bytes to private custody."""
     ci = p["ci"]
@@ -307,7 +353,9 @@ def package(p, target=None, *, transport=False, migrations_field=None, image_def
             require(sorted(z.namelist()) == ["SHA256SUMS", "image.tar.gz", "manifest.json"]
                     and z.getinfo("manifest.json").file_size <= 65536
                     and z.getinfo("SHA256SUMS").file_size <= 256, "ARTIFACT_LAYOUT")
-            manifest = json.loads(z.read("manifest.json"))
+            raw_manifest = z.read("manifest.json")
+            manifest = (vertical_mock_manifest(raw_manifest) if ci["manifestSchema"] == VERTICAL_MOCK_SCHEMA
+                        else json.loads(raw_manifest))
             tested = manifest["testedCommit"]
             tag = ci["imageName"] + ":" + tested
             expected = {

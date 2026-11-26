@@ -1,0 +1,55 @@
+{
+  "schema": "ouf.module-release.v1",
+  "module": "vertical-mock",
+  "persistentPathEnv": ["OUF_MOCK_DATA_DIR"],
+  "container": "SERVICE_NAME",
+  "retainedName": "RETAINED_NAME",
+  "failedName": "FAILED_NAME",
+  "oldImage": "sha256:<approved predecessor image ID>",
+  "networks": {
+    "NETWORK_NAME": {
+      "ipv4": "<installation IPv4>",
+      "aliases": [
+        "<approved network alias>"
+      ]
+    }
+  },
+  "gate": {
+    "executable": "/usr/local/bin/ouf-vertical-mock",
+    "command": [
+      "/usr/local/bin/ouf-vertical-mock",
+      "serve"
+    ]
+  },
+  "migration": {
+    "mode": "none",
+    "rollbackCompatible": false
+  },
+  "readiness": {
+    "path": "/health/ready",
+    "port": 8080,
+    "acceptStatus": [
+      204
+    ],
+    "attempts": 30
+  },
+  "inbox": "<absolute transport inbox>",
+  "journal": "<absolute private journal directory>",
+  "dockerSocket": "<absolute Docker socket>",
+  "nsenter": "<absolute nsenter executable>",
+  "ci": {
+    "repository": "<approved owner/repo>",
+    "workflow": "module-ci.yml",
+    "pullRequest": 0,
+    "sourceCommit": "<reviewed PR head>",
+    "sourceTree": "<reviewed source tree>",
+    "manifestSchema": "ouf.vertical-mock-tested-image.v1",
+    "imageName": "ouf-vertical-mock",
+    "runId": 0,
+    "runAttempt": 0,
+    "artifactId": 0,
+    "zipSha256": "<GitHub artifact SHA-256>",
+    "imageId": "sha256:<approved target engine image ID>",
+    "artifactPrefix": "vertical-mock-governed-image"
+  }
+}

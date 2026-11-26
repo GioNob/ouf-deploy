@@ -132,6 +132,72 @@
       "capture": "Custode root. Cifrare la configurazione e i journal, registrare versioni, SHA-256 e permessi. Associare ZIP, ricevuta di trasporto, lista delle migrazioni e plan.",
       "restore": "Dopo il bootstrap, ripristinare profilo, inbox e journal in ordine. Riconciliare CID, profilo e database prima del rilascio o del ritorno.",
       "test": "Provare il 204, il ritorno al CID conservato e il rifiuto DATABASE_CHANGED prima del fermo del candidato."
+    },
+    {
+      "id": "deploy.module-release.profile",
+      "version": 2,
+      "owner": "ouf-deploy",
+      "archive": "Profilo ordinario vertical-mock, binding di creazione del task-61e, inbox e journal distinti.",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Il custode root conserva profili, SHA-256, permessi e riferimenti VERTICAL_MOCK_RELEASE_TRANSPORT_PROFILE e MODULE_RELEASE_INBOX.",
+      "restore": "Dopo il bootstrap ripristinare i profili in custodia privata, gli environment protetti e i percorsi.",
+      "test": "Validare pin del publisher, binding e digest del profilo."
+    },
+    {
+      "id": "deploy.module-release.artifact",
+      "version": 1,
+      "owner": "ouf-deploy",
+      "archive": "ZIP originale vertical-mock e ricevuta del trasporto.",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Il custode del trasporto conserva ZIP per digest, coordinate PR, commit, alberi, tentativo e identità verificate.",
+      "restore": "Dopo il profilo ripristinare lo ZIP nell’inbox per SHA-256.",
+      "test": "Verificare ZIP, manifest, archivio immagine, label e identità Docker/OCI al plan."
+    },
+    {
+      "id": "deploy.module-release.journal",
+      "version": 2,
+      "owner": "ouf-deploy",
+      "archive": "Journal privato vertical-mock, lock, ricevuta del primo CID pronto del 61e, baseline e ricevute successive.",
+      "class": "configurazione",
+      "secrets": true,
+      "capture": "Il custode root cifra journal e lock in quiescenza con i permessi e gli intenti consumati.",
+      "restore": "Dopo profilo e archivio ripristinare il journal. Prima di abilitare apply riconciliare CID, image ID, frame e digest.",
+      "test": "Verificare la prima successione dal CID pronto, il 204 e il rifiuto del replay."
+    },
+    {
+      "id": "vertical-mock.data",
+      "version": 1,
+      "owner": "ouf-vertical-mock",
+      "archive": "Directory OUF_MOCK_DATA_DIR con eventi, schemi, epoca e chiave HMAC delle posizioni.",
+      "class": "dati di prova",
+      "secrets": true,
+      "capture": "Il custode dell’installazione cifra la copia coerente a scrittore fermo. Per dati rigenerabili registra l’omissione della cattura.",
+      "restore": "Ripristinare directory e permessi sul bind RW prima dell’avvio. Per i dati omessi rigenerare con reset.",
+      "test": "Verificare rilettura dei cursori conservati o, dopo reset, 410 CURSOR_EXPIRED e POSITION_LOST lato consumatore."
+    },
+    {
+      "id": "vertical-mock.tokens",
+      "version": 1,
+      "owner": "ouf-vertical-mock",
+      "archive": "File distinti dei bearer di lettura e di amministrazione.",
+      "class": "segreti",
+      "secrets": true,
+      "capture": "Il custode dei segreti conserva valori, ruoli e permessi nel deposito privato dell’installazione.",
+      "restore": "Ripristinare i due file con bind RO prima dell’avvio. Ruotare con riavvio.",
+      "test": "Provare lettura via credentialRef, rifiuto del vecchio token e separazione dei ruoli."
+    },
+    {
+      "id": "vertical-mock.domain",
+      "version": 1,
+      "owner": "ouf-vertical-mock",
+      "archive": "File OUF_MOCK_DOMAIN_FILE con collezioni, campi e generatori.",
+      "class": "configurazione",
+      "secrets": false,
+      "capture": "Il custode dell’installazione versiona il file e registra il digest della revisione approvata.",
+      "restore": "Ripristinare il file sul bind RO prima dell’avvio.",
+      "test": "Confrontare digest, collezioni e schemi attesi su journal nuovo e verificare il dominio registrato sul journal ripristinato."
     }
   ]
 }

@@ -9,6 +9,7 @@ from . import flyway, postgres
 from .contract import (CI_COORDINATES, INGESTION_STARTUP_FLAGS, MCP_CI_COORDINATES, Held, SHA, diagnostic,
                        digest, jar_name, matches, package, require, validate)
 from .docker import Docker
+from .persistent_paths import check_persistent_paths
 from .frame import (baseline, check_body, check_created_networks, check_live_networks, endpoint, epoch, merge_image,
                     provenance_labels, request, snapshot)
 
@@ -50,6 +51,7 @@ def observe(p, rt, previous_release=None):
         previous = previous_release()
         require(old["Id"] == previous["successorCid"] and snapshot(old) == previous["successorFrameSha256"],
                 "PREDECESSOR_CHANGED")
+    check_persistent_paths(p, old)
     baseline(p, old, predecessor_image=previous["imageId"] if previous else None)
     require(old["Image"] != p["ci"]["imageId"], "ALREADY_INSTALLED")
     require(all(rt.inspect(p[k], missing=True) is None for k in ("retainedName", "failedName")),

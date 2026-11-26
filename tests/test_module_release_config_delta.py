@@ -369,7 +369,8 @@ class InstalledDeltaTest(unittest.TestCase):
         self.receipt.write_bytes(b"retained receipt")
         if not case.native:
             self.enterContext(patch.object(os, "geteuid", return_value=0, create=True))
-            self.enterContext(patch.object(case.inst, "sys", SimpleNamespace(flags=SimpleNamespace(isolated=True))))
+            self.enterContext(patch.object(case.inst, "sys", SimpleNamespace(
+                flags=SimpleNamespace(isolated=True), path=sys.path, modules=sys.modules)))
         if os.name == "nt":
             self.enterContext(patch.object(case.inst, "installation_lock", nullcontext))
 

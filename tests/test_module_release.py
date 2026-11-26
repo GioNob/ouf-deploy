@@ -100,10 +100,10 @@ class GateProcessTest(unittest.TestCase):
         self.assertFalse(rt.process(doc, gated=True))
 
 
-def artifact(p, root, *, image_env=None, **manifest_changes):
+def artifact(p, root, *, image_env=None, revision_label=TESTED, **manifest_changes):
     ci = p["ci"]
     tag = ci["imageName"] + ":" + TESTED
-    defaults = {"Labels": {"org.opencontainers.image.revision": TESTED,
+    defaults = {"Labels": {"org.opencontainers.image.revision": revision_label,
                            "org.opencontainers.image.source": "https://github.com/" + ci["repository"]}}
     if image_env is not None:
         defaults["Env"] = image_env

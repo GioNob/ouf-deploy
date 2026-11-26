@@ -29,7 +29,7 @@ from tools.module_release import frame, operation, recovery, return_operation
 
 
 # Tip of origin/release/d091-t2-deploy at DN-L1-5. Keep the oracle fixed after merge.
-REFERENCE = "c8851aba5d6fabb93f84829e39e461bc57094b3e"
+REFERENCE = "6ae7001aee5a845b774f3a6b9d82174aa202ba45"
 
 
 def installer_plan(root, profile, fail_read=0):
@@ -271,7 +271,7 @@ class NoDeltaParity(unittest.TestCase):
 
     def test_DEP_58LL_05_malformed_profile_retains_release_diagnostic(self):
         expected = self.reference[0].plan(None, runtime=object())
-        self.assertEqual(expected["reason"], "RELEASE_IO_OR_INPUT_ERROR/TypeError@contract.py:86")
+        self.assertEqual(expected["reason"], "RELEASE_IO_OR_INPUT_ERROR/TypeError@contract.py:87")
         self.assertEqual(operation.plan(None, runtime=object()), expected)
 
     def test_DEP_58LN_01_transport_transient_read_without_token(self):
@@ -403,7 +403,7 @@ class NoDeltaParity(unittest.TestCase):
 
         # New files have no release lines. The only CLI tail is the transport wrapper,
         # exercised by DEP_58LN_01 (transient read) and DEP_58LN_02 (--help with stdin open).
-        transport_tail = ("tools/module_release/transport.py", 119, 0, 120, 19)
+        transport_tail = ("tools/module_release/transport.py", 130, 0, 131, 19)
         paths = git("diff", "--no-renames", "--diff-filter=MDT", "--name-only", "-z", REFERENCE,
                     "--", "tools/", "scripts/", ".github/scripts/")
         for path in os.fsdecode(paths).split("\0"):
@@ -494,7 +494,7 @@ class NoDeltaParity(unittest.TestCase):
                 result = op.apply(case.p, stamp, rt)
             self.assertEqual((result["status"], result["rollback"], result["restoredCid"]),
                              ("HELD", "ROLLED_BACK", fixture.OLD))
-            self.assertEqual(result["reason"], "RELEASE_IO_OR_INPUT_ERROR/OSError@operation.py:137")
+            self.assertEqual(result["reason"], "RELEASE_IO_OR_INPUT_ERROR/OSError@operation.py:139")
             self.assertEqual(op.read(Path(case.p["journal"]) / stamp, "receipt.json"), result)
 
         for mode in ("none", "dedicated"):
