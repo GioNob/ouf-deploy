@@ -1,4 +1,5 @@
 """Module profile admission, also loaded by the isolated bootstrap before application imports."""
+from collections.abc import Mapping
 import json
 import stat
 
@@ -14,6 +15,8 @@ def require(condition, code):
 
 def validate_profile_options(profile, *, check=require):
     """Common to full release profiles and the smaller transport profiles."""
+    if not isinstance(profile, Mapping):
+        return  # The entry point owns malformed profile diagnostics.
     check("configDelta" not in profile, "CONFIG_DELTA_NOT_ENABLED")
 
 
@@ -24,12 +27,12 @@ def validate_request_profiles(req, policy, *, check=require):
 
 
 def validate_module_profiles(name, policy, *, release, check=require):
-    modules = policy.get("modules", {})
+    modules = policy.get("modules") if isinstance(policy, dict) else None
     if isinstance(name, str) and isinstance(modules, dict):
         names = (name, "mcp") if release and name == "onboarding" else (name,)
         for key in names:
             profile = modules.get(key)
-            if isinstance(profile, dict):
+            if isinstance(profile, Mapping):
                 validate_profile_options(profile, check=check)
 
 
@@ -37,7 +40,7 @@ def validate_policy_profiles(policy, *, check=require):
     modules = policy.get("modules") if isinstance(policy, dict) else None
     if isinstance(modules, dict):
         for profile in modules.values():
-            if isinstance(profile, dict):
+            if isinstance(profile, Mapping):
                 validate_profile_options(profile, check=check)
 
 

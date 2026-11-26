@@ -8,8 +8,6 @@ SCHEMA = "ouf.module-install.v1"
 
 
 def valid_request(req, policy, common):
-    from .profile_options import validate_module_profiles
-    validate_module_profiles(req.get("module"), policy, release=False, check=contract.require)
     fields = common | {"operation", "schema", "module"}
     if "resumePlan" in req:
         fields.add("resumePlan")
@@ -33,7 +31,6 @@ class _ReadinessFields(dict):
 
 
 def validate(p):
-    contract.validate_profile_options(p)
     check(p.get("schema") in (SCHEMA, "ouf.module-release.v1") and matches(NAME, p.get("module"))
           and matches(NAME, p.get("container")), "INVALID_INSTALL_PROFILE")
     install_shape(p)
@@ -56,3 +53,19 @@ def validate(p):
     check(matches(NAME, ci["workflow"]) and type(ci["pullRequest"]) is int and ci["pullRequest"] > 0
           and "publisherFormat" not in ci and matches(NAME, ci.get("manifestSchema"))
           and matches(IMAGE, ci["imageId"]), "CI_PINS_REQUIRED")
+
+
+_valid_request = valid_request
+_validate = validate
+
+
+def valid_request(req, policy, common):
+    from .profile_options import validate_module_profiles
+    if isinstance(req, dict):
+        validate_module_profiles(req.get("module"), policy, release=False, check=contract.require)
+    return _valid_request(req, policy, common)
+
+
+def validate(p):
+    contract.validate_profile_options(p)
+    return _validate(p)

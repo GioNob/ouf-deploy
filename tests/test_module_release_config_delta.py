@@ -1,5 +1,5 @@
 """Fail-closed release profiles and the isolated 58q library."""
-from contextlib import ExitStack, redirect_stderr, redirect_stdout
+from contextlib import ExitStack, chdir, redirect_stderr, redirect_stdout
 from functools import partial
 import io
 import json
@@ -16,7 +16,7 @@ import test_module_release as fixture
 from test_module_install import setup_profile
 import test_privileged_executor_install as installer_fixture
 import module_operation
-from tools.module_release import install_contract, install_operation as install, retention
+from tools.module_release import frame_spec, install_contract, install_operation as install, retention
 import mandate
 import store
 from tools.module_release import config_delta, operation, recovery, return_operation, transport
@@ -188,6 +188,40 @@ class DisabledDeltaTest(unittest.TestCase):
                 transport.transport(profile, 15, 17, fixture.PROFILE.parent)
         github.assert_not_called()
         mkdir.assert_not_called()
+
+    def test_DEP_58LL_01_build_create_denies_before_rendering(self):
+        profile = setup_profile(str(fixture.ROOT))
+        with patch.object(frame_spec, "create_with_custody") as render:
+            for delta in (None, self.marker):
+                with self.subTest(delta=delta), self.assertRaises(frame_spec.SpecHeld) as held:
+                    frame_spec.build_create(dict(profile, configDelta=delta), {}, "0" * 64)
+                self.assertEqual(str(held.exception), self.code)
+            render.assert_not_called()
+
+    def test_DEP_58LL_02_transport_dangling_module_is_usage_only(self):
+        root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        profile = root / "profilo.json"
+        raw = json.dumps({"configDelta": self.marker}).encode()
+        profile.write_bytes(raw)
+        out, err = io.StringIO(), io.StringIO()
+        locking = Mock()
+        with chdir(root), redirect_stdout(out), redirect_stderr(err), ExitStack() as stack:
+            github = stack.enter_context(patch.object(transport, "github"))
+            mkdir = stack.enter_context(patch.object(os, "mkdir"))
+            open_fd = stack.enter_context(patch.object(os, "open"))
+            open_file = stack.enter_context(patch.object(Path, "open"))
+            stack.enter_context(patch.dict(sys.modules, fcntl=locking))
+            with self.assertRaises(SystemExit) as usage:
+                transport.main([profile.name, "1", "2", ".", "--module"])
+        self.assertEqual(usage.exception.code, 2)
+        self.assertEqual(out.getvalue(), "")
+        self.assertIn("usage:", err.getvalue())
+        self.assertIn("argument --module: expected one argument", err.getvalue())
+        self.assertNotIn(self.marker, err.getvalue())
+        for effect in (github, mkdir, open_fd, open_file, locking):
+            self.assertEqual(effect.mock_calls, [])
+        self.assertEqual(list(root.iterdir()), [profile])
+        self.assertEqual(profile.read_bytes(), raw)
 
     def test_DEP_58LK_01_all_profile_ingresses_precede_errors_and_effects(self):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))

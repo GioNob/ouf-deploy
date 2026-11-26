@@ -82,7 +82,7 @@ def candidate_command(command, candidate):
     return [arg for arg in command if arg not in removed]
 
 
-def _validate(p):
+def validate(p):
     require(p["schema"] == "ouf.module-release.v1", "PROFILE_VERSION")
     for name in ("module", "container", "retainedName", "failedName"):
         require(matches(NAME, p[name]), "INVALID_NAME")
@@ -290,7 +290,7 @@ def verify_labels(labels, repository, tested, *, optional):
 
 
 def package(p, target=None, *, transport=False, migrations_field=None, image_defaults=None):
-    validate_profile_options(p)
+    """Hash the exact open ZIP and inner payload. Only copy verified bytes to private custody."""
     ci = p["ci"]
     path = Path(p["inbox"]) / (ci["zipSha256"] + ".zip")
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_BINARY", 0)
@@ -343,12 +343,20 @@ def package(p, target=None, *, transport=False, migrations_field=None, image_def
             return facts
 
 
+_validate = validate
+_package = package
+
+
 def validate_profile_options(profile, *, check=require):
     from .profile_options import validate_profile_options as admit
     admit(profile, check=check)
 
 
 def validate(p):
-    # Keep diagnostic locations in the release validator stable for no-delta receipts.
     validate_profile_options(p)
-    _validate(p)
+    return _validate(p)
+
+
+def package(p, target=None, *, transport=False, migrations_field=None, image_defaults=None):
+    validate_profile_options(p)
+    return _package(p, target, transport=transport, migrations_field=migrations_field, image_defaults=image_defaults)

@@ -9,7 +9,7 @@ import re
 import tempfile
 from urllib.parse import urlsplit
 
-from .contract import SEMANTIC_SCHEMA, Held, checksum, package, require, validate_ci, validate_profile_options
+from .contract import SEMANTIC_SCHEMA, Held, checksum, package, require, validate_ci
 from .provenance import select_artifact, verify_tested_tree
 
 
@@ -74,7 +74,6 @@ def select(ci, run_id, artifact_id, api, *, artifact_prefix=None):
 
 
 def transport(profile, run_id, artifact_id, inbox):
-    validate_profile_options(profile)
     ci = select(profile["ci"], run_id, artifact_id, github)
     pinned = profile.get("module") in ("udp", "ingestion")
     if pinned:
@@ -104,6 +103,33 @@ def transport(profile, run_id, artifact_id, inbox):
 
 
 def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--module", choices=("udp", "ingestion"))
+    parser.add_argument("profile", type=Path)
+    parser.add_argument("run_id", type=int)
+    parser.add_argument("artifact_id", type=int)
+    parser.add_argument("inbox", type=Path)
+    args = parse_admitted_args(parser, argv)
+    try:
+        profile = args.profile_data
+        require(args.module is None or profile.get("module") == args.module, "MODULE_PROFILE_MISMATCH")
+        print(json.dumps(transport(profile, args.run_id,
+                                   args.artifact_id, args.inbox), sort_keys=True))
+    except Exception as error:
+        raise SystemExit(str(error) if isinstance(error, Held) else "TRANSPORT_IO_OR_INPUT_ERROR") from None
+
+
+from .contract import validate_profile_options
+
+_transport = transport
+
+
+def transport(profile, run_id, artifact_id, inbox):
+    validate_profile_options(profile)
+    return _transport(profile, run_id, artifact_id, inbox)
+
+
+def parse_admitted_args(parser, argv):
     # Locate the profile even when later positional arguments are missing or invalid.
     locator = argparse.ArgumentParser(add_help=False)
     locator.add_argument("--module")
@@ -113,22 +139,12 @@ def main(argv=None):
     if hint.profile is not None:
         try:
             profile = json.loads(hint.profile.read_text(encoding="utf-8"))
-        except (OSError, ValueError, RecursionError):
-            pass  # Let the release parser report argument errors first.
-    try:
-        if isinstance(profile, dict):
             validate_profile_options(profile)
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--module", choices=("udp", "ingestion"))
-        parser.add_argument("profile", type=Path)
-        parser.add_argument("run_id", type=int)
-        parser.add_argument("artifact_id", type=int)
-        parser.add_argument("inbox", type=Path)
-        args = parser.parse_args(argv)
-        require(args.module is None or profile.get("module") == args.module, "MODULE_PROFILE_MISMATCH")
-        print(json.dumps(transport(profile, args.run_id, args.artifact_id, args.inbox), sort_keys=True))
-    except Exception as error:
-        raise SystemExit(str(error) if isinstance(error, Held) else "TRANSPORT_IO_OR_INPUT_ERROR") from None
+        except (OSError, ValueError, RecursionError):
+            pass  # The full parser owns argument diagnostics.
+        except Held as error:
+            raise SystemExit(str(error)) from None
+    return parser.parse_args(argv, namespace=argparse.Namespace(profile_data=profile))
 
 
 if __name__ == "__main__":

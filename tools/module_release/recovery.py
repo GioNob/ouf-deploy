@@ -2,11 +2,11 @@
 from pathlib import Path
 
 from . import operation as op
-from .contract import SHA, digest, matches, require, validate, validate_profile_options
+from .contract import SHA, digest, matches, require, validate
 from .frame import check_body, check_live_networks, epoch, snapshot
 
 
-def _residual(p, rt):
+def residual(p, rt):
     state = {}
     for role in ("container", "retainedName", "failedName"):
         try:
@@ -149,6 +149,11 @@ def resume(p, rt, approved):
     op.record(root, "receipt.json", result)
     op.unlock_module(lock)
     return result
+
+
+from .contract import validate_profile_options
+
+_residual = residual
 
 
 def residual(p, rt):

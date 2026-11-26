@@ -4,15 +4,13 @@ import json
 import os
 from pathlib import Path
 import sys
-
 sys.dont_write_bytecode = True
+from runpy import run_path
 ROOT = Path("/opt/ouf-a2")
 if __name__ == "__main__":
-    from runpy import run_path
     import fcntl
     try:
-        bootstrap = run_path(str(ROOT / "lib/module_release/profile_options.py"))
-        prefetched = bootstrap["preflight_executor"](ROOT, sys.stdin.buffer)
+        prefetched = run_path(str(ROOT / "lib/module_release/profile_options.py"))["preflight_executor"](ROOT, sys.stdin.buffer)
         installation = os.open(ROOT.parent, os.O_DIRECTORY)
         fcntl.flock(installation, fcntl.LOCK_SH | fcntl.LOCK_NB)
     except OSError:
@@ -23,6 +21,7 @@ from store import read, trusted
 from pipeline import Cutover
 from module_operation import ModuleInstall, ModuleRelease
 from gateway_operation import GatewayRelease
+
 
 def dispatch(req, cfg, state, get, source_get=None, *, token=None):
     review = authorize(req, cfg, get, state)
@@ -35,6 +34,7 @@ def dispatch(req, cfg, state, get, source_get=None, *, token=None):
     if req.get("operation") == "gateway-release":
         return GatewayRelease(cfg, state, req).execute(review, token)
     return Cutover(cfg, state, req, source_get).execute(review)
+
 
 def main(prefetched=None):
     import fcntl

@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import parse_qsl, quote, urlencode
 
 from . import operation as op, postgres
-from .contract import SHA, Held, digest, matches, require, validate_profile_options
+from .contract import SHA, Held, digest, matches, require
 
 ADMIN = "mcp-retention-admin-019"
 BATCH = "analysis-retention-once"
@@ -181,7 +181,6 @@ def verified_output(rt, cid):
 
 
 def run(p, rt, source, phase, ready):
-    validate_profile_options(p)
     require(phase in COMMAND and matches(SHA, source), "RETENTION_PLAN_DRIFT")
     root = Path(p["journal"]) / source
     plan = op.read(root, "plan.json")
@@ -232,3 +231,13 @@ def run(p, rt, source, phase, ready):
         require(done.get("status") == "VERIFIED", "RETENTION_OUTPUT_UNCONFIRMED")
         retire_worker(rt, root, phase, done["cid"])
     return expected
+
+
+from .contract import validate_profile_options
+
+_run = run
+
+
+def run(p, rt, source, phase, ready):
+    validate_profile_options(p)
+    return _run(p, rt, source, phase, ready)

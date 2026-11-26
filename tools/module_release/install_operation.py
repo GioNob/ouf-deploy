@@ -7,7 +7,7 @@ import tempfile
 from urllib.parse import quote
 
 from . import frame_spec, operation
-from .contract import Held, SHA, digest, matches, package, require, validate_profile_options
+from .contract import Held, SHA, digest, matches, package, require
 from .frame import baseline, configuration, merge_image, snapshot as release_snapshot
 from .install_contract import validate
 from .operation import confirm, never_started, park, read, ready_status, reason, record, sync_dir
@@ -33,7 +33,6 @@ EMPTY_LABEL = "0" * 64
 
 
 def engine(profile):
-    validate_profile_options(profile)
     # A future release may change the launch command. Installation always
     # proves the unmodified gate.command against the installed process.
     return operation.Docker({k: v for k, v in profile.items() if k != "candidate"})
@@ -129,7 +128,6 @@ def observe(p, rt, *, resume=None, archive=None, verified_package=None):
 
 def plan(p, runtime=None, *, resume=None):
     try:
-        validate_profile_options(p)
         rt = runtime or engine(p)
         if resume is not None:
             require(matches(SHA, resume), "PLAN_DIGEST_REQUIRED")
@@ -440,7 +438,6 @@ def isolate(p, rt, root, body, req, defaults, cid, *, failure=None):
 
 def apply(p, stamp, runtime=None):
     try:
-        validate_profile_options(p)
         require(matches(SHA, stamp), "PLAN_DIGEST_REQUIRED")
         validate(p)
         rt = runtime or engine(p)
@@ -502,7 +499,6 @@ def apply(p, stamp, runtime=None):
 
 def rollback(p, stamp, runtime=None):
     try:
-        validate_profile_options(p)
         require(matches(SHA, stamp), "PLAN_DIGEST_REQUIRED")
         rt = runtime or engine(p)
         root = Path(p["journal"]) / stamp
@@ -521,3 +517,40 @@ def rollback(p, stamp, runtime=None):
         return isolate(p, rt, root, body, req, defaults, cid)
     except Exception as exc:
         return {"status": "HELD", "reason": reason(exc)}
+
+
+from .contract import validate_profile_options
+
+_engine = engine
+_plan = plan
+_apply = apply
+_rollback = rollback
+
+
+def engine(profile):
+    validate_profile_options(profile)
+    return _engine(profile)
+
+
+def plan(p, runtime=None, *, resume=None):
+    try:
+        validate_profile_options(p)
+    except Held as exc:
+        return {"status": "HELD", "reason": reason(exc)}
+    return _plan(p, runtime, resume=resume)
+
+
+def apply(p, stamp, runtime=None):
+    try:
+        validate_profile_options(p)
+    except Held as exc:
+        return {"status": "HELD", "reason": reason(exc)}
+    return _apply(p, stamp, runtime)
+
+
+def rollback(p, stamp, runtime=None):
+    try:
+        validate_profile_options(p)
+    except Held as exc:
+        return {"status": "HELD", "reason": reason(exc)}
+    return _rollback(p, stamp, runtime)

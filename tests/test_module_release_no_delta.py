@@ -4,6 +4,7 @@ from http.client import HTTPConnection
 import io
 import json
 from pathlib import Path
+import runpy
 import shutil
 import subprocess
 import sys
@@ -16,6 +17,7 @@ import test_module_release as fixture
 import test_module_release_mcp as mcp
 from test_module_release_config_delta import executor_with_busy_lock
 import mandate
+import module_operation
 from tools.module_release import frame, operation, recovery, return_operation
 
 
@@ -68,7 +70,8 @@ class NoDeltaParity(unittest.TestCase):
         tmp = cls.enterClassContext(tempfile.TemporaryDirectory())
         try:
             archive = subprocess.check_output(["git", "archive", "--format=zip", REFERENCE, "tools/module_release",
-                                               "scripts/ouf-a2-executor", "tools/privileged_executor/mandate.py"],
+                                               "scripts/ouf-a2-executor", "tools/privileged_executor/mandate.py",
+                                               "tools/privileged_executor/module_operation.py"],
                                               cwd=fixture.ROOT, stderr=subprocess.PIPE)
         except subprocess.CalledProcessError:
             shallow = subprocess.check_output(["git", "rev-parse", "--is-shallow-repository"], cwd=fixture.ROOT)
@@ -80,8 +83,14 @@ class NoDeltaParity(unittest.TestCase):
         with zipfile.ZipFile(io.BytesIO(archive)) as source:
             source.extractall(cls.reference_root)
         cls.enterClassContext(patch.object(sys, "path", [tmp, *sys.path]))
-        from dep58lf_reference.tools.module_release import operation, recovery, return_operation
+        from dep58lf_reference.tools import module_release as reference_package
+        from dep58lf_reference.tools.module_release import contract, operation, recovery, retention, return_operation
         from dep58lf_reference.tools.privileged_executor import mandate as reference_mandate
+        # The installed executor uses absolute imports from its private lib directory.
+        with patch.dict(sys.modules, {"module_release": reference_package, "module_release.contract": contract,
+                                      "module_release.retention": retention, "mandate": reference_mandate}):
+            from dep58lf_reference.tools.privileged_executor import module_operation as reference_executor
+        cls.reference_executor = reference_executor
         cls.reference_mandate = reference_mandate
         cls.reference = (operation, recovery, return_operation)
 
@@ -184,6 +193,47 @@ class NoDeltaParity(unittest.TestCase):
         actual = executor_with_busy_lock(fixture.ROOT, mandate, profile)
         self.assertEqual(reference, ((1, "", "A2_EVIDENCE_UNPROVEN/BlockingIOError@ouf-a2-executor:54\n"), 1, 1))
         self.assertEqual(actual, reference)
+
+    def test_DEP_58LL_03_apply_without_review_request_matches_release(self):
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        req = dict(case.req, phase="apply", digest="a" * 64)
+        outcomes = []
+        for name, executor in (("release", self.reference_executor), ("candidate", module_operation)):
+            root = case.root / name
+            root.mkdir()
+            with patch.object(executor.operation, "Docker", return_value=case.rt):
+                owner = executor.ModuleRelease(case.cfg, root, req)
+                (owner.path / "plan.review").write_bytes(b'{"review":"fixture"}')
+                with self.assertRaises(executor.Held) as held:
+                    owner.execute("fixture")
+            receipt = (owner.path / "apply.held").read_bytes()
+            outcomes.append((str(held.exception), receipt))
+        self.assertEqual(json.loads(outcomes[0][1])["reason"],
+                         "RELEASE_IO_OR_INPUT_ERROR/KeyError@module_operation.py:186")
+        self.assertEqual(outcomes[1], outcomes[0])
+
+    def test_DEP_58LL_04_executor_dispatch_error_matches_release(self):
+        outcomes = []
+        for root in (self.reference_root, fixture.ROOT):
+            with patch.object(sys, "path", list(sys.path)), patch.object(sys, "dont_write_bytecode", True):
+                executor = runpy.run_path(str(root / "scripts/ouf-a2-executor"))
+            dispatch = executor["dispatch"]
+            with patch.dict(dispatch.__globals__, authorize=Mock(), ModuleRelease=Mock(side_effect=OSError)):
+                try:
+                    dispatch({"operation": "module-release"}, {}, None, None)
+                except OSError as error:
+                    outcomes.append(executor["public_error"](error))
+                else:
+                    self.fail("missing dispatch error")
+        self.assertEqual(outcomes[0], "A2_EVIDENCE_UNPROVEN/OSError@ouf-a2-executor:33")
+        self.assertEqual(outcomes[1], outcomes[0])
+
+    def test_DEP_58LL_05_malformed_profile_retains_release_diagnostic(self):
+        expected = self.reference[0].plan(None, runtime=object())
+        self.assertEqual(expected["reason"], "RELEASE_IO_OR_INPUT_ERROR/TypeError@contract.py:86")
+        self.assertEqual(operation.plan(None, runtime=object()), expected)
 
     def test_DEP_58LF_06_none_interrupted_apply_and_return(self):
         self.compare("none", interrupted=True)
