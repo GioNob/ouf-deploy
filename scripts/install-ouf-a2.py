@@ -43,7 +43,8 @@ def inspect(profile):
     safe(profile)
     check(profile.is_file() and not profile.stat().st_mode & 0o077, "PRIVATE_PROFILE_REQUIRED")
     raw = profile.read_bytes()
-    cfg, _ = checked_profiles(raw)
+    checked_profiles(raw)
+    cfg = json.loads(raw)
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
@@ -201,11 +202,15 @@ def fingerprint(data, mode):
     return {"sha256": sha(data), "mode": oct(mode)}
 
 
-def _journal_paths(policy):
+def _journal_paths(raw):
+    policy = json.loads(raw)
+    profile_options().validate_policy_profiles(policy)
     return {Path(m["journal"]) for m in policy.get("modules", {}).values()}
 
 
-def _manifest(files, profiles):
+def manifest(files):
+    profile = ROOT / "profile.json"
+    checked_profiles(files[profile][0])
     inventory = ROOT / "managed-files.json"
     paths = set(files)
     if existing(inventory):
@@ -216,11 +221,11 @@ def _manifest(files, profiles):
             check(len(rel.parts) >= 2 and rel.parts[0] in ("lib", "books")
                   and rel.as_posix() == name and ".." not in rel.parts, "INVALID_INSTALL_INVENTORY")
             paths.add(ROOT / rel)
-    proposed, installed = profiles
-    new_journals = _journal_paths(proposed)
+    new_journals = _journal_paths(files[profile][0])
     protected = {ROOT / "state"} | new_journals
     # An upgrade also protects journals retired by the proposed profile.
-    protected.update(_journal_paths(installed))
+    if existing(profile):
+        protected.update(_journal_paths(profile.read_bytes()))
     for directory in new_journals:
         if not directory.exists():
             check(not any(p in directory.parents for p in protected), "PROTECTED_INSTALL_STATE")
@@ -267,7 +272,9 @@ def visudo(*args):
     subprocess.run(["/usr/sbin/visudo", "-c", *args], check=True, stdout=subprocess.DEVNULL)
 
 
-def _install(files, spec, new_journals):
+def install(files, spec):
+    profile = files[ROOT / "profile.json"][0]
+    checked_profiles(profile)
     changed = [Path(p) for p, row in spec.items() if row["action"] != "unchanged"]
     changed.sort(key=lambda p: p == RULE)
     visudo()
@@ -277,7 +284,7 @@ def _install(files, spec, new_journals):
             staged[RULE] = stage(RULE, *files[RULE], cleanup)
             visudo("-f", str(staged[RULE]))
         for directory in (ROOT, ROOT / "lib", ROOT / "lib/module_release", ROOT / "books",
-                          ROOT / "state", *new_journals):
+                          ROOT / "state", *_journal_paths(profile)):
             if not directory.exists():
                 directory.mkdir(mode=0o700)
                 sync_dir(directory.parent)
@@ -367,7 +374,7 @@ def _run_cli():
 
 from functools import cache
 
-PROFILE_OPTIONS_SHA256 = "517d9fd6f5ee3a705cd04ee663dceae1f531b1c09b3b9a04efc5fe8f29e9adf4"
+PROFILE_OPTIONS_SHA256 = "2f2efcd842617bedd298c0ac45194d29bc98f8d7d0165fee1c65075c7b4bdbed"
 
 
 @cache
@@ -383,13 +390,21 @@ def profile_options():
 
 
 def checked_profiles(candidate):
-    proposed = json.loads(candidate)
+    """Only deny a decoded option here. Each caller owns its required reads."""
+    try:
+        proposed = json.loads(candidate)
+    except (ValueError, RecursionError):
+        return
     options = profile_options()
     options.validate_policy_profiles(proposed)
     path = ROOT / "profile.json"
-    installed = json.loads(path.read_bytes()) if existing(path) else {}
+    try:
+        if not existing(path):
+            return
+        installed = json.loads(path.read_bytes())
+    except (OSError, ValueError, RecursionError):
+        return
     options.validate_policy_profiles(installed)
-    return proposed, installed
 
 
 def read_profiles(profile):
@@ -407,16 +422,8 @@ def load_contract(contract, files, package):
 
 
 def journals(profile_bytes):
-    proposed, _ = checked_profiles(profile_bytes)
-    return _journal_paths(proposed)
-
-
-def manifest(files):
-    return _manifest(files, checked_profiles(files[ROOT / "profile.json"][0]))
-
-
-def install(files, spec):
-    return _install(files, spec, journals(files[ROOT / "profile.json"][0]))
+    checked_profiles(profile_bytes)
+    return _journal_paths(profile_bytes)
 
 
 class InstallParser(argparse.ArgumentParser):

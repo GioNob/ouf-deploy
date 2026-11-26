@@ -24,15 +24,19 @@ from tools.module_release.contract import Held, validate
 
 
 def executor_with_busy_lock(root, policy_module, profile, *, denied=False, operation_name="module-release", phase="plan",
-                            locked_profile=None):
+                            locked_profile=None, raw_request=None, installation_fd=None):
     """Run the CLI and capture its public output with the operation lock occupied."""
     script = str(root / "scripts/ouf-a2-executor")
     req = dict(operation=operation_name, module="mcp", phase=phase, run="1", attempt="1", commit="a" * 40)
     req["digest"] = policy_module.intent(req)
     cfg = {"commit": req["commit"], "modules": {"mcp": profile}}
-    envelope = json.dumps({"request": req, "token": "fixture"}).encode()
+    envelope = json.dumps({"request": req, "token": "fixture"}).encode() if raw_request is None else raw_request
     locks = Mock(LOCK_SH=1, LOCK_EX=2, LOCK_NB=4)
     locks.flock.side_effect = [None, BlockingIOError()]
+    if installation_fd is not None:
+        import fcntl
+        locks = Mock(wraps=fcntl, LOCK_SH=fcntl.LOCK_SH, LOCK_EX=fcntl.LOCK_EX, LOCK_NB=fcntl.LOCK_NB)
+    fd = 17 if installation_fd is None else installation_fd
     trusted_lock = Mock(open=mock_open())
     out, err = io.StringIO(), io.StringIO()
     flags = SimpleNamespace(**{k: getattr(sys.flags, k) for k in dir(sys.flags) if not k.startswith("_")})
@@ -68,7 +72,7 @@ def executor_with_busy_lock(root, policy_module, profile, *, denied=False, opera
         enter(patch.object(sys, "stdin", Mock(buffer=io.BytesIO(envelope))))
         enter(patch.object(os, "geteuid", return_value=0, create=True))
         enter(patch.object(os, "O_DIRECTORY", 0, create=True))
-        open_lock = enter(patch.object(os, "open", return_value=17))
+        open_lock = enter(patch.object(os, "open", return_value=fd))
         enter(patch.object(os, "environ", {}))
         enter(patch.object(os, "chdir"))
         enter(patch.object(os, "umask"))
@@ -95,7 +99,7 @@ def executor_with_busy_lock(root, policy_module, profile, *, denied=False, opera
         open_lock.assert_not_called()
         locks.flock.assert_not_called()
     else:
-        assert locks.flock.call_args_list[0] == call(17, locks.LOCK_SH | locks.LOCK_NB)
+        assert locks.flock.call_args_list[0] == call(fd, locks.LOCK_SH | locks.LOCK_NB)
     return (status, out.getvalue(), err.getvalue()), trusted.call_count, sum(
         args[1] == locks.LOCK_EX | locks.LOCK_NB for args, _ in locks.flock.call_args_list)
 
@@ -222,6 +226,16 @@ class DisabledDeltaTest(unittest.TestCase):
             self.assertEqual(effect.mock_calls, [])
         self.assertEqual(list(root.iterdir()), [profile])
         self.assertEqual(profile.read_bytes(), raw)
+
+    def test_DEP_58LM_05_transport_retries_unreadable_profile_after_parsing(self):
+        argv = ["profile.json", "1", "2", "."]
+        for first_read in (OSError("unavailable"), "{"):
+            with self.subTest(first_read=first_read), patch.object(Path, "read_text", side_effect=[
+                    first_read, json.dumps({"configDelta": self.marker})]), patch.object(transport, "transport") as send:
+                with self.assertRaises(SystemExit) as denied:
+                    transport.main(argv)
+                self.assertEqual(denied.exception.code, self.code)
+                send.assert_not_called()
 
     def test_DEP_58LK_01_all_profile_ingresses_precede_errors_and_effects(self):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))

@@ -1,8 +1,10 @@
 """DEP-58LF: execute both releases against the same MCP archive, profile and Engine."""
 import copy
+from contextlib import ExitStack, redirect_stderr, redirect_stdout
 from http.client import HTTPConnection
 import io
 import json
+import os
 from pathlib import Path
 import runpy
 import shutil
@@ -10,11 +12,13 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import Mock, patch
 import zipfile
 
 import test_module_release as fixture
 import test_module_release_mcp as mcp
+import test_privileged_executor_install as installer_fixture
 from test_module_release_config_delta import executor_with_busy_lock
 import mandate
 import module_operation
@@ -70,10 +74,13 @@ class NoDeltaParity(unittest.TestCase):
         tmp = cls.enterClassContext(tempfile.TemporaryDirectory())
         try:
             archive = subprocess.check_output(["git", "archive", "--format=zip", REFERENCE, "tools/module_release",
-                                               "scripts/ouf-a2-executor", "tools/privileged_executor/mandate.py",
+                                               "scripts/ouf-a2-executor", "scripts/install-ouf-a2.py",
+                                               "tools/privileged_executor/mandate.py",
                                                "tools/privileged_executor/module_operation.py"],
                                               cwd=fixture.ROOT, stderr=subprocess.PIPE)
         except subprocess.CalledProcessError:
+            if "CI" in os.environ:
+                raise
             shallow = subprocess.check_output(["git", "rev-parse", "--is-shallow-repository"], cwd=fixture.ROOT)
             if shallow.strip() == b"true" and subprocess.run(
                     ["git", "cat-file", "-e", REFERENCE], cwd=fixture.ROOT, stderr=subprocess.DEVNULL).returncode:
@@ -235,6 +242,95 @@ class NoDeltaParity(unittest.TestCase):
         self.assertEqual(expected["reason"], "RELEASE_IO_OR_INPUT_ERROR/TypeError@contract.py:86")
         self.assertEqual(operation.plan(None, runtime=object()), expected)
 
+    def test_DEP_58LM_01_installer_plan_preserves_first_error(self):
+        case = installer_fixture.Bootstrap()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.inst.ROOT.mkdir()
+        installed = case.inst.ROOT / "profile.json"
+        marker = "private-installer-delta"
+        delta = json.dumps({"modules": {"mcp": {"configDelta": marker}}}).encode()
+        for proposed, current, diagnostic in ((b"{}", b"{", "INSTALL_PROFILE_FIELDS"),
+                                              (b"{", delta, "JSONDecodeError")):
+            case.path.write_bytes(proposed)
+            installed.write_bytes(current)
+            for root in (self.reference_root, fixture.ROOT):
+                with self.subTest(root=root, diagnostic=diagnostic):
+                    main = runpy.run_path(str(root / "scripts/install-ouf-a2.py"))["main"]
+                    out, err, effect = io.StringIO(), io.StringIO(), Mock()
+                    with ExitStack() as stack:
+                        enter = stack.enter_context
+                        enter(patch.dict(main.__globals__, ROOT=case.inst.ROOT, safe=case.inst.safe,
+                                         sys=SimpleNamespace(flags=SimpleNamespace(isolated=True)),
+                                         manifest=effect, installation_lock=effect, install=effect))
+                        enter(patch.object(sys, "argv", ["install", "plan", str(case.path)]))
+                        enter(patch.object(os, "geteuid", return_value=0, create=True))
+                        enter(patch.object(os, "umask"))
+                        enter(redirect_stdout(out))
+                        enter(redirect_stderr(err))
+                        with self.assertRaises(ValueError) as caught:
+                            main()
+                    if diagnostic == "JSONDecodeError":
+                        self.assertIs(type(caught.exception), json.JSONDecodeError)
+                    else:
+                        self.assertEqual(str(caught.exception), diagnostic)
+                    self.assertNotIn(marker, str(caught.exception))
+                    self.assertEqual((out.getvalue(), err.getvalue()), ("", ""))
+                    effect.assert_not_called()
+                    case.inst.subprocess.check_output.assert_not_called()
+                    self.assertEqual(list(case.inst.ROOT.iterdir()), [installed])
+                    self.assertEqual(installed.read_bytes(), current)
+
+    def test_DEP_58LM_02_executor_preserves_malformed_request_errors(self):
+        marker = "private-executor-delta"
+        request = b'{"request":{"operation":"module-release","module":"mcp"},"token":"fixture"}'
+        for raw, diagnostic in ((request[:-1], "A2_EVIDENCE_UNPROVEN/JSONDecodeError@ouf-a2-executor:49"),
+                                (request.ljust(8194), "REQUEST_LIMIT"),
+                                (request[:-1].ljust(8193) + b"}", "REQUEST_LIMIT")):
+            for profile in ({}, {"configDelta": marker}):
+                with self.subTest(length=len(raw), delta=bool(profile)):
+                    for root, policy in ((self.reference_root, self.reference_mandate), (fixture.ROOT, mandate)):
+                        with ExitStack() as stack:
+                            guards = [stack.enter_context(patch.object(owner, name))
+                                      for owner, name in ((policy, "validate"), (module_operation, "Journal"),
+                                                          (module_operation.operation, "Docker"),
+                                                          (module_operation.operation, "request"))]
+                            result = executor_with_busy_lock(root, policy, profile, raw_request=raw)
+                        for guard in guards:
+                            guard.assert_not_called()
+                        self.assertEqual(result, ((1, "", diagnostic + "\n"), 0, 0))
+
+    @unittest.skipUnless(sys.platform == "linux", "requires Linux flock")
+    def test_DEP_58LM_04_malformed_request_releases_shared_lock_on_exit(self):
+        import fcntl
+        from multiprocessing import get_context
+
+        directory = self.enterContext(tempfile.TemporaryDirectory())
+        probe = os.open(directory, os.O_DIRECTORY)
+        self.addCleanup(os.close, probe)
+
+        def reject(root, policy):
+            # A fresh open in the child gives the CLI its own file description.
+            fd = os.open(directory, os.O_DIRECTORY)
+            result = executor_with_busy_lock(root, policy, {"configDelta": "private-lock-delta"},
+                                             raw_request=b" " * 8194, installation_fd=fd)
+            self.assertEqual(result, ((1, "", "REQUEST_LIMIT\n"), 0, 0))
+            with self.assertRaises(BlockingIOError):
+                fcntl.flock(probe, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            # The CLI leaves fd open until process exit.
+
+        for root, policy in ((self.reference_root, self.reference_mandate), (fixture.ROOT, mandate)):
+            with self.subTest(root=root):
+                child = get_context("fork").Process(target=reject, args=(root, policy))
+                child.start()
+                child.join(10)
+                if child.is_alive():
+                    child.kill()
+                    child.join()
+                self.assertEqual(child.exitcode, 0)
+                fcntl.flock(probe, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                fcntl.flock(probe, fcntl.LOCK_UN)
+
     def test_DEP_58LF_06_none_interrupted_apply_and_return(self):
         self.compare("none", interrupted=True)
 
@@ -368,6 +464,6 @@ class WithoutDelta(unittest.TestCase):
         with self.assertRaisesRegex(operation.Held, "INVALID_RETURN_PLAN"):
             return_operation.run(case.p, stamp, case.rt, recover=True)
 
-    def test_DEP_58LG_04_native_checkout_does_not_require_full_history(self):
+    def test_DEP_58LM_03_native_checkout_includes_reference_history(self):
         path = fixture.ROOT / ".github/workflows/privileged-executor-native.yml"
-        self.assertNotRegex(path.read_text(encoding="utf-8"), r"(?m)^\s*fetch-depth:\s*0\s*$")
+        self.assertRegex(path.read_text(encoding="utf-8"), r"(?m)^\s*fetch-depth:\s*0\s*$")

@@ -61,7 +61,12 @@ def preflight_executor(root, stream):
     else:
         return None  # Preserve the normal entrypoint's stdin and lock ordering.
 
-    raw = stream.read(8193)
+    try:
+        raw = stream.read(8193)
+    except (OSError, ValueError):
+        return None  # Retry through the locked reader for its public diagnostic.
+    if raw is None or len(raw) > 8192:
+        return raw  # Let REQUEST_LIMIT take precedence, even for a decodable prefix.
     try:
         envelope = json.loads(raw)
         if isinstance(envelope, dict):

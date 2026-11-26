@@ -44,6 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: Normalize the hosted runner's own sudoers modes (the installer runs a full visudo -c)
         run: sudo find /etc/sudoers.d -type f -exec chmod 0440 {} + && sudo /usr/sbin/visudo -c
@@ -68,7 +69,7 @@ jobs:
           image=$(docker image inspect --format '{{.Id}}' ouf-ci-gate:old)
           result=0
           for suite in 'test_privileged_executor*.py' 'test_module_release*.py' 'test_module_install_native.py'; do
-            sudo env OUF_A2_NATIVE=1 OUF_A2_NATIVE_ENGINE=1 OUF_MODULE_RELEASE_NATIVE=1 \
+            sudo env CI="$CI" OUF_A2_NATIVE=1 OUF_A2_NATIVE_ENGINE=1 OUF_MODULE_RELEASE_NATIVE=1 \
               OUF_A2_FIXTURE_SOCKET=/var/run/docker.sock OUF_A2_FIXTURE_IMAGE="$image" \
               /usr/bin/python3 -I -B -m unittest discover -s tests -p "$suite" -v || result=1
           done

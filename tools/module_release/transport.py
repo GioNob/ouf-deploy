@@ -111,7 +111,7 @@ def main(argv=None):
     parser.add_argument("inbox", type=Path)
     args = parse_admitted_args(parser, argv)
     try:
-        profile = args.profile_data
+        profile = args.profile_data if hasattr(args, "profile_data") else read_admitted_profile(args.profile)
         require(args.module is None or profile.get("module") == args.module, "MODULE_PROFILE_MISMATCH")
         print(json.dumps(transport(profile, args.run_id,
                                    args.artifact_id, args.inbox), sort_keys=True))
@@ -129,22 +129,30 @@ def transport(profile, run_id, artifact_id, inbox):
     return _transport(profile, run_id, artifact_id, inbox)
 
 
+def read_admitted_profile(path):
+    profile = json.loads(path.read_text(encoding="utf-8"))
+    validate_profile_options(profile)
+    return profile
+
+
 def parse_admitted_args(parser, argv):
     # Locate the profile even when later positional arguments are missing or invalid.
-    locator = argparse.ArgumentParser(add_help=False)
+    locator = argparse.ArgumentParser(add_help=False, exit_on_error=False)
     locator.add_argument("--module")
     locator.add_argument("profile", nargs="?", type=Path)
-    hint, _ = locator.parse_known_args(argv)
-    profile = None
+    try:
+        hint, _ = locator.parse_known_args(argv)
+    except argparse.ArgumentError:
+        return parser.parse_args(argv)
+    args = argparse.Namespace()
     if hint.profile is not None:
         try:
-            profile = json.loads(hint.profile.read_text(encoding="utf-8"))
-            validate_profile_options(profile)
+            args.profile_data = read_admitted_profile(hint.profile)
         except (OSError, ValueError, RecursionError):
             pass  # The full parser owns argument diagnostics.
         except Held as error:
             raise SystemExit(str(error)) from None
-    return parser.parse_args(argv, namespace=argparse.Namespace(profile_data=profile))
+    return parser.parse_args(argv, namespace=args)
 
 
 if __name__ == "__main__":
