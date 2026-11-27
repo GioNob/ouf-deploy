@@ -67,7 +67,8 @@ def verify_signature(binding, receipt, returning, context):
     field = "returnSignature" if returning else "readySignature"
     context[field] = "unverified" if present else "absent"
     if not present:
-        require(returning or not binding, "MODULE_RECEIPT_SIGNATURE_REQUIRED")
+        require((returning and receipt.name == "return-receipt.json") or not binding,
+                "MODULE_RECEIPT_SIGNATURE_REQUIRED")
         return
     require(binding, "MODULE_RECEIPT_SIGNER_REQUIRED")
     public, openssl = (Path(binding[key]["path"]) for key in ("publicKey", "openssl"))
@@ -92,6 +93,8 @@ def module_history(state, journal, module):
     if os.path.lexists(journal / (module + ".lock")):
         raise OpenTransaction("module-lock")
     transactions = {}
+    restored = set()
+    before_ready = set()
     for directory in journal.iterdir():
         if not HEX.fullmatch(directory.name):
             continue
@@ -104,8 +107,17 @@ def module_history(state, journal, module):
         if not returned and os.path.lexists(directory / "return-receipt.json"):
             raise Held("MODULE_RETURN_DRIFT")
         terminal = directory / ("return-receipt.json" if returned else "receipt.json")
-        if not terminal.is_file() or read(terminal).get("status") != ("ROLLED_BACK" if returned else "READY"):
+        if not terminal.is_file():
             raise OpenTransaction(terminal.name)
+        receipt = read(terminal)
+        compensated = not returned and receipt.get("status") == "HELD" and receipt.get("rollback") == "ROLLED_BACK"
+        if not compensated and receipt.get("status") != ("ROLLED_BACK" if returned else "READY"):
+            raise OpenTransaction(terminal.name)
+        if returned or compensated:
+            restored.add(directory.name)
+            if compensated or not (directory / "receipt.json").exists():
+                before_ready.add(directory.name)
+        require(receipt["planSha256"] == directory.name, "MODULE_RECEIPT_DRIFT")
         require(digest(plan) == directory.name and plan["operation"] == "module-release",
                 "MODULE_RECEIPT_DRIFT")
         transactions[directory.name] = (plan, terminal)
@@ -144,11 +156,20 @@ def module_history(state, journal, module):
                     partial_apply.add(source)
             if source not in transactions:
                 raise OpenTransaction(phase + ".review")
-            represented.add(source)
-            if phase == "rollback":
-                if transactions[source][1].name != "return-receipt.json" or not (run / "rollback.result").is_file():
-                    raise OpenTransaction("rollback.review")
-                require(read(run / "rollback.result") == read(transactions[source][1]), "MODULE_RETURN_DRIFT")
+            if phase == "apply":
+                represented.add(source)
+                continue
+            if source not in restored:
+                raise OpenTransaction("rollback.review")
+            terminal = transactions[source][1]
+            result_path = run / "rollback.result"
+            if result_path.is_file():
+                result = read(result_path)
+                # Older dispatches closed a failed verification or a denied replay with HELD.
+                if result.get("status") != "HELD":
+                    require(result == read(terminal), "MODULE_RETURN_DRIFT")
+            if terminal.name == "return-receipt.json" and review.get("returnAlreadyConsumed") is not True:
+                represented.add(source)
                 returns.add(source)
     for source in partial_apply:
         # A return may close the original interrupted apply. A second primary
@@ -168,19 +189,19 @@ def module_history(state, journal, module):
         require(source in transactions, "MODULE_RELEASE_HEAD_DRIFT")
         plan, terminal = transactions[source]
         result = read(terminal)
-        active = result["restoredCid"] if source in returns else result["successorCid"]
-        if any(s != source and s not in returns and candidate["oldCid"] == active
+        require(source not in before_ready, "MODULE_RELEASE_HEAD_DRIFT")
+        active = result["restoredCid"] if source in restored else result["successorCid"]
+        if any(s != source and s not in restored and candidate["oldCid"] == active
                for s, (candidate, _) in transactions.items()):
             raise OpenTransaction("ready-pointer")
-        interrupted = [s for s in returns if s != source and transactions[s][0]["oldCid"] == active
-                       and not (journal / s / "receipt.json").exists()]
+        interrupted = [s for s in before_ready if transactions[s][0]["oldCid"] == active]
         if not interrupted:
             return plan, terminal
         require(source not in returns, "MODULE_RETURN_ORDER_UNPROVEN")
     else:
-        if any(s not in returns or (journal / s / "receipt.json").exists() for s in transactions):
+        if before_ready != transactions.keys():
             raise OpenTransaction("ready-pointer")
-        interrupted = list(returns)
+        interrupted = list(before_ready)
     require(len(interrupted) == 1, "MODULE_RETURN_ORDER_UNPROVEN")
     return transactions[interrupted[0]]
 
@@ -216,13 +237,14 @@ def module_gate(identity, state, profile, transaction, name, live, docker, conte
     require(Path(profile["journal"]) == journal and profile["container"] == name, "MODULE_PROFILE_DRIFT")
     plan, path = transaction
     source = path.parent.name
-    returning = path.name == "return-receipt.json"
+    receipt = read(path)
+    reviewed_return = path.name == "return-receipt.json"
+    returning = reviewed_return or (receipt.get("status") == "HELD" and receipt.get("rollback") == "ROLLED_BACK")
     context.update(planSha256=source, terminal=path.name)
     binding = identity.get("receiptSigning")
     require((binding or {}).get("publicKey") == profile.get("receiptSigning", {}).get("publicKey"),
             "SIGNATURE_BINDING_CHANGED")
     verify_signature(binding, path, returning, context)
-    receipt = read(path)
     require(receipt["planSha256"] == source, "MODULE_RECEIPT_DRIFT")
     baseline = read(path.parent / "baseline.private.json")
     require(baseline["Id"] == plan["oldCid"] and baseline["Name"] == "/" + name, "MODULE_BASELINE_DRIFT")
@@ -230,9 +252,16 @@ def module_gate(identity, state, profile, transaction, name, live, docker, conte
         created = path.parent / "created.json"
         candidate = read(created)["cid"] if created.exists() else None
         require(not (path.parent / "create-intent.json").exists() or candidate, "MODULE_RETURN_DRIFT")
-        require(receipt["restoredCid"] == baseline["Id"] and receipt["predecessorReadiness"] == "UP"
-                and read(path.parent / "return-intent.json") == {"cid": candidate, "planSha256": source},
+        require(receipt["restoredCid"] == baseline["Id"] and receipt["predecessorReadiness"] == "UP",
                 "MODULE_RETURN_DRIFT")
+        if reviewed_return:
+            require(read(path.parent / "return-intent.json") == {"cid": candidate, "planSha256": source},
+                    "MODULE_RETURN_DRIFT")
+        else:
+            require(receipt["operation"] == "module-release" and receipt["predecessorCid"] == baseline["Id"]
+                    and receipt.get("successorCid") == candidate
+                    and read(path.parent / "rollback-intent.json") == {"cid": baseline["Id"]},
+                    "MODULE_RETURN_DRIFT")
         cid, image = baseline["Id"], plan["oldImage"]
     else:
         ready_head(state, module, source, plan, receipt)

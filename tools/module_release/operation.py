@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import tempfile
+from uuid import uuid4
 
 from . import flyway, postgres
 from .contract import (CI_COORDINATES, INGESTION_STARTUP_FLAGS, MCP_CI_COORDINATES, Held, SHA, diagnostic,
@@ -148,9 +149,13 @@ def confirm(root, name, data):
 
 
 def unlock_module(lock):
-    (lock / "owner.json").unlink(missing_ok=True)
-    lock.rmdir()
+    # Detach the whole directory before cleanup. A process loss leaves either
+    # the original owner at the active path or an inactive, private directory.
+    retired = lock.with_name(f".{lock.name}.released-{uuid4().hex}")
+    lock.rename(retired)
     sync_dir(lock.parent)
+    (retired / "owner.json").unlink(missing_ok=True)
+    retired.rmdir()
 
 
 def retained(p, rt, old):
@@ -499,8 +504,17 @@ def rollback(p, rt, old, root, result, exc):
             result["reason"] = "DATABASE_CHANGED"
 
 
-def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=False, previous_release=None) -> dict:
-    """Replan under exclusion; consume once, write a private receipt even on ordinary failure."""
+def terminal_receipt(result):
+    """READY or a verified automatic compensation: the receipt an attesting owner must sign."""
+    return result.get("status") == "READY" or (result.get("status") == "HELD" and result.get("rollback") == "ROLLED_BACK")
+
+
+def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=False, previous_release=None,
+          seal=None) -> dict:
+    """Replan under exclusion; consume once, write a private receipt even on ordinary failure.
+
+    ``seal(root, name)`` signs a terminal receipt before the module lock is released, so a lost
+    process leaves the lock to the recovery path, which signs the same bytes."""
     result = {"operation": "module-release", "status": "HELD"}
     try:
         require(matches(SHA, plan_sha256), "PLAN_DIGEST_REQUIRED")
@@ -534,16 +548,20 @@ def apply(profile: dict, plan_sha256: str, runtime=None, *, defer_migration=Fals
                 result["reason"] = reason(exc)
             gated = result["status"] == "GATED"
             record(root, "stage.json" if gated else "receipt.json", result)
+            if seal and not gated and terminal_receipt(result):
+                seal(root, "receipt")
             unlock = not gated and result.get("rollback") != "HELD"
         finally:
             if unlock:
                 unlock_module(lock)
     except Exception as exc:
+        if seal and terminal_receipt(result):
+            raise
         result.update(status="HELD", reason=reason(exc))
     return result
 
 
-def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=False):
+def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=False, seal=None):
     """Resume the exact staged generation under the executor's installation lock."""
     validate(profile)
     require(matches(SHA, plan_sha256) and matches(SHA, migration_sha256), "MIGRATION_DIGEST_REQUIRED")
@@ -560,6 +578,9 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
             and staged["migrationSha256"] == migration_sha256 == digest(stage)
             and stage["planSha256"] == plan_sha256 and stage["profileSha256"] == digest(profile),
             "MIGRATION_PLAN_CHANGED")
+    if seal:
+        owner = lock / "owner.json"
+        require(owner.is_file() and json.loads(owner.read_bytes()) == {"planSha256": plan_sha256}, "LOCK_OWNER_UNPROVEN")
     rt = runtime or Docker(profile)
     old = load_predecessor(profile, rt, root)
     cid = stage["cid"]
@@ -584,6 +605,8 @@ def migrate(profile, plan_sha256, migration_sha256, runtime=None, *, recover=Fal
         # the reviewed stage for a fresh dispatch to reconcile it read-only.
         return result
     record(root, "receipt.json", result)
+    if seal and terminal_receipt(result):
+        seal(root, "receipt")
     if result.get("rollback") != "HELD":
         unlock_module(lock)
     return result

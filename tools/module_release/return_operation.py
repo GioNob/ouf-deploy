@@ -5,8 +5,53 @@ from pathlib import Path
 from .contract import SHA, digest, matches, require
 from .frame import snapshot
 from .recovery import verify_stop_claim
-from .operation import (Docker, checked_generation, load_predecessor, read as journal_read, reason,
-                        record, restore, retained, unlock_module, verify_flyway_return, verify_never_started)
+from .operation import (Docker, checked_generation, load_predecessor, read as journal_read, ready, reason,
+                        record, restore, retained, unlock_module, verify_database, verify_flyway_return,
+                        verify_never_started)
+
+
+def completed_return(profile, rt, root, stamp):
+    """Verify the immutable receipt, its journals and the restored service without effects."""
+    receipt = journal_read(root, "return-receipt.json")
+    require(receipt.get("status") == "ROLLED_BACK", "OPERATION_IN_PROGRESS_OR_INTERRUPTED")
+    require(receipt.get("planSha256") == stamp, "RETURN_RECEIPT_DRIFT")
+    plan = journal_read(root, "plan.json")
+    require(digest(plan) == stamp and plan["profileSha256"] == digest(profile), "RETURN_PLAN_CHANGED")
+    old = load_predecessor(profile, rt, root)
+    require(snapshot(old) == plan["oldFrameSha256"] and old["Id"] == plan["oldCid"], "RETURN_BASELINE_CHANGED")
+    successor = None
+    if (root / "created.json").exists():
+        successor = journal_read(root, "created.json")["cid"]
+        require(matches(SHA, successor) and successor != old["Id"] and
+                journal_read(root, "create-intent.json") == {"requestSha256": plan["requestSha256"]},
+                "RECOVERY_CREATE_CHANGED")
+    else:
+        require(not (root / "create-intent.json").exists(), "CREATE_OWNERSHIP_UNCONFIRMED")
+    if (root / "receipt.json").exists():
+        forward = journal_read(root, "receipt.json")
+        require(forward.get("status") == "READY" and forward.get("planSha256") == stamp
+                and successor and forward.get("successorCid") == successor, "RETURN_RECEIPT_DRIFT")
+    require(journal_read(root, "return-intent.json") == {"cid": successor, "planSha256": stamp},
+            "RETURN_INTENT_CHANGED")
+    require(receipt.get("predecessorReadiness") == "UP" and
+            receipt.get("predecessorReadyHttp") in profile["readiness"]["acceptStatus"], "RETURN_RECEIPT_DRIFT")
+    doc = rt.inspect(profile["container"])
+    require(doc["Id"] == receipt["restoredCid"] == plan["oldCid"] and doc["State"]["Running"]
+            and ready(rt, doc, profile["readiness"]), "RETURN_READINESS_CHANGED")
+    if (root / "restore-start.json").is_file():
+        require(journal_read(root, "restore-generation.json") == {"generation": snapshot(doc)},
+                "TERMINAL_GENERATION_CHANGED")
+    else:
+        require(snapshot(doc) == plan["oldFrameSha256"], "TERMINAL_GENERATION_CHANGED")
+    failed = rt.inspect(profile["failedName"], missing=True)
+    if successor:
+        require(failed and failed["Id"] == successor and not failed["State"]["Running"] and
+                not failed["NetworkSettings"]["Networks"], "PARK_UNCONFIRMED")
+    else:
+        require(failed is None, "CUSTODY_NAME_OCCUPIED")
+    verify_database(profile, rt, old, root)
+    verify_flyway_return(profile, rt, old, root)
+    return receipt
 
 
 def interrupted_successor(profile, rt, old, plan, root):
@@ -29,7 +74,7 @@ def interrupted_successor(profile, rt, old, plan, root):
     return cid
 
 
-def run(profile, stamp, runtime=None, *, recover=False):
+def run(profile, stamp, runtime=None, *, recover=False, seal=None):
     require(matches(SHA, stamp) and ("database" in profile["migration"] or "flyway" in profile["migration"]),
             "INVALID_RETURN_PLAN")
     parent = Path(profile["journal"])
@@ -44,10 +89,16 @@ def run(profile, stamp, runtime=None, *, recover=False):
     try:
         lock.mkdir(mode=0o700)
     except FileExistsError:
+        owned = recover and (lock / "owner.json").is_file() and journal_read(lock, "owner.json") == {"planSha256": stamp}
+        if owned and (root / "return-intent.json").is_file() and (root / "return-receipt.json").is_file():
+            receipt = completed_return(profile, runtime or Docker(profile), root, stamp)
+            if seal:
+                seal(root, "return-receipt")
+            unlock_module(lock)
+            return receipt
         resuming = (root / "return-intent.json").is_file()
         interrupted = "flyway" in profile["migration"] and not (root / "receipt.json").exists()
-        if not (recover and (lock / "owner.json").is_file() and json.loads((lock / "owner.json").read_bytes())
-                == {"planSha256": stamp} and (resuming or interrupted) and not (root / "return-receipt.json").exists()):
+        if not (owned and (resuming or interrupted) and not (root / "return-receipt.json").exists()):
             return dict(result, reason="OPERATION_IN_PROGRESS_OR_INTERRUPTED")
     unlock = not (resuming or interrupted)
     try:
@@ -97,8 +148,13 @@ def run(profile, stamp, runtime=None, *, recover=False):
         except Exception as exc:
             result["reason"] = reason(exc)
         record(root, "return-receipt.json", result)
+        if seal and result["status"] == "ROLLED_BACK":
+            # Signed under the module lock: a lost process leaves the lock to completed_return.
+            seal(root, "return-receipt")
         unlock = result["status"] == "ROLLED_BACK"
     except Exception as exc:
+        if seal and result["status"] == "ROLLED_BACK":
+            raise
         result["reason"] = reason(exc)
     finally:
         if unlock:
