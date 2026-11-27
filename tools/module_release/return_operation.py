@@ -5,7 +5,7 @@ from pathlib import Path
 from .contract import SHA, digest, matches, require
 from .frame import snapshot
 from .recovery import verify_stop_claim
-from .operation import (Docker, checked_generation, load_predecessor, read as journal_read, reason,
+from .operation import (Docker, checked_generation, database_baseline, load_predecessor, read as journal_read, reason,
                         record, restore, retained, unlock_module, verify_flyway_return, verify_never_started)
 
 
@@ -30,7 +30,7 @@ def interrupted_successor(profile, rt, old, plan, root):
 
 
 def run(profile, stamp, runtime=None, *, recover=False):
-    require(matches(SHA, stamp) and ("database" in profile["migration"] or "flyway" in profile["migration"]),
+    require(matches(SHA, stamp) and {"database", "flyway"}.intersection(profile["migration"]),
             "INVALID_RETURN_PLAN")
     parent = Path(profile["journal"])
     root = parent / stamp
@@ -52,7 +52,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
     unlock = not (resuming or interrupted)
     try:
         plan = read("plan.json")
-        require(digest(plan) == stamp and plan["profileSha256"] == digest(profile), "RETURN_PLAN_CHANGED")
+        require(digest(plan) == stamp and plan["profileSha256"] == profile_binding(profile, plan), "RETURN_PLAN_CHANGED")
         rt = runtime or Docker(profile)
         old = load_predecessor(profile, rt, root)
         require(snapshot(old) == plan["oldFrameSha256"] and old["Id"] == plan["oldCid"], "RETURN_BASELINE_CHANGED")
@@ -74,7 +74,7 @@ def run(profile, stamp, runtime=None, *, recover=False):
                     and (resuming or not (root / "return-intent.json").exists()), "RETURN_ALREADY_CONSUMED_OR_UNAVAILABLE")
             cid = receipt["successorCid"]
         if "database" in profile["migration"]:
-            require(digest(read("database.private.json")) == plan["databaseSha256"], "RETURN_BASELINE_CHANGED")
+            require(digest(database_baseline(lambda: read("database.private.json"))) == plan["databaseSha256"], "RETURN_BASELINE_CHANGED")
         claim = {"cid": cid, "planSha256": stamp}
         verify_flyway_return(profile, rt, old, root)
         if resuming:
@@ -113,4 +113,11 @@ _run = run
 
 def run(profile, stamp, runtime=None, *, recover=False):
     validate_profile_options(profile)
+    from . import reviewed
+    if reviewed.enabled(profile):
+        return reviewed.return_run(profile, stamp, runtime)
     return _run(profile, stamp, runtime, recover=recover)
+
+
+from .public_output import profile_binding, release_output
+run = release_output(run)

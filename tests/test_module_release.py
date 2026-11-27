@@ -137,7 +137,8 @@ def artifact(p, root, *, image_env=None, revision_label=TESTED, **manifest_chang
 
 
 class Engine:
-    def __init__(self, p, blob):
+    def __init__(self, p, blob, client=docker.Docker):
+        self.client = client
         self.p = p
         self.blob = blob
         self.events = []
@@ -157,7 +158,16 @@ class Engine:
                            "State": {"Running": True, "Status": "running", "Pid": 12, "StartedAt": "first"},
                            "RestartCount": 0}}
 
+    def owned_containers(self, label, value):
+        return {cid for cid, doc in self.docs.items() if (doc.get("Config", {}).get("Labels") or {}).get(label) == value}
+
     def inspect(self, ident, missing=False):
+        return self.client.inspect(self, ident, missing=missing)
+
+    def api(self, method, path, *, missing=False):
+        from urllib.parse import unquote
+        assert method == "GET" and path.startswith("/containers/") and path.endswith("/json")
+        ident = unquote(path[len("/containers/"):-len("/json")])
         for cid, doc in self.docs.items():
             if ident in (cid, doc["Name"][1:]):
                 return copy.deepcopy(doc)
@@ -173,7 +183,7 @@ class Engine:
 
     def stop(self, cid):
         self.events.append("stop:" + cid[0])
-        self.docs[cid]["State"].update(Running=False, Status="exited", Pid=0)
+        self.docs[cid]["State"].update(Running=False, Status="exited", Pid=0, FinishedAt=str(len(self.events)))
 
     def start(self, cid):
         self.events.append("gate:" + cid[0])
@@ -252,13 +262,21 @@ class Engine:
         pass
 
 
+def dedicated_profile(profile):
+    profile["module"] = "mcp"
+    profile["migration"].update(mode="dedicated", command=["/usr/local/bin/ouf-mcp", "migrate"])
+
+
 class ReleaseTest(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
+        key = Path(self.enterContext(tempfile.TemporaryDirectory())) / ".release-hmac.key"
+        key.touch(mode=0o600)
+        key.write_bytes(os.urandom(32))
         p = self.p = json.loads(PROFILE.read_text(encoding="utf-8"))
-        p.update(inbox=tmp.name, journal=tmp.name, dockerSocket=str(self.root / "sock"),
+        p.update(fingerprintKeyFile=str(key), inbox=tmp.name, journal=tmp.name, dockerSocket=str(self.root / "sock"),
                  nsenter=str(self.root / "nsenter"), oldImage="sha256:" + "a" * 64)
         for i, net in enumerate(p["networks"].values(), start=1):
             net["ipv4"] = "192.0.2." + str(i)
@@ -285,11 +303,12 @@ class ReleaseTest(unittest.TestCase):
         import store
         dispatch = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["dispatch"]
         cfg = dict(repositoryId=10, environmentId=20, branch="protected", environment="test",
-                   reviewerIds=[30], commit="a"*40, runner="fixture", modules={"onboarding":self.p})
+                   reviewerIds=[30], commit="a"*40, runner="fixture", fingerprintKeyFile=self.p.get("fingerprintKeyFile"), modules={self.p["module"]: self.p})
         req = dict(run="1", attempt="1", commit=cfg["commit"], operation="module-release",
-                   module="onboarding", phase="plan")
+                   module=self.p["module"], phase="plan")
         req["digest"] = mandate.intent(req)
-        def call(approval_count, workflow=mandate.module_workflow("onboarding")):
+        def call(approval_count, workflow=mandate.module_workflow(self.p["module"])):
+            from module_release.docker import Docker as InstalledDocker
             run = dict(id=int(req["run"]), run_attempt=1, event="workflow_dispatch", status="in_progress",
                        path=workflow, head_branch="protected", head_sha=cfg["commit"],
                        repository={"id":10}, head_repository={"id":10})
@@ -299,8 +318,9 @@ class ReleaseTest(unittest.TestCase):
             approval = dict(state="approved", comment="",
                             user=user, environments=[env])
             jobs = {"jobs": [dict(status="in_progress", runner_name="fixture", name=req["phase"] + " " + req["digest"])]}
-            return dispatch(req, cfg, self.root, Mock(side_effect=[run, jobs, dict(protected=True,
-                            commit={"sha":cfg["commit"]}), env, [approval] * approval_count]))
+            with patch.object(self.rt, "client", InstalledDocker):
+                return dispatch(req, cfg, self.root, Mock(side_effect=[run, jobs, dict(protected=True,
+                                commit={"sha":cfg["commit"]}), env, [approval] * approval_count]))
         self.enterContext(patch.object(store, "sync_dir"))
         self.enterContext(patch.object(store, "trusted", side_effect=lambda path, **_: Path(path)))
         self.enterContext(patch.object(module_operation.operation, "Docker", return_value=self.rt))
@@ -340,7 +360,7 @@ class ReleaseTest(unittest.TestCase):
 
     def test_executor_enforces_each_review_through_onboarding_readiness(self):
         import mandate
-        command = self.p["gate"]["command"] + ["--fixture.option=private-marker"]
+        command = self.p["gate"]["command"] + ["--fixture.password=private-marker"]
         self.p["gate"]["command"] = command
         self.p["candidate"] = {"removeArgs": command[-1:]}
         self.rt.docs[OLD]["Config"]["Cmd"] = command
@@ -349,8 +369,16 @@ class ReleaseTest(unittest.TestCase):
         with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
             call(0, workflow=mandate.WORKFLOW)
         plan_result = call(0)
-        self.assertEqual(plan_result["candidateReview"]["removedArgs"], ["--fixture.option=<redacted>"])
-        self.assertFalse("private-marker" in json.dumps(plan_result))
+        self.assertEqual(plan_result["candidateReview"]["removedArgs"], ["--fixture.password=<redacted>"])
+        self.assertNotIn("private-marker", json.dumps(plan_result))
+        self.assertNotEqual(plan_result["candidateReview"]["predecessorCmdSha256"], mandate.digest(command))
+        with patch.object(sys, "path", list(sys.path)), patch("sys.stdout", new_callable=io.StringIO) as notice:
+            render = runpy.run_path(str(ROOT / ".github/scripts/module-release.py"))["module_review"]
+            summary = io.StringIO()
+            render(summary, self.p["module"], "plan", plan_result, "apply", None)
+            for output in (summary.getvalue(), notice.getvalue()):
+                self.assertIn("HMAC-SHA-256 comando predecessore", output)
+                self.assertNotIn("private-marker", output)
         req.update(phase="apply", digest=plan_result["digest"])
         with self.assertRaisesRegex(mandate.Held, "EXACT_HUMAN_REVIEW_REQUIRED"):
             call(0)
@@ -514,9 +542,22 @@ class ReleaseTest(unittest.TestCase):
         self.assertFalse((self.root / approved / "migration-review-consumed.json").exists())
 
     def test_dedicated_migration_before_signal(self):
-        self.p["migration"].update(mode="dedicated", command=["app", "migrate"])
+        dedicated_profile(self.p)
         self.assertEqual(self.execute()["readiness"], "UP")
         self.assertLess(self.rt.events.index("migrate"), self.rt.events.index("signal:2"))
+
+    def test_DEP_58QI_03_exec_inherits_candidate_environment(self):
+        dedicated_profile(self.p)
+        adapter = docker.Docker(self.p)
+        responses = [{"Id": "exec-id"}, None, {"ContainerID": NEW, "Running": False, "ExitCode": 0}]
+        with patch.object(adapter, "api", side_effect=responses) as api:
+            adapter.migrate(NEW, self.p["migration"]["command"])
+        self.assertEqual([call.args for call in api.call_args_list], [
+            ("POST", "/containers/" + NEW + "/exec", {"Cmd": ["/usr/local/bin/ouf-mcp", "migrate"],
+                                                      "AttachStdout": False, "AttachStderr": False, "Tty": False}),
+            ("POST", "/exec/exec-id/start", {"Detach": True, "Tty": False}),
+            ("GET", "/exec/exec-id/json"),
+        ])
 
     def test_original_onboarding_profile_still_requires_http_200_with_up(self):
         with patch.object(self.rt, "probe", return_value=(204, b"")):

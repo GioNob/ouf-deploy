@@ -30,6 +30,8 @@ Le voci D-065 descrivono i tipi di archivio di competenza deploy. La distinta pr
 
 Il profilo `modules.mcp` aggiunge eseguibile, argv, readiness 204, pin del trasporto, CID PostgreSQL, socket locale, variabile di binding del servizio, versione iniziale, lista e impronta delle migrazioni e schema finale per la modalità dedicata. L'environment protetto custodisce il riferimento `MCP_RELEASE_TRANSPORT_PROFILE`. Conservare la ricevuta con lo ZIP e i due journal con la fotografia SQL iniziale. In prova di recupero verificare il rifiuto del ritorno a storia o schema difforme prima dello stop del candidato. [Voce D-065 deploy.module-release.mcp@1](../tools/privileged_executor/host-register.json)
 
+Per R-059 la lista chiusa degli argv `dedicated` contiene una sola voce per `mcp`, `["/usr/local/bin/ouf-mcp","migrate"]`. Per gli altri moduli è vuota. Il custode registra in `migration.database.urlEnv` il nome della variabile del candidato. Per ampliare la lista serve una modifica di codice con review. Gli argv fuori lista sono l'unica eccezione di parità del 58q-i rispetto a `6ae7001a`. Dopo il ripristino, il custode esegue la fase `plan` governata con l'esecutore aggiornato. Il controllo del profilo installato precede il piano e segnala `MIGRATION_COMMAND_NOT_ALLOWED` senza esporre il comando o richiedere la lettura del segreto.
+
 ## Esecutore privilegiato condiviso
 
 La voce `deploy.a2.successor-image@1` copre lo ZIP Semantic selezionato, entrambi gli image ID, gli inventari Flyway e la review sul CID al cancello. La restituzione del CID originario presuppone la compatibilità dello schema applicato con l’immagine conservata, qualificata nel task-24c. [Custodia e prova di ripristino](../tools/privileged_executor/host-register.json)
@@ -47,7 +49,7 @@ Il formato di cattura, il punto di aggancio T2 e i comandi in sola lettura sono 
 
 ## Delta di configurazione di module-release (D-065)
 
-`configDelta` non abilitato, si abilita con il 58q. Il custode omette la chiave dal profilo di rilascio. Un profilo che la contiene viene rifiutato con `CONFIG_DELTA_NOT_ENABLED`.
+Il custode registra nel profilo privato il delta ENV, bind RO e alias, le allowlist e gli hash dei file. Il piano conserva il digest del delta e il frame del predecessore. Una review di rollback ripristina il CID conservato con la configurazione originaria. Per il ritorno semplice senza delta il custode imposta `readyReturn: true`.
 
 Per il 58q, la voce di custodia prevista è `deploy.module-release.config-delta@1`. Il custode dell'esecutore conserva il profilo privato, i digest e i permessi dei file RO. Il produttore conserva i contenuti approvati e i segreti. La prova di ripristino prevista confronta i file con i digest approvati e verifica bind, ENV, reti e readiness sul CID originale.
 

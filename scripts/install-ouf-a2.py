@@ -43,11 +43,11 @@ def inspect(profile):
     safe(profile)
     check(profile.is_file() and not profile.stat().st_mode & 0o077, "PRIVATE_PROFILE_REQUIRED")
     raw = profile.read_bytes()
-    cfg = json.loads(raw); check(not (isinstance(cfg, dict) and isinstance(cfg.get("modules"), dict) and any(isinstance(p, dict) and "configDelta" in p for p in cfg["modules"].values())), "CONFIG_DELTA_NOT_ENABLED")
+    cfg = json.loads(raw); check(not (isinstance(cfg, dict) and isinstance(cfg.get("modules"), dict) and any(isinstance(p, dict) and "configDelta" in p and not (isinstance(p["configDelta"], dict) and p["configDelta"]) for p in cfg["modules"].values())), "INVALID_DELTA")
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
-    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "nextSuccessorImage", "gateway", "runnerName", "semanticDatabase"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
+    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "nextSuccessorImage", "gateway", "runnerName", "semanticDatabase", "fingerprintKeyFile"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
           and type(cfg["readinessPort"]) is int and 0 < cfg["readinessPort"] < 65536, "INSTALL_PROFILE_FIELDS")
     check(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", cfg["repository"]) and cfg["branch"]
           and all(Path(cfg[k]).is_absolute() for k in ("installRoot","leaseJournal","socket")),
@@ -122,7 +122,7 @@ def inspect(profile):
     package = ROOT / "lib/module_release"
     for module in ("__init__", "contract", "docker", "flyway", "frame", "mcp_artifact", "operation",
                    "postgres", "provenance", "recovery", "retention", "return_operation", "transport",
-                   "frame_spec", "install_contract", "install_operation", "persistent_paths", "profile_options"):
+                   "frame_spec", "install_contract", "install_operation", "persistent_paths", "profile_options", "config_delta", "reviewed", "public_output", "fingerprints"):
         files[package / (module + ".py")] = (blob(f"tools/module_release/{module}.py"), 0o600)
     # Use the same validated commit bytes that the installed executor will import.
     contract = types.ModuleType("release_contract")
@@ -140,7 +140,7 @@ def inspect(profile):
         exec(compile(files[ROOT / "lib/gateway_policy.py"][0], "gateway_policy.py", "exec"), gateway.__dict__)
         check(gateway.valid_profile(cfg["gateway"]), "GATEWAY_INSTALL_PROFILE")
     check(isinstance(cfg["modules"], dict) and "onboarding" in cfg["modules"], "MODULE_PROFILE_REQUIRED")
-    if any("install" in p for p in cfg["modules"].values()):
+    if any("install" in profile or "configDelta" in profile for profile in cfg["modules"].values()):
         # Resolve relative imports exclusively from the same pinned Git blobs.
         with tempfile.TemporaryDirectory() as tmp:
             grammar = Path(tmp) / "a2_install_validation"
@@ -149,10 +149,10 @@ def inspect(profile):
                 (grammar / (unit + ".py")).write_bytes(files[package / (unit + ".py")][0])
             sys.path.insert(0, tmp)
             try:
-                from a2_install_validation.install_contract import validate as validate_install
+                from a2_install_validation import install_contract, profile_options
                 for module_profile in cfg["modules"].values():
-                    if "install" in module_profile:
-                        validate_install(module_profile)
+                    if "configDelta" in module_profile: profile_options.validate_profile_options(module_profile, check=check)
+                    if "install" in module_profile: install_contract.validate(module_profile)
             finally:
                 sys.path.remove(tmp)
                 for key in tuple(sys.modules):
@@ -161,7 +161,7 @@ def inspect(profile):
     for name, module_profile in cfg["modules"].items():
         if "install" not in module_profile or "oldImage" in module_profile:
             contract.validate(module_profile)
-        check(module_profile["module"] == name, "MODULE_ID_DRIFT")
+        check(module_profile["module"] == name and "fingerprintKeyFile" not in module_profile, "MODULE_ID_DRIFT")
         journal = Path(module_profile["journal"])
         safe(journal.parent)
         check(journal != Path(module_profile["inbox"]) and not journal.is_relative_to(Path(module_profile["inbox"])),
@@ -219,16 +219,16 @@ def manifest(files):
     profile = ROOT / "profile.json"
     new_journals = journals(files[profile][0])
     protected = {ROOT / "state"} | new_journals
-    if existing(profile):
-        protected.update(journals(profile.read_bytes()))
-    for directory in new_journals:
-        if not directory.exists():
-            check(not any(p in directory.parents for p in protected), "PROTECTED_INSTALL_STATE")
-    spec = {}
+    previous = profile.read_bytes() if existing(profile) else None
+    protected.update(journals(previous) if previous is not None else ())
+    check(all(d.exists() or not any(p in d.parents for p in protected) for d in new_journals), "PROTECTED_INSTALL_STATE")
+    helper = types.ModuleType("release_fingerprints")
+    exec(files[ROOT / "lib/module_release/fingerprints.py"][0], helper.__dict__)
+    spec, bind = {}, helper.manifest_binding(ROOT, files, fingerprint, protected, previous)
     for path in sorted(paths):
         check(not any(path.is_relative_to(p) for p in protected), "PROTECTED_INSTALL_STATE")
-        before = fingerprint(path.read_bytes(), stat.S_IMODE(path.stat().st_mode)) if existing(path) else None
-        after = fingerprint(*files[path]) if path in files else None
+        before = bind(path, path.read_bytes(), stat.S_IMODE(path.stat().st_mode)) if existing(path) else None
+        after = bind(path, *files[path]) if path in files else None
         if before is None and after is None:
             continue
         if before == after:

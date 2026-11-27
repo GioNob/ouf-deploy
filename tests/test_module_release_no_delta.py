@@ -1,8 +1,10 @@
 """DEP-58LF: execute both releases against the same MCP archive, profile and Engine."""
 import ast
+import builtins
 import copy
 from contextlib import ExitStack, redirect_stderr, redirect_stdout
 from http.client import HTTPConnection
+import importlib
 import io
 import json
 import os
@@ -63,7 +65,8 @@ def installer_plan(root, profile, fail_read=0):
 
 class Trace:
     """Capture calls at the Docker adapter boundary, before the Engine changes state."""
-    def __init__(self, engine, docker):
+    def __init__(self, engine, docker, *, create_id=fixture.NEW):
+        self.create_id = create_id
         self.engine = engine
         self.docker = docker
         self.calls = []
@@ -72,7 +75,7 @@ class Trace:
     def create(self, name, body):
         # Exercise this version's Docker.create and Docker.api up to the socket boundary.
         response = Mock(status=201)
-        response.read.return_value = json.dumps({"Id": fixture.NEW}).encode()
+        response.read.return_value = json.dumps({"Id": self.create_id}).encode()
         with patch.object(HTTPConnection, "request") as send, patch.object(HTTPConnection, "getresponse",
                                                                          return_value=response):
             cid = self.docker.create(name, body)
@@ -100,6 +103,64 @@ class Trace:
         return call
 
 
+class ProcessFiles:
+    """Back the Docker adapter's procfs and dir_fd reads with ordinary fixture files."""
+    O_PATH = getattr(os, "O_PATH", 0)
+    O_DIRECTORY = getattr(os, "O_DIRECTORY", 0)
+    O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+    O_NONBLOCK = getattr(os, "O_NONBLOCK", 0)
+
+    def __init__(self, directory, profile):
+        self.directory = directory
+        self.command = profile["gate"]["command"]
+        self.executable = profile["gate"].get("executable", self.command[0])
+        self.directories = {}
+        self.root = directory / "root"
+        (self.root / "bin").mkdir(parents=True)
+        shell = self.root / "bin/sh"
+        shell.touch()
+        for state in ("gated", "running"):
+            proc = directory / state
+            proc.mkdir()
+            (proc / "exe").hardlink_to(shell)
+            (proc / "status").write_text("SigCgt: 00000200\n")
+            argv = fixture.ENTRY + self.command if state == "gated" else self.command
+            (proc / "cmdline").write_bytes(b"\0".join(arg.encode() for arg in argv) + b"\0")
+
+    def __getattr__(self, name):
+        return getattr(os, name)
+
+    def proc_path(self, *args):
+        if args[0] == "/proc":
+            return self.directory / self.state
+        return Path(*args)
+
+    def readlink(self, path):
+        assert Path(path).name == "exe"
+        return self.executable
+
+    def open(self, name, flags, *, dir_fd=None):
+        path = self.directories[dir_fd] / name if dir_fd in self.directories else Path(name)
+        if path.name == "root":
+            path = self.root
+        if os.name == "posix":
+            return os.open(path if dir_fd is None else name, flags, **({"dir_fd": dir_fd} if dir_fd is not None else {}))
+        # Windows cannot open directories as file descriptors. Give them a real
+        # descriptor and keep their path for relative opens and inode checks.
+        if path.is_dir():
+            fd = os.open(self.directory / "descriptor", os.O_RDONLY)
+            self.directories[fd] = path
+            return fd
+        return os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+
+    def fstat(self, fd):
+        return self.directories[fd].stat() if fd in self.directories else os.fstat(fd)
+
+    def close(self, fd):
+        self.directories.pop(fd, None)
+        os.close(fd)
+
+
 class NoDeltaParity(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -107,8 +168,10 @@ class NoDeltaParity(unittest.TestCase):
         try:
             archive = subprocess.check_output(["git", "archive", "--format=zip", REFERENCE, "tools/module_release",
                                                "scripts/ouf-a2-executor", "scripts/install-ouf-a2.py",
-                                               "tools/privileged_executor/mandate.py",
-                                               "tools/privileged_executor/module_operation.py"],
+                                               ".github/scripts/module-release.py", ".github/scripts/release_review.py",
+                                               "tools/privileged_executor/mandate.py", "tools/privileged_executor/store.py",
+                                               "tools/privileged_executor/module_operation.py",
+                                               "tools/privileged_executor/module_receipt.py"],
                                               cwd=fixture.ROOT, stderr=subprocess.PIPE)
         except subprocess.CalledProcessError:
             if "CI" in os.environ:
@@ -128,7 +191,12 @@ class NoDeltaParity(unittest.TestCase):
         # The installed executor uses absolute imports from its private lib directory.
         with patch.dict(sys.modules, {"module_release": reference_package, "module_release.contract": contract,
                                       "module_release.retention": retention, "mandate": reference_mandate}):
-            from dep58lf_reference.tools.privileged_executor import module_operation as reference_executor
+            from dep58lf_reference.tools.privileged_executor import store as reference_store
+            with patch.dict(sys.modules, {"store": reference_store}):
+                from dep58lf_reference.tools.privileged_executor import module_receipt as reference_receipt
+            with patch.dict(sys.modules, {"module_receipt": reference_receipt}):
+                from dep58lf_reference.tools.privileged_executor import module_operation as reference_executor
+        cls.reference_store = reference_store
         cls.reference_executor = reference_executor
         cls.reference_mandate = reference_mandate
         cls.reference = (operation, recovery, return_operation)
@@ -195,7 +263,8 @@ class NoDeltaParity(unittest.TestCase):
             else:
                 exercise(op, rec, case, rt, stamp)
             self.assertEqual(len(rt.creates), 1)
-            return {"CREATE": rt.creates[0], "planSha256": stamp.encode(), "Docker calls": rt.calls,
+            return {"plan": json.dumps(planned).encode(), "inspect": json.dumps(case.rt.docs).encode(),
+                    "CREATE": rt.creates[0], "planSha256": stamp.encode(), "Docker calls": rt.calls,
                     "journal": {f.relative_to(journal): f.read_bytes()
                                 for f in journal.rglob("*") if f.is_file()}}
         finally:
@@ -205,6 +274,7 @@ class NoDeltaParity(unittest.TestCase):
         case = mcp.Release()
         self.addCleanup(case.doCleanups)
         case.setUp()
+        case.p.pop("fingerprintKeyFile")
         case.p["journal"] = str(case.root / "journal")
         blob, baseline_db = case.rt.blob, case.db
         self.assertNotIn("configDelta", case.p)
@@ -221,6 +291,131 @@ class NoDeltaParity(unittest.TestCase):
         for key in expected:
             with self.subTest(field=key):
                 self.assertEqual(expected[key], actual[key])
+
+    def test_DEP_58Q_10_legacy_flyway_bytes(self):
+        self.compare_legacy_flyway_bytes()
+
+    def compare_legacy_flyway_bytes(self):
+        import test_module_release_java as java
+        import importlib
+        with java.fixture("udp") as (p, initial, rows, history):
+            p["journal"] = str(Path(p["inbox"]) / "journal")
+            journal = Path(p["journal"])
+            results = []
+            for op, _, ret in (self.reference, (operation, recovery, return_operation)):
+                journal.mkdir()
+                rt = Trace(copy.deepcopy(initial), op.Docker(p))
+                fw = importlib.import_module(op.__package__ + ".flyway")
+                with patch.object(fw, "inventory", return_value=rows):
+                    plan = op.plan(p, rt)
+                    stage = op.apply(p, plan["planSha256"], rt)
+                    send = rt.engine.signal
+                    def launch(cid):
+                        send(cid)
+                        if cid == fixture.NEW:
+                            history.append(rows[1])
+                    with patch.object(rt.engine, "signal", launch):
+                        ready = op.migrate(p, plan["planSha256"], stage["migrationSha256"], rt)
+                    returned = ret.run(p, plan["planSha256"], rt)
+                self.assertEqual((ready["status"], returned["status"]), ("READY", "ROLLED_BACK"))
+                results.append((rt.calls, rt.creates, json.dumps([plan, stage, ready, returned, rt.engine.docs]).encode(),
+                                {f.relative_to(journal): f.read_bytes() for f in journal.rglob("*") if f.is_file()}))
+                del history[1:]
+                shutil.rmtree(journal)
+            self.assertEqual(*results)
+
+    def test_DEP_58Q_11_first_install_bytes(self):
+        self.compare_first_install_bytes()
+
+    def compare_first_install_bytes(self):
+        import importlib
+        import test_module_install as first
+        with tempfile.TemporaryDirectory() as tmp:
+            p = first.setup_profile(tmp)
+            blob = fixture.artifact(p, Path(tmp))
+            journal = Path(tmp) / "journal"
+            p["journal"] = str(journal)
+            results = []
+            for op in (self.reference[0], operation):
+                journal.mkdir()
+                install = importlib.import_module(op.__package__ + ".install_operation")
+                spec = importlib.import_module(op.__package__ + ".frame_spec")
+                engine = first.Engine(p, blob)
+                rt = Trace(engine, op.Docker(p), create_id=fixture.OLD)
+                with patch.object(spec, "bind_facts", return_value=({}, {"ino": 42})):
+                    plan = install.plan(p, rt)
+                    ready = install.apply(p, plan["planSha256"], rt)
+                    returned = install.rollback(p, plan["planSha256"], rt)
+                self.assertEqual(ready["status"], "READY", ready)
+                self.assertEqual(returned["status"], "ROLLED_BACK", returned)
+                results.append((rt.calls, rt.creates, json.dumps([plan, ready, returned, engine.docs]).encode(),
+                                {f.relative_to(journal): f.read_bytes() for f in journal.rglob("*") if f.is_file()}))
+                shutil.rmtree(journal)
+            self.assertEqual(*results)
+
+    def test_DEP_58Q_17_legacy_none_denial_and_public_annotation(self):
+        self.compare_legacy_none_denial_and_public_annotation()
+
+    def test_DEP_58QB_06_missing_migration_keeps_public_location(self):
+        outcomes = []
+        for policy in (self.reference_mandate, mandate):
+            req = dict(module="mcp", operation="module-release", phase="rollback", run="1", attempt="1",
+                       digest="a" * 64, commit="b" * 40)
+            with self.assertRaises(KeyError) as missing:
+                try:
+                    policy.validate(req, {"modules": {"mcp": {}}})
+                except KeyError as error:
+                    import traceback
+                    last = traceback.extract_tb(error.__traceback__)[-1]
+                    outcomes.append(f"{type(error).__name__}@{Path(last.filename).name}:{last.lineno}")
+                    raise
+            self.assertEqual(missing.exception.args, ("migration",))
+        self.assertEqual(outcomes, ["KeyError@mandate.py:46"] * 2)
+
+    def compare_legacy_none_denial_and_public_annotation(self):
+        case = fixture.ReleaseTest()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.p.pop("fingerprintKeyFile")
+        case.p["migration"] = {"mode": "none", "rollbackCompatible": True}
+        outputs = []
+        for modules, source in ((self.reference, self.reference_root), ((operation, recovery, return_operation), fixture.ROOT)):
+            op, _, ret = modules
+            rt = Trace(copy.deepcopy(case.rt), op.Docker(case.p))
+            planned = op.plan(case.p, rt)
+            stamp = planned["planSha256"]
+            with self.assertRaisesRegex(op.Held, "^INVALID_RETURN_PLAN$") as held:
+                ret.run(case.p, stamp, rt)
+            public = {"status": planned["status"], "digest": stamp, "candidateImageId": case.p["ci"]["imageId"],
+                      "predecessorImageId": case.p["oldImage"]}
+            summary, annotation = io.StringIO(), io.StringIO()
+            with patch.object(sys, "path", list(sys.path)), patch.dict(sys.modules), redirect_stdout(annotation):
+                sys.modules.pop("release_review", None)
+                render = runpy.run_path(str(source / ".github/scripts/module-release.py"))["module_review"]
+                render(summary, case.p["module"], "plan", public, "apply", None)
+            outputs.append((json.dumps(planned).encode(), rt.calls, summary.getvalue().encode(),
+                            annotation.getvalue().encode(), str(held.exception).encode()))
+        self.assertEqual(*outputs)
+
+    def test_DEP_58Q_22_reference_from_design(self):
+        import importlib
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "dep58q_design"
+            archive = subprocess.check_output(["git", "archive", "--format=zip", "c8851aba", "tools/module_release",
+                                               ".github/scripts/module-release.py", ".github/scripts/release_review.py"],
+                                              cwd=fixture.ROOT)
+            with zipfile.ZipFile(io.BytesIO(archive)) as files:
+                files.extractall(source)
+            with patch.object(sys, "path", [directory, *sys.path]):
+                self.reference = tuple(importlib.import_module("dep58q_design.tools.module_release." + name)
+                                       for name in ("operation", "recovery", "return_operation"))
+                self.reference_root = source
+                self.compare("none")
+                self.compare("none", interrupted=True)
+                self.compare("dedicated", interrupted=True)
+                self.compare_legacy_flyway_bytes()
+                self.compare_first_install_bytes()
+                self.compare_legacy_none_denial_and_public_annotation()
 
     def test_DEP_58LF_05_none(self):
         self.compare("none", interrupted=False)
@@ -389,7 +584,7 @@ class NoDeltaParity(unittest.TestCase):
         case.path.write_text(json.dumps(policy), encoding="utf-8")
         actual = installer_plan(fixture.ROOT, case.path, fail_read=2)
         self.assertEqual((actual.returncode, actual.stdout), (1, b""))
-        self.assertEqual(actual.stderr.splitlines()[-1], b"ValueError: CONFIG_DELTA_NOT_ENABLED")
+        self.assertEqual(actual.stderr.splitlines()[-1], b"ValueError: INVALID_DELTA")
         self.assertNotIn(marker.encode(), actual.stderr)
 
     def test_DEP_58LO_03_changed_hunks_preserve_release_lines(self):
@@ -477,6 +672,454 @@ class NoDeltaParity(unittest.TestCase):
 
     def test_DEP_58LF_07_dedicated(self):
         self.compare("dedicated", interrupted=False)
+
+    def test_DEP_58QG_03_every_no_delta_file_read(self):
+        """Discover ordered reads from the pinned release, including repeated opens of one file."""
+        self.read_fault_matrix(("none", "dedicated", "spring-flyway"))
+
+    def test_DEP_58QG_03_executor_file_reads(self):
+        self.read_fault_matrix(("executor-none", "executor-dedicated", "executor-signed-none", "executor-signed-dedicated"))
+
+    def test_DEP_58QL_key_read_faults(self):
+        self.read_fault_matrix(("private-none", "private-dedicated", "private-spring-flyway", "executor-private-dedicated"))
+
+    def test_DEP_58QM_09_retention_catalog_read_fault(self):
+        from test_module_release_retention_019 import RetentionFixture
+        errors = []
+        for executor in (self.reference_executor, module_operation):
+            with ExitStack() as stack:
+                fixture_case = RetentionFixture()
+                fixture_case.setUp()
+                stack.callback(fixture_case.doCleanups)
+                case = fixture_case.release
+                self.assertNotIn("configDelta", case.p)
+                case.p.pop("fingerprintKeyFile")
+                if executor is self.reference_executor:
+                    stack.enter_context(patch.dict(case.dispatch.__globals__, ModuleRelease=executor.ModuleRelease))
+                    stack.enter_context(patch.object(executor.operation, "Docker", return_value=case.rt))
+                    stack.enter_context(patch.object(executor.retention.postgres, "database_snapshot", fixture_case.catalog_read))
+                    stack.enter_context(patch.object(self.reference_store, "trusted", lambda path, **kw: Path(path)))
+                    stack.enter_context(patch.object(self.reference_store, "sync_dir"))
+                witness = fixture_case.root / "retention-catalog.json"
+                original = Path.read_bytes
+                hits = []
+                def fail_catalog(path):
+                    if path == witness:
+                        hits.append(path)
+                        raise OSError("injected")
+                    return original(path)
+                outcomes = []
+                for phase, run in ((executor.retention.ADMIN, "2"), (executor.retention.BATCH, "3")):
+                    if phase == executor.retention.BATCH:
+                        fixture_case.call(executor.retention.ADMIN, run=run)
+                    with patch.object(Path, "read_bytes", fail_catalog), self.assertRaisesRegex(
+                            executor.Held, r"RELEASE_IO_OR_INPUT_ERROR/OSError@") as held:
+                        fixture_case.call(phase, run=run)
+                    self.assertEqual(hits, [witness])
+                    hits.clear()
+                    self.assertEqual(len(fixture_case.work), 1)
+                    self.assertFalse((fixture_case.root / "retention-batch.json").exists())
+                    outcomes.append(str(held.exception))
+                fixture_case.call(executor.retention.ADMIN, run="4")
+                fixture_case.call(executor.retention.BATCH, run="4")
+                self.assertEqual(len(fixture_case.work), 2)
+                errors.append(outcomes)
+        self.assertEqual(*errors)
+        print("I/O matrix: 2 injected reads (retention-catalog.json, admin and batch)", flush=True)
+
+    def read_fault_matrix(self, modes):
+        total = 0
+        for mode in modes:
+            spring = mode.endswith("spring-flyway")
+            for interrupted in ((False,) if mode.startswith("executor-") else (False, True)):
+                for modules in (self.reference, (operation, recovery, return_operation)):
+                    if "private" in mode and modules is self.reference:
+                        continue
+                    op, rec, ret = modules
+                    with ExitStack() as setup:
+                        import store
+                        storage = self.reference_store if modules is self.reference else store
+                        sync_storage = storage.sync_dir
+                        directory = Path(setup.enter_context(tempfile.TemporaryDirectory()))
+                        (directory / "descriptor").touch()
+                        jar = directory / "root/app/app.jar"
+                        jar.parent.mkdir(parents=True)
+                        if spring:
+                            import test_module_release_java as java
+                            p, initial, rows, history = setup.enter_context(java.fixture("udp", jar=jar))
+                        else:
+                            case = mcp.Release()
+                            case.setUp()
+                            setup.callback(case.doCleanups)
+                            p, initial = case.p, case.rt
+                            baseline_db = copy.deepcopy(case.db)
+                        if "private" in mode:
+                            if spring:
+                                key = directory / ".release-hmac.key"
+                                key.touch(mode=0o600)
+                                key.write_bytes(os.urandom(32))
+                                p["fingerprintKeyFile"] = str(key)
+                            initial.docs[fixture.OLD]["HostConfig"]["LogConfig"] = {
+                                "Type": "splunk", "Config": {"splunk-token": "fixture"}}
+                        proc = ProcessFiles(directory, p)
+                        docker = importlib.import_module(op.__package__ + ".docker")
+                        setup.enter_context(patch.object(docker, "Path", proc.proc_path))
+                        setup.enter_context(patch.object(docker, "os", proc))
+                        setup.enter_context(patch.object(docker.signal, "SIGUSR1", 10, create=True))
+                        setup.enter_context(patch.object(op.flyway, "os", proc))
+                        adapter = docker.Docker(p)
+                        parent = Path(p["inbox"]) / "read-matrix"
+                        p["journal"] = str(parent)
+
+                        if mode.startswith("executor-"):
+                            pinned = modules is self.reference
+                            executor = self.reference_executor if pinned else module_operation
+                            policy = self.reference_mandate if pinned else mandate
+                            setup.enter_context(patch.dict(sys.modules, {"store": storage}))
+                            setup.enter_context(patch.dict(case.dispatch.__globals__,
+                                {"ModuleRelease": executor.ModuleRelease, "authorize": policy.authorize}))
+                            setup.enter_context(patch.object(executor, "read", storage.read))
+                            setup.enter_context(patch.object(executor, "save", storage.save))
+                            setup.enter_context(patch.object(executor, "Journal", storage.Journal))
+                            setup.enter_context(patch.object(storage, "trusted", lambda path, **kw: Path(path)))
+                            if "signed" in mode:
+                                signer = executor.module_receipt
+                                public = directory / "receipt-public.der"
+                                der = signer.ED25519_SPKI + bytes(range(32))
+                                public.write_bytes(der)
+                                private = directory / "receipt-private"
+                                private.touch()
+                                p["receiptSigning"] = {"publicKey": {"path": str(public), "sha256": fixture.sha(der)},
+                                                       "privateKey": str(private)}
+                                setup.enter_context(patch.object(signer, "trusted", storage.trusted))
+                                # Only OpenSSL is doubled. Key bindings, key reads, signature publication
+                                # and verification use the signer shipped by each release.
+                                def openssl(command, **kwargs):
+                                    output = der if command[1] == "pkey" else bytes(64) if "-sign" in command else b""
+                                    return subprocess.CompletedProcess(command, 0, stdout=output)
+                                setup.enter_context(patch.object(signer.subprocess, "run", openssl))
+                            setup.enter_context(patch.object(storage, "sync_dir", sync_storage))
+                            if os.name != "posix":
+                                setup.enter_context(patch.object(os, "O_DIRECTORY", 1 << 28, create=True))
+                            case.root = parent
+
+                        def replay(fault):
+                            parent.mkdir()
+                            engine = copy.deepcopy(initial)
+                            if spring:
+                                del history[1:]
+                                send = engine.signal
+                                def launch(cid):
+                                    send(cid)
+                                    if cid == fixture.NEW:
+                                        history.append(rows[1])
+                                engine.signal = launch
+                            else:
+                                case.rt, case.db = engine, copy.deepcopy(baseline_db)
+                                if mode.endswith("dedicated"):
+                                    case.dedicated()
+                            def process(doc, gated):
+                                proc.state = "gated" if doc["Id"] in engine.gates else "running"
+                                return adapter.process(doc, gated)
+                            engine.process = process
+                            events = []
+                            phase = "plan"
+                            def visit(kind, name):
+                                # Names containing content digests differ between temporary installations.
+                                name = re.sub(r"[a-f0-9]{64}", "digest", str(name))
+                                events.append((phase, kind, name))
+                                if len(events) == fault:
+                                    raise OSError("injected")
+                            fd_open, zip_open = os.open, zipfile.ZipFile.open
+                            read_bytes = Path.read_bytes
+                            in_read_bytes = False
+                            def bytes_read(path):
+                                nonlocal in_read_bytes
+                                visit("read_bytes", path.name)
+                                in_read_bytes = True
+                                try:
+                                    return read_bytes(path)
+                                finally:
+                                    in_read_bytes = False
+                            def traced_open(original):
+                                def opened(path, mode="r", *args, **kwargs):
+                                    if not in_read_bytes and "r" in mode and not isinstance(path, int):
+                                        visit("open", Path(path).name)
+                                    return original(path, mode, *args, **kwargs)
+                                return opened
+                            def fd_read(path, flags, *args, **kwargs):
+                                if not flags & (os.O_WRONLY | os.O_CREAT):
+                                    visit("os.open", Path(path).name)
+                                if os.name != "posix" and flags == getattr(os, "O_DIRECTORY", None):
+                                    return fd_open(directory / "descriptor", os.O_RDONLY)
+                                return fd_open(path, flags, *args, **kwargs)
+                            def member_read(archive, name, mode="r", *args, **kwargs):
+                                if mode == "r":
+                                    visit("member", getattr(name, "filename", name))
+                                return zip_open(archive, name, mode, *args, **kwargs)
+
+                            try:
+                                with (patch.object(builtins, "open", traced_open(builtins.open)),
+                                      patch.object(io, "open", traced_open(io.open)),
+                                      patch.object(Path, "read_bytes", bytes_read), patch.object(os, "open", fd_read),
+                                      patch.object(zipfile.ZipFile, "open", member_read), patch.object(os, "fsync")):
+                                    if mode.startswith("executor-"):
+                                        case.req["run"] = "1"
+                                        case.approvals.clear()
+                                        with patch.object(executor.operation, "Docker", return_value=engine), \
+                                             patch.object(executor.return_operation, "Docker", return_value=engine):
+                                            result = case.call("plan", policy.intent(dict(case.req, phase="plan")), approved=False)
+                                            phase = "apply"
+                                            stamp = result["digest"]
+                                            result = case.call(phase, stamp)
+                                            if result["status"] == "GATED":
+                                                phase = "migrate"
+                                                result = case.call(phase, result["digest"])
+                                            if "signed" in mode:
+                                                phase = "verify"
+                                                release = executor.ModuleRelease(case.cfg, case.root, case.req)
+                                                release.previous_release()
+                                            # The previous READY release can own a completed retention worker.
+                                            for worker in ("mcp-retention-admin-019", "analysis-retention-once"):
+                                                (parent / stamp / (worker + ".start.json")).write_text(json.dumps({"cid": "d" * 64}))
+                                            phase = "return"
+                                            result = case.call("rollback", stamp, run="2")
+                                    else:
+                                        result = op.plan(p, engine)
+                                    if result["status"] == "PLANNED":
+                                        stamp = result["planSha256"]
+                                        phase = "apply"
+                                        if interrupted:
+                                            try:
+                                                with patch.object(engine, "start", side_effect=KeyboardInterrupt):
+                                                    result = op.apply(p, stamp, engine)
+                                            except KeyboardInterrupt:
+                                                phase = "recovery-plan"
+                                                approved = rec.proposal(p, engine)
+                                                phase = "resume"
+                                                result = rec.resume(p, engine, approved)
+                                        else:
+                                            result = op.apply(p, stamp, engine)
+                                        if result["status"] == "GATED":
+                                            phase = "migrate"
+                                            result = op.migrate(p, stamp, result["migrationSha256"], engine)
+                                        if result["status"] == "READY":
+                                            phase = "return"
+                                            if interrupted and mode != "dedicated":
+                                                deliver = engine.signal
+                                                def lost_signal(cid):
+                                                    deliver(cid)
+                                                    raise KeyboardInterrupt
+                                                try:
+                                                    with patch.object(engine, "signal", lost_signal):
+                                                        result = ret.run(p, stamp, engine)
+                                                except KeyboardInterrupt:
+                                                    phase = "resume-return"
+                                                    result = ret.run(p, stamp, engine, recover=True)
+                                            else:
+                                                result = ret.run(p, stamp, engine)
+                            except Exception as exc:
+                                if mode.startswith("executor-") and isinstance(exc, (executor.Held, policy.Held)):
+                                    result = {"status": "HELD", "reason": str(exc)}
+                                else:
+                                    result = {"status": "raised", "reason": op.reason(exc)}
+                            finally:
+                                shutil.rmtree(parent)
+                            return events, {k: result[k] for k in ("status", "reason", "rollbackReason") if k in result}
+
+                        trace, outcome = replay(None)
+                        if "private" in mode:
+                            indices = [i for i, (_, kind, name) in enumerate(trace, 1)
+                                       if kind == "os.open" and name == ".release-hmac.key"]
+                            self.assertTrue(indices, outcome)
+                            self.assertIn("return", {phase for phase, _, _ in trace}, outcome)
+                            for i in indices:
+                                with self.subTest(mode=mode, interrupted=interrupted, occurrence=i):
+                                    reached, actual = replay(i)
+                                    self.assertEqual(trace[:i], reached[:i])
+                                    self.assertIn("FINGERPRINT_KEY_UNAVAILABLE", str(actual))
+                            total += len(indices)
+                        elif modules is self.reference:
+                            self.assertIn(outcome["status"], ("ROLLED_BACK", "HELD"))
+                            self.assertIn("return", {row[0] for row in trace}, (outcome, trace[-20:]))
+                            opens = {(kind, name) for _, kind, name in trace}
+                            self.assertTrue({("open", "status"), ("read_bytes", "cmdline")} <= opens, opens)
+                            if spring:
+                                self.assertIn(("os.open", "app.jar"), opens)
+                            if mode.startswith("executor-"):
+                                for worker in ("mcp-retention-admin-019", "analysis-retention-once"):
+                                    self.assertIn(("return", "read_bytes", worker + ".start.json"), trace)
+                            if "signed" in mode:
+                                signing = "migrate" if mode.endswith("dedicated") else "apply"
+                                for phase in (signing, "verify"):
+                                    self.assertIn((phase, "read_bytes", public.name), trace)
+                            expected_trace = trace
+                            expected = [replay(i)[1] for i in range(1, len(trace) + 1)]
+                        else:
+                            self.assertEqual(trace, expected_trace)
+                            for i, (event, reference) in enumerate(zip(trace, expected), 1):
+                                with self.subTest(mode=mode, interrupted=interrupted, occurrence=i, read=event):
+                                    reached, actual = replay(i)
+                                    self.assertEqual(reached[:i], trace[:i])
+                                    self.assertEqual(actual, reference)
+                            total += len(trace)
+                            print("I/O", mode, "resume" if interrupted else "apply", len(trace), flush=True)
+        print("I/O matrix:", total, "injected reads", flush=True)
+
+    def test_DEP_58QM_01_predecessor_receipt_uses_issuing_release(self):
+        case = fixture.ReleaseTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        p, rt = case.p, case.rt
+        p["migration"] = {"mode": "none", "rollbackCompatible": True}
+        rt.docs[fixture.OLD]["Config"]["Env"].append("PGPASSWORD=fixture")
+        reference = self.reference[0]
+        historical = {k: v for k, v in p.items() if k != "fingerprintKeyFile"}
+        stamp = reference.plan(historical, rt)["planSha256"]
+        receipt = reference.apply(historical, stamp, rt)
+        self.assertEqual(receipt["status"], "READY", receipt)
+        doc = rt.docs[receipt["successorCid"]]
+        previous = {**receipt, "imageId": doc["Image"]}
+        p["retainedName"] += "-next"
+        fixture.artifact(p, case.root, image_env=["PUBLIC=next"])
+        expected = reference.plan(p, rt, previous_release=lambda: previous)
+        self.assertEqual(expected["status"], "PLANNED", expected)
+        current = operation.plan(p, rt, previous_release=lambda: previous)
+        self.assertEqual(current["status"], expected["status"], current)
+        self.assertEqual(current["plan"]["predecessorPlanSha256"], stamp)
+        self.assertNotEqual(current["plan"]["oldFrameSha256"], receipt["successorFrameSha256"])
+        with patch.dict(doc, RestartCount=doc["RestartCount"] + 1):
+            self.assertEqual(operation.plan(p, rt, previous_release=lambda: previous)["reason"], "PREDECESSOR_CHANGED")
+        # A keyed receipt must never fall back to the historical SHA-256.
+        keyed = dict(previous, fingerprintRun=current["plan"]["fingerprintRun"])
+        self.assertEqual(operation.plan(p, rt, previous_release=lambda: keyed)["reason"], "PREDECESSOR_CHANGED")
+        keyed["successorFrameSha256"] = current["plan"]["oldFrameSha256"]
+        self.assertEqual(operation.plan(p, rt, previous_release=lambda: keyed), current)
+
+    def test_DEP_58QM_02_flag_without_operand_matches_release(self):
+        case = fixture.ReleaseTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        Path(case.p.pop("fingerprintKeyFile")).unlink()
+        labels = case.rt.docs[fixture.OLD]["Config"]["Labels"]
+        for flag in ("--password", "client --password", '["client","--password"]'):
+            with self.subTest(flag=flag), patch.dict(labels, client=flag):
+                expected = self.reference[0].plan(case.p, case.rt)
+                self.assertEqual(expected["status"], "PLANNED", expected)
+                self.assertEqual(operation.plan(case.p, case.rt), expected)
+        with patch.dict(labels, client="client --password operand"):
+            self.assertEqual(operation.plan(case.p, case.rt)["reason"], "FINGERPRINT_KEY_UNAVAILABLE")
+
+    def test_DEP_58QL_clean_plan_bytes(self):
+        import test_module_release_java as java
+        with ExitStack() as stack:
+            case = mcp.Release()
+            case.setUp()
+            stack.callback(case.doCleanups)
+            case.dedicated()
+            case.rt.docs[fixture.OLD]["Config"]["Labels"]["client"] = "psql -p5432"
+            case.rt.docs[fixture.OLD]["Config"]["Labels"]["description"] = "basic readiness check"
+            p, engine, _, _ = stack.enter_context(java.fixture("udp"))
+            flag = "--feature.mode=off"
+            p["gate"]["command"].append(flag)
+            engine.docs[fixture.OLD]["Config"]["Cmd"] = list(p["gate"]["command"])
+            engine.docs[fixture.OLD]["Args"] = fixture.ENTRY[1:] + p["gate"]["command"]
+            p["candidate"] = {"removeArgs": [flag]}
+            for profile, rt in ((case.p, case.rt), (p, engine)):
+                reference_input = {k: v for k, v in profile.items() if k != "fingerprintKeyFile"}
+                expected = self.reference[0].plan(reference_input, rt)
+                self.assertEqual(expected["status"], "PLANNED", expected)
+                with patch.object(operation.public_output, "read_key", side_effect=AssertionError("unneeded key")):
+                    self.assertEqual(operation.plan(profile, rt), expected)
+
+    def test_DEP_58QL_16_clean_manifest_matches_reference(self):
+        case = installer_fixture.Bootstrap()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        policy = json.loads(case.path.read_bytes())
+        del policy["modules"]["vertical-mock"]
+        Path(policy.pop("fingerprintKeyFile")).unlink()
+        case.path.write_text(json.dumps(policy))
+        files = case.inst.inspect(case.path)
+        manifest = runpy.run_path(str(self.reference_root / "scripts/install-ouf-a2.py"))["manifest"]
+        with patch.dict(manifest.__globals__, ROOT=case.inst.ROOT, safe=case.inst.safe):
+            self.assertEqual(case.inst.manifest(files), manifest(files))
+
+    def test_credential_matrix_near_names_match_reference_without_delta(self):
+        names = ("TOKENIZER", "TOKENIZER_STATUS", "KEYBOARD_LAYOUT", "PASSAGE", "SECRETARY", "MONKEY")
+        for name in (*names, "psql"):
+            with self.subTest(name=name), ExitStack() as stack:
+                case = mcp.Release()
+                case.setUp()
+                stack.callback(case.doCleanups)
+                case.p.pop("fingerprintKeyFile")
+                case.dedicated()
+                if name == "psql":
+                    case.rt.docs[fixture.OLD]["Config"]["Labels"]["client"] = "psql --password mcp"
+                else:
+                    case.rt.docs[fixture.OLD]["Config"]["Env"].append(name + "=PLANNED")
+                outputs = []
+                for op in (self.reference[0], module_operation.operation):
+                    adapter = importlib.import_module(op.__package__ + ".docker").Docker
+                    with patch.object(case.rt, "client", adapter):
+                        outputs.append(op.plan(case.p, case.rt))
+                self.assertEqual(outputs[0]["status"], "PLANNED")
+                self.assertEqual(outputs[0], outputs[1])
+        print(f"Credentials: {len(names)} no-delta control names and psql --password mcp match {REFERENCE[:8]}", flush=True)
+
+    def test_DEP_58QE_05_mcp_return_plan_io_location(self):
+        def exercise(op, rec, case, rt, stamp):
+            import importlib
+            ret = importlib.import_module(op.__package__ + ".return_operation")
+            self.assertEqual(op.apply(case.p, stamp, rt)["status"], "READY")
+            read = Path.read_bytes
+            def fail(path):
+                if path.name == "plan.json":
+                    raise OSError("fixture")
+                return read(path)
+            with patch.object(Path, "read_bytes", fail):
+                result = ret.run(case.p, stamp, rt)
+            self.assertEqual((result["status"], result["reason"]),
+                             ("HELD", "RELEASE_IO_OR_INPUT_ERROR/OSError@return_operation.py:40"))
+        self.compare("none", exercise=exercise)
+
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        stamp = case.planned()["digest"]
+        self.assertEqual(case.call("apply", stamp)["status"], "READY")
+        read = Path.read_bytes
+        def fail_plan(path):
+            if path == Path(case.p["journal"]) / stamp / "plan.json":
+                raise OSError("fixture")
+            return read(path)
+        with patch.object(Path, "read_bytes", fail_plan), self.assertRaisesRegex(mandate.Held, "OSError@return_operation.py:40"):
+            case.call("rollback", stamp, run="2")
+        self.assertEqual(json.loads((case.root / "2" / "rollback.result").read_bytes()),
+                         {"status": "HELD", "planSha256": stamp, "reason": "RELEASE_IO_OR_INPUT_ERROR/OSError@return_operation.py:40"})
+
+    def test_DEP_58QI_01_allowed_migration_bytes_and_digest(self):
+        argv = ["/usr/local/bin/ouf-mcp", "migrate"]
+
+        def exercise(op, rec, case, rt, stamp):
+            result = op.apply(case.p, stamp, rt)
+            self.assertEqual(result["status"], "GATED")
+            stage = op.read(Path(case.p["journal"]) / stamp, "migration-plan.json")
+            self.assertEqual(stage["migration"]["command"], argv)
+            self.assertEqual(result["migrationSha256"], op.digest(stage))
+        self.compare("dedicated", exercise=exercise)
+
+        case = mcp.Release()
+        self.addCleanup(case.doCleanups)
+        case.setUp()
+        case.dedicated()
+        network = next(iter(case.p["networks"]))
+        case.p["configDelta"] = {"aliases": {network: ["reviewed-db-client"]}}
+        stamp = case.planned()["digest"]
+        gated = case.call("apply", stamp)
+        stage = operation.read(Path(case.p["journal"]) / stamp, "migration-plan.json")
+        self.assertEqual(stage["migration"]["command"], argv)
+        self.assertEqual(case.call("migrate", gated["digest"])["status"], "READY")
 
     def test_DEP_58LF_08_dedicated_interrupted_apply_and_migration(self):
         self.compare("dedicated", interrupted=True)

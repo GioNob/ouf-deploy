@@ -27,7 +27,7 @@ def proposal(p, rt):
     require(matches(SHA, stamp), "LOCK_OWNER_UNPROVEN")
     root = parent / stamp
     body = op.read(root, "plan.json")
-    require(digest(body) == stamp and body["profileSha256"] == digest(p), "RECOVERY_PROFILE_CHANGED")
+    require(digest(body) == stamp and body["profileSha256"] == op.public_output.profile_binding(p, body), "RECOVERY_PROFILE_CHANGED")
     require(not (root / "return-intent.json").exists(), "REVIEWED_RETURN_REQUIRED")
     old = op.load_predecessor(p, rt, root)
     require(old["Id"] == body["oldCid"] and snapshot(old) == body["oldFrameSha256"], "RECOVERY_BASELINE_CHANGED")
@@ -35,14 +35,14 @@ def proposal(p, rt):
     for role in ("container", "retainedName", "failedName"):
         doc = rt.inspect(p[role], missing=True)
         frames[role] = snapshot(doc) if doc else None
-    journal = {f.name: digest(op.read(root, f.name)) for f in root.glob("*.json")}
-    proposal = {"operation": "module-recovery", "sourcePlan": stamp, "profileSha256": digest(p),
+    journal = {f.name: op.public_output.journal_binding(f.name, op.read(root, f.name)) for f in root.glob("*.json")}
+    proposal = {"operation": "module-recovery", "sourcePlan": stamp, "profileSha256": op.public_output.binding("profile", p), **op.public_output.run_fields(),
                 "journal": journal, "frames": frames}
     if "candidateReview" in body:
         proposal["candidateReview"] = body["candidateReview"]
     if "mcp-retention-admin-019" in body:
         proposal["mcp-retention-admin-019"] = body["mcp-retention-admin-019"]
-    return proposal
+    return op.reviewed.recovery_review(p, root, body, proposal, old) if op.reviewed.enabled(p) else proposal
 
 
 def verify_stop_claim(rt, old, body, root):
@@ -125,7 +125,7 @@ def resume(p, rt, approved):
             check = op.checked_generation if (root / "release-signal.json").exists() else op.waiting_gate
             generation, checked = check(p, rt, old, cid)
             expected = {"cid": cid, "generation": generation, "planSha256": root.name,
-                              "profileSha256": digest(p), "predecessorFrame": body["oldFrameSha256"],
+                              "profileSha256": op.public_output.binding("profile", p), **op.public_output.run_fields(), "predecessorFrame": body["oldFrameSha256"],
                               "migration": p["migration"]}
             if "flyway" in p["migration"]:
                 proof = (op.read(root, "flyway-plan.json") if (root / "release-signal.json").exists()
@@ -134,13 +134,13 @@ def resume(p, rt, approved):
                 expected["flywayReview"] = proof
             require(stage == expected, "MIGRATION_PLAN_CHANGED")
             if (root / "release-signal.json").exists():
-                require(op.read(root, "migration-review-consumed.json") == {"digest": digest(stage)},
+                require(op.read(root, "migration-review-consumed.json") == {"digest": op.public_output.migration_binding(stage)},
                         "MIGRATION_REVIEW_UNPROVEN")
                 proof = op.release(p, rt, old, cid, root, expected_generation=generation)
                 op.retained(p, rt, old)
                 result.update(status="READY", readiness="UP", **proof)
             else:
-                result.update(status="GATED", migrationSha256=digest(stage))
+                result.update(status="GATED", migrationSha256=op.public_output.migration_binding(stage))
         else:
             op.finish_apply(p, rt, body, old, cid, root, result, defer_migration=True)
         if result["status"] == "GATED":
@@ -159,3 +159,17 @@ _residual = residual
 def residual(p, rt):
     validate_profile_options(p)
     return _residual(p, rt)
+
+
+_resume = resume
+
+
+def resume(p, rt, approved):
+    if not op.reviewed.enabled(p):
+        return _resume(p, rt, approved)
+    require(proposal(p, rt) == approved, "RECOVERY_PLAN_CHANGED")
+    return op.reviewed.resume(p, rt, approved["sourcePlan"])
+
+
+proposal = op.public_output.release_output(proposal)
+resume = op.public_output.release_output(resume)

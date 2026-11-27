@@ -1,5 +1,7 @@
 """Opt-in module release with an actual Docker archive, gated Java and HTTP probe."""
 import gzip
+from contextlib import ExitStack
+from ipaddress import IPv4Network
 import json
 import os
 from pathlib import Path
@@ -19,6 +21,27 @@ from tools.module_release import flyway, postgres, recovery, return_operation
 from tools.module_release.contract import ENTRY, checksum, digest
 from tools.module_release.docker import Docker
 from tools.module_release.operation import apply, migrate, plan, ready
+
+
+def fixture_subnet(interruption):
+    if interruption and interruption.startswith("58q-"):
+        return IPv4Network({
+            "58q-exit": "192.0.2.64/27",
+            "58q-lost-stop": "192.0.2.96/27",
+            "58q-before-signal": "192.0.2.128/27",
+            "58q-after-signal": "192.0.2.160/27",
+        }[interruption])
+    return IPv4Network("192.0.2.32/27")
+
+
+class FixtureNetworkTest(unittest.TestCase):
+    def test_DEP_58QB_08_subcases_have_disjoint_subnets(self):
+        allocated = [fixture_subnet(None)]
+        for cut in ("exit", "lost-stop", "before-signal", "after-signal"):
+            with self.subTest(cut=cut):
+                subnet = fixture_subnet("58q-" + cut)
+                self.assertFalse(any(subnet.overlaps(previous) for previous in allocated))
+                allocated.append(subnet)
 
 
 @unittest.skipUnless(sys.platform == "linux" and os.getenv("OUF_MODULE_RELEASE_NATIVE") == "1",
@@ -103,6 +126,32 @@ class NativeRelease(unittest.TestCase):
     def test_ingestion_v21_from_validate_only_and_return(self):
         self.exercise_release(busybox=False, interruption="jdbc", module="ingestion")
 
+    def test_DEP_58Q_08_native_immediate_exit_and_lost_stop(self):
+        for cut in ("exit", "lost-stop"):
+            with self.subTest(cut=cut):
+                self.exercise_release(busybox=True, interruption="58q-" + cut)
+
+    def test_DEP_58Q_09_native_restore_signal_delivery(self):
+        for cut in ("before-signal", "after-signal"):
+            with self.subTest(cut=cut):
+                self.exercise_release(busybox=True, interruption="58q-" + cut)
+
+    def test_DEP_58QB_08_native_fixture_releases_subnet_on_exit(self):
+        socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
+        rt = Docker({"dockerSocket": socket})
+        self.assertIn("ouf.a2.fixture=true", rt.api("GET", "/info")["Labels"])
+        cli = ["/usr/bin/docker", "--host", "unix://" + socket]
+        self.exercise_release(busybox=True, interruption="58q-exit")
+        with ExitStack() as resources:
+            for cut in ("exit", "lost-stop", "before-signal", "after-signal"):
+                self.fixture_network(rt, cli, "module-fixture-" + uuid.uuid4().hex,
+                                     fixture_subnet("58q-" + cut), resources)
+
+    def fixture_network(self, rt, cli, net, subnet, resources):
+        network = rt.api("POST", "/networks/create", {"Name": net, "Internal": True, "Driver": "bridge",
+                         "IPAM": {"Config": [{"Subnet": str(subnet)}]}})["Id"]
+        resources.callback(subprocess.run, [*cli, "network", "rm", network], check=True)
+
     def exercise_release(self, busybox, interruption=None, module=None):
         self.assertEqual(os.geteuid(), 0)
         socket = os.environ["OUF_A2_FIXTURE_SOCKET"]
@@ -113,6 +162,8 @@ class NativeRelease(unittest.TestCase):
         self.assertIn("ouf.a2.fixture=true", rt.api("GET", "/info")["Labels"])
         name = "module-fixture-" + uuid.uuid4().hex
         net = name + "-net"
+        subnet = fixture_subnet(interruption)
+        ipv4 = str(subnet[3])
         command = ["java", "-jar", "/app/application.jar"]
         old_image = os.environ["OUF_A2_FIXTURE_IMAGE"]
         image_name = "ouf-ci-busybox" if busybox else "ouf-ci-gate"
@@ -130,16 +181,21 @@ class NativeRelease(unittest.TestCase):
             command = ["/usr/local/bin/ouf-mcp", "server"]
         tag = image_name + ":" + TESTED
         candidate = rt.api("GET", "/images/" + tag + "/json")["Id"]
-        with tempfile.TemporaryDirectory() as directory:
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as resources:
             root = Path(directory)
-            p.update(container=name, retainedName=name+"-saved", failedName=name+"-failed", oldImage=old_image,
+            key = Path(resources.enter_context(tempfile.TemporaryDirectory())) / ".release-hmac.key"
+            key.touch(mode=0o600)
+            key.write_bytes(os.urandom(32))
+            p.update(fingerprintKeyFile=str(key), container=name, retainedName=name+"-saved", failedName=name+"-failed", oldImage=old_image,
                      inbox=directory, journal=directory, nsenter="/usr/bin/nsenter",
-                     networks={net: {"ipv4":"192.0.2.35", "aliases":[name]}}, gate={"command":command})
+                     networks={net: {"ipv4":ipv4, "aliases":[name]}}, gate={"command":command})
             p["readiness"].update(path="/ready", attempts=20)
-            p["migration"].update(mode="dedicated", command=["/bin/sh", "-c", "exit 0"], rollbackCompatible=True)
+            p["migration"]["rollbackCompatible"] = True
+            if interruption in (None, "database", "detach"):
+                p["module"] = "mcp"
+                p["migration"].update(mode="dedicated", command=["/usr/local/bin/ouf-mcp", "migrate"])
             if busybox:
                 p["readiness"] = dict(path="/health/ready", port=8080, acceptStatus=[204], attempts=20)
-                p["migration"]["command"] = ["/bin/sh", "-c", "exit 1"]
             ci = p["ci"]
             ci.update(repository="fixture/module", imageName=image_name, imageId=candidate,
                       runId=1, runAttempt=1, artifactId=1)
@@ -163,15 +219,13 @@ class NativeRelease(unittest.TestCase):
             with archive.open("rb") as f:
                 ci["zipSha256"] = checksum(f)
             archive.rename(root / (ci["zipSha256"] + ".zip"))
-            network = rt.api("POST", "/networks/create", {"Name":net, "Internal":True, "Driver":"bridge",
-                             "IPAM":{"Config":[{"Subnet":"192.0.2.32/27"}]}})["Id"]
-            self.addCleanup(subprocess.run, [*cli, "network", "rm", network], check=False)
+            self.fixture_network(rt, cli, net, subnet, resources)
             for container in (name, p["retainedName"], p["failedName"]):
-                self.addCleanup(subprocess.run, [*cli, "rm", "-f", container], stderr=subprocess.DEVNULL)
-            env = []
+                resources.callback(subprocess.run, [*cli, "rm", "-f", container], stderr=subprocess.DEVNULL)
+            env = ["FIXTURE_MIGRATE_FAIL=true"] if busybox and interruption is None else []
             if interruption in ("flyway", "database", "jdbc"):
                 pg = name + "-pg"
-                setup = self.enterContext(postgres_fixture(cli, pg, net, jdbc=interruption == "jdbc"))
+                setup = resources.enter_context(postgres_fixture(cli, pg, net, jdbc=interruption == "jdbc"))
                 def sql(command):
                     subprocess.run(setup, input=command.encode(), check=True, stdout=subprocess.DEVNULL)
                 if interruption == "jdbc":
@@ -195,7 +249,7 @@ class NativeRelease(unittest.TestCase):
                         CREATE TABLE ouf_mcp.schema_migration(version int, checksum text, applied_at timestamptz);
                         INSERT INTO ouf_mcp.schema_migration VALUES (1,repeat('a',64),now());""")
                     env = [f"MCP_DATABASE_URL=postgresql://fixture@{pg}/postgres"]
-                    p["migration"].update(command=["/bin/sh", "-c", "exit 0"],
+                    p["migration"].update(
                         database=dict(postgresCid=rt.inspect(pg)["Id"], version=1, socket="/tmp", urlEnv="MCP_DATABASE_URL"),
                         migrations=[dict(version=2, checksum="b"*64)])
                 else:
@@ -205,15 +259,18 @@ class NativeRelease(unittest.TestCase):
                         INSERT INTO ouf_onboarding.flyway_schema_history VALUES
                         (1,'1','V1__base.sql','SQL',%d,true);""" % flyway.flyway_checksum(b"SELECT 1;"))
                     rt.flyway_peer = dict(postgresCid=rt.inspect(pg)["Id"], socket="/tmp")
-                    p["migration"].pop("command")
                     p["migration"]["mode"] = "spring-flyway"
                     env = [f"OUF_ONB_DB_URL=jdbc:postgresql://{pg}/postgres", "OUF_ONB_DB_USER=fixture"]
+            elif interruption and interruption.startswith("58q-"):
+                p.update(readyReturn=True, migration={"mode": "none", "rollbackCompatible": True})
+                if interruption == "58q-exit":
+                    p.update(envAllowlist=["FIXTURE_EXIT"], configDelta={"env": [
+                        {"name": "FIXTURE_EXIT", "before": None, "after": "true"}]})
             elif interruption == "create":
-                p["migration"].pop("command")
                 p["migration"]["mode"] = "none"
             old = rt.create(name, dict(Image=old_image, Entrypoint=ENTRY, Cmd=command, Env=env, User="10005:10005" if busybox else "",
                 HostConfig={"NetworkMode":net, "RestartPolicy":{"Name":"no"}},
-                NetworkingConfig={"EndpointsConfig":{net:{"Aliases":[name], "IPAMConfig":{"IPv4Address":"192.0.2.35"}}}}))
+                NetworkingConfig={"EndpointsConfig":{net:{"Aliases":[name], "IPAMConfig":{"IPv4Address":ipv4}}}}))
             rt.start(old)
             for _ in range(100):
                 if rt.process(rt.inspect(old), gated=True):
@@ -234,6 +291,41 @@ class NativeRelease(unittest.TestCase):
             proposal = plan(p)
             self.assertEqual(proposal["status"], "PLANNED", proposal)
             stamp = proposal["planSha256"]
+            if interruption and interruption.startswith("58q-"):
+                from tools.module_release import reviewed
+                if interruption == "58q-exit":
+                    deliver = reviewed.signal
+                    def exit_after_delivery(engine, checked):
+                        cid = checked()["Id"]
+                        deliver(engine, checked)
+                        for _ in range(100):
+                            if engine.inspect(cid)["State"]["Status"] == "exited":
+                                raise KeyboardInterrupt
+                            time.sleep(.1)
+                        self.fail("Candidate did not exit after its gate was released")
+                    with patch.object(reviewed, "signal", exit_after_delivery), self.assertRaises(KeyboardInterrupt):
+                        apply(p, stamp, rt)
+                    self.assertEqual(rt.inspect(name)["State"]["Status"], "exited")
+                else:
+                    self.assertEqual(apply(p, stamp, rt)["status"], "READY")
+                    stop, deliver = rt.stop, reviewed.signal
+                    def lost_stop(cid):
+                        stop(cid)
+                        raise KeyboardInterrupt
+                    def cut_signal(engine, checked):
+                        if interruption == "58q-after-signal":
+                            deliver(engine, checked)
+                        raise KeyboardInterrupt
+                    hook = (patch.object(rt, "stop", lost_stop) if interruption == "58q-lost-stop" else
+                            patch.object(reviewed, "signal", cut_signal))
+                    with hook, self.assertRaises(KeyboardInterrupt):
+                        return_operation.run(p, stamp, rt)
+                final = return_operation.run(p, stamp, Docker(p))
+                self.assertEqual((final["status"], final.get("restoredCid")), ("ROLLED_BACK", old), final)
+                self.assertTrue(ready(rt, rt.inspect(name), p["readiness"]))
+                parked = rt.inspect(p["failedName"])
+                self.assertEqual((parked["State"]["Pid"], parked["NetworkSettings"]["Networks"]), (0, {}))
+                return
             if interruption == "jdbc":
                 before = rt.inspect(old)["Config"]
                 stage = apply(p, stamp, rt, defer_migration=True)

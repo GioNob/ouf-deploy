@@ -32,3 +32,18 @@ def approval(summary, phase, digest, facts):
         print("    " + line, file=summary)
     print(file=summary)
     print(command)
+
+
+def delta_lines(result):
+    """Only the closed delta projection may reach the summary or workflow command."""
+    import re
+    sha = r"(?:hmac-)?sha256 [0-9a-f]{64}"
+    flag = r'(?:assente|"(?:true|false|enabled|disabled)")'
+    patterns = (rf"ENV [A-Z_][A-Z0-9_]* da {sha} a {sha}",
+                rf"ENV SPRING_FLYWAY_ENABLED da {sha} a {flag}",
+                r"Bind destinazione hmac-sha256 [0-9a-f]{64} · contenuto hmac-sha256 [0-9a-f]{64}", rf"Alias {sha} · rete {sha}")
+    lines = result.get("approvalLines", [])
+    if not isinstance(lines, list) or not all(isinstance(line, str) and any(re.fullmatch(pattern, line)
+            for pattern in patterns) for line in lines):
+        raise SystemExit("Righe di approvazione del delta non valide")
+    return lines

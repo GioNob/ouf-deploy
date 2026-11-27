@@ -1,22 +1,19 @@
 """Reviewed, additive changes to a retained container's CREATE frame."""
 from copy import deepcopy
-import hashlib
 import json
 from pathlib import PurePosixPath
 import re
-from urllib.parse import unquote
 
+from .contract import digest
+from .public_output import fingerprint, run_fields
+from .profile_options import INLINE_SECRET, credential_name, delta_has_inline_secret, inline_secret
 from .contract import NAME, matches
-from .frame_spec import SpecHeld, canonical, check_file_env, disjoint, validate_bind, validate_env
+from .frame_spec import SpecHeld, check_file_env, disjoint, validate_bind, validate_env
 
 
 def check(ok, code):
     if not ok:
         raise SpecHeld(code)
-
-
-def delta_digest(value):
-    return hashlib.sha256(canonical(value)).hexdigest()
 
 
 def file_references(env, mounts):
@@ -28,33 +25,27 @@ def inspect_binds(mounts):
     return [{"Type": m["Type"], "Target": m["Destination"], "ReadOnly": m.get("RW") is False} for m in mounts]
 
 
-def check_json_properties(pairs):
-    # The decoder visits every object, including duplicate and escaped property names.
-    for key, _ in pairs:
-        check(not re.search(r"password|passwd|passphrase|secret|token|credential|api[._-]?key|private[._-]?key|"
-                            r"(?:^|[._-])(?:pwd|auths?|authorization|jwt|key)$", key, re.IGNORECASE),
-              "SECRET_ENV_DENIED")
-
-
 def validate_value(name, value, allowlist=None):
     if value is not None:
-        validate_env([{"name": name, "value": value}], allowlist)
-        if not name.endswith("_FILE"):
-            check(name != "DOCKER_AUTH_CONFIG" and not re.search(r"(?:^|_)(?:AUTH$|(?:AUTHORIZATION|PWD)(?:_|$))", name),
-                  "SECRET_ENV_DENIED")
-        if name == "SPRING_APPLICATION_JSON" or value.lstrip().startswith(("{", "[")):
+        check(not credential_name(name) and not inline_secret(value), INLINE_SECRET)
+        try:
+            validate_env([{"name": name, "value": value}], allowlist)
+        except SpecHeld as exc:
+            if exc.code == "SECRET_ENV_DENIED":
+                raise SpecHeld(INLINE_SECRET) from None
+            raise
+        if name == "SPRING_APPLICATION_JSON" or value.lstrip().startswith("{") or (
+                value.lstrip().startswith("[") and not re.fullmatch(r"\[[0-9a-fA-F:.]+\]:[0-9]+", value)):
             try:
-                json.loads(value, object_pairs_hook=check_json_properties)
+                json.loads(value)
             except (ValueError, RecursionError):
                 raise SpecHeld("INVALID_ENV") from None
-        check(not re.search(r"\bbasic\s+[A-Za-z0-9+/]+=*|(?:password|passwd|pwd|token|secret)\s*=|"
-                            r"\boracle:thin:[^@\s]+/[^@\s]+@", unquote(value), re.IGNORECASE),
-              "SECRET_ENV_DENIED")
 
 
 def validate_delta(delta, policy, module, *, predecessor_mounts=()):
     """policy is the installed profile for this module, outside configDelta."""
     check(policy.get("module") == module, "DELTA_POLICY_MODULE")
+    check(not delta_has_inline_secret(dict(policy, configDelta=delta)), INLINE_SECRET)
     check(isinstance(delta, dict) and set(delta) <= {"env", "binds", "aliases"}, "INVALID_DELTA")
     env, binds, aliases = delta.get("env", []), delta.get("binds", []), delta.get("aliases", {})
     check(isinstance(env, list) and isinstance(binds, list) and isinstance(aliases, dict), "INVALID_DELTA")
@@ -165,18 +156,35 @@ def expected_after(predecessor_inspect, delta):
 
 
 def approval_lines(delta, show_values=()):
-    def display(name, value):
+    profile = {"configDelta": delta, "showValues": list(show_values)}
+    check(not delta_has_inline_secret(profile), INLINE_SECRET)
+    env = delta.get("env", [])
+
+    private = bool(run_fields() or delta.get("binds") or any(r["name"].endswith("_FILE") for r in env))
+    algorithm = "hmac-sha256" if private else "sha256"
+
+    def mark(field, value):
+        return fingerprint(field, value) if private else digest([field, value])
+
+    def display(name, side, value):
         validate_value(name, value)
-        if name in show_values:
-            return "assente" if value is None else json.dumps(value, ensure_ascii=False)
-        return "sha256 " + delta_digest(value)
+        if (side == "after" and len(env) == 1 and name == "SPRING_FLYWAY_ENABLED" and name in show_values
+                and value in (None, "true", "false", "enabled", "disabled")):
+            return "assente" if value is None else json.dumps(value)
+        return algorithm + " " + mark(["env", name, side], value)
 
     lines = []
-    for row in delta.get("env", []):
+    for row in env:
         name = row["name"]
-        lines.append(f"ENV {name} da {display(name, row['before'])} a {display(name, row['after'])}")
+        check(matches(r"[A-Z_][A-Z0-9_]*", name), "INVALID_ENV")
+        lines.append(f"ENV {name} da {display(name, 'before', row['before'])} a {display(name, 'after', row['after'])}")
     for bind in delta.get("binds", []):
-        lines.append(f"Aggiungi bind in sola lettura su {bind['target']} · sha256 {bind['sha256']}")
+        check(matches(r"[0-9a-f]{64}", bind["sha256"]), "INVALID_BIND_DIGEST")
+        target = fingerprint("bind.target", bind["target"])
+        content = fingerprint(["bind.content", bind["target"]], bind["sha256"])
+        lines.append(f"Bind destinazione hmac-sha256 {target} · contenuto hmac-sha256 {content}")
     for network, additions in sorted(delta.get("aliases", {}).items()):
-        lines.extend(f"Aggiungi alias {alias} alla rete {network}" for alias in additions)
+        net = mark("alias.network", network)
+        for alias in additions:
+            lines.append(f"Alias {algorithm} {mark(['alias', network], alias)} · rete {algorithm} {net}")
     return lines

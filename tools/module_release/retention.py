@@ -119,10 +119,10 @@ def completed_worker(rt, doc, root, phase, facts):
         # adopt an unjournalled CID or start a second worker in its place.
         cid = rt.create(name, request)
         require(matches(SHA, cid), "RETENTION_WORKER_UNPROVEN")
-        claim = {"cid": cid, "requestSha256": digest(request)}
+        claim = {"cid": cid, "requestSha256": op.public_output.binding("retention-request", request)}
         op.record(root, claim_file, claim)
     cid = claim["cid"]
-    require(matches(SHA, cid) and claim["requestSha256"] == digest(request), "RETENTION_WORKER_DRIFT")
+    require(matches(SHA, cid) and claim["requestSha256"] == op.public_output.binding("retention-request", request), "RETENTION_WORKER_DRIFT")
 
     def inspect():
         worker = rt.inspect(cid)
@@ -184,16 +184,16 @@ def run(p, rt, source, phase, ready):
     require(phase in COMMAND and matches(SHA, source), "RETENTION_PLAN_DRIFT")
     root = Path(p["journal"]) / source
     plan = op.read(root, "plan.json")
-    require(digest(plan) == source and plan["profileSha256"] == digest(p)
+    require(digest(plan) == source and plan["profileSha256"] == op.public_output.profile_binding(p, plan)
             and not (root / "return-intent.json").exists()
             and not (root.parent / "mcp.lock").exists(), "RETENTION_PLAN_DRIFT")
     doc = rt.inspect(p["container"])
     require(doc["Id"] == ready["successorCid"] and doc["Image"] == plan["ci"]["imageId"]
-            and op.snapshot(doc) == ready["successorFrameSha256"] and op.ready(rt, doc, p["readiness"]),
+            and op.prior_snapshot(p, doc, ready) == ready["successorFrameSha256"] and op.ready(rt, doc, p["readiness"]),
             "RETENTION_CANDIDATE_DRIFT")
     spec = p["migration"]["retentionAdmin019"]
     expected = {"planSha256": source, **plan[ADMIN], "status": "VERIFIED"}
-    baseline = op.read(root, "database.private.json")
+    baseline = op.database_baseline(lambda: op.read(root, "database.private.json"))
     require(digest(baseline) == plan["databaseSha256"], "DATABASE_BASELINE_CHANGED")
 
     def verify(*, installed):
@@ -241,3 +241,6 @@ _run = run
 def run(p, rt, source, phase, ready):
     validate_profile_options(p)
     return _run(p, rt, source, phase, ready)
+
+
+run = op.public_output.release_output(run)

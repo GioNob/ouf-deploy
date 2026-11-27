@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 from urllib.parse import quote
 
-from . import frame_spec, operation
+from . import frame_spec, operation, public_output
 from .contract import Held, SHA, digest, matches, package, require
 from .frame import baseline, configuration, merge_image, snapshot as release_snapshot
 from .install_contract import validate
@@ -73,7 +73,7 @@ def summary(p):
     section = frame_spec.install_section(p["install"])
     ready = p["readiness"]
     return {"imageId": p["ci"]["imageId"], "container": p["container"], "networks": p["networks"],
-            "binds": [{k: row[k] for k in ("target", "mode", "sha256") if k in row} for row in section["binds"]],
+            "binds": [public_pin(row, {k: row[k] for k in ("target", "mode", "sha256") if k in row}) for row in section["binds"]],
             "tmpfs": section["tmpfs"], "user": section["user"], "env": [row["name"] for row in section["env"]],
             "readiness": {key: ready[key] for key in ("port", "path", "acceptStatus", "jsonStatus", "attempts")
                           if key in ready}, "tls": "tls" in ready}
@@ -115,14 +115,14 @@ def observe(p, rt, *, resume=None, archive=None, verified_package=None):
     live = network_inventory(p, rt, own)
     facts = {"imageId": p["ci"]["imageId"], "Config": defaults, "networks": live}
     section = p["install"]
-    body, custody = frame_spec.create_with_custody(p, facts, EMPTY_LABEL)
-    plan = {"operation": "module-install", "module": p["module"], "profileSha256": digest(p),
-            "ci": p["ci"], "artifact": artifact, "review": summary(p),
+    body, custody = approved_custody(p, facts, defaults)
+    plan = {**public_output.run_fields(), "operation": "module-install", "module": p["module"], "profileSha256": public_output.binding("profile", p),
+            "ci": public_ci(p["ci"]), "artifact": artifact, "review": summary(p),
             "preconditions": {"absent": [p["container"], section["failedName"]], "pending": False,
                               "bindingsFree": True, "bindCustody": custody,
                               "previousIsolations": history,
                               "networks": {n: {"NetworkID": ep["NetworkID"]} for n, ep in live.items()}},
-            "requestSha256": digest(body)}
+            "requestSha256": public_output.binding("install.request", body)}
     return plan, body, defaults
 
 
@@ -269,7 +269,7 @@ def park_proof(doc):
                ("Networks", "Ports", "SandboxID", "SandboxKey", "EndpointID", "MacAddress")}
     return {"cid": doc["Id"], "frameSha256": snapshot(doc),
             "epoch": {"startedAt": doc["State"]["StartedAt"], "restartCount": doc["RestartCount"]},
-            "stableFrameSha256": digest([doc["Image"], configuration(doc), doc["HostConfig"],
+            "stableFrameSha256": public_output.observed_binding("install.stable-frame", doc, [doc["Image"], configuration(doc), doc["HostConfig"],
                                          canonical_mounts(doc), doc["Path"], doc["Args"], network])}
 
 
@@ -331,7 +331,7 @@ def finish(p, rt, root, req, defaults, networks, cid):
 
 
 def install_claim(p, req, stamp):
-    return {"module": p["module"], "requestSha256": digest(req), "planSha256": stamp}
+    return {"module": p["module"], "requestSha256": public_output.binding("install.request", req), "planSha256": stamp}
 
 
 def verify_creation(p, rt, root, body, req, defaults, cid):
@@ -355,7 +355,7 @@ def approved_create(p, root, body, defaults):
     image = p["ci"]["imageId"]
     nets = {name: {**net, "aliases": [], "ips": []} for name, net in body["preconditions"]["networks"].items()}
     req = frame_spec.create_request(p, {"imageId": image, "Config": defaults, "networks": nets}, EMPTY_LABEL)
-    require(digest(req) == body["requestSha256"], "INSTALL_REQUEST_CHANGED")
+    require(public_output.binding("install.request", req) == body["requestSha256"], "INSTALL_REQUEST_CHANGED")
     req["Labels"][LABEL] = root.name
     require(read(root, "install-intent.json") == install_claim(p, req, root.name), "INSTALL_INTENT_CHANGED")
     return req
@@ -443,8 +443,8 @@ def apply(p, stamp, runtime=None):
         rt = runtime or engine(p)
         root = Path(p["journal"]) / stamp
         if (root / "plan.json").exists():
-            saved = read(root, "plan.json")
-            require(digest(saved) == stamp and saved["profileSha256"] == digest(p), "PLAN_CHANGED")
+            saved = public_output.use_plan(read(root, "plan.json"))
+            require(digest(saved) == stamp and saved["profileSha256"] == public_output.binding("profile", p), "PLAN_CHANGED")
             defaults = {}
             require(package(p, image_defaults=defaults) == saved["artifact"], "ARTIFACT_CHANGED")
             if (root / "receipt.json").exists():
@@ -504,9 +504,9 @@ def rollback(p, stamp, runtime=None):
         root = Path(p["journal"]) / stamp
         require(not (root.parent / (p["module"] + ".lock")).exists(), "OPERATION_IN_PROGRESS_OR_INTERRUPTED")
         require((root / "install-intent.json").is_file(), "NO_INSTALL_TO_RETURN")
-        body = read(root, "plan.json")
+        body = public_output.use_plan(read(root, "plan.json"))
         require(body["operation"] == "module-install" and digest(body) == stamp
-                and body["profileSha256"] == digest(p), "PLAN_CHANGED")
+                and body["profileSha256"] == public_output.binding("profile", p), "PLAN_CHANGED")
         require((root / "created.json").exists(), "CREATE_UNCERTAIN")
         cid = read(root, "created.json")["cid"]
         require(matches(SHA, cid), "CREATE_UNCERTAIN")
@@ -537,7 +537,8 @@ def plan(p, runtime=None, *, resume=None):
         validate_profile_options(p)
     except Held as exc:
         return {"status": "HELD", "reason": reason(exc)}
-    return _plan(p, runtime, resume=resume)
+    with public_output.scope(p):
+        return _plan(p, runtime, resume=resume)
 
 
 def apply(p, stamp, runtime=None):
@@ -545,7 +546,8 @@ def apply(p, stamp, runtime=None):
         validate_profile_options(p)
     except Held as exc:
         return {"status": "HELD", "reason": reason(exc)}
-    return _apply(p, stamp, runtime)
+    with public_output.scope(p):
+        return _apply(p, stamp, runtime)
 
 
 def rollback(p, stamp, runtime=None):
@@ -553,4 +555,28 @@ def rollback(p, stamp, runtime=None):
         validate_profile_options(p)
     except Held as exc:
         return {"status": "HELD", "reason": reason(exc)}
-    return _rollback(p, stamp, runtime)
+    with public_output.scope(p):
+        return _rollback(p, stamp, runtime)
+
+
+def public_pin(row, facts):
+    if "sha256" not in facts:
+        return facts
+    # The private approval pin is checked against the open file by bind_facts.
+    facts = dict(facts)
+    facts["hmacSha256"] = public_output.fingerprint(["install.bind", row["target"]], facts.pop("sha256"))
+    return facts
+
+
+def approved_custody(profile, facts, defaults):
+    body, custody = frame_spec.create_with_custody(profile, facts, EMPTY_LABEL)
+    public_output.begin(profile, {}, defaults)
+    binds = profile["install"].get("binds", [])
+    return body, [public_pin(row, observed) for row, observed in zip(binds, custody, strict=True)]
+
+
+def public_ci(ci):
+    from .contract import CI_COORDINATES, structured_secret
+    if not structured_secret(ci):
+        return ci
+    return {k: v for k, v in ci.items() if k in CI_COORDINATES or k == "artifactPrefix"}

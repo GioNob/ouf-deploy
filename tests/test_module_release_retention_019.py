@@ -85,7 +85,10 @@ class RetentionFixture(unittest.TestCase):
             if self.crash == cmd:
                 raise KeyboardInterrupt
         f.rt.create, f.rt.start = create_worker, start_worker
-        def retire(method, path):
+        engine_api = f.rt.api
+        def retire(method, path, **kwargs):
+            if method == "GET":
+                return engine_api(method, path, **kwargs)
             self.assertEqual(method, "DELETE")
             cid = path.removeprefix("/containers/").removesuffix("?v=true")
             self.assertEqual(f.rt.docs[cid]["State"]["Status"], "exited")
@@ -117,6 +120,23 @@ class IncompleteConfig(RetentionFixture):
             self.call(retention.BATCH)
         self.assertEqual(len(self.work), 1)
         self.assertFalse((self.root / (retention.BATCH + ".worker.json")).exists())
+
+
+class PrivateWorker(RetentionFixture):
+    def batch_config(self):
+        self.release.rt.docs[fixture.OLD]["HostConfig"]["LogConfig"] = {
+            "Type": "splunk", "Config": {"splunk-token": "fixture"}}
+        return super().batch_config()
+
+    def test_DEP_58QL_15_retention_worker_request(self):
+        from module_release import public_output
+        p = self.release.p
+        self.call(retention.ADMIN)
+        plan = json.loads((self.root / "plan.json").read_bytes())
+        claim = json.loads((self.root / (retention.ADMIN + ".worker.json")).read_bytes())
+        with public_output.scope(p):
+            public_output.use_plan(plan)
+            self.assertEqual(claim["requestSha256"], public_output.fingerprint("retention-request", self.work[0]))
 
 
 class Retention(RetentionFixture):

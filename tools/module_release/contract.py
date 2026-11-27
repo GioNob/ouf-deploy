@@ -347,7 +347,7 @@ def package(p, target=None, *, transport=False, migrations_field=None, image_def
         with zipfile.ZipFile(stream) as z:
             if ci.get("publisherFormat") == "acquisition-mcp":
                 from .mcp_artifact import verify
-                receipt = verify(z, ci, target, transport)
+                receipt = verify(z, ci, target, transport, image_defaults=image_defaults)
                 require(os.fstat(stream.fileno()).st_ctime_ns == info.st_ctime_ns, "ARTIFACT_CHANGED_DURING_READ")
                 return receipt
             require(sorted(z.namelist()) == ["SHA256SUMS", "image.tar.gz", "manifest.json"]
@@ -395,6 +395,125 @@ _validate = validate
 _package = package
 
 
+# Credential-bearing productions accepted by the supported clients. Keep this
+# in the standalone contract: the installer loads this exact Git blob.
+from urllib.parse import unquote
+
+
+_delta_literal = re.compile(
+    r"://[^/?#@\s]*:[^/?#@\s]+@|(?i:oracle:thin:)[^/@\s]+/[^@\s]+@"
+    r"|(?:^|[=\s?&;'\"])(?i:password|sslpassword|PGPASSWORD|FLYWAY_PASSWORD|(?:-D)?flyway\.password)\s*=\s*[^\s&;]+"
+    r"|(?:^|[\s'\"])-{1,2}(?:password|secret|token)=[^\s]+"
+    r"|(?:^|[\s'\"])-p[^\s=]+")
+_value_flags = {"--password", "--secret", "--token"}
+
+
+def delta_literal(text):
+    return bool(_delta_literal.search(text))
+
+
+def credential_words(words):
+    for i, word in enumerate(words):
+        if not isinstance(word, str):
+            continue
+        if delta_literal(word):
+            return True
+        if word in _value_flags and i + 1 < len(words):
+            value = words[i + 1]
+            if isinstance(value, str) and value and not value.startswith("-"):
+                if not (word == "--password" and isinstance(words[0], str) and words[0].rsplit("/", 1)[-1] == "psql"):
+                    return True
+    return False
+
+
+_credential_parts = frozenset("PASSWORD PASSWD PWD SECRET TOKEN APIKEY ACCOUNTKEY PRIVATEKEY "
+                              "CREDENTIAL CREDENTIALS SAS SIGNATURE CONNECTIONSTRING DSN".split())
+_credential_pairs = {("API", "KEY"), ("ACCOUNT", "KEY"), ("PRIVATE", "KEY"), ("CONNECTION", "STRING")}
+# These clients have established names which do not follow the component convention.
+_client_credentials = {"PGPASSWORD", "SSLPASSWORD", "SNMP_COMMUNITY", "REDISCLI_AUTH", "DOCKER_AUTH_CONFIG"}
+_literal = re.compile(r"://[^/\s?#]*:[^/\s?#]*@|\b(?:basic|bearer)\s+\S+|-----BEGIN [^\n]*PRIVATE KEY|"
+                      r"\boracle:thin:[^@\s]+/[^@\s]+@", re.I)
+_assignment = re.compile(r"(?<![\w.-])(--?)?([\w.][\w.-]*)\s*=")
+_long_option = re.compile(r"""(?:^|[\s'"])--([a-zA-Z][\w.-]*)(?=$|[\s='"])""")
+
+
+def credential_name(name):
+    if not isinstance(name, str):
+        return False
+    words = re.sub(r"([A-Z])([A-Z][a-z])", r"\1_\2", name)
+    words = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", words)
+    parts = re.split(r"[_.-]+", words.upper())
+    return parts[-1] != "FILE" and (name.upper() in _client_credentials or parts[-1] == "KEY"
+            or bool(_credential_parts.intersection(parts))
+            or any(pair in _credential_pairs for pair in zip(parts, parts[1:])))
+
+
+def json_properties(pairs):
+    # Keep duplicate keys so a later property cannot hide an earlier credential.
+    return [{key: value} for key, value in pairs]
+
+
+def env_reference(key, value):
+    return (isinstance(key, str) and key.endswith("Env") and isinstance(value, str)
+            and re.fullmatch(r"[A-Z_][A-Z0-9_]*", value) is not None)
+
+
+def inline_secret(value):
+    """Recognize credential-bearing fields, argv and nested JSON in release inputs."""
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if env_reference(key, item):
+                continue
+            if credential_name(key) or inline_secret(key) or inline_secret(item):
+                return True
+        return False
+    if isinstance(value, list):
+        for flag, operand in zip(value, value[1:]):
+            if (isinstance(flag, str) and flag.startswith("--") and flag != "--password"
+                    and credential_name(flag[2:])
+                    and isinstance(operand, str) and operand and not operand.startswith("-")):
+                return True
+        return credential_words(value) or any(inline_secret(item) for item in value)
+    if not isinstance(value, str):
+        return False
+    raw = value.strip()
+    decoded = unquote(raw)
+    if _literal.search(decoded) or delta_literal(decoded):
+        return True
+    if any(credential_name(m[1]) and raw[m.end():].strip().lstrip("= ")
+           and not (m[1] == "password" and raw[m.end():].startswith(" ")
+                    and re.match(r"^(?:[^\s]*/)?psql(?:\s|$)", raw))
+           for m in _long_option.finditer(raw)):
+        return True
+    if raw.startswith("--"):
+        _, equals, argument = raw.partition("=")
+        if equals and inline_secret(argument):
+            return True
+    for field in _assignment.finditer(decoded):
+        if credential_name(field[2]) or field[2].lower() == "sig":
+            return True
+    for representation in dict.fromkeys((raw, decoded)):
+        if representation.startswith(("{", "[", '"')):
+            try:
+                parsed = json.loads(representation, object_pairs_hook=json_properties)
+            except ValueError:
+                continue  # Non-JSON inputs, including IPv6 addresses, follow the usual field validation.
+            if inline_secret(parsed):
+                return True
+    return False
+
+
+DEDICATED_MIGRATION_COMMANDS = {"mcp": (["/usr/local/bin/ouf-mcp", "migrate"],)}
+
+
+def validate_migration_command(profile, *, check=require):
+    migration = profile.get("migration")
+    if isinstance(migration, dict) and migration.get("mode") == "dedicated":
+        module = profile.get("module")
+        check(isinstance(module, str) and migration.get("command") in DEDICATED_MIGRATION_COMMANDS.get(module, ()),
+              "MIGRATION_COMMAND_NOT_ALLOWED")
+
+
 def validate_profile_options(profile, *, check=require):
     if __package__:
         try:
@@ -405,7 +524,8 @@ def validate_profile_options(profile, *, check=require):
             return admit(profile, check=check)
     # The installer also executes this module directly from its verified Git blob.
     if isinstance(profile, dict):
-        check("configDelta" not in profile, "CONFIG_DELTA_NOT_ENABLED")
+        check("configDelta" not in profile or isinstance(profile["configDelta"], dict) and profile["configDelta"], "INVALID_DELTA")
+        validate_migration_command(profile, check=check)
 
 
 def validate(p):
@@ -416,3 +536,74 @@ def validate(p):
 def package(p, target=None, *, transport=False, migrations_field=None, image_defaults=None):
     validate_profile_options(p)
     return _package(p, target, transport=transport, migrations_field=migrations_field, image_defaults=image_defaults)
+
+
+def structured_secret(value):
+    """Recognise declared credential fields and client argument/assignment grammars."""
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if private_field(key) or structured_secret(item):
+                return True
+        return False
+    if isinstance(value, list):
+        if value and isinstance(value[0], str) and value[0].rsplit("/", 1)[-1] == "psql":
+            # -p is the PostgreSQL port and --password requests a prompt.
+            return any(structured_secret(arg) for arg in value[1:]
+                       if isinstance(arg, str) and not re.fullmatch(r"-p[0-9]+|--password", arg))
+        return any(isinstance(arg, str) and arg.startswith("--") and private_field(arg[2:])
+                   and isinstance(operand, str) and operand and not operand.startswith("-")
+                   for arg, operand in zip(value, value[1:])) or any(structured_secret(arg) for arg in value)
+    if not isinstance(value, str):
+        return False
+    raw = unquote(value.strip())
+    if raw.startswith(("{", "[", '"')):
+        try:
+            return structured_secret(json.loads(raw, object_pairs_hook=json_properties))
+        except ValueError:
+            # A bracketed IPv6 endpoint is a separate, public input grammar.
+            endpoint = re.fullmatch(r"\[([^\]]+)\](?::[0-9]+)?", raw)
+            try:
+                return endpoint is None or not isinstance(ipaddress.ip_address(endpoint[1]), ipaddress.IPv6Address)
+            except ValueError:
+                return True
+    if re.match(r"^(?:[^ ]*/)?psql\s", raw):
+        import shlex
+        try:
+            return structured_secret(shlex.split(raw))
+        except ValueError:
+            return True
+    # These productions have named credential slots, regardless of their values.
+    for match in _assignment.finditer(raw):
+        argument = raw[match.end():].lstrip()
+        if private_field(match[2]) or match[2].lower() == "sig":
+            return True
+        if argument.startswith(("{", "[", '"')) and structured_secret(argument):
+            return True
+    for option in _long_option.finditer(raw):
+        if private_field(option[1]):
+            operand = re.match(r"""['"]?\s+(\S+)""", raw[option.end():])
+            if operand and operand[1] not in ("''", '""') and not operand[1].startswith("-"):
+                return True
+    return (bool(re.search(r"://[^/\s?#]*:[^/\s?#]*@|\boracle:thin:[^/@\s]+/[^@\s]+@", raw, re.I))
+            or bool(re.fullmatch(r"-p[^\s=]+", raw)))
+
+
+def private_field(name):
+    return (credential_name(name) or name.upper().endswith("_FILE")
+            or name.lower() in ("authorization", "proxy-authorization"))
+
+
+def private_profile(profile):
+    # A reference to a key file or to an ENV name does not contain its bytes.
+    inputs = {k: v for k, v in profile.items() if k not in
+              ("receiptSigning", "fingerprintKeyFile", "install", "configDelta")}
+    install = profile.get("install", {})
+    delta = profile.get("configDelta", {})
+    if not isinstance(delta, dict) or not isinstance(install, dict):
+        return True
+    # A pin in an operator-supplied mount has no CI provenance.
+    return (structured_secret(inputs) or structured_secret(install) or structured_secret(delta)
+            or bool(delta.get("binds"))
+            or any(private_field(row["name"]) for row in delta.get("env", []))
+            or any("sha256" in row for row in install.get("binds", []))
+            or any(private_field(row["name"]) for row in install.get("env", [])))
