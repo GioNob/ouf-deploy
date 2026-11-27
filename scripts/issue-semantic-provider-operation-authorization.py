@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from tools.semantic_provider_r3 import compose as C
 from tools.semantic_provider_operation import authorization as A
+from tools.semantic_lease_kernel_migration import boot_dispatcher as boot
 from tools.semantic_b1b2_authority import authority as AUTH
 from tools.semantic_acceptance_v51.issuance import load_mandates
 
@@ -234,11 +235,26 @@ def chain_lock(locks, chain):
     return fd
 
 
+def publication_lock(root, previous, owner, binding):
+    """Use the common flock after the CID and authorization-directory locks."""
+    require(sha(owner) == binding['sha256'], "COORDINATOR_INPUT_DRIFT")
+    path = C.document(owner)['commonLockFile']
+    if previous and previous['authorization']['lease']['ownerConfigurationSha256'] != binding['sha256']:
+        from tools.semantic_provider_operation import supersede_gate as gate
+        cfg, runtime, _ = gate.installed(root, previous)
+        sup = C.document(runtime.bound_bytes(cfg['leaseQuiesce']['configuration']))
+        prior = sup['coordinator']
+        require(prior['ownerConfiguration']['sha256'] ==
+                previous['authorization']['lease']['ownerConfigurationSha256']
+                and prior['commonLockPath'] == path, "COORDINATOR_LOCK_CHANGED")
+    return boot.lock(path)
+
+
 def execute(args, progress, clock=time.time):
     paths = destinations(args)
     _, chain, _, _ = paths
     observation = observe(args, clock)
-    plan, _, _, M, _, _, _, _, settings = observation
+    plan, _, reader, M, _, _, _, _, settings = observation
     if args.supersede:
         from tools.semantic_provider_operation import supersede_gate as gate
         plan["supersession"] = gate.observe(chain.parent, plan["previousHead"])
@@ -255,6 +271,8 @@ def execute(args, progress, clock=time.time):
             head = authorization_head(args, M, settings, clock)
             require(head == plan["previousHead"], "OPERATION_CHAIN_CHANGED_DURING_ISSUANCE")
             require(gate.observe(chain.parent, head) == plan["supersession"], "PLAN_DIGEST_MISMATCH")
+            binding = settings['coordinatorBinding']
+            locks.enter_context(publication_lock(chain.parent, head, reader.bound(binding), binding))
         require(destinations(args) == paths, "OUTPUT_CUSTODY_CHANGED")
         return publish(args, progress, clock, observation, paths, digest, locks, chain_fd)
 
@@ -292,6 +310,9 @@ def publish(args, progress, clock, observation, paths, digest, locks, chain_fd):
         if chain_fd is None:
             require(not os.listdir(chain), "AUTHORIZATION_ROOT_NOT_EMPTY")
             chain_fd = chain_lock(locks, chain)
+            binding = s['coordinatorBinding']
+            locks.enter_context(publication_lock(chain.parent, None, reader.bound(binding), binding))
+
         def chain_unchanged():
             if args.supersede:
                 require(authorization_head(args, M, s, clock) == plan["previousHead"],

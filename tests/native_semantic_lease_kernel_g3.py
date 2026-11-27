@@ -1,4 +1,4 @@
-"""PET A3-11 and A3-22. The entire nft session runs inside one disposable network namespace."""
+"""PET A3-11, A3-22 and A3-29. Each nft session runs in a disposable netns."""
 import hashlib
 import json
 import os
@@ -7,7 +7,9 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tools.semantic_lease_kernel_migration import g3_contract as g
@@ -66,13 +68,20 @@ read_pair
         subprocess.run(['unshare', '--net', '--', sys.executable, '-I', '-B', __file__, 'boot-proof'],
                        check=True, timeout=60)
 
+    def test_a3_29_replacement_after_handle_read_before_kernel_commit(self):
+        subprocess.run(['unshare', '--net', '--', sys.executable, '-I', '-B', __file__, 'tick-proof'],
+                       check=True, timeout=60)
 
-def boot_proof():
+
+def boot_proof(tick_proof):
     from uuid import uuid4
 
     sys.path.insert(0, str(Path(__file__).parent))
     from test_semantic_lease_kernel_g3_boot import stage
-    from test_semantic_lease_kernel_v2 import kernel, m
+    from test_semantic_lease_kernel_v2 import kernel, m, observations, refresh
+    from test_semantic_lease_kernel_g3_tick import context
+    from tools.semantic_provider_operation import lease_supervisor_g3
+    from tools.semantic_provider_r3 import lease_kernel_g3 as runtime
     from tools.semantic_lease_kernel_migration import boot_dispatcher as api, g3_journal as journal
     from tools.semantic_lease_kernel_migration import g3_reconcile as reconcile
 
@@ -94,7 +103,7 @@ def boot_proof():
         reference = api.tables(binary, name)
         profile = g.listing_profile(reference['inet']['nftables'][0])
         previous = str(uuid4())
-        _, observed = stage(root, api, cfg, binary, reference, previous)
+        _, observed = stage(root, api, cfg, binary, reference, previous, runtime=True)
         raw = api.private(root / 'journal')
         remove_pair()
         assert api.tables(binary, name) is None
@@ -124,16 +133,49 @@ def boot_proof():
         policy['nftProfile'] = profile
         members = {'provider_0': {'validUntil': {}, 'maxSeconds': 30}}
         g.verify_tick(policy, seal, api.tables(binary, name), members, 0)
-        remove_pair()
-        api.command(binary, ['-f', '-'], rules)
+        if not tick_proof:
+            remove_pair()
+            api.command(binary, ['-f', '-'], rules)
+            with unittest.TestCase().assertRaisesRegex(ValueError, '^' + g.SEAL_DRIFT + '$'):
+                g.verify_tick(policy, seal, api.tables(binary, name), members, 0)
+            return
+        # A3-29: the governed gate sees the actual reconciled instance. Stage
+        # the first admission as the opening writer, then run the real tick.
+        coordinator, head = context(root, observed)
+        owner = api.document(api.private(root / 'owner'))
+        gate = runtime.observe(owner, closed, coordinator, head)
+        with runtime.locked(coordinator, api) as state:
+            state.verify(state.local_reference(), state.read_pair())
+            api.write_once(state.admission_path, api.canonical(state.admission({'provider_0': {}})))
+            state.transition('LEASE_READY')
+        def renew():
+            return lease_supervisor_g3.tick(coordinator, lambda: head,
+                lambda owner: observations(cfg, now=time.monotonic(), lifetime=60), refresh.compile_refresh)
+        assert renew()['state'] == 'LEASE_READY'
+        ready = api.document(api.private(root / 'journal'))
+        assert runtime.observe(owner, ready, coordinator, head) == gate
+        batch = lease_supervisor_g3.nft_batch_g3
+        submit = batch.submit
+        admission = api.private(root / 'admission')
+        def replace_before_send(*args):
+            remove_pair()
+            api.command(binary, ['-f', '-'], rules)
+            return submit(*args)
+        with patch.object(batch, 'submit', side_effect=replace_before_send) as sent, \
+                unittest.TestCase().assertRaisesRegex(ValueError, '^' + g.SEAL_DRIFT + '$'):
+            renew()
+        sent.assert_called_once()
         replaced = api.tables(binary, name)
+        api.empty(replaced)
         assert g.policy_footprint(replaced, profile) == observed['footprint']
-        with unittest.TestCase().assertRaisesRegex(ValueError, '^' + g.SEAL_DRIFT + '$'):
-            g.verify_tick(policy, seal, replaced, members, 0)
+        assert g.local_seal(observed['head'], observed['owner'], 3, current, replaced, profile) != seal
+        assert api.private(root / 'admission') == admission
+        denied = api.document(api.private(root / 'journal'))
+        assert denied == {**closed, 'state': 'BLOCKED'}
 
 
 if __name__ == '__main__':
-    if sys.argv[1:] == ['boot-proof']:
-        boot_proof()
+    if sys.argv[1:] in (['boot-proof'], ['tick-proof']):
+        boot_proof(sys.argv[1] == 'tick-proof')
     else:
         print(json.dumps(read_nft_profile(*sys.argv[1:])))

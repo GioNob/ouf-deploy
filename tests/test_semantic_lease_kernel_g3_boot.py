@@ -1,6 +1,7 @@
 """Portable A3 boot and reconciliation transactions, synthetic authority and kernel."""
 from contextlib import ExitStack, contextmanager
 import copy
+import ctypes
 import json
 import os
 from pathlib import Path
@@ -29,7 +30,7 @@ def empty_pair():
     return tables
 
 
-def stage(root, api, kernel, nft, reference, previous=OLD):
+def stage(root, api, kernel, nft, reference, previous=OLD, *, runtime=False):
     """Stage an isolated test receipt with the real closure file layout."""
     for sub in ('source', 'source/tools', 'source/scripts', 'receipts', 'seals', 'issuer'):
         (root / sub).mkdir(mode=0o700)
@@ -58,6 +59,9 @@ def stage(root, api, kernel, nft, reference, previous=OLD):
                  operationLockFiles=[str(root / n) for n in ('adapter.lock', 'southbound.lock')],
                  cohortCgroups={role: '/sys/fs/cgroup/' + cid * 64 for role, cid
                                 in (('adapter', 'a'), ('southbound', 'b'))})
+    if runtime:
+        owner.update(predecessorTableName='sample_prior', admissionFile=str(root / 'admission'),
+                     applyBudgetSeconds=2)
     owner_hash = put('owner', B.canonical(owner))
     boot = dict(kernel=kernel, nftPath=nft['path'], lockFile=owner['commonLockFile'], head=HEAD,
                 expectedFootprint=footprint, projection=g.PROJECTION)
@@ -66,6 +70,8 @@ def stage(root, api, kernel, nft, reference, previous=OLD):
     receipt = dict(schema='ouf.semantic-lease-kernel-generation.v1', generation=3, directory=str(root),
                    runner='source/tools/boot_runner_v3.py', closure=closure, bootProfile=dict(
                        path=str(root / 'profile'), sha256=put('profile', B.canonical(profile_doc))))
+    if runtime:
+        receipt.update(configurationHash=owner_hash, predecessorTableName=owner['predecessorTableName'])
     pointer = dict(schema='ouf.semantic-coordinated-boot-pointer.v1', receiptFile=str(root / 'generation'),
                    receiptHash=put('generation', B.canonical(receipt)), observerFile=str(root / 'dispatcher'),
                    observerHash=put('dispatcher', Path(B.__file__).read_bytes()))
@@ -176,7 +182,24 @@ class Fake:
     directory_lock = lock
 
     def sync(self, path):
-        pass
+        if os.name != 'nt':
+            fd = os.open(path, os.O_DIRECTORY | os.O_RDONLY)
+            try:
+                os.fsync(fd)
+            finally:
+                os.close(fd)
+            return
+        # Flush a real directory handle on Windows (the CRT cannot open it).
+        kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+        kernel.CreateFileW.restype = ctypes.c_void_p
+        handle = kernel.CreateFileW(str(path), 0x40000000, 7, None, 3, 0x02000000, None)
+        if handle == ctypes.c_void_p(-1).value:
+            raise ctypes.WinError(ctypes.get_last_error())
+        try:
+            if not kernel.FlushFileBuffers(ctypes.c_void_p(handle)):
+                raise ctypes.WinError(ctypes.get_last_error())
+        finally:
+            kernel.CloseHandle(ctypes.c_void_p(handle))
 
     def private(self, path, expected=None):
         raw = Path(path).read_bytes()
@@ -184,14 +207,19 @@ class Fake:
         return raw
 
     def write_once(self, path, raw):
-        with Path(path).open('xb') as stream:
+        path = Path(path)
+        with path.open('xb') as stream:
             stream.write(raw)
-        self.after(Path(path).name)
+            stream.flush()
+            os.fsync(stream.fileno())
+        self.sync(path.parent)
+        self.after(path.name)
 
     def cas(self, path, before, after):
-        self.need(self.private(path) == before, 'FOREIGN_PUBLICATION_PRESERVED')
         self.after('before-cas')
-        Path(path).write_bytes(after)
+        with patch.object(B, 'safe', Path), patch.object(B, 'private', self.private), \
+                patch.object(B, 'write_once', self.write_once), patch.object(B, 'sync', self.sync):
+            B.cas(path, before, after)
         self.after('after-cas')
 
     def sealed_receipt(self, path):
@@ -469,6 +497,7 @@ class Boot(unittest.TestCase):
         def interrupt_sync(path):
             if path == self.archive.parent and self.archive.exists():
                 raise Cut('before parent fsync')
+            Fake.sync(self.api, path)
 
         with patch.object(self.api, 'sync', interrupt_sync), self.assertRaises(Cut):
             self.boot()
@@ -516,6 +545,7 @@ class Boot(unittest.TestCase):
         def interrupt_sync(directory):
             if directory == self.archive and final.exists():
                 raise Cut('before directory fsync')
+            Fake.sync(self.api, directory)
 
         with patch.object(self.api, 'sync', interrupt_sync), self.assertRaises(Cut):
             self.boot()
@@ -524,7 +554,7 @@ class Boot(unittest.TestCase):
         with patch.object(self.api, 'sync', wraps=self.api.sync) as sync:
             self.boot()
             self.assertEqual([call.args[0] for call in sync.call_args_list],
-                             [self.archive.parent, self.archive])
+                             [self.archive.parent, self.archive, self.root, self.root])
         self.assert_state('BLOCKED')
         self.assertEqual(final.read_bytes(), published)
         self.assertEqual(self.api.nft_writes, 1)
@@ -626,6 +656,7 @@ class Boot(unittest.TestCase):
         def fail_journal_directory(path):
             if path == self.root:
                 raise OSError('journal directory fsync')
+            Fake.sync(self.api, path)
 
         lose_rename(self.boot)
         self.assert_state('BLOCKED')
@@ -666,6 +697,7 @@ class Boot(unittest.TestCase):
                 if directory == path.parent and events == ['file']:
                     events.append('directory')
                     raise OSError('directory fsync')
+                Fake.sync(self.api, directory)
 
             with self.subTest(path=path.name, failure=failure), patch.object(os, 'fsync', file_sync), \
                     patch.object(self.api, 'sync', dir_sync), self.assertRaisesRegex(OSError, failure):
@@ -720,8 +752,9 @@ class Boot(unittest.TestCase):
                 events.append('file')
 
         def sync_directory(path):
-            if path == self.seal.parent:
+            if path == self.seal.parent and events == ['file']:
                 events.append('directory')
+            Fake.sync(self.api, path)
 
         def transition(path, before, after):
             events.append('cas')

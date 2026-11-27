@@ -1,5 +1,6 @@
 """Contract of ops/vps/r3-{issue,install,restore}.sh: one delivery, LF blobs, full closure."""
 import hashlib
+import json
 from pathlib import Path
 import re
 import subprocess
@@ -123,7 +124,12 @@ class R3Runbooks(unittest.TestCase):
                          | set(C.SOURCE_INPUTS_V17) | set(C.SOURCE_INPUTS_V18) | set(C.SOURCE_INPUTS_V19) | set(C.SOURCE_INPUTS_V20) | set(C.SOURCE_INPUTS_V21) | set(C.SOURCE_INPUTS_V22) | set(C.SOURCE_INPUTS_V23) | set(C.SOURCE_INPUTS_V24) | set(C.SOURCE_INPUTS_V25))
 
     def test_sealed_hashes_are_lf_blobs_at_head(self):
+        candidates = json.loads((ROOT / "tests/fixtures/r3-g3-candidate-source-sha256.json").read_bytes())
         for path, digest in self.deliveries[0]:
+            if path in candidates:
+                raw = (ROOT / path).read_bytes().replace(b"\r\n", b"\n")
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), candidates[path], path)
+                continue
             if path in VERSIONED_TOOLS:
                 continue
             with self.subTest(path=path):

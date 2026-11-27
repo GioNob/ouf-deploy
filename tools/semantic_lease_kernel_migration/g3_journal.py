@@ -62,6 +62,15 @@ def read_locked(api, path, head, owner):
     return raw, value, boot_id
 
 
+def confirmed_selection(api, path):
+    """A previous publisher may have died after replace and before directory fsync."""
+    pointer, receipt = api.sealed_receipt(path)
+    raw = api.private(path)
+    api.need(api.document(raw) == pointer, 'BOOT_POINTER_CHANGED')
+    sync_verified(api, Path(path), raw, 'BOOT_POINTER_CHANGED')
+    return pointer, receipt
+
+
 def transition_locked(api, path, before, head, owner, target):
     """CAS after caller's operational checks. No nft or start effects here."""
     raw, journal, boot_id = read_locked(api, path, head, owner)
@@ -115,14 +124,15 @@ def cohort_empty(owner, api):
 class BootState:
     """Inputs selected by the dispatcher's sealed generation receipt."""
 
-    def __init__(self, receipt, api):
+    def __init__(self, receipt, api, *, current_runtime=False):
         self.api = api
         api.need(receipt['schema'] == 'ouf.semantic-lease-kernel-generation.v1'
                  and type(receipt['generation']) is int and receipt['generation'] == 3, g.BINDING)
         ref = receipt['bootProfile']
         profile = api.document(api.private(ref['path'], ref['sha256']))
         self.owner_hash = profile['coordinatedConfigurationHash']
-        self.owner = owner = api.document(api.private(profile['coordinatedConfiguration'], self.owner_hash))
+        self.owner_path = profile['coordinatedConfiguration']
+        self.owner = owner = api.document(api.private(self.owner_path, self.owner_hash))
         boot = api.document(api.private(profile['bootConfiguration'], profile['bootConfigurationHash']))
         api.need(type(owner['generation']) is int and owner['generation'] == 3
                  and owner['kernel'] == boot['kernel'] and owner['commonLockFile'] == boot['lockFile']
@@ -132,7 +142,17 @@ class BootState:
         self.profile = owner['nftProfile']
         self.nft = {'path': owner['nftPath'], 'sha256': owner['nftSha256']}
         self.raw, self.journal, self.boot_id = read_locked(api, owner['journalFile'], self.head, self.owner_hash)
-        api.need(g.classify_journal(self.journal, self.boot_id) != g.DENY, 'G3_JOURNAL_DENIED')
+        if current_runtime:
+            closed = {**self.journal, 'state': 'QUIESCED', 'leaseAuthorized': False}
+            active = self.journal.get('state') in ('LEASE_READY', 'LEASE_UPDATING')
+            api.need(self.journal.get('bootId') == self.boot_id
+                     and self.journal.keys() == closed.keys()
+                     and g.classify_journal(closed, self.boot_id) == g.QUIESCENT
+                     and self.journal['state'] in ('QUIESCED', 'BLOCKED', 'LEASE_READY',
+                                                   'LEASE_UPDATING', 'QUIESCING')
+                     and self.journal['leaseAuthorized'] is active, 'G3_JOURNAL_DENIED')
+        else:
+            api.need(g.classify_journal(self.journal, self.boot_id) != g.DENY, 'G3_JOURNAL_DENIED')
         self.directory = Path(owner['receiptDirectory']) / self.boot_id
         self.seal_path = Path(owner['sealDirectory']) / (self.boot_id + '.json')
         private_directory(api, self.directory.parent)
@@ -142,11 +162,8 @@ class BootState:
         return self.api.tables(self.nft, self.owner['kernel']['tableName'])
 
     def confirm_journal(self):
-        # CAS flushes its tempfile before replace. On replay the rename itself
-        # may still be pending in the journal's own directory.
         path = Path(self.owner['journalFile'])
-        self.api.need(self.api.private(path) == self.raw, 'FOREIGN_PUBLICATION_PRESERVED')
-        self.api.sync(path.parent)
+        sync_verified(self.api, path, self.raw, 'FOREIGN_PUBLICATION_PRESERVED')
 
     def seal(self, tables):
         return g.local_seal(self.head, self.owner_hash, 3, self.boot_id, tables, self.profile)
@@ -163,13 +180,18 @@ class BootState:
                  and old['head'] == self.head and old['owner'] == self.owner_hash, g.BINDING)
         return raw
 
-    def guard(self, tables):
+    def guard_records(self):
         api = self.api
         previous = self.previous()
         claim = api.document(api.private(self.directory / 'claim.json'))
         guard = api.document(api.private(self.directory / 'guard.json'))
         api.need(claim['previousSha256'] == api.sha(previous) and claim['bootId'] == self.boot_id
                  and guard['claimSha256'] == api.digest(claim), g.BINDING)
+        return claim, guard
+
+    def guard(self, tables):
+        api = self.api
+        claim, guard = self.guard_records()
         self.verify(guard['instance'], tables)
         if claim['mode'] == 'present':
             self.verify(claim['instance'], tables)
@@ -184,17 +206,18 @@ class BootState:
         return {'schema': 'ouf.lease-kernel.reconciled.g3.v1', **self.intent(plan),
                 'bootId': self.boot_id, 'journalSha256': plan['afterSha256']}
 
-    def verify_completion(self, guard, seal_raw):
+    def verify_completion(self, guard, seal_raw, *, quiesced_raw=None):
         api = self.api
         directory = self.directory / 'reconcile'
         private_directory(api, directory)
         plan = api.document(api.private(directory / 'plan.json'))
         api.need(plan['guardSha256'] == api.digest(guard)
-                 and plan['afterSha256'] == api.sha(self.raw)
+                 and plan['afterSha256'] == api.sha(self.raw if quiesced_raw is None else quiesced_raw)
                  and plan['sealSha256'] == api.sha(seal_raw)
                  and api.private(directory / 'seal-intent.json') == api.canonical(self.intent(plan)),
                  g.BINDING)
-        sync_verified(api, directory / 'receipt.json', api.canonical(self.completion(plan)), g.BINDING)
+        expected = api.canonical(self.completion(plan))
+        sync_verified(api, directory / 'receipt.json', expected, g.BINDING)
 
     def block_previous(self, tables):
         # Sole cross-boot transition: evidence and signed readback before CAS.

@@ -1,6 +1,6 @@
 # Kernel del lease g3 · contratto v1
 
-Linea A3, sprint-03/63h e 63j, passi 1 e 2a di DN-A-2. Il contratto distingue l'autorizzazione a eseguire una politica dall'identità delle tabelle che la realizzano durante un boot. La libreria calcola e verifica valori JSON in memoria. Il guard e la riconciliazione applicano le transizioni di boot. Il passo 2b riguarda supervisore e start governato.
+Linea A3, passi 1, 2a e 2b di DN-A-2. La testa autorizza la politica per la propria durata. Il guard e la riconciliazione attestano l’istanza locale per il boot. Il tick e lo start governato verificano entrambi i riferimenti prima di usare il lease.
 
 ## Autorità e origine dei riferimenti
 
@@ -132,6 +132,49 @@ Alla cattura si conservano i byte del journal precedente, binding, claim e ricev
 
 Cambio di boot, testa, owner o generazione invalida il riferimento attivo. Un ripristino recupera l'archivio come evidenza, verifica custodia, digest, claim e catena su host isolato. Il nuovo boot deve ricostruire o qualificare la propria coppia e passare dalla riconciliazione prima della riapertura. Copiare handle o scadenze monotone da backup non conferisce autorità. La registrazione in distinta D-065 è affidata a Claude.
 
+## Tick e start governato · passo 2b
+
+Lo start seleziona la politica g3 dalla generazione dell’owner autenticato. Sotto il lock comune rilegge il puntatore, la ricevuta selezionata, il profilo e i file dell’owner e del boot. Verifica lo SHA-256 dell’owner firmato dalla testa e il binding del journal al boot corrente. Il nome di destinazione viene dal kernel dell’owner qualificato. Il nome del predecessore deve coincidere nell’owner e nella ricevuta. Il lettore richiede il predecessore assente e la destinazione presente in entrambe le famiglie.
+
+Per il plan e subito prima delle richieste Docker, lo start richiede la coppia vuota da `QUIESCED/false/false`, la politica firmata e il sigillo del boot. Il lettore risale al digest di prima attivazione oppure al claim, al guard e alla ricevuta finale della riconciliazione. Il plan vincola anche il digest del sigillo. Dopo lo start, il polling verifica il journal `LEASE_READY` e i membri attivi con la ricevuta di ammissione corrente.
+
+Il plan g3 vincola anche il digest del puntatore. Per start e restart governati, il lettore prende il lock comune del coordinatore e prepara le connessioni Unix. Immediatamente prima di ciascun POST all’Engine v1.44 confronta la generazione selezionata con il plan, autentica la testa per entrambi i CID e verifica l’istanza nft. Un plan g2 con puntatore già passato a g3 si ferma prima del primo POST anche quando il supervisore descrive ancora g2. Il lock copre entrambi gli invii. L’attesa delle risposte avviene dopo il rilascio, così i due runtime possono acquisirlo.
+
+La DN-A-3 richiede a tutti i writer governati lo stesso inode di lock. L’emittente prende i lock dei CID per la successione, poi la directory di autorizzazione e infine il lock comune. Lo conserva durante pubblicazione e readback della coppia firmata. Il riconciliatore del sigillo e la migrazione che pubblica la generazione seguono lo stesso ordine. Una modifica nft esterna al flock è rilevabile fino all’ultima lettura degli handle di ciascun POST. Il controllo di generazione del kernel copre il batch nft del tick.
+
+Prima di confermare la selezione, start e tick verificano i byte di `bootPointer` sotto lock e sincronizzano il file e la sua directory, anche dopo un’interruzione del writer fra rename e sync. Il lettore sincronizza journal, sigillo e ricevuta finale della riconciliazione. Per `LEASE_READY` sincronizza anche l’ammissione. Prima del POST conferma su disco payload e firma della testa. Ogni conferma richiede il sync del file e della sua directory. Un errore interrompe l’invio.
+
+### Ingressi per la composizione
+
+| Fonte | Campi consumati |
+|---|---|
+| Testa autenticata | Decisione `OPERATE`, digest della testa, `authorization.lease.ownerConfigurationSha256`, `projection` e `footprint` del lease. |
+| Configurazione autenticata del supervisore | In `coordinator`, binding `ownerConfiguration`, percorsi `commonLockPath`, `journalPath` e `bootPointer`. Il puntatore seleziona la ricevuta di generazione. |
+| Ricevuta selezionata | Profilo g3 del passo 2a, `configurationHash` dell’owner qualificato e `predecessorTableName` della transizione. |
+| Owner immutabile | Campi del passo 2a più `predecessorTableName`, `admissionFile` e `applyBudgetSeconds` del compilatore. Ogni flusso fornisce il proprio massimo `leaseSeconds`. |
+
+Il modulo installabile espone `tick(coordinator, authenticate, resolve, compile_refresh)`. Il chiamante collega `authenticate()` alla verifica della testa e delle epoche vive della coorte, `resolve(owner)` al lettore DNS corrente e `compile_refresh` al compilatore di rinnovo sigillato per quel kernel. I callback operano sotto il lock già acquisito, nell’ordine dei lock previsto dall’installazione. La composizione del passo 3 dovrà fissare i byte di questi adattatori e dei moduli Python. Il chiamante pianifica il prossimo tick entro il termine monotono restituito in `nextTickMonotonic`.
+
+Il writer dell’apertura governata prepara la prima ricevuta di ammissione sotto lock con gli indirizzi effettivamente ammessi, prima della transizione a `LEASE_READY`. Il tick parte da quella ricevuta. Verifica i membri prima del rinnovo, passa a `LEASE_UPDATING` e rilegge testa, sigillo e tabelle prima del batch nft atomico. Controlla il termine del compilatore prima e dopo il batch. Verifica il nuovo readback, sostituisce la ricevuta con CAS e la rilegge per la verifica finale prima di `LEASE_READY`. Il prossimo tick cade entro il periodo dell’owner e prima del consumo del margine di rinnovo.
+
+### Archivi del tick e interruzioni · D-065
+
+Il tick legge il contatore di generazione nft con `NFT_MSG_GETGEN` prima dell’ultima verifica degli handle. Trasmette le operazioni del compilatore per i set `provider_N` in un unico batch nfnetlink con `NFNL_BATCH_GENID`. Il kernel confronta la generazione all’inizio della transazione. Se nel frattempo cambia il ruleset, il tick conserva l’ammissione e chiude il journal. Una nuova lettura distingue la sostituzione dell’istanza (`G3_SEAL_DRIFT`) da un’altra modifica concorrente (`G3_NFT_GENERATION_CHANGED`).
+
+| Archivio | Custodia, cattura e ripresa |
+|---|---|
+| `admissionFile` | File locale privato per generazione, schema `ouf.lease-kernel.admission.g3.v1`. Contiene testa, owner, generazione, boot e `validUntil` per set e indirizzo. L’apertura inizializza il file. Il tick aggiorna i byte attesi con CAS sotto lock. Catturare insieme a journal, sigillo e ricevute, con le protezioni root e i digest usati dal guard. |
+| `receiptDirectory/<bootId>.tick-denied.json` | Evidenza privata creata in esclusiva prima del CAS a `BLOCKED/false/false`. Contiene testa, owner, boot, digest del journal precedente e codice di diniego. Una ricevuta parziale resta leggibile. La presenza del file inibisce start e rinnovo per quella selezione nel boot. |
+| Journal in `LEASE_UPDATING` | Un’interruzione tra CAS iniziale e CAS finale può lasciare il batch applicato o la ricevuta aggiornata. Il tick successivo chiude con `G3_INTERRUPTED_RENEWAL` conservando i file. Dopo il CAS finale, il tick successivo verifica la ricevuta pubblicata e lo stato vivo. Un CAS perso conserva il journal concorrente. |
+
+Una sostituzione a regole identiche produce `G3_SEAL_DRIFT`. Il tick revoca l’autorità nel journal e conserva l’istanza osservata. Gli elementi già installati conservano i timeout del kernel. Il ripristino degli archivi serve a verificare il residuo e la sua catena di custodia. Un nuovo boot richiede la propria qualificazione e una nuova ammissione con scadenze monotone correnti.
+
+Per la consegna Python di `r3-operate.sh` servono i file aggiuntivi `tools/semantic_provider_r3/lease_kernel_g3.py`, `tools/semantic_lease_kernel_migration/g3_contract.py` e `tools/semantic_lease_kernel_migration/g3_journal.py`, oltre al nuovo digest di `operate.py`. Il dispatcher è già nell’elenco. La closure del supervisore dovrà includere anche `lease_supervisor_g3.py` e `nft_batch_g3.py` da `tools/semantic_provider_operation/`. Elenco e pin del runbook spettano alla review di rilascio.
+
+La consegna della DN-A-3 comprende anche il nuovo digest dell’emittente
+`scripts/issue-semantic-provider-operation-authorization.py` e il riconciliatore aggiornato.
+L’emittente usa il flock del dispatcher incluso nella consegna v37.
+
 ## Interfaccia 2→3 e qualifica
 
 D-080 conserva il formato g2, i byte della closure e il confronto esatto g2. Il passo 3 aggiungerà a D-050 la transizione esplicita da g2 quiescente, a coorte ferma: plan approvato, staging separato di owner/journal/profilo/ricevuta g3, verifica e switch con CAS, emissione della testa N+1, upgrade e finalize. Prima della firma il predecessore esatto deve poter riprendere o fare restore; dopo `supersedes` serve ripresa governata o testa successiva autorizzata. Questo contratto non seleziona una generazione.
@@ -150,7 +193,15 @@ D-080 conserva il formato g2, i byte della closure e il confronto esatto g2. Il 
 | `Boot.test_a3_15_and_18_retry_journal_directory_after_replace`, `Boot.test_a3_18_retry_plan_and_receipt_before_fsync` | 63j-e, errore di sync al ritentativo sul journal dopo la rinomina e su piano e ricevuta dopo l'ultimo byte. Il guard e l'apply propagano l'errore. |
 | `Format.test_a3_20`–`21` | Ordini reali 1.0.9/1.1.3 e limite del margine di rinnovo. |
 | `NativeContract.test_a3_22_runner_reconcile_and_tick` | Netns opt-in, dispatcher, ricostruzione nft, riconciliazione e diniego del tick a handle sostituiti. |
+| `Tick.test_a3_23`–`25` | Rinnovo e gate nelle serializzazioni 1.0.9 e 1.1.3. Diniego per membri, TTL, boot, politica, handle, evidenza mancante, autorità incoerente e coppia parziale. |
+| `Tick.test_a3_26`–`28` | Tagli dopo la scrittura e dopo il rename, prima del sync corrispondente. Replay con errori ripetuti di file o directory, conservazione dell’ammissione e del diniego. |
+| `NativeContract.test_a3_29_replacement_after_handle_read_before_kernel_commit` | Nella netns, rinnovo valido seguito dalla sostituzione fra lettura e invio del batch. La prova richiede entrambi i set vuoti nella coppia ricreata, ammissione conservata e journal `BLOCKED`. |
+| `Tick.test_a3_30`–`31` | Revoca prima dell’ammissione con zero POST, contesa sul lock durante entrambi gli invii, risposte dopo lo sblocco, ricevuta parziale e CAS concorrente. |
+| `Tick.test_a3_32` | Scadenza del budget prima del batch, ritardo nella pubblicazione dell’ammissione e consumo del termine di rinnovo durante il CAS finale. |
+| `Tick.test_a3_33` | Plan g2 seguito da osservazione g3. Anche il supervisore g2 rilegge il puntatore sotto lock e riconosce lo switch. |
+| `Tick.test_a3_34` | Successione della testa o sostituzione degli handle prima del primo o del secondo POST. Contesa con emittente, riconciliatore e migrazione. Taglio prima del sync di payload e firma. |
+| `Tick.test_a3_35` | Taglio dopo il rename del puntatore, in una directory distinta dal journal. Un secondo errore di sync impedisce start e tick. |
 
-Per 63j-e le suite portabili su Windows hanno superato 31 prove di boot e riconciliazione g3, 14 di contratto g3, 28 di kernel e migrazione g2, 12 di R3 v12 e 24 di operate. Lo sweep usa il CAS del dispatcher e file reali nella fixture. Il modello portabile simula il batch nft e la sincronizzazione delle directory. L'esito CI Linux di questa revisione, inclusa l'esecuzione nativa di A3-22, resta da acquisire.
+Per 63j-e le suite portabili su Windows hanno superato 31 prove di boot e riconciliazione g3, 14 di contratto g3, 28 di kernel e migrazione g2, 12 di R3 v12 e 24 di operate. In 63k-b la fixture usa il CAS del dispatcher, file e directory reali. Sui sistemi POSIX esegue `fsync` sul descrittore della directory. Su Windows usa `FlushFileBuffers` su un handle della directory. Il batch nft reale è coperto dalla prova in netns.
 
-R-025/A3 resta aperto per il tick e il riconoscimento in operate del passo 2b, la transizione del passo 3 e la qualifica del passo 4 con due boot reali, systemd e Docker. Le prove del passo 1 misurano le verifiche in memoria e, nel caso nativo, l'identità delle tabelle in un unico boot.
+Il passo 2b dispone delle prove portabili. Restano la conferma nativa del rinnovo nella netns, la transizione del passo 3 e la qualifica del passo 4 con due boot reali, systemd e Docker.

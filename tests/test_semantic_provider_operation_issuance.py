@@ -125,6 +125,51 @@ class PortableTests(unittest.TestCase):
         self.assertEqual(locks, [])
         self.assertEqual(progress, issue.progress_initial())
 
+    def test_execute_retries_same_plan_after_start_releases_common_lock(self):
+        chain = fixtures.PurePosixPath("/installation/authorization")
+        paths = (chain.parent / "unused", chain, None, None)
+        plan = {"previousHead": {"sha256": "a" * 64}, "supersession": {}}
+        args = SimpleNamespace(supersede=True, plan=False, plan_sha256=A.sha(A.canonical(plan)))
+        binding = {"path": "/owner", "sha256": "b" * 64}
+        reader = SimpleNamespace(bound=lambda ref: b"owner")
+        observation = (plan, None, reader, None, None, None, None, None, {"coordinatorBinding": binding})
+        held = []
+        busy = True
+
+        @contextmanager
+        def lock(name):
+            held.append(name)
+            try:
+                yield
+            finally:
+                self.assertEqual(held.pop(), name)
+
+        def common(root, previous, owner, ref):
+            self.assertEqual((held, root, previous, owner, ref),
+                             (["cids", "chain"], chain.parent, plan["previousHead"], b"owner", binding))
+            if busy:
+                raise BlockingIOError()
+            return lock("common")
+
+        def publish(*_):
+            self.assertEqual(held, ["cids", "chain", "common"])
+            return "issued"
+
+        progress = issue.progress_initial()
+        with patch.object(issue, "destinations", return_value=paths), patch.object(issue, "observe", return_value=observation), \
+                patch.object(gate, "observe", return_value={}), patch.object(gate, "operation_locks", side_effect=lambda *_: lock("cids")), \
+                patch.object(issue, "chain_lock", side_effect=lambda stack, _: stack.enter_context(lock("chain"))), \
+                patch.object(issue, "authorization_head", return_value=plan["previousHead"]), \
+                patch.object(issue, "publication_lock", side_effect=common), patch.object(issue, "publish", side_effect=publish) as claim:
+            with self.assertRaises(BlockingIOError):
+                issue.execute(args, progress)
+            claim.assert_not_called()
+            self.assertEqual((held, progress), ([], issue.progress_initial()))
+            busy = False
+            self.assertEqual(issue.execute(args, progress), "issued")
+            claim.assert_called_once()
+        self.assertEqual(held, [])
+
     def test_gate_checks_both_cids_and_retained_prepared_failures(self):
         composed = C.compose(fixtures.fixture())
         raw = composed["authorization"]
@@ -177,6 +222,11 @@ class NativeTests(operation.Fixture):
         settings.update(installationRef="inst", entityRef="ent", issuerRef="installer", installRoot=str(self.install),
             issuedAt=self.now, anchorBinding=self.anchor, mandateRoot=str(self.ledger_root), opensslBinding=self.ssl)
         self.owner = self.root / "owner.json"
+        self.common_lock = self.root / "common.lock"
+        self.write(self.common_lock, b"")
+        owner = C.document(self.inputs["files"]["coordinator"])
+        owner["commonLockFile"] = str(self.common_lock)
+        self.inputs["files"]["coordinator"] = A.canonical(owner)
         self.write(self.owner, self.inputs["files"]["coordinator"])
         settings["coordinatorBinding"] = {"path": str(self.owner), "sha256": A.sha(self.owner.read_bytes())}
         # Bind the real fixture anchor to this public authority profile.
@@ -323,6 +373,13 @@ class NativeTests(operation.Fixture):
         for role in C.ROLES:
             self.epoch(role, "DELETED", prepared=True)
         plan = self.execute(supersede=True)
+        progress = issue.progress_initial()
+        retained = {p.name: p.read_bytes() for p in self.chain.iterdir()}
+        with issue.boot.lock(self.common_lock), self.assertRaises(BlockingIOError):
+            self.execute("--apply", plan["planSha256"], progress, supersede=True)
+        self.assertEqual(progress, issue.progress_initial())
+        self.assertFalse(self.output.exists())
+        self.assertEqual({p.name: p.read_bytes() for p in self.chain.iterdir()}, retained)
         read_head = A.head
         readback = []
 
@@ -330,7 +387,7 @@ class NativeTests(operation.Fixture):
             head = read_head(*args, **kwargs)
             if head["sequence"] == 2:
                 locks = [self.install / "registry" / cid / "operation.lock" for cid in self.cids.values()]
-                for path in [*locks, self.chain]:
+                for path in [*locks, self.chain, self.common_lock]:
                     fd = os.open(path, os.O_RDONLY)
                     try:
                         with self.assertRaises(BlockingIOError):
@@ -341,8 +398,9 @@ class NativeTests(operation.Fixture):
             return head
 
         with patch.object(A, "head", side_effect=verify_locks_at_readback):
-            result = self.execute("--apply", plan["planSha256"], supersede=True)
+            result = self.execute("--apply", plan["planSha256"], progress, supersede=True)
         self.assertEqual((result["sequence"], readback), (2, [result["payloadSha256"]]))
+        self.assertEqual(json.loads((self.output / "result.json").read_bytes()), result)
 
     def test_epoch_pointer_and_authorization_bindings_fail_closed(self):
         self.installed_first()
