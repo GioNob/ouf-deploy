@@ -192,13 +192,18 @@ def check_live_networks(old, doc):
         require(digest(actual) == digest(expected), "ENDPOINT_DELTA")
 
 
-def snapshot(old):
+def snapshot(old, *, recorded=False):
     nets = deepcopy(old["NetworkSettings"])
     nets.pop("MacAddress", None)
     for ep in nets["Networks"].values():
         ep.pop("MacAddress", None)
-    return frame_binding("frame", old, [old["Name"], old["Image"], configuration(old), old["HostConfig"], old["Mounts"],
+    return bind_frame(old, recorded, [old["Name"], old["Image"], configuration(old), old["HostConfig"], old["Mounts"],
                    old["Path"], old["Args"], nets, epoch(old)])
 
 
-from .public_output import observed_binding as frame_binding
+from .public_output import binding, observed_binding as frame_binding
+
+
+def bind_frame(doc, recorded, values):
+    # A stored frame uses the algorithm selected by its authenticated source plan.
+    return binding("frame", values) if recorded else frame_binding("frame", doc, values)

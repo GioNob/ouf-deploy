@@ -550,8 +550,9 @@ def structured_secret(value):
             # -p is the PostgreSQL port and --password requests a prompt.
             return any(structured_secret(arg) for arg in value[1:]
                        if isinstance(arg, str) and not re.fullmatch(r"-p[0-9]+|--password", arg))
-        return any(isinstance(arg, str) and arg.startswith("--") and credential_name(arg[2:])
-                   for arg in value[:-1]) or any(structured_secret(arg) for arg in value)
+        return any(isinstance(arg, str) and arg.startswith("--") and private_field(arg[2:])
+                   and isinstance(operand, str) and operand and not operand.startswith("-")
+                   for arg, operand in zip(value, value[1:])) or any(structured_secret(arg) for arg in value)
     if not isinstance(value, str):
         return False
     raw = unquote(value.strip())
@@ -578,8 +579,12 @@ def structured_secret(value):
             return True
         if argument.startswith(("{", "[", '"')) and structured_secret(argument):
             return True
-    return (any(private_field(m[1]) for m in _long_option.finditer(raw))
-            or bool(re.search(r"://[^/\s?#]*:[^/\s?#]*@|\boracle:thin:[^/@\s]+/[^@\s]+@", raw, re.I))
+    for option in _long_option.finditer(raw):
+        if private_field(option[1]):
+            operand = re.match(r"""['"]?\s+(\S+)""", raw[option.end():])
+            if operand and operand[1] not in ("''", '""') and not operand[1].startswith("-"):
+                return True
+    return (bool(re.search(r"://[^/\s?#]*:[^/\s?#]*@|\boracle:thin:[^/@\s]+/[^@\s]+@", raw, re.I))
             or bool(re.fullmatch(r"-p[^\s=]+", raw)))
 
 

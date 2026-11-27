@@ -643,4 +643,4 @@ def prior_snapshot(profile, doc, previous):
     # The signed predecessor frame belongs to the run that issued its receipt.
     with public_output.scope(dict(profile)):
         public_output.use_plan(previous)
-        return snapshot(doc)
+        return snapshot(doc, recorded=True)

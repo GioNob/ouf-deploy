@@ -305,6 +305,12 @@ class ReadyReturn(unittest.TestCase):
         print(f"D-080 matrix: {rows} interruption boundaries, {cells} cases", flush=True)
 
     def test_DEP_58QL_17_spring_losses_at_shared_interruption_points(self):
+        self.spring_shared_losses(after_candidate_stop=False)
+
+    def test_DEP_58QM_06_spring_journal_after_candidate_stop(self):
+        self.spring_shared_losses(after_candidate_stop=True)
+
+    def spring_shared_losses(self, *, after_candidate_stop):
         phases = self.interruption_points()
         phases["apply"].remove("database.private.json")
         phases["apply"].extend(("cleanup-plan.json", "cleanup-owner.json"))
@@ -315,6 +321,8 @@ class ReadyReturn(unittest.TestCase):
             for phase, points in phases.items():
                 for point in points:
                     for after in (False, True):
+                        if (point == "new-stop" and after) != after_candidate_stop:
+                            continue
                         rt, _ = self.case()
                         rt.p["migration"]["mode"] = "spring-flyway"
                         rt.flyway_peer = {"database": "fixture"}
@@ -328,7 +336,9 @@ class ReadyReturn(unittest.TestCase):
                         action = "apply" if phase in ("apply", "failed-apply") else "return"
                         result, rt = interrupted(rt, plan, action, point, after)
                         self.assertEqual(result, "crash", (phase, point, after, result))
-                        cells += self.loss_row(rt, plan, ("spring-common", phase, point, after), spring_only=True)
+                        if after_candidate_stop:
+                            self.assertTrue((Path(rt.p["journal"]) / op.digest(plan) / "baseline.private.json").is_file())
+                        cells += self.loss_row(rt, plan, ("spring-common", phase, point, after), spring_only=not after_candidate_stop)
                         rows += 1
         print(f"D-080 Spring shared: {rows} interruption boundaries, {cells} cases", flush=True)
 
@@ -734,31 +744,64 @@ class ReadyReturn(unittest.TestCase):
         self.assertEqual(case.rt.inspect(case.p["container"])["Id"], fixture.NEW)
 
     def test_signed_ready_before_result_republication_single_loss_matrix(self):
+        self.signed_republication("none")
+
+    def test_DEP_58QM_07_signed_spring_before_republication(self):
+        for profile in ("spring-proof", "spring-reader"):
+            self.signed_republication(profile)
+
+    def publication_profile(self, case, profile):
+        import module_operation
+        case.rt = Engine(case.p, case.rt.blob)
+        if profile == "none":
+            bind_database(case.p)
+            return
+        case.p["migration"]["mode"] = "spring-flyway"
+        case.rt.flyway_peer = {"database": "fixture"}
+        flyway = module_operation.operation.flyway
+        error = flyway.Held("FLYWAY_READ_FAILED") if profile == "spring-reader" else None
+        self.enterContext(patch.object(flyway, "checkpoint", return_value={"proof": "fixture"}, side_effect=error))
+        self.enterContext(patch.object(flyway, "verify"))
+        if profile == "spring-proof":
+            case.rt.fault = "lost_signal"
+
+    def check_spring_witnesses(self, directory, profile):
+        expected = {"spring-proof": {"flyway-plan.json", "release-signal.json.failure"},
+                    "spring-reader": {"flyway-reader.json"}, "none": set()}
+        self.assertEqual({name for name in self.SPRING_FILES if (directory / name).exists()}, expected[profile])
+
+    def signed_republication(self, profile):
         import module_operation
         import mandate
         cells = 0
         for unlock_error, apply_error in ((Crash, Crash), (OSError, mandate.Held)):
             case = self.governed_case()
-            bind_database(case.p)
-            case.rt = Engine(case.p, case.rt.blob)
+            self.publication_profile(case, profile)
             case.p["receiptSigning"] = {"publicKey": {"path": str(case.root / "pub"), "sha256": "a"*64},
                                         "privateKey": str(case.root / "key")}
             call, req = case.governed_dispatch()
             stamp = call(0)["digest"]
             plan = op.read(case.root / "1", "plan")["plan"]
             req.update(phase="apply", digest=stamp)
+            if profile != "none":
+                with patch.object(module_operation.module_receipt, "signing_key"):
+                    stage = call(1)
+                self.assertEqual(stage["status"], "GATED", stage)
+                req.update(phase="migrate", digest=stage["digest"])
+            terminal = req["phase"]
             with patch.object(module_operation.module_receipt, "signing_key"), \
                  patch.object(module_operation.operation.reviewed, "unlock", side_effect=unlock_error), self.assertRaises(apply_error):
-                call(1)
-            req.update(run="2", phase="rollback")
+                call(1 if terminal == "apply" else 2)
+            req.update(run="2", phase="rollback", digest=stamp)
             def signed(binding, directory, **kwargs):
                 attest_fixture(binding, directory, **kwargs)
                 raise Crash()
             with patch.object(module_operation.module_receipt, "attest", signed), self.assertRaises(Crash):
                 call(1)
             self.assertTrue((case.root / stamp / "receipt.ed25519").is_file())
-            target = case.root / "1" / "apply.result"
-            if unlock_error is OSError:
+            self.check_spring_witnesses(case.root / stamp, profile)
+            target = case.root / "1" / (terminal + ".result")
+            if unlock_error is OSError and terminal == "apply":
                 self.assertEqual(op.read(target.parent, target.name)["status"], "HELD")
             else:
                 self.assertFalse(target.exists())
@@ -766,8 +809,8 @@ class ReadyReturn(unittest.TestCase):
                 result, _ = approved_retry(fresh, stamp, "3", interrupt=False)
                 self.assertEqual(result["status"], "ROLLED_BACK", result)
                 return op.read(case.root / stamp, "return-receipt.json")
-            cells += self.loss_row(case.rt, plan, ("signed-before-republication", unlock_error.__name__), governed)
-        print(f"D-080 signed before republication: 2 interruption boundaries, {cells} cases", flush=True)
+            cells += self.loss_row(case.rt, plan, ("signed-before-republication", profile, unlock_error.__name__), governed)
+        print(f"D-080 signed before republication ({profile}): 2 interruption boundaries, {cells} cases", flush=True)
 
     def test_DEP_58QD_13_bound_dedicated_keeps_compatible_committed_schema(self):
         import test_module_release_mcp as mcp
@@ -1052,12 +1095,20 @@ class ReadyReturn(unittest.TestCase):
         return self.loss_row(rt, plan, ("return", "late-create.json", after))
 
     def test_DEP_58Q_16_review_and_ready_publication(self):
+        self.ready_publication("none")
+
+    def test_DEP_58QM_08_spring_ready_publication(self):
+        for profile in ("spring-proof", "spring-reader"):
+            self.ready_publication(profile)
+
+    def ready_publication(self, profile):
         import mandate
         import module_operation
         retry = self.enterContext(ProcessPoolExecutor(1))
         finish = self.enterContext(ProcessPoolExecutor(1))
         cells = 0
-        for cut in ("apply.review", "apply.result", "pointer", "signature"):
+        result_file = "apply.result" if profile == "none" else "migrate.result"
+        for cut in ("apply.review", result_file, "pointer", "signature"):
             for after in (False, True):
                 with self.subTest(cut=cut, after=after):
                     case = fixture.ReleaseTest()
@@ -1067,8 +1118,7 @@ class ReadyReturn(unittest.TestCase):
                                   receiptSigning={"publicKey": {"path": str(case.root / "pub"), "sha256": "a"*64},
                                                   "privateKey": str(case.root / "key")})
                     case.p["configDelta"] = {"aliases": {next(iter(case.p["networks"])): ["reviewed"]}}
-                    bind_database(case.p)
-                    case.rt = Engine(case.p, case.rt.blob)
+                    self.publication_profile(case, profile)
                     call, req = case.governed_dispatch()
                     stamp = call(0)["digest"]
                     plan = op.read(case.root / "1", "plan")["plan"]
@@ -1090,8 +1140,14 @@ class ReadyReturn(unittest.TestCase):
                     with patch.object(module_operation.module_receipt, "signing_key"), \
                          patch.object(module_operation.module_receipt, "attest", loss), \
                          patch.object(module_operation, "save", publish), self.assertRaises(Crash):
-                        call(1)
-                    req.update(phase="rollback", run="2")
+                        stage = call(1)
+                        if profile != "none":
+                            self.assertEqual(stage["status"], "GATED", stage)
+                            req.update(phase="migrate", digest=stage["digest"])
+                            call(2)
+                    req.update(phase="rollback", run="2", digest=stamp)
+                    if cut != "apply.review":
+                        self.check_spring_witnesses(case.root / stamp, profile)
                     before = json.dumps(case.rt.docs)
                     with self.assertRaises(mandate.Held):
                         call(0)
@@ -1100,14 +1156,14 @@ class ReadyReturn(unittest.TestCase):
                         response, _ = approved_retry(fresh, stamp, "2", interrupt=False)
                         self.assertEqual(response["status"], "ROLLED_BACK", response)
                         return op.read(case.root / stamp, "return-receipt.json")
-                    cells += self.loss_row(case.rt, plan, ("publication", cut, after), governed)
+                    cells += self.loss_row(case.rt, plan, ("publication", profile, cut, after), governed)
                     result, rt = retry.submit(approved_retry, case.rt, stamp, "2", interrupt=True).result()
                     self.assertEqual(result, "crash")
                     result, rt = finish.submit(approved_retry, rt, stamp, "3", interrupt=False).result()
                     self.assertEqual(result["status"], "ROLLED_BACK", result)
                     self.oracle(rt, plan, op.read(case.root / stamp, "return-receipt.json"))
 
-        print(f"D-080 publication: 8 interruption boundaries, {cells} cases", flush=True)
+        print(f"D-080 publication ({profile}): 8 interruption boundaries, {cells} cases", flush=True)
 
     def test_DEP_58Q_21_ready_published_by_recovery_dispatch(self):
         import mandate

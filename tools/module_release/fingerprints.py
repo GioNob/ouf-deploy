@@ -37,6 +37,9 @@ def secret_sources(policy):
     if gateway.get("keyFile"):
         paths.add(Path(gateway["keyFile"]))
     for module in policy.get("modules", {}).values():
+        client_key = module.get("readiness", {}).get("tls", {}).get("clientKeyFile")
+        if client_key:
+            paths.add(Path(client_key))
         signer = module.get("receiptSigning", {})
         if signer.get("privateKey"):
             paths.add(Path(signer["privateKey"]))
@@ -65,7 +68,9 @@ def manifest_binding(root, files, public_binding, protected, previous):
             for name, p in policy["modules"].items()}
 
     def bind(path, data, mode):
-        if path == profile:
+        # A declared secret source on either side takes precedence over its managed role.
+        private = path in sources
+        if path == profile and not private:
             content = json.loads(data)
             try:
                 private = (any(contract.private_profile(p) for p in content["modules"].values())
@@ -73,10 +78,6 @@ def manifest_binding(root, files, public_binding, protected, previous):
                                                          if k not in ("modules", "fingerprintKeyFile")}))
             except (AttributeError, KeyError, TypeError, RecursionError):
                 private = True
-        else:
-            # The inventory covers installer-owned code/books. A declared credential
-            # source takes precedence over that role, including on replacement.
-            private = path in sources
         if not private:
             return public_binding(data, mode)
         field = (path.relative_to(root) if path.is_relative_to(root) else path).as_posix()

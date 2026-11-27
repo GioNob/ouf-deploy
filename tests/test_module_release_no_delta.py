@@ -683,6 +683,50 @@ class NoDeltaParity(unittest.TestCase):
     def test_DEP_58QL_key_read_faults(self):
         self.read_fault_matrix(("private-none", "private-dedicated", "private-spring-flyway", "executor-private-dedicated"))
 
+    def test_DEP_58QM_09_retention_catalog_read_fault(self):
+        from test_module_release_retention_019 import RetentionFixture
+        errors = []
+        for executor in (self.reference_executor, module_operation):
+            with ExitStack() as stack:
+                fixture_case = RetentionFixture()
+                fixture_case.setUp()
+                stack.callback(fixture_case.doCleanups)
+                case = fixture_case.release
+                self.assertNotIn("configDelta", case.p)
+                case.p.pop("fingerprintKeyFile")
+                if executor is self.reference_executor:
+                    stack.enter_context(patch.dict(case.dispatch.__globals__, ModuleRelease=executor.ModuleRelease))
+                    stack.enter_context(patch.object(executor.operation, "Docker", return_value=case.rt))
+                    stack.enter_context(patch.object(executor.retention.postgres, "database_snapshot", fixture_case.catalog_read))
+                    stack.enter_context(patch.object(self.reference_store, "trusted", lambda path, **kw: Path(path)))
+                    stack.enter_context(patch.object(self.reference_store, "sync_dir"))
+                witness = fixture_case.root / "retention-catalog.json"
+                original = Path.read_bytes
+                hits = []
+                def fail_catalog(path):
+                    if path == witness:
+                        hits.append(path)
+                        raise OSError("injected")
+                    return original(path)
+                outcomes = []
+                for phase, run in ((executor.retention.ADMIN, "2"), (executor.retention.BATCH, "3")):
+                    if phase == executor.retention.BATCH:
+                        fixture_case.call(executor.retention.ADMIN, run=run)
+                    with patch.object(Path, "read_bytes", fail_catalog), self.assertRaisesRegex(
+                            executor.Held, r"RELEASE_IO_OR_INPUT_ERROR/OSError@") as held:
+                        fixture_case.call(phase, run=run)
+                    self.assertEqual(hits, [witness])
+                    hits.clear()
+                    self.assertEqual(len(fixture_case.work), 1)
+                    self.assertFalse((fixture_case.root / "retention-batch.json").exists())
+                    outcomes.append(str(held.exception))
+                fixture_case.call(executor.retention.ADMIN, run="4")
+                fixture_case.call(executor.retention.BATCH, run="4")
+                self.assertEqual(len(fixture_case.work), 2)
+                errors.append(outcomes)
+        self.assertEqual(*errors)
+        print("I/O matrix: 2 injected reads (retention-catalog.json, admin and batch)", flush=True)
+
     def read_fault_matrix(self, modes):
         total = 0
         for mode in modes:
@@ -921,6 +965,50 @@ class NoDeltaParity(unittest.TestCase):
                             total += len(trace)
                             print("I/O", mode, "resume" if interrupted else "apply", len(trace), flush=True)
         print("I/O matrix:", total, "injected reads", flush=True)
+
+    def test_DEP_58QM_01_predecessor_receipt_uses_issuing_release(self):
+        case = fixture.ReleaseTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        p, rt = case.p, case.rt
+        p["migration"] = {"mode": "none", "rollbackCompatible": True}
+        rt.docs[fixture.OLD]["Config"]["Env"].append("PGPASSWORD=fixture")
+        reference = self.reference[0]
+        historical = {k: v for k, v in p.items() if k != "fingerprintKeyFile"}
+        stamp = reference.plan(historical, rt)["planSha256"]
+        receipt = reference.apply(historical, stamp, rt)
+        self.assertEqual(receipt["status"], "READY", receipt)
+        doc = rt.docs[receipt["successorCid"]]
+        previous = {**receipt, "imageId": doc["Image"]}
+        p["retainedName"] += "-next"
+        fixture.artifact(p, case.root, image_env=["PUBLIC=next"])
+        expected = reference.plan(p, rt, previous_release=lambda: previous)
+        self.assertEqual(expected["status"], "PLANNED", expected)
+        current = operation.plan(p, rt, previous_release=lambda: previous)
+        self.assertEqual(current["status"], expected["status"], current)
+        self.assertEqual(current["plan"]["predecessorPlanSha256"], stamp)
+        self.assertNotEqual(current["plan"]["oldFrameSha256"], receipt["successorFrameSha256"])
+        with patch.dict(doc, RestartCount=doc["RestartCount"] + 1):
+            self.assertEqual(operation.plan(p, rt, previous_release=lambda: previous)["reason"], "PREDECESSOR_CHANGED")
+        # A keyed receipt must never fall back to the historical SHA-256.
+        keyed = dict(previous, fingerprintRun=current["plan"]["fingerprintRun"])
+        self.assertEqual(operation.plan(p, rt, previous_release=lambda: keyed)["reason"], "PREDECESSOR_CHANGED")
+        keyed["successorFrameSha256"] = current["plan"]["oldFrameSha256"]
+        self.assertEqual(operation.plan(p, rt, previous_release=lambda: keyed), current)
+
+    def test_DEP_58QM_02_flag_without_operand_matches_release(self):
+        case = fixture.ReleaseTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        Path(case.p.pop("fingerprintKeyFile")).unlink()
+        labels = case.rt.docs[fixture.OLD]["Config"]["Labels"]
+        for flag in ("--password", "client --password", '["client","--password"]'):
+            with self.subTest(flag=flag), patch.dict(labels, client=flag):
+                expected = self.reference[0].plan(case.p, case.rt)
+                self.assertEqual(expected["status"], "PLANNED", expected)
+                self.assertEqual(operation.plan(case.p, case.rt), expected)
+        with patch.dict(labels, client="client --password operand"):
+            self.assertEqual(operation.plan(case.p, case.rt)["reason"], "FINGERPRINT_KEY_UNAVAILABLE")
 
     def test_DEP_58QL_clean_plan_bytes(self):
         import test_module_release_java as java

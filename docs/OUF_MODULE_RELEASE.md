@@ -107,6 +107,9 @@ DN-L1-6 valuta la derivazione di ciascun campo pubblicato. La classificazione us
 | Impronta di un file gestito che è anche una sorgente dichiarata di segreti o chiavi, indipendentemente dal nome del file | `DEP-58QL-10` |
 | Digest di profilo, CREATE e frame della prima installazione con un riferimento `*_FILE`, compresi intent e prova di isolamento | `DEP-58QL-12` |
 | `requestSha256` dei worker MCP di retention nel journal di un rilascio con input privati, anche quando il recupero lo include nella review | `DEP-58QL-15` |
+| Prima installazione, eccezione rispetto al 61e. Un `readiness.path` fuori dalla grammatica `^/[A-Za-z0-9._~/-]*$` dà `READINESS_PATH_INVALID` prima del piano. Il diagnostico omette il valore. Rimane il controllo sul prefisso `//`. | `DEP-58QM-04` |
+
+Il confronto con il frame del predecessore usa l’algoritmo del piano che ha emesso la ricevuta. Per `6ae7001a` e le ricevute storiche prive di `fingerprintRun` verifica lo SHA-256 originale. Nei nuovi piani con input privati usa HMAC legato al run. Un flag `--password` isolato conserva la parità senza chiave. Se un file gestito è dichiarato in `readiness.tls.clientKeyFile`, il manifesto protegge con HMAC entrambi i lati presenti. Prove `DEP-58QM-01`, `02` e `03`.
 
 D-080 e D-082 conservano gli algoritmi dei pin di filiera per ID e digest delle immagini, digest di artefatti e archivi (incluso `archiveSha256`) e checksum Flyway. L’origine di filiera giustifica l’esclusione. Un file proveniente da un bind di segreti o da `*_FILE` usa HMAC anche se il campo porta il nome di un pin di filiera. Una credenziale nei default OCI o nell’archivio è un difetto di filiera D-058. `DEP-58QL-03` verifica l’identità dei pin con un archivio sintetico.
 

@@ -68,4 +68,7 @@ def valid_request(req, policy, common):
 
 def validate(p):
     contract.validate_profile_options(p)
+    ready = p.get("readiness")
+    if isinstance(ready, dict):
+        check(matches(r"/[A-Za-z0-9._~/-]*", ready.get("path")), "READINESS_PATH_INVALID")
     return _validate(p)

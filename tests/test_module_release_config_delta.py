@@ -180,6 +180,47 @@ class InvalidDeltaTest(unittest.TestCase):
         self.assertEqual(files, {p: p.read_bytes() for p in case.root.rglob("*") if p.is_file()})
 
     def test_DEP_58QG_01_generated_credential_matrix(self):
+        self.credential_matrix(("env-before", "env-after", "nested-json", "json-argument", "json-metadata",
+                                "label", "label-argv", "alias", "migration"))
+
+    def test_DEP_58QM_05_credential_outputs_for_log_and_install(self):
+        self.credential_matrix(("host-log", "install-bind"))
+
+    def install_bind_outputs(self, p, rt, target, pin, streams):
+        from test_release_approval import Approval
+        from module_release import frame_spec as installed_spec
+
+        case = fixture.ReleaseTest()
+        case.p, case.rt, case.root = p, rt, Path(p["journal"])
+        p["module"] = "onboarding"
+        workflow = ".github/workflows/module-install.yml"
+        results = []
+        with ExitStack() as stack:
+            stack.callback(case.doCleanups)
+            stack.enter_context(patch.object(installed_spec, "bind_facts", frame_spec.bind_facts))
+            call, req = case.governed_dispatch()
+            req.update(operation="module-install", schema=install_contract.SCHEMA)
+            req["digest"] = mandate.intent(req)
+            for phase, status in (("plan", "PLANNED"), ("apply", "READY"), ("rollback", "ROLLED_BACK")):
+                req["phase"] = phase
+                if phase == "rollback":
+                    req["run"] = "2"
+                with redirect_stdout(streams[0]), redirect_stderr(streams[1]):
+                    result = call(int(phase != "plan"), workflow)
+                    self.assertEqual(result["status"], status, result)
+                    with patch.object(sys, "path", list(sys.path)):
+                        published = Approval().client("module-install", phase, result, MODULE=p["module"], RESUME_PLAN="")
+                results.extend((result, published))
+                if phase == "plan":
+                    req["digest"] = result["digest"]
+                    plan = operation.read(case.root / "1", "plan")["plan"]
+                    with operation.public_output.scope(p):
+                        expected = operation.public_output.fingerprint(["install.bind", target], pin)
+                    self.assertEqual(result["installReview"]["binds"][-1]["hmacSha256"], expected)
+                    self.assertEqual(plan["preconditions"]["bindCustody"][-1]["hmacSha256"], expected)
+        return results
+
+    def credential_matrix(self, positions):
         def derivatives(secret):
             raw = secret.encode()
             forms = {raw, raw.hex().encode(), quote(secret, safe="").encode(),
@@ -199,7 +240,6 @@ class InvalidDeltaTest(unittest.TestCase):
             ("--password", "{v}"), ("--secret", "{v}"), ("--token", "{v}"),
             ("sh", "-c", "migrate --password '{v}'"),
         ]
-        positions = ("env-before", "env-after", "nested-json", "json-argument", "json-metadata", "label", "label-argv", "alias", "migration", "host-log", "install-bind")
         count = 0
         for syntax in corpus:
             for position in positions:
@@ -212,116 +252,112 @@ class InvalidDeltaTest(unittest.TestCase):
                 value = " ".join(args)
                 for delta in (False, True):
                     with self.subTest(syntax=syntax, position=position, delta=delta), ExitStack() as stack:
+                        streams = [io.StringIO(), io.StringIO(), io.StringIO()]
+                        private_hashes = set()
                         if position == "install-bind":
                             p, rt, target, pin = stack.enter_context(pinned_install(value.encode(), delta=delta))
-                            plan = install.plan(p, rt)["plan"]
-                            with operation.public_output.scope(p):
-                                expected = operation.public_output.fingerprint(["install.bind", target], pin)
-                            self.assertEqual(plan["review"]["binds"][-1]["hmacSha256"], expected)
-                            self.assertEqual(plan["preconditions"]["bindCustody"][-1]["hmacSha256"], expected)
-                            self.assertNotIn(pin, json.dumps(plan))
-                            self.assertNotIn(marker, json.dumps(plan))
-                            count += 1
-                            continue
-                        case = fixture.ReleaseTest()
-                        case.setUp()
-                        stack.callback(case.doCleanups)
-                        p, rt = case.p, case.rt
-                        net = next(iter(p["networks"]))
-                        fixture.dedicated_profile(p)
-                        cmd = p["migration"]["command"]
-                        if delta:
-                            p["configDelta"] = {"aliases": {net: ["public-candidate"]}}
-                        old = rt.docs[fixture.OLD]
-                        if position == "host-log":
-                            old["HostConfig"]["LogConfig"] = {"Type": "splunk", "Config": {"splunk-token": marker}}
-                        elif position == "migration":
-                            cmd.extend(args)
-                        elif position in ("json-argument", "json-metadata"):
-                            nested = {"settings": [{"AccountKey": marker, "connection": value}]}
-                            if position == "json-argument":
-                                cmd.append("--settings=" + json.dumps(nested))
-                            else:
-                                p["migration"]["options"] = nested
-                        elif position == "alias":
-                            if delta:
-                                p["configDelta"]["aliases"][net] = [value]
-                            else:
-                                p["networks"][net]["aliases"].append(value)
-                                old["NetworkSettings"]["Networks"][net]["Aliases"].append(value)
-                        elif position in ("label", "label-argv"):
-                            old["Config"]["Labels"]["settings"] = value if position == "label" else json.dumps(args)
-                            if not delta:
-                                p["networks"][net]["aliases"].append(marker)
-                                old["NetworkSettings"]["Networks"][net]["Aliases"].append(marker)
-                            if delta:
-                                p["configDelta"]["aliases"][net] = [marker]
+                            root = Path(p["journal"])
+                            responses = self.install_bind_outputs(p, rt, target, pin, streams)
+                            private_hashes.update((pin.encode(), operation.digest(p).encode(), operation.digest(pin).encode()))
                         else:
-                            setting = json.dumps({"settings": [{"argument": value}]}) if position == "nested-json" else value
-                            before = setting if position == "env-before" else None
-                            after = setting if before is None else "replacement"
-                            if before is not None or not delta:
-                                old["Config"]["Env"].append("APP_SETTINGS=" + setting)
+                            case = fixture.ReleaseTest()
+                            case.setUp()
+                            stack.callback(case.doCleanups)
+                            p, rt = case.p, case.rt
+                            net = next(iter(p["networks"]))
+                            fixture.dedicated_profile(p)
+                            cmd = p["migration"]["command"]
                             if delta:
-                                p.update(envAllowlist=["APP_SETTINGS"], showValues=["APP_SETTINGS"])
-                                p["configDelta"]["env"] = [dict(name="APP_SETTINGS", before=before, after=after)]
-                        streams = [io.StringIO(), io.StringIO(), io.StringIO()]
-                        call, req = case.governed_dispatch()
-                        responses = []
-                        with redirect_stdout(streams[0]), redirect_stderr(streams[1]):
-                            plan = operation.plan(p, rt)
-                            responses.append(plan)
-                            if position in ("migration", "json-argument"):
-                                self.assertEqual(plan["reason"], "MIGRATION_COMMAND_NOT_ALLOWED")
-                            if position in ("json-metadata", "label", "label-argv"):
-                                self.assertEqual(plan["status"], "PLANNED", plan)
-                            if plan["status"] == "PLANNED":
-                                response = call(0)
-                                responses.append(response)
-                                with patch.object(sys, "path", list(sys.path)):
-                                    render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
-                                    render(streams[2], p["module"], "plan", response, "apply", None)
-                                req.update(phase="apply", digest=response["digest"])
-                                result = call(1)
-                                responses.append(result)
-                                self.assertEqual(result["status"], "GATED", result)
-                                responses.append(recovery.proposal(p, rt))
-                                render(streams[2], p["module"], "apply", result, "migrate", None)
-                                req.update(phase="migrate", digest=result["digest"])
-                                ready = call(2)
-                                self.assertEqual(ready["status"], "READY", ready)
-                                responses.append(ready)
-                                render(streams[2], p["module"], "migrate", ready, None, None)
-                                req.update(phase="rollback", run="2", digest=response["digest"])
-                                if delta:
-                                    returned = call(1)
-                                    self.assertEqual(returned["status"], "ROLLED_BACK", returned)
-                                    responses.append(returned)
+                                p["configDelta"] = {"aliases": {net: ["public-candidate"]}}
+                            old = rt.docs[fixture.OLD]
+                            if position == "host-log":
+                                old["HostConfig"]["LogConfig"] = {"Type": "splunk", "Config": {"splunk-token": value}}
+                            elif position == "migration":
+                                cmd.extend(args)
+                            elif position in ("json-argument", "json-metadata"):
+                                nested = {"settings": [{"AccountKey": marker, "connection": value}]}
+                                if position == "json-argument":
+                                    cmd.append("--settings=" + json.dumps(nested))
                                 else:
-                                    with self.assertRaises(mandate.Held) as denied:
-                                        call(1)
-                                    responses.append(str(denied.exception))
+                                    p["migration"]["options"] = nested
+                            elif position == "alias":
+                                if delta:
+                                    p["configDelta"]["aliases"][net] = [value]
+                                else:
+                                    p["networks"][net]["aliases"].append(value)
+                                    old["NetworkSettings"]["Networks"][net]["Aliases"].append(value)
+                            elif position in ("label", "label-argv"):
+                                old["Config"]["Labels"]["settings"] = value if position == "label" else json.dumps(args)
+                                if not delta:
+                                    p["networks"][net]["aliases"].append(marker)
+                                    old["NetworkSettings"]["Networks"][net]["Aliases"].append(marker)
+                                if delta:
+                                    p["configDelta"]["aliases"][net] = [marker]
                             else:
-                                responses.append(operation.apply(p, "a" * 64, rt))
-                                with self.assertRaises(mandate.Held) as denied:
-                                    call(0)
-                                responses.append(str(denied.exception))
+                                setting = json.dumps({"settings": [{"argument": value}]}) if position == "nested-json" else value
+                                before = setting if position == "env-before" else None
+                                after = setting if before is None else "replacement"
+                                if before is not None or not delta:
+                                    old["Config"]["Env"].append("APP_SETTINGS=" + setting)
+                                if delta:
+                                    p.update(envAllowlist=["APP_SETTINGS"], showValues=["APP_SETTINGS"])
+                                    p["configDelta"]["env"] = [dict(name="APP_SETTINGS", before=before, after=after)]
+                            call, req = case.governed_dispatch()
+                            responses = []
+                            with redirect_stdout(streams[0]), redirect_stderr(streams[1]):
+                                plan = operation.plan(p, rt)
+                                responses.append(plan)
+                                if position in ("migration", "json-argument"):
+                                    self.assertEqual(plan["reason"], "MIGRATION_COMMAND_NOT_ALLOWED")
+                                if position in ("json-metadata", "label", "label-argv", "host-log"):
+                                    self.assertEqual(plan["status"], "PLANNED", plan)
+                                if plan["status"] == "PLANNED":
+                                    response = call(0)
+                                    responses.append(response)
+                                    with patch.object(sys, "path", list(sys.path)):
+                                        render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
+                                        render(streams[2], p["module"], "plan", response, "apply", None)
+                                    req.update(phase="apply", digest=response["digest"])
+                                    result = call(1)
+                                    responses.append(result)
+                                    self.assertEqual(result["status"], "GATED", result)
+                                    responses.append(recovery.proposal(p, rt))
+                                    render(streams[2], p["module"], "apply", result, "migrate", None)
+                                    req.update(phase="migrate", digest=result["digest"])
+                                    ready = call(2)
+                                    self.assertEqual(ready["status"], "READY", ready)
+                                    responses.append(ready)
+                                    render(streams[2], p["module"], "migrate", ready, None, None)
+                                    req.update(phase="rollback", run="2", digest=response["digest"])
+                                    if delta:
+                                        returned = call(1)
+                                        self.assertEqual(returned["status"], "ROLLED_BACK", returned)
+                                        responses.append(returned)
+                                    else:
+                                        with self.assertRaises(mandate.Held) as denied:
+                                            call(1)
+                                        responses.append(str(denied.exception))
+                                else:
+                                    responses.append(operation.apply(p, "a" * 64, rt))
+                                    with self.assertRaises(mandate.Held) as denied:
+                                        call(0)
+                                    responses.append(str(denied.exception))
+                            root = case.root
+                            if position == "host-log":
+                                request = (operation.reviewed.request(p, old, {}) if delta else
+                                           operation.request(old, p["ci"]["imageId"], operation.provenance_labels(p)))
+                                private_hashes.add(operation.digest(request).encode())
+                            for document in (p, old, p.get("configDelta"), old["Config"]["Cmd"]):
+                                if marker in json.dumps(document):
+                                    private_hashes.add(operation.digest(document).encode())
                         outputs = [json.dumps(responses).encode(), *(s.getvalue().encode() for s in streams)]
-                        private_hashes = set()
-                        if position == "host-log":
-                            request = (operation.reviewed.request(p, old, {}) if delta else
-                                       operation.request(old, p["ci"]["imageId"], operation.provenance_labels(p)))
-                            private_hashes.add(operation.digest(request).encode())
-                        for document in (p, old, p.get("configDelta"), old["Config"]["Cmd"]):
-                            if marker in json.dumps(document):
-                                private_hashes.add(operation.digest(document).encode())
-                        for path in case.root.rglob("*.json"):
+                        for path in root.rglob("*.json"):
                             raw = path.read_bytes()
                             if marker.encode() in raw:
                                 private_hashes.add(hashlib.sha256(raw).hexdigest().encode())
                                 private_hashes.add(hashlib.md5(raw, usedforsecurity=False).hexdigest().encode())
                                 private_hashes.add(operation.digest(json.loads(raw)).encode())
-                        for path in case.root.rglob("*"):
+                        for path in root.rglob("*"):
                             if path.is_file() and (path.name in {"plan", "plan.json", "stage.json", "receipt.json",
                                     "ready-before-signing.json", "return-receipt.json"} or path.suffix in (".held", ".result")):
                                 outputs.append(path.read_bytes())
@@ -1111,6 +1147,33 @@ class FingerprintPerimeter(unittest.TestCase):
         self.assertIn("hmacSha256", spec[str(path)]["after"])
         self.assertNotIn(hashlib.sha256(data).hexdigest(), json.dumps(spec))
 
+
+    def test_DEP_58QM_03_manifest_tls_client_key(self):
+        from tools.module_release.fingerprints import mac
+        case = installer_fixture.Bootstrap()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        policy = json.loads(case.path.read_bytes())
+        module = policy["modules"]["onboarding"]
+        path = case.inst.ROOT / "lib" / "client-key"
+        module["readiness"]["tls"] = dict(address=next(iter(module["networks"].values()))["ipv4"],
+            serverName="fixture.local", caFile=str(path.with_name("ca")), clientCertFile=str(path.with_name("cert")),
+            clientKeyFile=str(path))
+        case.path.write_text(json.dumps(policy))
+        files = case.inst.inspect(case.path)
+        path.parent.mkdir(parents=True)
+        before, after = secrets.token_bytes(32), secrets.token_bytes(32)
+        path.write_bytes(before)
+        files[path] = after, 0o600
+        manifest = case.inst.manifest(files)
+        runs = {name: [profile["ci"][k] for k in ("repository", "runId", "runAttempt")]
+                for name, profile in policy["modules"].items()}
+        key = Path(policy["fingerprintKeyFile"]).read_bytes()
+        for side, data in (("before", before), ("after", after)):
+            row = manifest[str(path)][side]
+            self.assertEqual(set(row), {"mode", "hmacSha256"})
+            self.assertEqual(row["hmacSha256"], mac(key, [policy["commit"], runs], "lib/client-key", data.hex()))
+            self.assertNotIn(hashlib.sha256(data).hexdigest(), json.dumps(manifest))
 
     def test_DEP_58QL_11_installation_key_across_modules(self):
         import test_module_release_mcp as mcp

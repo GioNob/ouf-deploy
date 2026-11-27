@@ -119,6 +119,16 @@ class InstallTest(unittest.TestCase):
     def apply(self, stamp):
         return install.apply(self.p, stamp, self.rt)
 
+    def test_DEP_58QM_04_readiness_path_grammar(self):
+        for path in ("/", "/health/A-z_9.~/-"):
+            with self.subTest(path=path), patch.dict(self.p["readiness"], path=path):
+                self.assertEqual(install.plan(self.p, self.rt)["plan"]["review"]["readiness"]["path"], path)
+        for path in ("/health?access_token=private", "/health#private", "/health%20private",
+                     "relative", "/health\n", "/sp ace", None):
+            with self.subTest(path=path), patch.dict(self.p["readiness"], path=path):
+                self.assertEqual(install.plan(self.p, self.rt), {"status": "HELD", "reason": "READINESS_PATH_INVALID"})
+        self.assertEqual(self.rt.events, [])
+
     def test_plan_before_create_is_read_only_and_restartable(self):
         before = list(self.root.iterdir())
         stamp = self.plan()
