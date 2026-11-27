@@ -1,12 +1,14 @@
 """Portable PET for the G3 runtime consumers with real files and journal edges."""
 import copy
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stdout
+import io
 import json
 import os
 from pathlib import Path
 import struct
 import sys
 import tempfile
+import threading
 from types import SimpleNamespace
 import unittest
 from unittest.mock import MagicMock, patch
@@ -474,7 +476,19 @@ class Tick(unittest.TestCase):
             s.runtime = runtime
             observe = K.observe
             gate = K.submission_gate
+            def nft(argv, *, stdout, **kwargs):
+                self.assertEqual(s.api.held, ['common.lock'])
+                name = s.owner['kernel']['tableName']
+                if argv[1:] == ['-j', 'list', 'tables']:
+                    doc = {'nftables': [{'table': {'name': name, 'family': f}} for f in ('inet', 'bridge')]}
+                else:
+                    self.assertEqual(argv[1:], ['-j', 'list', 'table', argv[4], name])
+                    doc = s.api.current[argv[4]]
+                stdout.write(B.canonical(doc))
+                return SimpleNamespace(returncode=0)
             with patch.object(K, 'observe', side_effect=lambda *args, **kw: observe(*args, api=s.api, **kw)), \
+                    patch.object(s.api, 'executable', side_effect=lambda path, digest: path, create=True), \
+                    patch.object(K, 'subprocess', SimpleNamespace(run=nft, DEVNULL=K.subprocess.DEVNULL)), \
                     patch.object(K, 'submission_gate', side_effect=lambda *a: gate(*a, api=s.api)), \
                     patch.object(O.I, 'write_once', side_effect=lambda p, raw, report: Fake.write_once(s.api, p, raw)):
                 plan = O.proposal(args, O.observe(args))
@@ -514,16 +528,25 @@ class Tick(unittest.TestCase):
                     with self.assertRaises(OSError):
                         revoke()
                     sent.append(raw.split(b'\r\n', 1)[0])
+                released = threading.Event()
+                gate = K.submission_gate
+                @contextmanager
+                def admission(*context):
+                    with gate(*context) as verify:
+                        yield verify
+                    released.set()
                 def response():
+                    self.assertTrue(released.wait(5))
                     self.assertFalse(s.api.held)
                     reply = MagicMock()
                     reply.__enter__.return_value.status = 204
                     return reply
                 report = dict(O.COUNTERS)
                 with patch.object(s.api, 'lock', lambda p: exclusive(s.api, p)), patch.object(O, 'poll'), \
+                        patch.object(K, 'submission_gate', admission), \
                         patch.object(O.VR, 'apply', side_effect=lambda *a: revoke() if revoke_first else None), \
                         patch.object(K.socket, 'AF_UNIX', 1, create=True), \
-                        patch.object(K.socket, 'socket') as connect, \
+                        patch.object(K, 'EngineSocket') as connect, \
                         patch.object(K.http.client.HTTPConnection, 'getresponse', side_effect=response):
                     connect.return_value.sendall.side_effect = sendall
                     if revoke_first:
@@ -656,6 +679,14 @@ class Tick(unittest.TestCase):
                         self.assertRaisesRegex(ValueError, 'GENERATION_DRIFT'):
                     check()
 
+    def held_start(self, args):
+        args.apply, args.plan = True, False
+        with patch.object(O, 'arguments', return_value=args), patch.object(O.sys, 'platform', 'linux'), \
+                patch.object(O.os, 'umask'), patch.object(O.os, 'geteuid', return_value=0, create=True), \
+                patch.object(O.os, 'getegid', return_value=0, create=True), redirect_stdout(io.StringIO()) as stdout:
+            self.assertEqual(O.main([]), 1)
+        return json.loads(stdout.getvalue())
+
     def test_a3_34_head_and_seal_rechecked_before_each_post(self):
         from test_semantic_provider_operation_issuance import issue
         for effect in ('head', 'handles'):
@@ -681,15 +712,218 @@ class Tick(unittest.TestCase):
                             R.apply(s.coordinator['bootPointer'], 'unused', api=s.api)
                         change()
                     client.request.side_effect = send
-                    report = dict(O.COUNTERS)
+                    client.getresponse.return_value.__enter__.return_value.status = 204 if effect == 'head' else 503
+                    inspect = O.docker
+                    first, second = (plan['observation']['candidates'][r]['cid'] for r in O.ROLES)
+                    def docker(args, verb, cid, **kwargs):
+                        raw = inspect(args, verb, cid, **kwargs)
+                        if cid == first and client.getresponse.called:
+                            row, = json.loads(raw)
+                            row['State'].update(Status='running', Running=True, Pid=231)
+                            return B.canonical([row])
+                        return raw
                     with patch.object(s.api, 'lock', lambda p: exclusive(s.api, p)), \
                             patch.object(issue.boot, 'lock', side_effect=s.api.lock), \
                             patch.object(K, 'connect_request', side_effect=connect), patch.object(O.VR, 'apply'), \
-                            self.assertRaisesRegex((ValueError, O.A.OperationDenied),
-                                                   'AUTHORIZATION_CHANGED' if effect == 'head' else g.SEAL_DRIFT):
-                        O.apply(args, plan, report)
+                            patch.object(O, 'docker', docker):
+                        emitted = self.held_start(args)
+                    report = json.loads((Path(args.output_directory) / 'result.json').read_bytes())
+                    self.assertEqual(report, emitted)
+                    self.assertEqual(report['status'], 'HELD')
+                    reason = 'R3_AUTHORIZATION_CHANGED_DURING_OBSERVATION' if effect == 'head' else g.SEAL_DRIFT
                     self.assertEqual(client.request.call_count, sent_before_change)
                     self.assertEqual(report['dockerStartRequests'], sent_before_change)
+                    self.assertEqual(client.getresponse.call_count, sent_before_change)
+                    if sent_before_change:
+                        self.assertEqual(report['reason'], 'R3_PARTIAL_START_DENIED')
+                        self.assertEqual(report['deniedRequest'], {'role': 'southbound', 'reason': reason})
+                        errors = [] if effect == 'head' else [{'role': 'adapter', 'reason': 'R3_DOCKER_REQUEST_FAILED'}]
+                        self.assertEqual(report['requestErrors'], errors)
+                        partial = report['partialObservation']
+                        self.assertEqual([(r['cid'], r['postAttempted'], r['docker']['Status'], r['docker']['Pid'])
+                                          for r in (partial['adapter'], partial['southbound'])],
+                                         [(first, True, 'running', 231), (second, False, 'exited', 0)])
+                    else:
+                        self.assertEqual(report['reason'], reason)
+
+    def test_a3_34_partial_result_interrupted_before_file_or_directory_sync(self):
+        write_once = O.I.write_once
+        for failed_sync in ('file', 'directory'):
+            with self.subTest(failed_sync=failed_sync), self.start_plan() as (s, args, _):
+                result = Path(args.output_directory) / 'result.json'
+                client = MagicMock()
+                client.getresponse.return_value.__enter__.return_value.status = 204
+                def send(*args, **kwargs):
+                    s.api.current['bridge']['nftables'][1]['table']['handle'] += 1
+                client.request.side_effect = send
+                switch = O.I.native_switch()
+                fsync, sync = os.fsync, switch.sync
+                attempts = []
+                def file_sync(fd):
+                    if result.exists() and os.path.samestat(result.stat(), os.fstat(fd)):
+                        attempts.append('file')
+                        if failed_sync == 'file':
+                            raise OSError('interrupted file sync')
+                    fsync(fd)
+                def dir_sync(path):
+                    if path == result.parent and result.exists():
+                        attempts.append('directory')
+                        if failed_sync == 'directory':
+                            raise OSError('interrupted directory sync')
+                    sync(path)
+                with patch.object(O.I, 'write_once', write_once), patch.object(switch, 'sync', dir_sync), \
+                        patch.object(os, 'fsync', file_sync), patch.object(os, 'O_NOFOLLOW', getattr(os, 'O_NOFOLLOW', 0), create=True), \
+                        patch.object(os, 'fchmod', getattr(os, 'fchmod', lambda *_: None), create=True), \
+                        patch.object(O.VR, 'apply'), patch.object(K, 'connect_request', return_value=(client, '/fixture')):
+                    emitted = self.held_start(args)
+                self.assertEqual(attempts, ['file'] if failed_sync == 'file' else ['file', 'directory'])
+                self.assertEqual((emitted['status'], emitted['diagnosisSaved'], emitted['doNotRerunApply']),
+                                 ('HELD', False, True))
+                raw = result.read_bytes()
+                residue = json.loads(raw)
+                self.assertEqual((residue['reason'], residue['dockerStartRequests'], residue['partialReadbackTimeout']),
+                                 ('R3_PARTIAL_START_DENIED', 1, True))
+                self.assertFalse(residue['partialObservation']['southbound']['postAttempted'])
+                s.api.current['bridge']['nftables'][1]['table']['handle'] -= 1
+                retry = self.held_start(args)
+                self.assertEqual((retry['status'], retry['doNotRerunApply'], retry['dockerStartRequests']),
+                                 ('HELD', True, 0))
+                self.assertEqual(result.read_bytes(), raw)
+
+    def test_a3_34_response_collected_while_second_gate_denies(self):
+        for status in (204, 503):
+            with self.subTest(status=status), self.start_plan() as (s, args, _):
+                now = [0.]
+                def advance(seconds):
+                    now[0] += seconds
+                clock = SimpleNamespace(monotonic=lambda: now[0], sleep=advance)
+                collected = threading.Event()
+                first, second = MagicMock(), MagicMock()
+                reply = first.getresponse.return_value
+                reply.__enter__.return_value.status = status
+                reply.__exit__.side_effect = lambda *_: collected.set()
+                def receive():
+                    now[0] = .1
+                    return reply
+                first.getresponse.side_effect = receive
+                gate = K.submission_gate
+                @contextmanager
+                def slow_gate(*context):
+                    with gate(*context) as verify:
+                        def check():
+                            if first.request.called:
+                                self.assertTrue(collected.wait(5))
+                                now[0] = 1.1
+                                s.api.current['bridge']['nftables'][1]['table']['handle'] += 1
+                            verify()
+                        yield check
+                with patch.object(O, 'time', clock), patch.object(K, 'time', clock), \
+                        patch.object(K, 'submission_gate', slow_gate), patch.object(O.VR, 'apply'), \
+                        patch.object(K, 'connect_request', side_effect=[(first, '/first'), (second, '/second')]):
+                    emitted = self.held_start(args)
+                report = json.loads((Path(args.output_directory) / 'result.json').read_bytes())
+                self.assertEqual(report, emitted)
+                self.assertEqual((report['status'], report['reason']), ('HELD', 'R3_PARTIAL_START_DENIED'))
+                self.assertEqual(first.sock.response_deadline, 1.)
+                self.assertEqual(report['deniedRequest'], {'role': 'southbound', 'reason': g.SEAL_DRIFT})
+                self.assertEqual(report['requestErrors'], [] if status == 204 else
+                                 [{'role': 'adapter', 'reason': 'R3_DOCKER_REQUEST_FAILED'}])
+                second.request.assert_not_called()
+
+    def test_a3_34_each_post_deadline_starts_at_its_send(self):
+        for first_end, second_end, failures in ((.99, 1.10, []), (.99, 1.26, ['southbound']),
+                                                (1.26, 1.1, ['adapter'])):
+            with self.subTest(first_end=first_end, second_end=second_end), self.start_plan() as (_, args, plan):
+                # Read completion advances only the clock of the corresponding
+                # worker. The second send occurs at .25 regardless of read order.
+                clock = threading.local()
+                clock.now = 0.
+                clients = [MagicMock(), MagicMock()]
+                reading = threading.Barrier(2, timeout=5)
+                def first_send(*args, **kwargs):
+                    clock.now = .25
+                clients[0].request.side_effect = first_send
+                def response(end):
+                    reading.wait()
+                    clock.now = end
+                    reply = MagicMock()
+                    reply.__enter__.return_value.status = 204
+                    return reply
+                clients[0].getresponse.side_effect = lambda: response(first_end)
+                clients[1].getresponse.side_effect = lambda: response(second_end)
+                report = dict(O.COUNTERS)
+                with patch.object(O, 'time', SimpleNamespace(monotonic=lambda: getattr(clock, 'now', .25))), \
+                        patch.object(K, 'connect_request', side_effect=[(c, '/fixture') for c in clients]), \
+                        patch.object(O.VR, 'apply'), patch.object(O, 'poll'):
+                    if failures:
+                        with self.assertRaisesRegex(O.A.OperationDenied, 'R3_DOCKER_REQUEST_FAILED'):
+                            O.apply(args, plan, report)
+                    else:
+                        O.apply(args, plan, report)
+                clients[0].sock.settimeout.assert_called_once_with(.75)
+                clients[1].sock.settimeout.assert_called_once_with(1.)
+                self.assertEqual([c.sock.response_deadline for c in clients], [1., 1.25])
+                self.assertEqual(report['requestErrors'],
+                                 [{'role': r, 'reason': 'R3_DOCKER_REQUEST_TIMEOUT'} for r in failures])
+
+    def test_a3_34_g3_poll_budgets_each_nft_read_under_lock(self):
+        with self.start_plan() as (s, args, plan):
+            now = [0.]
+            def advance(seconds):
+                now[0] += seconds
+            clock = SimpleNamespace(monotonic=lambda: now[0], sleep=advance)
+            reads = []
+            run = K.subprocess.run
+            def nft(argv, **kwargs):
+                reads.append((argv[3:], kwargs['timeout']))
+                advance(.25)
+                return run(argv, **kwargs)
+            with patch.object(O, 'time', clock), patch.object(K, 'time', clock), \
+                    patch.object(K.subprocess, 'run', nft):
+                latest = O.observe(args, output_exists=True, deadline=1.)
+            name = s.owner['kernel']['tableName']
+            self.assertEqual(reads, [(['tables'], 1.), (['table', 'inet', name], .75),
+                                     (['table', 'bridge', name], .5)])
+            self.assertEqual(latest['leaseKernel'], plan['observation']['leaseKernel'])
+
+    def test_a3_34_g3_poll_requires_completed_observation_within_window(self):
+        from test_semantic_provider_r3_operate import arguments, observation, successful
+        args = arguments()
+        before = observation()
+        before['leaseKernel'] = {'generation': 3, 'sealSha256': HEAD}
+        after = successful('start', before)
+        after['leaseKernel'] = before['leaseKernel']
+        self.assertTrue(O.reached(args, before, after))
+        for end in (.99, 1.01):
+            with self.subTest(end=end):
+                now = [0.]
+                def observe(*_, deadline, **kwargs):
+                    self.assertEqual(deadline, 1.)
+                    now[0] = end
+                    return after
+                report = {}
+                with patch.object(O, 'time', SimpleNamespace(monotonic=lambda: now[0])), \
+                        patch.object(O, 'observe', observe):
+                    if end < 1:
+                        O.poll(args, before, report)
+                    else:
+                        with self.assertRaisesRegex(O.A.OperationDenied, 'R3_READBACK_TIMEOUT'):
+                            O.poll(args, before, report)
+                self.assertEqual(report['lastObservation'], after)
+
+    def test_a3_34_header_fragments_share_the_post_deadline(self):
+        with K.EngineSocket() as sock, patch.object(K.socket.socket, 'recv_into', return_value=1) as recv:
+            sock.response_deadline = 5
+            with patch.object(K.time, 'monotonic', side_effect=[1, 4.75, 5]):
+                with sock.makefile('rb', buffering=0) as stream:
+                    buffer = bytearray(1)
+                    self.assertEqual(stream.readinto(buffer), 1)
+                    self.assertEqual(sock.gettimeout(), 4)
+                    self.assertEqual(stream.readinto(buffer), 1)
+                    self.assertEqual(sock.gettimeout(), .25)
+                    with self.assertRaises(TimeoutError):
+                        stream.readinto(buffer)
+            self.assertEqual(recv.call_count, 2)
 
     def test_a3_34_generation_writer_contends_during_both_posts(self):
         from tools.semantic_lease_kernel_migration import native

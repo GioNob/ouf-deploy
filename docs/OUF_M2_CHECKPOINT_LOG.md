@@ -725,3 +725,11 @@ Le prove A3-26/27 interrompono le pubblicazioni tra scrittura, rename e sync. A3
 ## 25 novembre 2026 · sprint-03/63k-c · ammissione Docker
 
 A3-33 copre il plan g2 durante lo switch a g3. A3-34 copre testa, sigillo e contesa dei writer alla frontiera dei due POST. A3-35 interrompe il CAS del puntatore prima del sync della directory e verifica la ripresa di start e tick. La qualifica CI Linux resta aperta. [Contratto e prove A3](OUF_SEMANTIC_LEASE_KERNEL_G3.md)
+
+## 27 novembre 2026 · sprint-03/63k-d · diniego parziale e contesa dell’emittente
+
+A3-34 verifica il risultato su disco dopo il diniego sul secondo POST e la scadenza di ogni risposta dal rispettivo invio. La prova dell’emittente ripresenta a `execute` lo stesso digest dopo la contesa. La sonda C verifica i byte Git della consegna fissata e i due digest candidati nella worktree. La qualifica Linux D-082 resta aperta. [Contratto operate](OUF_SEMANTIC_PROVIDER_R3_OPERATE.md#azioni-e-traguardi)
+
+## 27 novembre 2026 · sprint-03/63k-e · scadenze e replay g2
+
+A3-34 conserva l’esito HTTP 204 o 503 arrivato a 0,1 s quando il secondo gate nega a 1,1 s. Con una finestra di 1 s il polling conferma l’osservazione a 0,99 s e conserva quella a 1,01 s nella diagnosi di timeout. Le fixture dei cinque replay g2 esercitano l’emittente e l’invio HTTP al socket Engine. [Prove temporali](../tests/test_semantic_lease_kernel_g3_tick.py) · [Replay g2](../tests/test_semantic_provider_r3_ceiling_lifecycle.py)

@@ -252,7 +252,7 @@ def observe(args, *, output_exists=False, deadline=None, for_submission=False):
         kernel_state['leaseKernel'] = lease_kernel_state(owner, journal, tables,
             lambda family, name: decode(command(args.nft, args.nft_sha256,
                 ['-j', 'list', 'table', family, name], remaining())),
-            coordinator=sup['coordinator'], head=head)
+            coordinator=sup['coordinator'], head=head, deadline=deadline)
     present = {}
     for role in ROLES:
         name = head["authorization"]["roles"][role]["tableName"]
@@ -282,7 +282,7 @@ def observe(args, *, output_exists=False, deadline=None, for_submission=False):
     return snapshot
 
 
-def lease_kernel_state(owner, journal, tables, read, *, coordinator=None, head=None):
+def lease_kernel_state(owner, journal, tables, read, *, coordinator=None, head=None, deadline=None):
     """Start gate only: no nft writes, seal adoption or migration effects."""
     kernel = owner['kernel']
     generation = owner.get('generation', kernel.get('generation'))
@@ -292,7 +292,7 @@ def lease_kernel_state(owner, journal, tables, read, *, coordinator=None, head=N
         require(type(owner.get('generation')) is int and owner['generation'] == 3
                 and coordinator is not None and head is not None, 'G3_BINDING')
         try:
-            return lease_kernel_g3.observe(owner, journal, coordinator, head)
+            return lease_kernel_g3.observe(owner, journal, coordinator, head, deadline=deadline)
         except (OSError, KeyError, ValueError, TypeError) as exc:
             code = str(exc) if isinstance(exc, ValueError) and CODE.fullmatch(str(exc)) else 'G3_EVIDENCE'
             raise A.OperationDenied(code) from exc
@@ -418,19 +418,57 @@ def requests(args, before):
             if args.action != "stop" or rows[role]["docker"]["Running"]]
 
 
+def inspect_partial_start(args, before, report, deadline):
+    # Even if the signed head or the kernel evidence now denies a full observation,
+    # Docker can still report what happened to the CIDs in the approved plan.
+    partial = report.setdefault("partialObservation", {})
+    for role in ROLES:
+        cid = before["candidates"][role]["cid"]
+        row = partial.setdefault(role, {"cid": cid, "postAttempted": role != report["deniedRequest"]["role"]})
+        try:
+            remaining = deadline - time.monotonic()
+            require(remaining > 0, "R3_READBACK_TIMEOUT")
+            row["docker"] = docker_fields(docker(args, "inspect", cid, timeout=min(30, remaining)), cid)
+            row.pop("observationError", None)
+        except Exception as error:
+            row["observationError"] = error_fields(error)
+    return (all("observationError" not in row for row in partial.values())
+            and any(row["postAttempted"] and row["docker"]["Status"] in {"running", "restarting"}
+                    for row in partial.values()))
+
+
 def poll(args, before, report):
     deadline = time.monotonic() + args.timeout_seconds
+    denied = report.get("deniedRequest")
     while True:
+        partial_started = (denied and inspect_partial_start(args, before, report, deadline)
+                           and time.monotonic() <= deadline)
         try:
             latest = observe(args, output_exists=True, deadline=deadline)
             report["lastObservation"] = latest
             report.pop("observationError", None)
-            if reached(args, before, latest):
+            if reached(args, before, latest) and time.monotonic() <= deadline:
                 return
         except Exception as error:
             report["observationError"] = error_fields(error)
-        require(time.monotonic() < deadline, "R3_READBACK_TIMEOUT")
+        if partial_started:
+            return
+        if time.monotonic() >= deadline:
+            if denied:
+                report["partialReadbackTimeout"] = True
+                return
+            raise A.OperationDenied("R3_READBACK_TIMEOUT")
         time.sleep(min(.2, max(0, deadline - time.monotonic())))
+
+
+def read_start_response(client, deadline):
+    remaining = deadline - time.monotonic()
+    require(remaining > 0, 'R3_DOCKER_REQUEST_TIMEOUT')
+    client.sock.response_deadline = deadline
+    client.sock.settimeout(remaining)
+    with client.getresponse() as response:
+        require(time.monotonic() < deadline, 'R3_DOCKER_REQUEST_TIMEOUT')
+        require(response.status == 204, 'R3_DOCKER_REQUEST_FAILED')
 
 
 def submit_governed(args, before, calls, counter, report):
@@ -439,7 +477,7 @@ def submit_governed(args, before, calls, counter, report):
     pending = []
     latest, context = observe(args, output_exists=True, for_submission=True)
     preconditions(args, latest)
-    with ExitStack() as connections:
+    with ExitStack() as connections, ThreadPoolExecutor(max_workers=len(calls)) as readers:
         with lease_kernel_g3.submission_gate(*context) as verify:
             require(latest['leaseKernel']['generation'] == before['leaseKernel']['generation'],
                     'R3_LEASE_KERNEL_GENERATION_DRIFT')
@@ -452,19 +490,25 @@ def submit_governed(args, before, calls, counter, report):
                 # No socket bytes or attempted-POST count until admission succeeds.
                 try:
                     verify()
-                except (OSError, KeyError, ValueError, TypeError) as exc:
-                    code = str(exc) if isinstance(exc, ValueError) and CODE.fullmatch(str(exc)) else 'G3_EVIDENCE'
-                    raise A.OperationDenied(code) from exc
+                except Exception as exc:
+                    code = (str(exc) if isinstance(exc, (A.OperationDenied, ValueError))
+                            and CODE.fullmatch(str(exc)) else 'G3_EVIDENCE')
+                    if not report[counter]:
+                        raise A.OperationDenied(code) from exc
+                    report["deniedRequest"] = {"role": role, "reason": code}
+                    break
                 report[counter] += 1
+                deadline = time.monotonic() + args.timeout_seconds
                 try:
                     client.request('POST', resource, body=b'')
-                    pending.append((role, client))
+                    pending.append((role, readers.submit(read_start_response, client, deadline)))
                 except Exception as error:
                     errors.append({'role': role, **error_fields(error)})
-        for role, client in pending:
+        for role, response in pending:
             try:
-                with client.getresponse() as response:
-                    require(response.status == 204, 'R3_DOCKER_REQUEST_FAILED')
+                response.result()
+            except TimeoutError:
+                errors.append({'role': role, 'reason': 'R3_DOCKER_REQUEST_TIMEOUT'})
             except Exception as error:
                 errors.append({'role': role, **error_fields(error)})
     return errors
@@ -522,6 +566,7 @@ def apply(args, plan, report):
                 errors.append({"role": role, **error})
     report["requestErrors"] = errors
     poll(args, before, report)
+    require("deniedRequest" not in report, "R3_PARTIAL_START_DENIED")
     require(not errors, "R3_DOCKER_REQUEST_FAILED")
     report.update(status=SUCCESS[args.action])
 

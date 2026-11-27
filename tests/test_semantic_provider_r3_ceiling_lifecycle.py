@@ -1,15 +1,16 @@
 """One signed supersession, stopped upgrade and start using portable host boundaries."""
 from contextlib import ExitStack, nullcontext
+import io
 import os
 from pathlib import Path, PurePosixPath
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from test_semantic_provider_r3_ceiling import C, with_ceiling, v27
 from test_semantic_provider_operation_issuance import issue, gate
-from tools.semantic_provider_r3 import install_common as I, operate as O, upgrade as U
+from tools.semantic_provider_r3 import install_common as I, lease_kernel_g3 as K, operate as O, upgrade as U
 
 V12 = v27.v25.v24.v20.V12
 AUTH = v27.overlay.AUTH
@@ -185,7 +186,8 @@ class Replay(unittest.TestCase):
                 (issue, 'load_mandates', lambda *_: mapped), (issue.AUTH, 'absolute', PurePosixPath),
                 (I, 'coordinator_state', lambda *_: {'state': 'QUIESCED'}),
                 (issue, 'authorization_head', lambda *_: previous), (issue, 'directory', lambda *a, **kw: identity),
-                (issue, 'chain_lock', lambda *_: 1), (issue, 'os', host), (issue, 'write_once', write),
+                (issue, 'chain_lock', lambda *_: 1), (issue, 'publication_lock', lambda *_: nullcontext()),
+                (issue, 'os', host), (issue, 'write_once', write),
                 (issue, 'ENV', self.m.ENV), (issue.AUTH, 'public_bytes', lambda path, _: path.read_bytes()),
                 (issue.AUTH, 'attributes', lambda stat: stat), (gate, 'observe', lambda *_: {}),
                 (gate, 'operation_locks', lambda *_: nullcontext())):
@@ -372,14 +374,23 @@ class Replay(unittest.TestCase):
             return disk[str(path)], ()
         self.switch.custody = custody
 
-        def docker(args, verb, cid, **kwargs):
-            if verb == 'start':
+        def engine_socket(*_):
+            sock = MagicMock()
+            def send(raw):
+                method, resource, version = raw.split(b'\r\n', 1)[0].decode('ascii').split()
+                _, api, containers, cid, action = resource.split('/')
+                self.assertEqual((method, api, containers, action, version),
+                                 ('POST', 'v1.44', 'containers', 'start', 'HTTP/1.1'))
                 self.assertIn(cid, cfg['candidates'])
                 self.assertNotIn(cid, rows)
                 rows[cid] = dict(epoch=1, bootId='boot', state='STARTED', generation=dict(pid=101),
                                  failure=None, configurationHash=head['authorization']['runtimeConfigurationSha256'],
                                  authorizationSha256=head['sha256'])
-                return b''
+            sock.sendall.side_effect = send
+            sock.makefile.return_value = io.BytesIO(b'HTTP/1.1 204 No Content\r\n\r\n')
+            return sock
+
+        def docker(args, verb, cid, **kwargs):
             self.assertEqual(verb, 'inspect')
             live = cid in rows
             return C.canonical([dict(Id=cid, State=dict(Pid=101 if live else 0, Running=live,
@@ -400,12 +411,31 @@ class Replay(unittest.TestCase):
 
         self.patch(O, 'docker', docker)
         self.patch(O, 'command', command)
+        # The start gate reads the same signed chain and g2 selection as the replay.
+        pointer = C.document(inputs['files']['bootPointer'])
+        disk['/etc/ouf/coordinated-boot-installation.json'] = inputs['files']['bootPointer']
+        disk[pointer['receiptFile']] = inputs['files']['generationReceipt']
+        disk[pointer['observerFile']] = V12.blob(K.boot.__file__)
+        signature = f'{self.sequence}.signature.json'
+        disk[str(root / 'authorization' / signature)] = (self.chain.directory / signature).read_bytes()
+        def private(path, expected=None):
+            raw, _ = custody(PurePosixPath(Path(path).as_posix()), 0o600)
+            if expected is not None:
+                self.assertEqual(C.sha(raw), expected)
+            return raw
+        self.patch(K.boot, 'private', private)
+        self.patch(K.boot, 'lock', lambda _: nullcontext())
+        self.patch(K.journal, 'sync_verified', lambda api, path, raw, reason: self.assertEqual(private(path), raw))
+        self.patch(K.boot, 'command', lambda binding, argv: command(binding['path'], binding['sha256'], argv, 30))
+        self.enterContext(patch.object(K.socket, 'AF_UNIX', 1, create=True))
+        self.patch(K, 'EngineSocket', engine_socket)
         plan = O.proposal(args, O.observe(args))
         args.plan_sha256 = plan['planSha256']
         report = dict(O.COUNTERS)
         O.apply(args, plan, report)
         self.assertEqual((report['status'], report['dockerStartRequests'], report['signaturesIssued']),
                          ('SEMANTIC_PROVIDER_R3_STARTED', 2, 0))
+        self.assertEqual(set(rows), set(cfg['candidates']))
         self.assertEqual(guard.sequence, self.sequence)
         self.assertEqual('semanticEpoch' in report['lastObservation']['supervisor'], cap != 24)
 

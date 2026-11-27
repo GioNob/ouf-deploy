@@ -6,6 +6,10 @@ Il passo 2b aggiunge il rinnovo sotto lock e il controllo del sigillo in `operat
 
 La revisione 63k-c applica la DN-A-3. Emittente della testa, riconciliatore del sigillo, migrazione e invio Docker condividono il lock del coordinatore. Prima di ciascun POST il gate conferma il puntatore su disco, la testa firmata e l’istanza nft. La ricevuta CI per A3-29 e la chiusura D-082 sono pendenti.
 
+La revisione 63k-d conserva la risposta del primo CID e il readback dopo il diniego sul secondo. Ogni POST usa la propria scadenza dall’invio. In successione la contesa sul lock comune precede il claim, così il medesimo plan resta utilizzabile al rilascio del lock. [Contratto operate](OUF_SEMANTIC_PROVIDER_R3_OPERATE.md#azioni-e-traguardi)
+
+La revisione 63k-e raccoglie ogni risposta Engine dal rispettivo invio. Nel polling g3 l’inventario nft e le letture `inet` e `bridge` condividono la scadenza della finestra. Il controllo finale rifiuta un’osservazione tardiva anche quando entrambi i CID risultano avviati. [Prove A3-34](../tests/test_semantic_lease_kernel_g3_tick.py)
+
 ## Sprint 03/38 · approvazioni dei rilasci
 
 Le prove offline dei sette workflow verificano l’annotazione **Da approvare** e la sezione **Cosa approvi** nel job precedente a ogni review. Per Onboarding, MCP, UDP e Ingestion il task 38b mostra in entrambe le sedi gli ID delle immagini candidata e predecessore prima di approvare `apply` o `migrate`. La prova dell’esecutore copre anche il recupero e il predecessore selezionato dalla ricevuta del rilascio precedente. [Prove dei client](../tests/test_release_approval.py) · [Prove dell’esecutore](../tests/test_module_release.py)

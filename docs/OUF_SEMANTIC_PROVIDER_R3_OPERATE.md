@@ -100,7 +100,9 @@ Esiti: `SEMANTIC_PROVIDER_R3_STARTED`,
 `SEMANTIC_PROVIDER_R3_STOPPED`. Gli stati terminali sono DELETED, FAILED,
 ABANDONED. Per restart-one è richiesto specificamente DELETED del precedente.
 
-Il timeout limita ciascuna richiesta Docker; dopo le richieste si apre una
+Ogni richiesta Docker ha una scadenza monotona che decorre dal suo invio.
+La lettura di una risposta usa il tempo residuo della richiesta e accetta la
+risposta solo entro quella scadenza. Dopo le richieste si apre una
 finestra di polling della stessa durata. Le chiamate osservative nel polling
 ricevono il tempo residuo, fino a 30 secondi ciascuna. Nessun retry delle
 richieste Docker. Un errore di richiesta non produce un successo anche se il
@@ -109,6 +111,14 @@ readback raggiunge il traguardo. Se il traguardo non arriva, HELD con
 completa (epoche/failure, Docker, supervisore, lease e tabelle). Errori di
 lettura intermedi conservano l'ultima lettura completa e sono distinti in
 `observationError`; non diventano assenza di epoca o di tabella.
+
+Se il gate nega il secondo POST, l'esito è `HELD/R3_PARTIAL_START_DENIED`.
+`deniedRequest` identifica il ruolo e il motivo. L'operatore trova gli errori
+della prima risposta in `requestErrors` e l'ultima osservazione completa in
+`lastObservation`. Durante il polling, `partialObservation` registra per ciascun
+CID approvato il tentativo di POST e lo stato restituito da Docker, anche in
+caso di deriva del sigillo. Un errore di inspect compare sul ruolo interessato.
+Se la finestra termina senza osservare l'avvio, `partialReadbackTimeout` vale true.
 
 Non c'è stop automatico dopo un fallimento. Per lo stop compensativo occorre
 un nuovo plan `--action stop` e una root distinta. Se un fratello non è mai

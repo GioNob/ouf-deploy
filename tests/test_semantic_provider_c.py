@@ -376,21 +376,31 @@ class Contracts(unittest.TestCase):
         import hashlib
         import re
         script = (ROOT / "ops/vps/c-probe.sh").read_text()
-        self.assertRegex(script, r"(?m)^C=[0-9a-f]{40}$")
+        pin = re.search(r"(?m)^C=([0-9a-f]{40})$", script)[1]
+        self.assertNotEqual(pin, "0" * 40)
         self.assertIn("&& $C != 0000000000000000000000000000000000000000", script)
         rows = re.findall(r"^  fetch (\S+) ([0-9a-f]{64})$", script, re.M)
         self.assertGreater(len(rows), 3)
+        candidates = json.loads((ROOT / "tests/fixtures/r3-g3-candidate-source-sha256.json").read_bytes())
+        self.assertLessEqual(candidates.keys(), dict(rows).keys())
         with tempfile.TemporaryDirectory() as temp:
             for path, expected in rows:
-                blob = subprocess.run(["git", "show", "HEAD:" + path], cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-                raw = blob.stdout if blob.returncode == 0 else (ROOT / path).read_bytes()
+                raw = subprocess.check_output(["git", "cat-file", "blob", f"{pin}:{path}"], cwd=ROOT)
                 self.assertEqual(hashlib.sha256(raw).hexdigest(), expected, path)
+                # The two evolving host tools have separate candidate pins until release.
+                current = (ROOT / path).read_bytes().replace(b"\r\n", b"\n")
+                self.assertEqual(hashlib.sha256(current).hexdigest(), candidates.get(path, expected), path)
                 target = Path(temp) / path
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(raw)
-            run = subprocess.run([sys.executable, "-I", "-B", str(Path(temp) / "scripts/probe-semantic-provider-c.py"), "--help"],
-                                 capture_output=True, timeout=20)
-            self.assertEqual(run.returncode, 0, run.stderr.decode())
+            command = [sys.executable, "-I", "-B", str(Path(temp) / "scripts/probe-semantic-provider-c.py"), "--help"]
+            for version in ("pinned", "candidate"):
+                if version == "candidate":
+                    for path in candidates:
+                        (Path(temp) / path).write_bytes((ROOT / path).read_bytes().replace(b"\r\n", b"\n"))
+                with self.subTest(version=version):
+                    run = subprocess.run(command, capture_output=True, timeout=20)
+                    self.assertEqual(run.returncode, 0, run.stderr.decode())
 
     def test_container_dns_does_not_use_host_resolver(self):
         class DnsSocket:

@@ -8,6 +8,7 @@ on:
       - scripts/prepare-semantic-provider-installation.py
       - ops/vps/c-probe.sh
       - tests/test_semantic_provider_c.py
+      - tests/fixtures/r3-g3-candidate-source-sha256.json
       - docs/OUF_SEMANTIC_PROVIDER_C_PROBE.md
       - .github/workflows/semantic-provider-c-probe.yml
   workflow_dispatch:
@@ -18,7 +19,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with: {persist-credentials: false}
+        with: {persist-credentials: false, fetch-depth: 0}
       - name: Portable contracts and loopback TLS (synthetic credentials)
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_c.py -v
       - name: Runbook syntax
