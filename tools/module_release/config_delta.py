@@ -4,7 +4,8 @@ import json
 from pathlib import PurePosixPath
 import re
 
-from .public_output import fingerprint
+from .contract import digest
+from .public_output import fingerprint, run_fields
 from .profile_options import INLINE_SECRET, credential_name, delta_has_inline_secret, inline_secret
 from .contract import NAME, matches
 from .frame_spec import SpecHeld, check_file_env, disjoint, validate_bind, validate_env
@@ -159,12 +160,18 @@ def approval_lines(delta, show_values=()):
     check(not delta_has_inline_secret(profile), INLINE_SECRET)
     env = delta.get("env", [])
 
+    private = bool(run_fields() or delta.get("binds") or any(r["name"].endswith("_FILE") for r in env))
+    algorithm = "hmac-sha256" if private else "sha256"
+
+    def mark(field, value):
+        return fingerprint(field, value) if private else digest([field, value])
+
     def display(name, side, value):
         validate_value(name, value)
         if (side == "after" and len(env) == 1 and name == "SPRING_FLYWAY_ENABLED" and name in show_values
                 and value in (None, "true", "false", "enabled", "disabled")):
             return "assente" if value is None else json.dumps(value)
-        return "hmac-sha256 " + fingerprint(["env", name, side], value)
+        return algorithm + " " + mark(["env", name, side], value)
 
     lines = []
     for row in env:
@@ -177,7 +184,7 @@ def approval_lines(delta, show_values=()):
         content = fingerprint(["bind.content", bind["target"]], bind["sha256"])
         lines.append(f"Bind destinazione hmac-sha256 {target} · contenuto hmac-sha256 {content}")
     for network, additions in sorted(delta.get("aliases", {}).items()):
-        net = fingerprint("alias.network", network)
+        net = mark("alias.network", network)
         for alias in additions:
-            lines.append(f"Alias hmac-sha256 {fingerprint(['alias', network], alias)} · rete hmac-sha256 {net}")
+            lines.append(f"Alias {algorithm} {mark(['alias', network], alias)} · rete {algorithm} {net}")
     return lines

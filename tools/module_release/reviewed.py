@@ -51,7 +51,7 @@ def review_lines(p):
 def bind_plan(p, body, old):
     body["createPlanLabel"] = OWNER_LABEL
     if "configDelta" in p:
-        body.update(configDeltaSha256=op.public_output.fingerprint("configDelta", p["configDelta"]),
+        body.update(configDeltaSha256=op.public_output.binding("configDelta", p["configDelta"]),
                     approvalLines=review_lines(p))
     # Re-planning after an interruption before stop may observe exactly the same generation.
     directory = Path(p["journal"])
@@ -182,7 +182,7 @@ def stable(doc):
     # Docker normalizes explicit false (CREATE) back to null on first start.
     if host.get("OomKillDisable") is False:
         host["OomKillDisable"] = None
-    return op.public_output.binding("stable-frame", [doc["Id"], doc["Image"], frame.configuration(doc), host, doc["Mounts"], doc["Path"], doc["Args"]])
+    return op.public_output.observed_binding("stable-frame", doc, [doc["Id"], doc["Image"], frame.configuration(doc), host, doc["Mounts"], doc["Path"], doc["Args"]])
 
 
 def endpoints(old, doc, *, candidate=False):
@@ -535,7 +535,7 @@ def return_run(p, stamp, runtime, *, publication=None, approved_plan=None, publi
         require(plan and digest(plan) == stamp and plan["module"] == p["module"] and
                 plan["profileSha256"] == op.public_output.profile_binding(p, plan) and plan["createPlanLabel"] == OWNER_LABEL, "RETURN_PLAN_CHANGED")
         if "configDelta" in p:
-            require(plan.get("configDeltaSha256") == op.public_output.fingerprint("configDelta", p["configDelta"]), "RETURN_PLAN_CHANGED")
+            require(plan.get("configDeltaSha256") == op.public_output.binding("configDelta", p["configDelta"]), "RETURN_PLAN_CHANGED")
         rt = runtime or op.Docker(p)
         if (root / "baseline.private.json").is_file():
             old = op.load_predecessor(p, rt, root)
@@ -760,7 +760,7 @@ def predecessor_guard(old):
 def recovery_review(p, root, body, proposal, old):
     if "configDelta" in p:
         delta = p["configDelta"]
-        require(op.public_output.fingerprint("configDelta", delta) == body["configDeltaSha256"], "RECOVERY_PROFILE_CHANGED")
+        require(op.public_output.binding("configDelta", delta) == body["configDeltaSha256"], "RECOVERY_PROFILE_CHANGED")
         proposal["approvalLines"] = review_lines(p)
     for claim in root.glob("restore-after-*/*.json"):
         name = claim.relative_to(root).as_posix()

@@ -22,11 +22,11 @@ class Release(unittest.TestCase):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name)
-        key = self.root / ".release-hmac.key"
+        key = Path(self.enterContext(tempfile.TemporaryDirectory())) / ".release-hmac.key"
         key.touch(mode=0o600)
         key.write_bytes(os.urandom(32))
         p = self.p = json.loads((ROOT / "tests/fixtures/module-release/mcp.example.json").read_bytes())
-        p.update(inbox=temp.name, journal=temp.name, dockerSocket=str(self.root / "docker.sock"),
+        p.update(fingerprintKeyFile=str(key), inbox=temp.name, journal=temp.name, dockerSocket=str(self.root / "docker.sock"),
                  nsenter=str(self.root / "nsenter"), oldImage="sha256:" + "a"*64)
         next(iter(p["networks"].values()))["ipv4"] = "192.0.2.2"
         p["readiness"]["attempts"] = 2
@@ -39,7 +39,7 @@ class Release(unittest.TestCase):
                    "schema": ["relation", "column"]}
         self.rt.database = lambda old: copy.deepcopy(self.db)
         self.cfg = dict(repositoryId=10, environmentId=20, branch="protected", environment="test",
-                        reviewerIds=[30], commit="a"*40, runner="fixture", modules={"mcp": p})
+                        reviewerIds=[30], commit="a"*40, runner="fixture", fingerprintKeyFile=self.p.get("fingerprintKeyFile"), modules={"mcp": p})
         self.req = dict(run="1", attempt="1", commit=self.cfg["commit"], operation="module-release",
                         module="mcp", phase="plan")
         self.req["digest"] = mandate.intent(self.req)

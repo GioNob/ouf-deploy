@@ -536,3 +536,69 @@ def validate(p):
 def package(p, target=None, *, transport=False, migrations_field=None, image_defaults=None):
     validate_profile_options(p)
     return _package(p, target, transport=transport, migrations_field=migrations_field, image_defaults=image_defaults)
+
+
+def structured_secret(value):
+    """Recognise declared credential fields and client argument/assignment grammars."""
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if private_field(key) or structured_secret(item):
+                return True
+        return False
+    if isinstance(value, list):
+        if value and isinstance(value[0], str) and value[0].rsplit("/", 1)[-1] == "psql":
+            # -p is the PostgreSQL port and --password requests a prompt.
+            return any(structured_secret(arg) for arg in value[1:]
+                       if isinstance(arg, str) and not re.fullmatch(r"-p[0-9]+|--password", arg))
+        return any(isinstance(arg, str) and arg.startswith("--") and credential_name(arg[2:])
+                   for arg in value[:-1]) or any(structured_secret(arg) for arg in value)
+    if not isinstance(value, str):
+        return False
+    raw = unquote(value.strip())
+    if raw.startswith(("{", "[", '"')):
+        try:
+            return structured_secret(json.loads(raw, object_pairs_hook=json_properties))
+        except ValueError:
+            # A bracketed IPv6 endpoint is a separate, public input grammar.
+            endpoint = re.fullmatch(r"\[([^\]]+)\](?::[0-9]+)?", raw)
+            try:
+                return endpoint is None or not isinstance(ipaddress.ip_address(endpoint[1]), ipaddress.IPv6Address)
+            except ValueError:
+                return True
+    if re.match(r"^(?:[^ ]*/)?psql\s", raw):
+        import shlex
+        try:
+            return structured_secret(shlex.split(raw))
+        except ValueError:
+            return True
+    # These productions have named credential slots, regardless of their values.
+    for match in _assignment.finditer(raw):
+        argument = raw[match.end():].lstrip()
+        if private_field(match[2]) or match[2].lower() == "sig":
+            return True
+        if argument.startswith(("{", "[", '"')) and structured_secret(argument):
+            return True
+    return (any(private_field(m[1]) for m in _long_option.finditer(raw))
+            or bool(re.search(r"://[^/\s?#]*:[^/\s?#]*@|\boracle:thin:[^/@\s]+/[^@\s]+@", raw, re.I))
+            or bool(re.fullmatch(r"-p[^\s=]+", raw)))
+
+
+def private_field(name):
+    return (credential_name(name) or name.upper().endswith("_FILE")
+            or name.lower() in ("authorization", "proxy-authorization"))
+
+
+def private_profile(profile):
+    # A reference to a key file or to an ENV name does not contain its bytes.
+    inputs = {k: v for k, v in profile.items() if k not in
+              ("receiptSigning", "fingerprintKeyFile", "install", "configDelta")}
+    install = profile.get("install", {})
+    delta = profile.get("configDelta", {})
+    if not isinstance(delta, dict) or not isinstance(install, dict):
+        return True
+    # A pin in an operator-supplied mount has no CI provenance.
+    return (structured_secret(inputs) or structured_secret(install) or structured_secret(delta)
+            or bool(delta.get("binds"))
+            or any(private_field(row["name"]) for row in delta.get("env", []))
+            or any("sha256" in row for row in install.get("binds", []))
+            or any(private_field(row["name"]) for row in install.get("env", [])))

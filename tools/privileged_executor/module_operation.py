@@ -254,6 +254,12 @@ class ModuleInstall(_ModuleInstall):
         if isinstance(req, dict):
             validate_module_profiles(req.get("module"), cfg, release=False, check=need)
         super().__init__(cfg, root, req)
+        self.key_path = cfg.get("fingerprintKeyFile")
+
+
+    def execute(self, review):
+        with operation.public_output.scope(self.profile, key_path=self.key_path):
+            return super().execute(review)
 
 
 class ModuleRelease(_ModuleRelease):
@@ -261,11 +267,12 @@ class ModuleRelease(_ModuleRelease):
         if isinstance(req, dict):
             validate_module_profiles(req.get("module"), cfg, release=True, check=need)
         super().__init__(cfg, root, req)
+        self.key_path = cfg.get("fingerprintKeyFile")
         if operation.reviewed.enabled(self.profile):
             self.runtime.release_run = req["run"]
 
     def execute(self, review):
-        with operation.public_output.scope(self.profile, self.req["run"]):
+        with operation.public_output.scope(self.profile, self.req["run"], key_path=self.key_path):
             return super().execute(review)
 
     def reviewed_return(self):

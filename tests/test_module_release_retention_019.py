@@ -122,6 +122,23 @@ class IncompleteConfig(RetentionFixture):
         self.assertFalse((self.root / (retention.BATCH + ".worker.json")).exists())
 
 
+class PrivateWorker(RetentionFixture):
+    def batch_config(self):
+        self.release.rt.docs[fixture.OLD]["HostConfig"]["LogConfig"] = {
+            "Type": "splunk", "Config": {"splunk-token": "fixture"}}
+        return super().batch_config()
+
+    def test_DEP_58QL_15_retention_worker_request(self):
+        from module_release import public_output
+        p = self.release.p
+        self.call(retention.ADMIN)
+        plan = json.loads((self.root / "plan.json").read_bytes())
+        claim = json.loads((self.root / (retention.ADMIN + ".worker.json")).read_bytes())
+        with public_output.scope(p):
+            public_output.use_plan(plan)
+            self.assertEqual(claim["requestSha256"], public_output.fingerprint("retention-request", self.work[0]))
+
+
 class Retention(RetentionFixture):
     def test_dep_55j_01_owner_and_acl(self):
         """DEP-55J-01 — separate human review, observed function and owner/ACL."""

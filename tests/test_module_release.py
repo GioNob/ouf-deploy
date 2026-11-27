@@ -272,11 +272,11 @@ class ReleaseTest(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
-        key = self.root / ".release-hmac.key"
+        key = Path(self.enterContext(tempfile.TemporaryDirectory())) / ".release-hmac.key"
         key.touch(mode=0o600)
         key.write_bytes(os.urandom(32))
         p = self.p = json.loads(PROFILE.read_text(encoding="utf-8"))
-        p.update(inbox=tmp.name, journal=tmp.name, dockerSocket=str(self.root / "sock"),
+        p.update(fingerprintKeyFile=str(key), inbox=tmp.name, journal=tmp.name, dockerSocket=str(self.root / "sock"),
                  nsenter=str(self.root / "nsenter"), oldImage="sha256:" + "a" * 64)
         for i, net in enumerate(p["networks"].values(), start=1):
             net["ipv4"] = "192.0.2." + str(i)
@@ -303,7 +303,7 @@ class ReleaseTest(unittest.TestCase):
         import store
         dispatch = runpy.run_path(str(ROOT / "scripts/ouf-a2-executor"))["dispatch"]
         cfg = dict(repositoryId=10, environmentId=20, branch="protected", environment="test",
-                   reviewerIds=[30], commit="a"*40, runner="fixture", modules={self.p["module"]: self.p})
+                   reviewerIds=[30], commit="a"*40, runner="fixture", fingerprintKeyFile=self.p.get("fingerprintKeyFile"), modules={self.p["module"]: self.p})
         req = dict(run="1", attempt="1", commit=cfg["commit"], operation="module-release",
                    module=self.p["module"], phase="plan")
         req["digest"] = mandate.intent(req)
@@ -360,7 +360,7 @@ class ReleaseTest(unittest.TestCase):
 
     def test_executor_enforces_each_review_through_onboarding_readiness(self):
         import mandate
-        command = self.p["gate"]["command"] + ["--fixture.option=private-marker"]
+        command = self.p["gate"]["command"] + ["--fixture.password=private-marker"]
         self.p["gate"]["command"] = command
         self.p["candidate"] = {"removeArgs": command[-1:]}
         self.rt.docs[OLD]["Config"]["Cmd"] = command
@@ -369,7 +369,7 @@ class ReleaseTest(unittest.TestCase):
         with self.assertRaisesRegex(mandate.Held, "RUN_NOT_AUTHORIZED"):
             call(0, workflow=mandate.WORKFLOW)
         plan_result = call(0)
-        self.assertEqual(plan_result["candidateReview"]["removedArgs"], ["--fixture.option=<redacted>"])
+        self.assertEqual(plan_result["candidateReview"]["removedArgs"], ["--fixture.password=<redacted>"])
         self.assertNotIn("private-marker", json.dumps(plan_result))
         self.assertNotEqual(plan_result["candidateReview"]["predecessorCmdSha256"], mandate.digest(command))
         with patch.object(sys, "path", list(sys.path)), patch("sys.stdout", new_callable=io.StringIO) as notice:

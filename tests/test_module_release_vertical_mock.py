@@ -2,6 +2,7 @@
 import io
 import json
 from pathlib import Path
+import secrets
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -29,6 +30,10 @@ class VerticalMockRelease(unittest.TestCase):
         self.assertEqual((ready["path"], ready["port"], ready["acceptStatus"]), ("/health/ready", 8080, [204]))
         self.assertNotIn("jsonStatus", ready)
         self.p = profile
+        key = self.root / "installation-fingerprint"
+        key.touch(mode=0o600)
+        key.write_bytes(secrets.token_bytes(32))
+        profile["fingerprintKeyFile"] = str(key)
         self.ci = profile["ci"]
         self.ci.update(repository="fixture/reviewed-mock", sourceCommit="b"*40, sourceTree="c"*40,
                        pullRequest=2, runId=15, runAttempt=1, artifactId=17)

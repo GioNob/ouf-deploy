@@ -27,12 +27,12 @@ class Bootstrap(unittest.TestCase):
         spec.loader.exec_module(inst)
         inst.ROOT, inst.ENTRY, inst.RULE, inst.REPO = (tmp / name for name in ("install", "entry", "rule", "clone"))
         (inst.REPO / ".git").mkdir(parents=True)
-        key = tmp / ".ouf-a2-install-hmac.key"
+        key = tmp / ".release-hmac.key"
         key.touch(mode=0o600)
         key.write_bytes(os.urandom(32))
         self.path = tmp / "private.json"
         cfg = json.loads((ROOT / "docs/privileged-executor.example.json").read_bytes())
-        cfg.update(repository="fixture/repo", repositoryId=1, environmentId=2, reviewerIds=[3], commit="a"*40,
+        cfg.update(fingerprintKeyFile=str(key), repository="fixture/repo", repositoryId=1, environmentId=2, reviewerIds=[3], commit="a"*40,
                    runner="runner", readinessPort=8080, installRoot=str(tmp), leaseJournal=str(tmp/"lease"),
                    socket=str(tmp/"docker.sock"))
         c = cfg["queue"]

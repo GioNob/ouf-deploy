@@ -1,5 +1,5 @@
 """Fail-closed release profiles and the isolated 58q library."""
-from contextlib import ExitStack, chdir, nullcontext, redirect_stderr, redirect_stdout
+from contextlib import ExitStack, contextmanager, chdir, nullcontext, redirect_stderr, redirect_stdout
 from functools import partial
 import base64
 import hashlib
@@ -25,6 +25,35 @@ import mandate
 import store
 from tools.module_release import config_delta, operation, recovery, return_operation, transport
 from tools.module_release.contract import Held, validate
+
+
+@contextmanager
+def pinned_install(data, *, delta=False, file_env=True):
+    import test_module_install as first
+    with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as store:
+        p = first.setup_profile(directory)
+        key = Path(store) / ".release-hmac.key"
+        key.touch(mode=0o600)
+        key.write_bytes(os.urandom(32))
+        p["fingerprintKeyFile"] = str(key)
+        target = "/app/archiveSha256"
+        material = Path(store) / "content"
+        material.write_bytes(data)
+        pin = hashlib.sha256(data).hexdigest()
+        p["install"]["binds"].append(dict(mode="ro", source="/srv/fixture/secret", target=target, sha256=pin))
+        if file_env:
+            p["install"]["env"].append(dict(name="READ_TOKEN_FILE", value=target))
+        if delta:
+            p["configDelta"] = {"aliases": {"example-net": ["approved"]}}
+        rt = first.Engine(p, fixture.artifact(p, Path(directory)))
+        def facts(row, *args, **kwargs):
+            if row["target"] != target:
+                return {}, {"ino": 42}
+            observed = hashlib.sha256(material.read_bytes()).hexdigest()
+            frame_spec.check(observed == row["sha256"], "BIND_DIGEST_CHANGED")
+            return {}, {"ino": 43, "sha256": observed}
+        with patch.object(frame_spec, "bind_facts", facts):
+            yield p, rt, target, pin
 
 
 def request_for(kind, module, phase="plan"):
@@ -170,7 +199,7 @@ class InvalidDeltaTest(unittest.TestCase):
             ("--password", "{v}"), ("--secret", "{v}"), ("--token", "{v}"),
             ("sh", "-c", "migrate --password '{v}'"),
         ]
-        positions = ("env-before", "env-after", "nested-json", "json-argument", "json-metadata", "label", "label-argv", "alias", "migration")
+        positions = ("env-before", "env-after", "nested-json", "json-argument", "json-metadata", "label", "label-argv", "alias", "migration", "host-log", "install-bind")
         count = 0
         for syntax in corpus:
             for position in positions:
@@ -183,6 +212,17 @@ class InvalidDeltaTest(unittest.TestCase):
                 value = " ".join(args)
                 for delta in (False, True):
                     with self.subTest(syntax=syntax, position=position, delta=delta), ExitStack() as stack:
+                        if position == "install-bind":
+                            p, rt, target, pin = stack.enter_context(pinned_install(value.encode(), delta=delta))
+                            plan = install.plan(p, rt)["plan"]
+                            with operation.public_output.scope(p):
+                                expected = operation.public_output.fingerprint(["install.bind", target], pin)
+                            self.assertEqual(plan["review"]["binds"][-1]["hmacSha256"], expected)
+                            self.assertEqual(plan["preconditions"]["bindCustody"][-1]["hmacSha256"], expected)
+                            self.assertNotIn(pin, json.dumps(plan))
+                            self.assertNotIn(marker, json.dumps(plan))
+                            count += 1
+                            continue
                         case = fixture.ReleaseTest()
                         case.setUp()
                         stack.callback(case.doCleanups)
@@ -193,7 +233,9 @@ class InvalidDeltaTest(unittest.TestCase):
                         if delta:
                             p["configDelta"] = {"aliases": {net: ["public-candidate"]}}
                         old = rt.docs[fixture.OLD]
-                        if position == "migration":
+                        if position == "host-log":
+                            old["HostConfig"]["LogConfig"] = {"Type": "splunk", "Config": {"splunk-token": marker}}
+                        elif position == "migration":
                             cmd.extend(args)
                         elif position in ("json-argument", "json-metadata"):
                             nested = {"settings": [{"AccountKey": marker, "connection": value}]}
@@ -266,6 +308,10 @@ class InvalidDeltaTest(unittest.TestCase):
                                 responses.append(str(denied.exception))
                         outputs = [json.dumps(responses).encode(), *(s.getvalue().encode() for s in streams)]
                         private_hashes = set()
+                        if position == "host-log":
+                            request = (operation.reviewed.request(p, old, {}) if delta else
+                                       operation.request(old, p["ci"]["imageId"], operation.provenance_labels(p)))
+                            private_hashes.add(operation.digest(request).encode())
                         for document in (p, old, p.get("configDelta"), old["Config"]["Cmd"]):
                             if marker in json.dumps(document):
                                 private_hashes.add(operation.digest(document).encode())
@@ -393,7 +439,7 @@ class InvalidDeltaTest(unittest.TestCase):
         key = directory / ".release-hmac.key"
         key.touch(mode=0o600)
         key.write_bytes(os.urandom(32))
-        return operation.public_output.scope({"journal": str(directory), "module": "mcp"}, run)
+        return operation.public_output.scope({"journal": str(directory), "fingerprintKeyFile": str(key), "module": "mcp"}, run)
 
     def test_hmac_depends_on_field_run_and_private_key(self):
         case = fixture.ReleaseTest()
@@ -406,7 +452,7 @@ class InvalidDeltaTest(unittest.TestCase):
         original = marks("1")
         self.assertEqual(original, marks("1"))
         self.assertEqual(len(set(original + marks("2"))), 4)
-        path = case.root / output.KEY_FILE
+        path = Path(case.p["fingerprintKeyFile"])
         path.write_bytes(os.urandom(32))
         self.assertTrue(set(original).isdisjoint(marks("1")))
         path.unlink()
@@ -419,7 +465,7 @@ class InvalidDeltaTest(unittest.TestCase):
         for before, after in (("true", "false"), ("enabled", "disabled")):
             public = dict(name=flag, before=before, after=after)
             self.assertRegex(config_delta.approval_lines({"env": [public]}, [flag])[0],
-                             rf'^ENV {flag} da hmac-sha256 [a-f0-9]{{64}} a "{after}"$')
+                             rf'^ENV {flag} da sha256 [a-f0-9]{{64}} a "{after}"$')
             for name in ("SNMP_COMMUNITY", "DB_DSN", "DB_PASSWORD", "SERVICE_SECRET", "ACCESS_TOKEN",
                          "SIGNING_KEY", "DB_CONNECTION_STRING"):
                 with self.subTest(name=name, before=before):
@@ -431,7 +477,7 @@ class InvalidDeltaTest(unittest.TestCase):
     def test_DEP_58QG_01_approval_grammar_at_both_boundaries(self):
         row = {"name": "OPAQUE", "before": None, "after": "ENV"}
         with self.fingerprint_scope():
-            self.assertTrue(config_delta.approval_lines({"env": [row]}, ["OPAQUE"])[0].startswith("ENV OPAQUE da hmac-sha256 "))
+            self.assertTrue(config_delta.approval_lines({"env": [row]}, ["OPAQUE"])[0].startswith("ENV OPAQUE da sha256 "))
         stream = io.StringIO()
         with patch.object(sys, "path", list(sys.path)), redirect_stdout(stream):
             render = runpy.run_path(str(fixture.ROOT / ".github/scripts/module-release.py"))["module_review"]
@@ -893,6 +939,279 @@ class InstalledDeltaTest(unittest.TestCase):
         self.assertEqual(self.installed.read_bytes(), self.clean)
         self.assertEqual(list(self.old_journal.iterdir()), [self.receipt])
         self.assertEqual(self.receipt.read_bytes(), b"retained receipt")
+
+
+class FingerprintPerimeter(unittest.TestCase):
+    def test_DEP_58QL_01_log_token_request_frame_and_profile(self):
+        for delta in (False, True):
+            with self.subTest(delta=delta):
+                case = fixture.ReleaseTest()
+                case.setUp()
+                self.addCleanup(case.doCleanups)
+                p, old = case.p, case.rt.docs[fixture.OLD]
+                old["HostConfig"]["LogConfig"] = {"Type": "splunk", "Config": {"splunk-token": "apply"}}
+                if delta:
+                    p["configDelta"] = {"aliases": {next(iter(p["networks"])): ["test-alias"]}}
+                result = operation.plan(p, case.rt)
+                plan = result["plan"]
+                request = (operation.reviewed.request(p, old, {}) if delta else
+                           operation.request(old, p["ci"]["imageId"], operation.provenance_labels(p)))
+                with operation.public_output.scope(p):
+                    operation.public_output.use_plan(plan)
+                    self.assertEqual(plan["requestSha256"], operation.public_output.fingerprint("request", request))
+                    self.assertEqual(plan["oldFrameSha256"], operation.snapshot(old))
+                self.assertNotEqual(plan["profileSha256"], operation.digest(p))
+                with patch("tools.module_release.frame.frame_binding", side_effect=lambda name, doc, value: operation.digest(value)):
+                    self.assertNotEqual(plan["oldFrameSha256"], operation.snapshot(old))
+                self.assertNotEqual(plan["requestSha256"], operation.digest(request))
+                Path(p["fingerprintKeyFile"]).unlink()
+                self.assertEqual(operation.plan(p, case.rt)["reason"], "FINGERPRINT_KEY_UNAVAILABLE")
+
+    def test_DEP_58QL_02_install_review_and_custody(self):
+        for file_env in (True, False):
+            with self.subTest(file_env=file_env), pinned_install(secrets.token_bytes(32), file_env=file_env) as inputs:
+                p, rt, target, pin = inputs
+                proposal = install.plan(p, rt)
+                plan, stamp = proposal["plan"], proposal["planSha256"]
+                shown = plan["review"]["binds"][-1]["hmacSha256"]
+                self.assertEqual(plan["preconditions"]["bindCustody"][-1]["hmacSha256"], shown)
+                with operation.public_output.scope(p):
+                    self.assertEqual(shown, operation.public_output.fingerprint(["install.bind", target], pin))
+                ready = install.apply(p, stamp, rt)
+                self.assertEqual(ready["status"], "READY", ready)
+                self.assertEqual(install.apply(p, stamp, rt), ready)
+                self.assertEqual(install.rollback(p, stamp, rt)["status"], "ROLLED_BACK")
+                for secret in (pin, p["fingerprintKeyFile"], operation.digest(p)):
+                    self.assertNotIn(secret, json.dumps([proposal, ready]))
+
+    def test_DEP_58QL_03_oci_and_archive_pins(self):
+        case = fixture.ReleaseTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        blob = fixture.artifact(case.p, case.root, image_env=["PGPASSWORD=fixture"])
+        plan = operation.plan(case.p, case.rt)["plan"]
+        self.assertEqual(plan["ci"]["imageId"], case.p["ci"]["imageId"])
+        self.assertEqual(plan["archiveSha256"], hashlib.sha256(blob).hexdigest())
+        self.assertIn("fingerprintRun", plan)
+
+    def test_DEP_58QL_04_manifest_public_and_private_sides(self):
+        case = installer_fixture.Bootstrap()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        policy = json.loads(case.path.read_bytes())
+        del policy["modules"]["vertical-mock"]
+        case.path.write_text(json.dumps(policy))
+        files = case.inst.inspect(case.path)
+        profile = case.inst.ROOT / "profile.json"
+        data, mode = files[profile]
+        key = Path(policy["fingerprintKeyFile"])
+        key.unlink()
+        expected = case.inst.fingerprint(data, mode)
+        self.assertEqual(case.inst.manifest(files)[str(profile)]["after"], expected)
+        case.inst.ROOT.mkdir()
+        old = json.loads(data)
+        old["modules"]["mcp"]["migration"]["options"] = {"PGPASSWORD": "fixture"}
+        profile.write_text(json.dumps(old))
+        with self.assertRaisesRegex(ValueError, "^FINGERPRINT_KEY_UNAVAILABLE$"):
+            case.inst.manifest(files)
+        key.touch(mode=0o600)
+        key.write_bytes(os.urandom(32))
+        row = case.inst.manifest(files)[str(profile)]
+        self.assertIn("hmacSha256", row["before"])
+        self.assertEqual(row["after"], expected)
+        self.assertNotIn(fixture.sha(profile.read_bytes()), json.dumps(row))
+
+    def test_DEP_58QL_05_clean_delta_requires_no_key(self):
+        case = fixture.ReleaseTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        Path(case.p["fingerprintKeyFile"]).unlink()
+        case.p.update(configDelta={"env": [dict(name="FEATURE", before=None, after="off")]}, envAllowlist=["FEATURE"])
+        proposal = operation.plan(case.p, case.rt)
+        self.assertEqual(proposal["status"], "PLANNED", proposal)
+        self.assertNotIn("fingerprintRun", proposal["plan"])
+        self.assertRegex(proposal["plan"]["approvalLines"][0], "^ENV FEATURE da sha256 ")
+
+
+    def release_case(self):
+        case = fixture.ReleaseTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        return case
+
+    def test_DEP_58QL_06_command_review(self):
+        case = self.release_case()
+        cmd = case.p["gate"]["command"] + ["--client.password=fixture"]
+        case.p["gate"]["command"] = cmd
+        case.p["candidate"] = {"removeArgs": cmd[-1:]}
+        old = case.rt.docs[fixture.OLD]
+        old["Config"]["Cmd"], old["Args"] = cmd, fixture.ENTRY[1:] + cmd
+        review = operation.plan(case.p, case.rt)["plan"]["candidateReview"]
+        with operation.public_output.scope(case.p):
+            for name, args in (("predecessorCmdSha256", cmd), ("candidateCmdSha256", cmd[:-1])):
+                self.assertEqual(review[name], operation.public_output.fingerprint("command", args))
+
+    def test_DEP_58QL_07_migration_review(self):
+        case = self.release_case()
+        fixture.dedicated_profile(case.p)
+        case.p["migration"]["options"] = {"DB_PASSWORD": "apply"}
+        stamp = operation.plan(case.p, case.rt)["planSha256"]
+        result = operation.apply(case.p, stamp, case.rt, defer_migration=True)
+        stage = operation.read(case.root / stamp, "migration-plan.json")
+        with operation.public_output.scope(case.p):
+            self.assertEqual(result["migrationSha256"], operation.public_output.fingerprint("migration-plan", stage))
+        self.assertNotEqual(result["migrationSha256"], operation.digest(stage))
+
+    def test_DEP_58QL_08_recovery_journal(self):
+        case = self.release_case()
+        case.rt.docs[fixture.OLD]["Config"]["Env"].append("PGPASSWORD=apply")
+        stamp = operation.plan(case.p, case.rt)["planSha256"]
+        with patch.object(case.rt, "start", side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+            operation.apply(case.p, stamp, case.rt)
+        # The supported legacy journal contains the full predecessor inspect.
+        name = "baseline.private.json"
+        old = fixture.Engine(case.p, case.rt.blob).docs[fixture.OLD]
+        old["Config"]["Env"].append("PGPASSWORD=apply")
+        path = case.root / stamp / name
+        path.write_text(json.dumps(old))
+        proposal = recovery.proposal(case.p, case.rt)
+        baseline = operation.read(case.root / stamp, name)
+        with operation.public_output.scope(case.p):
+            self.assertEqual(proposal["journal"][name], operation.public_output.fingerprint(["journal", name], baseline))
+
+    def test_DEP_58QL_09_delta_review_and_receipt(self):
+        case = self.release_case()
+        old = case.rt.docs[fixture.OLD]
+        old["Config"]["Labels"]["splunk-token"] = "fixture"
+        net = next(iter(case.p["networks"]))
+        delta = {"env": [dict(name="FEATURE", before=None, after="off")], "aliases": {net: ["candidate"]}}
+        case.p.update(configDelta=delta, envAllowlist=["FEATURE"], migration={"mode": "none", "rollbackCompatible": True})
+        proposal = operation.plan(case.p, case.rt)
+        plan = proposal["plan"]
+        receipt = operation.apply(case.p, proposal["planSha256"], case.rt)
+        with operation.public_output.scope(case.p):
+            operation.public_output.use_plan(plan)
+            self.assertEqual(receipt["configDeltaSha256"], operation.public_output.fingerprint("configDelta", delta))
+            self.assertEqual(receipt["successorFrameSha256"], operation.snapshot(case.rt.inspect(fixture.NEW)))
+        self.assertTrue(all("hmac-sha256" in line for line in plan["approvalLines"]))
+
+    def test_DEP_58QL_10_manifest_key_file_origin(self):
+        case = installer_fixture.Bootstrap()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        policy = json.loads(case.path.read_bytes())
+        # A managed name that looks like code is also declared as a key source.
+        path = case.inst.ROOT / "lib" / "archiveSha256.py"
+        policy["gateway"]["keyFile"] = str(path)
+        case.path.write_text(json.dumps(policy))
+        files = case.inst.inspect(case.path)
+        data = secrets.token_bytes(32)
+        files[path] = data, 0o600
+        spec = case.inst.manifest(files)
+        self.assertIn("hmacSha256", spec[str(path)]["after"])
+        self.assertNotIn(hashlib.sha256(data).hexdigest(), json.dumps(spec))
+
+
+    def test_DEP_58QL_11_installation_key_across_modules(self):
+        import test_module_release_mcp as mcp
+        onboarding = self.release_case()
+        other = mcp.Release()
+        other.setUp()
+        self.addCleanup(other.doCleanups)
+        key = onboarding.p.pop("fingerprintKeyFile")
+        Path(other.p.pop("fingerprintKeyFile")).unlink()
+        other.cfg["fingerprintKeyFile"] = key
+        for case in (onboarding, other):
+            case.rt.docs[fixture.OLD]["Config"]["Env"].append("PGPASSWORD=test")
+            with operation.public_output.scope(case.p, "1", key_path=key):
+                result = operation.plan(case.p, case.rt)
+            self.assertEqual(result["status"], "PLANNED", result)
+            self.assertNotIn(key, json.dumps(result))
+        self.assertEqual(other.planned()["digest"], result["planSha256"])
+
+    def test_DEP_58QL_12_install_request_and_stable_frame(self):
+        import test_module_install as first
+        case = first.InstallTest()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        key = case.root / ".release-hmac.key"
+        key.touch(mode=0o600)
+        key.write_bytes(os.urandom(32))
+        case.p["fingerprintKeyFile"] = str(key)
+        case.p["install"]["env"].append({"name": "READ_TOKEN_FILE", "value": "/token"})
+        case.p["install"]["binds"].append({"mode": "ro", "target": "/token", "source": "/srv/fixture/ro"})
+        plan = install.plan(case.p, case.rt)
+        stamp, body = plan["planSha256"], plan["plan"]
+        self.assertEqual(install.apply(case.p, stamp, case.rt)["status"], "READY")
+        with operation.public_output.scope(case.p):
+            operation.public_output.use_plan(body)
+            req = install.approved_create(case.p, case.root / stamp, body, case.rt.image_defaults(case.p["ci"]["imageId"]))
+            claim = operation.read(case.root / stamp, "install-intent.json")
+            self.assertEqual(claim["requestSha256"], operation.public_output.fingerprint("install.request", req))
+            req["Labels"][install.LABEL] = install.EMPTY_LABEL
+            self.assertEqual(body["requestSha256"], operation.public_output.fingerprint("install.request", req))
+            gate = operation.read(case.root / stamp, "gate-run.json")
+            proof = install.park_proof(case.rt.inspect(gate["cid"]))
+            self.assertEqual(proof["stableFrameSha256"], gate["stableFrameSha256"])
+
+    def test_DEP_58QL_13_bootstrap_key_read_faults(self):
+        case = installer_fixture.Bootstrap()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        files = case.inst.inspect(case.path)
+        profile = case.inst.ROOT / "profile.json"
+        case.inst.ROOT.mkdir()
+        profile.write_bytes(files[profile][0])
+        key = json.loads(profile.read_bytes())["fingerprintKeyFile"]
+        real_open = os.open
+        for fault in (None, 1, 2):
+            count = 0
+            def open_key(path, flags, *args, **kwargs):
+                nonlocal count
+                if path == key:
+                    count += 1
+                    if count == fault:
+                        raise OSError("injected")
+                return real_open(path, flags, *args, **kwargs)
+            with patch.object(os, "open", open_key):
+                if fault:
+                    with self.assertRaisesRegex(ValueError, "^FINGERPRINT_KEY_UNAVAILABLE$"):
+                        case.inst.manifest(files)
+                else:
+                    case.inst.manifest(files)
+            self.assertEqual(count, fault or 2)
+        print("I/O installer manifest: 2 injected key reads")
+
+    def test_DEP_58QL_14_install_key_read_faults(self):
+        def replay(fault):
+            events = []
+            with pinned_install(b"fixture") as (p, rt, _, _):
+                real_open = os.open
+                def opened(path, flags, *args, **kwargs):
+                    if path == p["fingerprintKeyFile"]:
+                        events.append(phase)
+                        if len(events) == fault:
+                            raise OSError("injected")
+                    return real_open(path, flags, *args, **kwargs)
+                with patch.object(os, "open", opened):
+                    for phase in ("plan", "apply", "resume", "replay", "rollback"):
+                        if phase == "plan":
+                            result = install.plan(p, rt)
+                        elif phase == "resume":
+                            result = install.plan(p, rt, resume=stamp)
+                        elif phase == "rollback":
+                            result = install.rollback(p, stamp, rt)
+                        else:
+                            result = install.apply(p, stamp, rt)
+                        if result["status"] == "HELD":
+                            return events, result["reason"]
+                        stamp = result["planSha256"]
+            return events, result["status"]
+        trace, status = replay(None)
+        self.assertEqual((set(trace), status), ({"plan", "apply", "resume", "replay", "rollback"}, "ROLLED_BACK"))
+        for i in range(1, len(trace) + 1):
+            self.assertEqual(replay(i), (trace[:i], "FINGERPRINT_KEY_UNAVAILABLE"))
+        print(f"I/O first install: {len(trace)} injected key reads")
 
 
 class LibraryTest(unittest.TestCase):

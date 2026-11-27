@@ -274,6 +274,7 @@ class NoDeltaParity(unittest.TestCase):
         case = mcp.Release()
         self.addCleanup(case.doCleanups)
         case.setUp()
+        case.p.pop("fingerprintKeyFile")
         case.p["journal"] = str(case.root / "journal")
         blob, baseline_db = case.rt.blob, case.db
         self.assertNotIn("configDelta", case.p)
@@ -375,6 +376,7 @@ class NoDeltaParity(unittest.TestCase):
         case = fixture.ReleaseTest()
         self.addCleanup(case.doCleanups)
         case.setUp()
+        case.p.pop("fingerprintKeyFile")
         case.p["migration"] = {"mode": "none", "rollbackCompatible": True}
         outputs = []
         for modules, source in ((self.reference, self.reference_root), ((operation, recovery, return_operation), fixture.ROOT)):
@@ -678,11 +680,17 @@ class NoDeltaParity(unittest.TestCase):
     def test_DEP_58QG_03_executor_file_reads(self):
         self.read_fault_matrix(("executor-none", "executor-dedicated", "executor-signed-none", "executor-signed-dedicated"))
 
+    def test_DEP_58QL_key_read_faults(self):
+        self.read_fault_matrix(("private-none", "private-dedicated", "private-spring-flyway", "executor-private-dedicated"))
+
     def read_fault_matrix(self, modes):
         total = 0
         for mode in modes:
+            spring = mode.endswith("spring-flyway")
             for interrupted in ((False,) if mode.startswith("executor-") else (False, True)):
                 for modules in (self.reference, (operation, recovery, return_operation)):
+                    if "private" in mode and modules is self.reference:
+                        continue
                     op, rec, ret = modules
                     with ExitStack() as setup:
                         import store
@@ -692,7 +700,7 @@ class NoDeltaParity(unittest.TestCase):
                         (directory / "descriptor").touch()
                         jar = directory / "root/app/app.jar"
                         jar.parent.mkdir(parents=True)
-                        if mode == "spring-flyway":
+                        if spring:
                             import test_module_release_java as java
                             p, initial, rows, history = setup.enter_context(java.fixture("udp", jar=jar))
                         else:
@@ -701,6 +709,14 @@ class NoDeltaParity(unittest.TestCase):
                             setup.callback(case.doCleanups)
                             p, initial = case.p, case.rt
                             baseline_db = copy.deepcopy(case.db)
+                        if "private" in mode:
+                            if spring:
+                                key = directory / ".release-hmac.key"
+                                key.touch(mode=0o600)
+                                key.write_bytes(os.urandom(32))
+                                p["fingerprintKeyFile"] = str(key)
+                            initial.docs[fixture.OLD]["HostConfig"]["LogConfig"] = {
+                                "Type": "splunk", "Config": {"splunk-token": "fixture"}}
                         proc = ProcessFiles(directory, p)
                         docker = importlib.import_module(op.__package__ + ".docker")
                         setup.enter_context(patch.object(docker, "Path", proc.proc_path))
@@ -746,7 +762,7 @@ class NoDeltaParity(unittest.TestCase):
                         def replay(fault):
                             parent.mkdir()
                             engine = copy.deepcopy(initial)
-                            if mode == "spring-flyway":
+                            if spring:
                                 del history[1:]
                                 send = engine.signal
                                 def launch(cid):
@@ -820,8 +836,8 @@ class NoDeltaParity(unittest.TestCase):
                                                 release = executor.ModuleRelease(case.cfg, case.root, case.req)
                                                 release.previous_release()
                                             # The previous READY release can own a completed retention worker.
-                                            worker = parent / stamp / "mcp-retention-admin-019.start.json"
-                                            worker.write_text(json.dumps({"cid": "d" * 64}))
+                                            for worker in ("mcp-retention-admin-019", "analysis-retention-once"):
+                                                (parent / stamp / (worker + ".start.json")).write_text(json.dumps({"cid": "d" * 64}))
                                             phase = "return"
                                             result = case.call("rollback", stamp, run="2")
                                     else:
@@ -868,15 +884,27 @@ class NoDeltaParity(unittest.TestCase):
                             return events, {k: result[k] for k in ("status", "reason", "rollbackReason") if k in result}
 
                         trace, outcome = replay(None)
-                        if modules is self.reference:
+                        if "private" in mode:
+                            indices = [i for i, (_, kind, name) in enumerate(trace, 1)
+                                       if kind == "os.open" and name == ".release-hmac.key"]
+                            self.assertTrue(indices, outcome)
+                            self.assertIn("return", {phase for phase, _, _ in trace}, outcome)
+                            for i in indices:
+                                with self.subTest(mode=mode, interrupted=interrupted, occurrence=i):
+                                    reached, actual = replay(i)
+                                    self.assertEqual(trace[:i], reached[:i])
+                                    self.assertIn("FINGERPRINT_KEY_UNAVAILABLE", str(actual))
+                            total += len(indices)
+                        elif modules is self.reference:
                             self.assertIn(outcome["status"], ("ROLLED_BACK", "HELD"))
                             self.assertIn("return", {row[0] for row in trace}, (outcome, trace[-20:]))
                             opens = {(kind, name) for _, kind, name in trace}
                             self.assertTrue({("open", "status"), ("read_bytes", "cmdline")} <= opens, opens)
-                            if mode == "spring-flyway":
+                            if spring:
                                 self.assertIn(("os.open", "app.jar"), opens)
                             if mode.startswith("executor-"):
-                                self.assertIn(("return", "read_bytes", "mcp-retention-admin-019.start.json"), trace)
+                                for worker in ("mcp-retention-admin-019", "analysis-retention-once"):
+                                    self.assertIn(("return", "read_bytes", worker + ".start.json"), trace)
                             if "signed" in mode:
                                 signing = "migrate" if mode.endswith("dedicated") else "apply"
                                 for phase in (signing, "verify"):
@@ -894,6 +922,41 @@ class NoDeltaParity(unittest.TestCase):
                             print("I/O", mode, "resume" if interrupted else "apply", len(trace), flush=True)
         print("I/O matrix:", total, "injected reads", flush=True)
 
+    def test_DEP_58QL_clean_plan_bytes(self):
+        import test_module_release_java as java
+        with ExitStack() as stack:
+            case = mcp.Release()
+            case.setUp()
+            stack.callback(case.doCleanups)
+            case.dedicated()
+            case.rt.docs[fixture.OLD]["Config"]["Labels"]["client"] = "psql -p5432"
+            case.rt.docs[fixture.OLD]["Config"]["Labels"]["description"] = "basic readiness check"
+            p, engine, _, _ = stack.enter_context(java.fixture("udp"))
+            flag = "--feature.mode=off"
+            p["gate"]["command"].append(flag)
+            engine.docs[fixture.OLD]["Config"]["Cmd"] = list(p["gate"]["command"])
+            engine.docs[fixture.OLD]["Args"] = fixture.ENTRY[1:] + p["gate"]["command"]
+            p["candidate"] = {"removeArgs": [flag]}
+            for profile, rt in ((case.p, case.rt), (p, engine)):
+                reference_input = {k: v for k, v in profile.items() if k != "fingerprintKeyFile"}
+                expected = self.reference[0].plan(reference_input, rt)
+                self.assertEqual(expected["status"], "PLANNED", expected)
+                with patch.object(operation.public_output, "read_key", side_effect=AssertionError("unneeded key")):
+                    self.assertEqual(operation.plan(profile, rt), expected)
+
+    def test_DEP_58QL_16_clean_manifest_matches_reference(self):
+        case = installer_fixture.Bootstrap()
+        case.setUp()
+        self.addCleanup(case.doCleanups)
+        policy = json.loads(case.path.read_bytes())
+        del policy["modules"]["vertical-mock"]
+        Path(policy.pop("fingerprintKeyFile")).unlink()
+        case.path.write_text(json.dumps(policy))
+        files = case.inst.inspect(case.path)
+        manifest = runpy.run_path(str(self.reference_root / "scripts/install-ouf-a2.py"))["manifest"]
+        with patch.dict(manifest.__globals__, ROOT=case.inst.ROOT, safe=case.inst.safe):
+            self.assertEqual(case.inst.manifest(files), manifest(files))
+
     def test_credential_matrix_near_names_match_reference_without_delta(self):
         names = ("TOKENIZER", "TOKENIZER_STATUS", "KEYBOARD_LAYOUT", "PASSAGE", "SECRETARY", "MONKEY")
         for name in (*names, "psql"):
@@ -901,6 +964,7 @@ class NoDeltaParity(unittest.TestCase):
                 case = mcp.Release()
                 case.setUp()
                 stack.callback(case.doCleanups)
+                case.p.pop("fingerprintKeyFile")
                 case.dedicated()
                 if name == "psql":
                     case.rt.docs[fixture.OLD]["Config"]["Labels"]["client"] = "psql --password mcp"

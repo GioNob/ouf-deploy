@@ -2,25 +2,22 @@
 from contextlib import contextmanager
 from contextvars import ContextVar
 from functools import wraps
-from pathlib import Path
 
-from .contract import Held, INGESTION_STARTUP_FLAGS, digest, inline_secret, require
+from .contract import Held, digest, private_field, private_profile, require, structured_secret
 from .fingerprints import mac, read_key
 
 
 _context = ContextVar("release_fingerprints", default=None)
-KEY_FILE = ".release-hmac.key"
 
 
 def private_config(config):
     env = (entry.partition("=") for entry in config.get("Env") or ())
-    return (inline_secret(config.get("Labels")) or inline_secret(config.get("Cmd")) or
-            inline_secret(config.get("Entrypoint")) or inline_secret(config.get("Healthcheck")) or
-            any(inline_secret({key: value}) for key, _, value in env))
+    return (structured_secret({k: v for k, v in config.items() if k != "Env"})
+            or any(private_field(name) or structured_secret(value) for name, _, value in env))
 
 
 @contextmanager
-def scope(profile, run=None):
+def scope(profile, run=None, *, key_path=...):
     previous = _context.get()
     if previous is not None and previous["profile"] is profile and run is None:
         yield
@@ -28,8 +25,11 @@ def scope(profile, run=None):
     profile = profile if isinstance(profile, dict) else {}
     ci = profile.get("ci")
     ci = ci if isinstance(ci, dict) else {}
+    if key_path is ...:
+        key_path = previous["key_path"] if previous else profile.get("fingerprintKeyFile")
     state = {"profile": profile, "run": run or f"ci/{ci.get('repository')}/{ci.get('runId')}/{ci.get('runAttempt')}",
-             "private": False, "key": None}
+             "private": False, "key": None,
+             "key_path": key_path}
     token = _context.set(state)
     try:
         yield
@@ -37,13 +37,23 @@ def scope(profile, run=None):
         _context.reset(token)
 
 
+def private_frame(doc):
+    network = doc.get("NetworkSettings", {})
+    # SandboxKey is the Engine's namespace path. Network names are identifiers.
+    options = {k: v for k, v in network.items() if k not in ("SandboxKey", "Networks")}
+    return (private_config(doc.get("Config", {})) or structured_secret(doc.get("HostConfig", {}))
+            or structured_secret(doc.get("Args", [])) or structured_secret(doc.get("Mounts", []))
+            or structured_secret(options) or any(structured_secret(ep) for ep in network.get("Networks", {}).values()))
+
+
 def begin(profile, old, defaults):
-    ctx = _context.get()
-    # receiptSigning declares key paths and the public key's digest.
-    inputs = {name: item for name, item in profile.items() if name != "receiptSigning"}
-    removed = profile.get("candidate", {}).get("removeArgs", ())
-    ctx["private"] = ("configDelta" in profile or any(arg not in INGESTION_STARTUP_FLAGS for arg in removed)
-                      or inline_secret(inputs) or private_config(old["Config"]) or private_config(defaults))
+    _context.get()["private"] = private_profile(profile) or private_frame(old) or private_config(defaults)
+
+
+def observed_binding(name, doc, value):
+    if run_fields() or private_frame(doc):
+        return fingerprint(name, value)
+    return digest(value)
 
 
 def run_fields():
@@ -65,19 +75,26 @@ def fingerprint(name, value):
     require(ctx is not None and ctx["profile"].get("journal"), "FINGERPRINT_CONTEXT_REQUIRED")
     if ctx["key"] is None:
         try:
-            ctx["key"] = read_key(Path(ctx["profile"]["journal"]) / KEY_FILE)
+            ctx["key"] = read_key(ctx["key_path"])
         except ValueError as exc:
             raise Held(str(exc)) from None
     return mac(ctx["key"], [ctx["profile"]["module"], ctx["run"]], name, value)
 
 
 def binding(name, value):
+    if name == "profile" and "fingerprintKeyFile" in value:
+        value = {k: v for k, v in value.items() if k != "fingerprintKeyFile"}
     return fingerprint(name, value) if run_fields() else digest(value)
 
 
 def journal_binding(name, value):
     # Older full-frame journals can contain private inputs even if the source plan predates HMAC.
-    if inline_secret(value):
+    if name == "baseline.private.json" and isinstance(value, dict):
+        return observed_binding(["journal", name], value, value)
+    if name == "return-frame.json" and isinstance(value, dict) and "baseline" in value:
+        if private_frame(value["baseline"]) or structured_secret(value.get("plan")):
+            return fingerprint(["journal", name], value)
+    elif structured_secret(value):
         return fingerprint(["journal", name], value)
     return binding(["journal", name], value)
 

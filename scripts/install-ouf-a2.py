@@ -47,7 +47,7 @@ def inspect(profile):
     required = {"runner", "repository", "repositoryId", "environmentId", "reviewerIds", "branch", "commit",
                 "environment", "installRoot", "leaseJournal", "socket", "roleCids", "roleTables", "originalProfile",
                 "retainedName", "failedName", "readinessPort", "runbooks", "probe", "queue", "modules"}
-    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "nextSuccessorImage", "gateway", "runnerName", "semanticDatabase"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
+    check(required <= set(cfg) and set(cfg) - required <= {"successorImage", "nextSuccessorImage", "gateway", "runnerName", "semanticDatabase", "fingerprintKeyFile"} and all(type(cfg[k]) is int and cfg[k] > 0 for k in ("repositoryId","environmentId"))
           and type(cfg["readinessPort"]) is int and 0 < cfg["readinessPort"] < 65536, "INSTALL_PROFILE_FIELDS")
     check(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", cfg["repository"]) and cfg["branch"]
           and all(Path(cfg[k]).is_absolute() for k in ("installRoot","leaseJournal","socket")),
@@ -161,7 +161,7 @@ def inspect(profile):
     for name, module_profile in cfg["modules"].items():
         if "install" not in module_profile or "oldImage" in module_profile:
             contract.validate(module_profile)
-        check(module_profile["module"] == name, "MODULE_ID_DRIFT")
+        check(module_profile["module"] == name and "fingerprintKeyFile" not in module_profile, "MODULE_ID_DRIFT")
         journal = Path(module_profile["journal"])
         safe(journal.parent)
         check(journal != Path(module_profile["inbox"]) and not journal.is_relative_to(Path(module_profile["inbox"])),
@@ -219,16 +219,16 @@ def manifest(files):
     profile = ROOT / "profile.json"
     new_journals = journals(files[profile][0])
     protected = {ROOT / "state"} | new_journals
-    if existing(profile):
-        protected.update(journals(profile.read_bytes()))
-    for directory in new_journals:
-        check(directory.exists() or not any(p in directory.parents for p in protected), "PROTECTED_INSTALL_STATE")
-    spec, helper = {}, types.ModuleType("release_fingerprints")
+    previous = profile.read_bytes() if existing(profile) else None
+    protected.update(journals(previous) if previous is not None else ())
+    check(all(d.exists() or not any(p in d.parents for p in protected) for d in new_journals), "PROTECTED_INSTALL_STATE")
+    helper = types.ModuleType("release_fingerprints")
     exec(files[ROOT / "lib/module_release/fingerprints.py"][0], helper.__dict__)
+    spec, bind = {}, helper.manifest_binding(ROOT, files, fingerprint, protected, previous)
     for path in sorted(paths):
         check(not any(path.is_relative_to(p) for p in protected), "PROTECTED_INSTALL_STATE")
-        before = helper.file_binding(ROOT, files, path, fingerprint, path.read_bytes(), stat.S_IMODE(path.stat().st_mode)) if existing(path) else None
-        after = helper.file_binding(ROOT, files, path, fingerprint, *files[path]) if path in files else None
+        before = bind(path, path.read_bytes(), stat.S_IMODE(path.stat().st_mode)) if existing(path) else None
+        after = bind(path, *files[path]) if path in files else None
         if before is None and after is None:
             continue
         if before == after:

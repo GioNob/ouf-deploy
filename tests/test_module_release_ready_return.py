@@ -121,6 +121,8 @@ def approved_retry(rt, stamp, run, *, interrupt):
 
 
 class ReadyReturn(unittest.TestCase):
+    SPRING_FILES = ("flyway-plan.json", "flyway-reader.json", "release-signal.json.failure")
+
     def case(self, delta=True, *, database=False):
         case = fixture.ReleaseTest()
         self.addCleanup(case.doCleanups)
@@ -182,7 +184,7 @@ class ReadyReturn(unittest.TestCase):
     def test_DEP_58Q_03_ready_return_boundaries(self):
         self.matrix(self.return_points(), applying=False)
 
-    def loss_row(self, rt, plan, label, retry=None, ambiguous_exit=False):
+    def loss_row(self, rt, plan, label, retry=None, ambiguous_exit=False, spring_only=False):
         """Replay the same independent Docker and filesystem snapshots for each missing file."""
         parent = Path(rt.p["journal"])
         root = parent / op.digest(plan)
@@ -193,7 +195,7 @@ class ReadyReturn(unittest.TestCase):
         # the release journal (including its published/private locks) loses a file.
         release_entries = {d.name for d in journal_entries()}
         def relevant(path):
-            return path.name != ".release-hmac.key" and path.suffix != ".zip" and (retry is not None or path.parts[0] in release_entries)
+            return (parent / path) != Path(rt.p.get("fingerprintKeyFile", "")) and path.suffix != ".zip" and (retry is not None or path.parts[0] in release_entries)
         dirs, snapshot = [], {}
         for path in parent.rglob("*"):
             rel = path.relative_to(parent)
@@ -207,6 +209,12 @@ class ReadyReturn(unittest.TestCase):
         database_file = root.relative_to(parent) / "database.private.json"
         if "database" in rt.p["migration"] and database_file not in files:
             files.append(database_file)
+        if rt.p["migration"]["mode"] == "spring-flyway":
+            spring_files = [root.relative_to(parent) / name for name in self.SPRING_FILES]
+            if spring_only:
+                files = spring_files
+            else:
+                files.extend(relative for relative in spring_files if relative not in files)
         ready = json.loads(snapshot.get(root.relative_to(parent) / "receipt.json", b"{}")).get("status") == "READY"
 
         def reset():
@@ -267,16 +275,18 @@ class ReadyReturn(unittest.TestCase):
         print("D-080", label, "(ROLLED_BACK unless indicated)", ", ".join(row), flush=True)
         return len(files) + 1
 
+    def interruption_points(self):
+        return {"apply": [*self.apply_points(), "return-frame.json", "database.private.json"],
+                "return": [*self.return_points(), "restore-dispatch.json"],
+                "recycle": ["restore-recycle.json", "origin.json", "old-stop", "recycled-restore-stop-epoch.json",
+                            "recycled-restore-start.json", "old-start", "recycled-restore-generation.json",
+                            "recycled-restore-signal.json", "recycled-restore-dispatch.json", "old-signal"],
+                "failed-apply": ["rollback-intent.json", "new-stop", "old-start", "receipt.json"]}
+
     def test_DEP_58QG_02_generated_single_loss_matrix(self):
-        phases = {"apply": [*self.apply_points(), "return-frame.json", "database.private.json"],
-                  "return": [*self.return_points(), "restore-dispatch.json"],
-                  "recycle": ["restore-recycle.json", "origin.json", "old-stop", "recycled-restore-stop-epoch.json",
-                              "recycled-restore-start.json", "old-start", "recycled-restore-generation.json",
-                              "recycled-restore-signal.json", "recycled-restore-dispatch.json", "old-signal"],
-                  "failed-apply": ["rollback-intent.json", "new-stop", "old-start", "receipt.json"]}
         cells = rows = 0
         with patch.object(os, "fsync"):
-            for phase, points in phases.items():
+            for phase, points in self.interruption_points().items():
                 for point in points:
                     for after in (False, True):
                         rt, plan = self.case(database=True)
@@ -293,6 +303,34 @@ class ReadyReturn(unittest.TestCase):
                         cells += self.loss_row(rt, plan, (phase, point, after))
                         rows += 1
         print(f"D-080 matrix: {rows} interruption boundaries, {cells} cases", flush=True)
+
+    def test_DEP_58QL_17_spring_losses_at_shared_interruption_points(self):
+        phases = self.interruption_points()
+        phases["apply"].remove("database.private.json")
+        phases["apply"].extend(("cleanup-plan.json", "cleanup-owner.json"))
+        phases["return"].extend(("private-plan.json", "private-owner.json", "rename-lock"))
+        cells = rows = 0
+        with (patch.object(os, "fsync"), patch.object(op.flyway, "checkpoint", return_value={"proof": "fixture"}),
+              patch.object(op.flyway, "verify")):
+            for phase, points in phases.items():
+                for point in points:
+                    for after in (False, True):
+                        rt, _ = self.case()
+                        rt.p["migration"]["mode"] = "spring-flyway"
+                        rt.flyway_peer = {"database": "fixture"}
+                        plan = op.plan(rt.p, rt)["plan"]
+                        if phase in ("return", "recycle"):
+                            self.assertEqual(op.apply(rt.p, op.digest(plan), rt)["status"], "READY")
+                        if phase == "recycle":
+                            self.assertEqual(interrupted(rt, plan, "return", "restore-signal.json", True)[0], "crash")
+                        if phase == "failed-apply":
+                            rt.fault = "readiness"
+                        action = "apply" if phase in ("apply", "failed-apply") else "return"
+                        result, rt = interrupted(rt, plan, action, point, after)
+                        self.assertEqual(result, "crash", (phase, point, after, result))
+                        cells += self.loss_row(rt, plan, ("spring-common", phase, point, after), spring_only=True)
+                        rows += 1
+        print(f"D-080 Spring shared: {rows} interruption boundaries, {cells} cases", flush=True)
 
     def test_DEP_58QG_02_publication_and_transient_return_cuts(self):
         self.bound_migration_cuts = set()
@@ -347,10 +385,15 @@ class ReadyReturn(unittest.TestCase):
     def test_DEP_58QG_02_migration_single_loss_matrix(self):
         self.bound_migration_cuts = set()
         cells = rows = 0
-        for mode in ("dedicated", "spring-flyway"):
+        for scenario in ("dedicated", "spring-flyway", "spring-proof", "spring-reader"):
+            mode = "dedicated" if scenario == "dedicated" else "spring-flyway"
             points = ["migration-review-consumed.json", "release-signal.json", "signal", "receipt.json"]
             if mode == "dedicated":
                 points += ["migration-intent.json", "migrate", "migration-complete.json"]
+            if scenario == "spring-proof":
+                points += ["flyway-plan.json", "release-signal.json.failure"]
+            if scenario == "spring-reader":
+                points += ["flyway-reader.json"]
             for point in points:
                 for after in (False, True):
                     rt, _ = self.case(database=mode == "dedicated")
@@ -366,17 +409,27 @@ class ReadyReturn(unittest.TestCase):
                         result = fn(*args, **kwargs)
                         if name == point and after:
                             raise Crash()
+                        if name == "signal" and scenario == "spring-proof":
+                            raise OSError("lost response after delivery")
                         return result
                     record = op.record
                     with ExitStack() as stack:
                         stack.enter_context(patch.object(op, "record", lambda d, n, v: cut(n, record, d, n, v)))
+                        if scenario in ("spring-proof", "spring-reader"):
+                            rt.flyway_peer = {"database": "fixture"}
+                            proof = {"review": "fixture"}
+                            error = op.Held("FLYWAY_READ_FAILED") if scenario == "spring-reader" else None
+                            stack.enter_context(patch.object(op.flyway, "checkpoint", return_value=proof, side_effect=error))
+                            stack.enter_context(patch.object(op.flyway, "verify", return_value=None))
                         for name in ("signal", "migrate"):
                             original = getattr(rt, name)
                             stack.enter_context(patch.object(rt, name,
                                 lambda *a, n=name, fn=original: cut(n, fn, *a)))
-                        with self.assertRaises(Crash):
+                        with self.assertRaises(Crash, msg=(scenario, point, after)):
                             op.migrate(rt.p, stamp, stage["migrationSha256"], rt)
-                    cells += self.loss_row(rt, plan, (mode, point, after))
+                    if point in self.SPRING_FILES:
+                        self.assertEqual((Path(rt.p["journal"]) / stamp / point).exists(), after)
+                    cells += self.loss_row(rt, plan, (scenario, point, after))
                     rows += 1
         print(f"D-080 migration: {rows} interruption boundaries, {cells} cases", flush=True)
 
@@ -510,6 +563,8 @@ class ReadyReturn(unittest.TestCase):
                 if not private:
                     case.p.pop("configDelta")
                     case.p["readyReturn"] = True
+                else:
+                    case.p["migration"]["options"] = {"DB_PASSWORD": "fixture"}
                 call, req = case.governed_dispatch()
                 stamp = call(0)["digest"]
                 req.update(phase="apply", digest=stamp)
@@ -1106,9 +1161,10 @@ class ConfigDeltaTest(unittest.TestCase):
             net["ipv4"] = f"192.0.2.{i}"
         p["readiness"]["attempts"] = 2
         p["oldImage"] = "sha256:" + "a" * 64
-        key = self.root / ".release-hmac.key"
+        key = Path(self.enterContext(tempfile.TemporaryDirectory())) / ".release-hmac.key"
         key.touch(mode=0o600)
         key.write_bytes(os.urandom(32))
+        p["fingerprintKeyFile"] = str(key)
         self.rt = DeltaEngine(p, fixture.artifact(p, self.root))
         self.old = self.rt.inspect(fixture.OLD)
         self.net = next(iter(p["networks"]))
